@@ -1,5 +1,7 @@
-import AILabTab from "@/components/AILabTab";
-
 export default function Page() {
-  return <AILabTab />;
+  return (
+    <main>
+      <h1>تداول+</h1>
+    </main>
+  );
 }
