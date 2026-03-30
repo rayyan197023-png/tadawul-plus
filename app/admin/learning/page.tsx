@@ -13,7 +13,7 @@ const sbFetch = async (path, options = {}) => {
       "apikey": SUPABASE_KEY,
       "Authorization": `Bearer ${SUPABASE_KEY}`,
       "Content-Type": "application/json",
-      "Prefer": "return=representation",
+      "Prefer": "return=minimal",
       ...(options.headers as Record<string, string> || {})
 
     },
@@ -32,7 +32,7 @@ const getUserId = () => {
 const db = {
   async pull(userId) {
     try {
-      return await sbFetch(`/learning_records?user_id=eq.${userId}&order=created_at.desc`);
+      return await sbFetch(`/learning_records?user_id=eq.${userId}&order=id.desc`);
     } catch { return null; }
   },
   async save(userId, record) {
