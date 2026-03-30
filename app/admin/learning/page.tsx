@@ -14,7 +14,8 @@ const sbFetch = async (path, options = {}) => {
       "Authorization": `Bearer ${SUPABASE_KEY}`,
       "Content-Type": "application/json",
       "Prefer": "return=representation",
-      ...(options.headers || {}),
+      ...(options.headers as Record<string, string> || {})
+
     },
   });
   if (!res.ok) throw new Error(await res.text());
