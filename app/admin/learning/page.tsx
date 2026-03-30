@@ -1,4 +1,2 @@
-import AILearningEngine from "@/components/AILearningEngine";
-export default function Page() {
-  return <AILearningEngine />;
-}
+"use client";
+export { default } from "../../components/AILearningEngine";
