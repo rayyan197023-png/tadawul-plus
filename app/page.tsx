@@ -1,5 +1,5 @@
-"use client";
-import { useState, useRef, useCallback } from "react";
+" use client" ;
+import { useState, useRef, useCallback } from " react" ;
 
 const C = {
 ink: “#06080f”, deep: “#090c16”, void: “#0c1020”,
@@ -49,7 +49,7 @@ const TYPES = [
 function dataBlock(s: any) {
 const pos = Math.round((s.p - s.lo52) / (s.hi52 - s.lo52) * 100);
 const volR = Math.round(parseFloat(s.vol) / parseFloat(s.avgVol) * 100);
-return `=== ${s.name} (${s.sym}) --- ${s.sec} ===\n${s.desc}\n> السعر: ${s.p} | ${s.ch > 0 ? "+" : ""}${s.ch}% | 52اسبوع: ${s.lo52}->${s.hi52} | موقع: ${pos}%\n> P/E ${s.pe} | P/B ${s.pb} | EPS ${s.eps} | Cap ${s.cap}\n> ROE ${s.roe}% | هامش ${s.net_margin}% | FCF ${s.fcf ?? "N/A"} | D/E ${s.debt_eq ?? "بنوك"} | Beta ${s.beta}\n> توزيعات: ${s.div}% | حجم: ${s.vol} (${volR}% من ${s.avgVol})`;
+return `=== ${s.name} (${s.sym}) --- ${s.sec} ===\n${s.desc}\n> السعر: ${s.p} | ${s.ch > 0 ? " +"  : " " }${s.ch}% | 52اسبوع: ${s.lo52}->${s.hi52} | موقع: ${pos}%\n> P/E ${s.pe} | P/B ${s.pb} | EPS ${s.eps} | Cap ${s.cap}\n> ROE ${s.roe}% | هامش ${s.net_margin}% | FCF ${s.fcf ?? " N/A" } | D/E ${s.debt_eq ?? " بنوك" } | Beta ${s.beta}\n> توزيعات: ${s.div}% | حجم: ${s.vol} (${volR}% من ${s.avgVol})`;
 }
 
 const SYSTEMS: Record<string, string> = {
@@ -70,7 +70,7 @@ const f = (r: number) => (s.lo52 + fib * r).toFixed(2);
 const map: Record<string, string> = {
 comprehensive: `${base}\n\n**الخلاصة التنفيذية** (التوصية + مستوى الثقة %)\n\n**التحليل الأساسي**\n- P/E ${s.pe} و P/B ${s.pb}: رخيص/عادل/غالٍ؟\n- ROE ${s.roe}% + هامش ${s.net_margin}%\n- القيمة العادلة: P/E مستهدف × EPS ${s.eps}\n\n**التحليل الفني**\n- موقع ${pos}% من القاع\n- فيبوناتشي: 23.6%=${f(.236)} | 38.2%=${f(.382)} | 61.8%=${f(.618)}\n- الحجم ${volR}%\n\n**المخاطر** (5 مرتبة)\n\n**التوصية** دخول | هدف 1 | هدف 2 | وقف | الأفق`,
 technical: `${base}\n\n**هيكل السوق** موقع ${pos}%\n\n**فيبوناتشي**\n23.6%=${f(.236)} | 38.2%=${f(.382)} | 50%=${f(.5)} | 61.8%=${f(.618)} | 78.6%=${f(.786)}\n\n**مناطق الطلب والعرض**\n\n**الحجم** ${volR}%\n\n**نقاط التداول** دخول | وقف | هدف 1 | هدف 2`,
-fundamental: `${base}\n\n**Moat الاقتصادي**\n\n**التقييم**\n- P/E ${s.pe} و P/B ${s.pb} مع ROE ${s.roe}%\n${s.fcf != null ? `- FCF ${s.fcf}B` : "- بنوك: Price/Book"}\n\n**جودة الأرباح** EPS ${s.eps} + توزيعات ${s.div}%\n\n**التوصية** القيمة العادلة | هامش الأمان`,
+fundamental: `${base}\n\n**Moat الاقتصادي**\n\n**التقييم**\n- P/E ${s.pe} و P/B ${s.pb} مع ROE ${s.roe}%\n${s.fcf != null ? `- FCF ${s.fcf}B` : " - بنوك: Price/Book" }\n\n**جودة الأرباح** EPS ${s.eps} + توزيعات ${s.div}%\n\n**التوصية** القيمة العادلة | هامش الأمان`,
 smart_money: `${base}\n\n**الحجم** ${volR}% - تراكم أم توزيع?\n\n**Wyckoff** موقع ${pos}%\nBSL: ${s.hi52} | SSL: ${s.lo52}\nOB صعودي: ${f(.236)} | OB هبوطي: ${f(.786)}\n\n**استراتيجية** دخول | وقف | R:R`,
 macro: `${base}\n\n**محركات ${s.sec}** النفط، الفائدة، الدولار\n\n**رؤية 2030** موقع ${s.name}\n\n**سيناريوهات** نفط↑ / نفط↓ / رفع فائدة / خفض فائدة\n\n**التوقعات** أساسي | متفائل | متشائم`,
 sentiment: `${base}\n\n**المشاعر** حجم ${volR}%، موقع ${pos}%\n\n**التحيزات** Anchoring/Herding\n\n**دورة العواطف** الموقع الحالي\n\n**التوصية السيكولوجية**`,
@@ -90,19 +90,19 @@ const mn = Math.min(…pts), mx = Math.max(…pts), rng = mx - mn || 0.01;
 const W = 100, H = 24, pad = 2;
 const px = (i: number) => pad + (i / (pts.length - 1)) * (W - pad * 2);
 const py = (v: number) => H - pad - ((v - mn) / rng) * (H - pad * 2);
-const d = pts.map((v, i) => `${i === 0 ? "M" : "L"}${px(i).toFixed(1)},${py(v).toFixed(1)}`).join(” “);
+const d = pts.map((v, i) => `${i === 0 ? " M"  : " L" }${px(i).toFixed(1)},${py(v).toFixed(1)}`).join(” “);
 const lx = px(pts.length - 1), ly = py(pts[pts.length - 1]);
 return (
 <svg width={W} height={H} style={{ overflow: “visible” }}>
 <defs>
 <linearGradient id={`sg${pos}`} x1=“0” y1=“0” x2=“0” y2=“1”>
-<stop offset="0%" stopColor={color} stopOpacity="0.25" />
-<stop offset="100%" stopColor={color} stopOpacity="0" />
+<stop offset=" 0%"  stopColor={color} stopOpacity=" 0.25"  />
+<stop offset=" 100%"  stopColor={color} stopOpacity=" 0"  />
 </linearGradient>
 </defs>
 <path d={`${d} L${lx},${H} L${pad},${H} Z`} fill={`url(#sg${pos})`} />
-<path d={d} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-<circle cx={lx} cy={ly} r="3" fill={color} />
+<path d={d} fill=" none"  stroke={color} strokeWidth=" 1.5"  strokeLinecap=" round"  strokeLinejoin=" round"  />
+<circle cx={lx} cy={ly} r=" 3"  fill={color} />
 </svg>
 );
 }
@@ -221,73 +221,73 @@ return (
 
 ```
   {/* HEADER */}
-  <div style={{ padding: "14px 16px 12px", background: `linear-gradient(160deg,${C.layer2},${C.layer1},${C.deep})`, borderBottom: `1px solid ${C.line}`, position: "relative", overflow: "hidden" }}>
-    <div style={{ position: "absolute", top: -40, right: -40, width: 140, height: 140, borderRadius: "50%", background: `radial-gradient(circle,${C.gold}15,transparent 70%)`, pointerEvents: "none" }} />
-    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 1, background: `linear-gradient(90deg,transparent,${C.gold}50,${C.electric}50,transparent)`, pointerEvents: "none" }} />
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <div style={{ width: 40, height: 40, borderRadius: 12, background: `linear-gradient(135deg,${C.gold}35,${C.goldD}18)`, border: `1px solid ${C.gold}50`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 19, boxShadow: `0 4px 20px ${C.gold}35` }}>&#x1F52C;</div>
+  <div style={{ padding: " 14px 16px 12px" , background: `linear-gradient(160deg,${C.layer2},${C.layer1},${C.deep})`, borderBottom: `1px solid ${C.line}`, position: " relative" , overflow: " hidden"  }}>
+    <div style={{ position: " absolute" , top: -40, right: -40, width: 140, height: 140, borderRadius: " 50%" , background: `radial-gradient(circle,${C.gold}15,transparent 70%)`, pointerEvents: " none"  }} />
+    <div style={{ position: " absolute" , bottom: 0, left: 0, right: 0, height: 1, background: `linear-gradient(90deg,transparent,${C.gold}50,${C.electric}50,transparent)`, pointerEvents: " none"  }} />
+    <div style={{ display: " flex" , alignItems: " center" , justifyContent: " space-between" , position: " relative"  }}>
+      <div style={{ display: " flex" , alignItems: " center" , gap: 10 }}>
+        <div style={{ width: 40, height: 40, borderRadius: 12, background: `linear-gradient(135deg,${C.gold}35,${C.goldD}18)`, border: `1px solid ${C.gold}50`, display: " flex" , alignItems: " center" , justifyContent: " center" , fontSize: 19, boxShadow: `0 4px 20px ${C.gold}35` }}>&#x1F52C;</div>
         <div>
-          <div style={{ fontSize: 16, fontWeight: 900, color: C.snow, letterSpacing: "-.3px" }}>\u062a\u062f\u0627\u0648\u0644+ \u00b7 \u062a\u062d\u0644\u064a\u0644 AI</div>
-          <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 2 }}>
-            <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.mint, boxShadow: `0 0 6px ${C.mint}`, animation: "pulse 2s ease-in-out infinite" }} />
+          <div style={{ fontSize: 16, fontWeight: 900, color: C.snow, letterSpacing: " -.3px"  }}>\u062a\u062f\u0627\u0648\u0644+ \u00b7 \u062a\u062d\u0644\u064a\u0644 AI</div>
+          <div style={{ display: " flex" , alignItems: " center" , gap: 5, marginTop: 2 }}>
+            <div style={{ width: 5, height: 5, borderRadius: " 50%" , background: C.mint, boxShadow: `0 0 6px ${C.mint}`, animation: " pulse 2s ease-in-out infinite"  }} />
             <span style={{ fontSize: 10, color: C.mint, fontWeight: 600 }}>Claude Sonnet \u00b7 \u0630\u0643\u0627\u0621 \u0627\u0635\u0637\u0646\u0627\u0639\u064a</span>
           </div>
         </div>
       </div>
-      <div style={{ background: `linear-gradient(135deg,${C.electric}22,${C.electric}0d)`, border: `1px solid ${C.electric}44`, borderRadius: 8, padding: "4px 10px", fontSize: 10, fontWeight: 700, color: C.electric }}>6 \u0623\u0646\u0648\u0627\u0639</div>
+      <div style={{ background: `linear-gradient(135deg,${C.electric}22,${C.electric}0d)`, border: `1px solid ${C.electric}44`, borderRadius: 8, padding: " 4px 10px" , fontSize: 10, fontWeight: 700, color: C.electric }}>6 \u0623\u0646\u0648\u0627\u0639</div>
     </div>
   </div>
 
-  <div style={{ padding: "14px 14px 100px" }}>
+  <div style={{ padding: " 14px 14px 100px"  }}>
 
     {/* PICKER */}
     <div style={{ marginBottom: 16 }}>
-      <div style={{ fontSize: 10, color: C.smoke, marginBottom: 7, fontWeight: 700, letterSpacing: "1.5px" }}>\u0627\u0644\u0633\u0647\u0645</div>
-      <div style={{ position: "relative" }}>
-        <button onClick={() => setOpen((o) => !o)} style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: `linear-gradient(135deg,${C.layer1},${C.layer2})`, border: `1px solid ${open ? sc + "60" : C.line}`, borderRadius: 14, cursor: "pointer", outline: "none", boxShadow: open ? `0 0 0 2px ${sc}20,0 8px 24px rgba(0,0,0,.35)` : `0 4px 14px rgba(0,0,0,.2)`, transition: "all .2s" }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, flexShrink: 0, background: `linear-gradient(135deg,${sc}30,${sc}12)`, border: `1px solid ${sc}60`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ fontSize: 10, color: C.smoke, marginBottom: 7, fontWeight: 700, letterSpacing: " 1.5px"  }}>\u0627\u0644\u0633\u0647\u0645</div>
+      <div style={{ position: " relative"  }}>
+        <button onClick={() => setOpen((o) => !o)} style={{ width: " 100%" , display: " flex" , alignItems: " center" , gap: 10, padding: " 10px 14px" , background: `linear-gradient(135deg,${C.layer1},${C.layer2})`, border: `1px solid ${open ? sc + " 60"  : C.line}`, borderRadius: 14, cursor: " pointer" , outline: " none" , boxShadow: open ? `0 0 0 2px ${sc}20,0 8px 24px rgba(0,0,0,.35)` : `0 4px 14px rgba(0,0,0,.2)`, transition: " all .2s"  }}>
+          <div style={{ width: 40, height: 40, borderRadius: 10, flexShrink: 0, background: `linear-gradient(135deg,${sc}30,${sc}12)`, border: `1px solid ${sc}60`, display: " flex" , flexDirection: " column" , alignItems: " center" , justifyContent: " center"  }}>
             <span style={{ fontSize: 10, fontWeight: 900, color: sc }}>{stock.sym}</span>
             <span style={{ fontSize: 8, color: C.smoke, marginTop: 1 }}>{stock.sec}</span>
           </div>
-          <div style={{ flex: 1, textAlign: "right" }}>
+          <div style={{ flex: 1, textAlign: " right"  }}>
             <div style={{ fontSize: 14, fontWeight: 800, color: C.snow }}>{stock.name}</div>
             <div style={{ fontSize: 10, color: C.smoke, marginTop: 2 }}>P/E {stock.pe} \u00b7 \u062a\u0648\u0632\u064a\u0639 {stock.div}%</div>
           </div>
-          <div style={{ textAlign: "left", flexShrink: 0 }}>
-            <div style={{ fontSize: 20, fontWeight: 900, color: C.snow, direction: "ltr" }}>{stock.p}</div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: chColor, direction: "ltr" }}>{isUp ? "+" : ""}{stock.ch}%</div>
+          <div style={{ textAlign: " left" , flexShrink: 0 }}>
+            <div style={{ fontSize: 20, fontWeight: 900, color: C.snow, direction: " ltr"  }}>{stock.p}</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: chColor, direction: " ltr"  }}>{isUp ? " +"  : " " }{stock.ch}%</div>
           </div>
-          <div style={{ color: C.smoke, fontSize: 11, flexShrink: 0, transform: open ? "rotate(180deg)" : "none", transition: "transform .2s" }}>&#x25BC;</div>
+          <div style={{ color: C.smoke, fontSize: 11, flexShrink: 0, transform: open ? " rotate(180deg)"  : " none" , transition: " transform .2s"  }}>&#x25BC;</div>
         </button>
         {open && (
           <>
-            <div style={{ position: "fixed", inset: 0, zIndex: 40 }} onClick={() => { setOpen(false); setSrchQ(""); }} />
-            <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0, zIndex: 50, background: C.layer1, border: `1px solid ${C.line}`, borderRadius: 14, overflow: "hidden", boxShadow: `0 20px 56px rgba(0,0,0,.7)`, animation: "dropDown .18s cubic-bezier(.16,1,.3,1)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 12px", borderBottom: `1px solid ${C.edge}`, background: C.void }}>
+            <div style={{ position: " fixed" , inset: 0, zIndex: 40 }} onClick={() => { setOpen(false); setSrchQ(" " ); }} />
+            <div style={{ position: " absolute" , top: " calc(100% + 6px)" , left: 0, right: 0, zIndex: 50, background: C.layer1, border: `1px solid ${C.line}`, borderRadius: 14, overflow: " hidden" , boxShadow: `0 20px 56px rgba(0,0,0,.7)`, animation: " dropDown .18s cubic-bezier(.16,1,.3,1)"  }}>
+              <div style={{ display: " flex" , alignItems: " center" , gap: 6, padding: " 8px 12px" , borderBottom: `1px solid ${C.edge}`, background: C.void }}>
                 <span style={{ fontSize: 12, color: C.smoke }}>&#x1F50D;</span>
-                <input value={srchQ} onChange={(e) => setSrchQ(e.target.value)} placeholder="\u0627\u0628\u062d\u062b..." autoFocus style={{ flex: 1, background: "none", border: "none", outline: "none", color: C.snow, fontSize: 11, direction: "rtl", fontFamily: "Cairo,sans-serif" }} />
-                {srchQ && <button onClick={() => setSrchQ("")} style={{ background: "none", border: "none", cursor: "pointer", color: C.smoke, fontSize: 15 }}>&#x00D7;</button>}
+                <input value={srchQ} onChange={(e) => setSrchQ(e.target.value)} placeholder=" \u0627\u0628\u062d\u062b..."  autoFocus style={{ flex: 1, background: " none" , border: " none" , outline: " none" , color: C.snow, fontSize: 11, direction: " rtl" , fontFamily: " Cairo,sans-serif"  }} />
+                {srchQ && <button onClick={() => setSrchQ(" " )} style={{ background: " none" , border: " none" , cursor: " pointer" , color: C.smoke, fontSize: 15 }}>&#x00D7;</button>}
               </div>
-              <div style={{ maxHeight: 260, overflowY: "auto" }}>
+              <div style={{ maxHeight: 260, overflowY: " auto"  }}>
                 {filtered.map((s, i) => {
                   const sc2 = SEC[s.sec] || C.electric;
                   const active = s.sym === stock.sym;
                   return (
-                    <button key={s.sym} onClick={() => changeStock(s)} className="dr-row" style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "9px 12px", background: active ? `${C.gold}10` : "none", borderBottom: i < filtered.length - 1 ? `1px solid ${C.edge}` : "none", border: "none", cursor: "pointer", textAlign: "right" }}>
-                      <div style={{ width: 34, height: 34, borderRadius: 8, flexShrink: 0, background: `${sc2}20`, border: `1px solid ${sc2}44`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                    <button key={s.sym} onClick={() => changeStock(s)} className=" dr-row"  style={{ width: " 100%" , display: " flex" , alignItems: " center" , gap: 10, padding: " 9px 12px" , background: active ? `${C.gold}10` : " none" , borderBottom: i < filtered.length - 1 ? `1px solid ${C.edge}` : " none" , border: " none" , cursor: " pointer" , textAlign: " right"  }}>
+                      <div style={{ width: 34, height: 34, borderRadius: 8, flexShrink: 0, background: `${sc2}20`, border: `1px solid ${sc2}44`, display: " flex" , flexDirection: " column" , alignItems: " center" , justifyContent: " center"  }}>
                         <span style={{ fontSize: 9, fontWeight: 900, color: sc2 }}>{s.sym}</span>
                         <span style={{ fontSize: 7, color: C.smoke, marginTop: 1 }}>{s.sec}</span>
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: active ? C.gold : C.snow, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: active ? C.gold : C.snow, overflow: " hidden" , textOverflow: " ellipsis" , whiteSpace: " nowrap"  }}>{s.name}</div>
                         <div style={{ fontSize: 10, color: C.smoke }}>P/E {s.pe} \u00b7 {s.div}%</div>
                       </div>
-                      <div style={{ textAlign: "left", flexShrink: 0 }}>
+                      <div style={{ textAlign: " left" , flexShrink: 0 }}>
                         <div style={{ fontSize: 12, fontWeight: 800, color: C.snow }}>{s.p}</div>
-                        <div style={{ fontSize: 10, color: s.ch >= 0 ? C.mint : C.coral, direction: "ltr" }}>{s.ch >= 0 ? "+" : ""}{s.ch}%</div>
+                        <div style={{ fontSize: 10, color: s.ch >= 0 ? C.mint : C.coral, direction: " ltr"  }}>{s.ch >= 0 ? " +"  : " " }{s.ch}%</div>
                       </div>
-                      {active && <div style={{ width: 6, height: 6, borderRadius: "50%", background: C.gold }} />}
+                      {active && <div style={{ width: 6, height: 6, borderRadius: " 50%" , background: C.gold }} />}
                     </button>
                   );
                 })}
@@ -299,40 +299,40 @@ return (
     </div>
 
     {/* METRICS */}
-    <div style={{ marginBottom: 16, borderRadius: 14, overflow: "hidden", background: `linear-gradient(135deg,${C.layer1},${C.layer2})`, border: `1px solid ${sc}35`, animation: "cardIn .28s cubic-bezier(.16,1,.3,1)" }}>
+    <div style={{ marginBottom: 16, borderRadius: 14, overflow: " hidden" , background: `linear-gradient(135deg,${C.layer1},${C.layer2})`, border: `1px solid ${sc}35`, animation: " cardIn .28s cubic-bezier(.16,1,.3,1)"  }}>
       <div style={{ height: 3, background: `linear-gradient(90deg,${sc},${sc}55,transparent)` }} />
-      <div style={{ padding: "12px 14px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ background: isUp ? `${C.mint}18` : `${C.coral}18`, border: `1px solid ${chColor}44`, borderRadius: 8, padding: "4px 10px", fontSize: 11, fontWeight: 800, color: chColor }}>{isUp ? "\u25b2" : "\u25bc"} {Math.abs(stock.ch)}%</div>
+      <div style={{ padding: " 12px 14px"  }}>
+        <div style={{ display: " flex" , alignItems: " center" , justifyContent: " space-between" , marginBottom: 10 }}>
+          <div style={{ display: " flex" , alignItems: " center" , gap: 8 }}>
+            <div style={{ background: isUp ? `${C.mint}18` : `${C.coral}18`, border: `1px solid ${chColor}44`, borderRadius: 8, padding: " 4px 10px" , fontSize: 11, fontWeight: 800, color: chColor }}>{isUp ? " \u25b2"  : " \u25bc" } {Math.abs(stock.ch)}%</div>
             <div style={{ fontSize: 10, color: C.smoke }}>{stock.sec}</div>
           </div>
-          <div style={{ textAlign: "left" }}>
-            <div style={{ fontSize: 28, fontWeight: 900, color: C.snow, letterSpacing: "-1px", direction: "ltr" }}>{stock.p}</div>
+          <div style={{ textAlign: " left"  }}>
+            <div style={{ fontSize: 28, fontWeight: 900, color: C.snow, letterSpacing: " -1px" , direction: " ltr"  }}>{stock.p}</div>
             <div style={{ fontSize: 10, color: C.smoke }}>\u0631\u064a\u0627\u0644 \u0633\u0639\u0648\u062f\u064a</div>
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10, padding: "6px 8px", background: C.void, borderRadius: 8, border: `1px solid ${C.edge}` }}>
+        <div style={{ display: " flex" , alignItems: " center" , justifyContent: " space-between" , marginBottom: 10, padding: " 6px 8px" , background: C.void, borderRadius: 8, border: `1px solid ${C.edge}` }}>
           <div style={{ fontSize: 10, color: C.ash }}>30 \u064a\u0648\u0645\u0627\u064b</div>
           <Sparkline pos={pos} color={pos > 50 ? C.mint : C.coral} />
-          <div style={{ fontSize: 11, fontWeight: 700, color: pos > 50 ? C.mint : C.coral }}>{pos > 50 ? "\u2191" : "\u2193"} {pos}%</div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: pos > 50 ? C.mint : C.coral }}>{pos > 50 ? " \u2191"  : " \u2193" } {pos}%</div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 1, background: C.edge, borderRadius: 8, overflow: "hidden", marginBottom: 10 }}>
-          {[{ l: "P/E", v: String(stock.pe), alert: stock.pe > 50 }, { l: "ROE", v: `${stock.roe}%` }, { l: "\u062a\u0648\u0632\u064a\u0639", v: `${stock.div}%` }, { l: "P/B", v: String(stock.pb) }, { l: "Beta", v: String(stock.beta) }, { l: "\u062d\u062c\u0645", v: stock.vol }].map((m) => (
-            <div key={m.l} style={{ background: C.layer1, padding: "10px 6px", textAlign: "center" }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: (m as any).alert ? C.coral : C.snow }}>{m.v}{(m as any).alert ? " !" : ""}</div>
+        <div style={{ display: " grid" , gridTemplateColumns: " 1fr 1fr 1fr" , gap: 1, background: C.edge, borderRadius: 8, overflow: " hidden" , marginBottom: 10 }}>
+          {[{ l: " P/E" , v: String(stock.pe), alert: stock.pe > 50 }, { l: " ROE" , v: `${stock.roe}%` }, { l: " \u062a\u0648\u0632\u064a\u0639" , v: `${stock.div}%` }, { l: " P/B" , v: String(stock.pb) }, { l: " Beta" , v: String(stock.beta) }, { l: " \u062d\u062c\u0645" , v: stock.vol }].map((m) => (
+            <div key={m.l} style={{ background: C.layer1, padding: " 10px 6px" , textAlign: " center"  }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: (m as any).alert ? C.coral : C.snow }}>{m.v}{(m as any).alert ? "  !"  : " " }</div>
               <div style={{ fontSize: 10, color: C.ash, marginTop: 2 }}>{m.l}</div>
             </div>
           ))}
         </div>
         <div>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
+          <div style={{ display: " flex" , justifyContent: " space-between" , marginBottom: 5 }}>
             <span style={{ fontSize: 10, color: C.ash }}>\u0623\u062f\u0646\u0649 {stock.lo52}</span>
             <span style={{ fontSize: 10, color: C.smoke, fontWeight: 600 }}>{pos}%</span>
             <span style={{ fontSize: 10, color: C.ash }}>\u0623\u0639\u0644\u0649 {stock.hi52}</span>
           </div>
-          <div style={{ height: 5, background: C.edge, borderRadius: 3, overflow: "hidden", direction: "ltr" }}>
-            <div style={{ height: "100%", width: `${pos}%`, background: `linear-gradient(90deg,${sc}aa,${sc})`, borderRadius: 3, transition: "width .45s ease" }} />
+          <div style={{ height: 5, background: C.edge, borderRadius: 3, overflow: " hidden" , direction: " ltr"  }}>
+            <div style={{ height: " 100%" , width: `${pos}%`, background: `linear-gradient(90deg,${sc}aa,${sc})`, borderRadius: 3, transition: " width .45s ease"  }} />
           </div>
         </div>
       </div>
@@ -340,19 +340,19 @@ return (
 
     {/* TYPES */}
     <div style={{ marginBottom: 16 }}>
-      <div style={{ fontSize: 10, color: C.smoke, marginBottom: 8, fontWeight: 700, letterSpacing: "1.5px" }}>\u0646\u0648\u0639 \u0627\u0644\u062a\u062d\u0644\u064a\u0644</div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+      <div style={{ fontSize: 10, color: C.smoke, marginBottom: 8, fontWeight: 700, letterSpacing: " 1.5px"  }}>\u0646\u0648\u0639 \u0627\u0644\u062a\u062d\u0644\u064a\u0644</div>
+      <div style={{ display: " grid" , gridTemplateColumns: " 1fr 1fr 1fr" , gap: 8 }}>
         {TYPES.map((t) => {
           const sel = type === t.id;
           const tc = t.color;
           return (
-            <button key={t.id} onClick={() => changeType(t.id)} className="tc-card" style={{ ...(t.badge ? { gridColumn: "1/-1", flexDirection: "row" as const, alignItems: "center", gap: 12, padding: "11px 14px" } : { flexDirection: "column" as const, padding: "10px 8px" }), display: "flex", textAlign: "right", background: sel ? `linear-gradient(135deg,${tc}28,${tc}12)` : `linear-gradient(135deg,${C.layer1},${C.layer2})`, border: `1px solid ${sel ? tc + "55" : C.line}`, borderRadius: 12, cursor: "pointer", boxShadow: sel ? `0 4px 18px ${tc}25` : "none", transition: "all .15s", outline: "none" }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, background: sel ? `${tc}28` : C.layer3, border: sel ? `1px solid ${tc}44` : `1px solid ${C.edge}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, marginBottom: t.badge ? 0 : 8 }}>{t.icon}</div>
+            <button key={t.id} onClick={() => changeType(t.id)} className=" tc-card"  style={{ ...(t.badge ? { gridColumn: " 1/-1" , flexDirection: " row"  as const, alignItems: " center" , gap: 12, padding: " 11px 14px"  } : { flexDirection: " column"  as const, padding: " 10px 8px"  }), display: " flex" , textAlign: " right" , background: sel ? `linear-gradient(135deg,${tc}28,${tc}12)` : `linear-gradient(135deg,${C.layer1},${C.layer2})`, border: `1px solid ${sel ? tc + " 55"  : C.line}`, borderRadius: 12, cursor: " pointer" , boxShadow: sel ? `0 4px 18px ${tc}25` : " none" , transition: " all .15s" , outline: " none"  }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, background: sel ? `${tc}28` : C.layer3, border: sel ? `1px solid ${tc}44` : `1px solid ${C.edge}`, display: " flex" , alignItems: " center" , justifyContent: " center" , fontSize: 16, marginBottom: t.badge ? 0 : 8 }}>{t.icon}</div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 11, fontWeight: sel ? 800 : 600, color: sel ? tc : C.mist }}>{t.label}</div>
                 <div style={{ fontSize: 10, color: sel ? C.smoke : C.ash, marginTop: 2, lineHeight: 1.3 }}>{t.desc}</div>
               </div>
-              {t.badge && <div style={{ flexShrink: 0, fontSize: 9, fontWeight: 900, color: C.gold, background: "rgba(60,42,0,.92)", padding: "3px 8px", borderRadius: 6, border: `1px solid ${C.gold}55` }}>{t.badge}</div>}
+              {t.badge && <div style={{ flexShrink: 0, fontSize: 9, fontWeight: 900, color: C.gold, background: " rgba(60,42,0,.92)" , padding: " 3px 8px" , borderRadius: 6, border: `1px solid ${C.gold}55` }}>{t.badge}</div>}
             </button>
           );
         })}
@@ -360,8 +360,8 @@ return (
     </div>
 
     {/* RUN */}
-    {status === "idle" && (
-      <button onClick={run} className="run-btn" style={{ width: "100%", padding: "15px", background: `linear-gradient(135deg,${selType.color}40,${selType.color}22)`, border: `2px solid ${selType.color}80`, borderRadius: 14, cursor: "pointer", outline: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 10, boxShadow: `0 6px 28px ${selType.color}30`, transition: "all .15s", minHeight: 52 }}>
+    {status === " idle"  && (
+      <button onClick={run} className=" run-btn"  style={{ width: " 100%" , padding: " 15px" , background: `linear-gradient(135deg,${selType.color}40,${selType.color}22)`, border: `2px solid ${selType.color}80`, borderRadius: 14, cursor: " pointer" , outline: " none" , display: " flex" , alignItems: " center" , justifyContent: " center" , gap: 10, boxShadow: `0 6px 28px ${selType.color}30`, transition: " all .15s" , minHeight: 52 }}>
         <span style={{ fontSize: 20 }}>{selType.icon}</span>
         <span style={{ fontSize: 14, fontWeight: 800, color: selType.color }}>\u0627\u0628\u062f\u0623 {selType.label}</span>
         <span style={{ fontSize: 13, color: selType.color, opacity: .6 }}>&#x2190;</span>
@@ -370,43 +370,43 @@ return (
 
     {/* LOADING */}
     {isLoad && !hasRes && (
-      <div style={{ borderRadius: 14, overflow: "hidden", border: `1px solid ${selType.color}35`, background: `linear-gradient(135deg,${C.layer1},${C.layer2})` }}>
-        <div style={{ padding: "10px 14px", borderBottom: `1px solid ${C.edge}`, background: `linear-gradient(135deg,${C.void},${C.deep})`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 14, height: 14, borderRadius: "50%", border: "2px solid transparent", borderTopColor: selType.color, animation: "spin .65s linear infinite" }} />
+      <div style={{ borderRadius: 14, overflow: " hidden" , border: `1px solid ${selType.color}35`, background: `linear-gradient(135deg,${C.layer1},${C.layer2})` }}>
+        <div style={{ padding: " 10px 14px" , borderBottom: `1px solid ${C.edge}`, background: `linear-gradient(135deg,${C.void},${C.deep})`, display: " flex" , alignItems: " center" , justifyContent: " space-between"  }}>
+          <div style={{ display: " flex" , alignItems: " center" , gap: 8 }}>
+            <div style={{ width: 14, height: 14, borderRadius: " 50%" , border: " 2px solid transparent" , borderTopColor: selType.color, animation: " spin .65s linear infinite"  }} />
             <span style={{ fontSize: 11, fontWeight: 700, color: selType.color }}>\u064a\u062d\u0644\u0644 Claude {stock.name}&#x2026;</span>
           </div>
-          <span style={{ fontSize: 10, color: selType.color, background: `${selType.color}15`, border: `1px solid ${selType.color}33`, padding: "2px 8px", borderRadius: 6 }}>{selType.label}</span>
+          <span style={{ fontSize: 10, color: selType.color, background: `${selType.color}15`, border: `1px solid ${selType.color}33`, padding: " 2px 8px" , borderRadius: 6 }}>{selType.label}</span>
         </div>
-        <div style={{ padding: "16px 14px", display: "flex", flexDirection: "column", gap: 10 }}>
-          <Skel w="65%" h={14} /><Skel w="90%" h={10} /><Skel w="82%" h={10} /><Skel w="55%" h={10} />
-          <div style={{ height: 6 }} /><Skel w="50%" h={14} /><Skel w="86%" h={10} /><Skel w="72%" h={10} />
+        <div style={{ padding: " 16px 14px" , display: " flex" , flexDirection: " column" , gap: 10 }}>
+          <Skel w=" 65%"  h={14} /><Skel w=" 90%"  h={10} /><Skel w=" 82%"  h={10} /><Skel w=" 55%"  h={10} />
+          <div style={{ height: 6 }} /><Skel w=" 50%"  h={14} /><Skel w=" 86%"  h={10} /><Skel w=" 72%"  h={10} />
         </div>
-        <div style={{ padding: "10px 14px 14px", borderTop: `1px solid ${C.edge}`, display: "flex", justifyContent: "center" }}>
-          <button onClick={() => { cancel(); setStatus("idle"); }} style={{ padding: "7px 24px", background: "none", border: `1px solid ${C.line}`, borderRadius: 8, cursor: "pointer", fontSize: 11, color: C.smoke, minHeight: 36 }}>&#x23F9; \u0625\u064a\u0642\u0627\u0641</button>
+        <div style={{ padding: " 10px 14px 14px" , borderTop: `1px solid ${C.edge}`, display: " flex" , justifyContent: " center"  }}>
+          <button onClick={() => { cancel(); setStatus(" idle" ); }} style={{ padding: " 7px 24px" , background: " none" , border: `1px solid ${C.line}`, borderRadius: 8, cursor: " pointer" , fontSize: 11, color: C.smoke, minHeight: 36 }}>&#x23F9; \u0625\u064a\u0642\u0627\u0641</button>
         </div>
       </div>
     )}
 
     {/* RESULT */}
     {hasRes && (
-      <div style={{ borderRadius: 14, overflow: "hidden", border: `1px solid ${isLoad ? selType.color + "44" : C.line}`, background: `linear-gradient(135deg,${C.layer1},${C.layer2})`, transition: "border-color .3s" }}>
+      <div style={{ borderRadius: 14, overflow: " hidden" , border: `1px solid ${isLoad ? selType.color + " 44"  : C.line}`, background: `linear-gradient(135deg,${C.layer1},${C.layer2})`, transition: " border-color .3s"  }}>
         <div style={{ height: 2, background: `linear-gradient(90deg,${selType.color},${selType.color}55,transparent)` }} />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderBottom: `1px solid ${C.edge}`, background: `linear-gradient(135deg,${C.void},${C.deep})` }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            {isDone ? <span style={{ fontSize: 13 }}>&#x2705;</span> : <div style={{ width: 14, height: 14, borderRadius: "50%", border: "2px solid transparent", borderTopColor: selType.color, animation: "spin .65s linear infinite" }} />}
-            <span style={{ fontSize: 11, fontWeight: 700, color: isDone ? C.mint : selType.color }}>{isDone ? `\u0627\u0643\u062a\u0645\u0644 \u00b7 ${words} \u0643\u0644\u0645\u0629` : "\u064a\u0643\u062a\u0628..."}</span>
+        <div style={{ display: " flex" , alignItems: " center" , justifyContent: " space-between" , padding: " 10px 14px" , borderBottom: `1px solid ${C.edge}`, background: `linear-gradient(135deg,${C.void},${C.deep})` }}>
+          <div style={{ display: " flex" , alignItems: " center" , gap: 8 }}>
+            {isDone ? <span style={{ fontSize: 13 }}>&#x2705;</span> : <div style={{ width: 14, height: 14, borderRadius: " 50%" , border: " 2px solid transparent" , borderTopColor: selType.color, animation: " spin .65s linear infinite"  }} />}
+            <span style={{ fontSize: 11, fontWeight: 700, color: isDone ? C.mint : selType.color }}>{isDone ? `\u0627\u0643\u062a\u0645\u0644 \u00b7 ${words} \u0643\u0644\u0645\u0629` : " \u064a\u0643\u062a\u0628..." }</span>
           </div>
-          <div style={{ display: "flex", gap: 5 }}>
-            <span style={{ fontSize: 10, color: selType.color, background: `${selType.color}18`, border: `1px solid ${selType.color}33`, padding: "2px 8px", borderRadius: 6 }}>{selType.label}</span>
-            <span style={{ fontSize: 10, color: C.smoke, background: C.layer3, border: `1px solid ${C.line}`, padding: "2px 8px", borderRadius: 6 }}>{stock.sym}</span>
+          <div style={{ display: " flex" , gap: 5 }}>
+            <span style={{ fontSize: 10, color: selType.color, background: `${selType.color}18`, border: `1px solid ${selType.color}33`, padding: " 2px 8px" , borderRadius: 6 }}>{selType.label}</span>
+            <span style={{ fontSize: 10, color: C.smoke, background: C.layer3, border: `1px solid ${C.line}`, padding: " 2px 8px" , borderRadius: 6 }}>{stock.sym}</span>
           </div>
         </div>
-        <div style={{ padding: "14px" }}><Result text={result} streaming={isLoad} /></div>
+        <div style={{ padding: " 14px"  }}><Result text={result} streaming={isLoad} /></div>
         {isDone && (
-          <div style={{ display: "flex", gap: 8, padding: "10px 14px 14px", borderTop: `1px solid ${C.edge}` }}>
-            <button onClick={reset} style={{ flex: 1, padding: "10px", background: C.layer3, border: `1px solid ${C.line}`, borderRadius: 10, cursor: "pointer", fontSize: 11, fontWeight: 700, color: C.smoke, minHeight: 40 }}>&#x00D7; \u062c\u062f\u064a\u062f</button>
-            <button onClick={run} style={{ flex: 2, padding: "10px", background: `linear-gradient(135deg,${selType.color}28,${selType.color}14)`, border: `1px solid ${selType.color}44`, borderRadius: 10, cursor: "pointer", fontSize: 11, fontWeight: 800, color: selType.color, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, minHeight: 40 }}>&#x21BA; \u0623\u0639\u062f \u0627\u0644\u062a\u062d\u0644\u064a\u0644</button>
+          <div style={{ display: " flex" , gap: 8, padding: " 10px 14px 14px" , borderTop: `1px solid ${C.edge}` }}>
+            <button onClick={reset} style={{ flex: 1, padding: " 10px" , background: C.layer3, border: `1px solid ${C.line}`, borderRadius: 10, cursor: " pointer" , fontSize: 11, fontWeight: 700, color: C.smoke, minHeight: 40 }}>&#x00D7; \u062c\u062f\u064a\u062f</button>
+            <button onClick={run} style={{ flex: 2, padding: " 10px" , background: `linear-gradient(135deg,${selType.color}28,${selType.color}14)`, border: `1px solid ${selType.color}44`, borderRadius: 10, cursor: " pointer" , fontSize: 11, fontWeight: 800, color: selType.color, display: " flex" , alignItems: " center" , justifyContent: " center" , gap: 6, minHeight: 40 }}>&#x21BA; \u0623\u0639\u062f \u0627\u0644\u062a\u062d\u0644\u064a\u0644</button>
           </div>
         )}
       </div>
@@ -414,23 +414,23 @@ return (
 
     {/* ERROR */}
     {isErr && (
-      <div style={{ padding: 14, background: `${C.coral}10`, border: `1px solid ${C.coral}33`, borderRadius: 12, display: "flex", gap: 10 }}>
+      <div style={{ padding: 14, background: `${C.coral}10`, border: `1px solid ${C.coral}33`, borderRadius: 12, display: " flex" , gap: 10 }}>
         <span style={{ fontSize: 20, flexShrink: 0 }}>&#x26A0;&#xFE0F;</span>
         <div>
           <div style={{ fontSize: 12, fontWeight: 700, color: C.coral, marginBottom: 4 }}>\u062e\u0637\u0623 \u0641\u064a \u0627\u0644\u062a\u062d\u0644\u064a\u0644</div>
-          <div style={{ fontSize: 11, color: C.smoke, lineHeight: 1.55, wordBreak: "break-all" }}>{errMsg}</div>
-          <button onClick={run} style={{ marginTop: 10, padding: "6px 16px", background: `${C.coral}18`, border: `1px solid ${C.coral}33`, borderRadius: 8, cursor: "pointer", fontSize: 11, color: C.coral, fontWeight: 700, minHeight: 36 }}>&#x21BA; \u0623\u0639\u062f \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629</button>
+          <div style={{ fontSize: 11, color: C.smoke, lineHeight: 1.55, wordBreak: " break-all"  }}>{errMsg}</div>
+          <button onClick={run} style={{ marginTop: 10, padding: " 6px 16px" , background: `${C.coral}18`, border: `1px solid ${C.coral}33`, borderRadius: 8, cursor: " pointer" , fontSize: 11, color: C.coral, fontWeight: 700, minHeight: 36 }}>&#x21BA; \u0623\u0639\u062f \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629</button>
         </div>
       </div>
     )}
 
     {/* EMPTY */}
-    {status === "idle" && !hasRes && (
-      <div style={{ marginTop: 12, padding: "28px 16px 24px", background: `linear-gradient(135deg,${C.layer1},${C.layer2})`, borderRadius: 16, border: `1px dashed ${C.line}`, textAlign: "center" }}>
-        <div style={{ width: 64, height: 64, borderRadius: 18, margin: "0 auto 14px", background: `linear-gradient(135deg,${C.electric}22,${C.electric}08)`, border: `1px solid ${C.electric}33`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>&#x1F4CA;</div>
+    {status === " idle"  && !hasRes && (
+      <div style={{ marginTop: 12, padding: " 28px 16px 24px" , background: `linear-gradient(135deg,${C.layer1},${C.layer2})`, borderRadius: 16, border: `1px dashed ${C.line}`, textAlign: " center"  }}>
+        <div style={{ width: 64, height: 64, borderRadius: 18, margin: " 0 auto 14px" , background: `linear-gradient(135deg,${C.electric}22,${C.electric}08)`, border: `1px solid ${C.electric}33`, display: " flex" , alignItems: " center" , justifyContent: " center" , fontSize: 28 }}>&#x1F4CA;</div>
         <div style={{ fontSize: 14, fontWeight: 700, color: C.mist, marginBottom: 6 }}>\u0627\u062e\u062a\u0631 \u0627\u0644\u0633\u0647\u0645 \u0648\u0646\u0648\u0639 \u0627\u0644\u062a\u062d\u0644\u064a\u0644</div>
         <div style={{ fontSize: 11, color: C.smoke, lineHeight: 1.6, marginBottom: 18 }}>20 \u0645\u0624\u0634\u0631 \u0645\u0627\u0644\u064a \u00b7 6 \u0623\u0646\u0648\u0627\u0639 \u062a\u062d\u0644\u064a\u0644 \u00b7 Claude Sonnet</div>
-        <div style={{ padding: "8px 12px", background: `${C.amber}08`, border: `1px solid ${C.amber}20`, borderRadius: 8 }}>
+        <div style={{ padding: " 8px 12px" , background: `${C.amber}08`, border: `1px solid ${C.amber}20`, borderRadius: 8 }}>
           <span style={{ fontSize: 10, color: C.smoke }}>&#x26A0;&#xFE0F; \u0644\u0644\u0623\u063a\u0631\u0627\u0636 \u0627\u0644\u062a\u0639\u0644\u064a\u0645\u064a\u0629 \u0641\u0642\u0637 \u00b7 \u0644\u064a\u0633 \u0646\u0635\u064a\u062d\u0629 \u0627\u0633\u062a\u062b\u0645\u0627\u0631\u064a\u0629 \u00b7 CMA</span>
         </div>
       </div>
