@@ -1,1 +1,1 @@
-export { default } from "../../../components/AILearningEngine";
+export { default } from '../../components/AILearningEngine';
