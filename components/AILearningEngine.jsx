@@ -9,7 +9,7 @@ edge:"#2a3858", line:"#32426a",
 snow:"#f0f6ff", mist:"#c8d8f0", smoke:"#90a4c8", ash:"#5a6e94",
 gold:"#f0c050", electric:"#4d9fff", mint:"#1ee68a", coral:"#ff5f6a",
 amber:"#fbbf24", plasma:"#a78bfa", violet:"#7c3aed", teal:"#22d3ee",
-;}
+};
 const ERROR_PATTERNS = [
 ,} "ﺛﻘﺔ ﻣﺒﺎﻟﻐﺔ":id:"overconfident", label {
 ,} "ﺗﺠﺎھﻞ اﻟﻤﺨﺎﻃﺮ":id:"no_downside", label {
