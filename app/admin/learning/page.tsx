@@ -1,1 +1,2 @@
-export { default } from '@/components/AILearningEngine';
+import AILearningEngine from '../../../components/AILearningEngine';
+export default AILearningEngine;
