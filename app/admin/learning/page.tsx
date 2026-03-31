@@ -1,1 +1,1 @@
-CREATE VIEW learning_records AS SELECT * FROM analysis_records;
+export { default } from "../../../components/AILearningEngine";
