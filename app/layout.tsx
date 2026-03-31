@@ -15,6 +15,8 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "تداول+",
   description: "تحليل الأسهم السعودية بالذكاء الاصطناعي",
+  manifest: "/manifest.json",
+  themeColor: "#C9A84C",
 };
 
 export default function RootLayout({
