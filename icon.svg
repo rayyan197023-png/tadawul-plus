@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#1a1f35"/>
+      <stop offset="100%" stop-color="#050810"/>
+    </radialGradient>
+    <linearGradient id="goldBar1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFD700"/>
+      <stop offset="100%" stop-color="#B8860B"/>
+    </linearGradient>
+    <linearGradient id="goldBar2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFC200"/>
+      <stop offset="100%" stop-color="#996500"/>
+    </linearGradient>
+    <linearGradient id="goldBar3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFE44D"/>
+      <stop offset="100%" stop-color="#CC9900"/>
+    </linearGradient>
+    <linearGradient id="areaFill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00E676" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#00E676" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="goldTextGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFE566"/>
+      <stop offset="50%" stop-color="#C9A84C"/>
+      <stop offset="100%" stop-color="#8A6A1A"/>
+    </linearGradient>
+    <linearGradient id="shineGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.06)"/>
+      <stop offset="50%" stop-color="rgba(255,255,255,0)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0.15)"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="220" ry="220" fill="url(#bgGrad)"/>
+  <g opacity="0.07" stroke="#C9A84C" stroke-width="1">
+    <line x1="80" y1="180" x2="944" y2="180"/>
+    <line x1="80" y1="310" x2="944" y2="310"/>
+    <line x1="80" y1="440" x2="944" y2="440"/>
+    <line x1="80" y1="570" x2="944" y2="570"/>
+    <line x1="80" y1="700" x2="944" y2="700"/>
+  </g>
+  <rect x="105" y="540" width="72" height="220" rx="7" fill="url(#goldBar2)" opacity="0.5"/>
+  <rect x="215" y="440" width="72" height="320" rx="7" fill="url(#goldBar1)" opacity="0.5"/>
+  <rect x="325" y="360" width="72" height="400" rx="7" fill="url(#goldBar3)" opacity="0.5"/>
+  <rect x="435" y="420" width="72" height="340" rx="7" fill="url(#goldBar1)" opacity="0.5"/>
+  <rect x="545" y="300" width="72" height="460" rx="7" fill="url(#goldBar3)" opacity="0.5"/>
+  <rect x="655" y="350" width="72" height="410" rx="7" fill="url(#goldBar2)" opacity="0.5"/>
+  <rect x="765" y="230" width="72" height="530" rx="7" fill="url(#goldBar1)" opacity="0.5"/>
+  <polygon points="105,620 200,580 310,340 430,510 560,250 680,420 870,140 870,760 105,760" fill="url(#areaFill)"/>
+  <polyline points="105,620 200,580 310,340 430,510 560,250 680,420 870,140" fill="none" stroke="#00E676" stroke-width="8" stroke-linecap="round" stroke-linejoin="miter"/>
+  <circle cx="310" cy="340" r="11" fill="#00E676"/>
+  <circle cx="310" cy="340" r="5" fill="white"/>
+  <circle cx="560" cy="250" r="13" fill="#00E676"/>
+  <circle cx="560" cy="250" r="6" fill="white"/>
+  <circle cx="870" cy="140" r="16" fill="#00E676"/>
+  <circle cx="870" cy="140" r="7" fill="white"/>
+  <polygon points="870,82 844,124 896,124" fill="#00E676"/>
+  <line x1="160" y1="852" x2="864" y2="852" stroke="#C9A84C" stroke-width="1" opacity="0.2"/>
+  <text x="512" y="938" text-anchor="middle" font-size="88" font-weight="900" fill="url(#goldTextGrad)" font-family="Arial Black, Arial, sans-serif" letter-spacing="-1">TADAWUL+</text>
+  <text x="512" y="806" text-anchor="middle" font-size="28" fill="#C9A84C" opacity="0.4" font-family="Arial, sans-serif" letter-spacing="10">AI · SAUDI MARKET</text>
+  <rect width="1024" height="1024" rx="220" ry="220" fill="url(#shineGrad)"/>
+  <rect width="1024" height="1024" rx="220" ry="220" fill="none" stroke="#C9A84C" stroke-width="2" opacity="0.1"/>
+</svg>
