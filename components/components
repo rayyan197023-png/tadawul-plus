@@ -368,7 +368,7 @@ RENDER
 return (
 <div style={{ minHeight:"100vh", background:C.ink, direction:"rtl", fontFamily:"Cairo,san
 <style>{`
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&
 @keyframes spin { to { transform:rotate(360deg); } }
 @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:sca
 @keyframes fadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:

@@ -61,21 +61,21 @@ method: ‘DELETE’,
 headers: { ‘apikey’: SUPABASE_KEY, ‘Authorization’: ’Bearer ’ + SUPABASE_KEY },
 });
 };
-const IBrain = () => <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2'><path d='M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z'/><path d='M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z'/></svg>;
-const IChart = () => <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2'><line x1='18' y1='20' x2='18' y2='10'/><line x1='12' y1='20' x2='12' y2='4'/><line x1='6' y1='20' x2='6' y2='14'/></svg>;
-const IPlus = () => <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2'><line x1='12' y1='5' x2='12' y2='19'/><line x1='5' y1='12' x2='19' y2='12'/></svg>;
-const IList = () => <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2'><line x1='8' y1='6' x2='21' y2='6'/><line x1='8' y1='12' x2='21' y2='12'/><line x1='8' y1='18' x2='21' y2='18'/><line x1='3' y1='6' x2='3.01' y2='6'/><line x1='3' y1='12' x2='3.01' y2='12'/><line x1='3' y1='18' x2='3.01' y2='18'/></svg>;
-const IWarn = () => <svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2'><path d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/><line x1='12' y1='9' x2='12' y2='13'/><line x1='12' y1='17' x2='12.01' y2='17'/></svg>;
-const IZap = () => <svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2'><polygon points='13 2 3 14 12 14 11 22 21 10 12 10 13 2'/></svg>;
-const IGlobe = () => <svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2'><circle cx='12' cy='12' r='10'/><line x1='2' y1='12' x2='22' y2='12'/><path d='M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'/></svg>;
+const IBrain = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>;
+const IChart = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>;
+const IPlus = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
+const IList = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>;
+const IWarn = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>;
+const IZap = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>;
+const IGlobe = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>;
 
 function Gauge({ value }) {
 const color = value >= 75 ? C.mint : value >= 55 ? C.amber : C.coral;
 return (
 <div style={{ textAlign:‘center’ }}>
 <div style={{ position:‘relative’, width:90, height:90, margin:‘0 auto 6px’ }}>
-<svg width='90' height='90' viewBox='0 0 90 90'>
-<circle cx='45' cy='45' r='38' fill='none' stroke={C.edge} strokeWidth='7'/>
+<svg width="90" height="90" viewBox="0 0 90 90">
+<circle cx="45" cy="45" r="38" fill="none" stroke={C.edge} strokeWidth="7"/>
 <circle cx=‘45’ cy=‘45’ r=‘38’ fill=‘none’ stroke={color} strokeWidth=‘7’
 strokeDasharray={`${2.389 * value} 239`} strokeLinecap=‘round’
 transform=‘rotate(-90 45 45)’ style={{ transition:‘stroke-dasharray 1s ease’ }}/>
@@ -258,7 +258,7 @@ const ctrl = new AbortController();
 abortRef.current = ctrl;
 setLoading(true); setAnalysis(’’);
 const errList = Object.entries(errFreq).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([id,n])=>`- ${ERROR_PATTERNS.find(p=>p.id===id)?.label||id}: ${n} مرة`);
-const prompt = `أنت نظام تحسين ذاتي لمحلل AI متخصص في السوق السعودي. == بيانات الأداء == التحليلات: ${records.length} | المقيّمة: ${evaluated.length} | الدقة: ${acc!==null?acc+'%':'غير محددة'} صحيحة: ${evaluated.filter(r=>r.outcome==='correct').length} | خاطئة: ${evaluated.filter(r=>r.outcome==='wrong').length} == أنماط الأخطاء == ${errList.length?errList.join('\n'):'لا توجد بيانات كافية بعد'} == آخر 3 مقيّمة == ${evaluated.slice(-3).map(r=>`${r.name}(${r.sym}): ${r.outcome} | ${r.errorPatterns?.join(’,’)}`).join(’\n’)}
+const prompt = `أنت نظام تحسين ذاتي لمحلل AI متخصص في السوق السعودي. == بيانات الأداء == التحليلات: ${records.length} | المقيّمة: ${evaluated.length} | الدقة: ${acc!==null?acc+"%":"غير محددة"} صحيحة: ${evaluated.filter(r=>r.outcome==="correct").length} | خاطئة: ${evaluated.filter(r=>r.outcome==="wrong").length} == أنماط الأخطاء == ${errList.length?errList.join("\n"):"لا توجد بيانات كافية بعد"} == آخر 3 مقيّمة == ${evaluated.slice(-3).map(r=>`${r.name}(${r.sym}): ${r.outcome} | ${r.errorPatterns?.join(’,’)}`).join(’\n’)}
 اكتب تحليلاً ذاتياً يشمل:
 
 1. **تشخيص الأنماط** — ما المتكرر ولماذا؟
@@ -302,7 +302,7 @@ const tabs = [
 
 return (
 <div style={{ minHeight:‘100vh’, background:C.ink, direction:‘rtl’, fontFamily:‘Cairo,sans-serif’ }}>
-<style>{`@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap'); @keyframes spin{to{transform:rotate(360deg)}} @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} *{box-sizing:border-box;margin:0;padding:0} button,input,textarea{font-family:inherit;} ::-webkit-scrollbar{width:3px} ::-webkit-scrollbar-thumb{background:${C.edge};border-radius:3px;} input::placeholder,textarea::placeholder{color:${C.ash}}`}</style>
+<style>{`@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap"); @keyframes spin{to{transform:rotate(360deg)}} @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} *{box-sizing:border-box;margin:0;padding:0} button,input,textarea{font-family:inherit;} ::-webkit-scrollbar{width:3px} ::-webkit-scrollbar-thumb{background:${C.edge};border-radius:3px;} input::placeholder,textarea::placeholder{color:${C.ash}}`}</style>
 <div style={{ padding:‘14px 16px 12px’, background:`linear-gradient(160deg,${C.layer2},${C.layer1})`, borderBottom:`1px solid ${C.edge}` }}>
 <div style={{ display:‘flex’, alignItems:‘center’, justifyContent:‘space-between’ }}>
 <div style={{ display:‘flex’, alignItems:‘center’, gap:10 }}>
@@ -329,7 +329,7 @@ return (
 </div>
 <div style={{ display:‘flex’, borderBottom:`1px solid ${C.line}`, background:C.deep }}>
 {tabs.map(t => (
-<button key={t.id} onClick={()=>setTab(t.id)} style={{ flex:1,padding:‘10px 4px’,display:‘flex’,flexDirection:‘column’,alignItems:‘center’,gap:3,border:‘none’,background:‘transparent’,color:tab===t.id?C.electric:C.ash,borderBottom:`2px solid ${tab===t.id?C.electric:'transparent'}`,fontSize:8,fontWeight:700,cursor:‘pointer’,transition:‘all .2s’ }}>
+<button key={t.id} onClick={()=>setTab(t.id)} style={{ flex:1,padding:‘10px 4px’,display:‘flex’,flexDirection:‘column’,alignItems:‘center’,gap:3,border:‘none’,background:‘transparent’,color:tab===t.id?C.electric:C.ash,borderBottom:`2px solid ${tab===t.id?C.electric:"transparent"}`,fontSize:8,fontWeight:700,cursor:‘pointer’,transition:‘all .2s’ }}>
 <t.Icon />{t.label}
 </button>
 ))}
@@ -343,8 +343,8 @@ return (
 }
 </div>
 <div style={{display:‘grid’,gridTemplateColumns:‘1fr 1fr’,gap:8,marginBottom:12}}>
-<Stat label='إجمالي التحليلات' value={records.length} color={C.electric} Icon={IChart} />
-<Stat label='للتقييم' value={due} color={C.amber} Icon={IWarn} />
+<Stat label="إجمالي التحليلات" value={records.length} color={C.electric} Icon={IChart} />
+<Stat label="للتقييم" value={due} color={C.amber} Icon={IWarn} />
 <Stat label=‘صحيحة’ value={evaluated.filter(r=>r.outcome===‘correct’).length} color={C.mint} Icon={IZap} />
 <Stat label=‘خاطئة’ value={evaluated.filter(r=>r.outcome===‘wrong’).length} color={C.coral} Icon={IWarn} />
 </div>
