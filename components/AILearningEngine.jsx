@@ -11,16 +11,16 @@ gold:”#f0c050”, electric:”#4d9fff”, mint:”#1ee68a”, coral:”#ff5f6a
 amber:”#fbbf24”, plasma:”#a78bfa”, violet:”#7c3aed”, teal:”#22d3ee”,
 };
 const ERROR_PATTERNS = [
-{ id:“overconfident”, label:“ثقة مبالغة” },
-{ id:“no_downside”, label:“تجاهل المخاطر” },
-{ id:“sector_blindspot”, label:“عمى القطاع” },
-{ id:“price_anchoring”, label:“تثبيت السعر” },
-{ id:“momentum_bias”, label:“تحيز الزخم” },
-{ id:“macro_ignored”, label:“إهمال الكلي” },
-{ id:“shallow_moat”, label:“Moat سطحي” },
-{ id:“fcf_mismatch”, label:“تناقض FCF” },
-{ id:“volume_ignored”, label:“تجاهل الحجم” },
-{ id:“timing_wrong”, label:“خطأ التوقيت” },
+  { id:"overconfident", label:"\u062b\u0642\u0629 \u0645\u0628\u0627\u0644\u063a\u0629" },
+  { id:"no_downside", label:"\u062a\u062c\u0627\u0647\u0644 \u0627\u0644\u0645\u062e\u0627\u0637\u0631" },
+  { id:"sector_blindspot", label:"\u0639\u0645\u0649 \u0627\u0644\u0642\u0637\u0627\u0639" },
+  { id:"price_anchoring", label:"\u062a\u062b\u0628\u064a\u062a \u0627\u0644\u0633\u0639\u0631" },
+  { id:"momentum_bias", label:"\u062a\u062d\u064a\u0632 \u0627\u0644\u0632\u062e\u0645" },
+  { id:"macro_ignored", label:"\u0625\u0647\u0645\u0627\u0644 \u0627\u0644\u0643\u0644\u064a" },
+  { id:"shallow_moat", label:"Moat \u0633\u0637\u062d\u064a" },
+  { id:"fcf_mismatch", label:"\u062a\u0646\u0627\u0642\u0636 FCF" },
+  { id:"volume_ignored", label:"\u062a\u062c\u0627\u0647\u0644 \u0627\u0644\u062d\u062c\u0645" },
+  { id:"timing_wrong", label:"\u062e\u0637\u0623 \u0627\u0644\u062a\u0648\u0642\u064a\u062a" },
 ];
 const fmtDate = ts => new Date(ts).toLocaleDateString(“ar-SA”, { day:“numeric”, month:“short” });
 const calcAcc = records => {
