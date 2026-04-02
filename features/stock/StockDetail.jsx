@@ -27,7 +27,6 @@ import { SDFundamental }     from './tabs/SDFundamentalTab';
 import { ShareholdersLoader } from './tabs/SDShareholdersTab';
 import { SDApiEngines }      from './tabs/SDApiEnginesTab';
 
-'use client';
 /**
  * STOCK DETAIL — معلومات السهم الكاملة
  * تداول+ — مطابق 100٪ للملف الأصلي
