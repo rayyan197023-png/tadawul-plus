@@ -1,5 +1,5 @@
-import AILabTab from '../components/AILabTab_v17_clean'
+import AppShell from '../src/AppShell';
 
 export default function Home() {
-  return <AILabTab />
+  return <AppShell />;
 }
