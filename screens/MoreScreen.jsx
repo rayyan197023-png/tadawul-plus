@@ -9,7 +9,7 @@
  * - more/ToolsTabs.jsx   → لقطات + إعدادات + حاسبة + مقارنة + تنبيهات + متابعة
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { STOCKS } from '../constants/stocksData';
 import { useSharedPrices } from '../store';
 import { useHaptic } from '../hooks/useHaptic';

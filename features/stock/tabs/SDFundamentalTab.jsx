@@ -3,7 +3,7 @@
  * @module features/stock/tabs/SDFundamentalTab
  * @description تبويب التحليل الأساسي والمالي للسهم
  */
-import { useMemo, useRef, useState } from 'react'';
+import { useMemo, useRef, useState } from 'react';
 import { C, SectionCard, Row, Tag, EmptyState } from './StockDetailShared';
 import { STOCKS } from '../../../constants/stocksData';
 
