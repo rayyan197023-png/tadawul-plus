@@ -4008,7 +4008,7 @@ export default function AnalysisScreen(){
         @keyframes particle3{0%,100%{transform:translate(0%,0%) scale(1)}50%{transform:translate(-8%,-10%) scale(.92)}}
         @keyframes particle4{0%,100%{transform:translate(0%,0%) scale(1)}50%{transform:translate(5%,7%) scale(1.08)}}
         @keyframes particle5{0%,100%{transform:translate(0%,0%) scale(1)}50%{transform:translate(-4%,9%) scale(.95)}}
-      `}</style>/>
+      `}</style>
 
       {/* ══ خلفية الجسيمات المتحركة ══ */}
       <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0,overflow:"hidden"}}>
