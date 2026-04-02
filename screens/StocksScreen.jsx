@@ -39,10 +39,6 @@ const SECTOR_COLORS = {
 
 
 
-const SECTOR_COLORS = {
-  طاقة:C.amber, بنوك:C.electric, بترو:C.plasma,
-  غذاء:C.mint, تقنية:C.teal, تعدين:C.gold, تأمين:C.coral
-};
 
 function genBars(stk) {
   let seed = stk.sym.split("").reduce((a,c)=>a+c.charCodeAt(0),0)*7919;
