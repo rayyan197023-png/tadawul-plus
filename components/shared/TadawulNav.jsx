@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNav } from '../../store';
+import { useHaptic } from '../../hooks/useHaptic';
 import { Home, TrendingUp, BarChart3, PieChart, Newspaper, Sparkles, LayoutGrid } from 'lucide-react';
 
 const C = {
@@ -287,6 +288,7 @@ function NavTab({ tab, isActive, onPress, tabRef }) {
 export default function TadawulNav() {
   const [active,         setActive]         = useState("home");
   const { setTab } = useNav();
+  const haptic = useHaptic();
   const [indicatorX,     setIndicatorX]     = useState(null);
   const [indicatorReady, setIndicatorReady] = useState(false);
   const [indicatorGpuHint, setIndicatorGpuHint] = useState(false);
