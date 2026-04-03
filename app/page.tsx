@@ -1,9 +1,5 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-
-const AppShell = dynamic(() => import('../AppShell'), { ssr: false });
-
 export default function Home() {
-  return <AppShell />;
+  return <div style={{color:'white',padding:20}}>يعمل!</div>;
 }
