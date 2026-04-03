@@ -5,7 +5,7 @@
  * Root component: stores + nav + screens + StockDetail + PWA
  */
 
-import React, { lazy, Suspense, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { RootStoreProvider }   from './store/index';
 import { useNav, useSharedPrices, useStockState } from './store';
 import TadawulNav from './components/shared/TadawulNav';
@@ -220,31 +220,18 @@ function Shell() {
     }}>
 
       {/* Screen content */}
-      <div style={{ flex:1, overflowY:'auto', overflowX:'hidden', WebkitOverflowScrolling:'touch', paddingBottom:80 }}>
-        <ErrorBoundary label="الشاشة الرئيسية" fallback={<div style={{color:'red',padding:20}}>خطأ في الشاشة</div>}>
-          {activeTab === TAB_IDS.MORE
-              ? <ActiveScreen snapshots={snapshots} setSnapshots={setSnapshots} watchlist={watchlist} setWatchlist={setWatchlist} commData={commData} setCommData={setCommData} />
-              : activeTab === TAB_IDS.AI
-              ? <ActiveScreen aiAnalysis={aiAnalysis} onClearAnalysis={() => setAiAnalysis(null)} commData={commData} />
-              : activeTab === TAB_IDS.ANALYSIS
-              ? <ActiveScreen commData={commData} />
-              : <ActiveScreen />
-            }
-        </ErrorBoundary>
-
-          <Suspense fallback={<div style={{color:'yellow',fontSize:20,padding:40,position:'fixed',top:100,zIndex:9999}}>جاري التحميل...</div>}>
-            {activeTab === TAB_IDS.MORE
-              ? <ActiveScreen snapshots={snapshots} setSnapshots={setSnapshots} watchlist={watchlist} setWatchlist={setWatchlist} commData={commData} setCommData={setCommData} />
-              : activeTab === TAB_IDS.AI
-              ? <ActiveScreen aiAnalysis={aiAnalysis} onClearAnalysis={() => setAiAnalysis(null)} commData={commData} />
-              : activeTab === TAB_IDS.ANALYSIS
-              ? <ActiveScreen commData={commData} />
-  : <ActiveScreen />
-
-            }
-          </Suspense>
-        </ErrorBoundary>
-      </div>
+<div style={{ flex:1, overflowY:'auto', overflowX:'hidden', WebkitOverflowScrolling:'touch', paddingBottom:80 }}>
+  <ErrorBoundary label="الشاشة الرئيسية" fallback={<div style={{color:'red',padding:20}}>خطأ في الشاشة</div>}>
+    {activeTab === TAB_IDS.MORE
+      ? <ActiveScreen snapshots={snapshots} setSnapshots={setSnapshots} watchlist={watchlist} setWatchlist={setWatchlist} commData={commData} setCommData={setCommData} />
+      : activeTab === TAB_IDS.AI
+      ? <ActiveScreen aiAnalysis={aiAnalysis} onClearAnalysis={() => setAiAnalysis(null)} commData={commData} />
+      : activeTab === TAB_IDS.ANALYSIS
+      ? <ActiveScreen commData={commData} />
+      : <ActiveScreen />
+    }
+  </ErrorBoundary>
+</div>
 
       {/* Nav bar */}
       <div style={{ position:'fixed', bottom:0, left:'50%', transform:'translateX(-50%)', width:'100%', maxWidth:480, zIndex:100 }}>
