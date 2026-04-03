@@ -1106,7 +1106,7 @@ export default function PortfolioScreen() {
               <div style={{fontSize:11,color:C.gold,fontWeight:700,letterSpacing:"2px",marginBottom:6}}>PORTFOLIO EMPTY</div>
               <div style={{fontSize:15,fontWeight:800,color:C.mist,marginBottom:8}}>لا توجد مراكز</div>
               <div style={{fontSize:12,color:C.smoke,marginBottom:28,lineHeight:1.7}}>اضف اسهمك لتظهر توصيات الشراء والبيع من المحرك</div>
-              <button onClick={function(){setSheet(true);}} style={{background:"linear-gradient(135deg,"+C.electric+"28,"+C.electric+"12)",border:"1px solid "+C.electric+"44",borderRadius:14,padding:"13px 32px",cursor:"pointer",fontSize:13,fontWeight:900,color:C.electric,fontFamily:"Cairo,sans-serif",boxShadow:"0 4px 20px "+C.electric+"22"}} onClick={function(){haptic.tap();}}>+ اضف سهمك الاول</button>
+              <button onClick={function(){haptic.tap();setSheet(true);}} style={{background:"linear-gradient(135deg,"+C.electric+"28,"+C.electric+"12)",border:"1px solid "+C.electric+"44",borderRadius:14,padding:"13px 32px",cursor:"pointer",fontSize:13,fontWeight:900,color:C.electric,fontFamily:"Cairo,sans-serif",boxShadow:"0 4px 20px "+C.electric+"22"}}>+ اضف سهمك الاول</button>
             </div>
           ):(
             <div>
