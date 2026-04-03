@@ -5,7 +5,8 @@
  * Root component: stores + nav + screens + StockDetail + PWA
  */
 
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { RootStoreProvider }   from './store/index';
 import { useNav, useSharedPrices, useStockState } from './store';
 import TadawulNav from './components/shared/TadawulNav';
