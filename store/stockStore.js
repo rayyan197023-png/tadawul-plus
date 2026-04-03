@@ -74,9 +74,9 @@ function stockReducer(state, action) {
 
     case STOCK_ACTIONS.UPDATE_PRICES: {
       const updates = {};
-      action.payload.forEach(({ sym, data }) => {
-        updates[sym] = { ...data, ts: Date.now() };
-      });
+(Array.isArray(action.payload) ? action.payload : Object.values(action.payload)).forEach(({ sym, data }) => {
+  updates[sym] = { ...data, ts: Date.now() };
+});
       return { ...state, priceCache: { ...state.priceCache, ...updates } };
     }
 
