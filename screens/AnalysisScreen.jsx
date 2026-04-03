@@ -1005,7 +1005,7 @@ export default function AnalysisScreen(){
                         <div style={{position:"relative",flexShrink:0}}>
                           <ArcRing val={health.score} size={56} stroke={4} color={health.sigC} bg={C.ash}>
                             <div style={{textAlign:"center"}}>
-                              <div className="num-lg" className="glow-white" style={{fontSize:11,fontWeight:900,color:health.sigC,lineHeight:1}}>{health.score}</div>
+                              <div className="num-lg glow-white" style={{fontSize:11,fontWeight:900,color:health.sigC,lineHeight:1}}>{health.score}</div>
                               <div style={{fontSize:7,fontWeight:700,color:health.sigC,marginTop:1}}>{scoreWord(health.score)}</div>
                               <div style={{display:"flex",alignItems:"flex-end",gap:1,justifyContent:"center",marginTop:3,height:6}}>
                                 {(function(){
