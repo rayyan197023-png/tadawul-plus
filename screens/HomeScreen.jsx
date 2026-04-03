@@ -722,6 +722,7 @@ function TopBar({idx,chgP,showDemoBadge}){
         </span>
       </div>
     )}
+   </div>   
   );
 }
 
