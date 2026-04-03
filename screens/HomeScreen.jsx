@@ -3887,6 +3887,7 @@ export default function HomeScreen() {
 
   return (
     <>
+<div style={{color:'yellow',padding:20,fontSize:16,position:'fixed',top:50,zIndex:9999}}>HomeScreen يعمل</div>
       <style>{`
         @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
         @keyframes spin{to{transform:rotate(360deg)}}
