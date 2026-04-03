@@ -49,7 +49,7 @@ function Loader() {
 }
 
 function Shell() {
-  const { activeTab, isStockOpen, activeStock, closeStock } = useNav();
+  const { activeTab, isStockOpen, activeStock, closeStock, setTab } = useNav();
   const haptic = useHaptic();
   const [chartStock, setChartStock] = React.useState(null);
   const [snapshots,   setSnapshots]  = React.useState([]);
