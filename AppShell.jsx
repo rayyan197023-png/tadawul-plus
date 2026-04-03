@@ -228,7 +228,10 @@ function Shell() {
               ? <ActiveScreen aiAnalysis={aiAnalysis} onClearAnalysis={() => setAiAnalysis(null)} commData={commData} />
               : activeTab === TAB_IDS.ANALYSIS
               ? <ActiveScreen commData={commData} />
-              : <ActiveScreen />
+              : activeTab === 'home' 
+  ? <div style={{color:'white',padding:40,fontSize:18}}>التطبيق يعمل! عدد الأسهم يظهر هنا</div>
+  : <ActiveScreen />
+
             }
           </Suspense>
         </ErrorBoundary>
