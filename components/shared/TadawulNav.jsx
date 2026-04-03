@@ -286,6 +286,7 @@ function NavTab({ tab, isActive, onPress, tabRef }) {
 /* ══ MAIN ══ */
 export default function TadawulNav() {
   const [active,         setActive]         = useState("home");
+  const { setTab } = useNav();
   const [indicatorX,     setIndicatorX]     = useState(null);
   const [indicatorReady, setIndicatorReady] = useState(false);
   const [indicatorGpuHint, setIndicatorGpuHint] = useState(false);
