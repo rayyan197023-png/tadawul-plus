@@ -970,7 +970,7 @@ export default function AnalysisScreen(){
                             <span style={{fontSize:9,color:C.smoke,background:C.layer3,padding:"1px 7px",borderRadius:5}}>{stk.sym}</span>
                             <span style={{fontSize:9,color:C.smoke}}>{stk.sec}</span>
                           </div>
-                          <div className="num-lg" className="glow-white" style={{fontSize:18,fontWeight:900,color:C.snow,letterSpacing:"-0.5px",lineHeight:1,direction:"ltr"}}>{stk.p.toFixed(2)}</div>
+                          <div className="num-lg glow-white" style={{fontSize:18,fontWeight:900,color:C.snow,letterSpacing:"-0.5px",lineHeight:1,direction:"ltr"}}>{stk.p.toFixed(2)}</div>
                           <div style={{display:"inline-flex",alignItems:"center",gap:3,background:priceColor+"20",border:"1px solid "+priceColor+"44",borderRadius:7,padding:"2px 8px",direction:"ltr"}}>
                             <span style={{fontSize:10,fontWeight:800,color:priceColor}}>{up?"+":""}{stk.ch.toFixed(2)}%</span>
                           </div>
