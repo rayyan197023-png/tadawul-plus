@@ -21,14 +21,13 @@ import { colors }              from './theme/tokens';
 const C = colors;
 
 import dynamic from 'next/dynamic';
-const Loader = () => <div style={{color:'white',padding:40,textAlign:'center'}}>جاري التحميل...</div>;
-const HomeScreen = dynamic(() => import('./screens/HomeScreen'), { ssr:false, loading: Loader });
-const StocksScreen = dynamic(() => import('./screens/StocksScreen'), { ssr:false, loading: Loader });
-const AnalysisScreen = dynamic(() => import('./screens/AnalysisScreen'), { ssr:false, loading: Loader });
+const HomeScreen = dynamic(() => import('./screens/HomeScreen'), { ssr:false, loading: () => <div style={{color:'white',padding:40,textAlign:'center'}}>جاري التحميل...</div> });
+const StocksScreen = dynamic(() => import('./screens/StocksScreen'), { ssr:false, loading: () => <div style={{color:'white',padding:40,textAlign:'center'}}>جاري التحميل...</div> });
+const AnalysisScreen = dynamic(() => import('./screens/AnalysisScreen'), { ssr:false, loading: () => <div style={{color:'white',padding:40,textAlign:'center'}}>جاري التحميل...</div> });
 const PortfolioScreen = dynamic(() => import('./screens/PortfolioScreen'), { ssr:false, loading: Loader });
-const NewsScreen = dynamic(() => import('./screens/NewsScreen'), { ssr:false, loading: Loader });
-const AIScreen = dynamic(() => import('./screens/AIScreen'), { ssr:false, loading: Loader });
-const MoreScreen = dynamic(() => import('./screens/MoreScreen'), { ssr:false, loading: Loader });
+const NewsScreen = dynamic(() => import('./screens/NewsScreen'), { ssr:false, loading: () => <div style={{color:'white',padding:40,textAlign:'center'}}>جاري التحميل...</div> });
+const AIScreen = dynamic(() => import('./screens/AIScreen'), { ssr:false, loading: () => <div style={{color:'white',padding:40,textAlign:'center'}}>جاري التحميل...</div> });
+const MoreScreen = dynamic(() => import('./screens/MoreScreen'), { ssr:false, loading: () => <div style={{color:'white',padding:40,textAlign:'center'}}>جاري التحميل...</div> });
 
 const SCREEN_MAP = {
   [TAB_IDS.HOME]:      HomeScreen,
