@@ -20,14 +20,15 @@ import { colors }              from './theme/tokens';
 
 const C = colors;
 
-const HomeScreen      = lazy(() => import('./screens/HomeScreen'));
-const StocksScreen    = lazy(() => import('./screens/StocksScreen'));
-const AnalysisScreen  = lazy(() => import('./screens/AnalysisScreen'));
-const PortfolioScreen = lazy(() => import('./screens/PortfolioScreen'));
-const NewsScreen      = lazy(() => import('./screens/NewsScreen'));
-const AIScreen        = lazy(() => import('./screens/AIScreen'));
-const MoreScreen      = lazy(() => import('./screens/MoreScreen'));
-const StockDetail     = lazy(() => import('./features/stock/StockDetail'));
+import dynamic from 'next/dynamic';
+const Loader = () => <div style={{color:'white',padding:40,textAlign:'center'}}>جاري التحميل...</div>;
+const HomeScreen = dynamic(() => import('./screens/HomeScreen'), { ssr:false, loading: Loader });
+const StocksScreen = dynamic(() => import('./screens/StocksScreen'), { ssr:false, loading: Loader });
+const AnalysisScreen = dynamic(() => import('./screens/AnalysisScreen'), { ssr:false, loading: Loader });
+const PortfolioScreen = dynamic(() => import('./screens/PortfolioScreen'), { ssr:false, loading: Loader });
+const NewsScreen = dynamic(() => import('./screens/NewsScreen'), { ssr:false, loading: Loader });
+const AIScreen = dynamic(() => import('./screens/AIScreen'), { ssr:false, loading: Loader });
+const MoreScreen = dynamic(() => import('./screens/MoreScreen'), { ssr:false, loading: Loader });
 
 const SCREEN_MAP = {
   [TAB_IDS.HOME]:      HomeScreen,
@@ -221,6 +222,16 @@ function Shell() {
       {/* Screen content */}
       <div style={{ flex:1, overflowY:'auto', overflowX:'hidden', WebkitOverflowScrolling:'touch', paddingBottom:80 }}>
         <ErrorBoundary label="الشاشة الرئيسية" fallback={<div style={{color:'red',padding:20}}>خطأ في الشاشة</div>}>
+          {activeTab === TAB_IDS.MORE
+              ? <ActiveScreen snapshots={snapshots} setSnapshots={setSnapshots} watchlist={watchlist} setWatchlist={setWatchlist} commData={commData} setCommData={setCommData} />
+              : activeTab === TAB_IDS.AI
+              ? <ActiveScreen aiAnalysis={aiAnalysis} onClearAnalysis={() => setAiAnalysis(null)} commData={commData} />
+              : activeTab === TAB_IDS.ANALYSIS
+              ? <ActiveScreen commData={commData} />
+              : <ActiveScreen />
+            }
+        </ErrorBoundary>
+
           <Suspense fallback={<div style={{color:'yellow',fontSize:20,padding:40,position:'fixed',top:100,zIndex:9999}}>جاري التحميل...</div>}>
             {activeTab === TAB_IDS.MORE
               ? <ActiveScreen snapshots={snapshots} setSnapshots={setSnapshots} watchlist={watchlist} setWatchlist={setWatchlist} commData={commData} setCommData={setCommData} />
