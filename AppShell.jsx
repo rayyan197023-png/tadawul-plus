@@ -19,9 +19,6 @@ import { useHaptic }          from './hooks/useHaptic';
 import ChartScreen             from './features/chart/ChartScreen';
 import { colors }              from './theme/tokens';
 
-const C = colors;
-
-import dynamic from 'next/dynamic';
 const HomeScreen = dynamic(() => import('./screens/HomeScreen'), { ssr:false, loading: () => <div style={{color:'white',padding:40,textAlign:'center'}}>جاري التحميل...</div> });
 const StocksScreen = dynamic(() => import('./screens/StocksScreen'), { ssr:false, loading: () => <div style={{color:'white',padding:40,textAlign:'center'}}>جاري التحميل...</div> });
 const AnalysisScreen = dynamic(() => import('./screens/AnalysisScreen'), { ssr:false, loading: () => <div style={{color:'white',padding:40,textAlign:'center'}}>جاري التحميل...</div> });
@@ -29,6 +26,7 @@ const PortfolioScreen = dynamic(() => import('./screens/PortfolioScreen'), { ssr
 const NewsScreen = dynamic(() => import('./screens/NewsScreen'), { ssr:false, loading: () => <div style={{color:'white',padding:40,textAlign:'center'}}>جاري التحميل...</div> });
 const AIScreen = dynamic(() => import('./screens/AIScreen'), { ssr:false, loading: () => <div style={{color:'white',padding:40,textAlign:'center'}}>جاري التحميل...</div> });
 const MoreScreen = dynamic(() => import('./screens/MoreScreen'), { ssr:false, loading: () => <div style={{color:'white',padding:40,textAlign:'center'}}>جاري التحميل...</div> });
+const StockDetail = dynamic(() => import('./features/stock/StockDetail'), { ssr:false });
 
 const SCREEN_MAP = {
   [TAB_IDS.HOME]:      HomeScreen,
