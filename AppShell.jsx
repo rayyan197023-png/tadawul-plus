@@ -18,6 +18,7 @@ import { useLiveStockPrices }  from './hooks/useLiveStockPrices';
 import { useHaptic }          from './hooks/useHaptic';
 import ChartScreen             from './features/chart/ChartScreen';
 import { colors }              from './theme/tokens';
+const C = colors;
 
 const HomeScreen = dynamic(() => import('./screens/HomeScreen'), { ssr:false, loading: () => <div style={{color:'white',padding:40,textAlign:'center'}}>جاري التحميل...</div> });
 const StocksScreen = dynamic(() => import('./screens/StocksScreen'), { ssr:false, loading: () => <div style={{color:'white',padding:40,textAlign:'center'}}>جاري التحميل...</div> });
