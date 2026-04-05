@@ -227,7 +227,7 @@ function Shell() {
       ? <ActiveScreen aiAnalysis={aiAnalysis} onClearAnalysis={() => setAiAnalysis(null)} commData={commData} />
       : activeTab === TAB_IDS.ANALYSIS
       ? <ActiveScreen commData={commData} />
-      : <ActiveScreen commData={commData} />
+      : <ActiveScreen commData={commData} liveStocks={liveStocks} watchlist={watchlist} setWatchlist={setWatchlist} snapshots={snapshots} />
     }
   </ErrorBoundary>
 </div>
