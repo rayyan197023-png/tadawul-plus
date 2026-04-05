@@ -205,7 +205,7 @@ function Shell() {
     ? { ...activeStock, ...priceCache[activeStock.sym] }
     : activeStock;
   const tabDef       = TABS.find(t => t.id === activeTab) ?? TABS[0];
-  const ActiveScreen = HomeScreenDirect;
+  const ActiveScreen = SCREEN_MAP[activeTab] ?? HomeScreen;
 
   return (
     <div style={{
