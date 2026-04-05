@@ -7,6 +7,7 @@
 
 import React, { Suspense, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import HomeScreenDirect from './screens/HomeScreen';
 import { RootStoreProvider }   from './store/index';
 import { useNav, useSharedPrices, useStockState } from './store';
 import TadawulNav from './components/shared/TadawulNav';
@@ -204,7 +205,7 @@ function Shell() {
     ? { ...activeStock, ...priceCache[activeStock.sym] }
     : activeStock;
   const tabDef       = TABS.find(t => t.id === activeTab) ?? TABS[0];
-  const ActiveScreen = SCREEN_MAP[activeTab] ?? HomeScreen;
+  const ActiveScreen = HomeScreenDirect;
 
   return (
     <div style={{
