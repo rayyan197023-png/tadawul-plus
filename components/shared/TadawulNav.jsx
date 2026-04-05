@@ -354,7 +354,7 @@ export default function TadawulNav() {
 
   return (
     <div style={{
-      minHeight: "100dvh",
+      minHeight: "auto",
       background: `radial-gradient(ellipse 120% 80% at 50% 100%, ${activeTab.glowBg} 0%, ${C.ink} 55%)`,
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "flex-end",
