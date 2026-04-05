@@ -220,8 +220,6 @@ function Shell() {
     }}>
 
       {/* Screen content */}
-      <div style={{background:'blue',color:'white',padding:20,fontSize:20,position:'fixed',top:0,left:0,right:0,zIndex:99999}}>TEST</div>
-
       <div style={{ flex:1, minHeight:0, overflowY:'auto', overflowX:'hidden', WebkitOverflowScrolling:'touch', paddingBottom:80 }}>
   <ErrorBoundary label="الشاشة الرئيسية" fallback={<div style={{color:'red',padding:20}}>خطأ في الشاشة</div>}>
     {activeTab === TAB_IDS.MORE
