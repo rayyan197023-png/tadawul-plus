@@ -365,52 +365,6 @@ export default function TadawulNav() {
       fontFamily: "'Cairo', 'SF Arabic', 'Geeza Pro', 'Helvetica Neue', Tahoma, sans-serif",
     }}>
 
-      {/* Demo content */}
-      <div style={{
-        flex: 1, display: "flex", flexDirection: "column",
-        alignItems: "center", justifyContent: "center",
-        width: "100%", maxWidth: 480,
-        padding: "0 24px 148px", gap: 18,
-      }}>
-        <div style={{
-          width: 96, height: 96, borderRadius: "50%",
-          background: `radial-gradient(circle at 38% 32%, ${activeTab.glow} 0%, ${C.layer1} 65%)`,
-          border: `1.5px solid ${activeTab.accent}28`,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: `0 0 48px ${activeTab.glow}, 0 0 100px ${activeTab.glowBg}`,
-          transition: "all 0.5s cubic-bezier(0.34,1.56,0.64,1)",
-        }}>
-          <activeTab.Icon
-            size={40} color={activeTab.accent} strokeWidth={1.6}
-            style={{ filter: `drop-shadow(0 0 10px ${activeTab.glow})`, transition: "all 0.4s ease" }}
-          />
-        </div>
-
-        <div style={{
-          color: activeTab.accent, fontSize: 30, fontWeight: 700,
-          textShadow: `0 0 32px ${activeTab.glow}`,
-          transition: "color 0.3s ease",
-        }}>
-          {activeTab.label}
-        </div>
-
-        <div style={{ color: C.ash, fontSize: 12, letterSpacing: "0.1em" }}>
-          تداول＋ · {activeTab.id}
-        </div>
-
-        <div style={{ display: "flex", gap: 5, marginTop: 4 }}>
-          {TABS.map(t => (
-            <div key={t.id} style={{
-              height: 3, borderRadius: 2,
-              width: t.id === active ? 30 : 5,
-              background: t.id === active ? activeTab.accent : C.layer3,
-              boxShadow: t.id === active ? `0 0 8px ${activeTab.glow}` : "none",
-              transition: "all 0.45s cubic-bezier(0.34,1.56,0.64,1)",
-            }} />
-          ))}
-        </div>
-      </div>
-
       {/* ══ NAV BAR ══ */}
       <div style={{
         position: "fixed", bottom: 0, left: "50%",
