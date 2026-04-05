@@ -11,7 +11,7 @@
  * - التحليل المتقدم: خريطة السيولة + المحرك الكمي + عرض السوق
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSharedPrices } from '../store';
+import { useSharedPrices, useNav } from '../store';
 import { STOCKS, STOCKS_MAP, SECTORS } from '../constants/stocksData';
 import { useHaptic }          from '../hooks/useHaptic';
 import { usePullToRefresh }   from '../hooks/usePullToRefresh';
