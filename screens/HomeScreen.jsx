@@ -1190,7 +1190,7 @@ function TasiCard({ idx, chgP, market }) {
 }
 
 
-function HomeContent({idx,chgP,market,isLoadingH=false,isRefreshingH=false}){
+function HomeContent({idx,chgP,market,liveStocks=[],isLoadingH=false,isRefreshingH=false}){
   const [stTab,   setStTab]        = useState(0);
   const [period,  setPeriod]       = useState("يومي");
   const [showPeriodMenu, setShowPeriodMenu] = useState(false);
@@ -3920,7 +3920,7 @@ export default function HomeScreen() {
           </div>
         )}
         <TopBar idx={idx} chgP={chgP} showDemoBadge={showDemoBadge}/>
-        <HomeContent idx={idx} chgP={chgP} market={market} isLoadingH={isLoading} isRefreshingH={isRefreshing}/>
+        <HomeContent idx={idx} chgP={chgP} market={market} liveStocks={liveStocks} isLoadingH={isLoading} isRefreshingH={isRefreshing}/>
         {/* Scroll to top */}
         {showScrollTop && (
           <button
