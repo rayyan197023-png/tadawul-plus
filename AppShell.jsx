@@ -7,7 +7,6 @@
 
 import React, { Suspense, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import HomeScreenDirect from './screens/HomeScreen';
 import { RootStoreProvider }   from './store/index';
 import { useNav, useSharedPrices, useStockState } from './store';
 import TadawulNav from './components/shared/TadawulNav';
