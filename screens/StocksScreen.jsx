@@ -6,7 +6,8 @@
  */
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { useHaptic }          from '../hooks/useHaptic';
+import { useHaptic } from '../hooks/useHaptic';
+import { useNav } from '../store';
 import { usePullToRefresh }   from '../hooks/usePullToRefresh';
 
 
