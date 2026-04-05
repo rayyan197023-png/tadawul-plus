@@ -219,7 +219,7 @@ function Shell() {
     }}>
 
       {/* Screen content */}
-<div style={{ flex:1, minHeight:0, overflowY:'auto', overflowX:'hidden', WebkitOverflowScrolling:'touch', paddingBottom:80 }}>
+      <div style={{ flex:1, minHeight:0, overflowY:'auto', overflowX:'hidden', WebkitOverflowScrolling:'touch', paddingBottom:80 }}>
   <ErrorBoundary label="الشاشة الرئيسية" fallback={<div style={{color:'red',padding:20}}>خطأ في الشاشة</div>}>
     {activeTab === TAB_IDS.MORE
       ? <ActiveScreen snapshots={snapshots} setSnapshots={setSnapshots} watchlist={watchlist} setWatchlist={setWatchlist} commData={commData} setCommData={setCommData} />
