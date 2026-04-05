@@ -353,17 +353,7 @@ export default function TadawulNav() {
   }, [setTab, haptic]);
 
   return (
-    <div style={{
-      minHeight: "auto",
-      background: `radial-gradient(ellipse 120% 80% at 50% 100%, ${activeTab.glowBg} 0%, ${C.ink} 55%)`,
-      display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "flex-end",
-      direction: "rtl",
-      overscrollBehavior: "none",
-      overflow: "hidden",
-      transition: "background 0.7s ease",
-      fontFamily: "'Cairo', 'SF Arabic', 'Geeza Pro', 'Helvetica Neue', Tahoma, sans-serif",
-    }}>
+  <div style={{ direction: "rtl" }}>
 
       {/* ══ NAV BAR ══ */}
       <div style={{
