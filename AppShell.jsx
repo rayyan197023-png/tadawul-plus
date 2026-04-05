@@ -227,7 +227,7 @@ function Shell() {
       ? <ActiveScreen aiAnalysis={aiAnalysis} onClearAnalysis={() => setAiAnalysis(null)} commData={commData} />
       : activeTab === TAB_IDS.ANALYSIS
       ? <ActiveScreen commData={commData} />
-      : <HomeScreenDirect />
+      : <ActiveScreen />
     }
   </ErrorBoundary>
 </div>
