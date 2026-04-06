@@ -654,7 +654,8 @@ function useMarketEngine() {
   return marketState;
 }
 
-export default function App() {
+export default function HomeScreen()
+ {
   const market = useMarketEngine();
   const idx    = market.current;
   const chgP   = market.chgPts;
