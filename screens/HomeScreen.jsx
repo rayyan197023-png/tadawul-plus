@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 
-/* ─── Design tokens from screenshots ─── */
+/*  Design tokens from screenshots  */
 const BG    = "#0a0c12";
 const CARD  = "#12151f";
 const CARD2 = "#1a1d2a";
@@ -16,7 +16,7 @@ const GOLD  = "#f59e0b";
 const BLUE  = "#4a9eff";
 const PU    = "#a78bfa";
 
-/* ─── Stocks data ─── */
+/*  Stocks data  */
 const STOCKS = [
   {sym:"2010", name:"سابك",          sec:"البتروكيماويات", p:103.20, pct: 2.38, v:1823000, avgVol:1400000, hi:115, lo:80,  earn:"28 أبريل 2026", eps:5.67, prevEps:5.64},
   {sym:"2222", name:"أرامكو السعودية",sec:"الطاقة",         p:28.15,  pct:-0.84, v:12400000,avgVol:9000000, hi:32,  lo:22,  earn:"15 أبريل 2026", eps:1.42, prevEps:1.38},
@@ -43,39 +43,39 @@ const SECTORS_DATA = [
   {name:"التعدين",        pct:-2.1,  dot:"#60a5fa",  pc:"#dc2626", w:5,  id:"mining"},
 ];
 
-/* ════════════════════════════════════════════════════════
+/* 
    PROFESSIONAL ANALYSIS ENGINES
-   ════════════════════════════════════════════════════════
+   
 
-   ─── محاكاة بيانات يومية واقعية (20 يوم) ───
-   نظراً لأن API غير متصل، نُولّد سلسلة زمنية
-   محاكاة باستخدام seed ثابت مرتبط بالسهم،
-   لضمان نتائج ثابتة وقابلة للتكرار.
+        (20 ) 
+     API     
+     seed   
+       .
 */
 
-// دالة توليد بيانات شبه‑واقعية بـ seed ثابت (لا عشوائية)
+//      seed  ( )
 function seedRng(seed) {
   let s = seed;
   return () => { s = (s * 1664525 + 1013904223) & 0xffffffff; return (s >>> 0) / 0xffffffff; };
 }
 
-function generateDailyBars(stk, days = 28) {  // 28 يوم افتراضياً لـ warm-up كافٍ لـ RSI/ATR
+function generateDailyBars(stk, days = 28) {  // 28    warm-up   RSI/ATR
   const rng  = seedRng(parseInt(stk.sym, 10) * 997 + 13);
   const bars = [];
-  let   p    = stk.p * (1 - stk.pct / 100); // سعر قبل days يوم تقريباً
+  let   p    = stk.p * (1 - stk.pct / 100); //   days  
   const avgDailyVol = stk.avgVol || stk.v || 1e6;
 
   for (let i = 0; i < days; i++) {
     const drift  = (stk.pct / 100) / days;
-    // noise محايد (rng-0.5) — drift يتحكم في الاتجاه فقط
+    // noise  (rng-0.5)  drift    
     const noise  = (rng() - 0.5) * 0.022;
     const change = drift + noise;
     const open   = p;
     const close  = p * (1 + change);
-    // hi ≥ max(open,close) و lo ≤ min(open,close) — شرط ضروري أكاديمياً
+    // hi  max(open,close)  lo  min(open,close)    
     const hi     = Math.max(open, close) * (1 + rng() * 0.010);
     const lo     = Math.min(open, close) * (1 - rng() * 0.010);
-    // الحجم يتأثر بمقدار التغير — حجم أعلى عند تحركات كبيرة
+    //          
     const volMult = 0.5 + rng() * 1.2 + Math.abs(change) * 8;
     const vol    = Math.round(avgDailyVol * volMult);
     bars.push({ open, hi, lo, close, vol, pct: change * 100 });
@@ -84,30 +84,30 @@ function generateDailyBars(stk, days = 28) {  // 28 يوم افتراضياً ل
   return bars;
 }
 
-/* ════════════════════════════════════════════════════════
-   محركات الحساب الاحترافية — نسخة مُصحَّحة كاملاً
-   ════════════════════════════════════════════════════════
+/* 
+         
+   
 
-   ✅ إصلاح 1: RSI → Wilder's Smoothed Moving Average
-   ✅ إصلاح 2: ATR → Wilder's Smoothed Moving Average
-   ✅ إصلاح 3: OBV → دالة فعّالة ومُستخدمة فعلاً
-   ✅ إصلاح 4: Fear&Greed historical → seed ثابت
-   ✅ إصلاح 5: Fear&Greed SMA125 → محسوب من HISTORICAL_DATA
-   ✅ إصلاح 6: Quantum Value → نسبة السعر/القيمة من بيانات حقيقية
-   ✅ إصلاح 7: Quantum Quality → OBV slope + RSI consistency
-   ✅ إصلاح 8: Breadth VWAP → محسوب من bars لكل سهم فعلاً
-   ✅ إصلاح 9: HISTORICAL_DATA.week → مُولَّدة من نفس seed محرك السوق
+     1: RSI  Wilder's Smoothed Moving Average
+     2: ATR  Wilder's Smoothed Moving Average
+     3: OBV     
+     4: Fear&Greed historical  seed 
+     5: Fear&Greed SMA125    HISTORICAL_DATA
+     6: Quantum Value   /   
+     7: Quantum Quality  OBV slope + RSI consistency
+     8: Breadth VWAP    bars   
+     9: HISTORICAL_DATA.week     seed  
 */
 
-/* ─── RSI — Wilder's Smoothed Moving Average (الصيغة الرسمية) ───
-   الخطوة 1: حساب أول EMA من SMA بسيط على أول `period` يوم
-   الخطوة 2: Wilder's smoothing: EMA = EMA_prev×(period-1)/period + gain_today×(1/period)
-   الفرق عن SMA: يُعطي وزناً أكبر للبيانات الأحدث ← أكثر حساسية
+/*  RSI  Wilder's Smoothed Moving Average ( ) 
+    1:   EMA  SMA    `period` 
+    2: Wilder's smoothing: EMA = EMA_prev(period-1)/period + gain_today(1/period)
+     SMA:        
 */
 function calcRSI(bars, period = 14) {
   if (bars.length < period + 1) return 50;
 
-  // الخطوة 1: أول SMA على أول period يوم
+  //  1:  SMA   period 
   let avgGain = 0, avgLoss = 0;
   for (let i = 1; i <= period; i++) {
     const diff = bars[i].close - bars[i - 1].close;
@@ -117,12 +117,12 @@ function calcRSI(bars, period = 14) {
   avgGain /= period;
   avgLoss /= period;
 
-  // الخطوة 2: Wilder's smoothing للباقي
+  //  2: Wilder's smoothing 
   for (let i = period + 1; i < bars.length; i++) {
     const diff = bars[i].close - bars[i - 1].close;
     const gain = diff > 0 ? diff : 0;
     const loss = diff < 0 ? -diff : 0;
-    // Wilder's EMA: α = 1/period
+    // Wilder's EMA:  = 1/period
     avgGain = (avgGain * (period - 1) + gain) / period;
     avgLoss = (avgLoss * (period - 1) + loss) / period;
   }
@@ -132,14 +132,14 @@ function calcRSI(bars, period = 14) {
   return Math.round(100 - 100 / (1 + rs));
 }
 
-/* ─── ATR — Wilder's Smoothed Moving Average (الصيغة الرسمية) ───
-   الخطوة 1: True Range = max(Hi-Lo, |Hi-PC|, |Lo-PC|)
-   الخطوة 2: Wilder's EMA: ATR = ATR_prev×(n-1)/n + TR_today×(1/n)
+/*  ATR  Wilder's Smoothed Moving Average ( ) 
+    1: True Range = max(Hi-Lo, |Hi-PC|, |Lo-PC|)
+    2: Wilder's EMA: ATR = ATR_prev(n-1)/n + TR_today(1/n)
 */
 function calcATR(bars, period = 14) {
   if (bars.length < period + 1) return 0;
 
-  // الخطوة 1: أول SMA كـ seed
+  //  1:  SMA  seed
   let atr = 0;
   for (let i = 1; i <= period; i++) {
     const tr = Math.max(
@@ -151,7 +151,7 @@ function calcATR(bars, period = 14) {
   }
   atr /= period;
 
-  // الخطوة 2: Wilder's smoothing
+  //  2: Wilder's smoothing
   for (let i = period + 1; i < bars.length; i++) {
     const tr = Math.max(
       bars[i].hi - bars[i].lo,
@@ -164,10 +164,10 @@ function calcATR(bars, period = 14) {
   return atr;
 }
 
-/* ─── OBV (On Balance Volume) — مُصحَّح ومُستخدَم فعلاً ───
-   يُعيد: { obv, trend, slope, signal }
-   trend: "صاعد" | "هابط" | "محايد"
-   signal: توافق OBV مع حركة السعر
+/*  OBV (On Balance Volume)     
+   : { obv, trend, slope, signal }
+   trend: "" | "" | ""
+   signal:  OBV   
 */
 function calcOBV(bars) {
   if (bars.length < 5) return { obv: 0, trend: "محايد", slope: 0, signal: "محايد" };
@@ -178,11 +178,11 @@ function calcOBV(bars) {
   for (let i = 1; i < bars.length; i++) {
     if      (bars[i].close > bars[i-1].close) obv += bars[i].vol;
     else if (bars[i].close < bars[i-1].close) obv -= bars[i].vol;
-    // إذا تساوى: OBV لا يتغير
+    //  : OBV  
     obvArr.push(obv);
   }
 
-  // الميل بـ OLS Linear Regression على آخر 5 أيام (أدق من 2-point)
+  //   OLS Linear Regression   5  (  2-point)
   const last5 = obvArr.slice(-5);
   const n5 = last5.length; // = 5
   const xMean = 2; // (0+1+2+3+4)/5 = 2
@@ -194,7 +194,7 @@ function calcOBV(bars) {
   }
   const slope = den !== 0 ? num / den : 0;
 
-  // توافق OBV مع السعر
+  //  OBV  
   const priceSlope = bars[bars.length-1].close - bars[bars.length-5].close;
   let signal = "محايد";
   if (slope > 0 && priceSlope > 0) signal = "تأكيد صعود";
@@ -211,19 +211,19 @@ function calcOBV(bars) {
   };
 }
 
-/* ─── SMA (Simple Moving Average) ─── */
+/*  SMA (Simple Moving Average)  */
 function calcSMA(values, period) {
   if (values.length < period) return values[values.length - 1] || 0;
   const slice = values.slice(-period);
   return slice.reduce((s, v) => s + v, 0) / period;
 }
 
-/* ─── تاريخ Fear & Greed ثابت بـ seed محدد ───
-   كل فترة تُولَّد من seed خاص بها ← ثابتة لا تتغير بين renders
-   القيم تعكس دورات السوق المنطقية (تذبذب + اتجاه)
+/*   Fear & Greed   seed  
+       seed        renders
+        ( + )
 */
 const FG_HISTORICAL = (() => {
-  // seed ثابت لكل فترة تاريخية
+  // seed    
   function genFgSeries(seedVal, steps, startVal, endVal, volatility) {
     const rng = seedRng(seedVal);
     const series = [startVal];
@@ -233,25 +233,25 @@ const FG_HISTORICAL = (() => {
       const next  = Math.max(5, Math.min(95, series[i-1] + drift + noise));
       series.push(Math.round(next));
     }
-    series.push(endVal); // آخر نقطة = القيمة الحالية
+    series.push(endVal); //   =  
     return series;
   }
 
-  // سنة كاملة (52 أسبوع) — تاريخ منطقي لتاسي
+  //   (52 )    
   const yearSeries = genFgSeries(7001, 51, 42, 61, 8);
 
   return {
-    // أمس: نسخة مستقرة قريبة من اليوم
+    // :     
     yesterday: (current) => {
       const rng = seedRng(8881);
       return Math.max(5, Math.min(95, Math.round(current + (rng()-0.5)*6)));
     },
-    // أسبوع مضى: نقطة من السلسلة السنوية
+    //  :    
     weekAgo: (current) => {
       const rng = seedRng(8882);
       return Math.max(5, Math.min(95, Math.round(current + (rng()-0.45)*14)));
     },
-    // شهر مضى
+    //  
     monthAgo: (current) => {
       const rng = seedRng(8883);
       return Math.max(5, Math.min(95, Math.round(current + (rng()-0.42)*22)));
@@ -260,11 +260,11 @@ const FG_HISTORICAL = (() => {
   };
 })();
 
-/* ─── SMA-125 محسوب من HISTORICAL_DATA ───
-   نأخذ آخر 125 نقطة يومية من q3m + month + year مدمجة
+/*  SMA-125   HISTORICAL_DATA 
+     125    q3m + month + year 
 */
 function calcSMA125() {
-  // نحتاج 125 نقطة يومية — نجمع: extra(40) + month(21) + q3m(66) = 127 نقطة → slice(-125)
+  //  125    : extra(40) + month(21) + q3m(66) = 127   slice(-125)
   const extraRng = seedRng(5555);
   const extra = Array.from({length:40}, () => {
     const v = 12100 + (extraRng()-0.5)*200;
@@ -272,43 +272,43 @@ function calcSMA125() {
   });
   const combined = [
     ...extra,
-    ...HISTORICAL_DATA.month.slice(0,-1),   // 21 نقطة
-    ...HISTORICAL_DATA.q3m.slice(0,-1),     // 66 نقطة
-  ].slice(-125);                             // = 125 نقطة بالضبط ✓
+    ...HISTORICAL_DATA.month.slice(0,-1),   // 21 
+    ...HISTORICAL_DATA.q3m.slice(0,-1),     // 66 
+  ].slice(-125);                             // = 125   
   return calcSMA(combined, 125);
 }
 
-/* ─── بيانات P/E محاكاة لكل سهم (ثابتة بـ seed) ───
-   مبنية على نسب P/E واقعية للسوق السعودي 2024
+/*   P/E    (  seed) 
+      P/E    2024
 */
 const STOCK_FUNDAMENTALS = (() => {
   const data = {
-    "2010": { pe: 14.2, pb: 1.8,  roe: 0.128, divYield: 3.2 }, // سابك
-    "2222": { pe: 17.1, pb: 3.1,  roe: 0.182, divYield: 3.8 }, // أرامكو
-    "1120": { pe: 12.8, pb: 2.2,  roe: 0.172, divYield: 2.1 }, // الراجحي
-    "1010": { pe: 11.4, pb: 1.6,  roe: 0.141, divYield: 3.5 }, // الرياض
-    "2350": { pe: 22.3, pb: 3.4,  roe: 0.152, divYield: 2.8 }, // المراعي
-    "7010": { pe: 13.6, pb: 2.0,  roe: 0.147, divYield: 4.1 }, // الاتصالات
-    "4001": { pe: 18.7, pb: 2.5,  roe: 0.134, divYield: 1.9 }, // التصنيع
-    "6010": { pe: 10.9, pb: 1.4,  roe: 0.128, divYield: 4.4 }, // القابضة
-    "8010": { pe: 15.2, pb: 1.9,  roe: 0.125, divYield: 2.3 }, // تكافل
-    "2082": { pe: 16.8, pb: 2.1,  roe: 0.125, divYield: 2.0 }, // معادن
-    "1211": { pe: 20.4, pb: 2.8,  roe: 0.137, divYield: 1.5 }, // صحر
-    "4280": { pe: 19.1, pb: 2.6,  roe: 0.136, divYield: 1.8 }, // التجزئة
+    "2010": { pe: 14.2, pb: 1.8,  roe: 0.128, divYield: 3.2 }, // 
+    "2222": { pe: 17.1, pb: 3.1,  roe: 0.182, divYield: 3.8 }, // 
+    "1120": { pe: 12.8, pb: 2.2,  roe: 0.172, divYield: 2.1 }, // 
+    "1010": { pe: 11.4, pb: 1.6,  roe: 0.141, divYield: 3.5 }, // 
+    "2350": { pe: 22.3, pb: 3.4,  roe: 0.152, divYield: 2.8 }, // 
+    "7010": { pe: 13.6, pb: 2.0,  roe: 0.147, divYield: 4.1 }, // 
+    "4001": { pe: 18.7, pb: 2.5,  roe: 0.134, divYield: 1.9 }, // 
+    "6010": { pe: 10.9, pb: 1.4,  roe: 0.128, divYield: 4.4 }, // 
+    "8010": { pe: 15.2, pb: 1.9,  roe: 0.125, divYield: 2.3 }, // 
+    "2082": { pe: 16.8, pb: 2.1,  roe: 0.125, divYield: 2.0 }, // 
+    "1211": { pe: 20.4, pb: 2.8,  roe: 0.137, divYield: 1.5 }, // 
+    "4280": { pe: 19.1, pb: 2.6,  roe: 0.136, divYield: 1.8 }, // 
   };
-  // متوسط السوق لأي سهم غير موجود
+  //      
   const mktAvgPE = 15.5, mktAvgPB = 2.2, mktAvgROE = 0.145, mktDivYield = 2.8;
   return sym => data[sym] || { pe:mktAvgPE, pb:mktAvgPB, roe:mktAvgROE, divYield:mktDivYield };
 })();
 
-/* ─── MFI (Money Flow Index) — الصيغة الرسمية ───
-   MFI = 100 − 100 / (1 + PMF/NMF)
-   حيث:
+/*  MFI (Money Flow Index)    
+   MFI = 100  100 / (1 + PMF/NMF)
+   :
      TP  = (High + Low + Close) / 3   (Typical Price)
-     RMF = TP × Volume                 (Raw Money Flow)
-     PMF = مجموع RMF للأيام الصاعدة
-     NMF = مجموع RMF للأيام الهابطة
-   الفترة المعيارية = 14 يوم
+     RMF = TP  Volume                 (Raw Money Flow)
+     PMF =  RMF  
+     NMF =  RMF  
+     = 14 
 */
 function calcMFI(bars, period = 14) {
   if (bars.length < period + 1) return 50;
@@ -327,11 +327,11 @@ function calcMFI(bars, period = 14) {
   return Math.round(100 - 100 / (1 + posFlow / negFlow));
 }
 
-/* ─── CMF (Chaikin Money Flow) — الصيغة الرسمية ───
-   CMF = Σ(MFV) / Σ(Volume)  لـ 20 يوم
-   حيث:
-     MFM = ((Close − Low) − (High − Close)) / (High − Low)
-     MFV = MFM × Volume
+/*  CMF (Chaikin Money Flow)    
+   CMF = (MFV) / (Volume)   20 
+   :
+     MFM = ((Close  Low)  (High  Close)) / (High  Low)
+     MFV = MFM  Volume
 */
 function calcCMF(bars, period = 20) {
   const slice = bars.slice(-period);
@@ -344,12 +344,12 @@ function calcCMF(bars, period = 20) {
     sumVol += b.vol;
   }
   if (sumVol === 0) return 0;
-  return sumMFV / sumVol;  // دقة كاملة — التقريب يتم عند العرض فقط
+  return sumMFV / sumVol;  //        
 }
 
-/* ─── VWAP (Volume Weighted Average Price) ───
-   VWAP = Σ(TP × Volume) / Σ(Volume)
-   يُحسب على أحدث 20 جلسة (يومي)
+/*  VWAP (Volume Weighted Average Price) 
+   VWAP = (TP  Volume) / (Volume)
+      20  ()
 */
 function calcVWAP(bars) {
   let sumTPV = 0, sumVol = 0;
@@ -361,38 +361,38 @@ function calcVWAP(bars) {
   return sumVol > 0 ? sumTPV / sumVol : 0;
 }
 
-/* ─── وايكوف المُحسَّن — نظام نقاط موزونة (4 محاور أكاديمية) ───
-   المرجع: R.D. Wyckoff 1931 + آدمز & شاكر 2010
-   ──────────────────────────────────────────────────
-   A. Price Location  30%  — pfl موقع السعر من النطاق السنوي
-   B. Volume Quality  25%  — rv × direction + OBV direction
-   C. Money Flow      25%  — CMF(20) + MFI(14)
-   D. Price Momentum  20%  — pct_change + RSI
+/*        (4  ) 
+   : R.D. Wyckoff 1931 +  &  2010
+   
+   A. Price Location  30%   pfl     
+   B. Volume Quality  25%   rv  direction + OBV direction
+   C. Money Flow      25%   CMF(20) + MFI(14)
+   D. Price Momentum  20%   pct_change + RSI
 
-   كل محور: -2 (تصريف قوي) إلى +2 (تجميع قوي)
-   المجموع الموزون يُحدد المرحلة من 8 مراحل وايكوف الرسمية
+    : -2 ( )  +2 ( )
+        8   
 */
 function wyckoffPhase(pfl, rv, pct, cmf, rsi, mfi, obvDir) {
-  // A: موقع السعر من النطاق السنوي
+  // A:     
   const locA = pfl < 20 ? +2 : pfl < 35 ? +1 : pfl < 65 ? 0 : pfl < 80 ? -1 : -2;
 
-  // B: جودة الحجم — rv في اتجاه الحركة + OBV التراكمي
+  // B:    rv    + OBV 
   const volDir  = pct >= 0 ? 1 : -1;
   const rvScore = rv > 2.0 ? 2 : rv > 1.4 ? 1 : rv < 0.7 ? -1 : 0;
   const obvS    = obvDir === "صاعد" ? +1 : obvDir === "هابط" ? -1 : 0;
   const locB    = Math.max(-2, Math.min(2, rvScore * volDir + obvS * 0.5));
 
-  // C: تدفق الأموال — CMF(20) + MFI(14)
+  // C:    CMF(20) + MFI(14)
   const cmfS = cmf > 0.15 ? +2 : cmf > 0.05 ? +1 : cmf < -0.15 ? -2 : cmf < -0.05 ? -1 : 0;
   const mfiS = (mfi||50) > 65 ? +1 : (mfi||50) < 35 ? -1 : 0;
   const locC = Math.max(-2, Math.min(2, cmfS + mfiS));
 
-  // D: زخم السعر — pct + RSI
+  // D:    pct + RSI
   const pctS = pct > 1.0 ? +2 : pct > 0.3 ? +1 : pct < -1.0 ? -2 : pct < -0.3 ? -1 : 0;
   const rsiS = (rsi||50) > 60 ? +1 : (rsi||50) < 40 ? -1 : 0;
   const locD = Math.max(-2, Math.min(2, pctS + rsiS));
 
-  // المجموع الموزون: نطاق [-2, +2]
+  //  :  [-2, +2]
   const total = locA * 0.30 + locB * 0.25 + locC * 0.25 + locD * 0.20;
   const conf  = x => Math.min(95, Math.round(Math.abs(x) * 40 + 20));
 
@@ -407,38 +407,38 @@ function wyckoffPhase(pfl, rv, pct, cmf, rsi, mfi, obvDir) {
   return { phase: "محايد", col: T2, conf: 30 };
 }
 
-/* ─── محرك السيولة الذكية الاحترافي ─── */
+/*       */
 function calcLiq(stk) {
-  // 1. بيانات يومية — 28 يوم لـ warm-up كافٍ (2×period=14)
+  // 1.    28   warm-up  (2period=14)
   const bars = generateDailyBars(stk, 28);
 
-  // 2. حجم مُطبَّع لتخفيف شذوذ الحجم اليومي
+  // 2.      
   const vol    = stk.v || 1e6;
   const avgVol = stk.avgVol || vol;
   const rv     = ((vol + avgVol) / 2) / avgVol;  // (v + avgVol)/2 / avgVol
 
-  // 3. النطاق السنوي وموقع السعر
+  // 3.    
   const hi52 = stk.hi || stk.p * 1.25;
   const lo52 = stk.lo || stk.p * 0.75;
   const range52 = hi52 - lo52;
   const pfl = range52 > 0 ? ((stk.p - lo52) / range52) * 100 : 50;
 
-  // 4. MFI الرسمي (14 يوم)
+  // 4. MFI  (14 )
   const mfi = calcMFI(bars, 14);
 
-  // 5. CMF الرسمي (20 يوم)
+  // 5. CMF  (20 )
   const cmf = calcCMF(bars, 20);
 
-  // 6. VWAP الرسمي
+  // 6. VWAP 
   const vwapVal = calcVWAP(bars);
   const vwapDiff = vwapVal > 0
     ? +((stk.p - vwapVal) / vwapVal * 100).toFixed(2) : 0;
   const aboveVwap = stk.p >= vwapVal;
 
-  // 7. RSI (14 يوم)
+  // 7. RSI (14 )
   const rsi = calcRSI(bars, 14);
 
-  // 8. ATR — التذبذب الفعلي
+  // 8. ATR   
   const atr    = calcATR(bars, 14);
   const atrPct = stk.p > 0 ? +(atr / stk.p * 100).toFixed(2) : 0;
 
@@ -454,66 +454,66 @@ function calcLiq(stk) {
     return slope > 0 ? "صاعد" : slope < 0 ? "هابط" : "محايد";
   })();
 
-  // 10. Tight Range — التضيّق
+  // 10. Tight Range  
   const rangeRatio = range52 > 0 ? (hi52 - lo52) / lo52 : 0.3;
   const tight = rangeRatio < 0.25;
 
-  // 11. حساب LPI (Liquidity Pressure Index)
-  // نطاق −100 إلى +100
+  // 11.  LPI (Liquidity Pressure Index)
+  //  100  +100
   const mfiNorm = (mfi - 50) / 50;
   const cmfNorm = Math.max(-1, Math.min(1, cmf));
-  const rvCapped = Math.min(rv, 4.0);  // cap عند 4x لمنع تضخيم القيم المتطرفة
+  const rvCapped = Math.min(rv, 4.0);  // cap  4x    
   const rvNorm  = Math.max(-1, Math.min(1, (rvCapped - 1) * 0.8));
-  // لا حاجة لـ ×100/100 — round مباشر
+  //    100/100  round 
   const lpiInt = Math.max(-100, Math.min(100,
     Math.round(mfiNorm * 40 + cmfNorm * 35 + rvNorm * 25)
   ));
 
-  // 12. Smart Money Score — نقاط السيولة الذكية (0–100)
-  // مبني على مؤشرات محددة بدون عشوائية
+  // 12. Smart Money Score     (0100)
+  //      
   let sm = 0;
-  // MFI (وزن 25%)
+  // MFI ( 25%)
   sm += mfi > 70 ? 25 : mfi > 55 ? 15 : mfi > 45 ? 8 : 0;
-  // CMF (وزن 20%)
+  // CMF ( 20%)
   sm += cmf > 0.15 ? 20 : cmf > 0.05 ? 12 : cmf > 0 ? 5 : 0;
-  // الحجم النسبي — مُكافأ في الاتجاهين (صعود أو هبوط قوي) (وزن 20%)
-  // حجم مرتفع في الصعود = شراء مؤسسي | حجم مرتفع في الهبوط = ضغط بيع
+  //       (   ) ( 20%)
+  //     =   |     =  
   if (stk.pct > 0) sm += rv > 2.5 ? 20 : rv > 1.8 ? 14 : rv > 1.2 ? 8 : 0;
-  else             sm += rv > 2.0 ? 10 : rv > 1.5 ? 6  : 0;  // هبوط بحجم عالٍ → ضغط بيع مؤكد (نقاط جزئية)
-  // RSI في نطاق صحي (وزن 15%)
+  else             sm += rv > 2.0 ? 10 : rv > 1.5 ? 6  : 0;  //        ( )
+  // RSI    ( 15%)
   sm += rsi > 50 && rsi < 75 ? 15 : rsi > 40 && rsi <= 50 ? 8 : 0;
-  // موقع السعر من المدى السنوي (وزن 10%)
+  //      ( 10%)
   sm += pfl < 35 && stk.pct > 0 ? 10 : pfl > 65 && stk.pct > 0 ? 5 : 0;
-  // فوق VWAP (وزن 10%)
+  //  VWAP ( 10%)
   sm += aboveVwap ? 10 : 0;
   sm = Math.min(100, Math.max(0, sm));
 
-  // 13. كشف التصريف المخفي (Hidden Distribution) — متعدد الشروط
-  // يحتاج: صعود السعر + CMF سلبي + MFI ضعيف + حجم مرتفع + OBV هابط (تباعد)
-  // الأكاديمي: 3+ إشارات متباينة = احتمال تصريف
+  // 13.    (Hidden Distribution)   
+  // :   + CMF  + MFI  +   + OBV  ()
+  // : 3+   =  
   const hdSignals = [
-    stk.pct > 0.3,       // السعر يرتفع
-    cmf < -0.02,         // تدفق أموال سلبي
-    mfi < 50,            // ضغط بيع في المال
-    rv > 1.5,            // حجم مرتفع
-    obviDir === "هابط",  // OBV يتراجع رغم صعود السعر
+    stk.pct > 0.3,       //  
+    cmf < -0.02,         //   
+    mfi < 50,            //    
+    rv > 1.5,            //  
+    obviDir === "هابط",  // OBV    
   ].filter(Boolean).length;
-  const hd = hdSignals >= 3;  // 3 شروط أو أكثر = إشارة تصريف مخفي
+  const hd = hdSignals >= 3;  // 3    =   
 
-  // 14. احتمال انفجار الحركة (Explosion Potential — Volatility Squeeze)
-  // مبني على: Bollinger Band Squeeze proxy + حجم منخفض + RSI محايد
-  // tight range + حجم متراجع عن المتوسط + RSI في المنتصف = ضغط مكبوت
+  // 14.    (Explosion Potential  Volatility Squeeze)
+  //  : Bollinger Band Squeeze proxy +   + RSI 
+  // tight range +     + RSI   =  
   const ep = tight && rv < 0.75 && rsi > 40 && rsi < 60;
 
-  // 15. النسبة المئوية للحجم الزائد
+  // 15.    
   const vp = Math.round((rv - 1) * 100);
 
-  // 16. مرحلة وايكوف — نظام نقاط موزونة (4 محاور)
+  // 16.       (4 )
   const { phase, col: phCol, conf: phConf } = wyckoffPhase(
     pfl, rv, stk.pct, cmf, rsi, mfi, obviDir
   );
 
-  // 17. تصنيف السيولة والألوان
+  // 17.   
   let col, lbl;
   if      (sm >= 75 && stk.pct > 0 && cmf > 0.05)  { col = BLUE;     lbl = "سيولة مؤسسية"; }
   else if (lpiInt > 35 && stk.pct > 0)               { col = "#4ade80"; lbl = "شراء نشط";    }
@@ -540,17 +540,17 @@ function calcLiq(stk) {
   };
 }
 
-/* ════════════════════════════════════════════════════════
-   MARKET ENGINE — محرك السوق المركزي
-   ────────────────────────────────────────────────────────
-   يُولّد سعراً حياً واقعياً ويحتفظ بسجل اليوم الكامل.
-   كل مكوّن يرسم من نفس المصدر → اتساق 100%.
-   ════════════════════════════════════════════════════════ */
+/* 
+   MARKET ENGINE    
+   
+          .
+           100%.
+    */
 
-// ─ بيانات تاسي التاريخية الثابتة (seed) لكل فترة ─
-// نستخدم بيانات حقيقية تقريبية لتاسي 2024-2025
+//      (seed)   
+//      2024-2025
 const HISTORICAL_DATA = {
-  // سنة كاملة — إغلاق أسبوعي (52 أسبوع) — بيانات تاريخية واقعية لتاسي 2024-2025
+  //      (52 )      2024-2025
   year: [
     11580,11620,11750,11830,11900,11780,11650,11580,11490,11600,
     11720,11850,11940,12050,12180,12250,12310,12200,12080,11960,
@@ -559,7 +559,7 @@ const HISTORICAL_DATA = {
     12580,12640,12720,12810,12870,12820,12760,12710,12770,12820,
     12840,12847.32,
   ],
-  // 3 أشهر — إغلاق يومي (67 نقطة)
+  // 3     (67 )
   q3m: (() => {
     const rng = seedRng(9001);
     let v = 12580;
@@ -568,7 +568,7 @@ const HISTORICAL_DATA = {
       return Math.round(v * 100)/100;
     }).concat([12847.32]);
   })(),
-  // شهر — إغلاق يومي (22 نقطة)
+  //     (22 )
   month: (() => {
     const rng = seedRng(9002);
     let v = 12680;
@@ -577,8 +577,8 @@ const HISTORICAL_DATA = {
       return Math.round(v * 100)/100;
     }).concat([12847.32]);
   })(),
-  // أسبوع — 5 أيام تداول مُولَّدة بـ seed ثابت
-  // تبدأ من 12691.04 (الافتتاح) وتنتهي بـ 12847.32 (الإغلاق الحالي)
+  //   5     seed 
+  //   12691.04 ()   12847.32 ( )
   week: (() => {
     const rng  = seedRng(9003);
     const OPEN = 12691.04;
@@ -594,15 +594,15 @@ const HISTORICAL_DATA = {
   })(),
 };
 
-// ─ محرك اليوم الحي ─
+//     
 function useMarketEngine() {
-  // سعر الافتتاح الثابت لليوم
+  //    
   const OPEN_PRICE = 12691.04;
 
   const [marketState, setMarketState] = useState(() => {
     const rng = seedRng(Date.now() % 100003);
-    // 78 نقطة كل 5 دقائق من 10:00 → 16:30
-    // نبني السلسلة من الافتتاح حتى السعر الحالي
+    // 78   5   10:00  16:30
+    //       
     const pts = [OPEN_PRICE];
     for (let i = 1; i < 78; i++) {
       const prev  = pts[i-1];
@@ -621,16 +621,16 @@ function useMarketEngine() {
     };
   });
 
-  // تحديث لحظي كل 2 ثانية
+  //    2 
   useEffect(() => {
     const id = setInterval(() => {
       setMarketState(prev => {
-        // تذبذب ±0.04% لكل tick (واقعي لـ 2 ثانية في سوق نشط)
+        //  0.04%  tick (  2    )
         const sigma  = prev.current * 0.0004;
         const rngNow = seedRng(Date.now() % 999983);
         const u1     = Math.max(1e-10, rngNow());
         const eps    = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * rngNow());
-        // حركة عشوائية مع ميل طفيف نحو الاتجاه
+        //       
         const trend  = prev.current > 12847 ? -0.3 : 0.3;
         const delta  = sigma * eps + trend;
         const next   = Math.max(12650, Math.min(12950,
@@ -642,7 +642,7 @@ function useMarketEngine() {
         return {
           current:  next,
           open:     prev.open,
-          todayPts: newPts.slice(-200), // نحتفظ بـ 200 نقطة كحد أقصى
+          todayPts: newPts.slice(-200), //   200   
           chgPts:   chgP,
           chgVal:   chgV,
         };
@@ -654,8 +654,7 @@ function useMarketEngine() {
   return marketState;
 }
 
-export default function HomeScreen()
- {
+export default function HomeScreen() {
   const market = useMarketEngine();
   const idx    = market.current;
   const chgP   = market.chgPts;
@@ -683,7 +682,7 @@ export default function HomeScreen()
   );
 }
 
-/* ─── TOP BAR ─── */
+/*  TOP BAR  */
 function TopBar({idx,chgP}){
   return(
     <div style={{
@@ -741,45 +740,45 @@ function TopBar({idx,chgP}){
   );
 }
 
-/* ─── HOME CONTENT ─── */
-/* ════════════════════════════════════════════════════
-   TASI CARD — شارت تفاعلي لحظي مع فترات زمنية دقيقة
-   ════════════════════════════════════════════════════
+/*  HOME CONTENT  */
+/* 
+   TASI CARD        
+   
 
-   منهجية توليد البيانات:
-   - Geometric Brownian Motion (GBM) مبسّط لكل فترة
-   - seed ثابت لكل فترة → نتائج ثابتة وقابلة للتكرار
-   - انعكاس اتجاه chgP في اليوم الأخير لكل الفترات
-   - تذبذب يومي يتناسب مع طبيعة كل فترة زمنية
+     :
+   - Geometric Brownian Motion (GBM)   
+   - seed        
+   -   chgP     
+   -        
 */
 
-/* ─ توليد سلسلة أسعار بـ GBM مبسّط ─ */
+/*      GBM   */
 function generatePriceSeries({ points, basePrice, targetPrice, volatility, seed }) {
   const rng    = seedRng(seed);
-  const drift  = (targetPrice - basePrice) / points;  // الانحراف الإجمالي
+  const drift  = (targetPrice - basePrice) / points;  //  
   const series = [basePrice];
   for (let i = 1; i < points; i++) {
-    // GBM: S(t+1) = S(t) × exp(drift + σ × ε)
-    // حيث ε ~ N(0,1) نقريبها بـ Box-Muller مبسّط
+    // GBM: S(t+1) = S(t)  exp(drift +   )
+    //   ~ N(0,1)   Box-Muller 
     const u1   = Math.max(1e-10, rng());
     const u2   = rng();
     const eps  = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
     const prev = series[i - 1];
     const next = prev + drift + volatility * eps;
-    // Clamp: ±0.5% per 5-min tick — واقعي لسوق تاسي
+    // Clamp: 0.5% per 5-min tick    
     series.push(Math.max(prev * 0.995, Math.min(prev * 1.005, next)));
   }
-  // نُعدّل آخر نقطة لتطابق السعر الحالي تماماً
+  //       
   series[series.length - 1] = targetPrice;
   return series;
 }
 
-/* ─ إعدادات كل فترة زمنية ─ */
+/*       */
 const PERIOD_CONFIG = {
   "يوم":    {
-    points: 78,          // كل 5 دقائق × 6.5 ساعة جلسة
-    volatility: 8,       // نقاط تذبذب للخطوة
-    baseDelta: -1.23,    // نسبة التغير من بداية الجلسة
+    points: 78,          //  5   6.5  
+    volatility: 8,       //   
+    baseDelta: -1.23,    //     
     seed: 1001,
     labelFn: (i, n) => {
       const mins = Math.round(i / (n-1) * 390);
@@ -796,7 +795,7 @@ const PERIOD_CONFIG = {
     },
   },
   "أسبوع": {
-    points: 5,           // 5 أيام تداول
+    points: 5,           // 5  
     volatility: 45,
     baseDelta: -2.1,
     seed: 1007,
@@ -805,7 +804,7 @@ const PERIOD_CONFIG = {
     xLabelFn: (i) => ["أحد","اثن","ثلا","أرب","خمس"][i] || "",
   },
   "شهر":   {
-    points: 22,          // ~22 يوم تداول
+    points: 22,          // ~22  
     volatility: 55,
     baseDelta: -3.8,
     seed: 1031,
@@ -820,7 +819,7 @@ const PERIOD_CONFIG = {
     },
   },
   "3 أشهر":{
-    points: 66,          // ~66 يوم تداول
+    points: 66,          // ~66  
     volatility: 38,
     baseDelta: -7.2,
     seed: 1090,
@@ -838,7 +837,7 @@ const PERIOD_CONFIG = {
     },
   },
   "سنة":   {
-    points: 52,          // أسبوعياً × 52 أسبوع
+    points: 52,          //   52 
     volatility: 120,
     baseDelta: -18.5,
     seed: 1365,
@@ -861,19 +860,19 @@ function TasiCard({ idx, chgP, market }) {
   const [tooltip, setTooltip] = useState(null);
   const svgRef                = useRef(null);
 
-  // ── اختيار بيانات الفترة ──
-  // "يوم" → بيانات حية من useMarketEngine (تتحدث كل 2 ث)
-  // باقي الفترات → بيانات تاريخية ثابتة + آخر نقطة = idx الحالي
+  //     
+  // ""     useMarketEngine (  2 )
+  //       +   = idx 
   const pts = useMemo(() => {
     if (period === "يوم") {
-      // بيانات اليوم الحية — مرتبطة مباشرة بالمحرك
+      //       
       const live = market?.todayPts || [idx];
-      // نتأكد أن آخر نقطة = السعر الحالي
+      //     =  
       const updated = [...live];
       updated[updated.length - 1] = idx;
       return updated;
     }
-    // باقي الفترات — بيانات تاريخية مع تحديث آخر نقطة للسعر الحالي
+    //           
     const base = {
       "أسبوع":  [...HISTORICAL_DATA.week],
       "شهر":    [...HISTORICAL_DATA.month],
@@ -885,7 +884,7 @@ function TasiCard({ idx, chgP, market }) {
     return updated;
   }, [period, market?.todayPts, idx]);
 
-  // ── حسابات الشارت ──
+  //    
   const W = 340, H = 96;
   const minV = Math.min(...pts);
   const maxV = Math.max(...pts);
@@ -905,29 +904,29 @@ function TasiCard({ idx, chgP, market }) {
   const liveX = toX(pts.length - 1);
   const liveY = toY(pts[pts.length - 1]);
 
-  // ── اتجاه الفترة — من أول نقطة إلى آخر نقطة ──
+  //           
   const firstPt    = pts[0] || idx;
   const lastPt     = pts[pts.length - 1] || idx;
   const periodChg  = +((lastPt - firstPt) / firstPt * 100).toFixed(2);
   const periodIsUp = periodChg >= 0;
 
-  // ── اتجاه اليوم — من market.open إلى السعر الحالي ──
+  //      market.open    
   const openPrice  = market?.open || (idx / (1 + chgP/100));
   const dayChgVal  = +(idx - openPrice).toFixed(2);
-  const dayChgPct  = chgP; // مباشر من المحرك
+  const dayChgPct  = chgP; //   
   const isUpToday  = dayChgPct >= 0;
 
-  // ── اللون يتبع الفترة المختارة ──
+  //      
   const color   = periodIsUp ? G : R;
   const bgFrom  = periodIsUp ? "#071c10" : "#180808";
   const bgTo    = periodIsUp ? "#040e08" : "#0e0404";
   const borderC = periodIsUp ? "rgba(34,197,94,.25)" : "rgba(239,68,68,.25)";
 
-  // ── Labels المحور السيني ──
+  //  Labels   
   const cfg = PERIOD_CONFIG[period] || PERIOD_CONFIG["يوم"];
   const xLabelIdxs = cfg.xLabels(pts.length);
 
-  // ── Crosshair ──
+  //  Crosshair 
   const handleMove = useCallback((e) => {
     const rect = svgRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -970,7 +969,7 @@ function TasiCard({ idx, chgP, market }) {
         transition:"background .4s",
       }}/>
 
-      {/* ── Info Row ── */}
+      {/*  Info Row  */}
       <div style={{
         padding:"14px 16px 6px",
         display:"flex",justifyContent:"space-between",alignItems:"flex-start",
@@ -981,7 +980,7 @@ function TasiCard({ idx, chgP, market }) {
             مؤشر تاسي الرئيسي
           </div>
 
-          {/* السعر الحالي — يتحدث مع كل tick */}
+          {/*       tick */}
           <div style={{
             fontSize:38,fontWeight:900,color:T1,
             letterSpacing:"-1.8px",lineHeight:1,direction:"ltr",
@@ -990,7 +989,7 @@ function TasiCard({ idx, chgP, market }) {
             {idx.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2})}
           </div>
 
-          {/* التغير اليومي — مرتبط بـ market.open */}
+          {/*      market.open */}
           <div style={{display:"flex",alignItems:"center",gap:6,marginTop:5,flexWrap:"wrap"}}>
             <span style={{fontSize:11,fontWeight:700,color:isUpToday?G:R}}>
               {isUpToday?"▲":"▼"} {isUpToday?"+":""}{dayChgVal} نقطة
@@ -1004,7 +1003,7 @@ function TasiCard({ idx, chgP, market }) {
             }}>
               {isUpToday?"+":""}{dayChgPct}%
             </span>
-            {/* تغير الفترة المختارة (إذا غير يومي) */}
+            {/*    (  ) */}
             {period !== "يوم" && (
               <span style={{
                 fontSize:10,fontWeight:700,
@@ -1060,7 +1059,7 @@ function TasiCard({ idx, chgP, market }) {
         </div>
       </div>
 
-      {/* ── Period Tabs ── */}
+      {/*  Period Tabs  */}
       <div style={{display:"flex",padding:"2px 14px 0",position:"relative",zIndex:1}}>
         {PERIODS.map(p=>(
           <button key={p} onClick={()=>{ setPeriod(p); setTooltip(null); }} style={{
@@ -1073,7 +1072,7 @@ function TasiCard({ idx, chgP, market }) {
         ))}
       </div>
 
-      {/* ── SVG Chart ── */}
+      {/*  SVG Chart  */}
       <div style={{position:"relative",height:H+30,userSelect:"none"}}>
         <svg
           ref={svgRef}
@@ -1098,7 +1097,7 @@ function TasiCard({ idx, chgP, market }) {
             </filter>
           </defs>
 
-          {/* خط سعر الافتتاح (baseline) في وضع اليوم */}
+          {/*    (baseline)    */}
           {period === "يوم" && (() => {
             const baseY = toY(openPrice);
             return (
@@ -1127,7 +1126,7 @@ function TasiCard({ idx, chgP, market }) {
             <circle cx={tooltip.x} cy={tooltip.y} r="1.2" fill="#fff"/>
           </>}
 
-          {/* نقطة حية */}
+          {/*   */}
           {!tooltip && <>
             <circle cx={liveX} cy={liveY} r="6"   fill={color} opacity="0.18"/>
             <circle cx={liveX} cy={liveY} r="3.2" fill={color}/>
@@ -1167,11 +1166,11 @@ function TasiCard({ idx, chgP, market }) {
             zIndex:20,whiteSpace:"nowrap",
             animation:"fadeUp .1s ease both",
           }}>
-            {/* السعر الرئيسي */}
+            {/*   */}
             <div style={{fontSize:15,fontWeight:900,color:T1,lineHeight:1,marginBottom:3}}>
               {tooltip.val}
             </div>
-            {/* التغير */}
+            {/*  */}
             <div style={{display:"flex",alignItems:"center",gap:6}}>
               <span style={{fontSize:11,fontWeight:700,color:tooltip.isUp?G:R}}>
                 {tooltip.isUp?"+":""}{tooltip.chg}%
@@ -1180,7 +1179,7 @@ function TasiCard({ idx, chgP, market }) {
                 ({tooltip.isUp?"+":""}{tooltip.chgVal})
               </span>
             </div>
-            {/* الوقت / التاريخ */}
+            {/*  /  */}
             <div style={{fontSize:8.5,color:T3,marginTop:3}}>{tooltip.label}</div>
           </div>
         )}
@@ -1209,21 +1208,21 @@ function HomeContent({idx,chgP,market}){
   const [showPeriodMenu, setShowPeriodMenu] = useState(false);
   const [proMode, setPro]          = useState(true);
 
-  // ── تعديل الفترة الزمنية ──
-  // المنهج الصحيح أكاديمياً:
-  //   pct_daily هي العائد اليومي الحالي
-  //   لتقدير عائد الفترة الأطول من يوم واحد نحتاج بيانات تاريخية فعلية
-  //   في غيابها: نستخدم HISTORICAL_DATA لحساب التغير الفعلي للفترة
-  //   للأسهم الفردية: نُعدّل بنسبة تغير المؤشر بين الفترتين (beta proxy)
+  //     
+  //   :
+  //   pct_daily    
+  //             
+  //    :  HISTORICAL_DATA    
+  //    :       (beta proxy)
   //
-  //   ملاحظة: √T Rule تنطبق على σ (الانحراف المعياري) لا على الـ Return.
-  //   pct_weekly ≠ pct_daily × √5 — هذا خطأ مفاهيمي شائع.
-  //   الصحيح: نُظهر pct_daily دائماً مع إشارة للفترة المرجعية.
+  //   : T Rule    ( )    Return.
+  //   pct_weekly  pct_daily  5     .
+  //   :  pct_daily     .
 
   const periodDays = {يومي:1, أسبوعي:5, شهري:22, سنوي:250};
   const T = periodDays[period];
 
-  // تغير مؤشر تاسي خلال الفترة (من HISTORICAL_DATA)
+  //      ( HISTORICAL_DATA)
   const tasiPeriodPct = (() => {
     if (period === "يومي") return market?.chgPts || 1.23;
     const data = {
@@ -1235,24 +1234,24 @@ function HomeContent({idx,chgP,market}){
     return first > 0 ? (last - first)/first*100 : 1.23;
   })();
 
-  // لكل سهم: نُعدّل pct بنسبة beta_proxy = pct_daily / tasiDayPct
-  // أي: pct_period ≈ tasiPeriodPct × (pct_daily / tasiDayPct)
-  // هذا أكاديمياً أقرب للواقع من pct×√T
+  //  :  pct  beta_proxy = pct_daily / tasiDayPct
+  // : pct_period  tasiPeriodPct  (pct_daily / tasiDayPct)
+  //      pctT
   const tasiDayPct = market?.chgPts || 1.23;
 
   const adjusted = STOCKS.map(s => {
     let adjPct;
     if (period === "يومي") {
-      adjPct = s.pct;  // يومي: بدون تعديل
+      adjPct = s.pct;  // :  
     } else {
-      // beta_proxy: مدى استجابة السهم للسوق
+      // beta_proxy:    
       const betaProxy = tasiDayPct !== 0 ? s.pct / tasiDayPct : 1;
-      // pct_period = tasiPeriodPct × betaProxy
-      // مُقيَّد بحدود واقعية حسب الفترة
+      // pct_period = tasiPeriodPct  betaProxy
+      //     
       const maxPct = {أسبوعي:25, شهري:50, سنوي:150}[period] || 25;
       adjPct = +Math.max(-maxPct, Math.min(maxPct, tasiPeriodPct * betaProxy)).toFixed(2);
     }
-    // حجم الفترة: v × عدد الأيام (تقريب معقول للتداول التراكمي)
+    //  : v    (   )
     const adjVol = Math.round(s.v * T);
     return { ...s, pct: adjPct, v: adjVol };
   });
@@ -1264,10 +1263,10 @@ function HomeContent({idx,chgP,market}){
   return(
     <div style={{paddingBottom:30,animation:"fadeUp .28s ease both"}}>
 
-      {/* ── 1. TASI Hero with Live Chart ── */}
+      {/*  1. TASI Hero with Live Chart  */}
       <TasiCard idx={idx} chgP={chgP} market={market}/>
 
-      {/* ── 2. Pro / Beginner toggle ── */}
+      {/*  2. Pro / Beginner toggle  */}
       <div style={{
         margin:"8px 12px",display:"flex",alignItems:"center",
         justifyContent:"space-between",
@@ -1315,9 +1314,9 @@ function HomeContent({idx,chgP,market}){
         </div>
       </div>
 
-      {/* ── 3. Top Opportunity — محسوب ديناميكياً من calcLiq ── */}
+      {/*  3. Top Opportunity     calcLiq  */}
       {(()=>{
-        // نحسب SM Score لكل سهم ونختار الأعلى
+        //  SM Score    
         const opps = STOCKS.map(s => {
           const liq = calcLiq(s);
           return { s, sm: liq.sm, liq };
@@ -1374,7 +1373,7 @@ function HomeContent({idx,chgP,market}){
         );
       })()}
 
-      {/* ── 4. أبرز التحركات ── */}
+      {/*  4.    */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",
                    padding:"0 14px 10px"}}>
         {/* Three-lines button with dropdown */}
@@ -1457,13 +1456,13 @@ function HomeContent({idx,chgP,market}){
         ))}
       </div>
 
-      {/* ── 6. Sector performance ── */}
+      {/*  6. Sector performance  */}
       <SectorSection/>
 
-      {/* ── 6.5. Fear & Greed Index ── */}
+      {/*  6.5. Fear & Greed Index  */}
       {proMode && <FearGreedIndex/>}
 
-      {/* ── 7. Advanced analysis — محترف فقط ── */}
+      {/*  7. Advanced analysis     */}
       {proMode ? (
         <AdvancedSection/>
       ) : (
@@ -1498,7 +1497,7 @@ function HomeContent({idx,chgP,market}){
   );
 }
 
-/* ─── STOCK ROW ─── */
+/*  STOCK ROW  */
 function StockRow({s,rank,period}){
   const up=s.pct>=0;
   return(
@@ -1534,46 +1533,46 @@ function StockRow({s,rank,period}){
   );
 }
 
-/* ─── SECTOR SECTION ─── */
-/* ════════════════════════════════════════════════════════════
-   FEAR & GREED INDEX — مؤشر الخوف والطمع الاحترافي
-   ════════════════════════════════════════════════════════════
+/*  SECTOR SECTION  */
+/* 
+   FEAR & GREED INDEX     
+   
 
-   7 مكوّنات وزن متوازن (مجموع = 100%):
+   7    ( = 100%):
 
-   1. زخم السوق / Market Momentum (20%)
-      = نسبة تاسي الحالية من متوسط 125 يوم (SMA-125)
-      إشارة: فوق المتوسط = طمع، تحته = خوف
+   1.   / Market Momentum (20%)
+      =      125  (SMA-125)
+      :   =   = 
 
-   2. قوة السهم / Stock Price Strength (15%)
-      = نسبة الأسهم على قمم 52 أسبوع ÷ قيعان 52 أسبوع
-      إشارة: نسبة عالية = طمع
+   2.   / Stock Price Strength (15%)
+      =     52    52 
+      :   = 
 
-   3. عرض السوق / Market Breadth (15%)
-      = مذبذب ماكليلان (A/D line)
-      إشارة: موجب قوي = طمع، سالب = خوف
+   3.   / Market Breadth (15%)
+      =   (A/D line)
+      :   =   = 
 
-   4. مؤشر تذبذب السوق / Volatility (15%)
-      = ATR نسبي مقارنة بالمتوسط التاريخي
-      إشارة: تذبذب منخفض = طمع، مرتفع = خوف
+   4.    / Volatility (15%)
+      = ATR    
+      :   =   = 
 
-   5. سيولة السوق / Market Liquidity (15%)
-      = حجم التداول الحالي ÷ متوسط 20 يوم
-      إشارة: حجم مرتفع في صعود = طمع
+   5.   / Market Liquidity (15%)
+      =      20 
+      :     = 
 
-   6. زخم RSI المجمع / Composite RSI (10%)
-      = متوسط RSI(14) لجميع الأسهم
-      إشارة: > 60 طمع، < 40 خوف
+   6.  RSI  / Composite RSI (10%)
+      =  RSI(14)  
+      : > 60  < 40 
 
-   7. CMF المجمع / Money Flow (10%)
-      = متوسط Chaikin Money Flow لجميع الأسهم
-      إشارة: موجب = طمع
-════════════════════════════════════════════════════════════ */
+   7. CMF  / Money Flow (10%)
+      =  Chaikin Money Flow  
+      :  = 
+ */
 
 function calcFearGreed() {
-  /* ══════════════════════════════════════════════════════════
-     بيانات الأسهم — 28 يوم لـ warm-up كافٍ
-  ══════════════════════════════════════════════════════════ */
+  /* 
+        28   warm-up 
+   */
   const stockData = STOCKS.map(s => {
     const bars = generateDailyBars(s, 28);
     const atr  = calcATR(bars, 14);
@@ -1592,19 +1591,19 @@ function calcFearGreed() {
 
   const n = stockData.length;
 
-  /* ── 1. زخم السوق (20%) ──
-     المنهج: S&P 500 vs SMA-125 (CNN Fear & Greed)
-     نُطبّقه على تاسي — نستخدم percentile ranking بدلاً من معامل تعسفي
-     percentile يُحوَّل لـ score 0-100 عبر التوزيع التاريخي المحاكى
+  /*  1.   (20%) 
+     : S&P 500 vs SMA-125 (CNN Fear & Greed)
+          percentile ranking    
+     percentile   score 0-100    
   */
   const currentIdx = 12847.32;
   const sma125     = calcSMA125();
   const momentumRaw = ((currentIdx - sma125) / sma125) * 100; // % deviation
 
-  // z-score تقريبي: std dev تاريخية للانحراف ≈ 4% للسوق السعودي
+  // z-score : std dev    4%  
   const momentumZScore = momentumRaw / 4.0;
-  // z-score دقيق بـ CDF الطبيعي: CDF(z) = 0.5×(1 + erf(z/√2))
-  // نُقرّب erf بسلسلة Horner (دقة < 1.5×10⁻⁷ وفق Abramowitz & Stegun)
+  // z-score   CDF : CDF(z) = 0.5(1 + erf(z/2))
+  //  erf  Horner ( < 1.510  Abramowitz & Stegun)
   const erfApprox = z => {
     const t = 1 / (1 + 0.3275911 * Math.abs(z));
     const poly = t*(0.254829592 + t*(-0.284496736 + t*(1.421413741 + t*(-1.453152027 + t*1.061405429))));
@@ -1616,31 +1615,31 @@ function calcFearGreed() {
   ));
   const momentumScore = Math.round(momentumPercentile);
 
-  /* ── 2. قوة السهم (15%) ──
+  /*  2.   (15%) 
      NYSE 52-week H/L Ratio = Highs / (Highs + Lows)
-     نُطبّقه على أسهم تاسي المتاحة
-     نستخدم قمة/قاع فعلي (ليس threshold ±%)
+         
+      /  ( threshold %)
   */
   const atHigh  = stockData.filter(d => d.stk.p >= d.hi52).length;
   const atLow   = stockData.filter(d => d.stk.p <= d.lo52).length;
-  const nearH   = stockData.filter(d => d.stk.p >= d.hi52 * 0.98).length; // ±2%
+  const nearH   = stockData.filter(d => d.stk.p >= d.hi52 * 0.98).length; // 2%
   const nearL   = stockData.filter(d => d.stk.p <= d.lo52 * 1.02).length;
   const hlTotal = nearH + nearL || 1;
   const hlRatio = nearH / hlTotal; // 0-1
 
-  // CNN formula: score = hlRatio × 100 مع smoothing
-  // نُضيف weight للأسهم على القمة الحقيقية
+  // CNN formula: score = hlRatio  100  smoothing
+  //  weight    
   const hlWeighted = (nearH + atHigh * 0.5) / (hlTotal + atHigh * 0.5 + atLow * 0.5);
   const strengthScore = Math.round(Math.max(0, Math.min(100, hlWeighted * 100)));
 
-  /* ── 3. عرض السوق (15%) ──
-     McClellan Summation Index = Σ(EMA19 - EMA39) على A/D line تاريخي
-     هذا هو التعريف الدقيق وفق Sherman & Marian McClellan 1969
+  /*  3.   (15%) 
+     McClellan Summation Index = (EMA19 - EMA39)  A/D line 
+          Sherman & Marian McClellan 1969
   */
   const adv = STOCKS.filter(s => s.pct > 0).length;
   const dec = STOCKS.filter(s => s.pct < 0).length;
 
-  // بناء سلسلة A/D يومية من HISTORICAL_DATA (52 أسبوع × 5 أيام/أسبوع ≈ 260 يوم)
+  //   A/D   HISTORICAL_DATA (52   5 /  260 )
   const calcEMA = (values, period) => {
     if (values.length === 0) return 0;
     const k = 2 / (period + 1);
@@ -1650,7 +1649,7 @@ function calcFearGreed() {
     return ema;
   };
 
-  // سلسلة A/D يومية محاكاة واقعية من بيانات تاسي السنوية
+  //  A/D       
   const rngAD = seedRng(77001);
   const adSeries = [];
   let cumAD = 0;
@@ -1661,13 +1660,13 @@ function calcFearGreed() {
     const advDay = Math.max(1, Math.min(n-1, advEst));
     const decDay = n - advDay;
     cumAD += advDay - decDay;
-    // نُولّد 5 أيام لكل أسبوع
+    //  5   
     for (let d = 0; d < 5; d++) {
       const noise = (rngAD()-0.5)*(n*0.2);
       adSeries.push(cumAD + noise);
     }
   });
-  // اليوم الحالي
+  //  
   adSeries.push(cumAD + (adv - dec));
 
   // McClellan Oscillator = EMA(19) - EMA(39)
@@ -1675,7 +1674,7 @@ function calcFearGreed() {
   const ema39 = calcEMA(adSeries, 39);
   const mclOscillator = ema19 - ema39;
 
-  // McClellan Summation Index = Σ(Oscillator) — نُحسبه تراكمياً
+  // McClellan Summation Index = (Oscillator)   
   let summation = 0;
   const oscSeries = [];
   for (let i = 0; i < adSeries.length; i++) {
@@ -1686,19 +1685,19 @@ function calcFearGreed() {
     summation = oscSeries.reduce((s,v) => s+v, 0);
   }
 
-  // Summation عادةً بين -1000 و +1000 — نُطبّع لـ 0-100
-  // نستخدم tanh للـ normalization (أكاديمياً أفضل من linear clamp)
+  // Summation   -1000  +1000    0-100
+  //  tanh  normalization (   linear clamp)
   const summationNorm = Math.tanh(summation / 500);  // -1 to +1
   const breadthScore  = Math.round(Math.max(0, Math.min(100, 50 + summationNorm * 50)));
 
-  /* ── 4. التذبذب (15%) ──
-     CNN: VIX vs SMA-50(VIX) — خوف شديد عندما VIX > SMA
-     نُطبّق على تاسي: ATR النسبي vs SMA-20(ATR) لنفس السهم
-     z-score للانحراف بدلاً من مقارنة بمرجع ثابت hard-coded
+  /*  4.  (15%) 
+     CNN: VIX vs SMA-50(VIX)     VIX > SMA
+       : ATR  vs SMA-20(ATR)  
+     z-score       hard-coded
   */
-  // نُحسب ATR التاريخي (SMA-20 للـ ATR) من بيانات كل سهم
+  //  ATR  (SMA-20  ATR)    
   const atrHistoricalScores = stockData.map(d => {
-    // SMA-20 للـ ATR من أول 14 شمعة (warm-up) إلى آخر 20
+    // SMA-20  ATR   14  (warm-up)   20
     const atrSeries = [];
     for (let i = 14; i < d.bars.length; i++) {
       const sliceAtr = d.bars.slice(Math.max(0, i-14), i);
@@ -1716,55 +1715,55 @@ function calcFearGreed() {
     if (atrSeries.length < 2) return 50;
     const smaATR = atrSeries.reduce((s,v)=>s+v,0) / atrSeries.length;
     const currentAtr = d.atrPct;
-    // نسبة ATR الحالي / SMA_ATR — مشابه لـ VIX/SMA_VIX في CNN
+    //  ATR  / SMA_ATR    VIX/SMA_VIX  CNN
     const ratio = smaATR > 0 ? currentAtr / smaATR : 1;
-    // ratio < 1 = هدوء = طمع | ratio > 1 = توتر = خوف
-    // نُطبّع: ratio=0.5→100, ratio=1→50, ratio=2→0
+    // ratio < 1 =  =  | ratio > 1 =  = 
+    // : ratio=0.5100, ratio=150, ratio=20
     return Math.max(0, Math.min(100, 100 - (ratio - 0.5) * 100));
   });
   const volatilityScore = Math.round(
     atrHistoricalScores.reduce((s,v)=>s+v,0) / atrHistoricalScores.length
   );
 
-  /* ── 5. سيولة السوق (15%) ──
-     CNN: Safe Haven Demand = فارق عائد السندات vs الأسهم (20 يوم)
-     نُقدّره في غياب بيانات السندات بمعادلة مركّبة:
-     - حجم التداول النسبي (مكوّن أساسي)
-     - اتجاه السوق (مكوّن مُعدِّل)
-     نستخدم logistic function بدلاً من معاملات تعسفية
+  /*  5.   (15%) 
+     CNN: Safe Haven Demand =    vs  (20 )
+           :
+     -    ( )
+     -   ( )
+      logistic function    
   */
   const totalVol    = STOCKS.reduce((s, stk) => s + (stk.v || 0), 0);
   const totalAvgVol = STOCKS.reduce((s, stk) => s + (stk.avgVol || stk.v || 0), 0);
   const volRv       = totalAvgVol > 0 ? totalVol / totalAvgVol : 1;
-  const advPct      = adv / n;  // نسبة الصاعد
+  const advPct      = adv / n;  //  
 
-  // Logistic(x) = 1/(1+e^-x) → نطاق 0-1
+  // Logistic(x) = 1/(1+e^-x)   0-1
   const logistic = x => 1 / (1 + Math.exp(-x));
-  // إشارة مركّبة: حجم مرتفع في السوق الصاعد = طمع
+  //  :      = 
   const liqSignal = (volRv - 1) * 2 + (advPct - 0.5) * 4;
   const liquidityScore = Math.round(logistic(liqSignal) * 100);
 
-  /* ── 6. RSI المجمع (10%) ──
-     الأكاديمي: نسبة الأسهم فوق RSI-50 (breadth RSI)
-     أفضل من المتوسط البسيط لأنه يعكس التوزيع لا المتوسط
+  /*  6. RSI  (10%) 
+     :    RSI-50 (breadth RSI)
+             
   */
   const aboveRSI50 = stockData.filter(d => d.rsi > 50).length;
   const aboveRSI60 = stockData.filter(d => d.rsi > 60).length;
-  // نُعطي وزناً للأسهم فوق 60 (زخم قوي)
+  //     60 ( )
   const rsiBreadth = (aboveRSI50 + aboveRSI60 * 0.5) / (n * 1.5);
   const rsiScore   = Math.round(Math.max(0, Math.min(100, rsiBreadth * 100)));
 
-  /* ── 7. CMF المجمع (10%) ──
-     نسبة الأسهم بـ CMF موجب (breadth CMF)
-     أكثر موثوقية من المتوسط البسيط عند N صغير
-     + نُضيف وزناً للأسهم بـ CMF قوي (>0.1)
+  /*  7. CMF  (10%) 
+        CMF  (breadth CMF)
+           N 
+     +     CMF  (>0.1)
   */
   const positiveCMF = stockData.filter(d => d.cmf > 0).length;
   const strongCMF   = stockData.filter(d => d.cmf > 0.10).length;
   const cmfBreadth  = (positiveCMF + strongCMF * 0.5) / (n * 1.5);
   const cmfScore    = Math.round(Math.max(0, Math.min(100, cmfBreadth * 100)));
 
-  /* ── المجموع الموزون ── */
+  /*     */
   const totalScore = Math.round(
     momentumScore    * 0.20 +
     strengthScore    * 0.15 +
@@ -1803,14 +1802,14 @@ function calcFearGreed() {
     prevScore: FG_HISTORICAL.yesterday(totalScore),
     weekAgo:   FG_HISTORICAL.weekAgo(totalScore),
     monthAgo:  FG_HISTORICAL.monthAgo(totalScore),
-    // للإشارة في الواجهة
+    //   
     adLine: adv - dec,
     mclOsc: Math.round(mclOscillator),
     summation: Math.round(summation),
   };
 }
 
-/* ── تصنيف النقطة ── */
+/*     */
 function fgLabel(score) {
   if (score >= 80) return { ar:"طمع شديد",   en:"Extreme Greed", col:"#22c55e", bg:"rgba(34,197,94,.12)"  };
   if (score >= 60) return { ar:"طمع",         en:"Greed",         col:"#86efac", bg:"rgba(134,239,172,.1)" };
@@ -1827,14 +1826,14 @@ function FearGreedIndex() {
   const score   = data.total;
   const lbl     = fgLabel(score);
 
-  // ── مقياس العقرب (Needle gauge) ──
+  //    (Needle gauge) 
   const R   = 80, CX = 100, CY = 90;
-  const deg = -180 + (score / 100) * 180;  // -180° (خوف شديد) → 0° (طمع شديد)
+  const deg = -180 + (score / 100) * 180;  // -180 ( )  0 ( )
   const rad = (deg * Math.PI) / 180;
   const nx  = CX + (R - 10) * Math.cos(rad);
   const ny  = CY + (R - 10) * Math.sin(rad);
 
-  // ── شرائح الـ gauge ──
+  //    gauge 
   const ZONES = [
     { from: 0,  to: 20,  col:"#ef4444", label:"خوف شديد" },
     { from: 20, to: 40,  col:"#fb923c", label:"خوف"      },
@@ -1889,7 +1888,7 @@ function FearGreedIndex() {
 
         <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
 
-          {/* ── Gauge SVG ── */}
+          {/*  Gauge SVG  */}
           <div style={{flexShrink:0}}>
             <svg width="200" height="108" viewBox="0 0 200 108">
               {/* Background arc */}
@@ -1947,7 +1946,7 @@ function FearGreedIndex() {
             </svg>
           </div>
 
-          {/* ── Right info ── */}
+          {/*  Right info  */}
           <div style={{flex:1}}>
             {/* Classification */}
             <div style={{
@@ -1998,7 +1997,7 @@ function FearGreedIndex() {
           </div>
         </div>
 
-        {/* ── 7 Component Breakdown ── */}
+        {/*  7 Component Breakdown  */}
         {expanded && (
           <div style={{marginTop:14,animation:"fadeUp .2s ease both"}}>
             <div style={{fontSize:10,fontWeight:700,color:T2,marginBottom:10,textAlign:"right"}}>
@@ -2121,33 +2120,33 @@ function FearGreedIndex() {
   );
 }
 
-/* ══════════════════════════════════════════════════════
-   حساب تدفق رأس المال لكل قطاع — المعادلات الأكاديمية
-   ────────────────────────────────────────────────────
-   المؤشر المحسوب: Dollar Price Impact (DPI)
-   ─────────────────────────────────────────
-   وهو مختلف عن "Money Flow" الكلاسيكي (Chaikin):
-     • Money Flow الحقيقي = Σ(TP × Vol) للأيام الصاعدة/الهابطة
-     • DPI = Σ(vol × price × |pct| / 100) ← ما نحسبه هنا
-     DPI يقيس: "كم ريالاً تأثّر بحركة السعر في كل اتجاه؟"
+/* 
+           
+   
+    : Dollar Price Impact (DPI)
+   
+      "Money Flow"  (Chaikin):
+      Money Flow  = (TP  Vol)  /
+      DPI = (vol  price  |pct| / 100)    
+     DPI : "       "
 
-   الصيغ المُستخدمة:
-   ─────────────────
-   Turnover       = Σ(vol × price)             ← قيمة التداول الكاملة
-   DPI_in         = Σ(vol × price × |pct|/100) for pct > 0  ← تأثير الصعود
-   DPI_out        = Σ(vol × price × |pct|/100) for pct < 0  ← تأثير الهبوط
-   Net_DPI        = DPI_in − DPI_out
+    :
+   
+   Turnover       = (vol  price)                
+   DPI_in         = (vol  price  |pct|/100) for pct > 0    
+   DPI_out        = (vol  price  |pct|/100) for pct < 0    
+   Net_DPI        = DPI_in  DPI_out
    Active_Flow    = DPI_in + DPI_out
-   FR_active      = Net_DPI / Active_Flow × 100  ← نسبة من التدفق الفعّال
-   FR_turnover    = Net_DPI / Turnover × 100     ← نسبة من السيولة الكلية
-   weightedPct    = Σ(pct × vol × price) / Σ(vol × price)  ← موزون بالقيمة
-   vol_normalized = (v + avgVol) / 2             ← تطبيع شذوذ الحجم اليومي
-══════════════════════════════════════════════════════ */
+   FR_active      = Net_DPI / Active_Flow  100      
+   FR_turnover    = Net_DPI / Turnover  100         
+   weightedPct    = (pct  vol  price) / (vol  price)    
+   vol_normalized = (v + avgVol) / 2                 
+ */
 function calcSectorFlows() {
   const totalTurnover = STOCKS.reduce((s, st) => s + st.v * st.p, 0) || 1;
 
-  // حساب الانحراف المعياري لـ FR_active لتصنيف ديناميكي
-  // نحسبه في مرحلة ثانية بعد تجميع كل القطاعات
+  //     FR_active  
+  //        
   const rawResults = SECTORS_DATA.map(sec => {
     const secStocks = STOCKS.filter(s => s.sec === sec.name);
     if (secStocks.length === 0) return {
@@ -2157,54 +2156,54 @@ function calcSectorFlows() {
       flowDir:"محايد", flowCol:T2, flowLabel:"لا بيانات",
     };
 
-    // ── حجم مُطبَّع: يُخفِّف شذوذ الحجم اليومي ──
-    // (v + avgVol) / 2 يُعطي وزناً للحجم التاريخي
+    //   :     
+    // (v + avgVol) / 2    
     const normVol = st => (st.v + (st.avgVol || st.v)) / 2;
 
-    // ── Turnover بالحجم المُطبَّع ──
+    //  Turnover   
     const turnover = secStocks.reduce((s, st) => s + normVol(st) * st.p, 0);
 
-    // ── Dollar Price Impact ──
+    //  Dollar Price Impact 
     let dpiIn = 0, dpiOut = 0;
     secStocks.forEach(st => {
       const vol   = normVol(st);
       const dpi   = vol * st.p * Math.abs(st.pct) / 100;
       if      (st.pct > 0) dpiIn  += dpi;
       else if (st.pct < 0) dpiOut += dpi;
-      // pct === 0 → لا تأثير سعري → يُهمل ✓
+      // pct === 0       
     });
 
     const netDPI      = dpiIn - dpiOut;
-    const activeFlow  = dpiIn + dpiOut || 1; // التدفق الفعّال (غير الصفري)
+    const activeFlow  = dpiIn + dpiOut || 1; //   ( )
 
-    // ── FR_active: نسبة صافي التأثير من التأثير الكلي ──
-    // أكاديمياً أكثر تعبيراً من FR_turnover (أقل تخفيفاً)
-    const frActive   = (netDPI / activeFlow) * 100;   // نطاق [-100, +100]
+    //  FR_active:       
+    //     FR_turnover ( )
+    const frActive   = (netDPI / activeFlow) * 100;   //  [-100, +100]
 
-    // ── FR_turnover: نسبة صافي التأثير من السيولة الكاملة ──
+    //  FR_turnover:       
     const frTurnover = turnover > 0 ? (netDPI / turnover) * 100 : 0;
 
-    // ── weightedPct: موزون بالقيمة السوقية (value-weighted) ──
-    // أكاديمياً أدق من الوزن بعدد الأسهم
+    //  weightedPct:    (value-weighted) 
+    //      
     const totalValue  = secStocks.reduce((s, st) => s + normVol(st) * st.p, 0) || 1;
     const weightedPct = secStocks.reduce((s, st) => s + st.pct * normVol(st) * st.p, 0) / totalValue;
 
-    // ── Dominance: نسبة DPI الداخل من التدفق الفعّال ──
+    //  Dominance:  DPI     
     const dominance = (dpiIn / activeFlow) * 100;
 
-    // ── Market Share ──
+    //  Market Share 
     const marketShare = (turnover / totalTurnover) * 100;
 
     return {
       ...sec,
       secStocks,
-      inflow: dpiIn, outflow: dpiOut,        // للتوافق مع الـ UI القديم
+      inflow: dpiIn, outflow: dpiOut,        //    UI 
       netFlow: netDPI,
       dpiIn, dpiOut, netDPI,
       turnover, activeFlow, marketShare: +marketShare.toFixed(1),
-      frActive:   +frActive.toFixed(2),       // [-100, +100] — الإشارة الرئيسية
-      frTurnover: +frTurnover.toFixed(3),     // نسبة مخففة
-      flowRatio:  +frActive.toFixed(2),       // للتوافق مع الـ UI
+      frActive:   +frActive.toFixed(2),       // [-100, +100]   
+      frTurnover: +frTurnover.toFixed(3),     //  
+      flowRatio:  +frActive.toFixed(2),       //    UI
       dominance:  +dominance.toFixed(1),
       weightedPct: +weightedPct.toFixed(2),
       flowDir:  netDPI >= 0 ? "دخول" : "خروج",
@@ -2213,8 +2212,8 @@ function calcSectorFlows() {
     };
   });
 
-  // ── تصنيف ديناميكي بناءً على توزيع |frActive| الفعلي ──
-  // نستخدم percentile ranking بدلاً من حدود hard-coded
+  //       |frActive|  
+  //  percentile ranking    hard-coded
   const frValues = rawResults.map(r => Math.abs(r.frActive || 0)).filter(v => v > 0);
   const frMean   = frValues.length > 0
     ? frValues.reduce((s,v)=>s+v,0) / frValues.length : 50;
@@ -2223,7 +2222,7 @@ function calcSectorFlows() {
 
   return rawResults.map(r => {
     const absFR = Math.abs(r.frActive || 0);
-    // تصنيف بـ z-score: > +1σ قوي، 0 إلى +1σ معتدل، < 0 ضعيف
+    //   z-score: > +1  0  +1  < 0 
     const zFR     = frStd > 0 ? (absFR - frMean) / frStd : 0;
     const flowLabel = zFR > 1.0  ? "تدفق قوي جداً"
                     : zFR > 0.25 ? "تدفق قوي"
@@ -2238,7 +2237,7 @@ function SectorSection(){
   const [viewMode,  setViewMode]  = useState("perf");
   const sectorFlows = useMemo(() => calcSectorFlows(), []);
 
-  // ── أُضيف pct المحسوب الحقيقي لكل قطاع ──
+  //   pct     
   const sectorsWithRealPct = useMemo(() => {
     return SECTORS_DATA.map(sec => {
       const flow = sectorFlows.find(f => f.id === sec.id);
@@ -2246,7 +2245,7 @@ function SectorSection(){
     });
   }, [sectorFlows]);
 
-  // ── Pie slices ──
+  //  Pie slices 
   const cx=160, cy=88, rx=115, ry=65, dep=24;
   const slices = (() => {
     let a = -Math.PI/2;
@@ -2263,13 +2262,13 @@ function SectorSection(){
   const selFlow     = selected ? sectorFlows.find(s=>s.id===selected)  : null;
   const selStocks   = selSec   ? STOCKS.filter(s=>s.sec===selSec.name) : [];
 
-  // أكبر تدفق لتطبيع الأشرطة
+  //    
   const maxAbsFlow  = Math.max(...sectorFlows.map(s=>Math.abs(s.netFlow)), 1);
   const totalVolume = sectorFlows.reduce((s,f)=>s+f.volume,0) || 1;
 
   return (
     <div>
-      {/* ── Header ── */}
+      {/*  Header  */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",
                    padding:"14px 14px 6px"}}>
         <div style={{display:"flex",gap:4}}>
@@ -2289,7 +2288,7 @@ function SectorSection(){
         </div>
       </div>
 
-      {/* ── 3D Pie (مشترك بين جميع modes) ── */}
+      {/*  3D Pie (   modes)  */}
       <div style={{display:"flex",justifyContent:"center",padding:"4px 0 8px",position:"relative"}}>
         <svg width="320" height="190" viewBox="0 0 320 190" style={{cursor:"pointer"}}>
           {slices.map((s,i)=>
@@ -2319,7 +2318,7 @@ function SectorSection(){
             );
           })}
 
-          {/* تدفق السيم على الـ pie في وضع Flow */}
+          {/*     pie   Flow */}
           {viewMode==="flow" && slices.map((s,i)=>{
             const flow = sectorFlows.find(f=>f.id===s.id);
             if (!flow) return null;
@@ -2346,7 +2345,7 @@ function SectorSection(){
         </svg>
       </div>
 
-      {/* ── Selected sector expanded card ── */}
+      {/*  Selected sector expanded card  */}
       {selected && selSec && selFlow && (
         <div style={{
           margin:"0 12px 10px",
@@ -2370,7 +2369,7 @@ function SectorSection(){
             </div>
           </div>
 
-          {/* تدفق رأس المال */}
+          {/*    */}
           <div style={{
             background:"rgba(0,0,0,.2)",borderRadius:10,
             padding:"10px 12px",marginBottom:10,
@@ -2384,7 +2383,7 @@ function SectorSection(){
               </span>
               <span style={{fontSize:11,fontWeight:700,color:T1}}>تدفق رأس المال</span>
             </div>
-            {/* شريط دخول/خروج */}
+            {/*  / */}
             <div style={{height:8,background:"rgba(255,255,255,.06)",borderRadius:4,overflow:"hidden",display:"flex",marginBottom:5}}>
               <div style={{
                 width:selFlow.dominance+"%",height:"100%",
@@ -2416,7 +2415,7 @@ function SectorSection(){
             </div>
           </div>
 
-          {/* أسهم القطاع */}
+          {/*   */}
           {selStocks.map((st,i)=>(
             <div key={i} style={{
               display:"flex",justifyContent:"space-between",alignItems:"center",
@@ -2438,9 +2437,9 @@ function SectorSection(){
         </div>
       )}
 
-      {/* ══════════════════════════════
+      {/* 
           PERFORMANCE VIEW
-      ══════════════════════════════ */}
+       */}
       {viewMode==="perf" && (
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:0,padding:"0 10px"}}>
           {sectorsWithRealPct.map((s,i)=>{
@@ -2474,12 +2473,12 @@ function SectorSection(){
         </div>
       )}
 
-      {/* ══════════════════════════════
-          FLOW VIEW — تدفق رأس المال
-      ══════════════════════════════ */}
+      {/* 
+          FLOW VIEW    
+       */}
       {viewMode==="flow" && (
         <div style={{padding:"4px 12px 8px"}}>
-          {/* شرح المقياس */}
+          {/*   */}
           <div style={{
             display:"flex",justifyContent:"space-between",alignItems:"center",
             marginBottom:10,padding:"6px 10px",
@@ -2511,7 +2510,7 @@ function SectorSection(){
                   border:"1px solid "+(isSel?sec.pc+"40":LN),
                   transition:"all .18s",
                 }}>
-                {/* Row 1: اسم + اتجاه + % أداء */}
+                {/* Row 1:  +  + %  */}
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
                   <div style={{display:"flex",alignItems:"center",gap:6}}>
                     <span style={{
@@ -2538,7 +2537,7 @@ function SectorSection(){
                   </div>
                 </div>
 
-                {/* شريط الدخول/الخروج المزدوج */}
+                {/*  /  */}
                 <div style={{display:"flex",height:7,borderRadius:4,overflow:"hidden",gap:1,marginBottom:4}}>
                   <div style={{
                     width:inW+"%",background:"linear-gradient(90deg,"+G+"60,"+G+")",
@@ -2550,7 +2549,7 @@ function SectorSection(){
                   }}/>
                 </div>
 
-                {/* صافي التدفق */}
+                {/*   */}
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:3}}>
                   <div style={{display:"flex",gap:10}}>
                     <span style={{fontSize:8,color:G}}>↑ {(sec.inflow/1e6).toFixed(2)}م ر.س</span>
@@ -2573,7 +2572,7 @@ function SectorSection(){
             );
           })}
 
-          {/* ملخص السوق */}
+          {/*   */}
           <div style={{
             marginTop:8,padding:"10px 12px",
             background:"rgba(255,255,255,.03)",borderRadius:10,
@@ -2616,9 +2615,9 @@ function SectorSection(){
         </div>
       )}
 
-      {/* ══════════════════════════════
-          BUBBLE VIEW — فقاعات
-      ══════════════════════════════ */}
+      {/* 
+          BUBBLE VIEW  
+       */}
       {viewMode==="bubble" && (
         <div style={{padding:"4px 12px 10px"}}>
           <div style={{
@@ -2627,7 +2626,7 @@ function SectorSection(){
             padding:"6px 0",
           }}>
             {sectorFlows.map((sec,i)=>{
-              // حجم الفقاعة يعتمد على حجم التداول
+              //      
               const volPct = sec.volume / totalVolume;
               const size   = Math.round(60 + volPct * 200); // 60-260px
               const clamp  = Math.max(64, Math.min(120, size));
@@ -2650,7 +2649,7 @@ function SectorSection(){
                     transform: isSel?"scale(1.08)":"scale(1)",
                     position:"relative",
                   }}>
-                  {/* تدفق badge */}
+                  {/*  badge */}
                   <div style={{
                     position:"absolute",top:-4,right:-4,
                     width:16,height:16,borderRadius:"50%",
@@ -2694,7 +2693,7 @@ function SectorSection(){
   );
 }
 
-/* ─── ADVANCED SECTION ─── */
+/*  ADVANCED SECTION  */
 function AdvancedSection(){
   const [open,setOpen]=useState(true);
   const [panel,setPanel]=useState("liquidity"); // liquidity | quantum | breadth
@@ -2728,7 +2727,7 @@ function AdvancedSection(){
           border:"1px solid rgba(167,139,250,.2)",
           borderTop:"none",overflow:"hidden",
         }}>
-          {/* Panel tabs — matching screenshot */}
+          {/* Panel tabs  matching screenshot */}
           <div style={{display:"flex",borderBottom:"1px solid rgba(255,255,255,.06)"}}>
             {[{id:"liquidity",l:"خريطة السيولة"},{id:"quantum",l:"المحرك الكمي"},{id:"breadth",l:"عرض السوق"}].map(p=>(
               <button key={p.id} onClick={()=>setPanel(p.id)} style={{
@@ -2750,7 +2749,7 @@ function AdvancedSection(){
   );
 }
 
-/* ─── LIQUIDITY PANEL ─── */
+/*  LIQUIDITY PANEL  */
 function LiquidityPanel(){
   const [view,setView]=useState("map");
   const [scanning,setScan]=useState(false);
@@ -2822,7 +2821,7 @@ function LiquidityPanel(){
           </div>
         </div>
 
-        {/* Sub-tabs — pill style matching screenshot */}
+        {/* Sub-tabs  pill style matching screenshot */}
         <div style={{display:"flex",gap:6}}>
           {VTABS.map(v=>(
             <button key={v.id} onClick={()=>setView(v.id)} style={{
@@ -2835,7 +2834,7 @@ function LiquidityPanel(){
             }}>{v.l}</button>
           ))}
         </div>
-        {/* إخلاء مسؤولية */}
+        {/*   */}
         <div style={{
           marginTop:8,fontSize:8,color:GOLD,
           background:"rgba(245,158,11,.05)",borderRadius:7,
@@ -2854,7 +2853,7 @@ function LiquidityPanel(){
         </div>
       )}
 
-      {/* MAP VIEW — matching screenshot bubbles */}
+      {/* MAP VIEW  matching screenshot bubbles */}
       {!scanning&&view==="map"&&(
         <div style={{padding:"10px 12px"}}>
           <div style={{display:"flex",gap:6,marginBottom:10,flexWrap:"wrap"}}>
@@ -2892,7 +2891,7 @@ function LiquidityPanel(){
         </div>
       )}
 
-      {/* LIST VIEW — matching screenshot cards exactly */}
+      {/* LIST VIEW  matching screenshot cards exactly */}
       {!scanning&&view==="list"&&(
         <div style={{padding:"10px 12px"}}>
           <div style={{fontSize:12,fontWeight:700,color:PU,marginBottom:10,textAlign:"right"}}>
@@ -3040,7 +3039,7 @@ function LiquidityPanel(){
   );
 }
 
-/* ─── DNA CARD — interactive bars with date tooltip ─── */
+/*  DNA CARD  interactive bars with date tooltip  */
 function DnaCard({d}){
   const [activeBar, setActiveBar] = useState(null);
 
@@ -3053,8 +3052,8 @@ function DnaCard({d}){
     const monthNames = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
     const rngDNA = seedRng(parseInt(d.stk.sym, 10) * 31 + k * 7);
     const h = 4 + Math.abs((rngDNA() - 0.5) * 48 * (d.sm / 100));
-    // تغير اليوم = تغير السهم الفعلي × عامل تراجع زمني (أقدم = أقل يقيناً)
-    const timeFade = 0.5 + (k / 28) * 0.5;  // 0.5 للأقدم → 1.0 لليوم الحالي
+    //   =        ( =  )
+    const timeFade = 0.5 + (k / 28) * 0.5;  // 0.5   1.0  
     const barPct = +(d.stk.pct * timeFade + (rngDNA() - 0.5) * 0.8).toFixed(2);
     const vol = Math.round(d.stk.v * (0.4 + rngDNA() * 1.2));
     const isRecent = k > 14;
@@ -3103,7 +3102,7 @@ function DnaCard({d}){
         ))}
       </div>
 
-      {/* Tooltip — full width below bars, always inside card */}
+      {/* Tooltip  full width below bars, always inside card */}
       {ab&&(
         <div style={{
           background:"linear-gradient(135deg,"+CARD3+","+CARD+")",
@@ -3160,7 +3159,7 @@ function DnaCard({d}){
   );
 }
 
-/* ─── QUANTUM CARD — expandable with full calculation breakdown ─── */
+/*  QUANTUM CARD  expandable with full calculation breakdown  */
 function QuantumCard({s}){
   const [expanded, setExpanded] = useState(false);
 
@@ -3185,7 +3184,7 @@ function QuantumCard({s}){
       border:"1px solid "+(expanded?s.sc+"40":LN),
       overflow:"hidden",transition:"border .2s",
     }}>
-      {/* Summary row — always visible */}
+      {/* Summary row  always visible */}
       <div
         onClick={()=>setExpanded(e=>!e)}
         style={{
@@ -3348,7 +3347,7 @@ function QuantumCard({s}){
   );
 }
 
-/* ─── QUANTUM PANEL ─── */
+/*  QUANTUM PANEL  */
 function QuantumPanel(){
   const [scores,setScores]=useState([]);
   const [scanning,setScan]=useState(false);
@@ -3361,60 +3360,60 @@ function QuantumPanel(){
         const bars = generateDailyBars(s, 28);
         const vol  = s.v || 1e6;
         const avg  = s.avgVol || vol;
-        const rv   = ((vol + avg) / 2) / avg;  // مُطبَّع لتخفيف شذوذ الحجم
+        const rv   = ((vol + avg) / 2) / avg;  //    
         const hi52 = s.hi || s.p * 1.25;
         const lo52 = s.lo || s.p * 0.75;
         const range52 = hi52 - lo52;
         const pfl = range52 > 0 ? (s.p - lo52) / range52 * 100 : 50;
 
-        // ─── عامل 1: الزخم (Momentum) / 20 ───
-        // RSI: 55-75 نطاق زخم صحي | >75 تشبع شراء | <40 زخم سلبي
+        //   1:  (Momentum) / 20 
+        // RSI: 55-75    | >75   | <40  
         const rsi   = calcRSI(bars, 14);
         const rsiScore = rsi > 55 && rsi < 75 ? 8
                        : rsi > 50 && rsi <= 55 ? 6
                        : rsi > 40 && rsi <= 50 ? 3
-                       : rsi >= 75 ? 2           // تشبع — خطر انعكاس
+                       : rsi >= 75 ? 2           //    
                        : 0;
 
-        // pflScore: يُمنح فقط للصاعد — الهابط لا يستحق نقاط موقع
-        // أكاديمياً: قيمة pfl لا معنى لها بدون momentum إيجابي
-        const pflScore = s.pct <= 0 ? 0                         // هابط: صفر نقاط
-                       : pfl < 30 ? 6                           // قرب القاع + صعود = فرصة
-                       : pfl < 60 ? 4                           // منتصف + صعود
-                       : 2;                                     // قرب القمة + صعود
+        // pflScore:         
+        // :  pfl     momentum 
+        const pflScore = s.pct <= 0 ? 0                         // :  
+                       : pfl < 30 ? 6                           //   +  = 
+                       : pfl < 60 ? 4                           //  + 
+                       : 2;                                     //   + 
 
-        // rv مُطبَّع: (v + avgVol)/2/avgVol يُخفف شذوذ الحجم اليومي
+        // rv : (v + avgVol)/2/avgVol    
         const rvNormMom = ((s.v + (s.avgVol || s.v)) / 2) / (s.avgVol || s.v || 1);
-        // الحجم المرتفع في الهبوط = بيع مؤسسي = عقوبة (أكاديمياً صحيح)
+        //     =   =  ( )
         const rvMomScore = rvNormMom > 2.0 && s.pct > 0 ? 6
                          : rvNormMom > 1.4 && s.pct > 0 ? 4
                          : rvNormMom > 1.0 && s.pct > 0 ? 2
-                         : rvNormMom > 2.0 && s.pct < 0 ? -2      // بيع مؤسسي = عقوبة
+                         : rvNormMom > 2.0 && s.pct < 0 ? -2      //   = 
                          : 0;
         const mf = Math.min(20, Math.max(0, rsiScore + pflScore + rvMomScore));
 
-        // ─── عامل 2: القيمة (Value) / 20 ───
-        // يعتمد على: VWAP discount + P/E نسبةً لمتوسط القطاع + P/B + عائد الأرباح
+        //   2:  (Value) / 20 
+        //  : VWAP discount + P/E    + P/B +  
         const vwapVal  = calcVWAP(bars);
         const vwapDisc = vwapVal > 0 ? (s.p - vwapVal) / vwapVal * 100 : 0;
         const vwapScore= vwapDisc < -2 ? 8 : vwapDisc < 0 ? 5 : vwapDisc < 2 ? 3 : 1;
 
-        // P/E و P/B من STOCK_FUNDAMENTALS (واقعية)
+        // P/E  P/B  STOCK_FUNDAMENTALS ()
         const fund = STOCK_FUNDAMENTALS(s.sym);
 
-        // متوسطات P/E حسب القطاع (أكاديمياً أدق من مقارنة بمتوسط السوق)
+        //  P/E   (     )
         const SECTOR_PE_AVG = {
           "البنوك": 12.5, "الطاقة": 16.0, "البتروكيماويات": 15.0,
           "الاتصالات": 14.0, "التجزئة": 20.0, "الغذاء": 22.0,
           "التأمين": 16.0, "التعدين": 18.0, "الصناعة": 17.0,
         };
         const sectorPEAvg = SECTOR_PE_AVG[s.sec] || 15.5;
-        // السهم رخيص إذا P/E أقل من متوسط قطاعه — Graham relativity
-        const peRelative = fund.pe / sectorPEAvg; // < 1 = رخيص، > 1 = غالٍ
+        //    P/E      Graham relativity
+        const peRelative = fund.pe / sectorPEAvg; // < 1 =  > 1 = 
         const peScore = peRelative < 0.75 ? 6 : peRelative < 0.90 ? 4
                       : peRelative < 1.10 ? 2 : 0;
 
-        // P/B: أقل من متوسط القطاع = قيمة جيدة
+        // P/B:     =  
         const SECTOR_PB_AVG = {
           "البنوك": 2.0, "الطاقة": 3.0, "البتروكيماويات": 2.0,
           "الاتصالات": 2.2, "التجزئة": 2.8, "الغذاء": 3.2,
@@ -3425,16 +3424,16 @@ function QuantumPanel(){
         const pbScore = pbRelative < 0.75 ? 4 : pbRelative < 0.95 ? 3
                       : pbRelative < 1.15 ? 1 : 0;
 
-        // عائد التوزيعات: أعلى = أفضل للقيمة
+        //  :  =  
         const divScore = fund.divYield > 4 ? 2 : fund.divYield > 2.5 ? 1 : 0;
         const vf = Math.min(20, vwapScore + peScore + pbScore + divScore);
 
-        // ─── عامل 3: الجودة (Quality) / 20 ───
-        // يعتمد على: ROE + ROIC proxy + CMF + OBV signal + تناسق الاتجاه
+        //   3:  (Quality) / 20 
+        //  : ROE + ROIC proxy + CMF + OBV signal +  
         const cmf       = calcCMF(bars, 20);
         const obvResult = calcOBV(bars);
 
-        // ROE مقارنةً بمتوسط القطاع (أكاديمياً أدق)
+        // ROE    ( )
         const SECTOR_ROE_AVG = {
           "البنوك": 0.155, "الطاقة": 0.180, "البتروكيماويات": 0.130,
           "الاتصالات": 0.145, "التجزئة": 0.140, "الغذاء": 0.155,
@@ -3445,47 +3444,47 @@ function QuantumPanel(){
         const roeScore     = roeRelative > 1.20 ? 7 : roeRelative > 1.05 ? 5
                            : roeRelative > 0.90 ? 3 : 1;
 
-        // ROIC proxy أكاديمي أدق:
-        // ROE / P/B ≈ Earnings Yield على حق الملكية الدفتري
-        // يُعطي فكرة عن عائد الاستثمار بدون الحاجة للميزانية الكاملة
-        // إذا ROE/PB > WACC(8%) = يخلق قيمة
+        // ROIC proxy  :
+        // ROE / P/B  Earnings Yield    
+        //         
+        //  ROE/PB > WACC(8%) =  
         const earningsYield = fund.pb > 0 ? fund.roe / fund.pb : fund.roe;
-        const WACC_SAUDI    = 0.08;  // تكلفة رأس المال المُقدَّرة للسوق السعودي
+        const WACC_SAUDI    = 0.08;  //      
         const roicBonus     = earningsYield > WACC_SAUDI ? 1 : 0;
 
-        // CMF: تدفق أموال ثابت
+        // CMF:   
         const cmfScore = cmf > 0.15 ? 5 : cmf > 0.05 ? 3 : cmf > 0 ? 1 : 0;
-        // OBV signal: توافق الحجم مع السعر
+        // OBV signal:    
         const obvScore = obvResult.signal === "تأكيد صعود"   ? 5
                        : obvResult.signal === "تباعد إيجابي" ? 3
                        : obvResult.signal === "محايد"         ? 2
                        : obvResult.signal === "تباعد سلبي"   ? 1 : 0;
-        // تناسق الاتجاه
+        //  
         const last5 = bars.slice(-5);
         const upDays = last5.filter(b => b.pct > 0).length;
         const consistScore = upDays >= 4 ? 2 : upDays === 3 ? 1 : 0;
         const qf = Math.min(20, roeScore + roicBonus + cmfScore + obvScore + consistScore);
 
-        // ─── عامل 4: التذبذب (Volatility) / 20 ───
+        //   4:  (Volatility) / 20 
         const atr    = calcATR(bars, 14);
         const atrPct = s.p > 0 ? atr / s.p * 100 : 3;
-        // ATR < 0.3% → ركود غير طبيعي → لا نُكافئه (ليس فرصة)
-        // ATR 0.3%-2.0% → نطاق صحي ← نُكافئ الأقل تذبذباً
-        const atrScore = atrPct < 0.3 ? 0          // ركود مريب — لا نقاط
+        // ATR < 0.3%        ( )
+        // ATR 0.3%-2.0%       
+        const atrScore = atrPct < 0.3 ? 0          //     
                        : atrPct < 1.0 ? 10
                        : atrPct < 1.5 ? 8
                        : atrPct < 2.0 ? 6
                        : atrPct < 3.0 ? 4 : 2;
         const rangeRatio = range52 > 0 ? (hi52 - lo52) / lo52 : 0.3;
-        // نطاق ضيق جداً (<10%) مريب أيضاً — نحدّ نقاطه
-        const rangeScoreV = rangeRatio < 0.10 ? 4   // ضيق مريب
+        //    (<10%)     
+        const rangeScoreV = rangeRatio < 0.10 ? 4   //  
                           : rangeRatio < 0.20 ? 10
                           : rangeRatio < 0.30 ? 7
                           : rangeRatio < 0.40 ? 5 : 3;
         const volf = Math.min(20, atrScore + rangeScoreV);
 
-        // ─── عامل 5: السيولة (Liquidity) / 20 ───
-        // يعتمد على: MFI + الحجم النسبي + LPI
+        //   5:  (Liquidity) / 20 
+        //  : MFI +   + LPI
         const mfi      = calcMFI(bars, 14);
         const mfiScore = mfi > 70 ? 8 : mfi > 55 ? 5 : mfi > 45 ? 3 : 0;
         const rvLiqScore = rv > 2 && s.pct > 0 ? 7
@@ -3498,7 +3497,7 @@ function QuantumPanel(){
         const lpiScore = lpi > 30 ? 5 : lpi > 10 ? 3 : lpi > -10 ? 1 : 0;
         const lf = Math.min(20, mfiScore + rvLiqScore + lpiScore);
 
-        // ─── النقاط الكلية ───
+        //    
         const qs = Math.min(100, Math.max(5, mf + vf + qf + volf + lf));
         const sig = qs >= 80 ? "إشارة شراء قوية"
                   : qs >= 65 ? "إشارة شراء"
@@ -3628,16 +3627,16 @@ function QuantumPanel(){
   );
 }
 
-/* ─── BREADTH PANEL ─── */
+/*  BREADTH PANEL  */
 function BreadthPanel(){
-  // ─── بيانات عرض السوق الفعلية ───
+  //      
   const adv = STOCKS.filter(s => s.pct > 0).length;
   const dec = STOCKS.filter(s => s.pct < 0).length;
   const unc = STOCKS.filter(s => s.pct === 0).length;
   const tot = STOCKS.length;
   const advRatio = (adv / tot * 100).toFixed(1);
 
-  // خط التقدم/التراجع = (صاعد − هابط)
+  //  / = (  )
   const adLine = adv - dec;
   const bs     = Math.round(adLine / tot * 100);
   const sig    = bs > 40  ? "سوق صاعد قوي"
@@ -3647,17 +3646,17 @@ function BreadthPanel(){
                : "سوق هابط قوي";
   const sc = bs > 15 ? G : bs < -15 ? R : GOLD;
 
-  // ─── VWAP لكل سهم — Σ(TP×Vol)/Σ(Vol) الرسمي (Wilder-corrected) ✓ ───
+  //  VWAP    (TPVol)/(Vol)  (Wilder-corrected)  
   const vwapResults = STOCKS.map(s => {
     const bars = generateDailyBars(s, 28);
-    const vwap = calcVWAP(bars);  // الصيغة الرسمية المُصحَّحة
+    const vwap = calcVWAP(bars);  //   
     const diff = vwap > 0 ? +((s.p - vwap) / vwap * 100).toFixed(2) : 0;
     return { sym: s.sym, name: s.name, aboveVwap: s.p >= vwap, diff, vwapVal: +vwap.toFixed(2) };
   });
   const aboveVwapCount = vwapResults.filter(v => v.aboveVwap).length;
   const belowVwapCount = tot - aboveVwapCount;
 
-  // ─── RSI لكل سهم ───
+  //  RSI   
   const rsiResults = STOCKS.map(s => {
     const bars = generateDailyBars(s, 28);
     return { sym: s.sym, name: s.name, rsi: calcRSI(bars, 14) };
@@ -3665,9 +3664,9 @@ function BreadthPanel(){
   const overbought = rsiResults.filter(r => r.rsi > 70).length;  // RSI > 70
   const oversold   = rsiResults.filter(r => r.rsi < 30).length;  // RSI < 30
 
-  /* ── مذبذب ماكليلان الحقيقي (McClellan Oscillator) ──
-     التعريف: EMA(19, A/D_daily) − EMA(39, A/D_daily)
-     نُحاكي سلسلة A/D يومية من HISTORICAL_DATA للحصول على EMAين كافيين
+  /*     (McClellan Oscillator) 
+     : EMA(19, A/D_daily)  EMA(39, A/D_daily)
+       A/D   HISTORICAL_DATA   EMA 
   */
   const calcEMA = (values, period) => {
     if (values.length === 0) return 0;
@@ -3679,28 +3678,28 @@ function BreadthPanel(){
     return ema;
   };
 
-  // بناء سلسلة A/D يومية محاكاة من بيانات تاسي التاريخية (52 أسبوع)
+  //   A/D       (52 )
   const rngAD = seedRng(77001);
   const adSeries = HISTORICAL_DATA.year.map((v, i) => {
     if (i === 0) return 0;
     const chg = v - HISTORICAL_DATA.year[i-1];
-    // نسبة الصاعد/الهابط بناءً على حجم تغير المؤشر
+    //  /     
     const advEst = Math.round(tot * (0.5 + chg/200 + (rngAD()-0.5)*0.15));
     const advC   = Math.max(1, Math.min(tot-1, advEst));
     return advC - (tot - advC);  // A/D daily
   });
 
-  // EMA(19) و EMA(39) على سلسلة A/D
+  // EMA(19)  EMA(39)   A/D
   const ema19 = calcEMA(adSeries, 19);
   const ema39 = calcEMA(adSeries, 39);
-  const mcl   = Math.round(ema19 - ema39);  // مذبذب ماكليلان الحقيقي
+  const mcl   = Math.round(ema19 - ema39);  //   
 
-  // ─── قمم وقيعان جديدة (52 أسبوع) ───
-  // بناءً على موقع السعر الحالي من hi52/lo52
+  //     (52 ) 
+  //       hi52/lo52
   const newHighs = STOCKS.filter(s => s.hi > 0 && s.p >= s.hi * 0.995).length;
   const newLows  = STOCKS.filter(s => s.lo > 0 && s.p <= s.lo * 1.005).length;
 
-  // ─── نسبة Hi/Lo ─── (نتجنب ∞ عند newLows=0)
+  //   Hi/Lo  (   newLows=0)
   const hlRatio = newLows === 0
     ? newHighs > 0 ? `${newHighs}:0` : "—"
     : (newHighs / newLows).toFixed(1);
@@ -3708,7 +3707,7 @@ function BreadthPanel(){
   return(
     <div style={{padding:"12px 14px"}}>
 
-      {/* إخلاء مسؤولية */}
+      {/*   */}
       <div style={{
         background:"rgba(245,158,11,.06)",borderRadius:8,padding:"6px 10px",
         marginBottom:10,border:"1px solid rgba(245,158,11,.12)",
@@ -3717,7 +3716,7 @@ function BreadthPanel(){
         ⚠ التحليل استرشادي — يعتمد على بيانات السهم المدخلة. ليس توصية استثمارية.
       </div>
 
-      {/* إشارة السوق */}
+      {/*   */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
         <div style={{display:"flex",alignItems:"center",gap:5}}>
           <div style={{width:7,height:7,borderRadius:"50%",background:sc,boxShadow:"0 0 6px "+sc}}/>
@@ -3726,7 +3725,7 @@ function BreadthPanel(){
         <span style={{fontSize:13,fontWeight:900,color:T1}}>مؤشرات عرض السوق</span>
       </div>
 
-      {/* شريط A/D */}
+      {/*  A/D */}
       <div style={{marginBottom:12}}>
         <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
           <span style={{fontSize:8.5,color:R}}>{dec} هابط</span>
@@ -3745,7 +3744,7 @@ function BreadthPanel(){
         </div>
       </div>
 
-      {/* مقاييس 6 */}
+      {/*  6 */}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:7,marginBottom:10}}>
         {[
           { l:"فوق VWAP",       v:`${aboveVwapCount}/${tot}`, c:aboveVwapCount>tot/2?G:R,
@@ -3769,7 +3768,7 @@ function BreadthPanel(){
         ))}
       </div>
 
-      {/* ماكليلان */}
+      {/*  */}
       <div style={{
         background:CARD2,borderRadius:10,padding:"10px 12px",marginBottom:10,
         border:"1px solid "+(mcl>20?G+"30":mcl<-20?R+"30":LN),
@@ -3805,7 +3804,7 @@ function BreadthPanel(){
         </div>
       </div>
 
-      {/* قادة فوق VWAP */}
+      {/*   VWAP */}
       <div style={{fontSize:9,fontWeight:700,color:T2,marginBottom:6}}>
         أعلى أسهم فوق VWAP
       </div>
