@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { useStocks } from '../store';
+import { useStockState as useStocks } from '../store';
 import { useNav }    from '../store';
 import { SECTORS }   from '../constants/stocksData';
 import { colors }    from '../theme/tokens';
