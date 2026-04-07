@@ -49,7 +49,7 @@ function sanitizeRecord(rec) {
   return safe;
 }
 
-import config from '../../constants/config';
+import config from '../constants/config';
 
 // ── Headers builder
 function headers() {
