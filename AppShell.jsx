@@ -14,7 +14,7 @@ import PWAPrompt               from './components/PWAPrompt';
 import ErrorBoundary           from './components/ErrorBoundary';
 import { getGlobalStyles }     from './theme/globalStyles';
 import { colors }              from './theme/tokens';
-import { TAB_IDS }             from './constants/navigation';
+import { TAB_IDS, TABS }        from './constants/navigation';
 
 const C = colors;
 
@@ -53,7 +53,7 @@ function Shell() {
   const liveStock = activeStock && priceCache[activeStock.sym]
     ? { ...activeStock, ...priceCache[activeStock.sym] }
     : activeStock;
-  const tabDef       = TABS_WITH_ICONS.find(t => t.id === activeTab) ?? TABS_WITH_ICONS[0];
+  const tabDef       = TABS.find(t => t.id === activeTab) ?? TABS[0];
   const ActiveScreen = SCREEN_MAP[activeTab] ?? HomeScreen;
 
   return (
