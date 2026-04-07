@@ -9,7 +9,7 @@ import { lazy, Suspense, useEffect } from 'react';
 import { RootStoreProvider }   from './store/index';
 import { useNav }              from './store';
 import { useStockState }       from './store';
-import TadawulNav, { TABS_WITH_ICONS } from './components/shared/TadawulNav';
+import TadawulNav from './components/shared/TadawulNav';
 import PWAPrompt               from './components/PWAPrompt';
 import ErrorBoundary           from './components/ErrorBoundary';
 import { getGlobalStyles }     from './theme/globalStyles';
