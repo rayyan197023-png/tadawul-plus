@@ -1,56 +1,56 @@
-'use client';
-/**
- * ANALYSIS SCREEN — لوحة التحليل الاحترافي
- * Refactored from TadawulPlus_v5_engine3_final.jsx (5925 lines)
- * Uses: radarEngine + stockAnalysisEngine + stockStore
- */
+  'use client';
+  /**
+   * ANALYSIS SCREEN — لوحة التحليل الاحترافي
+   * Refactored from TadawulPlus_v5_engine3_final.jsx (5925 lines)
+   * Uses: radarEngine + stockAnalysisEngine + stockStore
+   */
 
-import { useState, useMemo, memo } from 'react';
-import { useStockState as useStocks }  from '../store';
-import { useNav }            from '../store';
-import { calcRadarScore }    from '../engines/radarEngine';
-import { generateOHLCBars }  from '../services/api/stocksApi';
-import { colors }            from '../theme/tokens';
+  import { useState, useMemo, memo } from 'react';
+  import { useStockState as useStocks }  from '../store';
+  import { useNav }            from '../store';
+  import { calcRadarScore }    from '../engines/radarEngine';
+  import { generateOHLCBars }  from '../services/api/stocksApi';
+  import { colors }            from '../theme/tokens';
 
-const C = colors;
+  const C = colors;
 
-const TABS = [
-  { id: 'all',    label: 'الكل' },
-  { id: 'buy',    label: 'شراء'  },
-  { id: 'watch',  label: 'مراقبة'},
-  { id: 'reduce', label: 'تخفيف' },
-];
+  const TABS = [
+    { id: 'all',    label: 'الكل' },
+    { id: 'buy',    label: 'شراء'  },
+    { id: 'watch',  label: 'مراقبة'},
+    { id: 'reduce', label: 'تخفيف' },
+  ];
 
-function ScoreRing({ score, size = 56 }) {
-  const color = score >= 75 ? C.positive : score >= 55 ? C.amber : C.negative;
-  const r = (size - 8) / 2, cx = size / 2, cy = size / 2;
-  const circ = 2 * Math.PI * r;
-  const dash  = (score / 100) * circ;
-  return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ flexShrink: 0 }}>
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke={C.layer3} strokeWidth="5" />
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke={color} strokeWidth="5"
-        strokeDasharray={`${dash} ${circ - dash}`}
-        strokeDashoffset={circ / 4}
-        strokeLinecap="round" />
-      <text x={cx} y={cy + 4} textAnchor="middle" fill={color}
-        fontSize="13" fontWeight="900" fontFamily="monospace">{score}</text>
-    </svg>
-  );
-}
+  function ScoreRing({ score, size = 56 }) {
+    const color = score >= 75 ? C.positive : score >= 55 ? C.amber : C.negative;
+    const r = (size - 8) / 2, cx = size / 2, cy = size / 2;
+    const circ = 2 * Math.PI * r;
+    const dash  = (score / 100) * circ;
+    return (
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ flexShrink: 0 }}>
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke={C.layer3} strokeWidth="5" />
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke={color} strokeWidth="5"
+          strokeDasharray={`${dash} ${circ - dash}`}
+          strokeDashoffset={circ / 4}
+          strokeLinecap="round" />
+        <text x={cx} y={cy + 4} textAnchor="middle" fill={color}
+          fontSize="13" fontWeight="900" fontFamily="monospace">{score}</text>
+      </svg>
+    );
+  }
 
-// memo: prevent re-rendering all 12 cards when only tab changes
-const StockCard = memo(function StockCard({ item }) {
-  const { openStock } = useNav();
-  const { stk, radar } = item;
-  const isUp = stk.pct >= 0;
-  const score = radar.totalScore;
-  const color = score >= 75 ? C.positive : score >= 55 ? C.amber : C.negative;
+  // memo: prevent re-rendering all 12 cards when only tab changes
+  const StockCard = memo(function StockCard({ item }) {
+    const { openStock } = useNav();
+    const { stk, radar } = item;
+    const isUp = stk.pct >= 0;
+    const score = radar.totalScore;
+    const color = score >= 75 ? C.positive : score >= 55 ? C.amber : C.negative;
 
-  return (
-    <div
-      onClick={() => openStock(stk, 'analysis')}
-      style={{
+    return (
+      <div
+        onClick={() => openStock(stk, 'analysis')}
+        style={{
         background: C.layer1, borderRadius: 14, padding: '12px 14px',
         border: `1px solid ${color}22`, marginBottom: 8,
         display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer',
@@ -80,8 +80,8 @@ const StockCard = memo(function StockCard({ item }) {
         <div style={{ fontSize: 9, color: C.textTertiary, marginTop: 2 }}>{stk.sym}</div>
       </div>
     </div>
-  );
-}
+    );
+});
 
 export default function AnalysisScreen() {
   const [activeTab, setActiveTab] = useState('all');
