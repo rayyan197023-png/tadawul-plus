@@ -66,7 +66,7 @@ function Shell() {
     }}>
 
       {/* Screen content */}
-      <div style={{ flex:1, overflowY:'auto', overflowX:'hidden', WebkitOverflowScrolling:'touch', paddingBottom:80 }}>
+      <div style={{ flex:1, overflowY:'auto', overflowX:'hidden', WebkitOverflowScrolling:'touch', paddingBottom:96 }}>
         <ErrorBoundary label="الشاشة الرئيسية">
           <Suspense fallback={<Loader />}>
             <ActiveScreen />
