@@ -3834,7 +3834,8 @@ function BreadthPanel(){
    ══════════════════════════════════════════════════════ */
 
 export default function HomeScreen() {
-  const liveStocks = useSharedPrices(); // أسعار مشتركة محدَّثة
+  const liveStocks = useSharedPrices() || [];
+ // أسعار مشتركة محدَّثة
   const market = useMarketBridge();
   const idx    = market.current  || 12843.7;
   const chgP   = market.chgPts   || 0.84;
