@@ -36,14 +36,6 @@ const SECTOR_COLORS = {
   غذاء:C.mint, تقنية:C.teal, تعدين:C.gold, تأمين:C.coral
 };
 
-
-
-
-const SECTOR_COLORS = {
-  طاقة:C.amber, بنوك:C.electric, بترو:C.plasma,
-  غذاء:C.mint, تقنية:C.teal, تعدين:C.gold, تأمين:C.coral
-};
-
 function genBars(stk) {
   let seed = stk.sym.split("").reduce((a,c)=>a+c.charCodeAt(0),0)*7919;
   const rnd = () => { seed=(seed*1664525+1013904223)&0xffffffff; return (seed>>>0)/0xffffffff; };
