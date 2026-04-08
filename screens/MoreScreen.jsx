@@ -27,7 +27,7 @@ import { DividendsTab, IposTab, FundsTab, CalendarTab, MacroTab } from './more/F
 // ── تبويبات الأدوات
 import { SnapshotsTab, SettingsTab, ProfitCalc, CompareView, AlertsPanel, WatchlistTab } from './more/ToolsTabs';
 
-export default function MoreScreen({
+export default function MoreScreen() {
   const liveStocks = useSharedPrices(); // أسعار مشتركة محدَّثة snapshots: extSnaps, setSnapshots: setExtSnaps, watchlist: extWatchlist, setWatchlist: setExtWatchlist } = {}) {
 
   // ── UX hooks ──────────────────────────────────────────────────
