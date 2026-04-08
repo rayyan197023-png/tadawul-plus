@@ -719,7 +719,8 @@ function TopBar({idx,chgP,showDemoBadge}){
     {showDemoBadge && (
       <div style={{textAlign:"center",padding:"3px 0",background:"rgba(240,192,80,.08)",borderBottom:"1px solid rgba(240,192,80,.15)"}}>
         <span style={{fontSize:9,color:GOLD,letterSpacing:"1px",fontFamily:"monospace"}}>
-          ⚠ DEMO — بيانات محاكاة · ليست أسعاراً حقيقية
+          ⚠ DEMO -- بيانات محاكاة · ليست أسعاراً حقيقية
+   
         </span>
       </div>
     )}
