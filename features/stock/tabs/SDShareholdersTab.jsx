@@ -3,7 +3,7 @@
  * @module features/stock/tabs/SDShareholdersTab
  * @description تبويب المساهمون والملكية
  */
-import { useEffect, useMemo, useState } from 'react'';
+import { useEffect, useMemo, useState } from 'react';
 import { C, SkeletonCard, SectionCard, Tag } from './StockDetailShared';
 import { InfoTooltip } from './SDFundamentalTab';
 
