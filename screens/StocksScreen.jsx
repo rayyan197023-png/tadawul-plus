@@ -1,4 +1,3 @@
-
 'use client';
 /**
  * STOCKS SCREEN — قائمة الأسهم السعودية
