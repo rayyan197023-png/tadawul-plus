@@ -715,7 +715,7 @@ function TopBar({idx,chgP,showDemoBadge}){
           background:GOLD,borderRadius:"50%",border:"1.5px solid "+BG,
         }}/>
       </div>
-    </div
+        </div>
   );
 }
 
