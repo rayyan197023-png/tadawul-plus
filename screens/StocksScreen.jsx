@@ -1,4 +1,3 @@
-
 'use client';
 /**
  * STOCKS SCREEN — قائمة الأسهم السعودية
@@ -9,7 +8,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useHaptic }          from '../hooks/useHaptic';
 import { usePullToRefresh }   from '../hooks/usePullToRefresh';
-import { useSharedPrices } from '../store';
+import { useSharedPrices, useNav } from '../store';
 import { STOCKS, SECTORS } from '../constants/stocksData';
 
 
