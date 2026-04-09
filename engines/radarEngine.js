@@ -24,7 +24,7 @@ import {
 /**
  * Calculate order blocks (institutional buy zones)
  */
-function calcOrderBlocks(bars, atr) {
+export function calcOrderBlocks(bars, atr) {
   const obs = [], cur = bars[bars.length - 1].c, n = bars.length;
   const recentVol = bars.length >= 20 ? bars.slice(-20).reduce((s, b) => s + Math.abs(b.pct ?? 0), 0) / 20 : 1.5;
   const atrMult   = Math.max(1.2, Math.min(2.0, 1.5 * recentVol / 1.5));
