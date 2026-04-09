@@ -19,7 +19,7 @@
 
 import { STOCKS } from '../constants/stocksData';
 import { calcRSI, calcATR, calcVWAP, calcCMF, calcOBV, calcMACD, calcMarketStructure } from './technicalEngine';
-import { calcOrderBlocks, calcOrderBlocksFull, calcLiqSweepFull, calcMarketStructureFull } from './radarEngine';
+
 
 // ── Color tokens used in analysis output (signals, labels)
 const C = {
