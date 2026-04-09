@@ -18,7 +18,7 @@
  */
 
 import { STOCKS } from '../constants/stocksData';
-import { calcRSI, calcATR } from './technicalEngine';
+import { calcRSI, calcATR, calcVWAP, calcCMF, calcOBV, calcMACD, calcMarketStructure } from './technicalEngine';
 
 
 // ── Color tokens used in analysis output (signals, labels)
