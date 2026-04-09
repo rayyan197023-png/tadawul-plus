@@ -14,6 +14,7 @@
  */
 // STOCKS imported from single source of truth
 import { STOCKS, STOCKS_MAP } from '../constants/stocksData';
+import { calcOrderBlocks } from '../engines/radarEngine';
 
 /**
  * tadawulAnalysisEngine.js
