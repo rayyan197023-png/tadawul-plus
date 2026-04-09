@@ -14,7 +14,7 @@
  */
 // STOCKS imported from single source of truth
 import { STOCKS, STOCKS_MAP } from '../constants/stocksData';
-import { calcRSI, calcATR, calcVWAP, calcIVWAP, calcCMF, calcOBV, calcMACD, calcMarketStructure } from '../engines/technicalEngine';
+import { calcRSI, calcATR, calcVWAP, calcCMF, calcOBV, calcMACD, calcMarketStructure } from '../engines/technicalEngine';
 import { calcOrderBlocks, calcLiqSweep } from '../engines/radarEngine';
 
 // stub: calcMacroScore
