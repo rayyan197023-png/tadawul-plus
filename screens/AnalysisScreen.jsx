@@ -33,7 +33,7 @@ import {
   C,
 } from '../components/analysis/AnalysisHelpers';
 
-export default function AnalysisScreen(){
+export default function AnalysisScreen({ commData: extCommData } = {}) {
   const liveStocks = useSharedPrices(); // أسعار مشتركة محدَّثة
   
   // ── تحديث MACRO من الأسعار الحية (commData من AppShell) ──────────
