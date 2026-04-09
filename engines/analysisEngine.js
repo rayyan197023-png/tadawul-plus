@@ -18,7 +18,7 @@
  */
 
 import { STOCKS } from '../constants/stocksData';
-import { calcRSI, calcATR, calcVWAP, calcIVWAP, calcCMF, calcOBV, calcMACD, calcMarketStructure } from './technicalEngine';
+import { calcRSI, calcATR, calcVWAP, calcCMF, calcOBV, calcMACD, calcMarketStructure } from './technicalEngine';
 import { calcOrderBlocks, calcLiqSweep } from './radarEngine';
 
 // stub: calcMacroScore
