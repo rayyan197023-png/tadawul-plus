@@ -17,7 +17,7 @@ import { useHaptic }          from '../hooks/useHaptic';
 import { usePullToRefresh }   from '../hooks/usePullToRefresh';
 import config from '../constants/config';
 import { useMarketBridge } from '../hooks/useMarketBridge';
-import { calcRSI, calcATR, calcSMA, calcEMA } from '../engines/technicalEngine';
+import { calcRSI, calcATR, calcEMA } from '../engines/technicalEngine';
 
 
 /* ─── Design tokens from screenshots ─── */
