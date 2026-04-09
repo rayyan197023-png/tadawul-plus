@@ -606,7 +606,7 @@ export default function PortfolioScreen() {
         p.curWeightPct?p.curWeightPct.toFixed(1):'',
       ]);
     });
-    var csv = rows.map(function(r){ return r.join(','); }).join('
+    var csv = rows.map(function(r){ return r.join(','); }).join('\n');
 ');
     var blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
     var url = URL.createObjectURL(blob);
