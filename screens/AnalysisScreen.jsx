@@ -35,7 +35,7 @@ import {
 
 export default function AnalysisScreen(){
   const liveStocks = useSharedPrices(); // أسعار مشتركة محدَّثة
-
+  
   // ── تحديث MACRO من الأسعار الحية (commData من AppShell) ──────────
   // هذا يجعل محرك 9 الطبقات يعمل بأسعار نفط/ذهب/دولار حقيقية
   const liveMACRO = React.useMemo(function() {
