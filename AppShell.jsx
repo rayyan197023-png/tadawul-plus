@@ -159,7 +159,7 @@ function Shell() {
   useLiveStockPrices();
   // Demo simulation — starts GBM price simulation for ALL screens
   // useSharedPrices() dispatches UPDATE_PRICES every 3s → shared priceCache
-  // useSharedPrices();
+  useSharedPrices();
 
   // ── استقبال لقطات الشارت وتمريرها لـ MoreScreen ──────────────────
   React.useEffect(() => {
