@@ -41,9 +41,8 @@ const SCREEN_MAP = {
 
 function Loader() {
   return (
-    <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', background:C.bg }}>
-      <div style={{ width:36, height:36, borderRadius:'50%', border:`3px solid ${C.layer3}`, borderTopColor:C.gold, animation:'shellSpin .8s linear infinite' }} />
-      <style>{`@keyframes shellSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+    <div style={{background:'red',color:'white',fontSize:30,padding:40}}>
+      جاري التحميل...
     </div>
   );
 }
