@@ -337,5 +337,5 @@ function TagFilter(props) {
 
 // ── MAIN COMPONENT ────────────────────────────────────────────
 
-export { WATCHLIST_DEFAULT, CSS_STR, TADAWUL, WTI, DIVS, C, Ico, ArcRing, SentimentGauge, MiniLine, SparkLine, Stars, SectionHeader, TagFilter,
+export { WATCHLIST_DEFAULT, CSS_STR, TADAWUL, WTI, C, Ico, ArcRing, SentimentGauge, MiniLine, SparkLine, Stars, SectionHeader, TagFilter,
          COMM, DIVS, IPOS, FUNDS, RANKINGS, EVENTS, PRIORITY_ORDER };
