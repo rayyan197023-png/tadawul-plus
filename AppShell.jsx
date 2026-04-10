@@ -17,10 +17,10 @@ import { useLiveStockPrices }  from './hooks/useLiveStockPrices';
 import { useHaptic }          from './hooks/useHaptic';
 import ChartScreen             from './features/chart/ChartScreen';
 import { colors }              from './theme/tokens';
-import HomeScreenDirect from './screens/HomeScreen';
 
 const C = colors;
 
+[TAB_IDS.HOME]: HomeScreen,
 const StocksScreen    = lazy(() => import('./screens/StocksScreen'));
 const AnalysisScreen  = lazy(() => import('./screens/AnalysisScreen'));
 const PortfolioScreen = lazy(() => import('./screens/PortfolioScreen'));
