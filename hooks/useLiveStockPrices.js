@@ -12,7 +12,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import config         from '../constants/config';
 import { fetchAllStocks } from '../services/api/stocksApi';
-import { useStockState }  from '../store';
+import { useStocks }  from '../store';
 
 export function useLiveStockPrices() {
   const { dispatch } = useStocks();
