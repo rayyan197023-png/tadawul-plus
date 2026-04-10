@@ -21,7 +21,6 @@ import HomeScreenDirect from './screens/HomeScreen';
 
 const C = colors;
 
-const HomeScreen      = lazy(() => import('./screens/HomeScreen'));
 const StocksScreen    = lazy(() => import('./screens/StocksScreen'));
 const AnalysisScreen  = lazy(() => import('./screens/AnalysisScreen'));
 const PortfolioScreen = lazy(() => import('./screens/PortfolioScreen'));
