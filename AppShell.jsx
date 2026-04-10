@@ -206,7 +206,6 @@ function Shell() {
     const tabDef       = TABS.find(t => t.id === activeTab) ?? TABS[0];
   const ActiveScreen = SCREEN_MAP[activeTab] ?? HomeScreen;
 
-  if (!tabDef) return <div style={{color:'red',padding:20}}>tabDef missing: {activeTab}</div>;
 
   return (
     <div style={{
