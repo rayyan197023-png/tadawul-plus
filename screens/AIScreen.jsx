@@ -5,7 +5,7 @@
  * مطابق 100٪ للملف الأصلي
  */
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react"; 
 import { STOCKS } from '../constants/stocksData';
 
 // SVG Icons
