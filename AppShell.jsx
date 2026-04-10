@@ -20,7 +20,7 @@ import { colors }              from './theme/tokens';
 
 const C = colors;
 
-[TAB_IDS.HOME]: HomeScreen,
+const HomeScreen = lazy(() => import('./screens/HomeScreen'));
 const StocksScreen    = lazy(() => import('./screens/StocksScreen'));
 const AnalysisScreen  = lazy(() => import('./screens/AnalysisScreen'));
 const PortfolioScreen = lazy(() => import('./screens/PortfolioScreen'));
