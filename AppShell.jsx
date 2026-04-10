@@ -203,8 +203,10 @@ function Shell() {
   const liveStock = activeStock && priceCache[activeStock.sym]
     ? { ...activeStock, ...priceCache[activeStock.sym] }
     : activeStock;
-  const tabDef       = TABS.find(t => t.id === activeTab) ?? TABS[0];
+    const tabDef       = TABS.find(t => t.id === activeTab) ?? TABS[0];
   const ActiveScreen = SCREEN_MAP[activeTab] ?? HomeScreen;
+
+  if (!tabDef) return <div style={{color:'red',padding:20}}>tabDef missing: {activeTab}</div>;
 
   return (
     <div style={{
