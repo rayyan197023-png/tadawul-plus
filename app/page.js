@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 
-const AppShell = dynamic(() => import('../src/AppShell'), { 
+const AppShell = dynamic(() => import('./AppShell'), {
   ssr: false,
   loading: () => <div style={{color:'white',padding:20,fontFamily:'Cairo',direction:'rtl'}}>جاري التحميل...</div>
 });
