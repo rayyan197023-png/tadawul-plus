@@ -1714,22 +1714,20 @@ export default function AIScreen({ aiAnalysis, onClearAnalysis, commData }) {
               <span style={{ fontSize:10, color:C.smoke, lineHeight:1.6 }}><IconWarn size={11} color={C.smoke} style={{marginLeft:4}} /> للأغراض التعليمية فقط · ليس نصيحة استثمارية · راجع مستشاراً مالياً مرخصاً من هيئة CMA</span>
             </div>
           </div>
-        )}
+                )}
 
       </div>
     </div>
   );
-}
   // ── استقبال تحليل الشارت من AppShell ──────────────────────────
   useEffect(function() {
     if (!aiAnalysis) return;
     setChartData(aiAnalysis);
     setShowChartAI(true);
-    // auto-select stock if matches
     const found = STOCKS.find(s => s.sym === aiAnalysis.sym);
     if (found) setStock(found);
-    // auto-select analysis types
     setType('comprehensive');
   }, [aiAnalysis]);
+}
 
 
