@@ -25,6 +25,7 @@ export default class ErrorBoundary extends Component {
   if (typeof window !== 'undefined') alert('خطأ: ' + error.message + '\n' + (error.stack || ''));
     // Log to console in dev, could send to Sentry in prod
     console.error('[ErrorBoundary] Caught:', error.message, info.componentStack);
+    alert('خطأ: ' + error.message);
   }
 
   render() {
