@@ -19,7 +19,6 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useHaptic } from '../hooks/useHaptic';
-import { useHaptic } from '../hooks/useHaptic';
 import { genBars, stockHealth } from '../engines/analysisEngine';
 import { STOCKS } from '../constants/stocksData';
 import { useNav } from '../store';
