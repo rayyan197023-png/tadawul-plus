@@ -16,7 +16,7 @@ import { useHaptic } from '../hooks/useHaptic';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
 
 // ── Shared constants + UI
-import { C, Ico, COMM, PRIORITY_ORDER, WATCHLIST_DEFAULT, RANKINGS } from './more/MoreShared';
+import { C, Ico, COMM, PRIORITY_ORDER, WATCHLIST_DEFAULT, RANKINGS, FUNDS, IPOS, EVENTS, DIVS } from './more/MoreShared';
 
 // ── تبويبات السوق
 import { RankingsTab, CommoditiesTab } from './more/MarketTabs';
