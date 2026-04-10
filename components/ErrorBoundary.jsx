@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * ErrorBoundary — Catches React rendering errors
+ * ErrorBoundary -- Catches React rendering errors
  * Prevents one broken component from crashing the whole app.
  * Shows a graceful fallback with retry option.
  */
@@ -22,10 +22,10 @@ export default class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, info) {
-  if (typeof window !== 'undefined') alert('خطأ: ' + error.message + '\n' + (error.stack || ''));
-    // Log to console in dev, could send to Sentry in prod
     console.error('[ErrorBoundary] Caught:', error.message, info.componentStack);
-    alert('خطأ: ' + error.message);
+    if (typeof window !== 'undefined') {
+      window.__LAST_ERROR__ = error.message + ' | ' + (info.componentStack||'').slice(0,200);
+    }
   }
 
   render() {
@@ -48,7 +48,7 @@ export default class ErrorBoundary extends Component {
           تعذّر تحميل {label}
         </div>
         <div style={{ fontSize: 11, color: C.textSecondary, marginBottom: 16, lineHeight: 1.6 }}>
-          {this.state.error?.message ?? 'خطأ غير متوقع'}
+          {this.state.error?.message ?? 'خطأ غير متوقع'} {typeof window !== 'undefined' && window.__LAST_ERROR__}
         </div>
         <button
           onClick={() => this.setState({ hasError: false, error: null })}
