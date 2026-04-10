@@ -165,7 +165,7 @@ export default function MoreScreen({
         var np=parseFloat((s.p+d2).toFixed(2));
         var orig=STOCKS.filter(function(x){return x.sym===s.sym;})[0];
         var npct=parseFloat(((np-(orig?orig.p:np))/(orig?orig.p:np)*100).toFixed(2));
-        return Object.assign({},s,{p:np,pct:npct,spark:s.spark.slice(-9).concat([np])});
+        return Object.assign({},s,{p:np,pct:npct,spark:(s.spark||[]).slice(-9).concat([np])});
       });});
     },5000);
     return function(){clearInterval(t);};
