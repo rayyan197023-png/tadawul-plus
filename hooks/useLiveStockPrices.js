@@ -15,7 +15,7 @@ import { fetchAllStocks } from '../services/api/stocksApi';
 import { useStockState }  from '../store';
 
 export function useLiveStockPrices() {
-  const { dispatch } = useStockState();
+  const { dispatch } = useStocks();
   const pollRef = useRef(null);
   const abortRef = useRef(null);
 
