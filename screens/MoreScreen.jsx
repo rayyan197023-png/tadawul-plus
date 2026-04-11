@@ -470,7 +470,7 @@ export default function MoreScreen({
                   display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:10,
                   cursor:"pointer",
                   boxShadow:"0 8px 24px rgba(0,0,0,.35), 0 0 0 1px "+item.color+"18, inset 0 1px 0 "+C.layer3,
-                  position:"relative",overflow:"hidden",
+                  position:"relative",overflowX:"hidden",
                   transition:"all .3s cubic-bezier(.4,0,.2,1)",
                 }}>
                 <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse 80% 80% at 50% 30%,"+item.color+"12,transparent)"}}/>
