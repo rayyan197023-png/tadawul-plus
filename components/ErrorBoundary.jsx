@@ -22,9 +22,9 @@ export default class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, info) {
-    console.error('[ErrorBoundary] Caught:', error.message, info.componentStack);
     if (typeof window !== 'undefined') {
       window.__LAST_ERROR__ = error.message + ' | ' + (info.componentStack||'').slice(0,200);
+      document.title = error.message;
     }
   }
 
