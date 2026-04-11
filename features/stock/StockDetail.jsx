@@ -1,6 +1,11 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNav } from '../../store';
+import { SDOverview }         from './tabs/SDOverviewTab';
+import { TechLoader }         from './tabs/SDTechnicalTab';
+import { SDFundamental }      from './tabs/SDFundamentalTab';
+import { ShareholdersLoader } from './tabs/SDShareholdersTab';
+import { SDApiEngines }       from './tabs/SDApiEnginesTab';
 
 'use client';
 /**
