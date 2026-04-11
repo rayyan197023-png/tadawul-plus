@@ -261,8 +261,7 @@ function NavTab({ tab, isActive, onPress, tabRef }) {
 }
 
 export default function TadawulNav() {
-  const [active, setActive] = useState("home");
-  const { setTab } = useNav();
+const { activeTab: active, setTab } = useNav();
   const haptic = useHaptic();
   const [indicatorX,      setIndicatorX]      = useState(null);
   const [indicatorReady,  setIndicatorReady]  = useState(false);
