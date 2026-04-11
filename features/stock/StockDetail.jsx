@@ -309,7 +309,7 @@ export const FIN_SCORES = {
   default:{ altmanZ:2.4, piotroski:5, beneish:-1.8, cashScore:65, profitScore:70, growthScore:60, debtScore:68, overallLabel:"جيد", overallColor:"amber" },
 };
 
-const TECH_DATA = {
+export const TECH_DATA = {
   "2222":{ m5:"شراء قوي",m15:"شراء",m30:"شراء قوي",h1:"شراء",h5:"شراء",d1:"شراء قوي",w1:"شراء",mo1:"شراء",priceScore:72,maBuy:4,maSell:2,indBuy:3,indSell:2 },
   default:{ m5:"متعادل",m15:"مراقبة",m30:"شراء",h1:"شراء",h5:"متعادل",d1:"شراء",w1:"شراء",mo1:"متعادل",priceScore:55,maBuy:2,maSell:4,indBuy:2,indSell:4 },
 };
