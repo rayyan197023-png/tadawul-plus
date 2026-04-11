@@ -304,7 +304,7 @@ const PEERS = {
   ],
 };
 
-const FIN_SCORES = {
+export const FIN_SCORES = {
   "2222":{ altmanZ:3.8, piotroski:7, beneish:-2.7, cashScore:88, profitScore:91, growthScore:72, debtScore:82, overallLabel:"ممتاز", overallColor:"mint" },
   default:{ altmanZ:2.4, piotroski:5, beneish:-1.8, cashScore:65, profitScore:70, growthScore:60, debtScore:68, overallLabel:"جيد", overallColor:"amber" },
 };
