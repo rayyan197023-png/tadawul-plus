@@ -189,7 +189,7 @@ export default function AnalysisScreen({ commData: extCommData } = {}) {
       fontFamily:"Cairo,system-ui,sans-serif",
       direction:"rtl",
       color: LC.snow,
-      position:"relative", overflow:"hidden",
+      position:"relative",
       transition:"background .4s ease, color .4s ease",
       zoom: "1",
     }}
