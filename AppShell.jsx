@@ -115,6 +115,8 @@ React.useEffect(() => {
       direction: 'rtl',
       paddingTop: 'env(safe-area-inset-top)',
     }}>
+    <div style={{position:'fixed',top:0,left:0,zIndex:999,background:'red',color:'white',fontSize:12,padding:4}}>{activeTab}</div>
+{lastErr && <div style={{position:'fixed',top:20,left:0,right:0,zIndex:999,background:'orange',color:'black',fontSize:10,padding:4,wordBreak:'break-all'}}>{lastErr}</div>}
 
       {/* منطقة المحتوى — قابلة للسحب */}
       <div style={{
