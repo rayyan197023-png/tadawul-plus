@@ -111,7 +111,7 @@ function Shell() {
     }}>
       <div style={{ flex:1, overflowY:'auto', overflowX:'hidden', WebkitOverflowScrolling:'touch', paddingBottom:80 }}>
         <ErrorBoundary label="الشاشة الرئيسية">
-          <Suspense fallback={<Loader />}>
+          <Suspense key={activeTab} fallback={<Loader />}>
             {activeTab === TAB_IDS.MORE
               ? <ActiveScreen snapshots={snapshots} setSnapshots={setSnapshots} watchlist={watchlist} setWatchlist={setWatchlist} commData={commData} setCommData={setCommData} />
               : activeTab === TAB_IDS.AI
