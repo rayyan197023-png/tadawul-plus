@@ -311,7 +311,6 @@ const { activeTab: active, setTab } = useNav();
 
   const handlePress = useCallback((id) => {
     haptic.tap();
-    setActive(id);
     setTab(id);
   }, [setTab, haptic]);
 
