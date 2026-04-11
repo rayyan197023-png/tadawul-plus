@@ -1340,8 +1340,7 @@ export default function AnalysisScreen({ commData: extCommData } = {}) {
                                     background: g.pass ? "rgba(16,201,126,.07)" : "rgba(240,79,90,.07)",
                                     border:"1px solid " + (g.pass ? C.mint+"30" : C.coral+"30"),
                                     borderRadius:10,padding:"8px 8px 6px",
-                                    position:"relative",overflowX:"hidden"
-,
+                                    position:"relative",overflowX:"hidden",
                                     textAlign:"center",
                                   }}>
                                     {/* أيقونة + حالة */}
