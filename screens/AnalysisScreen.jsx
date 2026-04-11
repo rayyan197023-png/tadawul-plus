@@ -1198,7 +1198,7 @@ export default function AnalysisScreen({ commData: extCommData } = {}) {
                               textAlign:"center",
                               display:"flex",flexDirection:"column",
                               alignItems:"center",justifyContent:"center",gap:2,
-                              position:"relative",overflow:"hidden",
+                              position:"relative",
                             }}>
                               {/* شريط التقدم مبني على الحجم */}
                               <div style={{
