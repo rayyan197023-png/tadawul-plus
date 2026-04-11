@@ -1256,7 +1256,7 @@ export default function AIScreen({ aiAnalysis, onClearAnalysis, commData }) {
         padding:"14px 16px 12px",
         background:`linear-gradient(160deg,${C.layer2} 0%,${C.layer1} 40%,${C.deep} 100%)`,
         borderBottom:`1px solid ${C.line}`,
-        position:"relative", overflow:"hidden",
+        position:"relative", overflowX:"hidden",
       }}>
         <div style={{ position:"absolute", top:-40, right:-40, width:140, height:140, borderRadius:"50%", background:`radial-gradient(circle,${C.gold}15 0%,transparent 70%)`, pointerEvents:"none" }} />
         <div style={{ position:"absolute", bottom:0, left:0, right:0, height:1, background:`linear-gradient(90deg,transparent,${C.gold}50,${C.electric}50,transparent)`, pointerEvents:"none" }} />
