@@ -47,6 +47,7 @@ function Loader() {
 
 function Shell() {
   const { activeTab, isStockOpen, activeStock, closeStock } = useNav();
+  console.log('activeTab:', activeTab);
   const haptic = useHaptic();
   const { priceCache } = useStockState();
 
