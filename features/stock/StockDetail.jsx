@@ -287,7 +287,7 @@ const ANALYST_BANKS = {
   ],
 };
 
-const PEERS = {
+export const PEERS = {
   //
   "2222":[
     { sym:"2222", name:"أرامكو",          pe:14.2, pb:2.4, roe:22.4, divYld:3.52, grossM:51.2, opM:28.4, mc:"7.17T", p:27.80, pct:2.28,  isCurrent:true  },
