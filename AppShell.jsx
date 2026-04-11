@@ -110,6 +110,9 @@ function Shell() {
       direction: 'rtl',
       paddingTop: 'env(safe-area-inset-top)',
     }}>
+    <div style={{position:'fixed',top:0,left:0,zIndex:999,background:'red',color:'white',fontSize:12,padding:4}}>
+        {activeTab}
+      </div>
       <div style={{ flex:1, overflowY:'auto', overflowX:'hidden', WebkitOverflowScrolling:'touch', paddingBottom:80 }}>
         <ErrorBoundary label="الشاشة الرئيسية">
           <Suspense key={activeTab} fallback={<Loader />}>
