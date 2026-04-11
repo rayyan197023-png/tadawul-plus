@@ -157,7 +157,7 @@ const INSIDER_TX = {
   default:[],
 };
 
-const FINANCIALS_FULL = {
+export const FINANCIALS_FULL = {
   "2222": {
     income: {
       quarterly:[
