@@ -456,6 +456,7 @@ const useSahmkData = (baseStkData) => {
 
 
 const DTABS = ["نظرة-عامة", "تقني", "أساسي", "مساهمون", "محركات"];
+const DLABELS = ["نظرة عامة", "تقني", "أساسي", "مساهمون", "محركات"];
 export default function StockDetail({ stk: stkProp, wl=[], toggleStar, onClose, onExpand,
   apiConfig = null
 }) {
