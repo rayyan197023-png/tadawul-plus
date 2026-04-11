@@ -105,7 +105,7 @@ function Shell() {
       minHeight: '100dvh', maxWidth: 480, margin: '0 auto',
       background: `radial-gradient(ellipse 120% 80% at 50% 100%,${tabDef.glowBg} 0%,${C.bg} 55%)`,
       display: 'flex', flexDirection: 'column',
-      position: 'relative', overflow: 'hidden',
+      position: 'relative',
       fontFamily: "'Cairo','Segoe UI',sans-serif",
       direction: 'rtl',
       paddingTop: 'env(safe-area-inset-top)',
