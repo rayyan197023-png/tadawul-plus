@@ -229,7 +229,7 @@ export const EARNINGS_DATA = {
   ],
 };
 
-const DIVIDENDS_DETAIL = {
+export const DIVIDENDS_DETAIL = {
   "2222":[
     { date:"2024/12/15", exDate:"2024/12/01", div:0.50, yld:1.80, type:"خاص", growth:0 },
     { date:"2024/09/15", exDate:"2024/09/01", div:0.12, yld:0.43, type:"ربعي", growth:0 },
