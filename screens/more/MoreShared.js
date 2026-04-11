@@ -228,7 +228,7 @@ function MiniLine(props) {
   );
 }
 
-const MACRO = [
+export const MACRO = [
   {id:"gdp",     label:"نمو الناتج المحلي",    val:2.6,  prev:3.1,  unit:"%",          period:"Q4 2025", color:"#4d9fff", cat:"نمو",   desc:"أقل من التوقعات",   trend:[3.8,3.1,2.9,3.1,2.6]},
   {id:"cpi",     label:"التضخم",                val:1.9,  prev:2.1,  unit:"%",          period:"فبراير",  color:"#ff5555", cat:"أسعار", desc:"ضمن النطاق المستهدف",trend:[2.8,2.5,2.3,2.1,1.9]},
   {id:"rate",    label:"سعر الفائدة",           val:5.25, prev:5.25, unit:"%",          period:"مارس",    color:"#f0c050", cat:"نقدي",  desc:"ثابت منذ 6 أشهر",   trend:[4.5,5.0,5.25,5.25,5.25]},
