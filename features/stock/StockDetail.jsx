@@ -211,7 +211,7 @@ const FINANCIALS_FULL = {
   },
 };
 
-const EARNINGS_DATA = {
+export const EARNINGS_DATA = {
   "2222":[
     { date:"2025/03/12", period:"Q4 2025", eps:null,  epsEst:0.54, rev:null,  revEst:445, surprise:null,  future:true  },
     { date:"2024/11/10", period:"Q3 2024", eps:0.49,  epsEst:0.47, rev:429,   revEst:420, surprise:4.3,   future:false },
