@@ -542,7 +542,7 @@ export default function NewsScreen() {
 
   return (
     <div style={{ maxWidth:430, marginInline:"auto", background:C.ink, minHeight:"100vh",
-      fontFamily:"Cairo,system-ui,sans-serif", direction:"rtl", color:C.snow }}>
+      fontFamily:"Cairo,system-ui,sans-serif", direction:"rtl", color:C.snow, overflowX:"hidden" }}>
 
       <div style={{ paddingBlockStart:"48px", paddingInline:"20px", paddingBlockEnd:0,
         backdropFilter:"blur(20px)", WebkitBackdropFilter:"blur(20px)",
