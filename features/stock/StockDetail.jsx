@@ -263,7 +263,7 @@ const DISCLOSURES = {
   ],
 };
 
-const ANALYST_BANKS = {
+export const ANALYST_BANKS = {
   "2222":[
     //
     { bank:"JPMorgan",          rating:"شراء",    target:32.0, prev:31.0, date:"2025/02/18", upside:15.1 },
