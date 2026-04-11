@@ -47,6 +47,13 @@ function Loader() {
 
 function Shell() {
   const { activeTab, isStockOpen, activeStock, closeStock } = useNav();
+  const [lastErr, setLastErr] = React.useState('');
+React.useEffect(() => {
+  const t = setInterval(() => {
+    if (window.__LAST_ERROR__) setLastErr(window.__LAST_ERROR__);
+  }, 500);
+  return () => clearInterval(t);
+}, []);
   const haptic = useHaptic();
   const { priceCache } = useStockState();
 
