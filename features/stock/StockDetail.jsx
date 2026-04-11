@@ -1,31 +1,6 @@
 'use client';
-/**
- * @module features/stock/StockDetail
- * @description صفحة تفاصيل السهم — بعد إعادة الهيكلة
- *
- * هذا الملف يحتوي على:
- * - الثوابت المشتركة (C palette, DEMO_STK, Skeleton, etc.)
- * - useSahmkData hook (جلب بيانات السهم الحية)
- * - StockDetail component (المكوّن الرئيسي)
- *
- * تبويبات السهم مستخرجة إلى:
- * - tabs/SDOverviewTab.jsx    → نظرة عامة + شارت + درجات
- * - tabs/SDTechnicalTab.jsx   → التحليل التقني
- * - tabs/SDFundamentalTab.jsx → التحليل الأساسي
- * - tabs/SDShareholdersTab.jsx → المساهمون
- * - tabs/SDSubComponents.jsx  → دفتر الأوامر + صفقات + أخبار
- * - tabs/SDApiEnginesTab.jsx  → محركات التحليل
- */
-
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNav } from '../../store';
-
-// ── تبويبات السهم (مستخرجة)
-import { SDOverview }        from './tabs/SDOverviewTab';
-import { TechLoader }        from './tabs/SDTechnicalTab';
-import { SDFundamental }     from './tabs/SDFundamentalTab';
-import { ShareholdersLoader } from './tabs/SDShareholdersTab';
-import { SDApiEngines }      from './tabs/SDApiEnginesTab';
 
 'use client';
 /**
