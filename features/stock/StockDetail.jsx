@@ -148,7 +148,7 @@ export const SHAREHOLDERS = {
   default:[{ n:"مساهمون متنوعون", pct:100, ch:0, type:"متنوع", since:"—" }],
 };
 
-const INSIDER_TX = {
+export const INSIDER_TX = {
   "2222": [
     { name:"أمين الناصر (CEO)",      action:"شراء",  shares:500000,  price:26.40, date:"2024/03/15", value:"13.2M" },
     { name:"Nassir Al-Mahasher",    action:"شراء",  shares:250000,  price:25.80, date:"2024/01/10", value:"6.45M" },
