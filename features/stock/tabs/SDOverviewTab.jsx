@@ -13,6 +13,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { InfoTooltip } from './SDFundamentalTab';
 import { C, Skeleton, SkeletonCard, EmptyState, SectionCard, Row, Tag } from './StockDetailShared';
+import { FIN_SCORES, PEERS, PROS_CONS, TECH_DATA, ANALYST_BANKS, EARNINGS_DATA, DIVIDENDS_DETAIL, DISCLOSURES, FINANCIALS_FULL, SHAREHOLDERS, INSIDER_TX } from '../StockDetail';
 
 function ChartLoader({ sym, base, per, chartType, stk, onExpand }) {
   const [show, setShow] = useState(false);
