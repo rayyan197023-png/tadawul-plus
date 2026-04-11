@@ -137,7 +137,7 @@ const DEMO_STK = {
   })(),
 };
 
-const SHAREHOLDERS = {
+export const SHAREHOLDERS = {
   "2222": [
     { n:"حكومة المملكة العربية السعودية", pct:90.19, ch:0,     type:"حكومي",   since:"2019" },
     { n:"السوق العام (أسهم حرة)",          pct:6.81,  ch:-0.12, type:"أسواق",   since:"2019" },
