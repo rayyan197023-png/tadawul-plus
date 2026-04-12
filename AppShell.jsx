@@ -120,7 +120,7 @@ bottom: 0,
 overflowY: 'scroll',
 overflowX: 'hidden',
 WebkitOverflowScrolling: 'touch',
-paddingBottom: 140,
+paddingBottom: 100,
       }}>
         <ErrorBoundary label="الشاشة الرئيسية">
           <Suspense key={activeTab} fallback={<Loader />}>
