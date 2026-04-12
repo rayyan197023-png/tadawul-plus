@@ -189,6 +189,13 @@ function Shell() {
 
 export default function AppShell() {
   useEffect(() => {
+  import('./screens/StocksScreen');
+  import('./screens/AnalysisScreen');
+  import('./screens/PortfolioScreen');
+  import('./screens/NewsScreen');
+  import('./screens/AIScreen');
+  import('./screens/MoreScreen');
+}, []);
     const id = 'tadawul-global';
     if (document.getElementById(id)) return;
     const el = document.createElement('style');
