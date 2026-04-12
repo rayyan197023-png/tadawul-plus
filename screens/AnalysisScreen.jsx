@@ -735,7 +735,7 @@ export default function AnalysisScreen({ commData: extCommData } = {}) {
               <div style={{display:"flex",alignItems:"flex-end",gap:2,position:"relative",height:72}}>
                 {[...allData]
   .sort(function(a,b){ return b.health.score - a.health.score; })
-  .slice(0, 10)
+  .slice(0, 5)
   .map(function(d,i){
                     var isSelected = sel === d.stk.sym;
                     var dotSize    = isSelected ? 16 : 12;
