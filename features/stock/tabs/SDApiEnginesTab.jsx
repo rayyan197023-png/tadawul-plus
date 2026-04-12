@@ -46,7 +46,7 @@ const DTABS   = ["نظرة-عامة","تقني","أساسي","محركات","م�
 const DLABELS = ["نظرة عامة","تقني","الأساسي","محركات","كبار الملاك"];
 
 // ─── ANALYST_EST — helper ─────────────────────────────────────────
-const ANALYST_EST = {
+export const ANALYST_EST = {
   //
   "2222": { buy:8, hold:10, sell:2, targetPrice:28.30, upside:5.2 },
   default:{ buy:5, hold:4,  sell:3, targetPrice:null,  upside:null },
