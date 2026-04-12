@@ -2753,6 +2753,7 @@ function AdvancedSection({liveStocks=[]}){
 
 /* ─── LIQUIDITY PANEL ─── */
 function LiquidityPanel({liveStocks=[]}){
+  const { openStock } = useNav();
   const [view,setView]=useState("map");
   const [scanning,setScan]=useState(false);
   const [data,setData]=useState([]);
