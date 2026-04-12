@@ -2870,7 +2870,7 @@ function LiquidityPanel({liveStocks=[]}){
             {data.map((d,i)=>{
               const sz=d.sm>=80?72:d.sm>=65?62:d.sm>=50?52:d.sm>=35?44:36;
               return(
-                <div key={i} style={{
+                <div key={i} onClick={()=>openStock(d.stk)} style={{
                   width:sz,height:sz,borderRadius:9,
                   background:"linear-gradient(135deg,"+d.col+"25,"+d.col+"10)",
                   border:"1.5px solid "+d.col+"50",
