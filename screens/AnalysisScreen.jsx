@@ -2743,6 +2743,7 @@ export default function AnalysisScreen({ commData: extCommData } = {}) {
                 border:"1px solid " + C.line,
                 borderBottom:"none",
                 maxHeight:"78vh",
+                paddingBottom:80,
                 display:"flex",flexDirection:"column",
                 boxShadow:"0 -24px 64px rgba(0,0,0,.8), inset 0 1px 0 " + C.layer3,
                 animation:"slideUp .38s cubic-bezier(.16,1,.3,1) both",
