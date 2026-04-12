@@ -198,14 +198,7 @@ export default function AppShell() {
 }, []);
 
 useEffect(() => {
-  const id = 'tadawul-global';
-  if (document.getElementById(id)) return;
-  const el = document.createElement('style');
-  el.id = id;
-  el.textContent = getGlobalStyles();
-  document.head.appendChild(el);
-  return () => el.remove();
-}, []);
+  
     const id = 'tadawul-global';
     if (document.getElementById(id)) return;
     const el = document.createElement('style');
