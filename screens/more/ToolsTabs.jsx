@@ -3,7 +3,7 @@
  * @module screens/more/ToolsTabs
  * @description تبويبات الأدوات: لقطات، إعدادات، حاسبة، مقارنة، تنبيهات، المتابعة
  */
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { STOCKS } from '../../constants/stocksData';
 import { C, Ico, MiniLine, PRIORITY_ORDER, SectionHeader, SparkLine, TagFilter } from './MoreShared';
 import { useHaptic } from '../../hooks/useHaptic';
