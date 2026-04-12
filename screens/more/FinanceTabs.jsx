@@ -4,6 +4,7 @@
  * @description تبويبات مالية: توزيعات، اكتتابات، صناديق، تقويم، كلي
  */
 import { useState, useMemo, useEffect } from 'react';
+import { STOCKS } from '../../constants/stocksData';
 import { ArcRing, C, DIVS, EVENTS, FUNDS, IPOS, Ico, MiniLine, SectionHeader, Stars, MACRO } from './MoreShared';
 
 function DividendsTab(props) {
