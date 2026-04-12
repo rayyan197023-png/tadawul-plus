@@ -689,7 +689,7 @@ function ProfitCalc(props) {
   var calcTabs=[{k:"basic",l:"أساسي"},{k:"scenarios",l:"سيناريوهات"}];
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(6,8,15,.95)",zIndex:999,display:"flex",flexDirection:"column",justifyContent:"flex-end"}}>
-      <div style={{background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",borderRadius:"20px 20px 0 0",maxHeight:"90vh",overflowY:"auto",border:"1px solid "+C.line,boxShadow:"0 -24px 60px rgba(0,0,0,.6)"}}>
+      <div style={{background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",borderRadius:"20px 20px 0 0",maxHeight:"90vh",overflowY:"auto",paddingBottom:80,border:"1px solid "+C.line,boxShadow:"0 -24px 60px rgba(0,0,0,.6)"}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px 16px 12px",borderBottom:"1px solid "+C.line}}>
           <button onClick={function(){onClose();}} style={{background:C.layer3,border:"1px solid "+C.line,color:C.smoke,padding:"7px 14px",borderRadius:10,fontSize:12,cursor:"pointer"}}>
             <Ico k="back" color={C.smoke} size={14}/>
