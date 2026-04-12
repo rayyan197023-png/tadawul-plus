@@ -165,10 +165,11 @@ function Shell() {
           <ErrorBoundary label="صفحة السهم">
             <Suspense fallback={<Loader />}>
               <StockDetail
-                stk={liveStock}
-                onClose={() => { haptic.tap(); closeStock(); }}
-                wl={wlSyms}
-                toggleStar={(sym) => {
+  stk={liveStock}
+  onClose={() => { haptic.tap(); closeStock(); }}
+  wl={wlSyms}
+  onExpand={() => window.open('/chart.html?sym=' + liveStock.sym, '_blank')}
+  toggleStar={(sym) => {
                   setWatchlist(prev =>
                     prev.some(w => w.sym === sym)
                       ? prev.filter(w => w.sym !== sym)
