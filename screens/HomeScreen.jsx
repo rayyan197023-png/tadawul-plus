@@ -3731,12 +3731,12 @@ function BreadthPanel({liveStocks=[]}){
       {/* شريط A/D */}
       <div style={{marginBottom:12}}>
         <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-          <span style={{fontSize:8.5,color:R}}>{dec} هابط</span>
+          <span style={{fontSize:8.5,color:G}}>{adv} صاعد</span>
           <div style={{textAlign:"center"}}>
             <span style={{fontSize:9,color:T3,fontWeight:600}}>A/D Line: </span>
             <span style={{fontSize:10,color:sc,fontWeight:800}}>{adLine > 0 ? "+" : ""}{adLine}</span>
           </div>
-          <span style={{fontSize:8.5,color:G}}>{adv} صاعد</span>
+          <span style={{fontSize:8.5,color:R}}>{dec} هابط</span>
         </div>
         <div style={{height:8,background:R+"30",borderRadius:4,overflow:"hidden"}}>
           <div style={{width:advRatio+"%",height:"100%",
