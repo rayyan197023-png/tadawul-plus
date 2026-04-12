@@ -43,7 +43,8 @@ export const colors = {
   amber:    '#fbbf24',
   teal:     '#22d3ee',
   rose:     '#f43f8a',
-  ash:      '#5a6e94',
+  ash:      '#8a9ec4',
+
 
   // ── Glows (rgba strings)
   glowGold:     'rgba(240,192,80,0.4)',
