@@ -734,7 +734,6 @@ export default function AnalysisScreen({ commData: extCommData } = {}) {
               {/* النقاط مع درجة الصحة */}
               <div style={{display:"flex",alignItems:"flex-end",gap:2,position:"relative",height:72}}>
                 {[...allData]
-                  {[...allData]
   .sort(function(a,b){ return b.health.score - a.health.score; })
   .slice(0, 10)
   .map(function(d,i){
