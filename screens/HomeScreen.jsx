@@ -1499,11 +1499,13 @@ function HomeContent({idx,chgP,market,liveStocks=[],isLoadingH=false,isRefreshin
 
 /* ─── STOCK ROW ─── */
 function StockRow({s,rank,period}){
+  const { openStock } = useNav();
   const up=s.pct>=0;
   return(
-    <div style={{
+    <div onClick={()=>openStock(s)} style={{
       display:"flex",alignItems:"center",justifyContent:"space-between",
       padding:"11px 0",borderBottom:"1px solid rgba(255,255,255,.04)",
+      cursor:"pointer",
     }}>
       <div style={{display:"flex",alignItems:"center",gap:10,flex:1,minWidth:0}}>
         <div style={{
