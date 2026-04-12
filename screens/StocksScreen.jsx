@@ -10,6 +10,7 @@ import { useHaptic }          from '../hooks/useHaptic';
 import { usePullToRefresh }   from '../hooks/usePullToRefresh';
 import { useNav, useSharedPrices } from '../store';
 import { STOCKS } from '../constants/stocksData';
+import StockDetail from '../features/stock/StockDetail';
 
 
 /* ================================================================
