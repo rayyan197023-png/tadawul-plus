@@ -734,8 +734,10 @@ export default function AnalysisScreen({ commData: extCommData } = {}) {
               {/* النقاط مع درجة الصحة */}
               <div style={{display:"flex",alignItems:"flex-end",gap:2,position:"relative",height:72}}>
                 {[...allData]
-                  .sort(function(a,b){ return b.health.score - a.health.score; })
-                  .map(function(d,i){
+                  {[...allData]
+  .sort(function(a,b){ return b.health.score - a.health.score; })
+  .slice(0, 10)
+  .map(function(d,i){
                     var isSelected = sel === d.stk.sym;
                     var dotSize    = isSelected ? 16 : 12;
                     var barH       = 4 + (d.health.score / 100) * 26;
