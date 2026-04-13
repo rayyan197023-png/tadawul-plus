@@ -105,13 +105,13 @@ const FUNDS = [
 ];
 
 const RANKINGS = [
-  {title:"الأكثر ارتفاعاً",   color:C.mint,    field:"pct",   dir:1,  fmt:function(v){return(v>0?"+":"")+v.toFixed(1)+"%";}},
-  {title:"الأكثر انخفاضاً",   color:C.coral,   field:"pct",   dir:-1, fmt:function(v){return v.toFixed(1)+"%";}},
-  {title:"الأكثر تداولاً",    color:C.amber,   field:"vol",   dir:1,  fmt:function(v){return v>=1e6?(v/1e6).toFixed(1)+"M":v>=1e3?(v/1e3).toFixed(0)+"K":String(v);}},
-  {title:"أعلى قيمة سوقية",   color:C.gold,    field:"mktCap",dir:1,  fmt:function(v){return v>=1000?(v/1000).toFixed(1)+"T":v+"B";}},
-  {title:"أعلى عائد توزيعات", color:C.teal,    field:"div",   dir:1,  fmt:function(v){return v.toFixed(1)+"%";}},
-  {title:"أفضل ROE",           color:C.plasma,  field:"roe",   dir:1,  fmt:function(v){return v.toFixed(1)+"%";}},
-  {title:"أقل P/E",            color:C.electric,field:"pe",    dir:-1, fmt:function(v){return v+"x";}},
+  {title:"الأكثر ارتفاعاً",   color:C.mint,    field:"pct",   dir:1,  fmt:function(v){return v==null?"--":(v>0?"+":"")+v.toFixed(1)+"%";}},
+  {title:"الأكثر انخفاضاً",   color:C.coral,   field:"pct",   dir:-1, fmt:function(v){return v==null?"--":v.toFixed(1)+"%";}},
+  {title:"الأكثر تداولاً",    color:C.amber,   field:"vol",   dir:1,  fmt:function(v){return v==null?"--":v>=1e6?(v/1e6).toFixed(1)+"M":v>=1e3?(v/1e3).toFixed(0)+"K":String(v);}},
+  {title:"أعلى قيمة سوقية",   color:C.gold,    field:"mktCap",dir:1,  fmt:function(v){return v==null?"--":v>=1000?(v/1000).toFixed(1)+"T":v+"B";}},
+  {title:"أعلى عائد توزيعات", color:C.teal,    field:"div",   dir:1,  fmt:function(v){return v==null?"--":v.toFixed(1)+"%";}},
+  {title:"أفضل ROE",           color:C.plasma,  field:"roe",   dir:1,  fmt:function(v){return v==null?"--":v.toFixed(1)+"%";}},
+  {title:"أقل P/E",            color:C.electric,field:"pe",    dir:-1, fmt:function(v){return v==null?"--":v+"x";}},
 ];
 
 const COMM = [
