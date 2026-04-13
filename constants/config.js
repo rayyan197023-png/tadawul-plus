@@ -21,7 +21,7 @@
  */
 
 // ── Run mode: explicit, never ambiguous
-const RUN_MODE = process.env.NEXT_PUBLIC_RUN_MODE ?? 'demo';
+const RUN_MODE = process.env.NEXT_PUBLIC_RUN_MODE ?? 'production';
 // 'demo'       → GBM simulation, static seed data, no API calls
 // 'staging'    → real EODHD data, non-prod Supabase
 // 'production' → real EODHD data, prod Supabase, full monitoring
