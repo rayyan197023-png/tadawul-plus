@@ -1896,7 +1896,7 @@ const [filters, setFilters] = useState({
            صفحة الإشارات
       ══════════════════════════════════ */}
       {page==="signals"&&(
-        <div style={{padding:"52px 20px 90px",position:"relative",zIndex:1}}>
+        <div style={{padding:"90px 20px 90px",position:"relative",zIndex:1}}>
 <button onClick={()=>setPage("home")} style={{
   position:"absolute",top:52,right:16,
   background:C.layer2,border:"1px solid "+C.line,
