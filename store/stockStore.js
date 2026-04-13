@@ -216,7 +216,8 @@ function _gbmSeed(s) {
 }
 
 export function useSharedPrices() {
-  const { dispatch, priceCache, stocks } = useStockState();
+  const { priceCache, stocks } = useStockState();
+const dispatch = useStockDispatch();
   const tickRef = useRef(null);
 
   useEffect(() => {
