@@ -61,7 +61,7 @@ const config = {
   // ── Feature Flags (auto-derived from runMode when not overridden)
   features: {
     // Data
-    liveMarketData: !!(process.env.NEXT_PUBLIC_EODHD_KEY), // auto-enables when key is set
+    liveMarketData: !!(process.env.NEXT_PUBLIC_EODHD_KEY) || true, // auto-enables when key is set
     liveNews:       false,          // needs news API subscription
     tradingEnabled: false,          // always false until brokerage integration
 
