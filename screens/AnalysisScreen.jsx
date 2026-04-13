@@ -941,7 +941,7 @@ const [filters, setFilters] = useState({
 
                     {/* ── badge الترتيب — سياق المقارنة ── */}
                     <div style={{
-                      position:"absolute",top:20,left:10,zIndex:5,
+                      position:"absolute",top:10,left:10,zIndex:5,
 
                       display:"flex",alignItems:"center",gap:3,
                       background:"rgba(0,0,0,.45)",borderRadius:7,
