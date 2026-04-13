@@ -23,7 +23,7 @@ import config from '../../constants/config';
 
 // ── Saudi Exchange suffix
 const SR = '.SR';
-const BASE = config.eodhdBaseUrl;    // 'https://eodhd.com/api'
+const BASE = '/api/eodhd';    // 'https://eodhd.com/api'
 const KEY  = config.eodhdApiKey;     // process.env.NEXT_PUBLIC_EODHD_KEY
 
 // ── Validate key present
