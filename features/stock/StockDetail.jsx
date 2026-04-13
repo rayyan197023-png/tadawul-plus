@@ -1,5 +1,6 @@
 'use client';
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { fetchFundamentals } from '../../services/api/eodhdApi';
 import { useNav } from '../../store';
 
 
