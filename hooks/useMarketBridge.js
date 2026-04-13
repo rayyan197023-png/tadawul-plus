@@ -19,7 +19,7 @@ import { useStockState, useStockDispatch } from '../store/stockStore';
 export function useMarketBridge() {
   const market   = useMarketEngine();
   const dispatch = useMarketDispatch();
-  const stockState = useStockState();
+  const stockDispatch = useStockDispatch();
   // Merge live priceCache into stocks so sector/breadth calculations use live prices
   const stocks = stockState.stocks.map(s => {
     const live = stockState.priceCache[s.sym];
