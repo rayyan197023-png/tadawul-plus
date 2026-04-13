@@ -5244,18 +5244,15 @@ const useSahmkData = (baseStkData) => {
       setApiStatus("loading");
       setApiError(null);
       try {
-        const quote = await fetchSahmkQuote(sym);
-        if (!quote || quote._apiErr) throw new Error(quote?._apiErr || "لا استجابة");
-        const company = await fetchSahmkCompany(sym);
-let fundamentals = {};
-try {
-  fundamentals = await fetchFundamentals(sym) || {};
-} catch(e) { console.warn('Fundamentals:', e.message); } 
-        if (!cancelled) {
-          setLiveData({ ...quote, ...(company||{}), ...fundamentals });
-          setLastFetch(new Date().toLocaleTimeString("ar-SA"));
-          setApiStatus(quote.isDelayed ? "delayed" : "live");
-        }
+        const [quote, fundamentals] = await Promise.all([
+  fetchRealTimeQuote(sym).catch(() => ({})),
+  fetchFundamentals(sym).catch(() => ({})),
+]);
+if (!cancelled) {
+  setLiveData({ ...(quote||{}), ...(fundamentals||{}) });
+  setLastFetch(new Date().toLocaleTimeString("ar-SA"));
+  setApiStatus("live");
+}
       } catch(e) {
         if (!cancelled) {
           setApiStatus("error");
