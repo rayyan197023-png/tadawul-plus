@@ -90,12 +90,9 @@ export function useMarketBridge() {
         // 2. Fetch live stock prices (bulk — 1 API call)
         const liveStocks = await fetchAllStocks();
         if (liveStocks.length > 0) {
-          // Update stockStore with live prices
-          const updates = liveStocks.map(s => ({ sym: s.sym, data: { p: s.p, ch: s.ch, pct: s.pct, v: s.v } }));
-          // Dispatch price updates via stockStore (uses UPDATE_PRICES action)
-          // Note: dispatch here is marketStore dispatch — stockStore needs own dispatch
-          // This is handled in stockStore via the polling interval
-        }
+  const updates = liveStocks.map(s => ({ sym: s.sym, data: { p: s.p, ch: s.ch, pct: s.pct, v: s.v } }));
+  stockDispatch({ type: 'UPDATE_PRICES', payload: updates });
+}
 
         dispatch({ type: MARKET_ACTIONS.SET_LAST_UPDATED, payload: Date.now() });
         dispatch({ type: MARKET_ACTIONS.SET_STATUS, payload: 'open' });
