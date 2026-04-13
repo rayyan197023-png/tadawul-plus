@@ -14,7 +14,7 @@ import { fetchTASIIndex }  from '../services/api/eodhdApi';
 import { useEffect, useRef } from 'react';
 import { useMarketEngine }   from './useMarketEngine';
 import { useMarketDispatch, MARKET_ACTIONS } from '../store';
-import { useStockState }     from '../store/stockStore';
+import { useStockState, useStockDispatch } from '../store/stockStore';
 
 export function useMarketBridge() {
   const market   = useMarketEngine();
