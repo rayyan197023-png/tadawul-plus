@@ -975,7 +975,7 @@ const [filters, setFilters] = useState({
                         pointerEvents:"none",
                       }}/>
 
-                      <div style={{display:"flex",alignItems:"center",gap:12,position:"relative"}}>
+                      <div style={{display:"flex",alignItems:"flex-start",gap:12,position:"relative"}}>
 
                         {/* يمين — اسم السهم + رقمه + قطاعه + سعره + نسبته */}
                         <div style={{flexShrink:0,display:"flex",flexDirection:"column",alignItems:"flex-end",gap:3,maxWidth:"45%"}}>
