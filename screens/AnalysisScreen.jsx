@@ -1427,9 +1427,9 @@ const [filters, setFilters] = useState({
                         var prob  = health.probability  || {};
                         var ps    = health.positionSize  || {};
                         var conf  = health.confidence    || 50;
-                        var bull  = prob.bull  != null ? Math.round(prob.bull*100)  : null;
-                        var bear  = prob.bear  != null ? Math.round(prob.bear*100)  : null;
-                        var neut  = prob.neut  != null ? Math.round(prob.neut*100)  : null;
+                        var bull = prob.bull != null ? Math.round(prob.bull > 1 ? prob.bull : prob.bull*100) : null;
+var bear = prob.bear != null ? Math.round(prob.bear > 1 ? prob.bear : prob.bear*100) : null;
+var neut = prob.neut != null ? Math.round(prob.neut > 1 ? prob.neut : prob.neut*100) : null;
                         var pct   = ps.pct     != null ? (ps.pct*100).toFixed(1)    : null;
                         var kelly = ps.kelly   != null ? ps.kelly.toFixed(1)        : null;
                         var recK  = ps.recommended;
