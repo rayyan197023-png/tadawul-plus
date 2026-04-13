@@ -1041,7 +1041,7 @@ const [filters, setFilters] = useState({
                           })()}
                           {(function(){
                             var trend=stk.ch>=0,delta=Math.max(1,Math.min(12,Math.abs(Math.round(health.score*stk.ch/100*3))));
-                            return(<div style={{position:"absolute",bottom:-8,left:"50%",transform:"translateX(-50%)",display:"flex",alignItems:"center",gap:2,background:trend?"rgba(16,201,126,.15)":"rgba(240,79,90,.15)",border:"1px solid "+(trend?"rgba(16,201,126,.3)":"rgba(240,79,90,.3)"),borderRadius:5,padding:"1px 5px",whiteSpace:"nowrap"}}>
+                            return(<div style={{position:"absolute",bottom:-14,left:"50%",transform:"translateX(-50%)",display:"flex",alignItems:"center",gap:2,background:trend?"rgba(16,201,126,.15)":"rgba(240,79,90,.15)",border:"1px solid "+(trend?"rgba(16,201,126,.3)":"rgba(240,79,90,.3)"),borderRadius:5,padding:"1px 5px",whiteSpace:"nowrap"}}>
                               <span style={{fontSize:7,fontWeight:800,color:trend?C.mint:C.coral}}>{trend?"↑":"↓"}{delta}</span>
                             </div>);
                           })()}
