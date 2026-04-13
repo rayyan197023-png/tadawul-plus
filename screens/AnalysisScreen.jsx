@@ -979,7 +979,7 @@ const [filters, setFilters] = useState({
 
                         {/* يمين — اسم السهم + رقمه + قطاعه + سعره + نسبته */}
                         <div style={{flexShrink:0,display:"flex",flexDirection:"column",alignItems:"flex-end",gap:3,maxWidth:"45%"}}>
-                          <div className="glow-white" style={{fontSize:16,fontWeight:900,color:C.snow}}>{stk.name}</div>
+                          <div className="glow-white" style={{fontSize:16,fontWeight:900,color:C.snow,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{stk.name}</div>
                           <div style={{display:"flex",alignItems:"center",gap:4}}>
                             <span style={{fontSize:9,color:C.smoke,background:C.layer3,padding:"1px 7px",borderRadius:5}}>{stk.sym}</span>
                             <span style={{fontSize:9,color:C.smoke}}>{stk.sec}</span>
