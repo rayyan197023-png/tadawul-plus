@@ -70,6 +70,18 @@ export default function AnalysisScreen({ commData: extCommData } = {}) {
   const [port,        setPort]        = useState([]); // [{sym, qty, avgCost}]
   const [portSheet,   setPortSheet]   = useState(null); // "add" | sym
   const [portSrch,    setPortSrch]    = useState("");
+const [screenerOpen, setScreenerOpen] = useState(false);
+const [filters, setFilters] = useState({
+  minScore:0, maxScore:100,
+  sig:'all',
+  sector:'all',
+  minPE:0, maxPE:200,
+  minDivY:0,
+  minROE:0,
+  minUpside:-100,
+  regime:'all',
+  gatesAll:false,
+});
 
   useEffect(()=>{
     setAnim(true);
