@@ -1912,17 +1912,6 @@ const [filters, setFilters] = useState({
 
           {/* ══ فلاتر الفرز المتقدمة — Stock Screener ══ */}
           {(function(){
-            var [filters, setFilters] = React.useState({
-              minScore:0, maxScore:100,
-              sig:'all',       // all|شراء قوي|مراقبة|محايد|تخفيف
-              sector:'all',
-              minPE:0, maxPE:200,
-              minDivY:0,
-              minROE:0,
-              minUpside:-100,
-              regime:'all',    // all|trend|chop|reversal
-              gatesAll:false,
-            });
             var sectorList = ['all',...new Set(allData.map(function(d){return d.stk.sec;}))];
             function applyFilter(d){
               var h=d.health||{}, s=d.stk;
