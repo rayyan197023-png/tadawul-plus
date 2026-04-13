@@ -375,7 +375,8 @@ function SignalsPanel({allData, C, LC, scoreWord}){
         style={{
           width:"100%", padding:"10px 16px",
           background:LC.layer2, border:"1px solid "+LC.line,
-          borderRadius:10, color:LC.ink,
+          borderRadius:10, 
+          color:LC.snow,
           display:"flex", alignItems:"center", justifyContent:"space-between",
           cursor:"pointer", fontSize:13, fontWeight:600,
           direction:"rtl",
