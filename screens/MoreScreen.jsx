@@ -320,7 +320,8 @@ export default function MoreScreen({
   var eventsF=calF==="all"?EVENTS:calF==="high"?EVENTS.filter(function(e){return e.imp===3;}):EVENTS.filter(function(e){return e.sym!==null;});
 
   function cfmt(v) {
-    return(v>=1000?v.toLocaleString("en",{maximumFractionDigits:0}):v.toFixed(2))+" ر.س";
+  if(v==null||isNaN(v)) return "-- ر.س";
+  return(v>=1000?v.toLocaleString("en",{maximumFractionDigits:0}):v.toFixed(2))+" ر.س";
   }
 
   var commAgo=Math.floor((liveTime-commLU)/1000);
