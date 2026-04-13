@@ -1912,7 +1912,6 @@ const [filters, setFilters] = useState({
 
           {/* ══ فلاتر الفرز المتقدمة — Stock Screener ══ */}
           {(function(){
-            var [screenerOpen, setScreenerOpen] = React.useState(false);
             var [filters, setFilters] = React.useState({
               minScore:0, maxScore:100,
               sig:'all',       // all|شراء قوي|مراقبة|محايد|تخفيف
