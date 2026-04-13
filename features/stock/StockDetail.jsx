@@ -5252,7 +5252,7 @@ try {
   fundamentals = await fetchFundamentals(sym) || {};
 } catch(e) { console.warn('Fundamentals:', e.message); } 
         if (!cancelled) {
-          setLiveData({ ...quote, ...(company||{}) });
+          setLiveData({ ...quote, ...(company||{}), ...fundamentals });
           setLastFetch(new Date().toLocaleTimeString("ar-SA"));
           setApiStatus(quote.isDelayed ? "delayed" : "live");
         }
