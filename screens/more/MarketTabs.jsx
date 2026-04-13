@@ -145,17 +145,17 @@ function RankingsTab(props) {
                     <SparkLine data={s.spark} color={s.pct>=0?C.mint:C.coral} w={48} h={20}/>
                     <div style={{width:28,height:28,borderRadius:"50%",background:"conic-gradient("+rField.color+" "+Math.min(360,Math.abs(s.pct)*36)+"deg,#2a3858 "+Math.min(360,Math.abs(s.pct)*36)+"deg)",display:"flex",alignItems:"center",justifyContent:"center"}}>
                       <div style={{width:20,height:20,borderRadius:"50%",background:"#16202e",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                        <span style={{fontSize:6,fontWeight:900,color:rField.color}}>{Math.abs(s.pct).toFixed(1)}</span>
+                        <span style={{fontSize:6,fontWeight:900,color:rField.color}}>{(s.pct!=null?Math.abs(s.pct):0).toFixed(1)}</span>
                       </div>
                     </div>
                   </div>
                   <div style={{textAlign:"left",minWidth:64}}>
                     <div className="num-lg" style={{fontSize:15,fontWeight:900,color:rField.color,direction:"ltr"}}>{rField.fmt(s[rField.field])}</div>
                     <div style={{display:"flex",alignItems:"center",gap:4,marginTop:2,justifyContent:"flex-end"}}>
-                      <span className="num" style={{fontSize:10,fontWeight:700,color:s.pct>=0?C.mint:C.coral,direction:"ltr"}}>{s.pct>=0?"+":""}{s.pct.toFixed(1)}%</span>
+                      <span className="num" style={{fontSize:10,fontWeight:700,color:s.pct>=0?C.mint:C.coral,direction:"ltr"}}>{s.pct>=0?"+":""}{(s.pct||0).toFixed(1)}%</span>
                       {Math.abs(s.pct)>=5&&<span style={{fontSize:8,background:s.pct>=0?C.mint+"20":C.coral+"20",color:s.pct>=0?C.mint:C.coral,borderRadius:4,padding:"0 5px",fontWeight:700}}><Ico k="fire" color={C.amber} size={10}/></span>}
                     </div>
-                    {rField.field!=="vol"&&<div className="num" style={{fontSize:8,color:C.ash,direction:"ltr",marginTop:1}}>{(s.vol*s.p/1e6).toFixed(0)}M ر.س</div>}
+                    {rField.field!=="vol"&&<div className="num" style={{fontSize:8,color:C.ash,direction:"ltr",marginTop:1}}>{((s.vol||0)*(s.p||0)/1e6).toFixed(0)}M ر.س</div>}
                   </div>
                 </div>
               );
