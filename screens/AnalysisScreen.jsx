@@ -2801,7 +2801,7 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                     </div>
                   </div>
                   <div>
-                    <div className="glow-white" style={{fontSize:16,fontWeight:900,color:C.snow}}>{stk.name}</div>
+                    <div className="glow-white" style={{fontSize:16,fontWeight:900,color:C.snow,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{stk.name}</div>
                     <div style={{display:"flex",alignItems:"center",gap:6,marginTop:3}}>
                       <span style={{
                         fontSize:9,fontWeight:700,color:health.sigC,
