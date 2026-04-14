@@ -1419,8 +1419,10 @@ function SDOverview({ stk, per, setPer, onNav, onExpand }) {
   const banks = analystData?.banks?.slice(0,8) || (ANALYST_BANKS[stk.sym] || ANALYST_BANKS.default).slice(0,5);
   const peers  = PEERS[stk.sym] || PEERS.default;
 
-  const rng = stk.hi52 - stk.lo52 || 1;
-  const pos52 = Math.min(100, Math.max(0, ((stk.p-stk.lo52)/rng)*100));
+  const hi52 = stk.hi52 ?? stk.w52h ?? stk.p;
+const lo52 = stk.lo52 ?? stk.w52l ?? stk.p;
+const rng = hi52 - lo52 || 1;
+const pos52 = Math.min(100, Math.max(0, ((stk.p-lo52)/rng)*100));
   const dayHi = stk.dayHi ?? stk.hi ?? stk.p;
 const dayLo = stk.dayLo ?? stk.lo ?? stk.p;
 const dayRng = dayHi - dayLo || 1;
