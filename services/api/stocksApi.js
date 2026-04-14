@@ -104,8 +104,6 @@ function isSaudiMarketOpen() {
 
 export async function fetchAllStocks(signal) {
   console.log('liveMarketData:', config.features.liveMarketData);
-  export async function fetchAllStocks(signal) {
-  console.log('liveMarketData:', config.features.liveMarketData);
   try {
     if (config.isLive && config.features.liveMarketData) {
       if (!isSaudiMarketOpen()) return Object.values(STOCKS_MAP);
