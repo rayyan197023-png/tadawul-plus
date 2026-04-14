@@ -10,6 +10,7 @@
  * replace the setInterval with a real WebSocket/SSE connection.
  */
 
+import config from '../constants/config';
 import { useState, useEffect } from 'react';
 
 function seedRng(s) {
