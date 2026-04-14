@@ -1421,8 +1421,10 @@ function SDOverview({ stk, per, setPer, onNav, onExpand }) {
 
   const rng = stk.hi52 - stk.lo52 || 1;
   const pos52 = Math.min(100, Math.max(0, ((stk.p-stk.lo52)/rng)*100));
-  const dayRng = stk.dayHi-stk.dayLo || 1;
-  const dayPos = Math.min(100, Math.max(0, ((stk.p-stk.dayLo)/dayRng)*100));
+  const dayHi = stk.dayHi ?? stk.hi ?? stk.p;
+const dayLo = stk.dayLo ?? stk.lo ?? stk.p;
+const dayRng = dayHi - dayLo || 1;
+const dayPos = Math.min(100, Math.max(0, ((stk.p-dayLo)/dayRng)*100));
 
   const tot = (est.buy||0)+(est.hold||0)+(est.sell||0);
   const buyP  = tot?Math.round((est.buy /tot)*100):0;
