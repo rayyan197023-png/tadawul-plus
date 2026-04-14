@@ -1548,7 +1548,7 @@ function SDOverview({ stk, per, setPer, onNav, onExpand }) {
 
       {/* نطاقات الأسعار */}
       {[
-        {title:"النطاق اليومي", lo:stk.dayLo+' ر.س', hi:stk.dayHi+' ر.س', pos:dayPos},
+        {title:"النطاق اليومي", lo:(stk.dayLo??stk.lo??'-')+' ر.س', hi:(stk.dayHi??stk.hi??'-')+' ر.س', pos:dayPos},
         {title:"نطاق 52 أسبوع", lo:(stk.lo52??stk.w52l??'-')+' ر.س', hi:(stk.hi52??stk.w52h??'-')+' ر.س', pos:pos52},
       ].map((r,i) => (
         <SectionCard key={i}>
