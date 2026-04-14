@@ -103,13 +103,10 @@ function isSaudiMarketOpen() {
 }
 
 export async function fetchAllStocks(signal) {
-  console.log('liveMarketData:', config.features.liveMarketData);
   try {
     if (config.isLive && config.features.liveMarketData) {
       if (!isSaudiMarketOpen()) return Object.values(STOCKS_MAP);
-  try {
-    if (config.isLive && config.features.liveMarketData) {
-      const TOP_SYMS = ['2222','1120','2010','1010','2350','1180','1050','7010','1211','2082','4150','4164'];
+      const TOP_SYMS = ['2222','1120','2010','1010','2350'];
       const res = await fetch(`/api/sahmk?sym=${TOP_SYMS.join(',')}`, { signal });
       const quotes = await res.json();
       return Object.values(STOCKS_MAP).map(seed => {
@@ -122,7 +119,6 @@ export async function fetchAllStocks(signal) {
   }
   return Object.values(STOCKS_MAP);
 }
-
 export async function fetchAIAnalysis(prompt, maxTokens = 1200, signal = undefined) {
   const res = await fetch(config.claudeProxyUrl, {
     method:  'POST',
