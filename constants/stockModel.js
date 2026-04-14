@@ -66,6 +66,8 @@ export function createStock(raw) {
     lo:           raw.lo           ?? raw.low  ?? raw.p ?? 0,
     w52h:         raw.w52h         ?? raw.hi52 ?? null,
     w52l:         raw.w52l         ?? raw.lo52 ?? null,
+    hi52: raw.hi52 ?? raw.w52h ?? null,
+lo52: raw.lo52 ?? raw.w52l ?? null,
     target:       raw.target       ?? null,
     eps:          raw.eps          ?? null,
     pe:           raw.pe           ?? null,
