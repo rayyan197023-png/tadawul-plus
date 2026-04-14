@@ -70,7 +70,6 @@ function Shell() {
   const [commData, setCommData] = React.useState(COMM_DEFAULT);
 
   useLiveStockPrices();
-  useSharedPrices();
 
   React.useEffect(() => {
     function handleMessage(e) {
