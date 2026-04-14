@@ -221,7 +221,8 @@ const dispatch = useStockDispatch();
   const tickRef = useRef(null);
 
   useEffect(() => {
-    // كل 3 ثوانٍ — تذبذب ±0.3% لكل سهم
+    if (config.features.liveMarketData) return;
+    // كل 3 ثوانٍ -- تذبذب ±0.3% لكل سهم
     tickRef.current = setInterval(() => {
       const rng = _gbmSeed(Date.now() & 0xffff);
       const updates = stocks.map(s => {
