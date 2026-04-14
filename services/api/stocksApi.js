@@ -188,9 +188,10 @@ export async function fetchStockDetail(sym) {
 export async function fetchAllStocks(signal) {
   try {
     // ── Production: fetch live quotes for all symbols in ONE call
-    if (config.isLive && config.features.liveMarketData && config.eodhdApiKey) {
-      const syms   = Object.keys(STOCKS_MAP);
-      const quotes = await fetchBulkQuotes(syms, signal);
+    if (config.isLive && config.features.liveMarketData) {
+  const syms = Object.keys(STOCKS_MAP);
+  const res = await fetch(`/api/sahmk?sym=${syms.join(',')}`, { signal });
+  const quotes = await res.json();
       
       return syms.map(sym => {
         const seed  = STOCKS_MAP[sym];
