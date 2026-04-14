@@ -88,6 +88,7 @@ export function useMarketEngine() {
   }));
 
   useEffect(() => {
+    if (config.features.liveMarketData) return; // في production لا محاكاة
     const id = setInterval(() => {
       setState(prev => {
         const sigma  = prev.current * 0.0004;
