@@ -91,7 +91,17 @@ export async function fetchStockDetail(sym) {
   return STOCKS_MAP[sym] ?? null;
 }
 
-export async function fetchAllStocks(signal) {
+function isSaudiMarketOpen() {
+  const now = new Date();
+  const riyadh = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Riyadh' }));
+  const day = riyadh.getDay();
+  const hour = riyadh.getHours();
+  const min = riyadh.getMinutes();
+  const time = hour * 60 + min;
+  if (day === 5 || day === 6) return false;
+  return time >= 600 && time <= 930;
+}
+
 export async function fetchAllStocks(signal) {
   console.log('liveMarketData:', config.features.liveMarketData);
   try {
