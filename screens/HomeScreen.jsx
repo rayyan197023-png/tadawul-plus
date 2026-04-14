@@ -3883,7 +3883,7 @@ export default function HomeScreen() {
 
   return (
     <>
-      <div style={{color:'red',fontSize:20,padding:10,position:'fixed',top:0,zIndex:9999}}>HomeScreen OK</div>
+    
       <style>{`
         @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
         @keyframes spin{to{transform:rotate(360deg)}}
