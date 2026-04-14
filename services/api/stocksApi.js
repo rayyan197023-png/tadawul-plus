@@ -170,16 +170,13 @@ export async function fetchOHLCBars(sym, period = '3M', signal) {
 export async function fetchStockDetail(sym) {
   try {
     if (config.isLive && config.features.liveMarketData) {
-      const res = await fetch(`${config.sahmkBaseUrl}/stock/${sym}`);
-      if (!res.ok) throw new Error(`Stock fetch failed: ${res.status}`);
-      return res.json();
-    }
-    return STOCKS_MAP[sym] ?? null;
-  } catch (err) {
-    console.warn(`[stocksApi] fetchStockDetail(${sym}) failed:`, err.message);
-    return STOCKS_MAP[sym] ?? null;
-  }
+  const res = await fetch(`/api/sahmk?sym=${sym}`, { signal: undefined });
+  if (!res.ok) throw new Error(`Stock fetch failed: ${res.status}`);
+  const arr = await res.json();
+  const quote = arr[0];
+  if (quote) return { ...STOCKS_MAP[sym], ...quote };
 }
+return STOCKS_MAP[sym] ?? null;
 
 /**
  * Fetch all stocks list with live prices
