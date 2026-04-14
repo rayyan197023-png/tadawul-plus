@@ -2660,8 +2660,8 @@ function SDTechnical({ stk }) {
                   <text x={CX} y={CY+18} textAnchor="middle" fill={D.summaryColor} fontSize="13" fontWeight="900" fontFamily="IBM Plex Mono,monospace">{bullPct}%</text>
                   <text x={CX} y={CY+30} textAnchor="middle" fill={C.smoke} fontSize="9" fontFamily="Cairo,sans-serif">صاعدة</text>
                   {/* Labels */}
-                  <text x={CX-R-4} y={CY+4} textAnchor="middle" fill={C.coral} fontSize="8">بيع</text>
-                  <text x={CX+R+4} y={CY+4} textAnchor="middle" fill={C.mint} fontSize="8">شراء</text>
+                  <text x={CX-R-4} y={CY+14} textAnchor="middle" fill={C.coral} fontSize="8">بيع</text>
+<text x={CX+R+4} y={CY+14} textAnchor="middle" fill={C.mint} fontSize="8">شراء</text>
                 </svg>
                 <div style={{ flex:1 }}>
                   <div style={{ fontFamily:"IBM Plex Mono,monospace", fontSize:18, fontWeight:900, color:D.summaryColor, textShadow:`0 0 12px ${D.summaryColor}88`, marginBottom:6 }}>{D.summaryLabel}</div>
