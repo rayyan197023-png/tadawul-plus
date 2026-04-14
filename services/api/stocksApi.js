@@ -189,8 +189,9 @@ export async function fetchAllStocks(signal) {
   try {
     // ── Production: fetch live quotes for all symbols in ONE call
     if (config.isLive && config.features.liveMarketData) {
-  const syms = Object.keys(STOCKS_MAP);
-  const res = await fetch(`/api/sahmk?sym=${syms.join(',')}`, { signal });
+  // أهم 12 سهم فقط -- توفيراً لحد 100 طلب/يوم
+  const TOP_SYMS = ['2222','1120','2010','1010','2350','1180','1050','7010','1211','2082','4150','4164'];
+  const res = await fetch(`/api/sahmk?sym=${TOP_SYMS.join(',')}`, { signal });
   const quotes = await res.json();
       
       return syms.map(sym => {
