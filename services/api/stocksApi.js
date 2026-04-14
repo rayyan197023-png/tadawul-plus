@@ -92,6 +92,8 @@ export async function fetchStockDetail(sym) {
 }
 
 export async function fetchAllStocks(signal) {
+export async function fetchAllStocks(signal) {
+  console.log('liveMarketData:', config.features.liveMarketData);
   try {
     if (config.isLive && config.features.liveMarketData) {
       const TOP_SYMS = ['2222','1120','2010','1010','2350','1180','1050','7010','1211','2082','4150','4164'];
