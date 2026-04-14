@@ -93,10 +93,10 @@ const config = {
 
   // ── Polling intervals (ms) — only active when liveMarketData=true
   intervals: {
-    marketData:  30_000,   // 30s
-    portfolio:   60_000,   // 1m
-    news:       300_000,   // 5m
-  },
+    marketData:  900_000,  // 15 دقيقة بدلاً من 30 ثانية
+    portfolio:   900_000,
+    news:        900_000,
+},
 };
 
 export default config;
