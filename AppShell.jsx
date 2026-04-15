@@ -181,6 +181,19 @@ paddingBottom: 100,
           </ErrorBoundary>
         </div>
       )}
+      {expandedChart && liveStock && (
+  <div style={{
+    position:"fixed",inset:0,zIndex:500,
+    background:"#06080f",
+  }}>
+    <Suspense fallback={<div/>}>
+      <ChartScreen
+        sym={liveStock.sym}
+        onClose={() => setExpandedChart(false)}
+      />
+    </Suspense>
+  </div>
+)}
       <PWAPrompt />
     </div>
   );
