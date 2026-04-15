@@ -142,8 +142,9 @@ button{font-family:'Cairo',sans-serif;cursor:pointer;outline:none}
 <body>
 <div id="hdr">
  <div id="r1">
-<div id="badge" onclick="window.parent.postMessage('closeChart','*')" style="cursor:pointer;font-size:18px;color:#f0f6ff;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.1);border-radius:10px;border:1px solid rgba(255,255,255,.2)">
-  ✕
+<div id="badge" onclick="openSheet('stock')">
+  <span id="sym-code">2010</span>
+  <span id="sym-sar">SAR</span>
 </div>
 
  <span id="stk-name" onclick="openSheet('stock')">سابك</span>
