@@ -20,8 +20,12 @@ const C = {
 const nowStr = () => { const d=new Date(),p=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}/${p(d.getMonth()+1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; };
 
 const SECTOR_COLORS = {
-  طاقة:C.amber, بنوك:C.electric, بترو:C.plasma,
-  غذاء:C.mint, تقنية:C.teal, تعدين:C.gold, تأمين:C.coral
+  طاقة:C.amber, بنوك:C.electric, بتروكيماويات:C.plasma,
+  أغذية:C.mint, تقنية:C.teal, تعدين:C.gold, تأمين:C.coral,
+  عقارات:C.electricL, سياحة:C.goldL, لوجستية:C.teal,
+  "رعاية صحية":C.mint, "مواد بناء":C.smoke,
+  صناعة:C.ash, مطاعم:C.amber, "طاقة متجددة":C.mint,
+  زراعة:C.gold,
 };
 
 function genBars(stk) {
