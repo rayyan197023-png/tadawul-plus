@@ -182,17 +182,12 @@ paddingBottom: 100,
         </div>
       )}
       {expandedChart && liveStock && (
-  <div style={{
-    position:"fixed",inset:0,zIndex:500,
-    background:"#06080f",
-  }}>
-    <Suspense fallback={<div/>}>
-      <ChartScreen
-  stk={liveStock}
-  onClose={() => setExpandedChart(false)}
-/>
-    </Suspense>
-  </div>
+  <Suspense fallback={<div/>}>
+    <ChartScreen
+      stk={liveStock}
+      onClose={() => setExpandedChart(false)}
+    />
+  </Suspense>
 )}
       <PWAPrompt />
     </div>
