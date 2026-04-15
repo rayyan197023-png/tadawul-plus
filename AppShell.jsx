@@ -49,7 +49,7 @@ function Shell() {
   const { activeTab, isStockOpen, activeStock, closeStock } = useNav();
   const haptic = useHaptic();
   const { priceCache } = useStockState();
-
+  const [expandedChart, setExpandedChart] = React.useState(false);
   const [watchlist, setWatchlist] = React.useState(() => {
     try {
       const r = typeof window !== 'undefined' && window.localStorage.getItem('tadawul_watchlist');
