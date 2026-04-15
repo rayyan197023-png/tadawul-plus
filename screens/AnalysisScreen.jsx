@@ -2336,7 +2336,7 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
 
                     width:40,height:4,background:C.ash,borderRadius:2,
                     margin:"0 auto 16px",
-                  }}/>
+                  }}>
                   <div style={{fontSize:14,fontWeight:800,color:C.snow,marginBottom:16,textAlign:"right"}}>
                     إضافة سهم للمحفظة
                   </div>
