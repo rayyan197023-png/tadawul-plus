@@ -39,14 +39,14 @@ const PU    = "#a78bfa";
 
 
 const SECTORS_DATA = [
-  {name:"البنوك",         pct: 1.8,  dot:G,          pc:"#1d4ed8", w:22, id:"banks"},
-  {name:"الطاقة",         pct: 2.1,  dot:"#3b82f6",  pc:"#2563eb", w:18, id:"energy"},
-  {name:"البتروكيماويات", pct:-0.5,  dot:GOLD,       pc:"#7c3aed", w:15, id:"petro"},
-  {name:"الاتصالات",      pct: 0.9,  dot:R,          pc:"#9333ea", w:12, id:"telecom"},
-  {name:"التجزئة",        pct: 3.2,  dot:PU,         pc:"#4f46e5", w:10, id:"retail"},
-  {name:"الغذاء",         pct:-1.1,  dot:"#34d399",  pc:"#059669", w:10, id:"food"},
-  {name:"التأمين",        pct: 0.7,  dot:"#ec4899",  pc:"#db2777", w:8,  id:"insurance"},
-  {name:"التعدين",        pct:-2.1,  dot:"#60a5fa",  pc:"#dc2626", w:5,  id:"mining"},
+  {name:"بنوك",           pct: 1.8,  dot:G,          pc:"#1d4ed8", w:22, id:"banks"},
+  {name:"طاقة",           pct: 2.1,  dot:"#3b82f6",  pc:"#2563eb", w:18, id:"energy"},
+  {name:"بتروكيماويات",   pct:-0.5,  dot:GOLD,       pc:"#7c3aed", w:15, id:"petro"},
+  {name:"تقنية",          pct: 0.9,  dot:R,          pc:"#9333ea", w:12, id:"telecom"},
+  {name:"تجزئة",          pct: 3.2,  dot:PU,         pc:"#4f46e5", w:10, id:"retail"},
+  {name:"أغذية",          pct:-1.1,  dot:"#34d399",  pc:"#059669", w:10, id:"food"},
+  {name:"تأمين",          pct: 0.7,  dot:"#ec4899",  pc:"#db2777", w:8,  id:"insurance"},
+  {name:"تعدين",          pct:-2.1,  dot:"#60a5fa",  pc:"#dc2626", w:5,  id:"mining"},
 ];
 
 /* ════════════════════════════════════════════════════════
