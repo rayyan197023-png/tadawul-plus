@@ -168,7 +168,7 @@ paddingBottom: 100,
   stk={liveStock}
   onClose={() => { haptic.tap(); closeStock(); }}
   wl={wlSyms}
-  onExpand={null}
+  onExpand={() => setExpandedChart(true)}
   toggleStar={(sym) => {
                   setWatchlist(prev =>
                     prev.some(w => w.sym === sym)
