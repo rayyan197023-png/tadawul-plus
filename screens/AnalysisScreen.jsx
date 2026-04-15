@@ -925,7 +925,7 @@ const [filters, setFilters] = useState({
                   <div
                     className={isFlashing?"flash":isBuy&&!selected?"buy-glow":isDanger&&!selected?"danger-pulse":""}
                     style={{
-                    background:"linear-gradient(135deg," + C.layer1 + " 0%," + C.layer2 + " 100%)",
+                    background:"linear-gradient(135deg,#0f1628 0%,#131a2e 100%)",
                     borderRadius:18,
                     border:"1px solid " + (selected ? health.sigC+"66" : health.sigC+"22"),
                     overflow:"hidden",
