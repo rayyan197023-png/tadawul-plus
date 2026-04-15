@@ -582,7 +582,7 @@ const [filters, setFilters] = useState({
             return(
               <div style={{margin:"0 16px 14px",position:"relative"}}>
                 <div style={{
-                  background:`linear-gradient(160deg,${C.layer1} 0%,${C.layer2} 60%,${C.layer3} 100%)`,
+                  background:`linear-gradient(160deg,#0f1628 0%,#131a2e 60%,#162040 100%)`,
                   borderRadius:20,border:`1px solid ${C.line}`,overflow:"hidden",
                   boxShadow:`0 16px 48px rgba(0,0,0,.45), inset 0 1px 0 ${C.layer3}`,
                 }}>
