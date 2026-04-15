@@ -516,7 +516,7 @@ function SellSheet(props) {
           </div>
           <span style={{fontSize:12,fontWeight:700,color:C.coral,background:C.coral+"18",border:"1px solid "+C.coral+"33",borderRadius:8,padding:"2px 9px"}}>{sellSheet.name}</span>
         </div>
-        <div style={{overflowY:"auto",padding:"14px 20px 100px",flex:1}}
+        <div style={{overflowY:"auto",padding:"14px 20px 100px",flex:1}}>
           <div style={{background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",borderRadius:12,padding:"10px 14px",marginBottom:14,border:"1px solid "+C.line,boxShadow:"inset 0 1px 0 "+C.layer3}}>
             {[{l:"سعر الدخول",v:sellSheet.avgCost.toFixed(2)+" ر"},{l:"السعر الحالي",v:sellSheet.curPrice.toFixed(2)+" ر"},{l:"الكمية المتاحة",v:sellSheet.qty.toLocaleString("en-US")}].map(function(f,i){return (
               <div key={i} style={{display:"flex",justifyContent:"space-between",marginBottom:i<2?4:0}}>
