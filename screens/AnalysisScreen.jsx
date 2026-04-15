@@ -2128,7 +2128,7 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
         });
 
         return (
-          <div style={{padding:"52px 0 90px",position:"relative",zIndex:1}}>
+          <div style={{padding:"52px 0 90px",position:"relative",zIndex:1,overflowY:"auto",height:"100vh"}}>
 
             {/* ── هيدر المحفظة ── */}
             <div style={{padding:"0 16px 14px"}}>
