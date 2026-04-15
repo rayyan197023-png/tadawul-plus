@@ -161,7 +161,7 @@ paddingBottom: 100,
 
       {/* صفحة تفاصيل السهم */}
       {isStockOpen && liveStock && (
-        <div style={{ position:'fixed', inset:0, zIndex:200, background:C.bg }}>
+        <div style={{ position:'fixed', inset:0, zIndex:expandedChart?500:200, background:C.bg }}>
           <ErrorBoundary label="صفحة السهم">
             <Suspense fallback={<Loader />}>
               <StockDetail
