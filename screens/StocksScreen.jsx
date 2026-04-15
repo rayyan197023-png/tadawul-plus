@@ -112,7 +112,7 @@ function StocksPage() {
   const allData = useMemo(()=>liveStocks.map(stk=>({stk, bars:genBars(stk)})), [liveStocks]);
   const SECTORS = useMemo(()=>[...new Set(STOCKS.map(s=>s.sec))],[]);
 
-  const changeTab    = v => { haptic.tap(); setTab(v); setShowFilter(false); window.scrollTo({top:0,behavior:"smooth"}); };
+  const changeTab = v => { haptic.tap(); setTab(v); setShowFilter(false); };
   const changeSortBy = v => { setSortBy(v); setShowFilter(false); window.scrollTo({top:0,behavior:"smooth"}); };
 
   const filtered = useMemo(()=>{
