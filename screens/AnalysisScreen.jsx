@@ -716,7 +716,7 @@ const [filters, setFilters] = useState({
           {/* ─── شريط التصنيف الأفقي — محسّن ─── */}
           <div style={{padding:"0 16px 10px"}}>
             <div style={{
-              background:C.layer1,borderRadius:14,padding:"12px 14px",
+              background:"#0f1628",borderRadius:14,padding:"12px 14px",
               border:"1px solid " + C.line,
             }}>
               <div style={{
