@@ -175,10 +175,6 @@ function StocksPage() {
         ))}
       </div>
 
-      {/* Overlay لإغلاق الفلتر */}
-      {showFilter && (
-        <div onClick={()=>setShowFilter(false)} style={{position:"fixed",inset:0,zIndex:40,background:"rgba(0,0,0,.4)"}}/>
-      )}
 
       <div style={{position:"relative",zIndex:1,paddingBottom:80}}>
 
