@@ -86,7 +86,7 @@ export default function ChartScreen({ stk, onClose }) {
         style={{
           flex: 1, border: 'none', width: '100%', height: '100%',
           background: '#070b12',
-          opacity: loaded ? 1 : 0,
+          opacity: 1,
           transition: 'opacity 0.3s ease',
         }}
         title="تداول+ الشارت الاحترافي"
