@@ -166,7 +166,7 @@ paddingBottom: 100,
             <Suspense fallback={<Loader />}>
               <StockDetail
   stk={liveStock}
-  onClose={() => { haptic.tap(); closeStock(); }}
+  onClose={() => { haptic.tap(); closeStock(); setExpandedChart(false); }}
   wl={wlSyms}
   onExpand={() => { setExpandedChart(true); }}
   toggleStar={(sym) => {
