@@ -277,7 +277,8 @@ function StocksPage() {
 
           {/* Panel الفلتر */}
           {showFilter && (
-            <div className="slide-down" style={{position:"absolute",top:"100%",left:20,right:20,zIndex:60,background:C.layer1,border:`1px solid ${C.line}`,borderRadius:16,padding:"16px",boxShadow:"0 8px 32px rgba(0,0,0,.6)"}}>
+            <div className="slide-down" onClick={e=>e.stopPropagation()} style={{position:"absolute",top:"100%",left:20,right:20,zIndex:60,
+background:C.layer1,border:`1px solid ${C.line}`,borderRadius:16,padding:"16px",boxShadow:"0 8px 32px rgba(0,0,0,.6)"}}>
 
               {/* القطاعات */}
               <div style={{marginBottom:14}}>
