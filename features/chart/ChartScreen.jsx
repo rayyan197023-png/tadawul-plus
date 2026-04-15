@@ -42,7 +42,7 @@ export default function ChartScreen({ stk, onClose }) {
 
   return (
     <div style={{
-      position: 'fixed', inset: 0, zIndex: 300,
+      position: 'fixed', inset: 0, zIndex: 600,
       background: '#070b12',
       display: 'flex', flexDirection: 'column',
     }}>
