@@ -1295,64 +1295,6 @@ function HomeContent({idx,chgP,market,liveStocks=[],isLoadingH=false,isRefreshin
         </div>
       </div>
 
-      {/* ── 3. Top Opportunity — محسوب ديناميكياً من calcLiq ── */}
-      {(()=>{
-        // نحسب SM Score لكل سهم ونختار الأعلى
-        const opps = liveStocks.map(s => {
-          const liq = calcLiq(s);
-          return { s, sm: liq.sm, liq };
-        }).sort((a,b)=>b.sm-a.sm);
-        const top = opps[0];
-        if(!top) return null;
-        const { s, sm, liq } = top;
-        const scoreColor = sm>=75 ? G : sm>=55 ? GOLD : R;
-        return (
-        <div style={{
-          margin:"0 12px 8px",
-          background:`linear-gradient(135deg,${scoreColor}12,${scoreColor}06)`,
-          borderRadius:16,padding:"12px 14px",
-          border:`1px solid ${scoreColor}20`,
-          display:"flex",alignItems:"center",justifyContent:"space-between",
-          position:"relative",overflow:"hidden",
-        }}>
-          <div style={{position:"absolute",top:-20,left:-20,width:80,height:80,borderRadius:"50%",
-                       background:`${scoreColor}06`}}/>
-          <div style={{display:"flex",alignItems:"center",gap:10}}>
-            <div style={{
-              width:52,height:52,borderRadius:12,
-              background:`linear-gradient(135deg,${scoreColor}cc,${scoreColor})`,
-              display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
-              boxShadow:`0 4px 12px ${scoreColor}44`,
-            }}>
-              <span style={{fontSize:20,fontWeight:900,color:"#000",lineHeight:1}}>{sm}</span>
-              <span style={{fontSize:8,color:"rgba(0,0,0,.7)",fontWeight:700}}>SM</span>
-            </div>
-            <div>
-              <div style={{fontSize:15,fontWeight:800,color:T1}}>{s.p.toFixed(2)}</div>
-              <div style={{fontSize:12,color:s.pct>=0?G:R,fontWeight:600}}>
-                {s.pct>=0?"+":""}{s.pct}%
-              </div>
-            </div>
-          </div>
-          <div style={{textAlign:"right"}}>
-            <div style={{fontSize:17,fontWeight:900,color:T1}}>{s.name}</div>
-            <div style={{fontSize:11,color:scoreColor,fontWeight:600}}>
-              {sm>=75?"سيولة مؤسسية":sm>=55?"فرصة جيدة":"متوسط"}
-            </div>
-            <div style={{fontSize:9,color:T3,marginTop:2}}>
-              MFI {liq.mfi} | CMF {liq.cmf?.toFixed?.(2)||0}
-            </div>
-          </div>
-          <div style={{
-            background:`linear-gradient(135deg,${scoreColor}cc,${scoreColor})`,
-            borderRadius:10,padding:"9px 12px",
-            boxShadow:`0 2px 8px ${scoreColor}44`,
-          }}>
-            <span style={{fontSize:13,fontWeight:900,color:"#000"}}>{s.sym}</span>
-          </div>
-        </div>
-        );
-      })()}
 
       {/* ── 4. أبرز التحركات ── */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",
