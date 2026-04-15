@@ -183,7 +183,7 @@ paddingBottom: 100,
       )}
 {expandedChart && liveStock && (
   <div style={{
-    position:"fixed",inset:0,zIndex:300,
+    position:"fixed",inset:0,zIndex:500,
     background:"#06080f",
     display:"flex",flexDirection:"column",
   }}>
