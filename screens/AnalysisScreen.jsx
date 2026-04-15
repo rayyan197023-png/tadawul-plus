@@ -2325,12 +2325,16 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                 position:"fixed",inset:0,background:"rgba(0,0,0,.7)",
                 zIndex:200,display:"flex",alignItems:"flex-end",
               }} onClick={function(){ setPortSheet(null); }}>
-                <div style={{
-                  width:"100%",background:C.layer1,
-                  borderRadius:"20px 20px 0 0",
-                  padding:"20px 20px 40px",
-                  border:"1px solid "+C.line,
-                }} onClick={function(e){ e.stopPropagation(); }}>
+  <div style={{
+    width:"100%",background:C.layer1,
+    borderRadius:"20px 20px 0 0",
+    padding:"20px 20px 40px",
+    border:"1px solid "+C.line,
+    maxHeight:"85vh",
+    overflowY:"auto",
+  }} onClick={function(e){ e.stopPropagation(); }}>
+
+onClick={function(e){ e.stopPropagation(); }}>
                   <div style={{
                     width:40,height:4,background:C.ash,borderRadius:2,
                     margin:"0 auto 16px",
