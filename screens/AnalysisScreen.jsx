@@ -573,7 +573,7 @@ const [filters, setFilters] = useState({
             const avgConf    = Math.round(allData.reduce((s,d)=>s+d.health.score*.9,0)/totalN);
             const avgRadar   = Math.round(allData.reduce((s,d)=>s+d.stk.rating,0)/totalN);
             const mktLabel   = "المؤشر العام";
-            const mktColor   = avgHealth>=75?C.mint:avgHealth>=60?C.electric:avgHealth>=50?C.amber:avgHealth>=38?C.coral:"#ff2244";
+            const mktColor = avgHealth>=75?C.mint:avgHealth>=60?C.electric:avgHealth>=50?C.amber:avgHealth>=38?"#c0392b":"#a93226"
             const mktIcon    = avgHealth>=75?"rocket":avgHealth>=60?"trendUp":avgHealth>=50?"scale":avgHealth>=38?"trendDn":"warning";
             const breadthPct = Math.round(allData.filter(d=>d.health.score>=50).length/totalN*100);
             const bColor     = breadthPct>=65?C.mint:breadthPct>=50?C.electric:breadthPct>=35?C.amber:C.coral;
