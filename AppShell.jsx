@@ -188,9 +188,9 @@ paddingBottom: 100,
   }}>
     <Suspense fallback={<div/>}>
       <ChartScreen
-        sym={liveStock.sym}
-        onClose={() => setExpandedChart(false)}
-      />
+  stk={liveStock}
+  onClose={() => setExpandedChart(false)}
+/>
     </Suspense>
   </div>
 )}
