@@ -181,7 +181,39 @@ paddingBottom: 100,
           </ErrorBoundary>
         </div>
       )}
-
+{expandedChart && liveStock && (
+  <div style={{
+    position:"fixed",inset:0,zIndex:300,
+    background:"#06080f",
+    display:"flex",flexDirection:"column",
+  }}>
+    <button
+      onClick={() => setExpandedChart(false)}
+      style={{
+        position:"fixed",top:16,right:16,zIndex:310,
+        width:36,height:36,borderRadius:10,
+        background:"rgba(255,255,255,.1)",
+        border:"1px solid rgba(255,255,255,.2)",
+        color:"#f0f6ff",fontSize:18,cursor:"pointer",
+        display:"flex",alignItems:"center",justifyContent:"center",
+      }}>✕</button>
+    <Suspense fallback={<div/>}>
+      <StockDetail
+        stk={liveStock}
+        onClose={() => setExpandedChart(false)}
+        wl={wlSyms}
+        onExpand={null}
+        toggleStar={(sym) => {
+          setWatchlist(prev =>
+            prev.some(w => w.sym === sym)
+              ? prev.filter(w => w.sym !== sym)
+              : [...prev, {sym, name:sym, color:'#f0c050'}]
+          );
+        }}
+      />
+    </Suspense>
+  </div>
+)}
       <PWAPrompt />
     </div>
   );
