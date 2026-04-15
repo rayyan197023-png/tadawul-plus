@@ -1937,8 +1937,8 @@ function FearGreedIndex({liveStocks=[]}) {
 
               {/* Zone labels */}
               {[
-                {x:14, y:90, t:"خوف شديد", c:"#ff5f6a"},
-                {x:186,y:90, t:"طمع شديد", c:"#1ee68a"},
+                {x:14, y:105, t:"خوف شديد", c:"#ff5f6a"},
+{x:186,y:105, t:"طمع شديد", c:"#1ee68a"},
               ].map((lb,i)=>(
                 <text key={i} x={lb.x} y={lb.y} textAnchor="middle"
                   fill={lb.c} fontSize="7" fontFamily="Cairo" opacity="0.8">
