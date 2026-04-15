@@ -11,7 +11,7 @@ import { useNav } from '../../store';
 
 const C = {
   ink:"#06080f", deep:"#090c16", void:"#0c1020",
-  layer1:"#141d2b", layer2:"#1e2d42", layer3:"#243352",
+  layer1:"#0a0c12", layer2:"#0d1018", layer3:"#111520",
   edge:"#2e3e60", line:"#32426a",
   snow:"#f0f6ff", mist:"#c8d8f0", smoke:"#90a4c8", ash:"#5a6e94",
   gold:"#f0c050", goldL:"#ffd878", goldD:"#c09030",
