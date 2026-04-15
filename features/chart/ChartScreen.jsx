@@ -22,6 +22,13 @@ export default function ChartScreen({ stk, onClose }) {
 
   // When stock changes after load → send postMessage
   useEffect(() => {
+  const handler = (e) => {
+    if (e.data === 'closeChart') onClose && onClose();
+  };
+  window.addEventListener('message', handler);
+  return () => window.removeEventListener('message', handler);
+}, [onClose]);
+  useEffect(() => {
     if (!loaded || !iframeRef.current) return;
     try {
       iframeRef.current.contentWindow?.postMessage(
