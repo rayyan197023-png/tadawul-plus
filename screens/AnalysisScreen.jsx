@@ -2334,8 +2334,6 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
     overflowY:"auto",
   }} onClick={function(e){ e.stopPropagation(); }}>
 
-onClick={function(e){ e.stopPropagation(); }}>
-                  <div style={{
                     width:40,height:4,background:C.ash,borderRadius:2,
                     margin:"0 auto 16px",
                   }}/>
