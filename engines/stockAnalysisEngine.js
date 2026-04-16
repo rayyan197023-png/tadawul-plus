@@ -26,7 +26,7 @@ const MACRO = {
  * @returns {{ intrinsicValue, upside, margin, rating, label }}
  */
 export function calcDCF(stk) {
-  if (!stk.eps || !stk.roe) {
+  if (stk.eps == null || stk.roe == null) {
     return { intrinsicValue: null, upside: null, margin: null, rating: 'غير متاح', label: 'بيانات غير كافية' };
   }
 
