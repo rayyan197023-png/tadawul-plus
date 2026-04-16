@@ -3,9 +3,64 @@
  * @module screens/more/MarketTabs
  * @description تبويبات السوق
  */
-import { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { C, Ico, SentimentGauge, MiniLine, SparkLine, TagFilter, SectionHeader, COMM, RANKINGS } from './MoreShared';
-
+const RankItem = React.memo(function RankItem({ s, i, rField, BOX, SHD, SHD_ACTIVE }) {
+  const isBig = i < 3;
+  return (
+    <div className={"card-enter "+(s.pct>2?"buy-glow":s.pct<-2?"danger-pulse":"")} style={{
+      animationDelay:(i*0.05)+"s",
+      background:BOX,
+      border:"1px solid "+(isBig?rField.color+"44":C.line),
+      borderRadius:18,padding:"12px 14px",
+      display:"flex",alignItems:"center",gap:12,
+      boxShadow:isBig?SHD_ACTIVE+rField.color+"20, 0 0 0 1px "+rField.color+"22":SHD,
+      position:"relative",overflow:"hidden",
+    }}>
+      {isBig&&<div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,transparent,"+rField.color+"60,transparent)"}}/>}
+      <div style={{
+        width:36,height:36,borderRadius:11,flexShrink:0,
+        background:isBig?"linear-gradient(135deg,"+rField.color+"30,"+rField.color+"10)":C.layer3,
+        border:"1px solid "+(isBig?rField.color+"44":C.line),
+        display:"flex",alignItems:"center",justifyContent:"center",
+        boxShadow:isBig?"0 0 12px "+rField.color+"30":"none",
+      }}>
+        <div style={{position:"relative",display:"inline-flex",alignItems:"center"}}>
+          <div style={{
+            background:i<3?"linear-gradient(135deg,"+rField.color+","+rField.color+"aa)":"rgba(0,0,0,.4)",
+            borderRadius:7,padding:"2px 7px",fontSize:9,fontWeight:900,
+            color:i<3?"#06080f":C.smoke,
+            boxShadow:i<3?"0 2px 8px "+rField.color+"55":"none",
+            animation:"rankUp .4s ease both",
+          }}>#{i+1}</div>
+        </div>
+      </div>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{fontSize:14,fontWeight:800,color:C.snow,marginBottom:2}}>{s.name}</div>
+        <div style={{display:"flex",alignItems:"center",gap:5}}>
+          <span style={{fontSize:9,color:C.smoke,background:C.layer3,padding:"1px 7px",borderRadius:5,border:"1px solid "+C.line}}>{s.sym}</span>
+          <span style={{fontSize:9,color:C.smoke}}>{s.sec}</span>
+        </div>
+      </div>
+      <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
+        <SparkLine data={s.spark} color={s.pct>=0?C.mint:C.coral} w={48} h={20}/>
+        <div style={{width:28,height:28,borderRadius:"50%",background:"conic-gradient("+rField.color+" "+Math.min(360,Math.abs(s.pct)*36)+"deg,#2a3858 "+Math.min(360,Math.abs(s.pct)*36)+"deg)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <div style={{width:20,height:20,borderRadius:"50%",background:"#16202e",display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <span style={{fontSize:6,fontWeight:900,color:rField.color}}>{(s.pct!=null?Math.abs(s.pct):0).toFixed(1)}</span>
+          </div>
+        </div>
+      </div>
+      <div style={{textAlign:"left",minWidth:64}}>
+        <div className="num-lg" style={{fontSize:15,fontWeight:900,color:rField.color,direction:"ltr"}}>{rField.fmt(s[rField.field])}</div>
+        <div style={{display:"flex",alignItems:"center",gap:4,marginTop:2,justifyContent:"flex-end"}}>
+          <span className="num" style={{fontSize:10,fontWeight:700,color:s.pct>=0?C.mint:C.coral,direction:"ltr"}}>{s.pct>=0?"+":""}{(s.pct||0).toFixed(1)}%</span>
+          {Math.abs(s.pct)>=5&&<span style={{fontSize:8,background:s.pct>=0?C.mint+"20":C.coral+"20",color:s.pct>=0?C.mint:C.coral,borderRadius:4,padding:"0 5px",fontWeight:700}}><Ico k="fire" color={C.amber} size={10}/></span>}
+        </div>
+        {rField.field!=="vol"&&<div className="num" style={{fontSize:8,color:C.ash,direction:"ltr",marginTop:1}}>{((s.vol||0)*(s.p||0)/1e6).toFixed(0)}M ر.س</div>}
+      </div>
+    </div>
+  );
+}, (prev, next) => prev.s.p === next.s.p && prev.s.pct === next.s.pct && prev.i === next.i);
 function RankingsTab(props) {
   var tp=props.p?props.p:props;
   var sub=tp.sub;
