@@ -70,6 +70,7 @@ function MiniChart({ bars, color, h=40, id="" }) {
 function StocksPage() {
   const haptic                  = useHaptic();
   const liveStocks = useSharedPrices();
+  const barsCache = useRef({});
   const [sel,      setSel]      = useState(null);
   const [tab,      setTab]      = useState("all");
   const [sortBy,   setSortBy]   = useState("ch");
