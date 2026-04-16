@@ -1706,9 +1706,6 @@ export default function AIScreen({ aiAnalysis, onClearAnalysis, commData }) {
               fontSize:28, boxShadow:`0 8px 24px ${C.electric}15`,
             }}><IconBarChart size={28} color={C.electric} /></div>
             <div style={{ fontSize:14, fontWeight:700, color:C.mist, marginBottom:6 }}>اختر السهم ونوع التحليل</div>
-            <div style={{ fontSize:11, color:C.smoke, lineHeight:1.6, marginBottom:18 }}>
-              7 تحليلات متخصصة · GS · MS · BW · JPM · CIT · تحليل عميق
-            </div>
             {/* disclaimer */}
             <div style={{ padding:"8px 12px", background:`${C.amber}08`, border:`1px solid ${C.amber}20`, borderRadius:8 }}>
               <span style={{ fontSize:10, color:C.smoke, lineHeight:1.6 }}><IconWarn size={11} color={C.smoke} style={{marginLeft:4}} /> للأغراض التعليمية فقط · ليس نصيحة استثمارية · راجع مستشاراً مالياً مرخصاً من هيئة CMA</span>
