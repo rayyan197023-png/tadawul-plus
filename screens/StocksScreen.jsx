@@ -67,6 +67,47 @@ function MiniChart({ bars, color, h=40, id="" }) {
   );
 }
 
+const StockCard = React.memo(function StockCard({ stk, bars, flash, openDetail, setFlash, fmtVol }) {
+  const up = stk.ch >= 0;
+  const pc = up ? C.mint : C.coral;
+  const isFlsh = flash === stk.sym;
+  return (
+    <div className="card-stagger" style={{position:"relative",borderRadius:12,overflow:"hidden"}}
+      onClick={()=>{setFlash(stk.sym);setTimeout(()=>setFlash(null),350);openDetail(stk.sym);}}>
+      <div className={`stk-card ${isFlsh?"flash":""}`}
+        style={{background:`linear-gradient(160deg,${C.layer1} 0%,${C.layer2} 100%)`,border:`1px solid ${C.line+"66"}`,boxShadow:`0 1px 6px rgba(0,0,0,.25)`,cursor:"pointer"}}>
+        <div style={{height:3,background:up?`linear-gradient(90deg,${C.mint}00,${C.mint}cc,${C.mint}00)`:`linear-gradient(90deg,${C.coral}00,${C.coral}cc,${C.coral}00)`}}/>
+        <div style={{display:"flex",gap:0}}>
+          <div style={{flexShrink:0,minHeight:60,display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,paddingTop:10,paddingBottom:10,paddingRight:10,paddingLeft:8}}>
+            <div style={{fontSize:14,fontWeight:900,color:C.snow,lineHeight:1,letterSpacing:"-.3px"}}>{stk.name}</div>
+            <span style={{fontSize:11,color:C.ash,background:C.layer3,padding:"1px 5px",borderRadius:4}}>{stk.sym}</span>
+            <div style={{display:"flex",alignItems:"center",gap:2}}>
+              <span style={{fontSize:11,fontWeight:700,color:stk.v>stk.avgV?C.mint:C.ash,fontFamily:"monospace"}}>{fmtVol(stk.v)}</span>
+              {stk.v>stk.avgV*1.3&&<span style={{fontSize:11,color:C.mint}}>↑</span>}
+            </div>
+          </div>
+          <div style={{flex:1,minWidth:0,padding:"10px 8px",display:"flex",alignItems:"center"}}>
+            <MiniChart bars={bars} color={pc} h={40} id={stk.sym}/>
+          </div>
+          <div style={{flexShrink:0,minHeight:60,display:"flex",flexDirection:"column",alignItems:"flex-start",gap:4,paddingTop:10,paddingBottom:10,paddingLeft:8}}>
+            <div className="mono" style={{fontSize:18,fontWeight:900,color:C.snow,direction:"ltr",lineHeight:1,letterSpacing:"-.5px"}}>{stk.p.toFixed(2)}</div>
+            <div style={{display:"inline-flex",alignItems:"center",gap:3,background:pc+"15",border:`1px solid ${pc}30`,borderRadius:5,padding:"2px 7px",direction:"ltr"}}>
+              <span style={{fontSize:11,fontWeight:800,color:pc}}>{up?"+":""}{stk.ch.toFixed(2)}%</span>
+              <span style={{fontSize:9,color:pc,opacity:.45}}>·</span>
+              <span style={{fontSize:11,fontWeight:700,color:pc}}>{up?"+":""}{(stk.p*stk.ch/100).toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}, function(prev, next) {
+  return prev.stk.p === next.stk.p &&
+         prev.stk.ch === next.stk.ch &&
+         prev.stk.v === next.stk.v &&
+         prev.flash === next.flash;
+});
+
 function StocksPage() {
   const haptic                  = useHaptic();
   const liveStocks = useSharedPrices();
