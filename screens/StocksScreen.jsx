@@ -61,8 +61,8 @@ function MiniChart({ bars, color, h=40, id="" }) {
         </linearGradient>
       </defs>
       <polygon points={area} fill={`url(#${gid})`}/>
-      <polyline points={pts} fill="none" stroke={color} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" style={{filter:`drop-shadow(0 0 3px ${color}66)`}}/>
-      <circle cx={W} cy={lastY} r={2.2} fill={color} style={{filter:`drop-shadow(0 0 3px ${color})`}}/>
+      <polyline points={pts} fill="none" stroke={color} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round"/>
+<circle cx={W} cy={lastY} r={2.2} fill={color}/>
     </svg>
   );
 }
