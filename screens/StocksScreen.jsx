@@ -363,13 +363,20 @@ background:C.layer1,border:`1px solid ${C.line}`,borderRadius:16,padding:"16px",
         </div>
 
         {/* قائمة الأسهم */}
-        {isLoading && (
-          <div style={{padding:"10px 16px 0"}}>
-            {Array.from({length:8}).map((_,i)=>(
-              <div key={i} style={{height:64,marginBottom:8,borderRadius:12,background:C.layer1,opacity:0.5}}/>
-            ))}
-          </div>
-        )}
+       {isLoading && (
+  <div style={{padding:"10px 16px 0"}}>
+    {Array.from({length:8}).map((_,i)=>(
+      <div key={i} style={{
+        height:72, marginBottom:8, borderRadius:12,
+        background:'linear-gradient(90deg,#111827 25%,#1a2332 50%,#111827 75%)',
+        backgroundSize:'200% 100%',
+        animation:'shimmer 1.4s ease infinite',
+        animationDelay: i * 0.1 + 's',
+      }}/>
+    ))}
+    <style>{`@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}`}</style>
+  </div>
+)}
 
         {showTop && (
           <button onClick={()=>{ haptic.tap(); listRef.current?.scrollTo({top:0,behavior:'smooth'}); }}
