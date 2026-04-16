@@ -1460,7 +1460,7 @@ const StockRow = React.memo(function StockRow({s,rank,period}){
       </div>
     </div>
   );
-}
+}, (prev, next) => prev.s.p === next.s.p && prev.s.pct === next.s.pct && prev.rank === next.rank);
 
 /* ─── SECTOR SECTION ─── */
 /* ════════════════════════════════════════════════════════════
