@@ -902,7 +902,7 @@ const [filters, setFilters] = useState({
               const up=stk.ch>=0;
               const priceColor=up?C.mint:C.coral;
               const selected=sel===stk.sym;
-              const globalRank=[...allData].sort((a,b)=>b.health.score-a.health.score).findIndex(d=>d.stk.sym===stk.sym)+1;
+              const globalRank = rankMap[stk.sym] || 1;
               const prevRank=globalRank+(stk.ch>=0?-1:1);
               const rankUp=stk.ch>0;
               const isBuy=health.score>=75;
