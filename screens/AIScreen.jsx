@@ -150,7 +150,7 @@ const SYSTEMS = {
 
 function buildPrompt(s, type) {
   const base = dataBlock(s);
-  const pos  = Math.round((s.p - s.lo52) / (s.hi52 - s.lo52) * 100);
+  const pos = Math.round((stock.p - (stock.w52l||stock.lo)) / ((stock.w52h||stock.hi) - (stock.w52l||stock.lo)) * 100) || 0;
   const volR = Math.round(parseFloat(s.vol) / parseFloat(s.avgVol) * 100);
   const fib  = s.hi52 - s.lo52;
   const f = (r) => (s.lo52 + fib * r).toFixed(2);
