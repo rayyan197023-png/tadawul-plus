@@ -46,20 +46,6 @@ export default function ChartScreen({ stk, onClose }) {
       background: '#070b12',
       display: 'flex', flexDirection: 'column',
     }}>
-      {/* Close button */}
-      {onClose && (
-        <button
-          onClick={onClose}
-          style={{
-            position: 'absolute', top: 12, left: 12, zIndex: 10,
-            width: 36, height: 36, borderRadius: 10,
-            background: 'rgba(255,255,255,0.07)',
-            border: '1px solid rgba(255,255,255,0.12)',
-            color: '#fff', fontSize: 18, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}
-        >✕</button>
-      )}
 
       {/* Skeleton while loading */}
       {!loaded && (
