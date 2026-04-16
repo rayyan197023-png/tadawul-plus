@@ -1423,7 +1423,7 @@ export default function AIScreen({ aiAnalysis, onClearAnalysis, commData }) {
 { l:"توزيعات", v:`${stock.divY||0}%` },
 { l:"سعر/دفتري", v:String(stock.bookValue||"-") },
 { l:"بيتا", v:String(stock.sector_beta||"-") },
-{ l:"حجم التداول", v:stock.v },
+{ l:"حجم التداول", v: stock.v >= 1000000 ? (stock.v/1000000).toFixed(1)+"م" : stock.v >= 1000 ? (stock.v/1000).toFixed(0)+"k" : String(stock.v||"-") },
               ].map(m => (
                 <div key={m.l} style={{ background:C.layer1, padding:"10px 6px", textAlign:"center" }}>
                   <div style={{ fontSize:13, fontWeight:800, color:m.alert?C.coral:C.snow, letterSpacing:"-.3px" }}>{m.v}{m.alert ? <IconWarn size={12} color={C.coral} style={{marginRight:3}} /> : ""}</div>
