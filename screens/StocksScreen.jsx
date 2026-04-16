@@ -83,9 +83,10 @@ function StocksPage() {
 
   useEffect(() => {
     const t = setTimeout(() => setIsLoading(false), 1000);
+    setTimeout(() => setVisibleCount(50), 1300);
+    setTimeout(() => setVisibleCount(9999), 1600);
     return () => clearTimeout(t);
   }, []);
-
   useEffect(() => {
     const el = listRef.current;
     if (!el) return;
