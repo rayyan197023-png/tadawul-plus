@@ -411,44 +411,20 @@ background:C.layer1,border:`1px solid ${C.line}`,borderRadius:16,padding:"16px",
                     )}
                     <div style={{display:"flex",flexDirection:"column",gap:5,touchAction:"pan-y"}}>
                       {group.items.slice(0, Math.max(0, visibleCount - globalIdx)).map(({stk,bars})=>{
-                        const up   = stk.ch>=0;
-                        const pc   = up?C.mint:C.coral;
-                        const isFlsh = flash===stk.sym;
-                        const delay  = `${(globalIdx++)*0.04}s`;
-                        return(
-                          <div key={stk.sym} className="card-stagger"
-                            style={{animationDelay:delay,position:"relative",borderRadius:12,overflow:"hidden"}}
-                            onClick={()=>{setFlash(stk.sym);setTimeout(()=>setFlash(null),350);openDetail(stk.sym);}}>
-                            <div className={`stk-card ${isFlsh?"flash":""}`}
-                              style={{background:`linear-gradient(160deg,${C.layer1} 0%,${C.layer2} 100%)`,border:`1px solid ${C.line+"66"}`,boxShadow:`0 1px 6px rgba(0,0,0,.25)`,cursor:"pointer"}}>
-                              <div style={{height:3,background:up
-                                ?`linear-gradient(90deg,${C.mint}00,${C.mint}cc,${C.mint}00)`
-                                :`linear-gradient(90deg,${C.coral}00,${C.coral}cc,${C.coral}00)`}}/>
-                              <div style={{display:"flex",gap:0}}>
-                                <div style={{flexShrink:0,minHeight:60,display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,paddingTop:10,paddingBottom:10,paddingRight:10,paddingLeft:8}}>
-                                  <div style={{fontSize:14,fontWeight:900,color:C.snow,lineHeight:1,letterSpacing:"-.3px"}}>{stk.name}</div>
-                                  <span style={{fontSize:11,color:C.ash,background:C.layer3,padding:"1px 5px",borderRadius:4}}>{stk.sym}</span>
-                                  <div style={{display:"flex",alignItems:"center",gap:2}}>
-                                    <span style={{fontSize:11,fontWeight:700,color:stk.v>stk.avgV?C.mint:C.ash,fontFamily:"monospace"}}>{fmtVol(stk.v)}</span>
-                                    {stk.v>stk.avgV*1.3&&<span style={{fontSize:11,color:C.mint}}>↑</span>}
-                                  </div>
-                                </div>
-                                <div style={{flex:1,minWidth:0,padding:"10px 8px",display:"flex",alignItems:"center"}}>
-                                  <MiniChart bars={bars} color={pc} h={40} id={stk.sym}/>
-                                </div>
-                                <div style={{flexShrink:0,minHeight:60,display:"flex",flexDirection:"column",alignItems:"flex-start",gap:4,paddingTop:10,paddingBottom:10,paddingLeft:8}}>
-                                  <div className="mono" style={{fontSize:18,fontWeight:900,color:C.snow,direction:"ltr",lineHeight:1,letterSpacing:"-.5px"}}>{stk.p.toFixed(2)}</div>
-                                  <div style={{display:"inline-flex",alignItems:"center",gap:3,background:pc+"15",border:`1px solid ${pc}30`,borderRadius:5,padding:"2px 7px",direction:"ltr"}}>
-                                    <span style={{fontSize:11,fontWeight:800,color:pc}}>{up?"+":""}{stk.ch.toFixed(2)}%</span>
-                                    <span style={{fontSize:9,color:pc,opacity:.45}}>·</span>
-                                    <span style={{fontSize:11,fontWeight:700,color:pc}}>{up?"+":""}{(stk.p*stk.ch/100).toFixed(2)}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
+  const delay = `${(globalIdx++)*0.04}s`;
+  return (
+    <StockCard
+      key={stk.sym}
+      stk={stk}
+      bars={bars}
+      flash={flash}
+      openDetail={openDetail}
+      setFlash={setFlash}
+      fmtVol={fmtVol}
+      style={{animationDelay:delay}}
+    />
+  );
+})}
                     </div>
                   </div>
                 ))}
