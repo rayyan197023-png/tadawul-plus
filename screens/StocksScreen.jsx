@@ -366,7 +366,7 @@ background:C.layer1,border:`1px solid ${C.line}`,borderRadius:16,padding:"16px",
                         <div style={{flex:1,height:1,background:`linear-gradient(90deg,${SECTOR_COLORS[group.sec]||C.line}33,transparent)`}}/>
                       </div>
                     )}
-                    <div style={{display:"flex",flexDirection:"column",gap:5}}>
+                    <div style={{display:"flex",flexDirection:"column",gap:5,touchAction:"pan-y"}}>
                       {group.items.map(({stk,bars})=>{
                         const up   = stk.ch>=0;
                         const pc   = up?C.mint:C.coral;
