@@ -121,7 +121,7 @@ const TYPES = [
 
 /* ══ PROMPT ENGINEERING ══ */
 function dataBlock(s) {
-  const pos  = Math.round((s.p - s.lo52) / (s.hi52 - s.lo52) * 100);
+  const pos = Math.round((stock.p - (stock.w52l||stock.lo)) / ((stock.w52h||stock.hi) - (stock.w52l||stock.lo)) * 100) || 0;
   const volR = Math.round(parseFloat(s.vol) / parseFloat(s.avgVol) * 100);
   return `═══ ${s.name} (${s.sym}) - ${s.sec} ═══
 ${s.desc}
