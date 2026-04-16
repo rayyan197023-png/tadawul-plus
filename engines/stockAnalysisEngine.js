@@ -58,9 +58,10 @@ export function calcDCF(stk) {
   const wacc = waccBySector[stk.sectorId] ?? 0.10;
 
   // If FCF is negative, use EPS*0.6 as fallback
-  const rawFCF  = (stk.freeCashFlow !== null && stk.freeCashFlow > 0)
+  const rawFCF = (stk.freeCashFlow != null && stk.freeCashFlow !== 0)
     ? stk.freeCashFlow
-    : (stk.eps ?? 0) * 0.6;
+    : stk.eps != null ? stk.eps * 0.6
+    : stk.p * 0.04;
   // FCF yield cap: max 12% of price — prevents DCF explosion for high-FCF stocks
   // If a stock yields >12% FCF, something is unusual (data error or temporary spike)
   const maxFCF  = stk.p * 0.12;
