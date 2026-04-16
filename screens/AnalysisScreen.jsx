@@ -443,7 +443,9 @@ const [filters, setFilters] = useState({
               <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:6}}>
                 {/* مؤشر تاسي */}
                 <div style={{
-                  background:"linear-gradient(135deg," + C.layer2 + "," + C.layer3 + ")",
+                  background:'linear-gradient(90deg,#111827 25%,#1a2332 50%,#111827 75%)',
+backgroundSize:'200% 100%',
+animation:'shimmer 1.4s ease infinite',
                   borderRadius:14,padding:"8px 14px",textAlign:"center",
                   border:"1px solid " + C.line,
                 }}>
@@ -484,12 +486,16 @@ const [filters, setFilters] = useState({
               {/* Skeleton للـ Glanceable */}
               <div className="skeleton" style={{
                 height:62,borderRadius:14,marginBottom:10,
-                background:"linear-gradient(135deg," + C.layer2 + "," + C.layer3 + ")",
+                background:'linear-gradient(90deg,#111827 25%,#1a2332 50%,#111827 75%)',
+backgroundSize:'200% 100%',
+animation:'shimmer 1.4s ease infinite',
               }}/>
               {/* Skeleton للبطاقة العلوية */}
               <div className="skeleton" style={{
                 height:180,borderRadius:20,marginBottom:10,
-                background:"linear-gradient(135deg," + C.layer2 + "," + C.layer3 + ")",
+                background:'linear-gradient(90deg,#111827 25%,#1a2332 50%,#111827 75%)',
+backgroundSize:'200% 100%',
+animation:'shimmer 1.4s ease infinite',
               }}/>
               {/* Skeleton لبطاقات الأسهم */}
               {[1,2,3].map(function(i){
