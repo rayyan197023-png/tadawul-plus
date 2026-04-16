@@ -86,7 +86,7 @@ const [filters, setFilters] = useState({
   useEffect(()=>{
     setAnim(true);
     // محاكاة وقت التحليل
-    const t = setTimeout(function(){ setLoading(false); }, 1400);
+    const t = setTimeout(function(){ setLoading(false); }, 800);
     return function(){ clearTimeout(t); };
   },[]);
 
