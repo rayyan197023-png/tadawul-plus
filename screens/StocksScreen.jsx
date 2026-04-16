@@ -78,6 +78,7 @@ function StocksPage() {
   const [isLoading,setIsLoading]= useState(true);
   const [showTop,  setShowTop]  = useState(false);
   const [showFilter, setShowFilter] = useState(false);
+const [visibleCount, setVisibleCount] = useState(20);
   const scrollPos = useRef(0);
   const listRef   = useRef(null);
 
