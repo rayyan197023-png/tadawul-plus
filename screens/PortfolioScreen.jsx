@@ -17,7 +17,7 @@
  * مطابق 100٪ للملف الأصلي مع تحويل Next.js
  */
 
-import { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useHaptic } from '../hooks/useHaptic';
 import { genBars, stockHealth } from '../engines/analysisEngine';
 import { STOCKS } from '../constants/stocksData';
