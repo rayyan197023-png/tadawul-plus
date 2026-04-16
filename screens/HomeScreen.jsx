@@ -1425,7 +1425,7 @@ function HomeContent({idx,chgP,market,liveStocks=[],isLoadingH=false,isRefreshin
 }
 
 /* ─── STOCK ROW ─── */
-function StockRow({s,rank,period}){
+const StockRow = React.memo(function StockRow({s,rank,period}){
   const { openStock } = useNav();
   const up=s.pct>=0;
   return(
