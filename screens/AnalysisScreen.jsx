@@ -502,7 +502,9 @@ animation:'shimmer 1.4s ease infinite',
                 return(
                   <div key={i} className="skeleton" style={{
                     height:130,borderRadius:18,marginBottom:10,
-                    background:"linear-gradient(135deg," + C.layer2 + "," + C.layer3 + ")",
+                    background:'linear-gradient(90deg,#111827 25%,#1a2332 50%,#111827 75%)',
+backgroundSize:'200% 100%',
+animation:'shimmer 1.4s ease infinite',
                     animationDelay: (i*0.15) + "s",
                   }}/>
                 );
@@ -531,7 +533,9 @@ animation:'shimmer 1.4s ease infinite',
           {!loading&&(
           <div style={{
             margin:"10px 16px 4px",
-            background:"linear-gradient(135deg," + C.layer2 + "," + C.layer3 + ")",
+            background:'linear-gradient(90deg,#111827 25%,#1a2332 50%,#111827 75%)',
+backgroundSize:'200% 100%',
+animation:'shimmer 1.4s ease infinite',
             borderRadius:14,padding:"10px 14px",
             border:"1px solid " + tempColor + "22",
             display:"flex",alignItems:"center",
