@@ -110,7 +110,10 @@ function StocksPage() {
 
   useEffect(()=>{ const t=setInterval(()=>setNow(new Date()),30000); return()=>clearInterval(t); },[]);
 
-  const allData = useMemo(()=>liveStocks.map(stk=>({stk, bars:genBars(stk)})), [liveStocks]);
+  const allData = useMemo(()=>liveStocks.map(stk=>{
+  if(!barsCache.current[stk.sym]) barsCache.current[stk.sym] = genBars(stk);
+  return {stk, bars:barsCache.current[stk.sym]};
+}), [liveStocks]);
   const SECTORS = useMemo(()=>[...new Set(STOCKS.map(s=>s.sec))],[]);
 
   const changeTab = v => { haptic.tap(); setTab(v); };
