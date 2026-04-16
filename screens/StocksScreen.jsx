@@ -369,7 +369,7 @@ background:C.layer1,border:`1px solid ${C.line}`,borderRadius:16,padding:"16px",
                       </div>
                     )}
                     <div style={{display:"flex",flexDirection:"column",gap:5,touchAction:"pan-y"}}>
-                      {group.items.map(({stk,bars})=>{
+                      {group.items.slice(0, Math.max(0, visibleCount - globalIdx)).map(({stk,bars})=>{
                         const up   = stk.ch>=0;
                         const pc   = up?C.mint:C.coral;
                         const isFlsh = flash===stk.sym;
