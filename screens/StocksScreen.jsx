@@ -116,7 +116,7 @@ function StocksPage() {
 }), [liveStocks]);
   const SECTORS = useMemo(()=>[...new Set(STOCKS.map(s=>s.sec))],[]);
 
-  const changeTab = v => { haptic.tap(); setTab(v); };
+  const changeTab = v => { haptic.tap(); startTransition(() => setTab(v)); };
   const changeSortBy = v => { setSortBy(v); setShowFilter(false); window.scrollTo({top:0,behavior:"smooth"}); };
 
   const filtered = useMemo(()=>{
