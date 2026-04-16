@@ -1418,12 +1418,12 @@ export default function AIScreen({ aiAnalysis, onClearAnalysis, commData }) {
             {/* metrics grid */}
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:1, background:C.edge, borderRadius:8, overflow:"hidden", marginBottom:10 }}>
               {[
-                { l:"مكرر الربح",   v:String(stock.pe), alert:stock.pe>50 },
-                { l:"عائد حقوق",   v:`${stock.roe}%` },
-                { l:"توزيعات", v:`${stock.div}%` },
-                { l:"سعر/دفتري",   v:String(stock.pb) },
-                { l:"بيتا",  v:String(stock.beta) },
-                { l:"حجم التداول",   v:stock.vol },
+                { l:"مكرر الربح", v:String(stock.pe), alert:stock.pe>50 },
+{ l:"عائد حقوق", v:`${stock.roe}%` },
+{ l:"توزيعات", v:`${stock.divY||0}%` },
+{ l:"سعر/دفتري", v:String(stock.bookValue||"-") },
+{ l:"بيتا", v:String(stock.sector_beta||"-") },
+{ l:"حجم التداول", v:stock.v },
               ].map(m => (
                 <div key={m.l} style={{ background:C.layer1, padding:"10px 6px", textAlign:"center" }}>
                   <div style={{ fontSize:13, fontWeight:800, color:m.alert?C.coral:C.snow, letterSpacing:"-.3px" }}>{m.v}{m.alert ? <IconWarn size={12} color={C.coral} style={{marginRight:3}} /> : ""}</div>
