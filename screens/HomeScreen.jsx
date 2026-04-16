@@ -699,22 +699,7 @@ function TopBar({idx,chgP,showDemoBadge}){
         <span style={{fontSize:13,fontWeight:800,color:T1,letterSpacing:"-.3px",direction:"ltr"}}>{idx.toLocaleString("en-US")}</span>
         <span style={{fontSize:12,color:G,fontWeight:700}}>+{chgP}%</span>
       </div>
-
-      {/* LEFT: Bell */}
-      <div style={{
-        width:38,height:38,borderRadius:11,background:CARD2,
-        display:"flex",alignItems:"center",justifyContent:"center",
-        position:"relative",border:"1px solid rgba(255,255,255,.07)",
-      }}>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T2} strokeWidth="2">
-          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-          <path d="M13.73 21a2 2 0 01-3.46 0"/>
-        </svg>
-        <div style={{
-          position:"absolute",top:8,right:8,width:7,height:7,
-          background:GOLD,borderRadius:"50%",border:"1.5px solid "+BG,
-        }}/>
-      </div>
+      
         </div>
   );
 }
