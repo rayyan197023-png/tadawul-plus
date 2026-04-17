@@ -581,6 +581,11 @@ export default function PortfolioScreen() {
   }, []); // تُحسب مرة واحدة — STOCKS ثابتة
 
   var stocks = STOCKS;
+const [isLoading, setIsLoading] = useState(true);
+useEffect(() => {
+  const t = setTimeout(() => setIsLoading(false), 600);
+  return () => clearTimeout(t);
+}, []);
 
   // ======= دالة مساعدة للـ localStorage =======
   function loadLS(key, fallback) {
