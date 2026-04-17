@@ -1042,8 +1042,22 @@ useEffect(() => {
   var addIsOver=foundHealthPct>0&&addWeightVal>foundHealthPct*1.3;
   var addCostPreview=canAdd?{cost:addCostVal,weight:addWeightVal,isOver:addIsOver,idealPct:foundHealthPct}:null;
   return (
-    <div style={{maxWidth:430,margin:"0 auto",background:C.ink,minHeight:"100vh",fontFamily:"Cairo,system-ui,sans-serif",direction:"rtl",color:C.snow,position:"relative",overflowX:"hidden"
-}}>
+ <div style={{maxWidth:430,margin:"0 auto",background:C.ink,minHeight:"100vh",fontFamily:"Cairo,system-ui,sans-serif",direction:"rtl",color:C.snow,position:"relative",overflowX:"hidden"}}>
+
+{isLoading ? (
+  <div style={{padding:"80px 16px 16px"}}>
+    {Array.from({length:5}).map((_,i)=>(
+      <div key={i} style={{
+        height:80, marginBottom:10, borderRadius:14,
+        background:'linear-gradient(90deg,#111827 25%,#1a2332 50%,#111827 75%)',
+        backgroundSize:'200% 100%',
+        animation:'shimmer 1.4s ease infinite',
+        animationDelay: i * 0.1 + 's',
+      }}/>
+    ))}
+    <style>{`@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}`}</style>
+  </div>
+) : (
       <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0,overflow:"hidden"}}>
         {[{w:300,h:300,t:"-8%",r:"-15%",c:C.gold+"08",dur:"18s",an:"particle0"},{w:240,h:240,t:"55%",r:"-8%",c:C.gold+"06",dur:"22s",an:"particle1"},{w:260,h:260,t:"25%",r:"65%",c:C.electric+"07",dur:"16s",an:"particle2"},{w:180,h:180,t:"75%",r:"18%",c:C.electric+"05",dur:"24s",an:"particle3"}].map(function(pp,i){return(
           <div key={i} style={{position:"absolute",width:pp.w,height:pp.h,borderRadius:"50%",background:"radial-gradient(circle,"+pp.c+" 0%,transparent 70%)",top:pp.t,right:pp.r,animation:pp.an+" "+pp.dur+" ease-in-out infinite"}}/>
