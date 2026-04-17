@@ -67,7 +67,7 @@ export default function StockFundamentalTab({ stk }) {
 
       {/* DCF Valuation */}
       <Section title="تقييم التدفقات النقدية DCF">
-        {true ? (
+        {dcf.intrinsicValue != null ? (
           <>
             <Row label="القيمة العادلة" value={dcf.intrinsicValue + ' ر.س'}
               color={dcf.upside > 0 ? C.positive : C.negative} />
