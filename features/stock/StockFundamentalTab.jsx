@@ -73,7 +73,7 @@ export default function StockFundamentalTab({ stk }) {
               color={dcf.upside > 0 ? C.positive : C.negative} />
             <Row label="السعر الحالي" value={stk.p.toFixed(2) + ' ر.س'} />
             <Row label="هامش الأمان"
-              value={(dcf.upside > 0 ? '+' : '') + dcf.upside + '%'}
+              value={dcf.upside != null ? (dcf.upside > 0 ? '+' : '') + dcf.upside + '%' : '-'}
               color={dcf.upside > 0 ? C.positive : C.negative}
               sub={dcf.upside > 30 ? 'مقيّم بأقل من قيمته' : dcf.upside > 0 ? 'قريب من القيمة' : 'مقيّم بأكثر من قيمته'} />
             <div style={{ marginTop: 10, background: scoreColor(Math.max(0, 50 + dcf.upside)) + '15', borderRadius: 10, padding: '8px 12px', border: `1px solid ${scoreColor(Math.max(0, 50 + dcf.upside))}30` }}>
