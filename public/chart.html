@@ -11130,10 +11130,10 @@ function _recalcDrawingCoords(){
 
     try{
       // Pattern tools
-      if(d._ptsData&&Array.isArray(d._ptsData)&&d.pts){
+            if(d._ptsData&&Array.isArray(d._ptsData)&&d.pts){
         const newPts=d._ptsData.map(pd=>{
           const vi=_resolve(pd.idx,pd.t);
-          return{x:vi>=0?_tx(vi):0, y:pd.price!=null?_ty(pd.price):0};
+          return{x:vi>-9999?_tx(vi):0, y:pd.price!=null?_ty(pd.price):0};
         });
         d.pts=newPts;
         if(newPts.length){d.p1=newPts[0];d.p2=newPts[newPts.length-1];}
