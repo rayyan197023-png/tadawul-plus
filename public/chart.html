@@ -8701,6 +8701,7 @@ cv.addEventListener('touchmove',e=>{
  d.width=Math.max(5,Math.abs((pt.x-mx)*nx+(pt.y-my)*ny));
  } else if(drResH===0){d.p1={x:pt.x,y:pt.y};}
  else{if(d.tool==='hline')d.p1.y=pt.y;else d.p2={x:pt.x,y:pt.y};}
+ if(typeof _enrichDrawing==='function')_enrichDrawing(d);
  render();
  }return;
  }
