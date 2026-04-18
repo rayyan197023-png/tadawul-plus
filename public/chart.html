@@ -11119,9 +11119,12 @@ function _recalcDrawingCoords(){
       const f=_tsToGIdx(ts);
       if(f>=0)r=f;
     }
-    if(r==null)return -1;
-    return Math.max(0,Math.min(n-1,r-start));
+        if(r==null)return -1;
+    const vi=r-start;
+    if(vi<-1000||vi>n+1000)return -1;
+    return vi;
   };
+
 
   state.drawings.forEach(d=>{
     if(d._ai)return; // AI drawings handled inline in render()
