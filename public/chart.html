@@ -11113,16 +11113,14 @@ function _recalcDrawingCoords(){
     }
     return Math.max(0,Math.min(nAll-1,lo));
   };
-  const _resolve=(gIdx,ts)=>{
+    const _resolve=(gIdx,ts)=>{
     let r=gIdx;
     if(ts){
       const f=_tsToGIdx(ts);
       if(f>=0)r=f;
     }
-        if(r==null)return -1;
-    const vi=r-start;
-    if(vi<-1000||vi>n+1000)return -1;
-    return vi;
+    if(r==null)return -9999;
+    return r-start;
   };
 
 
