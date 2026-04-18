@@ -11171,18 +11171,18 @@ function _recalcDrawingCoords(){
         }
         return;
       }
-      // Generic 2-point
+            // Generic 2-point
       const p1price=(d._p1price!=null)?d._p1price:d._p1_price;
       const p1gi=(d._p1idx!=null)?d._p1idx:d._p1_idx;
       if(p1price!=null&&p1gi!=null){
         const vi=_resolve(p1gi,d._p1_t);
-        if(vi>=-1000&&vi<=n+1000)d.p1={x:_tx(vi),y:_ty(p1price)};
+        if(vi>-9999)d.p1={x:_tx(vi),y:_ty(p1price)};
       }
       const p2price=(d._p2price!=null)?d._p2price:d._p2_price;
       const p2gi=(d._p2idx!=null)?d._p2idx:d._p2_idx;
       if(p2price!=null&&p2gi!=null){
         const vi=_resolve(p2gi,d._p2_t);
-        if(vi>=0)d.p2={x:_tx(vi),y:_ty(p2price)};
+        if(vi>-9999)d.p2={x:_tx(vi),y:_ty(p2price)};
       }
     }catch(e){/* drawing conversion failed — skip */}
   });
