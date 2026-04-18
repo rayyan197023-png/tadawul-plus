@@ -8149,9 +8149,9 @@ function _enrichDrawing(d){
     // Panel heights (mirror render)
     const _gph=(typeof getPanelH==='function')?getPanelH:(k,h,d)=>Math.round(h*d);
     const VOL_H=_gph('vol',H,0.14);
-    const _inds=(state.inds||[]);
-    const SUB_BASE=['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD']
-      .filter(id=>_inds.indexOf(id)>=0);
+      const _inds=(state.activeInds||state.inds||[]);
+  const SUB_BASE=['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD']
+    .filter(id=>_inds.indexOf(id)>=0);
     const SUB_IDS=(typeof activeStrategy!=='undefined'&&activeStrategy==='TRIPLE_SCR'&&SUB_BASE.indexOf('MACD')<0)
       ?['MACD'].concat(SUB_BASE):SUB_BASE.slice();
     if(typeof customInds!=='undefined'&&customInds&&customInds.length){
