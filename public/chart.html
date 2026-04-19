@@ -3517,8 +3517,7 @@ function render(){
  _offValid=false; // will be set true after chart is drawn
  _checkIndAlerts();
  requestAnimationFrame(_updateZoomCtrlPos);
-  if(typeof _recalcDrawingCoords==='function')_recalcDrawingCoords();
-
+  
  const all=state.allCandles;
  if(!all.length)return;
  const YW=38, CW=W-YW;
