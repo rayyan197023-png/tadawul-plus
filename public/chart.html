@@ -8189,7 +8189,7 @@ function updateP2(pt) {
 
 
 function _enrichDrawing(d){
-    setTimeout(()=>{try{alert('ENRICH tool='+d.tool+' _p1_idx='+d._p1_idx+'\nLAST_RENDER: '+(window._lastDbg||'NONE'));}catch(e){}},500);
+      setTimeout(()=>{try{alert('BEFORE_RENDER p1.x='+(d.p1?d.p1.x:'null'));if(typeof render==='function')render();setTimeout(()=>{alert('AFTER_RENDER p1.x='+(d.p1?d.p1.x:'null')+'\nLAST_RENDER: '+(window._lastDbg||'NONE'));},200);}catch(e){}},500);
   // ────────────────────────────────────────────────────────────────
   // Computes data coords from pixel coords using EXACT same math as
   // render(). Accounts for: yScale, logScale, dynamic panel heights,
