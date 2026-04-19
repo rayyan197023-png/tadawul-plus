@@ -8706,7 +8706,8 @@ cv.addEventListener('touchmove',e=>{
  d.width=Math.max(5,Math.abs((pt.x-mx)*nx+(pt.y-my)*ny));
  } else if(drResH===0){d.p1={x:pt.x,y:pt.y};}
  else{if(d.tool==='hline')d.p1.y=pt.y;else d.p2={x:pt.x,y:pt.y};}
- render();
+ if(typeof _enrichDrawing==='function')_enrichDrawing(d);
+ render()
  }return;
  }
  if(drMode==='drag'&&drSelId!=null&&drDragP1){const d=state.drawings.find(d=>d.id===drSelId);if(d){const dx=pt.x-drX0,dy=pt.y-drY0;d.p1={x:drDragP1.x+dx,y:drDragP1.y+dy};if(d.p2&&drDragP2)d.p2={x:drDragP2.x+dx,y:drDragP2.y+dy};if(d.pts&&drDragPts)d.pts=drDragPts.map(p=>({x:p.x+dx,y:p.y+dy}));render();}return;}
