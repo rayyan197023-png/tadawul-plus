@@ -3748,6 +3748,7 @@ function render(){
     const p1gi=d._p1idx??d._p1_idx;
     if(p1pr!=null&&p1gi!=null){
      const vi=_rs(p1gi,d._p1_t);
+     if(d.tool==='trend')window._lastDbg='gi='+p1gi+' vi='+vi+' x='+tx(vi)+' y='+ty(p1pr)+' start='+start;
      if(vi>-9999)d.p1={x:tx(vi),y:ty(p1pr)};
     }
     const p2pr=d._p2price??d._p2_price;
