@@ -3521,6 +3521,48 @@ function render(){
  const ty=logScale&&logMn>0&&logMx>0&&logMx>logMn
  ? v=>cTop+cH-(Math.log(Math.max(0.01,v)/logMn)/Math.log(logMx/logMn))*cH
  : v=>cTop+cH-((v-mn)/rng)*cH;
+  if(state.drawings&&state.drawings.length){
+  state.drawings.forEach(d=>{
+   if(d._ai)return;
+   try{
+    if(d._ptsData&&Array.isArray(d._ptsData)&&d.pts){
+     d.pts=d._ptsData.map(pd=>{
+      const vi=(pd.idx!=null)?pd.idx-start:-9999;
+      return{x:vi>-9999?tx(vi):0,y:pd.price!=null?ty(pd.price):0};
+     });
+     if(d.pts.length){d.p1=d.pts[0];d.p2=d.pts[d.pts.length-1];}
+     return;
+    }
+    if(d.tool==='hline'){
+     const pr=d._p1price??d._p1_price??d._price;
+     if(pr!=null){const y=ty(pr);d.p1={x:0,y:y};d.p2={x:CW,y:y};}
+     return;
+    }
+    if(d.tool==='vline'){
+     const gi=d._p1idx??d._p1_idx;
+     if(gi!=null){const x=tx(gi-start);d.p1={x:x,y:cTop};d.p2={x:x,y:cBot};}
+     return;
+    }
+    if(d.tool==='hbrush'){
+     const pr=d._p1price??d._p1_price;
+     const pr2=d._p2price??d._p2_price;
+     if(pr!=null){const y1=ty(pr);const y2=pr2!=null?ty(pr2):y1+30;
+      d.p1={x:0,y:y1};d.p2={x:CW,y:y2};}
+     return;
+    }
+    const p1pr=d._p1price??d._p1_price;
+    const p1gi=d._p1idx??d._p1_idx;
+    if(p1pr!=null&&p1gi!=null){
+     d.p1={x:tx(p1gi-start),y:ty(p1pr)};
+    }
+    const p2pr=d._p2price??d._p2_price;
+    const p2gi=d._p2idx??d._p2_idx;
+    if(p2pr!=null&&p2gi!=null){
+     d.p2={x:tx(p2gi-start),y:ty(p2pr)};
+    }
+   }catch(e){}
+  });
+ }
  const tvy=v=>vBot-(v/mv)*(vBot-vTop);
  const lastC=sub[n-1]?.c||state.stk.p;
  const isUp=lastC>=(sub[0]?.c||state.stk.p);
