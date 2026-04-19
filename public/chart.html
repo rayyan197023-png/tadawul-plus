@@ -3760,6 +3760,7 @@ function render(){
    }catch(e){}
   });
  }
+  if(state.drawings[0]&&!window._didDbg){window._didDbg=true;setTimeout(()=>{window._didDbg=false;try{alert('AFTER_RECALC\np1.x='+state.drawings[0].p1.x+' p2.x='+state.drawings[0].p2.x+'\nstart='+start+' n='+n);}catch(e){}},1000);}
  const tvy=v=>vBot-(v/mv)*(vBot-vTop);
  const lastC=sub[n-1]?.c||state.stk.p;
  const isUp=lastC>=(sub[0]?.c||state.stk.p);
