@@ -3702,6 +3702,7 @@ function render(){
  : v=>cTop+cH-((v-mn)/rng)*cH;
   // Recalc drawing pixel coords using EXACT same tx/ty as candles
  if(state.drawings&&state.drawings.length){
+   console.log('RECALC_START drawings='+state.drawings.length+' start='+start+' n='+n);
   const _tsToG=(ts)=>{
    if(!ts)return -1;
    let lo=0,hi=all.length-1;
