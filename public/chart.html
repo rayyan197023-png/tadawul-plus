@@ -3744,18 +3744,18 @@ function render(){
       d.p1={x:0,y:y1};d.p2={x:CW,y:y2};}
      return;
     }
-    const p1pr=d._p1price??d._p1_price;
+        const p1pr=d._p1price??d._p1_price;
     const p1gi=d._p1idx??d._p1_idx;
     if(p1pr!=null&&p1gi!=null){
-     const vi=_rs(p1gi,d._p1_t);
-     if(d.tool==='trend')window._lastDbg='gi='+p1gi+' vi='+vi+' x='+tx(vi)+' y='+ty(p1pr)+' start='+start;
-     if(vi>-9999)d.p1={x:tx(vi),y:ty(p1pr)};
+     const vi1=p1gi-start;
+     d.p1={x:tx(vi1),y:ty(p1pr)};
     }
     const p2pr=d._p2price??d._p2_price;
     const p2gi=d._p2idx??d._p2_idx;
     if(p2pr!=null&&p2gi!=null){
-     const vi=_rs(p2gi,d._p2_t);
-     if(vi>-9999)d.p2={x:tx(vi),y:ty(p2pr)};
+     const vi2=p2gi-start;
+     d.p2={x:tx(vi2),y:ty(p2pr)};
+    }
     }
    }catch(e){}
   });
