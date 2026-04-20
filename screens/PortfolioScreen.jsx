@@ -832,14 +832,13 @@ useEffect(() => {
   }
 
   // ══════════════════════════════════════════════
-  // 🧪 اختبار الخطوة 5 -- مقاييس العوائد (مؤقت)
+  // 🧪 اختبار الخطوة 6 -- العوائد + التذبذب (مؤقت)
   // ══════════════════════════════════════════════
   useEffect(function(){
     if (!positions || positions.length === 0) return;
 
-    console.log('📊 ═══════ تحليل المحفظة (الخطوة 5) ═══════');
+    console.log('📊 ═══════ تحليل المحفظة (الخطوة 6) ═══════');
 
-    // تجهيز positions مع bars
     var positionsWithBars = positions.map(function(p) {
       var bars = genBars(p.stk, 60);
       return {
@@ -851,19 +850,25 @@ useEffect(() => {
     });
 
     var analysis = analyzePortfolio(positionsWithBars, []);
+    var perf = analysis.performance;
 
     console.log('💰 القيمة الإجمالية:', analysis.totalValue.toLocaleString(), 'ر.س');
     console.log('📊 عدد الأسهم:', analysis.stockCount);
-    console.log('⚖️ أوزان الأسهم:', analysis.weights);
     console.log('');
     console.log('📈 مقاييس العائد:');
-    console.log('   • العائد اليومي المتوسط:', (analysis.performance.dailyReturn * 100).toFixed(3) + '%');
-    console.log('   • العائد التراكمي:', (analysis.performance.cumulativeReturn * 100).toFixed(2) + '%');
-    console.log('   • العائد السنوي المتوقع:', (analysis.performance.annualReturn * 100).toFixed(2) + '%');
-    console.log('   • فترة الحساب:', analysis.performance.periodDays, 'يوم');
+    console.log('   • عائد يومي:', (perf.dailyReturn * 100).toFixed(3) + '%');
+    console.log('   • عائد تراكمي:', (perf.cumulativeReturn * 100).toFixed(2) + '%');
+    console.log('   • عائد سنوي متوقع:', (perf.annualReturn * 100).toFixed(2) + '%');
+    console.log('');
+    console.log('📉 مقاييس التذبذب:');
+    console.log('   • تذبذب يومي:', (perf.volatilityDaily * 100).toFixed(3) + '%');
+    console.log('   • تذبذب سنوي:', (perf.volatility * 100).toFixed(2) + '%');
+    console.log('   • التصنيف:', perf.volatilityLabel);
+    console.log('');
+    console.log('💡 نسبة العائد/التذبذب:', (perf.annualReturn / perf.volatility).toFixed(2));
     console.log('═══════════════════════════════════════');
   }, [positions]);
-  var positions=useMemo(function(){
+    var positions=useMemo(function(){
     var tv=port.reduce(function(s,pp){var stk=sl.find(function(x){return x.sym===pp.sym;});return s+(stk?stk.p:pp.avgCost)*pp.qty;},0)||1;
     return port.map(function(pp){
       var stk=sl.find(function(x){return x.sym===pp.sym;})||{sym:pp.sym,name:pp.sym,p:pp.avgCost,ch:0,sec:"-"};
