@@ -267,12 +267,11 @@ export function analyzePortfolio(positions, tasiBars) {
     })(),
         
 
-        // Position Sizing -- Kelly Criterion (الخطوة 20 ✅)
+            // Position Sizing -- Kelly + 2% Rule (الخطوات 20-21 ✅)
     positionSizing: (function() {
       var portfolioReturns = calcPortfolioReturns(positions, weights);
-      // تقدير Kelly inputs من عوائد المحفظة
+      // ⭐ Kelly Criterion -- الخطوة 20
       var kellyInputs = estimateKellyInputs(portfolioReturns);
-      // حساب Kelly Criterion
       var kellyResult = calcKellyCriterion(
         kellyInputs.winProbability,
         kellyInputs.winLossRatio,
@@ -281,6 +280,24 @@ export function analyzePortfolio(positions, tasiBars) {
           kellyFraction: 0.25,
           portfolioValue: totalValue,
         }
+      );
+      // ⭐ 2% Rule -- الخطوة 21
+      // نستخدم متوسط أسعار المحفظة كمرجع
+      var avgPrice = 0;
+      var validPositions = 0;
+      for (var i = 0; i < positions.length; i++) {
+        if (positions[i].stk && positions[i].stk.p > 0) {
+          avgPrice += positions[i].stk.p;
+          validPositions++;
+        }
+      }
+      avgPrice = validPositions > 0 ? avgPrice / validPositions : 50;
+
+      var twoPercentResult = calcTwoPercentRule(
+        totalValue,
+        avgPrice,
+        avgPrice * 0.93, // وقف خسارة 7% افتراضي
+        0.02 // 2% مخاطرة
       );
       return {
         // Kelly
@@ -292,16 +309,28 @@ export function analyzePortfolio(positions, tasiBars) {
         kellyClass: kellyResult.classification,
         kellyLabel: kellyResult.label,
         kellyInterpretation: kellyResult.interpretation,
-        // Inputs
+        // Kelly Inputs
         winProbability: kellyInputs.winProbability,
         winLossRatio: kellyInputs.winLossRatio,
         avgWin: kellyInputs.avgWin,
         avgLoss: kellyInputs.avgLoss,
         winCount: kellyInputs.winCount,
         lossCount: kellyInputs.lossCount,
+        // ⭐ 2% Rule -- الخطوة 21
+        twoPercent: {
+          maxShares: twoPercentResult.maxShares,
+          positionValueSAR: twoPercentResult.positionValueSAR,
+          riskSAR: twoPercentResult.riskSAR,
+          positionPercent: twoPercentResult.positionPercent,
+          stopLossPercent: twoPercentResult.stopLossPercent,
+          stopLossPrice: twoPercentResult.stopLossPrice,
+          classification: twoPercentResult.classification,
+          label: twoPercentResult.label,
+          interpretation: twoPercentResult.interpretation,
+          warning: twoPercentResult.warning,
+        },
       };
     })(),
-
     // التقييم النهائي (سيُضاف في المرحلة 6)
     healthScore: null,
     healthGrade: null,
