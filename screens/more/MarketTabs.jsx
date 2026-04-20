@@ -7,6 +7,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { C, Ico, SentimentGauge, MiniLine, SparkLine, TagFilter, SectionHeader, COMM, RANKINGS } from './MoreShared';
 import { useNav } from '../../store';
 const RankItem = React.memo(function RankItem({ s, i, rField, BOX, SHD, SHD_ACTIVE }) {
+  const { openStock } = useNav();
   const isBig = i < 3;
   return (
     <div className={"card-enter "+(s.pct>2?"buy-glow":s.pct<-2?"danger-pulse":"")} style={{
