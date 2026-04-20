@@ -1193,7 +1193,7 @@ function WatchlistTab(props) {
           var stock=live||base2||{};
           var isPos=(stock.pct||0)>=0;
           return(
-            <div key={w.sym} className={"card-enter "+(isPos?"buy-glow":"danger-pulse")} style={{background:BOX,borderRadius:16,padding:"14px 16px",border:"1px solid "+(isPos?C.mint:C.coral)+"22",boxShadow:SHD,position:"relative",overflow:"hidden"}}>
+            <div key={w.sym} onClick={function(e){if(e.target.closest("button"))return;if(typeof onStockSelect==="function")onStockSelect(w.sym);}} className={"card-enter "+(isPos?"buy-glow":"danger-pulse")} style={{background:BOX,borderRadius:16,padding:"14px 16px",border:"1px solid "+(isPos?C.mint:C.coral)+"22",boxShadow:SHD,position:"relative",overflow:"hidden",cursor:"pointer"}}>
               <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,transparent,"+(isPos?C.mint:C.coral)+",transparent)"}}/>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
                 <div style={{display:"flex",gap:8,alignItems:"center"}}>
