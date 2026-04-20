@@ -2824,6 +2824,158 @@ export function calcTrailingStop(bars, multiplier) {
   };
 }
 /* ══════════════════════════════════════════════════════════
+   ㉒ Stress Tests -- اختبارات الإجهاد
+   سيناريوهات تاريخية كارثية للسوق السعودي
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * سيناريوهات اختبار الإجهاد -- مُعايرة للسوق السعودي
+ */
+var STRESS_SCENARIOS = [
+  {
+    id: 'oil_crash_2015',
+    name: 'انهيار النفط 2015',
+    icon: '🛢️',
+    description: 'تاسي -20% خلال 3 أشهر مع انهيار النفط',
+    tasiShock: -0.20,
+    oilShock: -0.50,
+    severity: 'high',
+    historical: true,
+  },
+  {
+    id: 'covid_2020',
+    name: 'جائحة كورونا 2020',
+    icon: '🦠',
+    description: 'تاسي -24% في مارس 2020',
+    tasiShock: -0.24,
+    oilShock: -0.65,
+    severity: 'extreme',
+    historical: true,
+  },
+  {
+    id: 'saudi_correction',
+    name: 'تصحيح عادي -10%',
+    icon: '📉',
+    description: 'تصحيح نموذجي يحدث كل 1-2 سنة',
+    tasiShock: -0.10,
+    oilShock: -0.15,
+    severity: 'moderate',
+    historical: false,
+  },
+  {
+    id: 'crash_2006',
+    name: 'انهيار السوق 2006',
+    icon: '💥',
+    description: 'أسوأ انهيار في تاريخ تاسي (-65%)',
+    tasiShock: -0.65,
+    oilShock: 0,
+    severity: 'catastrophic',
+    historical: true,
+  },
+  {
+    id: 'black_swan',
+    name: 'البجعة السوداء',
+    icon: '🦢',
+    description: 'أسوأ سيناريو ممكن -35%',
+    tasiShock: -0.35,
+    oilShock: -0.70,
+    severity: 'catastrophic',
+    historical: false,
+  },
+];
+
+/**
+ * تشغيل اختبار إجهاد على المحفظة
+ *
+ * المنهجية:
+ * - نستخدم Portfolio Beta لتقدير تأثير صدمة السوق
+ * - Expected Loss = Portfolio Value × Beta × TASI Shock
+ * - نموذج CAPM المبسط للصدمات
+ *
+ * @param {number} portfolioValue - قيمة المحفظة
+ * @param {number} portfolioBeta - Beta المحفظة vs تاسي
+ * @returns {Array} نتائج جميع السيناريوهات
+ */
+export function runStressTests(portfolioValue, portfolioBeta) {
+  if (!portfolioValue || portfolioValue <= 0) {
+    return [];
+  }
+
+  if (portfolioBeta === undefined || portfolioBeta === null) {
+    portfolioBeta = 1.0;
+  }
+
+  var results = [];
+
+  for (var i = 0; i < STRESS_SCENARIOS.length; i++) {
+    var scenario = STRESS_SCENARIOS[i];
+
+    // ① التأثير من صدمة تاسي (عبر Beta)
+    var tasiImpact = portfolioBeta * scenario.tasiShock;
+
+    // ② الخسارة المتوقعة كنسبة
+    var expectedLossPct = tasiImpact;
+
+    // ③ الخسارة بالريال
+    var expectedLossSAR = portfolioValue * expectedLossPct;
+
+    // ④ القيمة المتوقعة بعد الصدمة
+    var afterShockValue = portfolioValue * (1 + expectedLossPct);
+
+    // ⑤ أيام التعافي المتوقعة (تقدير من التاريخ)
+    var recoveryDays;
+    if (Math.abs(expectedLossPct) < 0.10) {
+      recoveryDays = '30-60';
+    } else if (Math.abs(expectedLossPct) < 0.20) {
+      recoveryDays = '90-180';
+    } else if (Math.abs(expectedLossPct) < 0.35) {
+      recoveryDays = '365-730';
+    } else {
+      recoveryDays = '730+';
+    }
+
+    // ⑥ التقييم
+    var severity, severityColor;
+    if (Math.abs(expectedLossPct) < 0.10) {
+      severity = 'قابل للتحمل';
+      severityColor = 'mint';
+    } else if (Math.abs(expectedLossPct) < 0.20) {
+      severity = 'مؤلم';
+      severityColor = 'amber';
+    } else if (Math.abs(expectedLossPct) < 0.35) {
+      severity = 'خطير';
+      severityColor = 'coral';
+    } else {
+      severity = 'كارثي';
+      severityColor = 'coral';
+    }
+
+    results.push({
+      id: scenario.id,
+      name: scenario.name,
+      icon: scenario.icon,
+      description: scenario.description,
+      tasiShock: scenario.tasiShock,
+      expectedLossPct: +expectedLossPct.toFixed(4),
+      expectedLossSAR: Math.round(expectedLossSAR),
+      afterShockValue: Math.round(afterShockValue),
+      recoveryDays: recoveryDays,
+      severity: severity,
+      severityColor: severityColor,
+      historical: scenario.historical,
+    });
+  }
+
+  return results;
+}
+
+/**
+ * الحصول على السيناريوهات المتاحة
+ */
+export function getStressScenarios() {
+  return STRESS_SCENARIOS;
+}
+/* ══════════════════════════════════════════════════════════
    ⑥ دوال التصدير (للاستخدام في الشاشة)
 ═══════════════════════════════════════════════════════════ */
 
