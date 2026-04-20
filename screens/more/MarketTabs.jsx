@@ -10,14 +10,14 @@ const RankItem = React.memo(function RankItem({ s, i, rField, BOX, SHD, SHD_ACTI
   const { openStock } = useNav();
   const isBig = i < 3;
   return (
-    <div className={"card-enter "+(s.pct>2?"buy-glow":s.pct<-2?"danger-pulse":"")} style={{
+        <div onClick={()=>openStock(s,"more")} className={"card-enter "+(s.pct>2?"buy-glow":s.pct<-2?"danger-pulse":"")} style={{
       animationDelay:(i*0.05)+"s",
       background:BOX,
       border:"1px solid "+(isBig?rField.color+"44":C.line),
       borderRadius:18,padding:"12px 14px",
       display:"flex",alignItems:"center",gap:12,
       boxShadow:isBig?SHD_ACTIVE+rField.color+"20, 0 0 0 1px "+rField.color+"22":SHD,
-      position:"relative",overflow:"hidden",
+      position:"relative",overflow:"hidden",cursor:"pointer",
     }}>
       {isBig&&<div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,transparent,"+rField.color+"60,transparent)"}}/>}
       <div style={{
