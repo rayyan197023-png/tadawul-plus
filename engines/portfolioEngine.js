@@ -1,0 +1,261 @@
+/**
+ * @module portfolioEngine
+ * @description المحرك الرئيسي لتحليل مخاطر المحفظة الكلية
+ *
+ * هذا المحرك يحلل المحفظة ككيان واحد -- وليس كمجموع أسهم فردية.
+ * يعتمد على مبادئ Modern Portfolio Theory (Markowitz 1952)
+ * مع إضافات من Post-Modern Portfolio Theory (Sortino 1994)
+ *
+ * المصادر الأكاديمية:
+ * - Markowitz, H. (1952). "Portfolio Selection"
+ * - Sharpe, W. (1966). "Mutual Fund Performance"
+ * - Sortino, F. (1994). "Performance Measurement in a Downside Framework"
+ * - Jorion, P. (2006). "Value at Risk: The New Benchmark"
+ *
+ * الاستيراد:
+ * import { analyzePortfolio } from '../engines/portfolioEngine';
+ * var analysis = analyzePortfolio(positions, tasiBars);
+ *
+ * @requires ../utils/portfolioMath
+ * @author تداول+
+ * @version 1.0
+ */
+
+import {
+  mean,
+  variance,
+  std,
+  downsideDeviation,
+  simpleReturns,
+  covariance,
+  correlation,
+  beta,
+  annualizeReturn,
+  annualizeStd,
+  percentile,
+  clamp,
+  sanitize,
+} from '../utils/portfolioMath';
+
+/* ══════════════════════════════════════════════════════════
+   ⚙️ الثوابت الأساسية
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * معدل العائد الخالي من المخاطرة (يومي)
+ * السايبور السعودي ≈ 6% سنوياً → 0.0238% يومياً
+ * يُستخدم في: Sharpe, Sortino, Jensen's Alpha
+ */
+var RISK_FREE_DAILY = 0.06 / 252;
+
+/**
+ * عدد أيام التداول السنوية في تاسي
+ * الاستخدام: التحويل من يومي إلى سنوي
+ */
+var TRADING_DAYS = 252;
+
+/**
+ * مستوى ثقة VaR (95%)
+ * يعني: في 95% من الأيام، الخسارة ما تتجاوز VaR
+ */
+var VAR_CONFIDENCE = 95;
+
+/* ══════════════════════════════════════════════════════════
+   ① الدالة الرئيسية -- تحليل المحفظة الشامل
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * تحليل شامل للمحفظة
+ *
+ * @param {Array} positions - مصفوفة الممتلكات [{sym, qty, avgCost, value, bars}]
+ * @param {Array} tasiBars - البيانات التاريخية لتاسي (للمقارنة)
+ * @returns {Object} تحليل شامل للمحفظة
+ */
+export function analyzePortfolio(positions, tasiBars) {
+  // فحص المدخلات
+  if (!positions || positions.length === 0) {
+    return emptyPortfolioAnalysis();
+  }
+
+  // الأساسيات
+  var totalValue = calcTotalValue(positions);
+  var weights = calcWeights(positions, totalValue);
+
+  // سيُضاف لاحقاً في الخطوات القادمة
+  return {
+    // البيانات الأساسية
+    totalValue: totalValue,
+    stockCount: positions.length,
+    weights: weights,
+
+    // مقاييس الأداء (ستُضاف في المرحلة 2)
+    performance: {
+      dailyReturn: null,
+      annualReturn: null,
+      volatility: null,
+      sharpe: null,
+      sortino: null,
+      alpha: null,
+      beta: null,
+    },
+
+    // مقاييس المخاطر (ستُضاف في المرحلة 3)
+    risk: {
+      maxDrawdown: null,
+      var95: null,
+      cvar95: null,
+      downsideDeviation: null,
+      calmar: null,
+    },
+
+    // التنويع (سيُضاف في المرحلة 4)
+    diversification: {
+      hhi: null,
+      correlationMatrix: null,
+      avgCorrelation: null,
+      score: null,
+      effectiveStocks: null,
+    },
+
+    // التقييم النهائي (سيُضاف في المرحلة 6)
+    healthScore: null,
+    healthGrade: null,
+    recommendations: [],
+  };
+}
+
+/* ══════════════════════════════════════════════════════════
+   ② دوال مساعدة أساسية
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * حساب القيمة الإجمالية للمحفظة
+ * @param {Array} positions
+ * @returns {number}
+ */
+export function calcTotalValue(positions) {
+  if (!positions || positions.length === 0) return 0;
+  var total = 0;
+  for (var i = 0; i < positions.length; i++) {
+    total += positions[i].value || 0;
+  }
+  return total;
+}
+
+/**
+ * حساب الأوزان النسبية لكل سهم في المحفظة
+ * weight_i = value_i / total_value
+ *
+ * مجموع الأوزان = 1.0 (100%)
+ *
+ * @param {Array} positions
+ * @param {number} totalValue
+ * @returns {Object} {sym: weight}
+ */
+export function calcWeights(positions, totalValue) {
+  var weights = {};
+  if (!positions || totalValue <= 0) return weights;
+
+  for (var i = 0; i < positions.length; i++) {
+    var p = positions[i];
+    weights[p.sym] = p.value / totalValue;
+  }
+  return weights;
+}
+
+/**
+ * حساب سلسلة العوائد للمحفظة اليومية
+ * R_p(t) = Σ [w_i × r_i(t)]
+ *
+ * عائد المحفظة = مجموع (وزن كل سهم × عائده اليومي)
+ *
+ * @param {Array} positions - [{sym, bars, value}]
+ * @param {Object} weights - {sym: weight}
+ * @returns {number[]} سلسلة العوائد اليومية للمحفظة
+ */
+export function calcPortfolioReturns(positions, weights) {
+  if (!positions || positions.length === 0) return [];
+
+  // حساب عوائد كل سهم
+  var stockReturns = {};
+  var minLength = Infinity;
+
+  for (var i = 0; i < positions.length; i++) {
+    var p = positions[i];
+    if (!p.bars || p.bars.length < 2) continue;
+    var rets = simpleReturns(p.bars);
+    stockReturns[p.sym] = rets;
+    if (rets.length < minLength) minLength = rets.length;
+  }
+
+  if (minLength === Infinity || minLength === 0) return [];
+
+  // مزامنة الأطوال -- نأخذ آخر N يوم من كل سهم
+  var portfolioReturns = [];
+  for (var t = 0; t < minLength; t++) {
+    var dailyReturn = 0;
+    for (var sym in stockReturns) {
+      var rets2 = stockReturns[sym];
+      // أخذ العائد من نهاية السلسلة (آخر N يوم)
+      var idx = rets2.length - minLength + t;
+      var w = weights[sym] || 0;
+      dailyReturn += w * rets2[idx];
+    }
+    portfolioReturns.push(dailyReturn);
+  }
+
+  return sanitize(portfolioReturns);
+}
+
+/* ══════════════════════════════════════════════════════════
+   ③ حالة فارغة (للمحافظ الفارغة)
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * إرجاع تحليل فارغ للمحافظ غير الجاهزة
+ * يتجنب الأخطاء في الواجهة عندما لا توجد بيانات
+ */
+function emptyPortfolioAnalysis() {
+  return {
+    totalValue: 0,
+    stockCount: 0,
+    weights: {},
+    performance: {
+      dailyReturn: 0,
+      annualReturn: 0,
+      volatility: 0,
+      sharpe: 0,
+      sortino: 0,
+      alpha: 0,
+      beta: 0,
+    },
+    risk: {
+      maxDrawdown: 0,
+      var95: 0,
+      cvar95: 0,
+      downsideDeviation: 0,
+      calmar: 0,
+    },
+    diversification: {
+      hhi: 0,
+      correlationMatrix: {},
+      avgCorrelation: 0,
+      score: 0,
+      effectiveStocks: 0,
+    },
+    healthScore: 0,
+    healthGrade: 'N/A',
+    recommendations: [],
+  };
+}
+
+/* ══════════════════════════════════════════════════════════
+   ④ دوال التصدير (للاستخدام في الشاشة)
+═══════════════════════════════════════════════════════════ */
+
+// تصدير الثوابت للاستخدام في أماكن أخرى
+export var CONFIG = {
+  RISK_FREE_DAILY: RISK_FREE_DAILY,
+  TRADING_DAYS: TRADING_DAYS,
+  VAR_CONFIDENCE: VAR_CONFIDENCE,
+};
