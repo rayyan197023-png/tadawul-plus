@@ -1616,6 +1616,147 @@ export function calcHHI(weights) {
   };
 }
 /* ══════════════════════════════════════════════════════════
+   ⑯ Correlation Matrix -- مصفوفة الارتباط
+   أساس Markowitz Portfolio Theory (نوبل 1990)
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * بناء مصفوفة الارتباط بين أسهم المحفظة
+ *
+ * المنهجية الأكاديمية (Pearson Correlation):
+ * ρ(X,Y) = Cov(X,Y) / (σ_X × σ_Y)
+ *
+ * القيم بين -1 و +1:
+ * - +1.0: ارتباط تام موجب
+ * - +0.7: قوي موجب
+ * - 0.0: لا ارتباط
+ * - -0.7: قوي سلبي
+ * - -1.0: ارتباط تام سلبي (تحوط كامل)
+ *
+ * الخصائص:
+ * - القطر = 1.0 دائماً (السهم مع نفسه)
+ * - متناظرة: ρ(A,B) = ρ(B,A)
+ *
+ * @param {Array} positionsWithBars - [{sym, bars}]
+ * @returns {Object} {matrix, symbols, pairCount, highCorrelations}
+ */
+export function calcCorrelationMatrix(positionsWithBars) {
+  if (!positionsWithBars || positionsWithBars.length < 2) {
+    return {
+      matrix: {},
+      symbols: [],
+      pairCount: 0,
+      highCorrelations: [],
+      message: 'تحتاج سهمين على الأقل لحساب الارتباط',
+    };
+  }
+
+  // ① حساب عوائد كل سهم
+  var stockReturns = {};
+  var symbols = [];
+
+  for (var i = 0; i < positionsWithBars.length; i++) {
+    var p = positionsWithBars[i];
+    if (!p.bars || p.bars.length < 10) continue;
+    var rets = simpleReturns(p.bars);
+    if (rets.length < 5) continue;
+    stockReturns[p.sym] = rets;
+    symbols.push(p.sym);
+  }
+
+  if (symbols.length < 2) {
+    return {
+      matrix: {},
+      symbols: symbols,
+      pairCount: 0,
+      highCorrelations: [],
+      message: 'بيانات غير كافية',
+    };
+  }
+
+  // ② بناء المصفوفة
+  var matrix = {};
+  var highCorrelations = []; // أزواج الارتباط العالي (> 0.7)
+
+  for (var j = 0; j < symbols.length; j++) {
+    var symA = symbols[j];
+    matrix[symA] = {};
+
+    for (var k = 0; k < symbols.length; k++) {
+      var symB = symbols[k];
+
+      if (j === k) {
+        // القطر = 1.0 دائماً
+        matrix[symA][symB] = 1.0;
+      } else if (k < j && matrix[symB] && matrix[symB][symA] !== undefined) {
+        // استفد من التناظر (تحسين الأداء)
+        matrix[symA][symB] = matrix[symB][symA];
+      } else {
+        // حساب الارتباط
+        var retsA = stockReturns[symA];
+        var retsB = stockReturns[symB];
+
+        // مزامنة الأطوال
+        var minLen = Math.min(retsA.length, retsB.length);
+        var syncA = retsA.slice(-minLen);
+        var syncB = retsB.slice(-minLen);
+
+        var corr = correlation(syncA, syncB);
+        matrix[symA][symB] = +corr.toFixed(3);
+
+        // رصد الارتباطات العالية
+        if (j < k && Math.abs(corr) > 0.7) {
+          highCorrelations.push({
+            symA: symA,
+            symB: symB,
+            correlation: +corr.toFixed(3),
+            strength: Math.abs(corr) > 0.85 ? 'تام تقريباً' : 'قوي',
+            risk: 'هذان السهمان يتحركان معاً - التنويع محدود',
+          });
+        }
+      }
+    }
+  }
+
+  // ③ إحصاءات
+  var pairCount = (symbols.length * (symbols.length - 1)) / 2;
+
+  return {
+    matrix: matrix,
+    symbols: symbols,
+    pairCount: pairCount,
+    highCorrelations: highCorrelations,
+    highCorrelationCount: highCorrelations.length,
+  };
+}
+
+/**
+ * استخراج جميع قيم الارتباط (بدون القطر)
+ * مفيد لحساب متوسط الارتباط
+ *
+ * @param {Object} correlationMatrixResult
+ * @returns {number[]} مصفوفة قيم الارتباط (بدون تكرار)
+ */
+export function extractCorrelationValues(correlationMatrixResult) {
+  if (!correlationMatrixResult || !correlationMatrixResult.matrix) return [];
+
+  var matrix = correlationMatrixResult.matrix;
+  var symbols = correlationMatrixResult.symbols;
+  var values = [];
+
+  for (var i = 0; i < symbols.length; i++) {
+    for (var j = i + 1; j < symbols.length; j++) {
+      var symA = symbols[i];
+      var symB = symbols[j];
+      if (matrix[symA] && matrix[symA][symB] !== undefined) {
+        values.push(matrix[symA][symB]);
+      }
+    }
+  }
+
+  return values;
+}
+/* ══════════════════════════════════════════════════════════
    ⑤ حالة فارغة (للمحافظ الفارغة)
 ═══════════════════════════════════════════════════════════ */
 
