@@ -831,13 +831,13 @@ useEffect(() => {
     }
   }
 
-          // ══════════════════════════════════════════════
-  // 🧪 اختبار الخطوة 11 -- Max Drawdown (مؤقت)
+            // ══════════════════════════════════════════════
+  // 🧪 اختبار الخطوة 12 -- VaR 95% (مؤقت)
   // ══════════════════════════════════════════════
   useEffect(function(){
     if (!positions || positions.length === 0) return;
 
-    console.log('📉 ═══════ تحليل المخاطر (الخطوة 11) ═══════');
+    console.log('📉 ═══════ تحليل المخاطر (الخطوة 12) ═══════');
 
     var positionsWithBars = positions.map(function(p) {
       var bars = genBars(p.stk, 60);
@@ -856,26 +856,24 @@ useEffect(() => {
 
     console.log('💰 القيمة الإجمالية:', analysis.totalValue.toLocaleString(), 'ر.س');
     console.log('');
-    console.log('📈 الأداء:');
-    console.log('   • العائد السنوي:', (perf.annualReturn * 100).toFixed(2) + '%');
-    console.log('   • Sharpe:', perf.sharpe);
+    console.log('📈 ملخص الأداء:');
+    console.log('   • Sharpe:', perf.sharpe, '(' + perf.sharpeLabel + ')');
     console.log('   • Alpha:', (perf.alpha * 100).toFixed(2) + '%');
     console.log('');
     console.log('📉 Maximum Drawdown:');
     console.log('   • القيمة:', (risk.maxDrawdown * 100).toFixed(2) + '%');
-    console.log('   • المدة:', risk.drawdownDuration, 'يوم');
-    console.log('   • أيام التعافي:', risk.recoveryDays || 'لم يتعافَ بعد');
     console.log('   • التصنيف:', risk.drawdownLabel);
-    console.log('   • التفسير:', risk.drawdownInterpretation);
     console.log('');
-    console.log('💡 ماذا يعني هذا؟');
-    if (risk.maxDrawdown > -0.10) {
-      console.log('   ✅ محفظتك استقرار ممتاز -- يسهل الاحتفاظ بها نفسياً');
-    } else if (risk.maxDrawdown > -0.20) {
-      console.log('   ⚖️ تراجعات طبيعية -- لكن تحتاج صبر');
-    } else {
-      console.log('   ⚠️ تراجعات حادة -- راجع إدارة المخاطر');
-    }
+    console.log('🚨 Value at Risk 95% (معيار JPMorgan):');
+    console.log('   • يومي:', (risk.var95Daily * 100).toFixed(2) + '% | ' + risk.var95DailySAR.toLocaleString() + ' ر.س');
+    console.log('   • أسبوعي:', (risk.var95Weekly * 100).toFixed(2) + '% | ' + risk.var95WeeklySAR.toLocaleString() + ' ر.س');
+    console.log('   • شهري:', (risk.var95Monthly * 100).toFixed(2) + '% | ' + risk.var95MonthlySAR.toLocaleString() + ' ر.س');
+    console.log('   • التصنيف:', risk.varLabel);
+    console.log('   • التفسير:', risk.varInterpretation);
+    console.log('');
+    console.log('💡 التفسير العملي:');
+    console.log('   🎯 في 95% من الأيام، خسارتك اليومية ≤ ' + risk.var95DailySAR.toLocaleString() + ' ر.س');
+    console.log('   ⚠️ في 5% من الأيام (1 من 20)، قد تتجاوز هذا الرقم');
     console.log('═══════════════════════════════════════');
   }, [positions]);
     var positions=useMemo(function(){
