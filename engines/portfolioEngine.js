@@ -1490,6 +1490,121 @@ export function calcDownsideDeviation(returns, mar) {
   };
 }
 /* ══════════════════════════════════════════════════════════
+   ⑮ HHI -- Herfindahl-Hirschman Index
+   مقياس تركيز المحفظة (وزارة العدل الأمريكية 1982)
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * حساب HHI للمحفظة
+ *
+ * المعادلة الأكاديمية:
+ * HHI = Σ (w_i)² × 10,000
+ *
+ * المعيار التاريخي:
+ * - وزارة العدل الأمريكية منذ 1982
+ * - معيار SEC لتقييم صناديق الاستثمار
+ * - معيار Bloomberg Terminal
+ *
+ * تصنيف HHI:
+ * - < 1,500: متنوعة جيداً
+ * - 1,500-2,500: تنويع متوسط
+ * - 2,500-5,000: مركّزة
+ * - > 5,000: مركّزة بشدة
+ * - = 10,000: سهم واحد (احتكار)
+ *
+ * Effective Number of Stocks:
+ * N_eff = 10,000 / HHI
+ * "كم سهم متساوي الوزن يعادل محفظتي؟"
+ *
+ * @param {Object} weights - أوزان الأسهم {sym: weight}
+ * @returns {Object} {value, effectiveStocks, classification, ...}
+ */
+export function calcHHI(weights) {
+  // فحص المدخلات
+  if (!weights || typeof weights !== 'object') {
+    return {
+      value: 0,
+      effectiveStocks: 0,
+      largestPosition: 0,
+      classification: 'unknown',
+      label: 'بيانات غير كافية',
+      interpretation: 'لا يمكن حساب HHI بدون أوزان',
+    };
+  }
+
+  var symbols = Object.keys(weights);
+  if (symbols.length === 0) {
+    return {
+      value: 0,
+      effectiveStocks: 0,
+      largestPosition: 0,
+      classification: 'unknown',
+      label: 'محفظة فارغة',
+      interpretation: 'لا توجد أسهم في المحفظة',
+    };
+  }
+
+  // ① حساب HHI
+  // HHI = Σ (w_i)²
+  var sumSquaredWeights = 0;
+  var largestWeight = 0;
+
+  for (var i = 0; i < symbols.length; i++) {
+    var w = weights[symbols[i]] || 0;
+    sumSquaredWeights += w * w;
+    if (w > largestWeight) largestWeight = w;
+  }
+
+  // ② تحويل إلى مقياس 10,000
+  var hhi = sumSquaredWeights * 10000;
+
+  // ③ حساب Effective Number of Stocks
+  var effectiveStocks = hhi > 0 ? 10000 / hhi : 0;
+
+  // ④ التصنيف (معايير وزارة العدل الأمريكية)
+  var classification, label, interpretation;
+
+  if (hhi < 1500) {
+    classification = 'diversified';
+    label = 'متنوعة جيداً';
+    interpretation = 'توزيع صحي -- لا تركيز مفرط على أي سهم';
+  } else if (hhi < 2500) {
+    classification = 'moderate';
+    label = 'تنويع متوسط';
+    interpretation = 'تركيز مقبول -- لكن يمكن تحسين التوزيع';
+  } else if (hhi < 5000) {
+    classification = 'concentrated';
+    label = 'مركّزة';
+    interpretation = 'تركيز مرتفع -- خطر الاعتماد على عدد قليل من الأسهم';
+  } else if (hhi < 8000) {
+    classification = 'highlyConcentrated';
+    label = 'مركّزة بشدة';
+    interpretation = 'تركيز حاد -- المحفظة تعتمد على سهم أو سهمين';
+  } else {
+    classification = 'monopoly';
+    label = 'احتكار كامل';
+    interpretation = 'المحفظة سهم واحد فعلياً -- لا تنويع';
+  }
+
+  // ⑤ تحذير للسهم الأكبر
+  var largestPositionPct = largestWeight * 100;
+  var concentrationWarning = null;
+  if (largestPositionPct > 30) {
+    concentrationWarning = 'السهم الأكبر ' + largestPositionPct.toFixed(1) + '% -- فوق الحد الآمن (30%)';
+  }
+
+  return {
+    value: Math.round(hhi),
+    effectiveStocks: +effectiveStocks.toFixed(1),
+    largestPosition: +largestPositionPct.toFixed(1),
+    stockCount: symbols.length,
+    classification: classification,
+    label: label,
+    interpretation: interpretation,
+    concentrationWarning: concentrationWarning,
+  };
+}
+/* ══════════════════════════════════════════════════════════
    ⑤ حالة فارغة (للمحافظ الفارغة)
 ═══════════════════════════════════════════════════════════ */
 
