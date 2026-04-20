@@ -162,19 +162,32 @@ export function analyzePortfolio(positions, tasiBars) {
 
 
         // مقاييس المخاطر (الخطوة 11 ✅)
+        // مقاييس المخاطر (الخطوات 11-12 ✅)
     risk: (function() {
       var portfolioReturns = calcPortfolioReturns(positions, weights);
       // ⭐ Maximum Drawdown -- الخطوة 11
       var ddMetrics = calcMaxDrawdown(portfolioReturns);
+      // ⭐ Value at Risk -- الخطوة 12
+      var varMetrics = calcVaR(portfolioReturns, 95, totalValue);
       return {
+        // Max Drawdown
         maxDrawdown: ddMetrics.maxDrawdown,
         drawdownDuration: ddMetrics.duration,
         recoveryDays: ddMetrics.recoveryDays,
         drawdownClass: ddMetrics.classification,
         drawdownLabel: ddMetrics.label,
         drawdownInterpretation: ddMetrics.interpretation,
+        // ⭐ VaR 95%
+        var95Daily: varMetrics.daily,
+        var95Weekly: varMetrics.weekly,
+        var95Monthly: varMetrics.monthly,
+        var95DailySAR: varMetrics.dailySAR,
+        var95WeeklySAR: varMetrics.weeklySAR,
+        var95MonthlySAR: varMetrics.monthlySAR,
+        varClass: varMetrics.classification,
+        varLabel: varMetrics.label,
+        varInterpretation: varMetrics.interpretation,
         // ستُضاف لاحقاً:
-        var95: null,
         cvar95: null,
         downsideDeviation: null,
         calmar: null,
