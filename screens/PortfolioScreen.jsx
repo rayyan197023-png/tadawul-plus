@@ -831,13 +831,13 @@ useEffect(() => {
     }
   }
 
-           // ══════════════════════════════════════════════
-  // 🏆 الخطوة 19 -- المرحلة 4 مكتملة (التنويع الشامل)
+             // ══════════════════════════════════════════════
+  // 🧪 اختبار الخطوة 20 -- Kelly Criterion
   // ══════════════════════════════════════════════
   useEffect(function(){
     if (!positions || positions.length === 0) return;
 
-    console.log('🏆 ═══════ تحليل المحفظة الشامل (المرحلة 4) ═══════');
+    console.log('💰 ═══════ Position Sizing (الخطوة 20) ═══════');
 
     var positionsWithBars = positions.map(function(p) {
       var bars = genBars(p.stk, 60);
@@ -851,42 +851,39 @@ useEffect(() => {
     });
 
     var analysis = analyzePortfolio(positionsWithBars, []);
-    var perf = analysis.performance;
-    var risk = analysis.risk;
-    var div = analysis.diversification;
+    var ps = analysis.positionSizing;
 
     console.log('💰 القيمة الإجمالية:', analysis.totalValue.toLocaleString(), 'ر.س');
-    console.log('📊 عدد الأسهم:', div.stockCount);
     console.log('');
-    console.log('📈 الأداء (المرحلة 2):');
-    console.log('   • Sharpe:', perf.sharpe);
-    console.log('   • Alpha:', (perf.alpha * 100).toFixed(2) + '%');
+    console.log('📊 بيانات الإدخال (Kelly Inputs):');
+    console.log('   • عدد الأيام المحللة:', ps.winCount + ps.lossCount);
+    console.log('   • أيام رابحة:', ps.winCount);
+    console.log('   • أيام خاسرة:', ps.lossCount);
+    console.log('   • احتمال الربح (p):', (ps.winProbability * 100).toFixed(1) + '%');
+    console.log('   • متوسط الربح:', (ps.avgWin * 100).toFixed(3) + '%');
+    console.log('   • متوسط الخسارة:', (ps.avgLoss * 100).toFixed(3) + '%');
+    console.log('   • نسبة الربح/الخسارة (b):', ps.winLossRatio.toFixed(2));
     console.log('');
-    console.log('📉 المخاطر (المرحلة 3):');
-    console.log('   • VaR 95%:', (risk.var95Daily * 100).toFixed(2) + '%');
-    console.log('   • Max Drawdown:', (risk.maxDrawdown * 100).toFixed(2) + '%');
+    console.log('🎯 Kelly Criterion (Kelly 1956):');
+    console.log('   📐 Edge (الحافة):', (ps.edge * 100).toFixed(2) + '%');
     console.log('');
-    console.log('🎯 التنويع (المرحلة 4) -- الخطوة 19:');
+    if (ps.edge <= 0) {
+      console.log('   ❌ Edge سالب -- تجنب الاستثمار');
+      console.log('   السبب: ' + ps.kellyInterpretation);
+    } else {
+      console.log('   💎 Full Kelly:', (ps.fullKelly * 100).toFixed(2) + '%  (نظري -- خطر)');
+      console.log('   ✅ Safe Kelly:', (ps.safeKelly * 100).toFixed(2) + '%  (Quarter Kelly -- موصى به)');
+      console.log('   💵 المبلغ المقترح:', ps.amountSAR.toLocaleString() + ' ر.س');
+      console.log('');
+      console.log('   🏷️ التصنيف:', ps.kellyLabel);
+      console.log('   💡 التفسير:', ps.kellyInterpretation);
+    }
     console.log('');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('   🏆 درجة التنويع الشاملة: ' + div.score + '/100');
-    console.log('   📊 التصنيف: ' + div.scoreLabel);
-    console.log('   💡 التفسير: ' + div.scoreInterpretation);
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('📋 قواعد الحماية المطبقة:');
+    console.log('   ✅ حد أقصى 25% للمركز الواحد');
+    console.log('   ✅ Quarter Kelly (×0.25) للحماية من التقلبات');
+    console.log('   ✅ Edge سالب → Kelly = 0 تلقائياً');
     console.log('');
-    console.log('🔍 المكونات الثلاثة:');
-    console.log('   🧩 HHI:         ' + div.scoreComponents.hhi + '/100  (الوزن 40%)');
-    console.log('   🔗 Correlation: ' + div.scoreComponents.correlation + '/100  (الوزن 40%)');
-    console.log('   📊 Stock Count: ' + div.scoreComponents.stockCount + '/100  (الوزن 20%)');
-    console.log('');
-    console.log('📋 التوصيات:');
-    div.recommendations.forEach(function(rec, idx) {
-      console.log('   ' + (idx + 1) + '. ' + rec.icon + ' ' + rec.text);
-      console.log('      → ' + rec.action);
-    });
-    console.log('');
-    console.log('═══════════════════════════════════════');
-    console.log('🏆 المرحلة 4 مكتملة -- التنويع الشامل');
     console.log('═══════════════════════════════════════');
   }, [positions]);
     var positions=useMemo(function(){
