@@ -2122,6 +2122,209 @@ export function calcDiversificationScore(hhi, avgCorrelation, stockCount) {
   };
 }
 /* ══════════════════════════════════════════════════════════
+   ⑲ Kelly Criterion -- "عبقرية الرياضيات في التداول"
+   Kelly 1956, Thorp 1970s, Buffett-approved
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * حساب Kelly Criterion لسهم أو محفظة
+ *
+ * المعادلة الأكاديمية الأصلية (Kelly 1956):
+ * f* = (bp - q) / b
+ *
+ * حيث:
+ * - f*: نسبة رأس المال الأمثل
+ * - b: نسبة الربح إلى الخسارة
+ * - p: احتمال الربح
+ * - q: احتمال الخسارة (1 - p)
+ *
+ * التطبيق العملي (Thorp 1970s):
+ * Safe Kelly = Full Kelly × 0.25 (Quarter Kelly)
+ *
+ * قواعد الحماية:
+ * - Edge سالب → Kelly = 0 (لا تستثمر)
+ * - Kelly > 25% → قص عند 25% (حد أقصى مطلق)
+ * - استخدم Quarter Kelly دائماً في الواقع
+ *
+ * @param {number} winProbability - احتمال الربح (0-1)
+ * @param {number} winLossRatio - نسبة متوسط الربح إلى متوسط الخسارة
+ * @param {Object} options - خيارات إضافية
+ * @returns {Object} {fullKelly, safeKelly, edge, recommendation, ...}
+ */
+export function calcKellyCriterion(winProbability, winLossRatio, options) {
+  options = options || {};
+  var maxPositionSize = options.maxPositionSize || 0.25; // حد أقصى 25%
+  var kellyFraction = options.kellyFraction || 0.25;     // Quarter Kelly
+  var portfolioValue = options.portfolioValue || 0;
+
+  // فحص المدخلات
+  if (winProbability === undefined || winLossRatio === undefined) {
+    return {
+      fullKelly: 0,
+      safeKelly: 0,
+      edge: 0,
+      recommendation: 'bdata-غير-كافية',
+      amountSAR: 0,
+      classification: 'unknown',
+      label: 'بيانات غير كافية',
+      interpretation: 'تحتاج احتمال الربح ونسبة الربح/الخسارة',
+    };
+  }
+
+  // ضمان أن p بين 0 و 1
+  var p = Math.max(0, Math.min(1, winProbability));
+  var q = 1 - p;
+  var b = Math.max(0.01, winLossRatio); // تجنب القسمة على صفر
+
+  // ① حساب Edge (الحافة)
+  // Edge = (p × b) - q = العائد المتوقع
+  var edge = (p * b) - q;
+
+  // إذا Edge سالب → لا استثمار
+  if (edge <= 0) {
+    return {
+      fullKelly: 0,
+      safeKelly: 0,
+      edge: +edge.toFixed(4),
+      recommendation: 'تجنّب',
+      amountSAR: 0,
+      classification: 'negative_edge',
+      label: 'لا توصية',
+      interpretation: 'العائد المتوقع سلبي -- تجنّب هذا الاستثمار',
+      winProbability: p,
+      winLossRatio: b,
+    };
+  }
+
+  // ② حساب Full Kelly
+  // f* = (bp - q) / b
+  var fullKelly = ((b * p) - q) / b;
+
+  // ③ تطبيق الحد الأقصى
+  if (fullKelly > maxPositionSize) {
+    fullKelly = maxPositionSize;
+  }
+
+  // ④ حساب Safe Kelly (Quarter Kelly)
+  var safeKelly = fullKelly * kellyFraction;
+
+  // ⑤ تحويل إلى ريال سعودي
+  var amountSAR = portfolioValue > 0 ? safeKelly * portfolioValue : 0;
+
+  // ⑥ التصنيف
+  var classification, label, interpretation, recommendation;
+
+  if (safeKelly < 0.02) {
+    classification = 'minimal';
+    label = 'حجم ضئيل';
+    interpretation = 'الحافة محدودة -- استثمار رمزي فقط';
+    recommendation = 'استثمار صغير (< 2%)';
+  } else if (safeKelly < 0.05) {
+    classification = 'small';
+    label = 'حجم صغير';
+    interpretation = 'حافة معقولة -- استثمار حذر';
+    recommendation = 'استثمار صغير (2-5%)';
+  } else if (safeKelly < 0.10) {
+    classification = 'moderate';
+    label = 'حجم متوسط';
+    interpretation = 'حافة جيدة -- حجم مقبول';
+    recommendation = 'استثمار متوسط (5-10%)';
+  } else if (safeKelly < 0.15) {
+    classification = 'significant';
+    label = 'حجم كبير';
+    interpretation = 'حافة قوية -- استثمار استراتيجي';
+    recommendation = 'استثمار كبير (10-15%)';
+  } else {
+    classification = 'large';
+    label = 'حجم كبير جداً';
+    interpretation = 'حافة استثنائية -- لكن احذر من المخاطرة';
+    recommendation = 'استثمار كبير (15-25%)';
+  }
+
+  return {
+    fullKelly: +fullKelly.toFixed(4),
+    safeKelly: +safeKelly.toFixed(4),
+    edge: +edge.toFixed(4),
+    recommendation: recommendation,
+    amountSAR: Math.round(amountSAR),
+    classification: classification,
+    label: label,
+    interpretation: interpretation,
+    winProbability: p,
+    winLossRatio: b,
+    kellyFraction: kellyFraction,
+  };
+}
+
+/**
+ * تقدير احتمال الربح ونسبة الربح/الخسارة من بيانات السهم
+ *
+ * المنهجية:
+ * - نستخدم العوائد التاريخية
+ * - نفصل الأيام الرابحة عن الخاسرة
+ * - نحسب النسب من البيانات الفعلية
+ *
+ * @param {number[]} returns - سلسلة العوائد اليومية
+ * @returns {Object} {winProbability, winLossRatio, avgWin, avgLoss}
+ */
+export function estimateKellyInputs(returns) {
+  if (!returns || returns.length < 10) {
+    return {
+      winProbability: 0,
+      winLossRatio: 0,
+      avgWin: 0,
+      avgLoss: 0,
+      sampleSize: 0,
+    };
+  }
+
+  var wins = [];
+  var losses = [];
+
+  for (var i = 0; i < returns.length; i++) {
+    if (returns[i] > 0) {
+      wins.push(returns[i]);
+    } else if (returns[i] < 0) {
+      losses.push(Math.abs(returns[i]));
+    }
+  }
+
+  var totalTrades = wins.length + losses.length;
+  if (totalTrades === 0) {
+    return {
+      winProbability: 0.5,
+      winLossRatio: 1,
+      avgWin: 0,
+      avgLoss: 0,
+      sampleSize: returns.length,
+    };
+  }
+
+  // احتمال الربح
+  var winProbability = wins.length / totalTrades;
+
+  // متوسط الربح والخسارة
+  var avgWin = wins.length > 0
+    ? wins.reduce(function(s, v) { return s + v; }, 0) / wins.length
+    : 0;
+  var avgLoss = losses.length > 0
+    ? losses.reduce(function(s, v) { return s + v; }, 0) / losses.length
+    : 0.01;
+
+  // نسبة الربح/الخسارة
+  var winLossRatio = avgLoss > 0 ? avgWin / avgLoss : 1;
+
+  return {
+    winProbability: +winProbability.toFixed(4),
+    winLossRatio: +winLossRatio.toFixed(4),
+    avgWin: +avgWin.toFixed(5),
+    avgLoss: +avgLoss.toFixed(5),
+    sampleSize: returns.length,
+    winCount: wins.length,
+    lossCount: losses.length,
+  };
+}
+/* ══════════════════════════════════════════════════════════
    ⑥ دوال التصدير (للاستخدام في الشاشة)
 ═══════════════════════════════════════════════════════════ */
 
