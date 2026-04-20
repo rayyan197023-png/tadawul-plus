@@ -831,13 +831,13 @@ useEffect(() => {
     }
   }
 
-               // ══════════════════════════════════════════════
-  // 🧪 اختبار الخطوة 21 -- 2% Rule
+                 // ══════════════════════════════════════════════
+  // 🏆 الخطوة 22 -- المرحلة 5 مكتملة (Position Sizing الشامل)
   // ══════════════════════════════════════════════
   useEffect(function(){
     if (!positions || positions.length === 0) return;
 
-    console.log('🛡️ ═══════ Position Sizing الشامل (الخطوة 21) ═══════');
+    console.log('🏆 ═══════ Position Sizing الشامل (المرحلة 5) ═══════');
 
     var positionsWithBars = positions.map(function(p) {
       var bars = genBars(p.stk, 60);
@@ -852,40 +852,44 @@ useEffect(() => {
 
     var analysis = analyzePortfolio(positionsWithBars, []);
     var ps = analysis.positionSizing;
-    var tp = ps.twoPercent;
 
     console.log('💰 القيمة الإجمالية:', analysis.totalValue.toLocaleString(), 'ر.س');
     console.log('');
-    console.log('🎯 Kelly Criterion (الخطوة 20):');
-    console.log('   • Safe Kelly:', (ps.safeKelly * 100).toFixed(2) + '%');
+    console.log('🎯 الطرق الثلاث لحجم المركز:');
+    console.log('');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('1️⃣ Kelly Criterion (الرياضيات):');
+    console.log('   • النسبة:', (ps.safeKelly * 100).toFixed(2) + '%');
     console.log('   • المبلغ:', ps.amountSAR.toLocaleString() + ' ر.س');
-    console.log('   • Edge:', (ps.edge * 100).toFixed(2) + '%');
+    console.log('   • الفلسفة: تعظيم العائد حسب الاحتمالات');
     console.log('');
-    console.log('🛡️ 2% Rule -- قاعدة الناجين (الخطوة 21):');
+    console.log('2️⃣ 2% Rule (الحماية):');
+    console.log('   • الخسارة القصوى:', ps.twoPercent.riskSAR.toLocaleString() + ' ر.س');
+    console.log('   • الأسهم:', ps.twoPercent.maxShares.toLocaleString());
+    console.log('   • الفلسفة: لا إفلاس حتى بـ 10 خسائر');
     console.log('');
-    console.log('   📊 المبدأ: "لا تخاطر بأكثر من 2% في صفقة واحدة"');
+    console.log('3️⃣ ATR Stop Loss (الذكاء):');
+    console.log('   • ATR للمحفظة:', ps.atr.avgATRPercent + '%');
+    console.log('   • وقف متوسط:', ps.atr.avgStopPercent + '%');
+    console.log('   • عدد الأسهم المحللة:', ps.atr.stocksAnalyzed);
+    console.log('   • الفلسفة: كل سهم له وقفه الخاص');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('');
-    console.log('   💵 المخاطرة القصوى:', tp.riskSAR.toLocaleString() + ' ر.س (2%)');
-    console.log('   📉 وقف الخسارة:', tp.stopLossPercent + '% تحت السعر');
-    console.log('   📏 عدد الأسهم الموصى به:', tp.maxShares.toLocaleString());
-    console.log('   💼 قيمة المركز:', tp.positionValueSAR.toLocaleString() + ' ر.س');
-    console.log('   📊 نسبة من المحفظة:', tp.positionPercent + '%');
-    console.log('');
-    console.log('   🏷️ تصنيف الوقف:', tp.label);
-    console.log('   💡 التفسير:', tp.interpretation);
-    if (tp.warning) {
-      console.log('   ⚠️ تحذير:', tp.warning);
+    if (ps.atr.perStock.length > 0) {
+      console.log('📊 ATR Stop Loss لكل سهم:');
+      ps.atr.perStock.forEach(function(stock) {
+        console.log('   • ' + stock.sym + ': وقف ' + stock.stopLossPercent + '% | ATR ' + stock.atrPercent + '% | ' + stock.label);
+      });
     }
     console.log('');
-    console.log('🔢 رياضيات الحماية:');
-    console.log('   • 10 خسائر متتالية بـ 2% = -18% (قابل للتعافي)');
-    console.log('   • 10 خسائر متتالية بـ 10% = -65% (تحتاج +180% للتعافي!)');
+    console.log('💎 الاستراتيجية المثلى:');
+    console.log('   1. احسب Kelly (كم من المحفظة؟)');
+    console.log('   2. احسب ATR Stop (وقف ذكي لكل سهم)');
+    console.log('   3. طبق 2% Rule (لا تتجاوز 2% خسارة)');
+    console.log('   4. النتيجة النهائية = الأكثر تحفظاً');
     console.log('');
     console.log('═══════════════════════════════════════');
-    console.log('💎 استخدم Kelly و 2% Rule معاً:');
-    console.log('   • Kelly: "كم من المحفظة للسهم"');
-    console.log('   • 2% Rule: "كم سهم بناءً على Stop Loss"');
-    console.log('   • النهائي: الأصغر (الأكثر أماناً)');
+    console.log('🏆 المرحلة 5 مكتملة -- 3 أنظمة للـ Position Sizing');
     console.log('═══════════════════════════════════════');
   }, [positions]);
     var positions=useMemo(function(){
