@@ -831,13 +831,13 @@ useEffect(() => {
     }
   }
 
-                    // ══════════════════════════════════════════════
-  // 🧪 اختبار الخطوة 16 -- HHI (تركيز المحفظة)
+                      // ══════════════════════════════════════════════
+  // 🧪 اختبار الخطوة 17 -- Correlation Matrix
   // ══════════════════════════════════════════════
   useEffect(function(){
     if (!positions || positions.length === 0) return;
 
-    console.log('🧩 ═══════ تحليل التنويع (الخطوة 16) ═══════');
+    console.log('🔗 ═══════ تحليل الارتباطات (الخطوة 17) ═══════');
 
     var positionsWithBars = positions.map(function(p) {
       var bars = genBars(p.stk, 60);
@@ -855,33 +855,54 @@ useEffect(() => {
 
     console.log('💰 القيمة الإجمالية:', analysis.totalValue.toLocaleString(), 'ر.س');
     console.log('📊 عدد الأسهم:', div.stockCount);
+    console.log('🧩 HHI:', div.hhi, '(' + div.hhiLabel + ')');
     console.log('');
-    console.log('🧩 Herfindahl-Hirschman Index (HHI):');
-    console.log('   • القيمة:', div.hhi);
-    console.log('   • التصنيف:', div.hhiLabel);
-    console.log('   • التفسير:', div.hhiInterpretation);
+    console.log('🔗 Correlation Matrix:');
+    console.log('   • عدد الأزواج:', div.pairCount);
+
+    if (div.correlationSymbols && div.correlationSymbols.length >= 2) {
+      console.log('');
+      console.log('   📊 المصفوفة:');
+      // طباعة صف العناوين
+      var header = '        ';
+      for (var h = 0; h < div.correlationSymbols.length; h++) {
+        header += div.correlationSymbols[h].padEnd(8);
+      }
+      console.log('   ' + header);
+
+      // طباعة كل صف
+      for (var i = 0; i < div.correlationSymbols.length; i++) {
+        var symA = div.correlationSymbols[i];
+        var row = symA.padEnd(8);
+        for (var j = 0; j < div.correlationSymbols.length; j++) {
+          var symB = div.correlationSymbols[j];
+          var val = div.correlationMatrix[symA][symB];
+          var valStr = val >= 0 ? '+' + val.toFixed(2) : val.toFixed(2);
+          row += valStr.padEnd(8);
+        }
+        console.log('   ' + row);
+      }
+    }
+
     console.log('');
-    console.log('📐 Effective Number of Stocks:');
-    console.log('   • N_effective:', div.effectiveStocks);
-    console.log('   → "كأن محفظتك ' + div.effectiveStocks + ' سهم متساوي الوزن"');
-    console.log('');
-    console.log('📏 السهم الأكبر:');
-    console.log('   • النسبة:', div.largestPosition + '%');
-    if (div.concentrationWarning) {
-      console.log('   ⚠️ تحذير:', div.concentrationWarning);
+    console.log('⚠️ الارتباطات العالية (> 0.70):');
+    if (div.highCorrelationCount === 0) {
+      console.log('   ✅ لا توجد ارتباطات عالية - تنويع حقيقي!');
     } else {
-      console.log('   ✅ ضمن الحد الآمن (< 30%)');
+      console.log('   🚨 تم رصد ' + div.highCorrelationCount + ' زوج مرتبط:');
+      div.highCorrelations.forEach(function(pair, idx) {
+        console.log('   ' + (idx + 1) + '. ' + pair.symA + ' ↔ ' + pair.symB +
+                    ': ' + pair.correlation.toFixed(2) + ' (' + pair.strength + ')');
+      });
     }
     console.log('');
     console.log('💡 الحكم:');
-    if (div.hhi < 1500 && div.effectiveStocks >= 8) {
-      console.log('   🏆 محفظة متنوعة بشكل احترافي');
-    } else if (div.hhi < 2500) {
-      console.log('   ✅ تنويع مقبول -- يمكن تحسينه');
-    } else if (div.hhi < 5000) {
-      console.log('   ⚠️ تركيز مرتفع -- أضف المزيد من الأسهم');
+    if (div.highCorrelationCount === 0) {
+      console.log('   🏆 أسهمك متنوعة حقيقياً -- Markowitz فخور بك!');
+    } else if (div.highCorrelationCount <= 2) {
+      console.log('   ✅ تنويع جيد - بعض الارتباطات قابلة للتحسين');
     } else {
-      console.log('   🚨 تركيز حاد -- خطر على المحفظة');
+      console.log('   ⚠️ ارتباطات كثيرة - التنويع وهمي، راجع القطاعات');
     }
     console.log('═══════════════════════════════════════');
   }, [positions]);
