@@ -832,32 +832,37 @@ useEffect(() => {
   }
 
   // ══════════════════════════════════════════════
-  // 🧪 اختبار الربط -- الخطوة 4 (مؤقت، سيُحذف لاحقاً)
+  // 🧪 اختبار الخطوة 5 -- مقاييس العوائد (مؤقت)
   // ══════════════════════════════════════════════
   useEffect(function(){
-    console.log('🧪 ═══════ اختبار portfolioEngine ═══════');
-    console.log('✅ RISK_FREE_RATE المستورد:', RISK_FREE_RATE);
-    console.log('✅ HEALTH_GRADES عدد التصنيفات:', HEALTH_GRADES.length);
+    if (!positions || positions.length === 0) return;
 
-    // اختبار تحليل محفظة فارغة
-    var emptyAnalysis = analyzePortfolio([], []);
-    console.log('✅ تحليل محفظة فارغة:', emptyAnalysis);
+    console.log('📊 ═══════ تحليل المحفظة (الخطوة 5) ═══════');
 
-    // اختبار محفظة تجريبية
-    var testPositions = [
-      { sym: '2222', qty: 100, value: 3000, bars: [{c:30},{c:31},{c:30.5},{c:32}] },
-      { sym: '1120', qty: 50,  value: 5000, bars: [{c:100},{c:102},{c:101},{c:103}] },
-    ];
-    var testTotal = calcTotalValue(testPositions);
-    var testWeights = calcWeights(testPositions, testTotal);
-    var testReturns = calcPortfolioReturns(testPositions, testWeights);
+    // تجهيز positions مع bars
+    var positionsWithBars = positions.map(function(p) {
+      var bars = genBars(p.stk, 60);
+      return {
+        sym: p.sym,
+        qty: p.qty,
+        value: p.value,
+        bars: bars,
+      };
+    });
 
-    console.log('✅ القيمة الإجمالية التجريبية:', testTotal);
-    console.log('✅ الأوزان التجريبية:', testWeights);
-    console.log('✅ عوائد المحفظة التجريبية:', testReturns);
-    console.log('🎉 جميع الاختبارات نجحت!');
+    var analysis = analyzePortfolio(positionsWithBars, []);
+
+    console.log('💰 القيمة الإجمالية:', analysis.totalValue.toLocaleString(), 'ر.س');
+    console.log('📊 عدد الأسهم:', analysis.stockCount);
+    console.log('⚖️ أوزان الأسهم:', analysis.weights);
+    console.log('');
+    console.log('📈 مقاييس العائد:');
+    console.log('   • العائد اليومي المتوسط:', (analysis.performance.dailyReturn * 100).toFixed(3) + '%');
+    console.log('   • العائد التراكمي:', (analysis.performance.cumulativeReturn * 100).toFixed(2) + '%');
+    console.log('   • العائد السنوي المتوقع:', (analysis.performance.annualReturn * 100).toFixed(2) + '%');
+    console.log('   • فترة الحساب:', analysis.performance.periodDays, 'يوم');
     console.log('═══════════════════════════════════════');
-  }, []);
+  }, [positions]);
   var positions=useMemo(function(){
     var tv=port.reduce(function(s,pp){var stk=sl.find(function(x){return x.sym===pp.sym;});return s+(stk?stk.p:pp.avgCost)*pp.qty;},0)||1;
     return port.map(function(pp){
