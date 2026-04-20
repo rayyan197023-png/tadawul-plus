@@ -3240,6 +3240,54 @@ export function calcFinalRecommendation(analysis) {
     actions: actions,
   };
 }
+
+/**
+ * دالة مساعدة لإضافة طبقة الذكاء للتحليل
+ * تُستدعى من PortfolioScreen بعد analyzePortfolio
+ *
+ * @param {Object} analysis - نتيجة analyzePortfolio
+ * @param {Array} positionsWithBars
+ * @param {Function} stockHealthFunc - دالة stockHealth من analysisEngine
+ * @returns {Object} analysis بعد إضافة طبقة الذكاء
+ */
+export function addIntelligenceLayer(analysis, positionsWithBars, stockHealthFunc) {
+  if (!analysis) return analysis;
+
+  if (!stockHealthFunc) {
+    // إذا لم تتوفر stockHealth، نحسب التوصية النهائية فقط بدون طبقات
+    analysis.layersIntelligence = {
+      avgScore: 0,
+      weightedScore: 0,
+      stocksAnalyzed: 0,
+      qualityBreakdown: { strong: 0, moderate: 0, weak: 0 },
+      perStock: [],
+    };
+    analysis.finalRecommendation = calcFinalRecommendation(analysis);
+    return analysis;
+  }
+
+  // ① حساب الطبقات التسع
+  var weights = {};
+  for (var i = 0; i < positionsWithBars.length; i++) {
+    var p = positionsWithBars[i];
+    weights[p.sym] = p.value / analysis.totalValue;
+  }
+
+  var layersResult = calcPortfolioLayersScore(
+    positionsWithBars,
+    weights,
+    stockHealthFunc
+  );
+  analysis.layersIntelligence = layersResult;
+
+  // ② التوصية النهائية
+  var finalRec = calcFinalRecommendation(analysis);
+  analysis.finalRecommendation = finalRec;
+
+  return analysis;
+}
+
+
 /* ══════════════════════════════════════════════════════════
    ⑥ دوال التصدير (للاستخدام في الشاشة)
 ═══════════════════════════════════════════════════════════ */
