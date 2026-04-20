@@ -594,6 +594,167 @@ export function calcSortinoRatio(portfolioReturns, annualReturn, riskFreeRate) {
   };
 }
 /* ══════════════════════════════════════════════════════════
+   ⑦ TASI Synthetic Index -- بناء مؤشر مرجعي
+   
+   لا توجد بيانات تاسي تاريخية مباشرة، لذا نبنيها من
+   متوسط مرجّح بالقيمة السوقية لأكبر 10 أسهم
+   (نفس منهجية S&P 500 و Nikkei 225)
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * بناء سلسلة عوائد TASI Synthetic
+ * 
+ * المنهجية: Market-Cap Weighted Index
+ * TASI(t) = Σ [w_i × P_i(t)]
+ * 
+ * @param {Array} stocksWithBars - [{stk, bars, value}] - الأسهم مع بياناتها
+ * @returns {number[]} - سلسلة عوائد تاسي اليومية (decimal)
+ *
+ * @example
+ * var tasiReturns = buildTasiSyntheticReturns(allStocksWithBars);
+ * // [0.008, -0.003, 0.005, ...]
+ */
+export function buildTasiSyntheticReturns(stocksWithBars) {
+  if (!stocksWithBars || stocksWithBars.length === 0) return [];
+
+  // ① اختيار أكبر 10 أسهم بالقيمة السوقية
+  // إذا لم تتوفر mktCap، نستخدم value كبديل
+  var topStocks = stocksWithBars
+    .slice()
+    .sort(function(a, b) {
+      var aCap = (a.stk && a.stk.mktCap) || a.value || 0;
+      var bCap = (b.stk && b.stk.mktCap) || b.value || 0;
+      return bCap - aCap;
+    })
+    .slice(0, Math.min(10, stocksWithBars.length));
+
+  if (topStocks.length === 0) return [];
+
+  // ② حساب الأوزان النسبية
+  var totalCap = 0;
+  for (var i = 0; i < topStocks.length; i++) {
+    var cap = (topStocks[i].stk && topStocks[i].stk.mktCap) || topStocks[i].value || 0;
+    totalCap += cap;
+  }
+
+  if (totalCap === 0) return [];
+
+  var weights = [];
+  for (var j = 0; j < topStocks.length; j++) {
+    var cap2 = (topStocks[j].stk && topStocks[j].stk.mktCap) || topStocks[j].value || 0;
+    weights.push(cap2 / totalCap);
+  }
+
+  // ③ حساب عوائد كل سهم
+  var stockReturns = [];
+  var minLength = Infinity;
+
+  for (var k = 0; k < topStocks.length; k++) {
+    var bars = topStocks[k].bars;
+    if (!bars || bars.length < 2) continue;
+
+    var rets = simpleReturns(bars);
+    stockReturns.push(rets);
+    if (rets.length < minLength) minLength = rets.length;
+  }
+
+  if (minLength === Infinity || minLength === 0) return [];
+
+  // ④ حساب عوائد TASI Synthetic (مرجّحة)
+  var tasiReturns = [];
+  for (var t = 0; t < minLength; t++) {
+    var dailyTasiReturn = 0;
+    for (var s = 0; s < stockReturns.length; s++) {
+      if (stockReturns[s] && stockReturns[s].length > 0) {
+        var idx = stockReturns[s].length - minLength + t;
+        dailyTasiReturn += weights[s] * stockReturns[s][idx];
+      }
+    }
+    tasiReturns.push(dailyTasiReturn);
+  }
+
+  return sanitize(tasiReturns);
+}
+
+/* ══════════════════════════════════════════════════════════
+   ⑧ Portfolio Beta -- حساسية المحفظة لحركة السوق
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * حساب Beta للمحفظة مقابل TASI
+ * 
+ * المعادلة الأكاديمية (Sharpe 1964, CAPM):
+ * β = Cov(R_portfolio, R_market) / Var(R_market)
+ * 
+ * التفسير:
+ * β = 1.0  : تتحرك مثل تاسي
+ * β > 1.0  : أكثر تذبذباً من تاسي (hyper-aggressive)
+ * β < 1.0  : أقل تذبذباً من تاسي (defensive)
+ * β = 0    : غير مرتبطة (نادر)
+ * β < 0    : تتحرك عكس تاسي (hedged)
+ * 
+ * @param {number[]} portfolioReturns
+ * @param {number[]} marketReturns
+ * @returns {Object} {value, classification, label, interpretation}
+ */
+export function calcPortfolioBeta(portfolioReturns, marketReturns) {
+  // فحص المدخلات
+  if (!portfolioReturns || !marketReturns ||
+      portfolioReturns.length < 2 || marketReturns.length < 2) {
+    return {
+      value: 1.0,
+      classification: 'unknown',
+      label: 'بيانات غير كافية',
+      interpretation: 'لا يمكن حساب Beta بدون بيانات تاريخية كافية',
+    };
+  }
+
+  // مزامنة الأطوال
+  var minLen = Math.min(portfolioReturns.length, marketReturns.length);
+  var pReturns = portfolioReturns.slice(-minLen);
+  var mReturns = marketReturns.slice(-minLen);
+
+  // حساب Beta
+  var betaValue = beta(pReturns, mReturns);
+
+  // التصنيف
+  var classification, label, interpretation;
+
+  if (betaValue > 1.5) {
+    classification = 'aggressive';
+    label = 'عدوانية جداً';
+    interpretation = 'المحفظة تتحرك أكثر من تاسي بـ ' +
+                    Math.round((betaValue - 1) * 100) + '% -- مخاطرة عالية';
+  } else if (betaValue > 1.2) {
+    classification = 'moderatelyAggressive';
+    label = 'عدوانية';
+    interpretation = 'أكثر تذبذباً من تاسي -- تربح أكثر في الصعود، تخسر أكثر في الهبوط';
+  } else if (betaValue > 0.8) {
+    classification = 'balanced';
+    label = 'متوازنة';
+    interpretation = 'تتحرك تقريباً مع تاسي -- توازن طبيعي';
+  } else if (betaValue > 0.5) {
+    classification = 'defensive';
+    label = 'دفاعية';
+    interpretation = 'أقل تذبذباً من تاسي -- حماية جزئية في الأزمات';
+  } else if (betaValue > 0) {
+    classification = 'veryDefensive';
+    label = 'دفاعية جداً';
+    interpretation = 'تتحرك بشكل مستقل تقريباً عن تاسي -- تنويع ممتاز';
+  } else {
+    classification = 'inverse';
+    label = 'عكسية';
+    interpretation = 'تتحرك عكس تاسي -- تحوّط طبيعي (نادر)';
+  }
+
+  return {
+    value: +betaValue.toFixed(3),
+    classification: classification,
+    label: label,
+    interpretation: interpretation,
+  };
+}
+/* ══════════════════════════════════════════════════════════
    ⑤ حالة فارغة (للمحافظ الفارغة)
 ═══════════════════════════════════════════════════════════ */
 
