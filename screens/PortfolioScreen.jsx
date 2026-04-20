@@ -831,13 +831,13 @@ useEffect(() => {
     }
   }
 
-    // ══════════════════════════════════════════════
-  // 🧪 اختبار الخطوة 8 -- Sortino Ratio ⭐ (مؤقت)
+      // ══════════════════════════════════════════════
+  // 🧪 اختبار الخطوة 9 -- Beta vs TASI 🇸🇦 (مؤقت)
   // ══════════════════════════════════════════════
   useEffect(function(){
     if (!positions || positions.length === 0) return;
 
-    console.log('📊 ═══════ تحليل المحفظة (الخطوة 8) ═══════');
+    console.log('📊 ═══════ تحليل المحفظة (الخطوة 9) ═══════');
 
     var positionsWithBars = positions.map(function(p) {
       var bars = genBars(p.stk, 60);
@@ -846,6 +846,7 @@ useEffect(() => {
         qty: p.qty,
         value: p.value,
         bars: bars,
+        stk: p.stk,
       };
     });
 
@@ -857,24 +858,22 @@ useEffect(() => {
     console.log('📈 مقاييس الأداء السنوية:');
     console.log('   • العائد:', (perf.annualReturn * 100).toFixed(2) + '%');
     console.log('   • التذبذب:', (perf.volatility * 100).toFixed(2) + '%');
-    console.log('   • التذبذب السلبي:', (perf.downsideDeviation * 100).toFixed(2) + '%');
     console.log('');
-    console.log('⭐ Sharpe Ratio:');
-    console.log('   • القيمة:', perf.sharpe);
-    console.log('   • التصنيف:', perf.sharpeLabel);
+    console.log('⭐ مقاييس الأداء المعدّلة:');
+    console.log('   • Sharpe Ratio:', perf.sharpe, '(' + perf.sharpeLabel + ')');
+    console.log('   • Sortino Ratio:', perf.sortino, '(' + perf.sortinoLabel + ')');
     console.log('');
-    console.log('⭐ Sortino Ratio:');
-    console.log('   • القيمة:', perf.sortino);
-    console.log('   • التصنيف:', perf.sortinoLabel);
-    console.log('   • التفسير:', perf.sortinoInterpretation);
+    console.log('🇸🇦 Portfolio Beta vs TASI:');
+    console.log('   • القيمة:', perf.beta);
+    console.log('   • التصنيف:', perf.betaLabel);
+    console.log('   • التفسير:', perf.betaInterpretation);
     console.log('');
-    console.log('💡 مقارنة Sharpe vs Sortino:');
-    if (perf.sortino > perf.sharpe) {
-      console.log('   ✅ Sortino أعلى -- المحفظة تدير الخسائر بشكل جيد');
-    } else if (perf.sortino === perf.sharpe) {
-      console.log('   ⚖️ متساويان -- التذبذب متوازن');
+    console.log('💡 ماذا يعني هذا؟');
+    if (perf.beta > 1) {
+      console.log('   📈 إذا تاسي +1%، محفظتك ستتحرك +' + perf.beta.toFixed(2) + '%');
+      console.log('   📉 إذا تاسي -1%، محفظتك ستنخفض -' + perf.beta.toFixed(2) + '%');
     } else {
-      console.log('   ⚠️ حالة غير عادية -- راجع البيانات');
+      console.log('   🛡️ محفظتك أقل حساسية من تاسي -- استقرار نسبي');
     }
     console.log('═══════════════════════════════════════');
   }, [positions]);
