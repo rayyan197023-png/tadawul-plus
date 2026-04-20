@@ -1299,7 +1299,10 @@ useEffect(() => {
                 </div>
                 </div>
               </div>
-              {sorted.map(function(p,i){return <Card key={p.sym} p={p} i={i} capital={capital} setSellSheet={setSellSheet} onEdit={function(pos){setEditPos(pos);}}/>;}) }
+ 
+               {/* ═══ لوحة المخاطر الشاملة ═══ */}
+              {portfolioAnalysis && <RiskDashboard analysis={portfolioAnalysis} />}
+             {sorted.map(function(p,i){return <Card key={p.sym} p={p} i={i} capital={capital} setSellSheet={setSellSheet} onEdit={function(pos){setEditPos(pos);}}/>;}) }
             </div>
           )}
         </div>
