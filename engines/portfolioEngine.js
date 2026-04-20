@@ -267,6 +267,41 @@ export function analyzePortfolio(positions, tasiBars) {
     })(),
         
 
+        // Position Sizing -- Kelly Criterion (الخطوة 20 ✅)
+    positionSizing: (function() {
+      var portfolioReturns = calcPortfolioReturns(positions, weights);
+      // تقدير Kelly inputs من عوائد المحفظة
+      var kellyInputs = estimateKellyInputs(portfolioReturns);
+      // حساب Kelly Criterion
+      var kellyResult = calcKellyCriterion(
+        kellyInputs.winProbability,
+        kellyInputs.winLossRatio,
+        {
+          maxPositionSize: 0.25,
+          kellyFraction: 0.25,
+          portfolioValue: totalValue,
+        }
+      );
+      return {
+        // Kelly
+        fullKelly: kellyResult.fullKelly,
+        safeKelly: kellyResult.safeKelly,
+        edge: kellyResult.edge,
+        recommendation: kellyResult.recommendation,
+        amountSAR: kellyResult.amountSAR,
+        kellyClass: kellyResult.classification,
+        kellyLabel: kellyResult.label,
+        kellyInterpretation: kellyResult.interpretation,
+        // Inputs
+        winProbability: kellyInputs.winProbability,
+        winLossRatio: kellyInputs.winLossRatio,
+        avgWin: kellyInputs.avgWin,
+        avgLoss: kellyInputs.avgLoss,
+        winCount: kellyInputs.winCount,
+        lossCount: kellyInputs.lossCount,
+      };
+    })(),
+
     // التقييم النهائي (سيُضاف في المرحلة 6)
     healthScore: null,
     healthGrade: null,
