@@ -374,10 +374,9 @@ export function analyzePortfolio(positions, tasiBars) {
       var betaResult = calcPortfolioBeta(portfolioReturns, marketReturns);
       return runStressTests(totalValue, betaResult.value);
     })(),
-    // التقييم النهائي (سيُضاف في المرحلة 6)
-    healthScore: null,
-    healthGrade: null,
-    recommendations: [],
+       // التقييم النهائي (سيُضاف عبر addIntelligenceLayer)
+    layersIntelligence: null,
+    finalRecommendation: null,
   };
 }
 
