@@ -2983,6 +2983,265 @@ export function getStressScenarios() {
   return STRESS_SCENARIOS;
 }
 /* ══════════════════════════════════════════════════════════
+   ㉓ Portfolio Intelligence -- ربط الطبقات التسع
+   الخطوة 25: الختام الملحمي
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * تحليل جودة الأسهم في المحفظة بناءً على الطبقات التسع
+ *
+ * يستخدم stockHealth من analysisEngine.js لكل سهم
+ * ثم يحسب متوسطاً مرجّحاً للمحفظة
+ *
+ * @param {Array} positionsWithBars - [{sym, stk, bars, value}]
+ * @param {Object} weights - أوزان الأسهم
+ * @returns {Object} {avgScore, stocksAnalyzed, qualityBreakdown}
+ */
+export function calcPortfolioLayersScore(positionsWithBars, weights, stockHealthFunc) {
+  if (!positionsWithBars || positionsWithBars.length === 0 || !stockHealthFunc) {
+    return {
+      avgScore: 0,
+      weightedScore: 0,
+      stocksAnalyzed: 0,
+      qualityBreakdown: {
+        strong: 0,
+        moderate: 0,
+        weak: 0,
+      },
+      perStock: [],
+    };
+  }
+
+  var perStock = [];
+  var totalWeightedScore = 0;
+  var totalWeight = 0;
+  var sumScores = 0;
+  var qualityBreakdown = { strong: 0, moderate: 0, weak: 0 };
+
+  for (var i = 0; i < positionsWithBars.length; i++) {
+    var p = positionsWithBars[i];
+    if (!p.stk || !p.bars) continue;
+
+    try {
+      // استدعاء محرك الطبقات التسع
+      var health = stockHealthFunc(p.stk, p.bars);
+      if (!health || typeof health.score !== 'number') continue;
+
+      var weight = weights[p.sym] || 0;
+      var score = health.score;
+
+      // تصنيف الجودة
+      var quality;
+      if (score >= 70) {
+        quality = 'strong';
+        qualityBreakdown.strong++;
+      } else if (score >= 50) {
+        quality = 'moderate';
+        qualityBreakdown.moderate++;
+      } else {
+        quality = 'weak';
+        qualityBreakdown.weak++;
+      }
+
+      perStock.push({
+        sym: p.sym,
+        score: score,
+        weight: +(weight * 100).toFixed(1),
+        weightedContribution: +(score * weight).toFixed(2),
+        quality: quality,
+        recommendation: health.recommendation || health.signal || null,
+      });
+
+      totalWeightedScore += score * weight;
+      totalWeight += weight;
+      sumScores += score;
+    } catch (e) {
+      continue;
+    }
+  }
+
+  var avgScore = perStock.length > 0 ? sumScores / perStock.length : 0;
+  var weightedScore = totalWeight > 0 ? totalWeightedScore / totalWeight : 0;
+
+  return {
+    avgScore: +avgScore.toFixed(1),
+    weightedScore: +weightedScore.toFixed(1),
+    stocksAnalyzed: perStock.length,
+    qualityBreakdown: qualityBreakdown,
+    perStock: perStock,
+  };
+}
+
+/**
+ * التوصية الذكية النهائية للمحفظة
+ *
+ * تدمج:
+ * ① جودة اختيار الأسهم (الطبقات التسع)
+ * ② مخاطر المحفظة (Sharpe, Max DD, VaR)
+ * ③ التنويع (HHI, Correlation, Diversification Score)
+ * ④ Stress Tests
+ *
+ * ليعطي توصية واضحة:
+ * - 🟢 عزز الاستثمار
+ * - 🟡 حافظ على الوضع
+ * - 🟠 راجع وقلّل
+ * - 🔴 أعد هيكلة
+ *
+ * @param {Object} analysis - نتيجة analyzePortfolio الكاملة
+ * @returns {Object} {signal, label, color, reasons, actions}
+ */
+export function calcFinalRecommendation(analysis) {
+  if (!analysis) {
+    return {
+      signal: 'unknown',
+      label: 'بيانات غير كافية',
+      color: 'gray',
+      confidence: 0,
+      reasons: [],
+      actions: [],
+    };
+  }
+
+  var perf = analysis.performance || {};
+  var risk = analysis.risk || {};
+  var div = analysis.diversification || {};
+  var layers = analysis.layersIntelligence || {};
+  var stress = analysis.stressTests || [];
+
+  // ═══════════════════════════════════════════
+  // نظام التقييم: 4 محاور × 25 نقطة = 100
+  // ═══════════════════════════════════════════
+
+  var scores = {
+    stockQuality: 0,   // جودة الأسهم (الطبقات التسع)
+    performance: 0,    // الأداء (Sharpe, Alpha)
+    risk: 0,           // المخاطر (Max DD, VaR)
+    diversification: 0 // التنويع
+  };
+
+  // ① جودة الأسهم (25 نقطة)
+  if (layers.weightedScore >= 70) scores.stockQuality = 25;
+  else if (layers.weightedScore >= 60) scores.stockQuality = 20;
+  else if (layers.weightedScore >= 50) scores.stockQuality = 15;
+  else if (layers.weightedScore >= 40) scores.stockQuality = 10;
+  else scores.stockQuality = 5;
+
+  // ② الأداء (25 نقطة)
+  if (perf.sharpe >= 1.5) scores.performance = 25;
+  else if (perf.sharpe >= 1.0) scores.performance = 20;
+  else if (perf.sharpe >= 0.5) scores.performance = 15;
+  else if (perf.sharpe >= 0) scores.performance = 10;
+  else scores.performance = 5;
+
+  // ③ المخاطر (25 نقطة)
+  if (risk.maxDrawdown > -0.10 && risk.var95Daily < 0.02) scores.risk = 25;
+  else if (risk.maxDrawdown > -0.20) scores.risk = 20;
+  else if (risk.maxDrawdown > -0.30) scores.risk = 15;
+  else scores.risk = 10;
+
+  // ④ التنويع (25 نقطة)
+  if (div.score >= 75) scores.diversification = 25;
+  else if (div.score >= 60) scores.diversification = 20;
+  else if (div.score >= 45) scores.diversification = 15;
+  else if (div.score >= 30) scores.diversification = 10;
+  else scores.diversification = 5;
+
+  // ═══ الدرجة الإجمالية ═══
+  var totalScore = scores.stockQuality + scores.performance + scores.risk + scores.diversification;
+
+  // ═══ تحديد الإشارة ═══
+  var signal, label, color, icon;
+
+  if (totalScore >= 80) {
+    signal = 'strong_buy';
+    label = '🟢 عزز الاستثمار';
+    icon = '🟢';
+    color = 'mint';
+  } else if (totalScore >= 65) {
+    signal = 'hold';
+    label = '🟡 حافظ على الوضع';
+    icon = '🟡';
+    color = 'amber';
+  } else if (totalScore >= 45) {
+    signal = 'review';
+    label = '🟠 راجع وقلّل المخاطر';
+    icon = '🟠';
+    color = 'coral';
+  } else {
+    signal = 'restructure';
+    label = '🔴 أعد هيكلة المحفظة';
+    icon = '🔴';
+    color = 'coral';
+  }
+
+  // ═══ الأسباب ═══
+  var reasons = [];
+
+  if (scores.stockQuality >= 20) {
+    reasons.push({ icon: '✅', text: 'جودة الأسهم ممتازة (الطبقات التسع)', positive: true });
+  } else if (scores.stockQuality <= 10) {
+    reasons.push({ icon: '⚠️', text: 'جودة الأسهم تحتاج مراجعة', positive: false });
+  }
+
+  if (scores.performance >= 20) {
+    reasons.push({ icon: '📈', text: 'أداء قوي (Sharpe > 1)', positive: true });
+  } else if (scores.performance <= 10) {
+    reasons.push({ icon: '📉', text: 'أداء ضعيف مقابل المخاطر', positive: false });
+  }
+
+  if (scores.risk >= 20) {
+    reasons.push({ icon: '🛡️', text: 'مخاطر تحت السيطرة', positive: true });
+  } else if (scores.risk <= 15) {
+    reasons.push({ icon: '🚨', text: 'مخاطر مرتفعة', positive: false });
+  }
+
+  if (scores.diversification >= 20) {
+    reasons.push({ icon: '🎯', text: 'تنويع احترافي', positive: true });
+  } else if (scores.diversification <= 10) {
+    reasons.push({ icon: '⚠️', text: 'تركيز مفرط -- تنويع ضعيف', positive: false });
+  }
+
+  // ═══ الإجراءات الموصى بها ═══
+  var actions = [];
+
+  if (scores.diversification <= 15) {
+    actions.push('🎯 أضف أسهم من قطاعات متنوعة');
+  }
+  if (scores.stockQuality <= 15) {
+    actions.push('🔍 راجع الأسهم ذات الدرجات المنخفضة');
+  }
+  if (scores.risk <= 15) {
+    actions.push('🛡️ ضع Stop Loss واضح لكل سهم');
+  }
+  if (div.largestPosition > 30) {
+    actions.push('⚖️ قلّل السهم الأكبر (' + div.largestPosition + '%)');
+  }
+
+  // فحص Stress Tests
+  var catastrophicScenarios = stress.filter(function(s) {
+    return s.severity === 'كارثي';
+  });
+  if (catastrophicScenarios.length > 0) {
+    actions.push('⚡ محفظتك معرّضة لـ ' + catastrophicScenarios.length + ' سيناريو كارثي');
+  }
+
+  if (actions.length === 0) {
+    actions.push('✅ حافظ على الاستراتيجية الحالية');
+  }
+
+  return {
+    signal: signal,
+    label: label,
+    icon: icon,
+    color: color,
+    totalScore: totalScore,
+    confidence: +(totalScore / 100 * 100).toFixed(0),
+    scoreBreakdown: scores,
+    reasons: reasons,
+    actions: actions,
+  };
+}
+/* ══════════════════════════════════════════════════════════
    ⑥ دوال التصدير (للاستخدام في الشاشة)
 ═══════════════════════════════════════════════════════════ */
 
