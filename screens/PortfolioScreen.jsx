@@ -831,13 +831,13 @@ useEffect(() => {
     }
   }
 
-                        // ══════════════════════════════════════════════
-  // 🧪 اختبار الخطوة 18 -- Average Correlation
+           // ══════════════════════════════════════════════
+  // 🏆 الخطوة 19 -- المرحلة 4 مكتملة (التنويع الشامل)
   // ══════════════════════════════════════════════
   useEffect(function(){
     if (!positions || positions.length === 0) return;
 
-    console.log('🎯 ═══════ التنويع الشامل (الخطوة 18) ═══════');
+    console.log('🏆 ═══════ تحليل المحفظة الشامل (المرحلة 4) ═══════');
 
     var positionsWithBars = positions.map(function(p) {
       var bars = genBars(p.stk, 60);
@@ -851,49 +851,42 @@ useEffect(() => {
     });
 
     var analysis = analyzePortfolio(positionsWithBars, []);
+    var perf = analysis.performance;
+    var risk = analysis.risk;
     var div = analysis.diversification;
 
     console.log('💰 القيمة الإجمالية:', analysis.totalValue.toLocaleString(), 'ر.س');
     console.log('📊 عدد الأسهم:', div.stockCount);
     console.log('');
-    console.log('🧩 HHI:', div.hhi, '(' + div.hhiLabel + ')');
-    console.log('📐 Effective Stocks:', div.effectiveStocks);
+    console.log('📈 الأداء (المرحلة 2):');
+    console.log('   • Sharpe:', perf.sharpe);
+    console.log('   • Alpha:', (perf.alpha * 100).toFixed(2) + '%');
     console.log('');
-    console.log('🔗 إحصاءات الارتباط:');
-    console.log('   • عدد الأزواج:', div.pairCount);
-    console.log('   • متوسط الارتباط:', div.avgCorrelation);
-    console.log('   • أعلى ارتباط:', div.maxCorrelation);
-    console.log('   • أدنى ارتباط:', div.minCorrelation);
+    console.log('📉 المخاطر (المرحلة 3):');
+    console.log('   • VaR 95%:', (risk.var95Daily * 100).toFixed(2) + '%');
+    console.log('   • Max Drawdown:', (risk.maxDrawdown * 100).toFixed(2) + '%');
     console.log('');
-    console.log('🎯 تصنيف التنويع (Bridgewater):');
-    console.log('   • المستوى:', div.correlationLabel);
-    console.log('   • التفسير:', div.correlationInterpretation);
-    if (div.correlationWarning) {
-      console.log('   ⚠️ تحذير:', div.correlationWarning);
-    }
+    console.log('🎯 التنويع (المرحلة 4) -- الخطوة 19:');
     console.log('');
-    console.log('💡 الحكم الشامل:');
-    // حكم مركّب على التنويع
-    var isWellDiversified = div.hhi < 2500 && div.avgCorrelation < 0.40;
-    var needsImprovement = div.hhi >= 2500 || div.avgCorrelation >= 0.60;
-
-    if (isWellDiversified) {
-      console.log('   🏆 تنويع احترافي -- HHI منخفض + ارتباطات ضعيفة');
-    } else if (needsImprovement) {
-      console.log('   ⚠️ التنويع يحتاج تحسين جوهري');
-      if (div.hhi >= 2500) console.log('      - HHI عالٍ: قلل تركيز السهم الأكبر');
-      if (div.avgCorrelation >= 0.60) console.log('      - ارتباطات قوية: أضف أسهم من قطاعات مختلفة');
-    } else {
-      console.log('   ✅ تنويع مقبول -- يمكن تحسينه');
-    }
-
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('   🏆 درجة التنويع الشاملة: ' + div.score + '/100');
+    console.log('   📊 التصنيف: ' + div.scoreLabel);
+    console.log('   💡 التفسير: ' + div.scoreInterpretation);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('');
-    console.log('🎯 معيار Ray Dalio:');
-    if (div.avgCorrelation < 0.30) {
-      console.log('   ✅ أنت في "الكأس المقدسة" -- تنويع منخفض الارتباط');
-    } else {
-      console.log('   📊 المسافة للكأس المقدسة:', (div.avgCorrelation - 0.30).toFixed(2));
-    }
+    console.log('🔍 المكونات الثلاثة:');
+    console.log('   🧩 HHI:         ' + div.scoreComponents.hhi + '/100  (الوزن 40%)');
+    console.log('   🔗 Correlation: ' + div.scoreComponents.correlation + '/100  (الوزن 40%)');
+    console.log('   📊 Stock Count: ' + div.scoreComponents.stockCount + '/100  (الوزن 20%)');
+    console.log('');
+    console.log('📋 التوصيات:');
+    div.recommendations.forEach(function(rec, idx) {
+      console.log('   ' + (idx + 1) + '. ' + rec.icon + ' ' + rec.text);
+      console.log('      → ' + rec.action);
+    });
+    console.log('');
+    console.log('═══════════════════════════════════════');
+    console.log('🏆 المرحلة 4 مكتملة -- التنويع الشامل');
     console.log('═══════════════════════════════════════');
   }, [positions]);
     var positions=useMemo(function(){
