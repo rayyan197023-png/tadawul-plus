@@ -462,6 +462,100 @@ export default function RiskDashboard(props) {
               </div>
             </div>
 
+            {/* ⚡ اختبارات الإجهاد (الخطوة 24) */}
+            {analysis.stressTests && analysis.stressTests.length > 0 && (
+              <div style={{
+                background: "rgba(255,95,106,0.04)",
+                border: "1px solid " + C.coral + "22",
+                borderRadius: 10,
+                padding: "10px",
+                marginTop: 10,
+                marginBottom: 10,
+              }}>
+                <div style={{
+                  fontSize: 10,
+                  color: C.coral,
+                  fontWeight: 700,
+                  marginBottom: 8,
+                  letterSpacing: "1px"
+                }}>
+                  ⚡ اختبارات الإجهاد (ماذا لو تاسي انهار؟)
+                </div>
+                {analysis.stressTests.map(function (test, i) {
+                  var color = test.severityColor === 'mint' ? C.mint
+                            : test.severityColor === 'amber' ? C.amber
+                            : C.coral;
+                  return (
+                    <div key={i} style={{
+                      background: "rgba(255,255,255,0.02)",
+                      border: "1px solid " + color + "22",
+                      borderRadius: 8,
+                      padding: "8px 10px",
+                      marginBottom: 6,
+                    }}>
+                      <div style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: 4,
+                      }}>
+                        <div style={{
+                          fontSize: 11,
+                          fontWeight: 800,
+                          color: C.snow,
+                        }}>
+                          {test.icon} {test.name}
+                        </div>
+                        <div style={{
+                          fontSize: 10,
+                          fontWeight: 700,
+                          color: color,
+                          background: color + "15",
+                          borderRadius: 4,
+                          padding: "1px 6px",
+                        }}>
+                          {test.severity}
+                        </div>
+                      </div>
+                      <div style={{
+                        fontSize: 9,
+                        color: C.smoke,
+                        marginBottom: 4,
+                        lineHeight: 1.4,
+                      }}>
+                        {test.description}
+                      </div>
+                      <div style={{
+                        display: "flex",
+                        gap: 8,
+                        fontSize: 10,
+                        fontFamily: "IBM Plex Mono,monospace",
+                      }}>
+                        <div style={{ flex: 1 }}>
+                          <span style={{ color: C.ash }}>الخسارة: </span>
+                          <span style={{ color: color, fontWeight: 800 }}>
+                            {(test.expectedLossPct * 100).toFixed(1)}%
+                          </span>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <span style={{ color: C.ash }}>بالريال: </span>
+                          <span style={{ color: color, fontWeight: 800 }}>
+                            {Math.abs(test.expectedLossSAR).toLocaleString()} ر.س
+                          </span>
+                        </div>
+                      </div>
+                      <div style={{
+                        fontSize: 9,
+                        color: C.ash,
+                        marginTop: 4,
+                      }}>
+                        ⏳ التعافي المتوقع: {test.recoveryDays} يوم
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
             {/* التوصيات */}
             {div.recommendations && div.recommendations.length > 0 && (
               <div style={{
