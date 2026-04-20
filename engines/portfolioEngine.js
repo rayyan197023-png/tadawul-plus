@@ -160,7 +160,7 @@ export function analyzePortfolio(positions, tasiBars) {
     };
   })(),
 
-    // مقاييس المخاطر (الخطوات 11-14 ✅)
+        // مقاييس المخاطر (الخطوات 11-15 ✅) -- المرحلة 3 مكتملة!
     risk: (function() {
       var portfolioReturns = calcPortfolioReturns(positions, weights);
       // ⭐ Maximum Drawdown -- الخطوة 11
@@ -172,6 +172,8 @@ export function analyzePortfolio(positions, tasiBars) {
       // ⭐ Calmar Ratio -- الخطوة 14
       var returnsMetrics = calcReturnsMetrics(portfolioReturns);
       var calmarMetrics = calcCalmarRatio(returnsMetrics.annual, ddMetrics.maxDrawdown);
+      // ⭐ Downside Deviation -- الخطوة 15
+      var downMetrics = calcDownsideDeviation(portfolioReturns, 0);
       return {
         // Max Drawdown
         maxDrawdown: ddMetrics.maxDrawdown,
@@ -200,13 +202,19 @@ export function analyzePortfolio(positions, tasiBars) {
         cvarClass: cvarMetrics.classification,
         cvarLabel: cvarMetrics.label,
         cvarInterpretation: cvarMetrics.interpretation,
-        // ⭐ Calmar Ratio -- الخطوة 14
+        // Calmar
         calmar: calmarMetrics.value,
         calmarClass: calmarMetrics.classification,
         calmarLabel: calmarMetrics.label,
         calmarInterpretation: calmarMetrics.interpretation,
-        // ستُضاف لاحقاً:
-        downsideDeviation: null,
+        // ⭐ Downside Deviation -- الخطوة 15
+        downsideDeviationDaily: downMetrics.daily,
+        downsideDeviationAnnual: downMetrics.annual,
+        negativeDaysCount: downMetrics.negativeDaysCount,
+        negativeDaysPct: downMetrics.negativeDaysPct,
+        downsideClass: downMetrics.classification,
+        downsideLabel: downMetrics.label,
+        downsideInterpretation: downMetrics.interpretation,
       };
     })(),
 
