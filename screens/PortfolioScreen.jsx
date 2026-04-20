@@ -925,6 +925,21 @@ useEffect(() => {
   var alpha = +(tpP - benchmarkReturn).toFixed(2); // Alpha vs TASI
   var decisions=useMemo(function(){var m={};positions.forEach(function(p){m[p.sym]=getDecision(p);});return m;},[positions]);
 
+  // ═══ تحليل المحفظة الشامل (المراحل 1-5) ═══
+  var portfolioAnalysis = useMemo(function() {
+    if (!positions || positions.length === 0) return null;
+    var positionsWithBars = positions.map(function(p) {
+      var bars = genBars(p.stk, 60);
+      return {
+        sym: p.sym,
+        qty: p.qty,
+        value: p.value,
+        bars: bars,
+        stk: p.stk,
+      };
+    });
+    return analyzePortfolio(positionsWithBars, []);
+  }, [positions]);
   // ======= كشف تغيير القرار وإطلاق التنبيه =======
   useEffect(function(){
     var newAlerts=[];
