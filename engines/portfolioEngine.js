@@ -465,6 +465,124 @@ export function calcSharpeRatio(annualReturn, annualVolatility, riskFreeRate) {
   };
 }
 /* ══════════════════════════════════════════════════════════
+   ⑥ مقاييس الأداء -- Sortino Ratio (Sortino 1994)
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * حساب Sortino Ratio للمحفظة
+ *
+ * المعادلة الأكاديمية (Sortino & van der Meer 1991, Sortino & Price 1994):
+ * Sortino = (R_portfolio - R_riskfree) / σ_downside
+ *
+ * الفرق الجوهري عن Sharpe:
+ * - Sharpe يستخدم σ (الانحراف المعياري الكامل)
+ * - Sortino يستخدم σ_downside (الانحراف السلبي فقط)
+ *
+ * مزايا Sortino على Sharpe:
+ * ① لا يعاقب على التذبذب الإيجابي (الأرباح)
+ * ② يقيس "المخاطرة الحقيقية" (الخسائر فقط)
+ * ③ أكثر واقعية للمستثمر
+ *
+ * قاعدة ذهبية: Sortino > Sharpe (دائماً لنفس المحفظة)
+ *
+ * @param {number[]} portfolioReturns - سلسلة العوائد اليومية
+ * @param {number} annualReturn - العائد السنوي (decimal)
+ * @param {number} riskFreeRate - معدل خالي من المخاطر سنوي
+ * @returns {Object} {value, classification, label, downsideDeviationAnnual}
+ */
+export function calcSortinoRatio(portfolioReturns, annualReturn, riskFreeRate) {
+  // القيمة الافتراضية للسايبور السعودي
+  if (riskFreeRate === undefined) riskFreeRate = 0.06;
+
+  // فحص المدخلات
+  if (!portfolioReturns || portfolioReturns.length < 2) {
+    return {
+      value: 0,
+      downsideDeviationAnnual: 0,
+      classification: 'unknown',
+      label: 'بيانات غير كافية',
+      interpretation: 'لا توجد بيانات كافية للحساب',
+    };
+  }
+
+  // ① حساب العتبة اليومية من السايبور (Minimum Acceptable Return)
+  // MAR_daily = R_riskfree / 252
+  var marDaily = riskFreeRate / 252;
+
+  // ② حساب الانحراف السلبي (Downside Deviation)
+  // نأخذ فقط العوائد التي تحت العتبة
+  // DD = √[Σ min(0, r_i - MAR)² / n]
+  var sumSqDownside = 0;
+  var n = portfolioReturns.length;
+
+  for (var i = 0; i < n; i++) {
+    var deviation = portfolioReturns[i] - marDaily;
+    // نأخذ فقط الانحرافات السلبية (الخسائر)
+    if (deviation < 0) {
+      sumSqDownside += deviation * deviation;
+    }
+    // الانحرافات الموجبة = 0 في الحساب (الفرق عن Sharpe)
+  }
+
+  // متوسط التذبذب السلبي اليومي
+  var downsideDeviationDaily = Math.sqrt(sumSqDownside / n);
+
+  // ③ التحويل السنوي (قاعدة جذر الزمن)
+  var downsideDeviationAnnual = downsideDeviationDaily * Math.sqrt(252);
+
+  // حالة حدية: لا توجد خسائر (محفظة مثالية)
+  if (downsideDeviationAnnual <= 0) {
+    return {
+      value: Infinity,
+      downsideDeviationAnnual: 0,
+      classification: 'perfect',
+      label: 'لا خسائر',
+      interpretation: 'المحفظة لم تسجل أي خسائر في الفترة -- مؤشر إيجابي استثنائي',
+    };
+  }
+
+  // ④ حساب Sortino Ratio
+  var excessReturn = annualReturn - riskFreeRate;
+  var sortino = excessReturn / downsideDeviationAnnual;
+
+  // ⑤ التصنيف (أعلى من Sharpe لأن Sortino أكثر تساهلاً)
+  var classification, label, interpretation;
+
+  if (sortino > 3.0) {
+    classification = 'legendary';
+    label = 'أسطوري';
+    interpretation = 'عائد ممتاز مع حد أدنى من الخسائر';
+  } else if (sortino > 2.5) {
+    classification = 'excellent';
+    label = 'ممتاز';
+    interpretation = 'إدارة خسائر احترافية';
+  } else if (sortino > 1.5) {
+    classification = 'veryGood';
+    label = 'جيد جداً';
+    interpretation = 'توازن ممتاز بين العائد والخسائر';
+  } else if (sortino > 0.8) {
+    classification = 'good';
+    label = 'جيد';
+    interpretation = 'أداء مقبول -- الخسائر مُدارة';
+  } else if (sortino > 0) {
+    classification = 'poor';
+    label = 'ضعيف';
+    interpretation = 'العائد لا يعوض الخسائر بشكل كافٍ';
+  } else {
+    classification = 'negative';
+    label = 'سلبي';
+    interpretation = 'الخسائر تتجاوز الأرباح -- خطر حقيقي';
+  }
+
+  return {
+    value: +sortino.toFixed(3),
+    downsideDeviationAnnual: +downsideDeviationAnnual.toFixed(4),
+    classification: classification,
+    label: label,
+    interpretation: interpretation,
+  };
+}
+/* ══════════════════════════════════════════════════════════
    ⑤ حالة فارغة (للمحافظ الفارغة)
 ═══════════════════════════════════════════════════════════ */
 
