@@ -283,6 +283,83 @@ export function calcReturnsMetrics(portfolioReturns) {
   };
 }
 /* ══════════════════════════════════════════════════════════
+   ④ مقاييس الأداء -- التذبذب (Volatility)
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * حساب التذبذب اليومي والسنوي للمحفظة
+ *
+ * يعتمد على قاعدة جذر الزمن (Bachelier 1900):
+ * σ_annual = σ_daily × √252
+ *
+ * تصنيف التذبذب (معايير CFA):
+ * - low: < 10% (منخفض -- محفظة دفاعية)
+ * - moderate: 10-20% (متوسط -- محفظة متوازنة)
+ * - high: 20-30% (مرتفع -- محفظة نمو)
+ * - extreme: > 30% (شديد -- محفظة مضاربية)
+ *
+ * @param {number[]} portfolioReturns - سلسلة العوائد اليومية
+ * @returns {Object} {daily, annual, classification, label}
+ *
+ * @example
+ * var vol = calcVolatility(returns);
+ * console.log(vol.annual); // 0.18 يعني 18% سنوياً
+ * console.log(vol.label);  // "متوسط"
+ */
+export function calcVolatility(portfolioReturns) {
+  // فحص المدخلات
+  if (!portfolioReturns || portfolioReturns.length < 2) {
+    return {
+      daily: 0,
+      annual: 0,
+      classification: 'unknown',
+      label: 'بيانات غير كافية',
+    };
+  }
+
+  // ① حساب الانحراف المعياري اليومي
+  // std = √[Σ(r_i - μ)² / (n-1)]
+  var n = portfolioReturns.length;
+  var sum = 0;
+  for (var i = 0; i < n; i++) sum += portfolioReturns[i];
+  var mean = sum / n;
+
+  var sumSqDev = 0;
+  for (var j = 0; j < n; j++) {
+    var dev = portfolioReturns[j] - mean;
+    sumSqDev += dev * dev;
+  }
+  var variance = sumSqDev / (n - 1); // n-1 = Bessel's correction
+  var dailyStd = Math.sqrt(variance);
+
+  // ② التحويل السنوي (قاعدة جذر الزمن)
+  // σ_annual = σ_daily × √252
+  var annualVol = dailyStd * Math.sqrt(252);
+
+  // ③ التصنيف
+  var classification, label;
+  if (annualVol < 0.10) {
+    classification = 'low';
+    label = 'منخفض';
+  } else if (annualVol < 0.20) {
+    classification = 'moderate';
+    label = 'متوسط';
+  } else if (annualVol < 0.30) {
+    classification = 'high';
+    label = 'مرتفع';
+  } else {
+    classification = 'extreme';
+    label = 'شديد';
+  }
+
+  return {
+    daily: +dailyStd.toFixed(5),
+    annual: +annualVol.toFixed(4),
+    classification: classification,
+    label: label,
+  };
+}
+/* ══════════════════════════════════════════════════════════
    ③ حالة فارغة (للمحافظ الفارغة)
 ═══════════════════════════════════════════════════════════ */
 
