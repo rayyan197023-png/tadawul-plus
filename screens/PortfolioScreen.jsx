@@ -831,13 +831,13 @@ useEffect(() => {
     }
   }
 
-        // ══════════════════════════════════════════════
-  // 🏆 اختبار الخطوة 10 -- Jensen's Alpha (المرحلة 2 مكتملة!)
+          // ══════════════════════════════════════════════
+  // 🧪 اختبار الخطوة 11 -- Max Drawdown (مؤقت)
   // ══════════════════════════════════════════════
   useEffect(function(){
     if (!positions || positions.length === 0) return;
 
-    console.log('🏆 ═══════ تحليل المحفظة الكامل (المرحلة 2) ═══════');
+    console.log('📉 ═══════ تحليل المخاطر (الخطوة 11) ═══════');
 
     var positionsWithBars = positions.map(function(p) {
       var bars = genBars(p.stk, 60);
@@ -852,39 +852,29 @@ useEffect(() => {
 
     var analysis = analyzePortfolio(positionsWithBars, []);
     var perf = analysis.performance;
+    var risk = analysis.risk;
 
     console.log('💰 القيمة الإجمالية:', analysis.totalValue.toLocaleString(), 'ر.س');
     console.log('');
-    console.log('📈 الأداء السنوي:');
-    console.log('   • محفظتك:', (perf.annualReturn * 100).toFixed(2) + '%');
-    console.log('   • تاسي:', (perf.marketAnnualReturn * 100).toFixed(2) + '%');
-    console.log('   • السايبور:', '6.00%');
-    console.log('');
-    console.log('📉 التذبذب:');
-    console.log('   • تذبذب سنوي:', (perf.volatility * 100).toFixed(2) + '%');
-    console.log('   • Beta vs تاسي:', perf.beta);
-    console.log('');
-    console.log('⭐ مقاييس الأداء المعدّلة:');
-    console.log('   • Sharpe Ratio:', perf.sharpe, '(' + perf.sharpeLabel + ')');
-    console.log('   • Sortino Ratio:', perf.sortino, '(' + perf.sortinoLabel + ')');
-    console.log('');
-    console.log('🏆 Jensen\'s Alpha -- لحظة الحقيقة:');
-    console.log('   • العائد المتوقع (CAPM):', (perf.expectedReturn * 100).toFixed(2) + '%');
-    console.log('   • العائد الفعلي:', (perf.annualReturn * 100).toFixed(2) + '%');
+    console.log('📈 الأداء:');
+    console.log('   • العائد السنوي:', (perf.annualReturn * 100).toFixed(2) + '%');
+    console.log('   • Sharpe:', perf.sharpe);
     console.log('   • Alpha:', (perf.alpha * 100).toFixed(2) + '%');
-    console.log('   • التصنيف:', perf.alphaLabel);
-    console.log('   • التفسير:', perf.alphaInterpretation);
     console.log('');
-    console.log('═══════════════════════════════════════');
-    console.log('🎯 الحكم النهائي:');
-    if (perf.alpha > 0.01 && perf.sharpe > 1) {
-      console.log('   ✅ أداء احترافي -- تتفوق على السوق مع مخاطرة معقولة');
-    } else if (perf.alpha > 0) {
-      console.log('   👍 أداء جيد -- تتفوق على السوق لكن يمكن تحسين المخاطرة');
-    } else if (perf.sharpe > 1) {
-      console.log('   ⚖️ أداء متوازن -- مخاطر مقبولة لكن لا ميزة على السوق');
+    console.log('📉 Maximum Drawdown:');
+    console.log('   • القيمة:', (risk.maxDrawdown * 100).toFixed(2) + '%');
+    console.log('   • المدة:', risk.drawdownDuration, 'يوم');
+    console.log('   • أيام التعافي:', risk.recoveryDays || 'لم يتعافَ بعد');
+    console.log('   • التصنيف:', risk.drawdownLabel);
+    console.log('   • التفسير:', risk.drawdownInterpretation);
+    console.log('');
+    console.log('💡 ماذا يعني هذا؟');
+    if (risk.maxDrawdown > -0.10) {
+      console.log('   ✅ محفظتك استقرار ممتاز -- يسهل الاحتفاظ بها نفسياً');
+    } else if (risk.maxDrawdown > -0.20) {
+      console.log('   ⚖️ تراجعات طبيعية -- لكن تحتاج صبر');
     } else {
-      console.log('   ⚠️ يحتاج تحسين -- راجع استراتيجية المحفظة');
+      console.log('   ⚠️ تراجعات حادة -- راجع إدارة المخاطر');
     }
     console.log('═══════════════════════════════════════');
   }, [positions]);
