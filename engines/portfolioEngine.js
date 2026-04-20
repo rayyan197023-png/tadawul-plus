@@ -218,12 +218,14 @@ export function analyzePortfolio(positions, tasiBars) {
       };
     })(),
 
-            // التنويع (الخطوات 16-17 ✅)
+               // التنويع (الخطوات 16-18 ✅)
     diversification: (function() {
       // ⭐ HHI -- الخطوة 16
       var hhiMetrics = calcHHI(weights);
       // ⭐ Correlation Matrix -- الخطوة 17
       var corrResult = calcCorrelationMatrix(positions);
+      // ⭐ Average Correlation -- الخطوة 18
+      var avgCorrMetrics = calcAvgCorrelation(corrResult);
       return {
         // HHI
         hhi: hhiMetrics.value,
@@ -234,14 +236,21 @@ export function analyzePortfolio(positions, tasiBars) {
         hhiLabel: hhiMetrics.label,
         hhiInterpretation: hhiMetrics.interpretation,
         concentrationWarning: hhiMetrics.concentrationWarning,
-        // ⭐ Correlation Matrix -- الخطوة 17
+        // Correlation Matrix
         correlationMatrix: corrResult.matrix,
         correlationSymbols: corrResult.symbols,
         pairCount: corrResult.pairCount,
         highCorrelations: corrResult.highCorrelations,
         highCorrelationCount: corrResult.highCorrelationCount,
+        // ⭐ Average Correlation -- الخطوة 18
+        avgCorrelation: avgCorrMetrics.average,
+        maxCorrelation: avgCorrMetrics.max,
+        minCorrelation: avgCorrMetrics.min,
+        correlationClass: avgCorrMetrics.classification,
+        correlationLabel: avgCorrMetrics.label,
+        correlationInterpretation: avgCorrMetrics.interpretation,
+        correlationWarning: avgCorrMetrics.warning,
         // ستُضاف لاحقاً:
-        avgCorrelation: null,
         score: null,
       };
     })(),
