@@ -1,0 +1,496 @@
+'use client';
+/**
+ * @module RiskDashboard
+ * @description لوحة المخاطر الشاملة -- واجهة المستخدم
+ *
+ * تعرض 18 مقياساً عالمياً في 3 أقسام:
+ * - الأداء (Sharpe, Sortino, Alpha, Beta)
+ * - المخاطر (VaR, CVaR, Max Drawdown, Calmar)
+ * - التنويع (HHI, Correlation, Diversification Score)
+ *
+ * @author تداول+
+ * @version 1.0
+ */
+
+import React, { useState, useMemo } from 'react';
+
+const C = {
+  ink: "#06080f", deep: "#090c16", void: "#0c1020",
+  layer1: "#141d2b", layer2: "#1e2d42", layer3: "#243352",
+  edge: "#2e3e60", line: "#32426a",
+  snow: "#f0f6ff", mist: "#c8d8f0", smoke: "#90a4c8", ash: "#5a6e94",
+  gold: "#f0c050", goldL: "#ffd878",
+  electric: "#4d9fff", plasma: "#a78bfa",
+  mint: "#1ee68a", coral: "#ff5f6a", amber: "#fbbf24", teal: "#22d3ee",
+};
+
+/* ══════════════════════════════════════════════════════════
+   ① تحديد لون المقياس حسب التصنيف
+═══════════════════════════════════════════════════════════ */
+function getMetricColor(classification) {
+  var goodClasses = ['excellent', 'veryGood', 'good', 'legendary', 'diversified'];
+  var okClasses = ['moderate', 'balanced', 'neutral', 'standard'];
+  var badClasses = ['poor', 'negative', 'concentrated', 'highlyConcentrated', 'aggressive', 'speculative', 'very_poor', 'failing', 'catastrophic', 'difficult', 'extreme'];
+
+  if (goodClasses.indexOf(classification) !== -1) return C.mint;
+  if (okClasses.indexOf(classification) !== -1) return C.amber;
+  if (badClasses.indexOf(classification) !== -1) return C.coral;
+  return C.smoke;
+}
+
+/* ══════════════════════════════════════════════════════════
+   ② حساب Health Score الإجمالي
+═══════════════════════════════════════════════════════════ */
+function calcHealthScore(analysis) {
+  if (!analysis || !analysis.performance) return 50;
+
+  var perf = analysis.performance;
+  var risk = analysis.risk;
+  var div = analysis.diversification;
+
+  // وزن الأداء 30%
+  var perfScore = 50;
+  if (perf.sharpe > 1) perfScore = 85;
+  else if (perf.sharpe > 0.5) perfScore = 70;
+  else if (perf.sharpe > 0) perfScore = 55;
+  else perfScore = 30;
+
+  // وزن المخاطر 30%
+  var riskScore = 50;
+  if (risk && risk.maxDrawdown > -0.10) riskScore = 80;
+  else if (risk && risk.maxDrawdown > -0.20) riskScore = 60;
+  else if (risk && risk.maxDrawdown > -0.30) riskScore = 40;
+  else riskScore = 25;
+
+  // وزن التنويع 40%
+  var divScore = (div && div.score) ? div.score : 50;
+
+  var finalScore = Math.round(perfScore * 0.3 + riskScore * 0.3 + divScore * 0.4);
+  return Math.max(0, Math.min(100, finalScore));
+}
+
+/* ══════════════════════════════════════════════════════════
+   ③ تحديد الحرف والتصنيف
+═══════════════════════════════════════════════════════════ */
+function getGradeInfo(score) {
+  if (score >= 90) return { grade: 'A+', label: 'ممتاز', color: C.mint };
+  if (score >= 80) return { grade: 'A', label: 'ممتاز', color: C.mint };
+  if (score >= 70) return { grade: 'B', label: 'جيد جداً', color: C.electric };
+  if (score >= 60) return { grade: 'C', label: 'جيد', color: C.teal };
+  if (score >= 50) return { grade: 'D', label: 'متوسط', color: C.amber };
+  if (score >= 40) return { grade: 'E', label: 'ضعيف', color: C.coral };
+  return { grade: 'F', label: 'خطر', color: C.coral };
+}
+
+/* ══════════════════════════════════════════════════════════
+   ④ كرت مقياس واحد
+═══════════════════════════════════════════════════════════ */
+function MetricCard(props) {
+  var label = props.label;
+  var value = props.value;
+  var unit = props.unit || '';
+  var classification = props.classification;
+  var description = props.description;
+
+  var color = getMetricColor(classification);
+
+  return (
+    <div style={{
+      background: "linear-gradient(135deg," + C.layer1 + "," + C.layer2 + ")",
+      border: "1px solid " + color + "33",
+      borderRadius: 12,
+      padding: "10px 12px",
+      flex: 1,
+      minWidth: 0,
+    }}>
+      <div style={{
+        fontSize: 10,
+        color: C.smoke,
+        fontWeight: 600,
+        marginBottom: 4,
+        letterSpacing: "0.3px",
+      }}>
+        {label}
+      </div>
+      <div style={{
+        fontFamily: "IBM Plex Mono,monospace",
+        fontSize: 16,
+        fontWeight: 900,
+        color: color,
+        lineHeight: 1.1,
+        marginBottom: 2,
+      }}>
+        {value}{unit}
+      </div>
+      {description && (
+        <div style={{
+          fontSize: 9,
+          color: C.ash,
+          marginTop: 2,
+          lineHeight: 1.3,
+        }}>
+          {description}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════
+   ⑤ Risk Dashboard الرئيسي
+═══════════════════════════════════════════════════════════ */
+export default function RiskDashboard(props) {
+  var analysis = props.analysis;
+  var expandedState = useState(false);
+  var expanded = expandedState[0];
+  var setExpanded = expandedState[1];
+
+  if (!analysis || !analysis.totalValue) {
+    return null;
+  }
+
+  var healthScore = useMemo(function () {
+    return calcHealthScore(analysis);
+  }, [analysis]);
+
+  var gradeInfo = getGradeInfo(healthScore);
+  var perf = analysis.performance || {};
+  var risk = analysis.risk || {};
+  var div = analysis.diversification || {};
+
+  return (
+    <div style={{
+      background: "linear-gradient(145deg," + C.layer1 + " 0%," + C.layer2 + " 100%)",
+      borderRadius: 18,
+      border: "1px solid " + gradeInfo.color + "44",
+      boxShadow: "0 8px 32px " + gradeInfo.color + "11, 0 2px 8px rgba(0,0,0,.4)",
+      overflow: "hidden",
+      marginBottom: 12,
+    }}>
+      {/* ── شريط علوي ── */}
+      <div style={{
+        height: 3,
+        background: "linear-gradient(90deg," + gradeInfo.color + "00," + gradeInfo.color + "cc," + gradeInfo.color + "00)"
+      }} />
+
+      {/* ── Header: Health Score ── */}
+      <div style={{
+        padding: "14px 16px",
+        borderBottom: "1px solid " + C.line + "33",
+        display: "flex",
+        alignItems: "center",
+        gap: 14,
+      }}>
+        {/* دائرة الدرجة */}
+        <div style={{ position: "relative", width: 70, height: 70, flexShrink: 0 }}>
+          <svg width={70} height={70} style={{ transform: "rotate(-90deg)", position: "absolute", inset: 0 }}>
+            <circle cx={35} cy={35} r={30} fill="none" stroke={C.ash} strokeWidth={4} strokeOpacity={0.2} />
+            <circle
+              cx={35} cy={35} r={30}
+              fill="none"
+              stroke={gradeInfo.color}
+              strokeWidth={4}
+              strokeDasharray={2 * Math.PI * 30}
+              strokeDashoffset={2 * Math.PI * 30 * (1 - healthScore / 100)}
+              strokeLinecap="round"
+              style={{
+                filter: "drop-shadow(0 0 6px " + gradeInfo.color + "aa)",
+                transition: "stroke-dashoffset 1s ease",
+              }}
+            />
+          </svg>
+          <div style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+            <div style={{
+              fontFamily: "IBM Plex Mono,monospace",
+              fontSize: 18,
+              fontWeight: 900,
+              color: gradeInfo.color,
+              lineHeight: 1,
+              textShadow: "0 0 10px " + gradeInfo.color + "88",
+            }}>
+              {healthScore}
+            </div>
+            <div style={{
+              fontSize: 11,
+              color: gradeInfo.color,
+              fontWeight: 800,
+              marginTop: 2,
+            }}>
+              {gradeInfo.grade}
+            </div>
+          </div>
+        </div>
+
+        {/* النص */}
+        <div style={{ flex: 1 }}>
+          <div style={{
+            fontSize: 10,
+            color: C.gold,
+            fontWeight: 700,
+            letterSpacing: "1.5px",
+            marginBottom: 3,
+          }}>
+            لوحة المخاطر الشاملة
+          </div>
+          <div style={{
+            fontSize: 15,
+            fontWeight: 900,
+            color: C.snow,
+            marginBottom: 3,
+          }}>
+            صحة المحفظة: {gradeInfo.label}
+          </div>
+          <div style={{
+            fontSize: 11,
+            color: C.smoke,
+            lineHeight: 1.4,
+          }}>
+            18 مقياساً عالمياً · تحليل أكاديمي شامل
+          </div>
+        </div>
+      </div>
+
+      {/* ── 3 أقسام رئيسية ── */}
+      <div style={{ padding: "12px 14px" }}>
+        {/* القسم 1: الأداء */}
+        <div style={{ marginBottom: 12 }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            marginBottom: 6,
+          }}>
+            <div style={{
+              width: 3,
+              height: 12,
+              background: C.electric,
+              borderRadius: 2,
+            }} />
+            <span style={{
+              fontSize: 11,
+              fontWeight: 800,
+              color: C.mist,
+              letterSpacing: "0.5px",
+            }}>
+              📈 الأداء
+            </span>
+          </div>
+          <div style={{ display: "flex", gap: 6 }}>
+            <MetricCard
+              label="Sharpe"
+              value={perf.sharpe != null ? perf.sharpe.toFixed(2) : '-'}
+              classification={perf.sharpeClass}
+              description={perf.sharpeLabel}
+            />
+            <MetricCard
+              label="Sortino"
+              value={perf.sortino != null ? perf.sortino.toFixed(2) : '-'}
+              classification={perf.sortinoClass}
+              description={perf.sortinoLabel}
+            />
+            <MetricCard
+              label="Alpha"
+              value={perf.alpha != null ? (perf.alpha * 100).toFixed(1) : '-'}
+              unit="%"
+              classification={perf.alphaClass}
+              description={perf.alphaLabel}
+            />
+          </div>
+        </div>
+
+        {/* القسم 2: المخاطر */}
+        <div style={{ marginBottom: 12 }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            marginBottom: 6,
+          }}>
+            <div style={{
+              width: 3,
+              height: 12,
+              background: C.coral,
+              borderRadius: 2,
+            }} />
+            <span style={{
+              fontSize: 11,
+              fontWeight: 800,
+              color: C.mist,
+              letterSpacing: "0.5px",
+            }}>
+              📉 المخاطر
+            </span>
+          </div>
+          <div style={{ display: "flex", gap: 6 }}>
+            <MetricCard
+              label="Max DD"
+              value={risk.maxDrawdown != null ? (risk.maxDrawdown * 100).toFixed(1) : '-'}
+              unit="%"
+              classification={risk.drawdownClass}
+              description={risk.drawdownLabel}
+            />
+            <MetricCard
+              label="VaR 95%"
+              value={risk.var95Daily != null ? (risk.var95Daily * 100).toFixed(2) : '-'}
+              unit="%"
+              classification={risk.varClass}
+              description={risk.varLabel}
+            />
+            <MetricCard
+              label="CVaR"
+              value={risk.cvar95Daily != null ? (risk.cvar95Daily * 100).toFixed(2) : '-'}
+              unit="%"
+              classification={risk.cvarClass}
+              description={risk.cvarLabel}
+            />
+          </div>
+        </div>
+
+        {/* القسم 3: التنويع */}
+        <div style={{ marginBottom: 8 }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            marginBottom: 6,
+          }}>
+            <div style={{
+              width: 3,
+              height: 12,
+              background: C.mint,
+              borderRadius: 2,
+            }} />
+            <span style={{
+              fontSize: 11,
+              fontWeight: 800,
+              color: C.mist,
+              letterSpacing: "0.5px",
+            }}>
+              🎯 التنويع
+            </span>
+          </div>
+          <div style={{ display: "flex", gap: 6 }}>
+            <MetricCard
+              label="HHI"
+              value={div.hhi || '-'}
+              classification={div.hhiClass}
+              description={div.hhiLabel}
+            />
+            <MetricCard
+              label="Avg Corr"
+              value={div.avgCorrelation != null ? div.avgCorrelation.toFixed(2) : '-'}
+              classification={div.correlationClass}
+              description={div.correlationLabel}
+            />
+            <MetricCard
+              label="Score"
+              value={div.score || '-'}
+              unit="/100"
+              classification={div.scoreClass}
+              description={div.scoreLabel}
+            />
+          </div>
+        </div>
+
+        {/* زر التوسعة */}
+        <button
+          onClick={function () { setExpanded(!expanded); }}
+          style={{
+            width: "100%",
+            background: "transparent",
+            border: "1px solid " + C.line,
+            borderRadius: 10,
+            padding: "8px",
+            cursor: "pointer",
+            fontSize: 11,
+            fontWeight: 700,
+            color: C.smoke,
+            fontFamily: "Cairo,sans-serif",
+            marginTop: 4,
+            transition: "all .2s",
+          }}
+        >
+          {expanded ? '▲ إخفاء التفاصيل' : '▼ عرض التفاصيل الكاملة'}
+        </button>
+
+        {/* قسم التفاصيل الموسعة */}
+        {expanded && (
+          <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid " + C.line + "33" }}>
+            {/* تفاصيل الأداء */}
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ fontSize: 10, color: C.electric, fontWeight: 700, marginBottom: 6, letterSpacing: "1px" }}>
+                تفاصيل الأداء
+              </div>
+              <div style={{ fontSize: 10, color: C.mist, lineHeight: 1.7 }}>
+                <div>• عائد سنوي: <span style={{ color: C.snow, fontWeight: 700 }}>{perf.annualReturn != null ? (perf.annualReturn * 100).toFixed(2) + '%' : '-'}</span></div>
+                <div>• تذبذب سنوي: <span style={{ color: C.snow, fontWeight: 700 }}>{perf.volatility != null ? (perf.volatility * 100).toFixed(2) + '%' : '-'}</span></div>
+                <div>• Beta vs تاسي: <span style={{ color: C.snow, fontWeight: 700 }}>{perf.beta != null ? perf.beta.toFixed(2) : '-'}</span></div>
+                <div>• Downside Deviation: <span style={{ color: C.snow, fontWeight: 700 }}>{risk.downsideDeviationAnnual != null ? (risk.downsideDeviationAnnual * 100).toFixed(2) + '%' : '-'}</span></div>
+              </div>
+            </div>
+
+            {/* تفاصيل المخاطر */}
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ fontSize: 10, color: C.coral, fontWeight: 700, marginBottom: 6, letterSpacing: "1px" }}>
+                تفاصيل المخاطر
+              </div>
+              <div style={{ fontSize: 10, color: C.mist, lineHeight: 1.7 }}>
+                <div>• خسارة يومية محتملة (VaR): <span style={{ color: C.coral, fontWeight: 700 }}>{risk.var95DailySAR != null ? risk.var95DailySAR.toLocaleString() + ' ر.س' : '-'}</span></div>
+                <div>• خسارة كارثية (CVaR): <span style={{ color: C.coral, fontWeight: 700 }}>{risk.cvar95DailySAR != null ? risk.cvar95DailySAR.toLocaleString() + ' ر.س' : '-'}</span></div>
+                <div>• Calmar Ratio: <span style={{ color: C.snow, fontWeight: 700 }}>{risk.calmar != null ? risk.calmar.toFixed(2) : '-'}</span></div>
+                <div>• مدة التراجع: <span style={{ color: C.snow, fontWeight: 700 }}>{risk.drawdownDuration || '-'} يوم</span></div>
+              </div>
+            </div>
+
+            {/* تفاصيل التنويع */}
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ fontSize: 10, color: C.mint, fontWeight: 700, marginBottom: 6, letterSpacing: "1px" }}>
+                تفاصيل التنويع
+              </div>
+              <div style={{ fontSize: 10, color: C.mist, lineHeight: 1.7 }}>
+                <div>• عدد الأسهم الفعلي: <span style={{ color: C.snow, fontWeight: 700 }}>{div.effectiveStocks || '-'}</span></div>
+                <div>• السهم الأكبر: <span style={{ color: C.snow, fontWeight: 700 }}>{div.largestPosition || '-'}%</span></div>
+                <div>• أعلى ارتباط: <span style={{ color: C.snow, fontWeight: 700 }}>{div.maxCorrelation != null ? div.maxCorrelation.toFixed(2) : '-'}</span></div>
+                <div>• ارتباطات عالية: <span style={{ color: C.snow, fontWeight: 700 }}>{div.highCorrelationCount || 0} زوج</span></div>
+              </div>
+            </div>
+
+            {/* التوصيات */}
+            {div.recommendations && div.recommendations.length > 0 && (
+              <div style={{
+                background: "rgba(240,192,80,0.06)",
+                border: "1px solid " + C.gold + "22",
+                borderRadius: 10,
+                padding: "10px",
+                marginTop: 10,
+              }}>
+                <div style={{ fontSize: 10, color: C.gold, fontWeight: 700, marginBottom: 6, letterSpacing: "1px" }}>
+                  💡 التوصيات الذكية
+                </div>
+                {div.recommendations.map(function (rec, i) {
+                  return (
+                    <div key={i} style={{
+                      fontSize: 10,
+                      color: C.mist,
+                      lineHeight: 1.5,
+                      marginBottom: 4,
+                    }}>
+                      {rec.icon} {rec.text}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
