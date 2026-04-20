@@ -365,6 +365,94 @@ export function calcVolatility(portfolioReturns) {
   };
 }
 /* ══════════════════════════════════════════════════════════
+   ⑤ مقاييس الأداء -- Sharpe Ratio (نوبل 1990)
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * حساب Sharpe Ratio للمحفظة
+ *
+ * المعادلة الأكاديمية الأصلية (Sharpe 1966):
+ * Sharpe = (R_portfolio - R_riskfree) / σ_portfolio
+ *
+ * حيث:
+ * - R_portfolio: العائد السنوي للمحفظة
+ * - R_riskfree: معدل العائد الخالي من المخاطر (السايبور)
+ * - σ_portfolio: التذبذب السنوي للمحفظة
+ *
+ * تصنيف CFA:
+ * - > 3.0: أسطوري (نادر)
+ * - 2.0-3.0: ممتاز
+ * - 1.0-2.0: جيد جداً
+ * - 0.5-1.0: مقبول
+ * - 0.0-0.5: ضعيف
+ * - < 0: سلبي (خسارة بعد تعديل المخاطر)
+ *
+ * @param {number} annualReturn - العائد السنوي (decimal: 0.12 = 12%)
+ * @param {number} annualVolatility - التذبذب السنوي (decimal)
+ * @param {number} riskFreeRate - معدل خالي من المخاطر سنوي (default: 0.06)
+ * @returns {Object} {value, classification, label, interpretation}
+ *
+ * @example
+ * var sharpe = calcSharpeRatio(0.12, 0.18, 0.06);
+ * console.log(sharpe.value);  // 0.33
+ * console.log(sharpe.label);  // "ضعيف"
+ */
+export function calcSharpeRatio(annualReturn, annualVolatility, riskFreeRate) {
+  // القيمة الافتراضية للسايبور السعودي
+  if (riskFreeRate === undefined) riskFreeRate = 0.06;
+
+  // حالة حدية: لا يوجد تذبذب (محفظة نقدية 100%)
+  if (!annualVolatility || annualVolatility <= 0) {
+    return {
+      value: 0,
+      classification: 'unknown',
+      label: 'لا يمكن حسابه',
+      interpretation: 'التذبذب صفر -- محفظة نقدية أو بيانات غير كافية',
+    };
+  }
+
+  // ① حساب Sharpe Ratio
+  var excessReturn = annualReturn - riskFreeRate;
+  var sharpe = excessReturn / annualVolatility;
+
+  // ② التصنيف
+  var classification, label, interpretation;
+
+  if (sharpe > 3.0) {
+    classification = 'legendary';
+    label = 'أسطوري';
+    interpretation = 'أداء استثنائي نادر - مستوى Renaissance / Medallion';
+  } else if (sharpe > 2.0) {
+    classification = 'excellent';
+    label = 'ممتاز';
+    interpretation = 'أداء صناديق النخبة - استراتيجية محكمة';
+  } else if (sharpe > 1.0) {
+    classification = 'veryGood';
+    label = 'جيد جداً';
+    interpretation = 'أداء احترافي - أفضل من معظم الصناديق';
+  } else if (sharpe > 0.5) {
+    classification = 'good';
+    label = 'مقبول';
+    interpretation = 'أداء متوسط - فوق المؤشر قليلاً';
+  } else if (sharpe > 0) {
+    classification = 'poor';
+    label = 'ضعيف';
+    interpretation = 'العائد بالكاد يبرر المخاطرة - راجع الاستراتيجية';
+  } else {
+    classification = 'negative';
+    label = 'سلبي';
+    interpretation = 'خسارة بعد تعديل المخاطر - السايبور أفضل من محفظتك';
+  }
+
+  return {
+    value: +sharpe.toFixed(3),
+    excessReturn: +excessReturn.toFixed(4),
+    classification: classification,
+    label: label,
+    interpretation: interpretation,
+  };
+}
+/* ══════════════════════════════════════════════════════════
    ⑤ حالة فارغة (للمحافظ الفارغة)
 ═══════════════════════════════════════════════════════════ */
 
