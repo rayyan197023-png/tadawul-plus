@@ -1028,6 +1028,120 @@ export function calcMaxDrawdown(returns) {
   };
 }
 /* ══════════════════════════════════════════════════════════
+   ⑪ Value at Risk (VaR) -- معيار JPMorgan / بازل III
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * حساب Value at Risk للمحفظة
+ *
+ * المنهجية: Historical Simulation Method (Hull 2018)
+ * - أسلوب غير معلمي (non-parametric)
+ * - لا يفترض توزيع العوائد
+ * - أدق من Parametric VaR للأسواق الناشئة
+ *
+ * المعادلة:
+ * VaR_α(daily) = -Percentile(returns, 100-α)
+ * VaR_α(weekly) = VaR_daily × √5
+ * VaR_α(monthly) = VaR_daily × √21
+ *
+ * التفسير:
+ * VaR 95% = 2.5% → "في 95% من الأيام، الخسارة ≤ 2.5%"
+ *                  "في 5% من الأيام (1 من 20)، قد تتجاوز"
+ *
+ * تصنيف VaR يومي:
+ * - < 1%: محافظة
+ * - 1%-2%: متوازنة
+ * - 2%-3%: نمو
+ * - 3%-5%: عدوانية
+ * - > 5%: مضاربة
+ *
+ * @param {number[]} returns - سلسلة العوائد اليومية
+ * @param {number} confidence - مستوى الثقة (افتراضي 95)
+ * @param {number} portfolioValue - قيمة المحفظة (لحساب الخسارة بالريال)
+ * @returns {Object} {daily, weekly, monthly, dailySAR, ...}
+ */
+export function calcVaR(returns, confidence, portfolioValue) {
+  // القيم الافتراضية
+  if (confidence === undefined) confidence = 95;
+  if (portfolioValue === undefined) portfolioValue = 0;
+
+  // فحص المدخلات
+  if (!returns || returns.length < 10) {
+    return {
+      daily: 0,
+      weekly: 0,
+      monthly: 0,
+      dailySAR: 0,
+      weeklySAR: 0,
+      monthlySAR: 0,
+      confidence: confidence,
+      classification: 'unknown',
+      label: 'بيانات غير كافية',
+      interpretation: 'تحتاج 10+ أيام من البيانات لحساب VaR',
+    };
+  }
+
+  // ① ترتيب العوائد تصاعدياً (من الأسوأ للأفضل)
+  var sorted = returns.slice().sort(function(a, b) { return a - b; });
+
+  // ② حساب موقع الـ Percentile
+  // VaR 95% = أسوأ 5% من العوائد
+  var percentileIdx = Math.floor((100 - confidence) / 100 * sorted.length);
+  if (percentileIdx >= sorted.length) percentileIdx = sorted.length - 1;
+  if (percentileIdx < 0) percentileIdx = 0;
+
+  // ③ VaR يومي (قيمة سالبة → نحولها موجبة للوضوح)
+  var varDaily = -sorted[percentileIdx];
+  if (varDaily < 0) varDaily = 0; // حالة نادرة: كل العوائد موجبة
+
+  // ④ VaR أسبوعي وشهري (قاعدة جذر الزمن)
+  var varWeekly = varDaily * Math.sqrt(5);
+  var varMonthly = varDaily * Math.sqrt(21);
+
+  // ⑤ تحويل إلى ريال سعودي
+  var dailySAR = varDaily * portfolioValue;
+  var weeklySAR = varWeekly * portfolioValue;
+  var monthlySAR = varMonthly * portfolioValue;
+
+  // ⑥ التصنيف (معايير بنكية)
+  var classification, label, interpretation;
+
+  if (varDaily < 0.01) {
+    classification = 'conservative';
+    label = 'محافظة';
+    interpretation = 'مخاطر يومية منخفضة جداً -- محفظة دفاعية';
+  } else if (varDaily < 0.02) {
+    classification = 'balanced';
+    label = 'متوازنة';
+    interpretation = 'مخاطر معتدلة -- مناسبة للاستثمار طويل المدى';
+  } else if (varDaily < 0.03) {
+    classification = 'growth';
+    label = 'نمو';
+    interpretation = 'مخاطر نشطة -- عوائد محتملة أعلى';
+  } else if (varDaily < 0.05) {
+    classification = 'aggressive';
+    label = 'عدوانية';
+    interpretation = 'مخاطر مرتفعة -- تحتاج قدرة على تحمل الخسائر';
+  } else {
+    classification = 'speculative';
+    label = 'مضاربية';
+    interpretation = 'مخاطر عالية جداً -- محفظة مضاربية';
+  }
+
+  return {
+    daily: +varDaily.toFixed(4),
+    weekly: +varWeekly.toFixed(4),
+    monthly: +varMonthly.toFixed(4),
+    dailySAR: +dailySAR.toFixed(0),
+    weeklySAR: +weeklySAR.toFixed(0),
+    monthlySAR: +monthlySAR.toFixed(0),
+    confidence: confidence,
+    classification: classification,
+    label: label,
+    interpretation: interpretation,
+  };
+}
+/* ══════════════════════════════════════════════════════════
    ⑤ حالة فارغة (للمحافظ الفارغة)
 ═══════════════════════════════════════════════════════════ */
 
