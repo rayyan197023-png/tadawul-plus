@@ -88,7 +88,7 @@ export function analyzePortfolio(positions, tasiBars) {
     stockCount: positions.length,
     weights: weights,
 
-         // مقاييس الأداء -- العوائد + التذبذب + Sharpe (الخطوات 5-7 ✅)
+          // مقاييس الأداء -- العوائد + التذبذب + Sharpe + Sortino (الخطوات 5-8 ✅)
   performance: (function() {
     var portfolioReturns = calcPortfolioReturns(positions, weights);
     var returnsMetrics = calcReturnsMetrics(portfolioReturns);
@@ -97,7 +97,13 @@ export function analyzePortfolio(positions, tasiBars) {
     var sharpeMetrics = calcSharpeRatio(
       returnsMetrics.annual,
       volMetrics.annual,
-      0.06  // السايبور السعودي
+      0.06
+    );
+    // ⭐ Sortino Ratio -- الخطوة 8
+    var sortinoMetrics = calcSortinoRatio(
+      portfolioReturns,
+      returnsMetrics.annual,
+      0.06
     );
     return {
       dailyReturn: returnsMetrics.daily,
@@ -109,14 +115,19 @@ export function analyzePortfolio(positions, tasiBars) {
       volatility: volMetrics.annual,
       volatilityClass: volMetrics.classification,
       volatilityLabel: volMetrics.label,
-      // ⭐ Sharpe Ratio
+      // ⭐ Sharpe
       sharpe: sharpeMetrics.value,
       sharpeClass: sharpeMetrics.classification,
       sharpeLabel: sharpeMetrics.label,
       sharpeInterpretation: sharpeMetrics.interpretation,
       excessReturn: sharpeMetrics.excessReturn,
+      // ⭐ Sortino
+      sortino: sortinoMetrics.value,
+      sortinoClass: sortinoMetrics.classification,
+      sortinoLabel: sortinoMetrics.label,
+      sortinoInterpretation: sortinoMetrics.interpretation,
+      downsideDeviation: sortinoMetrics.downsideDeviationAnnual,
       // ستُضاف لاحقاً:
-      sortino: null,
       alpha: null,
       beta: null,
     };
