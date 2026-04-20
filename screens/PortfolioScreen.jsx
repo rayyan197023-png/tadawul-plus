@@ -831,13 +831,13 @@ useEffect(() => {
     }
   }
 
-              // ══════════════════════════════════════════════
-  // 🧪 اختبار الخطوة 13 -- CVaR 95% (مؤقت)
+                // ══════════════════════════════════════════════
+  // 🧪 اختبار الخطوة 14 -- Calmar Ratio (مؤقت)
   // ══════════════════════════════════════════════
   useEffect(function(){
     if (!positions || positions.length === 0) return;
 
-    console.log('🚨 ═══════ تحليل المخاطر (الخطوة 13) ═══════');
+    console.log('⚖️ ═══════ تحليل المخاطر (الخطوة 14) ═══════');
 
     var positionsWithBars = positions.map(function(p) {
       var bars = genBars(p.stk, 60);
@@ -851,30 +851,37 @@ useEffect(() => {
     });
 
     var analysis = analyzePortfolio(positionsWithBars, []);
+    var perf = analysis.performance;
     var risk = analysis.risk;
 
     console.log('💰 القيمة الإجمالية:', analysis.totalValue.toLocaleString(), 'ر.س');
     console.log('');
-    console.log('📉 Maximum Drawdown:', (risk.maxDrawdown * 100).toFixed(2) + '% (' + risk.drawdownLabel + ')');
+    console.log('📊 مقارنة نسب الأداء المعدّلة بالمخاطر:');
     console.log('');
-    console.log('🚨 VaR 95% vs CVaR 95%:');
+    console.log('   ⭐ Sharpe Ratio:', perf.sharpe, '(' + perf.sharpeLabel + ')');
+    console.log('      → العائد مقابل التذبذب الكامل');
     console.log('');
-    console.log('   📊 VaR يومي:   ' + (risk.var95Daily * 100).toFixed(2) + '% | ' + risk.var95DailySAR.toLocaleString() + ' ر.س');
-    console.log('   ⚠️  CVaR يومي: ' + (risk.cvar95Daily * 100).toFixed(2) + '% | ' + risk.cvar95DailySAR.toLocaleString() + ' ر.س');
+    console.log('   ⭐ Sortino Ratio:', perf.sortino, '(' + perf.sortinoLabel + ')');
+    console.log('      → العائد مقابل الخسائر فقط');
     console.log('');
-    console.log('   📊 VaR أسبوعي:   ' + (risk.var95Weekly * 100).toFixed(2) + '% | ' + risk.var95WeeklySAR.toLocaleString() + ' ر.س');
-    console.log('   ⚠️  CVaR أسبوعي: ' + (risk.cvar95Weekly * 100).toFixed(2) + '% | ' + risk.cvar95WeeklySAR.toLocaleString() + ' ر.س');
+    console.log('   ⭐ Calmar Ratio:', risk.calmar, '(' + risk.calmarLabel + ')');
+    console.log('      → العائد مقابل أسوأ كارثة');
     console.log('');
-    console.log('   📊 VaR شهري:   ' + (risk.var95Monthly * 100).toFixed(2) + '% | ' + risk.var95MonthlySAR.toLocaleString() + ' ر.س');
-    console.log('   ⚠️  CVaR شهري: ' + (risk.cvar95Monthly * 100).toFixed(2) + '% | ' + risk.cvar95MonthlySAR.toLocaleString() + ' ر.س');
+    console.log('📉 Max Drawdown:', (risk.maxDrawdown * 100).toFixed(2) + '% (' + risk.drawdownLabel + ')');
     console.log('');
-    console.log('💡 التفسير:');
-    console.log('   🎯 VaR يقول: "في 95% من الأيام، خسارتك ≤ ' + risk.var95DailySAR.toLocaleString() + ' ر.س"');
-    console.log('   🚨 CVaR يقول: "في الـ 5% الكارثية، متوسط خسارتك = ' + risk.cvar95DailySAR.toLocaleString() + ' ر.س"');
+    console.log('💡 Calmar Interpretation:');
+    console.log('   ' + risk.calmarInterpretation);
     console.log('');
-    console.log('   • تصنيف VaR:', risk.varLabel);
-    console.log('   • تصنيف CVaR:', risk.cvarLabel);
-    console.log('   • تفسير CVaR:', risk.cvarInterpretation);
+    console.log('🎯 الحكم النهائي:');
+    if (risk.calmar > 2 && perf.sharpe > 1) {
+      console.log('   🏆 محفظة احترافية -- عائد ممتاز مقابل مخاطر محدودة');
+    } else if (risk.calmar > 1) {
+      console.log('   ✅ محفظة جيدة -- توازن مقبول');
+    } else if (risk.calmar > 0.5) {
+      console.log('   ⚖️ محفظة مقبولة -- تحتاج تحسين');
+    } else {
+      console.log('   ⚠️ المخاطر تتجاوز المكافآت -- أعد التقييم');
+    }
     console.log('═══════════════════════════════════════');
   }, [positions]);
     var positions=useMemo(function(){
