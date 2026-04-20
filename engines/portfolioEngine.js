@@ -367,6 +367,13 @@ export function analyzePortfolio(positions, tasiBars) {
         },
       };
     })(),
+        // Stress Tests -- الخطوة 24 ✅
+    stressTests: (function() {
+      var portfolioReturns = calcPortfolioReturns(positions, weights);
+      var marketReturns = buildTasiSyntheticReturns(positions);
+      var betaResult = calcPortfolioBeta(portfolioReturns, marketReturns);
+      return runStressTests(totalValue, betaResult.value);
+    })(),
     // التقييم النهائي (سيُضاف في المرحلة 6)
     healthScore: null,
     healthGrade: null,
