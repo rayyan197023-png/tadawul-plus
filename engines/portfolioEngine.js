@@ -218,7 +218,7 @@ export function analyzePortfolio(positions, tasiBars) {
       };
     })(),
 
-               // التنويع (الخطوات 16-18 ✅)
+                   // التنويع (الخطوات 16-19 ✅) -- المرحلة 4 مكتملة!
     diversification: (function() {
       // ⭐ HHI -- الخطوة 16
       var hhiMetrics = calcHHI(weights);
@@ -226,6 +226,12 @@ export function analyzePortfolio(positions, tasiBars) {
       var corrResult = calcCorrelationMatrix(positions);
       // ⭐ Average Correlation -- الخطوة 18
       var avgCorrMetrics = calcAvgCorrelation(corrResult);
+      // ⭐ Diversification Score -- الخطوة 19
+      var divScore = calcDiversificationScore(
+        hhiMetrics.value,
+        avgCorrMetrics.average,
+        hhiMetrics.stockCount
+      );
       return {
         // HHI
         hhi: hhiMetrics.value,
@@ -242,7 +248,7 @@ export function analyzePortfolio(positions, tasiBars) {
         pairCount: corrResult.pairCount,
         highCorrelations: corrResult.highCorrelations,
         highCorrelationCount: corrResult.highCorrelationCount,
-        // ⭐ Average Correlation -- الخطوة 18
+        // Average Correlation
         avgCorrelation: avgCorrMetrics.average,
         maxCorrelation: avgCorrMetrics.max,
         minCorrelation: avgCorrMetrics.min,
@@ -250,8 +256,13 @@ export function analyzePortfolio(positions, tasiBars) {
         correlationLabel: avgCorrMetrics.label,
         correlationInterpretation: avgCorrMetrics.interpretation,
         correlationWarning: avgCorrMetrics.warning,
-        // ستُضاف لاحقاً:
-        score: null,
+        // ⭐ Diversification Score -- الخطوة 19
+        score: divScore.score,
+        scoreComponents: divScore.components,
+        scoreClass: divScore.classification,
+        scoreLabel: divScore.label,
+        scoreInterpretation: divScore.interpretation,
+        recommendations: divScore.recommendations,
       };
     })(),
         
