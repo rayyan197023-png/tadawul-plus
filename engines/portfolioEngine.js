@@ -2563,6 +2563,231 @@ export function combineKellyAndRisk(kellyResult, twoPercentResult) {
   };
 }
 /* ══════════════════════════════════════════════════════════
+   ㉑ ATR-based Stop Loss -- "وقف الخسارة الذكي"
+   J. Welles Wilder 1978
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * حساب Average True Range (ATR)
+ *
+ * المنهجية الأكاديمية (Wilder 1978):
+ * TR_t = max of:
+ *   1. High - Low
+ *   2. |High - Previous Close|
+ *   3. |Low - Previous Close|
+ *
+ * ATR = Moving Average of TR (عادة 14 فترة)
+ *
+ * @param {Array} bars - [{hi, lo, c}, ...]
+ * @param {number} period - عدد الأيام (افتراضي 14)
+ * @returns {Object} {atr, atrPercent, currentPrice}
+ */
+export function calcATR(bars, period) {
+  if (period === undefined) period = 14;
+
+  if (!bars || bars.length < period + 1) {
+    return {
+      atr: 0,
+      atrPercent: 0,
+      currentPrice: 0,
+      sampleSize: 0,
+    };
+  }
+
+  // حساب True Range لكل يوم
+  var trueRanges = [];
+
+  for (var i = 1; i < bars.length; i++) {
+    var bar = bars[i];
+    var prevClose = bars[i - 1].c;
+
+    var hl = bar.hi - bar.lo;
+    var hc = Math.abs(bar.hi - prevClose);
+    var lc = Math.abs(bar.lo - prevClose);
+
+    var tr = Math.max(hl, hc, lc);
+    trueRanges.push(tr);
+  }
+
+  // حساب ATR (متوسط آخر N يوم)
+  var recentTR = trueRanges.slice(-period);
+  var atr = 0;
+  for (var j = 0; j < recentTR.length; j++) {
+    atr += recentTR[j];
+  }
+  atr = atr / recentTR.length;
+
+  // السعر الحالي
+  var currentPrice = bars[bars.length - 1].c;
+
+  return {
+    atr: +atr.toFixed(3),
+    atrPercent: currentPrice > 0 ? +((atr / currentPrice) * 100).toFixed(2) : 0,
+    currentPrice: currentPrice,
+    sampleSize: recentTR.length,
+  };
+}
+
+/**
+ * حساب Stop Loss الذكي بناءً على ATR
+ *
+ * المعادلة (Wilder 1978):
+ * Stop Loss = Price - (ATR × Multiplier)
+ *
+ * المضاعفات:
+ * - 1.5: ضيق (متداولون نشطون)
+ * - 2.0: متوسط (المعيار)
+ * - 2.5: واسع (مستثمرون)
+ * - 3.0: واسع جداً (استثمار طويل المدى)
+ *
+ * @param {Array} bars - بيانات السهم
+ * @param {number} multiplier - مضاعف ATR
+ * @param {Object} options - {maxStopPct, minStopPct}
+ * @returns {Object} {stopLossPrice, stopLossDistance, stopLossPercent, ...}
+ */
+export function calcATRStopLoss(bars, multiplier, options) {
+  options = options || {};
+  if (multiplier === undefined) multiplier = 2.0;
+
+  var maxStopPct = options.maxStopPct || 0.10; // أقصى 10%
+  var minStopPct = options.minStopPct || 0.02; // أدنى 2%
+
+  // حساب ATR
+  var atrResult = calcATR(bars, 14);
+
+  if (atrResult.atr === 0) {
+    return {
+      stopLossPrice: 0,
+      stopLossDistance: 0,
+      stopLossPercent: 0,
+      atr: 0,
+      multiplier: multiplier,
+      classification: 'unknown',
+      label: 'بيانات غير كافية',
+      interpretation: 'تحتاج 15 يوم على الأقل من البيانات',
+    };
+  }
+
+  var price = atrResult.currentPrice;
+  var atr = atrResult.atr;
+
+  // ① حساب Stop Loss الأولي
+  var stopDistance = atr * multiplier;
+  var stopPercent = stopDistance / price;
+
+  // ② تطبيق الحدود (Guard Rails)
+  var cappedReason = null;
+
+  if (stopPercent > maxStopPct) {
+    stopDistance = price * maxStopPct;
+    stopPercent = maxStopPct;
+    cappedReason = 'تم تقييد الوقف عند ' + (maxStopPct * 100) + '% (الحد الأقصى)';
+  } else if (stopPercent < minStopPct) {
+    stopDistance = price * minStopPct;
+    stopPercent = minStopPct;
+    cappedReason = 'تم توسيع الوقف إلى ' + (minStopPct * 100) + '% (الحد الأدنى)';
+  }
+
+  var stopLossPrice = price - stopDistance;
+
+  // ③ التصنيف
+  var classification, label, interpretation;
+
+  if (atrResult.atrPercent < 1) {
+    classification = 'defensive';
+    label = 'سهم دفاعي';
+    interpretation = 'تذبذب منخفض جداً -- وقف ضيق مناسب';
+  } else if (atrResult.atrPercent < 2) {
+    classification = 'stable';
+    label = 'سهم مستقر';
+    interpretation = 'تذبذب معتدل -- وقف متوسط';
+  } else if (atrResult.atrPercent < 3.5) {
+    classification = 'active';
+    label = 'سهم نشط';
+    interpretation = 'تذبذب ملحوظ -- يحتاج وقف أوسع';
+  } else if (atrResult.atrPercent < 5) {
+    classification = 'volatile';
+    label = 'سهم متقلب';
+    interpretation = 'تذبذب عالي -- يحتاج صبر ووقف واسع';
+  } else {
+    classification = 'extreme';
+    label = 'سهم عالي التقلب';
+    interpretation = 'تذبذب شديد -- حذر شديد موصى به';
+  }
+
+  // ④ مقارنة مع Fixed 7%
+  var fixed7Percent = price * 0.07;
+  var comparisonAdvantage;
+
+  if (stopDistance < fixed7Percent) {
+    comparisonAdvantage = 'ATR أضيق بـ ' + ((1 - stopDistance / fixed7Percent) * 100).toFixed(0) +
+                         '% من 7% الثابت -- حماية أفضل لرأس المال';
+  } else if (stopDistance > fixed7Percent) {
+    comparisonAdvantage = 'ATR أوسع بـ ' + ((stopDistance / fixed7Percent - 1) * 100).toFixed(0) +
+                         '% من 7% الثابت -- يحمي من التفعيل المبكر';
+  } else {
+    comparisonAdvantage = 'ATR = 7% الثابت تقريباً';
+  }
+
+  return {
+    stopLossPrice: +stopLossPrice.toFixed(2),
+    stopLossDistance: +stopDistance.toFixed(2),
+    stopLossPercent: +(stopPercent * 100).toFixed(2),
+    currentPrice: price,
+    atr: atr,
+    atrPercent: atrResult.atrPercent,
+    multiplier: multiplier,
+    cappedReason: cappedReason,
+    classification: classification,
+    label: label,
+    interpretation: interpretation,
+    comparisonAdvantage: comparisonAdvantage,
+  };
+}
+
+/**
+ * حساب Trailing Stop Loss (Chandelier Exit)
+ * يتحرك مع السعر صعوداً فقط
+ *
+ * Chandelier Exit = Highest High - (ATR × Multiplier)
+ *
+ * @param {Array} bars
+ * @param {number} multiplier
+ * @returns {Object}
+ */
+export function calcTrailingStop(bars, multiplier) {
+  if (multiplier === undefined) multiplier = 3.0;
+
+  if (!bars || bars.length < 15) {
+    return {
+      trailingStop: 0,
+      highestHigh: 0,
+      currentPrice: 0,
+    };
+  }
+
+  // أعلى قمة في آخر 22 يوم
+  var lookback = Math.min(22, bars.length);
+  var recentBars = bars.slice(-lookback);
+  var highestHigh = recentBars[0].hi;
+  for (var i = 1; i < recentBars.length; i++) {
+    if (recentBars[i].hi > highestHigh) highestHigh = recentBars[i].hi;
+  }
+
+  // ATR
+  var atrResult = calcATR(bars, 14);
+  var trailingStop = highestHigh - (atrResult.atr * multiplier);
+
+  return {
+    trailingStop: +trailingStop.toFixed(2),
+    highestHigh: +highestHigh.toFixed(2),
+    currentPrice: atrResult.currentPrice,
+    atr: atrResult.atr,
+    multiplier: multiplier,
+    distanceFromPrice: +(atrResult.currentPrice - trailingStop).toFixed(2),
+  };
+}
+/* ══════════════════════════════════════════════════════════
    ⑥ دوال التصدير (للاستخدام في الشاشة)
 ═══════════════════════════════════════════════════════════ */
 
