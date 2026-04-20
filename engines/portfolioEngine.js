@@ -884,6 +884,139 @@ export function calcJensensAlpha(portfolioAnnualReturn, marketAnnualReturn, beta
   };
 }
 /* ══════════════════════════════════════════════════════════
+   ⑩ Maximum Drawdown -- أسوأ رحلة نفسية
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * حساب Maximum Drawdown و Drawdown Duration
+ *
+ * المنهجية الأكاديمية (Kestner 2003):
+ * 1. بناء منحنى قيمة المحفظة من العوائد
+ * 2. تتبع القمم المتحركة (Running Maximum)
+ * 3. حساب الهبوط من كل قمة
+ * 4. استخراج أكبر هبوط + مدته
+ *
+ * المعادلة:
+ * DD(t) = (V(t) - Peak(t)) / Peak(t)
+ * MaxDD = min(DD) لكل t
+ *
+ * تصنيف Max Drawdown:
+ * - > -5%: ممتاز (مستقرة)
+ * - -5% to -10%: جيد (طبيعي)
+ * - -10% to -20%: مقبول (يحتاج صبر)
+ * - -20% to -30%: صعب نفسياً
+ * - < -30%: كارثي
+ *
+ * @param {number[]} returns - سلسلة العوائد اليومية
+ * @returns {Object} {maxDrawdown, duration, recoveryDays, peakValue, troughValue, ...}
+ */
+export function calcMaxDrawdown(returns) {
+  // فحص المدخلات
+  if (!returns || returns.length < 2) {
+    return {
+      maxDrawdown: 0,
+      duration: 0,
+      recoveryDays: null,
+      peakIndex: 0,
+      troughIndex: 0,
+      classification: 'unknown',
+      label: 'بيانات غير كافية',
+      interpretation: 'لا توجد بيانات كافية للحساب',
+    };
+  }
+
+  // ① بناء منحنى قيمة المحفظة (Cumulative Value)
+  // نبدأ من 1.0 ونضرب بـ (1 + العائد) لكل يوم
+  var cumValue = [1.0];
+  for (var i = 0; i < returns.length; i++) {
+    cumValue.push(cumValue[cumValue.length - 1] * (1 + returns[i]));
+  }
+
+  // ② تتبع أعلى قمة حتى كل نقطة (Running Maximum)
+  var runningMax = [cumValue[0]];
+  for (var j = 1; j < cumValue.length; j++) {
+    runningMax.push(Math.max(runningMax[j - 1], cumValue[j]));
+  }
+
+  // ③ حساب Drawdown في كل نقطة
+  // DD(t) = (V(t) / Peak(t)) - 1
+  var drawdowns = [];
+  for (var k = 0; k < cumValue.length; k++) {
+    var dd = (cumValue[k] / runningMax[k]) - 1;
+    drawdowns.push(dd);
+  }
+
+  // ④ إيجاد Max Drawdown (أكبر هبوط -- أصغر قيمة سالبة)
+  var maxDD = 0;
+  var troughIdx = 0;
+  for (var l = 0; l < drawdowns.length; l++) {
+    if (drawdowns[l] < maxDD) {
+      maxDD = drawdowns[l];
+      troughIdx = l;
+    }
+  }
+
+  // ⑤ إيجاد القمة السابقة للقاع (Peak Index)
+  var peakIdx = 0;
+  var peakValue = cumValue[0];
+  for (var m = 0; m <= troughIdx; m++) {
+    if (cumValue[m] > peakValue) {
+      peakValue = cumValue[m];
+      peakIdx = m;
+    }
+  }
+
+  // ⑥ حساب مدة Drawdown (من القمة للقاع)
+  var duration = troughIdx - peakIdx;
+
+  // ⑦ حساب أيام التعافي (إذا حدث)
+  var recoveryDays = null;
+  for (var p = troughIdx + 1; p < cumValue.length; p++) {
+    if (cumValue[p] >= peakValue) {
+      recoveryDays = p - troughIdx;
+      break;
+    }
+  }
+
+  // ⑧ التصنيف
+  var classification, label, interpretation;
+
+  if (maxDD > -0.05) {
+    classification = 'excellent';
+    label = 'ممتاز';
+    interpretation = 'محفظة مستقرة جداً -- تراجعات محدودة';
+  } else if (maxDD > -0.10) {
+    classification = 'good';
+    label = 'جيد';
+    interpretation = 'تراجعات طبيعية -- سهلة التحمل نفسياً';
+  } else if (maxDD > -0.20) {
+    classification = 'moderate';
+    label = 'مقبول';
+    interpretation = 'يتطلب صبراً -- 80% من المستثمرين يتحملون هذا المستوى';
+  } else if (maxDD > -0.30) {
+    classification = 'difficult';
+    label = 'صعب نفسياً';
+    interpretation = 'معظم المستثمرين يبيعون عند هذا التراجع -- احذر';
+  } else {
+    classification = 'catastrophic';
+    label = 'كارثي';
+    interpretation = 'تراجع حاد -- نادراً ما يصمد المستثمر نفسياً';
+  }
+
+  return {
+    maxDrawdown: +maxDD.toFixed(4),
+    duration: duration,
+    recoveryDays: recoveryDays,
+    peakIndex: peakIdx,
+    troughIndex: troughIdx,
+    peakValue: +peakValue.toFixed(4),
+    troughValue: +cumValue[troughIdx].toFixed(4),
+    classification: classification,
+    label: label,
+    interpretation: interpretation,
+  };
+}
+/* ══════════════════════════════════════════════════════════
    ⑤ حالة فارغة (للمحافظ الفارغة)
 ═══════════════════════════════════════════════════════════ */
 
