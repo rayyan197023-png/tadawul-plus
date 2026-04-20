@@ -831,13 +831,13 @@ useEffect(() => {
     }
   }
 
-             // ══════════════════════════════════════════════
-  // 🧪 اختبار الخطوة 20 -- Kelly Criterion
+               // ══════════════════════════════════════════════
+  // 🧪 اختبار الخطوة 21 -- 2% Rule
   // ══════════════════════════════════════════════
   useEffect(function(){
     if (!positions || positions.length === 0) return;
 
-    console.log('💰 ═══════ Position Sizing (الخطوة 20) ═══════');
+    console.log('🛡️ ═══════ Position Sizing الشامل (الخطوة 21) ═══════');
 
     var positionsWithBars = positions.map(function(p) {
       var bars = genBars(p.stk, 60);
@@ -852,38 +852,40 @@ useEffect(() => {
 
     var analysis = analyzePortfolio(positionsWithBars, []);
     var ps = analysis.positionSizing;
+    var tp = ps.twoPercent;
 
     console.log('💰 القيمة الإجمالية:', analysis.totalValue.toLocaleString(), 'ر.س');
     console.log('');
-    console.log('📊 بيانات الإدخال (Kelly Inputs):');
-    console.log('   • عدد الأيام المحللة:', ps.winCount + ps.lossCount);
-    console.log('   • أيام رابحة:', ps.winCount);
-    console.log('   • أيام خاسرة:', ps.lossCount);
-    console.log('   • احتمال الربح (p):', (ps.winProbability * 100).toFixed(1) + '%');
-    console.log('   • متوسط الربح:', (ps.avgWin * 100).toFixed(3) + '%');
-    console.log('   • متوسط الخسارة:', (ps.avgLoss * 100).toFixed(3) + '%');
-    console.log('   • نسبة الربح/الخسارة (b):', ps.winLossRatio.toFixed(2));
+    console.log('🎯 Kelly Criterion (الخطوة 20):');
+    console.log('   • Safe Kelly:', (ps.safeKelly * 100).toFixed(2) + '%');
+    console.log('   • المبلغ:', ps.amountSAR.toLocaleString() + ' ر.س');
+    console.log('   • Edge:', (ps.edge * 100).toFixed(2) + '%');
     console.log('');
-    console.log('🎯 Kelly Criterion (Kelly 1956):');
-    console.log('   📐 Edge (الحافة):', (ps.edge * 100).toFixed(2) + '%');
+    console.log('🛡️ 2% Rule -- قاعدة الناجين (الخطوة 21):');
     console.log('');
-    if (ps.edge <= 0) {
-      console.log('   ❌ Edge سالب -- تجنب الاستثمار');
-      console.log('   السبب: ' + ps.kellyInterpretation);
-    } else {
-      console.log('   💎 Full Kelly:', (ps.fullKelly * 100).toFixed(2) + '%  (نظري -- خطر)');
-      console.log('   ✅ Safe Kelly:', (ps.safeKelly * 100).toFixed(2) + '%  (Quarter Kelly -- موصى به)');
-      console.log('   💵 المبلغ المقترح:', ps.amountSAR.toLocaleString() + ' ر.س');
-      console.log('');
-      console.log('   🏷️ التصنيف:', ps.kellyLabel);
-      console.log('   💡 التفسير:', ps.kellyInterpretation);
+    console.log('   📊 المبدأ: "لا تخاطر بأكثر من 2% في صفقة واحدة"');
+    console.log('');
+    console.log('   💵 المخاطرة القصوى:', tp.riskSAR.toLocaleString() + ' ر.س (2%)');
+    console.log('   📉 وقف الخسارة:', tp.stopLossPercent + '% تحت السعر');
+    console.log('   📏 عدد الأسهم الموصى به:', tp.maxShares.toLocaleString());
+    console.log('   💼 قيمة المركز:', tp.positionValueSAR.toLocaleString() + ' ر.س');
+    console.log('   📊 نسبة من المحفظة:', tp.positionPercent + '%');
+    console.log('');
+    console.log('   🏷️ تصنيف الوقف:', tp.label);
+    console.log('   💡 التفسير:', tp.interpretation);
+    if (tp.warning) {
+      console.log('   ⚠️ تحذير:', tp.warning);
     }
     console.log('');
-    console.log('📋 قواعد الحماية المطبقة:');
-    console.log('   ✅ حد أقصى 25% للمركز الواحد');
-    console.log('   ✅ Quarter Kelly (×0.25) للحماية من التقلبات');
-    console.log('   ✅ Edge سالب → Kelly = 0 تلقائياً');
+    console.log('🔢 رياضيات الحماية:');
+    console.log('   • 10 خسائر متتالية بـ 2% = -18% (قابل للتعافي)');
+    console.log('   • 10 خسائر متتالية بـ 10% = -65% (تحتاج +180% للتعافي!)');
     console.log('');
+    console.log('═══════════════════════════════════════');
+    console.log('💎 استخدم Kelly و 2% Rule معاً:');
+    console.log('   • Kelly: "كم من المحفظة للسهم"');
+    console.log('   • 2% Rule: "كم سهم بناءً على Stop Loss"');
+    console.log('   • النهائي: الأصغر (الأكثر أماناً)');
     console.log('═══════════════════════════════════════');
   }, [positions]);
     var positions=useMemo(function(){
