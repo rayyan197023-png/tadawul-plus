@@ -88,16 +88,23 @@ export function analyzePortfolio(positions, tasiBars) {
     stockCount: positions.length,
     weights: weights,
 
-    // مقاييس الأداء (ستُضاف في المرحلة 2)
-    performance: {
-      dailyReturn: null,
-      annualReturn: null,
+      // مقاييس الأداء -- العوائد (الخطوة 5 ✅)
+  performance: (function() {
+    var portfolioReturns = calcPortfolioReturns(positions, weights);
+    var returnsMetrics = calcReturnsMetrics(portfolioReturns);
+    return {
+      dailyReturn: returnsMetrics.daily,
+      cumulativeReturn: returnsMetrics.cumulative,
+      annualReturn: returnsMetrics.annual,
+      periodDays: returnsMetrics.periodDays,
+      // ستُضاف في الخطوات القادمة:
       volatility: null,
       sharpe: null,
       sortino: null,
       alpha: null,
       beta: null,
-    },
+    };
+  })(),
 
     // مقاييس المخاطر (ستُضاف في المرحلة 3)
     risk: {
