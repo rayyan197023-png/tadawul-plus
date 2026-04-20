@@ -161,14 +161,25 @@ export function analyzePortfolio(positions, tasiBars) {
   })(),
 
 
-    // مقاييس المخاطر (ستُضاف في المرحلة 3)
-    risk: {
-      maxDrawdown: null,
-      var95: null,
-      cvar95: null,
-      downsideDeviation: null,
-      calmar: null,
-    },
+        // مقاييس المخاطر (الخطوة 11 ✅)
+    risk: (function() {
+      var portfolioReturns = calcPortfolioReturns(positions, weights);
+      // ⭐ Maximum Drawdown -- الخطوة 11
+      var ddMetrics = calcMaxDrawdown(portfolioReturns);
+      return {
+        maxDrawdown: ddMetrics.maxDrawdown,
+        drawdownDuration: ddMetrics.duration,
+        recoveryDays: ddMetrics.recoveryDays,
+        drawdownClass: ddMetrics.classification,
+        drawdownLabel: ddMetrics.label,
+        drawdownInterpretation: ddMetrics.interpretation,
+        // ستُضاف لاحقاً:
+        var95: null,
+        cvar95: null,
+        downsideDeviation: null,
+        calmar: null,
+      };
+    })(),
 
     // التنويع (سيُضاف في المرحلة 4)
     diversification: {
