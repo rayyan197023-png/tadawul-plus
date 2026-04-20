@@ -88,11 +88,17 @@ export function analyzePortfolio(positions, tasiBars) {
     stockCount: positions.length,
     weights: weights,
 
-        // مقاييس الأداء -- العوائد + التذبذب (الخطوات 5-6 ✅)
+         // مقاييس الأداء -- العوائد + التذبذب + Sharpe (الخطوات 5-7 ✅)
   performance: (function() {
     var portfolioReturns = calcPortfolioReturns(positions, weights);
     var returnsMetrics = calcReturnsMetrics(portfolioReturns);
     var volMetrics = calcVolatility(portfolioReturns);
+    // ⭐ Sharpe Ratio -- الخطوة 7
+    var sharpeMetrics = calcSharpeRatio(
+      returnsMetrics.annual,
+      volMetrics.annual,
+      0.06  // السايبور السعودي
+    );
     return {
       dailyReturn: returnsMetrics.daily,
       cumulativeReturn: returnsMetrics.cumulative,
@@ -103,13 +109,19 @@ export function analyzePortfolio(positions, tasiBars) {
       volatility: volMetrics.annual,
       volatilityClass: volMetrics.classification,
       volatilityLabel: volMetrics.label,
+      // ⭐ Sharpe Ratio
+      sharpe: sharpeMetrics.value,
+      sharpeClass: sharpeMetrics.classification,
+      sharpeLabel: sharpeMetrics.label,
+      sharpeInterpretation: sharpeMetrics.interpretation,
+      excessReturn: sharpeMetrics.excessReturn,
       // ستُضاف لاحقاً:
-      sharpe: null,
       sortino: null,
       alpha: null,
       beta: null,
     };
   })(),
+
 
     // مقاييس المخاطر (ستُضاف في المرحلة 3)
     risk: {
