@@ -831,13 +831,13 @@ useEffect(() => {
     }
   }
 
-      // ══════════════════════════════════════════════
-  // 🧪 اختبار الخطوة 9 -- Beta vs TASI 🇸🇦 (مؤقت)
+        // ══════════════════════════════════════════════
+  // 🏆 اختبار الخطوة 10 -- Jensen's Alpha (المرحلة 2 مكتملة!)
   // ══════════════════════════════════════════════
   useEffect(function(){
     if (!positions || positions.length === 0) return;
 
-    console.log('📊 ═══════ تحليل المحفظة (الخطوة 9) ═══════');
+    console.log('🏆 ═══════ تحليل المحفظة الكامل (المرحلة 2) ═══════');
 
     var positionsWithBars = positions.map(function(p) {
       var bars = genBars(p.stk, 60);
@@ -855,25 +855,36 @@ useEffect(() => {
 
     console.log('💰 القيمة الإجمالية:', analysis.totalValue.toLocaleString(), 'ر.س');
     console.log('');
-    console.log('📈 مقاييس الأداء السنوية:');
-    console.log('   • العائد:', (perf.annualReturn * 100).toFixed(2) + '%');
-    console.log('   • التذبذب:', (perf.volatility * 100).toFixed(2) + '%');
+    console.log('📈 الأداء السنوي:');
+    console.log('   • محفظتك:', (perf.annualReturn * 100).toFixed(2) + '%');
+    console.log('   • تاسي:', (perf.marketAnnualReturn * 100).toFixed(2) + '%');
+    console.log('   • السايبور:', '6.00%');
+    console.log('');
+    console.log('📉 التذبذب:');
+    console.log('   • تذبذب سنوي:', (perf.volatility * 100).toFixed(2) + '%');
+    console.log('   • Beta vs تاسي:', perf.beta);
     console.log('');
     console.log('⭐ مقاييس الأداء المعدّلة:');
     console.log('   • Sharpe Ratio:', perf.sharpe, '(' + perf.sharpeLabel + ')');
     console.log('   • Sortino Ratio:', perf.sortino, '(' + perf.sortinoLabel + ')');
     console.log('');
-    console.log('🇸🇦 Portfolio Beta vs TASI:');
-    console.log('   • القيمة:', perf.beta);
-    console.log('   • التصنيف:', perf.betaLabel);
-    console.log('   • التفسير:', perf.betaInterpretation);
+    console.log('🏆 Jensen\'s Alpha -- لحظة الحقيقة:');
+    console.log('   • العائد المتوقع (CAPM):', (perf.expectedReturn * 100).toFixed(2) + '%');
+    console.log('   • العائد الفعلي:', (perf.annualReturn * 100).toFixed(2) + '%');
+    console.log('   • Alpha:', (perf.alpha * 100).toFixed(2) + '%');
+    console.log('   • التصنيف:', perf.alphaLabel);
+    console.log('   • التفسير:', perf.alphaInterpretation);
     console.log('');
-    console.log('💡 ماذا يعني هذا؟');
-    if (perf.beta > 1) {
-      console.log('   📈 إذا تاسي +1%، محفظتك ستتحرك +' + perf.beta.toFixed(2) + '%');
-      console.log('   📉 إذا تاسي -1%، محفظتك ستنخفض -' + perf.beta.toFixed(2) + '%');
+    console.log('═══════════════════════════════════════');
+    console.log('🎯 الحكم النهائي:');
+    if (perf.alpha > 0.01 && perf.sharpe > 1) {
+      console.log('   ✅ أداء احترافي -- تتفوق على السوق مع مخاطرة معقولة');
+    } else if (perf.alpha > 0) {
+      console.log('   👍 أداء جيد -- تتفوق على السوق لكن يمكن تحسين المخاطرة');
+    } else if (perf.sharpe > 1) {
+      console.log('   ⚖️ أداء متوازن -- مخاطر مقبولة لكن لا ميزة على السوق');
     } else {
-      console.log('   🛡️ محفظتك أقل حساسية من تاسي -- استقرار نسبي');
+      console.log('   ⚠️ يحتاج تحسين -- راجع استراتيجية المحفظة');
     }
     console.log('═══════════════════════════════════════');
   }, [positions]);
