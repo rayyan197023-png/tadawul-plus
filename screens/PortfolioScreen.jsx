@@ -938,7 +938,8 @@ useEffect(() => {
         stk: p.stk,
       };
     });
-    return analyzePortfolio(positionsWithBars, []);
+        var analysis = analyzePortfolio(positionsWithBars, []);
+    return addIntelligenceLayer(analysis, positionsWithBars, stockHealth);
   }, [positions]);
   // ======= كشف تغيير القرار وإطلاق التنبيه =======
   useEffect(function(){
