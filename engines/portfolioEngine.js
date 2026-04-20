@@ -267,7 +267,7 @@ export function analyzePortfolio(positions, tasiBars) {
     })(),
         
 
-            // Position Sizing -- Kelly + 2% Rule (الخطوات 20-21 ✅)
+                // Position Sizing -- Kelly + 2% Rule + ATR (الخطوات 20-22 ✅) -- المرحلة 5 مكتملة!
     positionSizing: (function() {
       var portfolioReturns = calcPortfolioReturns(positions, weights);
       // ⭐ Kelly Criterion -- الخطوة 20
@@ -282,7 +282,6 @@ export function analyzePortfolio(positions, tasiBars) {
         }
       );
       // ⭐ 2% Rule -- الخطوة 21
-      // نستخدم متوسط أسعار المحفظة كمرجع
       var avgPrice = 0;
       var validPositions = 0;
       for (var i = 0; i < positions.length; i++) {
@@ -296,9 +295,39 @@ export function analyzePortfolio(positions, tasiBars) {
       var twoPercentResult = calcTwoPercentRule(
         totalValue,
         avgPrice,
-        avgPrice * 0.93, // وقف خسارة 7% افتراضي
-        0.02 // 2% مخاطرة
+        avgPrice * 0.93,
+        0.02
       );
+      // ⭐ ATR Stop Loss -- الخطوة 22
+      // نحسب ATR لكل سهم ونستخرج متوسط
+      var atrStops = [];
+      for (var j = 0; j < positions.length; j++) {
+        var pos = positions[j];
+        if (pos.bars && pos.bars.length >= 15) {
+          var atrResult = calcATRStopLoss(pos.bars, 2.0, {
+            maxStopPct: 0.10,
+            minStopPct: 0.02,
+          });
+          atrStops.push({
+            sym: pos.sym,
+            stopLossPrice: atrResult.stopLossPrice,
+            stopLossPercent: atrResult.stopLossPercent,
+            atrPercent: atrResult.atrPercent,
+            label: atrResult.label,
+          });
+        }
+      }
+      // متوسط ATR للمحفظة
+      var avgATRPercent = 0;
+      var avgStopPercent = 0;
+      if (atrStops.length > 0) {
+        for (var k = 0; k < atrStops.length; k++) {
+          avgATRPercent += atrStops[k].atrPercent;
+          avgStopPercent += atrStops[k].stopLossPercent;
+        }
+        avgATRPercent = avgATRPercent / atrStops.length;
+        avgStopPercent = avgStopPercent / atrStops.length;
+      }
       return {
         // Kelly
         fullKelly: kellyResult.fullKelly,
@@ -316,7 +345,7 @@ export function analyzePortfolio(positions, tasiBars) {
         avgLoss: kellyInputs.avgLoss,
         winCount: kellyInputs.winCount,
         lossCount: kellyInputs.lossCount,
-        // ⭐ 2% Rule -- الخطوة 21
+        // 2% Rule
         twoPercent: {
           maxShares: twoPercentResult.maxShares,
           positionValueSAR: twoPercentResult.positionValueSAR,
@@ -328,6 +357,13 @@ export function analyzePortfolio(positions, tasiBars) {
           label: twoPercentResult.label,
           interpretation: twoPercentResult.interpretation,
           warning: twoPercentResult.warning,
+        },
+        // ⭐ ATR Stop Loss -- الخطوة 22
+        atr: {
+          perStock: atrStops,
+          avgATRPercent: +avgATRPercent.toFixed(2),
+          avgStopPercent: +avgStopPercent.toFixed(2),
+          stocksAnalyzed: atrStops.length,
         },
       };
     })(),
