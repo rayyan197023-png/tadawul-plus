@@ -160,7 +160,7 @@ export function analyzePortfolio(positions, tasiBars) {
     };
   })(),
 
-    // مقاييس المخاطر (الخطوات 11-13 ✅)
+    // مقاييس المخاطر (الخطوات 11-14 ✅)
     risk: (function() {
       var portfolioReturns = calcPortfolioReturns(positions, weights);
       // ⭐ Maximum Drawdown -- الخطوة 11
@@ -169,6 +169,9 @@ export function analyzePortfolio(positions, tasiBars) {
       var varMetrics = calcVaR(portfolioReturns, 95, totalValue);
       // ⭐ Conditional VaR -- الخطوة 13
       var cvarMetrics = calcCVaR(portfolioReturns, 95, totalValue);
+      // ⭐ Calmar Ratio -- الخطوة 14
+      var returnsMetrics = calcReturnsMetrics(portfolioReturns);
+      var calmarMetrics = calcCalmarRatio(returnsMetrics.annual, ddMetrics.maxDrawdown);
       return {
         // Max Drawdown
         maxDrawdown: ddMetrics.maxDrawdown,
@@ -187,7 +190,7 @@ export function analyzePortfolio(positions, tasiBars) {
         varClass: varMetrics.classification,
         varLabel: varMetrics.label,
         varInterpretation: varMetrics.interpretation,
-        // ⭐ CVaR 95% -- الخطوة 13
+        // CVaR 95%
         cvar95Daily: cvarMetrics.daily,
         cvar95Weekly: cvarMetrics.weekly,
         cvar95Monthly: cvarMetrics.monthly,
@@ -197,11 +200,16 @@ export function analyzePortfolio(positions, tasiBars) {
         cvarClass: cvarMetrics.classification,
         cvarLabel: cvarMetrics.label,
         cvarInterpretation: cvarMetrics.interpretation,
+        // ⭐ Calmar Ratio -- الخطوة 14
+        calmar: calmarMetrics.value,
+        calmarClass: calmarMetrics.classification,
+        calmarLabel: calmarMetrics.label,
+        calmarInterpretation: calmarMetrics.interpretation,
         // ستُضاف لاحقاً:
         downsideDeviation: null,
-        calmar: null,
       };
     })(),
+
         
     // التنويع (سيُضاف في المرحلة 4)
     diversification: {
