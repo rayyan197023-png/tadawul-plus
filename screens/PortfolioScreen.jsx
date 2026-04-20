@@ -944,6 +944,29 @@ useEffect(() => {
     // 🔬 تشخيص مؤقت -- الخطوة 25
   useEffect(function() {
     if (!portfolioAnalysis) return;
+    var lr = portfolioAnalysis.layersIntelligence || {};
+    var fr = portfolioAnalysis.finalRecommendation || {};
+    
+    console.log('🔬 ═══ تشخيص الذكاء ═══');
+    console.log('stocksAnalyzed:', lr.stocksAnalyzed);
+    console.log('weightedScore:', lr.weightedScore);
+    console.log('perStock:', JSON.stringify(lr.perStock));
+    console.log('finalRec.label:', fr.label);
+    console.log('finalRec.totalScore:', fr.totalScore);
+    console.log('═══════════════════════');
+    
+    // عرض في alert لسهولة المشاهدة
+    var msg = '🔬 تشخيص:\n\n';
+    msg += 'عدد الأسهم المُحلّلة: ' + (lr.stocksAnalyzed || 0) + '\n';
+    msg += 'جودة الأسهم: ' + (lr.weightedScore || 0) + '\n';
+    msg += 'التوصية: ' + (fr.label || 'فارغة!') + '\n';
+    msg += 'درجة الثقة: ' + (fr.confidence || 0);
+    alert(msg);
+  }, [portfolioAnalysis]);
+
+    // 🔬 تشخيص مؤقت -- الخطوة 25
+  useEffect(function() {
+    if (!portfolioAnalysis) return;
     console.log('🔬 ═══ تشخيص الذكاء ═══');
     console.log('layersIntelligence:', portfolioAnalysis.layersIntelligence);
     console.log('finalRecommendation:', portfolioAnalysis.finalRecommendation);
