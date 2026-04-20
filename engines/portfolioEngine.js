@@ -1805,7 +1805,117 @@ function emptyPortfolioAnalysis() {
     recommendations: [],
   };
 }
+/* ══════════════════════════════════════════════════════════
+   ⑰ Average Correlation -- قياس التنويع برقم واحد
+   معيار Bridgewater (Ray Dalio)
+═══════════════════════════════════════════════════════════ */
 
+/**
+ * حساب متوسط الارتباط + Max/Min للمحفظة
+ *
+ * المعادلة الأكاديمية:
+ * Avg Corr = Σ ρ(i,j) / N
+ * حيث N = n(n-1)/2 (عدد الأزواج الفريدة)
+ *
+ * الفلسفة (Ray Dalio - Bridgewater):
+ * "15-20 استثماراً منخفضة الارتباط = الكأس المقدسة للاستثمار"
+ *
+ * تصنيف متوسط الارتباط:
+ * - < 0.20: تنويع حقيقي (ممتاز)
+ * - 0.20-0.40: تنويع جيد
+ * - 0.40-0.60: يحتاج تحسين
+ * - 0.60-0.80: تنويع وهمي
+ * - > 0.80: كأن سهم واحد
+ *
+ * @param {Object} correlationMatrixResult - من calcCorrelationMatrix
+ * @returns {Object} {average, max, min, classification, label, interpretation}
+ */
+export function calcAvgCorrelation(correlationMatrixResult) {
+  // فحص المدخلات
+  if (!correlationMatrixResult || !correlationMatrixResult.matrix) {
+    return {
+      average: 0,
+      max: 0,
+      min: 0,
+      count: 0,
+      classification: 'unknown',
+      label: 'بيانات غير كافية',
+      interpretation: 'تحتاج سهمين على الأقل',
+    };
+  }
+
+  // ① استخراج قيم الارتباط (بدون القطر، بدون تكرار)
+  var values = extractCorrelationValues(correlationMatrixResult);
+
+  if (values.length === 0) {
+    return {
+      average: 0,
+      max: 0,
+      min: 0,
+      count: 0,
+      classification: 'unknown',
+      label: 'بيانات غير كافية',
+      interpretation: 'لا توجد أزواج لحسابها',
+    };
+  }
+
+  // ② حساب المتوسط والحد الأقصى والأدنى
+  var sum = 0;
+  var maxCorr = values[0];
+  var minCorr = values[0];
+
+  for (var i = 0; i < values.length; i++) {
+    sum += values[i];
+    if (values[i] > maxCorr) maxCorr = values[i];
+    if (values[i] < minCorr) minCorr = values[i];
+  }
+
+  var avgCorr = sum / values.length;
+
+  // ③ التصنيف
+  var classification, label, interpretation;
+
+  if (avgCorr < 0.20) {
+    classification = 'excellent';
+    label = 'تنويع حقيقي';
+    interpretation = 'ارتباطات منخفضة -- تنويع احترافي بمستوى Bridgewater';
+  } else if (avgCorr < 0.40) {
+    classification = 'good';
+    label = 'تنويع جيد';
+    interpretation = 'تنويع مقبول -- ضمن المستوى المطلوب';
+  } else if (avgCorr < 0.60) {
+    classification = 'moderate';
+    label = 'متوسط';
+    interpretation = 'تنويع محدود -- يمكن تحسينه بأسهم من قطاعات مختلفة';
+  } else if (avgCorr < 0.80) {
+    classification = 'poor';
+    label = 'تنويع وهمي';
+    interpretation = 'أسهمك تتحرك معاً بشكل متشابه -- التنويع غير فعّال';
+  } else {
+    classification = 'very_poor';
+    label = 'كأن سهم واحد';
+    interpretation = 'ارتباط شديد بين الأسهم -- لا يوجد تنويع فعلي';
+  }
+
+  // ④ تحذيرات ذكية
+  var warning = null;
+  if (maxCorr > 0.85 && minCorr < -0.3) {
+    warning = 'تباين شديد: بعض الأسهم مرتبطة جداً والبعض الآخر متعاكس';
+  } else if (maxCorr > 0.90) {
+    warning = 'زوجين متطابقين تقريباً (ارتباط > 0.90) -- احتمال تكرار';
+  }
+
+  return {
+    average: +avgCorr.toFixed(3),
+    max: +maxCorr.toFixed(3),
+    min: +minCorr.toFixed(3),
+    count: values.length,
+    classification: classification,
+    label: label,
+    interpretation: interpretation,
+    warning: warning,
+  };
+}
 /* ══════════════════════════════════════════════════════════
    ⑥ دوال التصدير (للاستخدام في الشاشة)
 ═══════════════════════════════════════════════════════════ */
