@@ -831,13 +831,13 @@ useEffect(() => {
     }
   }
 
-                      // ══════════════════════════════════════════════
-  // 🧪 اختبار الخطوة 17 -- Correlation Matrix
+                        // ══════════════════════════════════════════════
+  // 🧪 اختبار الخطوة 18 -- Average Correlation
   // ══════════════════════════════════════════════
   useEffect(function(){
     if (!positions || positions.length === 0) return;
 
-    console.log('🔗 ═══════ تحليل الارتباطات (الخطوة 17) ═══════');
+    console.log('🎯 ═══════ التنويع الشامل (الخطوة 18) ═══════');
 
     var positionsWithBars = positions.map(function(p) {
       var bars = genBars(p.stk, 60);
@@ -855,54 +855,44 @@ useEffect(() => {
 
     console.log('💰 القيمة الإجمالية:', analysis.totalValue.toLocaleString(), 'ر.س');
     console.log('📊 عدد الأسهم:', div.stockCount);
+    console.log('');
     console.log('🧩 HHI:', div.hhi, '(' + div.hhiLabel + ')');
+    console.log('📐 Effective Stocks:', div.effectiveStocks);
     console.log('');
-    console.log('🔗 Correlation Matrix:');
+    console.log('🔗 إحصاءات الارتباط:');
     console.log('   • عدد الأزواج:', div.pairCount);
+    console.log('   • متوسط الارتباط:', div.avgCorrelation);
+    console.log('   • أعلى ارتباط:', div.maxCorrelation);
+    console.log('   • أدنى ارتباط:', div.minCorrelation);
+    console.log('');
+    console.log('🎯 تصنيف التنويع (Bridgewater):');
+    console.log('   • المستوى:', div.correlationLabel);
+    console.log('   • التفسير:', div.correlationInterpretation);
+    if (div.correlationWarning) {
+      console.log('   ⚠️ تحذير:', div.correlationWarning);
+    }
+    console.log('');
+    console.log('💡 الحكم الشامل:');
+    // حكم مركّب على التنويع
+    var isWellDiversified = div.hhi < 2500 && div.avgCorrelation < 0.40;
+    var needsImprovement = div.hhi >= 2500 || div.avgCorrelation >= 0.60;
 
-    if (div.correlationSymbols && div.correlationSymbols.length >= 2) {
-      console.log('');
-      console.log('   📊 المصفوفة:');
-      // طباعة صف العناوين
-      var header = '        ';
-      for (var h = 0; h < div.correlationSymbols.length; h++) {
-        header += div.correlationSymbols[h].padEnd(8);
-      }
-      console.log('   ' + header);
-
-      // طباعة كل صف
-      for (var i = 0; i < div.correlationSymbols.length; i++) {
-        var symA = div.correlationSymbols[i];
-        var row = symA.padEnd(8);
-        for (var j = 0; j < div.correlationSymbols.length; j++) {
-          var symB = div.correlationSymbols[j];
-          var val = div.correlationMatrix[symA][symB];
-          var valStr = val >= 0 ? '+' + val.toFixed(2) : val.toFixed(2);
-          row += valStr.padEnd(8);
-        }
-        console.log('   ' + row);
-      }
+    if (isWellDiversified) {
+      console.log('   🏆 تنويع احترافي -- HHI منخفض + ارتباطات ضعيفة');
+    } else if (needsImprovement) {
+      console.log('   ⚠️ التنويع يحتاج تحسين جوهري');
+      if (div.hhi >= 2500) console.log('      - HHI عالٍ: قلل تركيز السهم الأكبر');
+      if (div.avgCorrelation >= 0.60) console.log('      - ارتباطات قوية: أضف أسهم من قطاعات مختلفة');
+    } else {
+      console.log('   ✅ تنويع مقبول -- يمكن تحسينه');
     }
 
     console.log('');
-    console.log('⚠️ الارتباطات العالية (> 0.70):');
-    if (div.highCorrelationCount === 0) {
-      console.log('   ✅ لا توجد ارتباطات عالية - تنويع حقيقي!');
+    console.log('🎯 معيار Ray Dalio:');
+    if (div.avgCorrelation < 0.30) {
+      console.log('   ✅ أنت في "الكأس المقدسة" -- تنويع منخفض الارتباط');
     } else {
-      console.log('   🚨 تم رصد ' + div.highCorrelationCount + ' زوج مرتبط:');
-      div.highCorrelations.forEach(function(pair, idx) {
-        console.log('   ' + (idx + 1) + '. ' + pair.symA + ' ↔ ' + pair.symB +
-                    ': ' + pair.correlation.toFixed(2) + ' (' + pair.strength + ')');
-      });
-    }
-    console.log('');
-    console.log('💡 الحكم:');
-    if (div.highCorrelationCount === 0) {
-      console.log('   🏆 أسهمك متنوعة حقيقياً -- Markowitz فخور بك!');
-    } else if (div.highCorrelationCount <= 2) {
-      console.log('   ✅ تنويع جيد - بعض الارتباطات قابلة للتحسين');
-    } else {
-      console.log('   ⚠️ ارتباطات كثيرة - التنويع وهمي، راجع القطاعات');
+      console.log('   📊 المسافة للكأس المقدسة:', (div.avgCorrelation - 0.30).toFixed(2));
     }
     console.log('═══════════════════════════════════════');
   }, [positions]);
