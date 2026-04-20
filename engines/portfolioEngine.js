@@ -219,14 +219,25 @@ export function analyzePortfolio(positions, tasiBars) {
     })(),
 
         
-    // التنويع (سيُضاف في المرحلة 4)
-    diversification: {
-      hhi: null,
-      correlationMatrix: null,
-      avgCorrelation: null,
-      score: null,
-      effectiveStocks: null,
-    },
+        // التنويع (الخطوة 16 ✅ - بداية المرحلة 4)
+    diversification: (function() {
+      // ⭐ HHI -- الخطوة 16
+      var hhiMetrics = calcHHI(weights);
+      return {
+        hhi: hhiMetrics.value,
+        effectiveStocks: hhiMetrics.effectiveStocks,
+        largestPosition: hhiMetrics.largestPosition,
+        stockCount: hhiMetrics.stockCount,
+        hhiClass: hhiMetrics.classification,
+        hhiLabel: hhiMetrics.label,
+        hhiInterpretation: hhiMetrics.interpretation,
+        concentrationWarning: hhiMetrics.concentrationWarning,
+        // ستُضاف لاحقاً:
+        correlationMatrix: null,
+        avgCorrelation: null,
+        score: null,
+      };
+    })(),
 
     // التقييم النهائي (سيُضاف في المرحلة 6)
     healthScore: null,
