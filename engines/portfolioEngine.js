@@ -1926,6 +1926,191 @@ export function calcAvgCorrelation(correlationMatrixResult) {
   };
 }
 /* ══════════════════════════════════════════════════════════
+   ⑱ Diversification Score -- "درجة التنويع 0-100"
+   مقياس موحد لتلخيص التنويع
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * حساب درجة التنويع الشاملة (0-100)
+ *
+ * المنهجية:
+ * Score = (HHI_score × 40%) + (Correlation_score × 40%) + (StockCount_score × 20%)
+ *
+ * كل مكوّن يُحوّل إلى نقاط (0-100) ثم يُدمج بأوزان مُعايرة.
+ *
+ * المصادر:
+ * - Elton & Gruber (1977) - Optimal Stock Selection
+ * - Bridgewater Associates - Risk Parity Framework
+ * - Bloomberg Portfolio Analytics Standards
+ *
+ * تصنيف النتيجة:
+ * - 90-100: ممتاز (Bridgewater level)
+ * - 75-89: جيد جداً (احترافي)
+ * - 60-74: جيد (مقبول)
+ * - 45-59: متوسط (يحتاج تحسين)
+ * - 30-44: ضعيف (تنويع وهمي)
+ * - < 30: سيء (خطر تركيز)
+ *
+ * @param {number} hhi - Herfindahl-Hirschman Index
+ * @param {number} avgCorrelation - متوسط الارتباط
+ * @param {number} stockCount - عدد الأسهم
+ * @returns {Object} {score, components, classification, label, interpretation}
+ */
+export function calcDiversificationScore(hhi, avgCorrelation, stockCount) {
+  // فحص المدخلات
+  if (hhi === undefined || avgCorrelation === undefined || stockCount === undefined) {
+    return {
+      score: 0,
+      components: { hhi: 0, correlation: 0, stockCount: 0 },
+      classification: 'unknown',
+      label: 'بيانات غير كافية',
+      interpretation: 'لا يمكن حساب الدرجة',
+      recommendations: [],
+    };
+  }
+
+  // ① تحويل HHI إلى نقاط (0-100)
+  var hhiScore;
+  if (hhi < 1500) {
+    hhiScore = 100;
+  } else if (hhi < 2500) {
+    // خطي بين 70-99
+    hhiScore = 100 - ((hhi - 1500) / 1000) * 30;
+  } else if (hhi < 5000) {
+    // خطي بين 40-69
+    hhiScore = 70 - ((hhi - 2500) / 2500) * 30;
+  } else if (hhi < 8000) {
+    // خطي بين 20-39
+    hhiScore = 40 - ((hhi - 5000) / 3000) * 20;
+  } else {
+    // 0-19
+    hhiScore = Math.max(0, 20 - ((hhi - 8000) / 2000) * 20);
+  }
+
+  // ② تحويل Correlation إلى نقاط (0-100)
+  var corrScore;
+  if (avgCorrelation < 0.20) {
+    corrScore = 100;
+  } else if (avgCorrelation < 0.40) {
+    corrScore = 100 - ((avgCorrelation - 0.20) / 0.20) * 30;
+  } else if (avgCorrelation < 0.60) {
+    corrScore = 70 - ((avgCorrelation - 0.40) / 0.20) * 30;
+  } else if (avgCorrelation < 0.80) {
+    corrScore = 40 - ((avgCorrelation - 0.60) / 0.20) * 20;
+  } else {
+    corrScore = Math.max(0, 20 - ((avgCorrelation - 0.80) / 0.20) * 20);
+  }
+
+  // ③ تحويل Stock Count إلى نقاط (0-100)
+  var countScore;
+  if (stockCount >= 10 && stockCount <= 25) {
+    countScore = 100; // النطاق المثالي
+  } else if ((stockCount >= 8 && stockCount < 10) || (stockCount > 25 && stockCount <= 30)) {
+    countScore = 80;
+  } else if ((stockCount >= 5 && stockCount < 8) || (stockCount > 30 && stockCount <= 40)) {
+    countScore = 60;
+  } else if (stockCount >= 3 && stockCount < 5) {
+    countScore = 40;
+  } else if (stockCount >= 2) {
+    countScore = 20;
+  } else {
+    countScore = 0; // سهم واحد أو لا شيء
+  }
+
+  // ④ حساب الدرجة النهائية (متوسط مرجّح)
+  var finalScore = (hhiScore * 0.40) + (corrScore * 0.40) + (countScore * 0.20);
+  finalScore = Math.round(finalScore);
+  finalScore = Math.max(0, Math.min(100, finalScore));
+
+  // ⑤ التصنيف
+  var classification, label, interpretation;
+
+  if (finalScore >= 90) {
+    classification = 'excellent';
+    label = 'ممتاز';
+    interpretation = 'تنويع بمستوى Bridgewater -- توزيع احترافي';
+  } else if (finalScore >= 75) {
+    classification = 'veryGood';
+    label = 'جيد جداً';
+    interpretation = 'تنويع احترافي -- محفظة مُدارة بعناية';
+  } else if (finalScore >= 60) {
+    classification = 'good';
+    label = 'جيد';
+    interpretation = 'تنويع مقبول -- يمكن تحسينه بخطوات بسيطة';
+  } else if (finalScore >= 45) {
+    classification = 'moderate';
+    label = 'متوسط';
+    interpretation = 'تنويع محدود -- يحتاج مراجعة جوهرية';
+  } else if (finalScore >= 30) {
+    classification = 'poor';
+    label = 'ضعيف';
+    interpretation = 'تنويع وهمي -- خطر تركيز قد يسبب خسائر كبيرة';
+  } else {
+    classification = 'veryPoor';
+    label = 'سيء';
+    interpretation = 'لا يوجد تنويع فعلي -- المحفظة شبه مركّزة في سهم واحد';
+  }
+
+  // ⑥ توصيات ذكية
+  var recommendations = [];
+
+  if (hhiScore < 60) {
+    recommendations.push({
+      priority: 'high',
+      icon: '⚠️',
+      text: 'قلل تركيز السهم الأكبر (حالياً HHI = ' + hhi + ')',
+      action: 'وزّع المحفظة على أسهم أكثر',
+    });
+  }
+
+  if (corrScore < 60) {
+    recommendations.push({
+      priority: 'high',
+      icon: '🔗',
+      text: 'الارتباط بين الأسهم مرتفع (' + avgCorrelation.toFixed(2) + ')',
+      action: 'أضف أسهم من قطاعات مختلفة (بنوك، اتصالات، أغذية)',
+    });
+  }
+
+  if (stockCount < 10) {
+    recommendations.push({
+      priority: 'medium',
+      icon: '📊',
+      text: 'عدد الأسهم قليل (' + stockCount + ')',
+      action: 'الحد الأمثل 10-20 سهم (Elton & Gruber 1977)',
+    });
+  } else if (stockCount > 30) {
+    recommendations.push({
+      priority: 'low',
+      icon: '📉',
+      text: 'عدد الأسهم كبير (' + stockCount + ')',
+      action: 'التنويع الزائد يقلل الأداء -- ركّز على الأفضل',
+    });
+  }
+
+  if (recommendations.length === 0) {
+    recommendations.push({
+      priority: 'info',
+      icon: '🏆',
+      text: 'تنويع احترافي -- حافظ على هذا المستوى',
+      action: 'استمر في التوازن الحالي',
+    });
+  }
+
+  return {
+    score: finalScore,
+    components: {
+      hhi: Math.round(hhiScore),
+      correlation: Math.round(corrScore),
+      stockCount: Math.round(countScore),
+    },
+    classification: classification,
+    label: label,
+    interpretation: interpretation,
+    recommendations: recommendations,
+  };
+}
+/* ══════════════════════════════════════════════════════════
    ⑥ دوال التصدير (للاستخدام في الشاشة)
 ═══════════════════════════════════════════════════════════ */
 
