@@ -831,13 +831,13 @@ useEffect(() => {
     }
   }
 
-  // ══════════════════════════════════════════════
-  // 🧪 اختبار الخطوة 7 -- Sharpe Ratio ⭐ (مؤقت)
+    // ══════════════════════════════════════════════
+  // 🧪 اختبار الخطوة 8 -- Sortino Ratio ⭐ (مؤقت)
   // ══════════════════════════════════════════════
   useEffect(function(){
     if (!positions || positions.length === 0) return;
 
-    console.log('📊 ═══════ تحليل المحفظة (الخطوة 7) ═══════');
+    console.log('📊 ═══════ تحليل المحفظة (الخطوة 8) ═══════');
 
     var positionsWithBars = positions.map(function(p) {
       var bars = genBars(p.stk, 60);
@@ -854,18 +854,28 @@ useEffect(() => {
 
     console.log('💰 القيمة الإجمالية:', analysis.totalValue.toLocaleString(), 'ر.س');
     console.log('');
-    console.log('📈 مقاييس العائد:');
-    console.log('   • عائد سنوي:', (perf.annualReturn * 100).toFixed(2) + '%');
-    console.log('   • عائد زائد (فوق السايبور):', (perf.excessReturn * 100).toFixed(2) + '%');
+    console.log('📈 مقاييس الأداء السنوية:');
+    console.log('   • العائد:', (perf.annualReturn * 100).toFixed(2) + '%');
+    console.log('   • التذبذب:', (perf.volatility * 100).toFixed(2) + '%');
+    console.log('   • التذبذب السلبي:', (perf.downsideDeviation * 100).toFixed(2) + '%');
     console.log('');
-    console.log('📉 التذبذب:');
-    console.log('   • تذبذب سنوي:', (perf.volatility * 100).toFixed(2) + '%');
-    console.log('   • التصنيف:', perf.volatilityLabel);
-    console.log('');
-    console.log('⭐ Sharpe Ratio (نوبل 1990):');
+    console.log('⭐ Sharpe Ratio:');
     console.log('   • القيمة:', perf.sharpe);
     console.log('   • التصنيف:', perf.sharpeLabel);
-    console.log('   • التفسير:', perf.sharpeInterpretation);
+    console.log('');
+    console.log('⭐ Sortino Ratio:');
+    console.log('   • القيمة:', perf.sortino);
+    console.log('   • التصنيف:', perf.sortinoLabel);
+    console.log('   • التفسير:', perf.sortinoInterpretation);
+    console.log('');
+    console.log('💡 مقارنة Sharpe vs Sortino:');
+    if (perf.sortino > perf.sharpe) {
+      console.log('   ✅ Sortino أعلى -- المحفظة تدير الخسائر بشكل جيد');
+    } else if (perf.sortino === perf.sharpe) {
+      console.log('   ⚖️ متساويان -- التذبذب متوازن');
+    } else {
+      console.log('   ⚠️ حالة غير عادية -- راجع البيانات');
+    }
     console.log('═══════════════════════════════════════');
   }, [positions]);
     var positions=useMemo(function(){
