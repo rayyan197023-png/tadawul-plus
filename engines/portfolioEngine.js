@@ -1377,6 +1377,111 @@ export function calcCalmarRatio(annualReturn, maxDrawdown) {
   };
 }
 /* ══════════════════════════════════════════════════════════
+   ⑭ Downside Deviation -- "تذبذب الخسائر فقط"
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * حساب Downside Deviation للمحفظة
+ *
+ * المنهجية الأكاديمية (Sortino & Price 1994):
+ * DD = √[Σ min(0, r_i - MAR)² / n]
+ *
+ * الفرق عن Volatility التقليدي:
+ * - Volatility: يحسب كل التذبذبات (موجبة وسالبة)
+ * - Downside Deviation: يحسب فقط التذبذبات السلبية
+ *
+ * الاستخدامات الاحترافية:
+ * ① مقام Sortino Ratio
+ * ② Omega Ratio
+ * ③ Upside/Downside Capture Ratio
+ * ④ Stutzer Index
+ *
+ * تصنيف DD سنوي:
+ * - < 8%: ممتاز (دفاعية)
+ * - 8%-12%: جيد (متوازنة)
+ * - 12%-18%: مرتفع (نشطة)
+ * - 18%-25%: عالي (عدوانية)
+ * - > 25%: شديد (مضاربية)
+ *
+ * @param {number[]} returns - سلسلة العوائد اليومية
+ * @param {number} mar - العتبة (Minimum Acceptable Return) - افتراضي 0
+ * @returns {Object} {daily, annual, classification, label, interpretation}
+ */
+export function calcDownsideDeviation(returns, mar) {
+  // القيمة الافتراضية: العتبة = 0 (أي عائد سالب يُعتبر خسارة)
+  if (mar === undefined) mar = 0;
+
+  // فحص المدخلات
+  if (!returns || returns.length < 2) {
+    return {
+      daily: 0,
+      annual: 0,
+      negativeDaysCount: 0,
+      totalDays: 0,
+      classification: 'unknown',
+      label: 'بيانات غير كافية',
+      interpretation: 'لا توجد بيانات كافية للحساب',
+    };
+  }
+
+  // ① حساب مجموع مربعات الانحرافات السلبية
+  var sumSqDownside = 0;
+  var negativeDaysCount = 0;
+
+  for (var i = 0; i < returns.length; i++) {
+    var deviation = returns[i] - mar;
+    // نأخذ فقط الانحرافات السلبية (الخسائر)
+    if (deviation < 0) {
+      sumSqDownside += deviation * deviation;
+      negativeDaysCount++;
+    }
+    // الانحرافات الموجبة = 0 في الحساب (الفرق عن Volatility)
+  }
+
+  // ② حساب Downside Deviation اليومي
+  // نقسم على العدد الكلي (وليس عدد الأيام السلبية فقط)
+  var ddDaily = Math.sqrt(sumSqDownside / returns.length);
+
+  // ③ التحويل السنوي (قاعدة جذر الزمن)
+  var ddAnnual = ddDaily * Math.sqrt(252);
+
+  // ④ التصنيف
+  var classification, label, interpretation;
+
+  if (ddAnnual < 0.08) {
+    classification = 'excellent';
+    label = 'ممتاز';
+    interpretation = 'تذبذب سلبي محدود -- محفظة دفاعية مستقرة';
+  } else if (ddAnnual < 0.12) {
+    classification = 'good';
+    label = 'جيد';
+    interpretation = 'خسائر معتدلة -- متوازن بين الأمان والعائد';
+  } else if (ddAnnual < 0.18) {
+    classification = 'moderate';
+    label = 'مرتفع';
+    interpretation = 'خسائر ملحوظة -- يتطلب تحمل نفسي جيد';
+  } else if (ddAnnual < 0.25) {
+    classification = 'high';
+    label = 'عالي';
+    interpretation = 'خسائر حادة -- محفظة عدوانية تحتاج خبرة';
+  } else {
+    classification = 'extreme';
+    label = 'شديد';
+    interpretation = 'خسائر كبيرة جداً -- مستوى مضاربي';
+  }
+
+  return {
+    daily: +ddDaily.toFixed(5),
+    annual: +ddAnnual.toFixed(4),
+    negativeDaysCount: negativeDaysCount,
+    totalDays: returns.length,
+    negativeDaysPct: +(negativeDaysCount / returns.length * 100).toFixed(1),
+    classification: classification,
+    label: label,
+    interpretation: interpretation,
+  };
+}
+/* ══════════════════════════════════════════════════════════
    ⑤ حالة فارغة (للمحافظ الفارغة)
 ═══════════════════════════════════════════════════════════ */
 
