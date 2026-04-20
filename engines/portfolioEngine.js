@@ -88,7 +88,7 @@ export function analyzePortfolio(positions, tasiBars) {
     stockCount: positions.length,
     weights: weights,
 
-            // مقاييس الأداء (الخطوات 5-9 ✅)
+              // مقاييس الأداء (الخطوات 5-10 ✅) -- المرحلة 2 مكتملة!
   performance: (function() {
     var portfolioReturns = calcPortfolioReturns(positions, weights);
     var returnsMetrics = calcReturnsMetrics(portfolioReturns);
@@ -113,33 +113,50 @@ export function analyzePortfolio(positions, tasiBars) {
       marketReturns = buildTasiSyntheticReturns(positions);
     }
     var betaMetrics = calcPortfolioBeta(portfolioReturns, marketReturns);
+    // ⭐ Jensen's Alpha -- الخطوة 10
+    // حساب العائد السنوي لتاسي
+    var tasiReturnsMetrics = calcReturnsMetrics(marketReturns);
+    var alphaMetrics = calcJensensAlpha(
+      returnsMetrics.annual,
+      tasiReturnsMetrics.annual,
+      betaMetrics.value,
+      0.06
+    );
     
     return {
       dailyReturn: returnsMetrics.daily,
       cumulativeReturn: returnsMetrics.cumulative,
       annualReturn: returnsMetrics.annual,
       periodDays: returnsMetrics.periodDays,
+      // التذبذب
       volatilityDaily: volMetrics.daily,
       volatility: volMetrics.annual,
       volatilityClass: volMetrics.classification,
       volatilityLabel: volMetrics.label,
+      // ⭐ Sharpe
       sharpe: sharpeMetrics.value,
       sharpeClass: sharpeMetrics.classification,
       sharpeLabel: sharpeMetrics.label,
       sharpeInterpretation: sharpeMetrics.interpretation,
       excessReturn: sharpeMetrics.excessReturn,
+      // ⭐ Sortino
       sortino: sortinoMetrics.value,
       sortinoClass: sortinoMetrics.classification,
       sortinoLabel: sortinoMetrics.label,
       sortinoInterpretation: sortinoMetrics.interpretation,
       downsideDeviation: sortinoMetrics.downsideDeviationAnnual,
-      // ⭐ Beta -- الخطوة 9
+      // ⭐ Beta
       beta: betaMetrics.value,
       betaClass: betaMetrics.classification,
       betaLabel: betaMetrics.label,
       betaInterpretation: betaMetrics.interpretation,
-      // ستُضاف لاحقاً:
-      alpha: null,
+      // ⭐ Alpha (الخطوة 10) -- المرحلة 2 مكتملة!
+      alpha: alphaMetrics.value,
+      alphaClass: alphaMetrics.classification,
+      alphaLabel: alphaMetrics.label,
+      alphaInterpretation: alphaMetrics.interpretation,
+      expectedReturn: alphaMetrics.expected,
+      marketAnnualReturn: tasiReturnsMetrics.annual,
     };
   })(),
 
