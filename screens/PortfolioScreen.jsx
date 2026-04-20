@@ -941,6 +941,14 @@ useEffect(() => {
         var analysis = analyzePortfolio(positionsWithBars, []);
     return addIntelligenceLayer(analysis, positionsWithBars, stockHealth);
   }, [positions]);
+    // 🔬 تشخيص مؤقت -- الخطوة 25
+  useEffect(function() {
+    if (!portfolioAnalysis) return;
+    console.log('🔬 ═══ تشخيص الذكاء ═══');
+    console.log('layersIntelligence:', portfolioAnalysis.layersIntelligence);
+    console.log('finalRecommendation:', portfolioAnalysis.finalRecommendation);
+    console.log('═══════════════════');
+  }, [portfolioAnalysis]);
   // ======= كشف تغيير القرار وإطلاق التنبيه =======
   useEffect(function(){
     var newAlerts=[];
