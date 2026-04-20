@@ -2360,6 +2360,180 @@ export function estimateKellyInputs(returns) {
   };
 }
 /* ══════════════════════════════════════════════════════════
+   ⑳ 2% Rule -- "قاعدة الناجين"
+   Van Tharp, Paul Tudor Jones, Turtle Traders
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * حساب حجم المركز بناءً على قاعدة المخاطرة الثابتة
+ *
+ * المعادلة:
+ * Position Size = (Portfolio × Risk%) / Stop Loss Distance
+ *
+ * الفلسفة (Van Tharp):
+ * - لا تخاطر بأكثر من 2% من رأس المال في صفقة
+ * - حتى 10 خسائر متتالية = -18% فقط (قابل للتعافي)
+ * - حتى 20 خسارة = -33% (مؤلم لكن لن يفلسك)
+ *
+ * التصنيفات المهنية:
+ * - 1%: محافظ جداً (Linda Raschke)
+ * - 2%: المعيار الذهبي (Van Tharp)
+ * - 3%: عدواني (يتطلب نظام دقيق)
+ * - > 3%: خطر الإفلاس
+ *
+ * @param {number} portfolioValue - قيمة المحفظة الإجمالية
+ * @param {number} stockPrice - سعر السهم الحالي
+ * @param {number} stopLossPrice - سعر وقف الخسارة
+ * @param {number} riskPercent - نسبة المخاطرة (افتراضي 2%)
+ * @returns {Object} {maxShares, positionValueSAR, riskSAR, ...}
+ */
+export function calcTwoPercentRule(portfolioValue, stockPrice, stopLossPrice, riskPercent) {
+  // القيمة الافتراضية
+  if (riskPercent === undefined) riskPercent = 0.02;
+
+  // فحص المدخلات
+  if (!portfolioValue || portfolioValue <= 0 || !stockPrice || stockPrice <= 0) {
+    return {
+      maxShares: 0,
+      positionValueSAR: 0,
+      riskSAR: 0,
+      riskPercent: riskPercent,
+      positionPercent: 0,
+      stopLossDistance: 0,
+      stopLossPercent: 0,
+      classification: 'unknown',
+      label: 'بيانات غير كافية',
+      interpretation: 'تحتاج قيمة المحفظة وسعر السهم',
+    };
+  }
+
+  // ① حساب المبلغ الأقصى للخسارة
+  var maxRiskSAR = portfolioValue * riskPercent;
+
+  // ② حساب مسافة وقف الخسارة
+  var stopLossDistance;
+  var stopLossPercent;
+
+  if (stopLossPrice && stopLossPrice > 0 && stopLossPrice < stockPrice) {
+    // وقف خسارة محدد
+    stopLossDistance = stockPrice - stopLossPrice;
+    stopLossPercent = (stopLossDistance / stockPrice) * 100;
+  } else {
+    // افتراضي: 7% وقف خسارة
+    stopLossPercent = 7;
+    stopLossDistance = stockPrice * 0.07;
+    stopLossPrice = stockPrice - stopLossDistance;
+  }
+
+  // ③ حساب حجم المركز
+  // Max Shares = Max Risk / Stop Distance
+  var maxShares = Math.floor(maxRiskSAR / stopLossDistance);
+
+  // ④ حساب القيمة الإجمالية
+  var positionValueSAR = maxShares * stockPrice;
+  var positionPercent = (positionValueSAR / portfolioValue) * 100;
+
+  // ⑤ التحقق من الحدود
+  var warning = null;
+  if (positionPercent > 30) {
+    warning = 'المركز يتجاوز 30% من المحفظة -- تركيز مخاطر';
+  } else if (positionPercent > 20) {
+    warning = 'المركز أكثر من 20% -- حجم كبير نسبياً';
+  }
+
+  // ⑥ التصنيف
+  var classification, label, interpretation;
+
+  if (stopLossPercent < 3) {
+    classification = 'tight';
+    label = 'وقف ضيق';
+    interpretation = 'مسافة الوقف < 3% -- قد يتفعّل من تذبذبات عادية';
+  } else if (stopLossPercent < 7) {
+    classification = 'standard';
+    label = 'وقف معياري';
+    interpretation = 'مسافة مثالية بين 3-7% -- حماية جيدة مع مرونة';
+  } else if (stopLossPercent < 10) {
+    classification = 'wide';
+    label = 'وقف واسع';
+    interpretation = 'مسافة أوسع من المعتاد -- مناسب للأسهم المتقلبة';
+  } else {
+    classification = 'very_wide';
+    label = 'وقف واسع جداً';
+    interpretation = 'مسافة > 10% -- قد يسبب خسارة كبيرة قبل التفعيل';
+  }
+
+  return {
+    maxShares: maxShares,
+    positionValueSAR: Math.round(positionValueSAR),
+    riskSAR: Math.round(maxRiskSAR),
+    riskPercent: riskPercent,
+    positionPercent: +positionPercent.toFixed(2),
+    stopLossDistance: +stopLossDistance.toFixed(2),
+    stopLossPercent: +stopLossPercent.toFixed(2),
+    stopLossPrice: +stopLossPrice.toFixed(2),
+    stockPrice: stockPrice,
+    classification: classification,
+    label: label,
+    interpretation: interpretation,
+    warning: warning,
+  };
+}
+
+/**
+ * دمج Kelly Criterion + 2% Rule
+ * النتيجة = الحد الأدنى بين الاثنين (الأكثر تحفظاً)
+ *
+ * @param {Object} kellyResult - من calcKellyCriterion
+ * @param {Object} twoPercentResult - من calcTwoPercentRule
+ * @returns {Object} {finalShares, finalValue, finalPercent, limitingFactor}
+ */
+export function combineKellyAndRisk(kellyResult, twoPercentResult) {
+  if (!kellyResult || !twoPercentResult) {
+    return {
+      finalShares: 0,
+      finalValue: 0,
+      finalPercent: 0,
+      limitingFactor: 'unknown',
+    };
+  }
+
+  // Kelly يعطي نسبة من المحفظة
+  var kellyValue = kellyResult.amountSAR || 0;
+
+  // 2% Rule يعطي قيمة بناءً على Stop Loss
+  var riskValue = twoPercentResult.positionValueSAR || 0;
+
+  // الحد الأدنى = الأكثر أماناً
+  var finalValue, limitingFactor;
+
+  if (kellyValue === 0) {
+    finalValue = 0;
+    limitingFactor = 'kelly_zero';
+  } else if (kellyValue < riskValue) {
+    finalValue = kellyValue;
+    limitingFactor = 'kelly';
+  } else {
+    finalValue = riskValue;
+    limitingFactor = '2_percent_rule';
+  }
+
+  // حساب الأسهم
+  var finalShares = twoPercentResult.stockPrice > 0
+    ? Math.floor(finalValue / twoPercentResult.stockPrice)
+    : 0;
+
+  return {
+    finalShares: finalShares,
+    finalValue: Math.round(finalShares * twoPercentResult.stockPrice),
+    finalPercent: twoPercentResult.stockPrice > 0
+      ? +((finalShares * twoPercentResult.stockPrice) / (kellyValue / (kellyResult.safeKelly || 0.01)) * 100).toFixed(2)
+      : 0,
+    limitingFactor: limitingFactor,
+    kellyValue: kellyValue,
+    riskValue: riskValue,
+  };
+}
+/* ══════════════════════════════════════════════════════════
    ⑥ دوال التصدير (للاستخدام في الشاشة)
 ═══════════════════════════════════════════════════════════ */
 
