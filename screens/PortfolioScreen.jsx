@@ -831,13 +831,13 @@ useEffect(() => {
     }
   }
 
-            // ══════════════════════════════════════════════
-  // 🧪 اختبار الخطوة 12 -- VaR 95% (مؤقت)
+              // ══════════════════════════════════════════════
+  // 🧪 اختبار الخطوة 13 -- CVaR 95% (مؤقت)
   // ══════════════════════════════════════════════
   useEffect(function(){
     if (!positions || positions.length === 0) return;
 
-    console.log('📉 ═══════ تحليل المخاطر (الخطوة 12) ═══════');
+    console.log('🚨 ═══════ تحليل المخاطر (الخطوة 13) ═══════');
 
     var positionsWithBars = positions.map(function(p) {
       var bars = genBars(p.stk, 60);
@@ -851,29 +851,30 @@ useEffect(() => {
     });
 
     var analysis = analyzePortfolio(positionsWithBars, []);
-    var perf = analysis.performance;
     var risk = analysis.risk;
 
     console.log('💰 القيمة الإجمالية:', analysis.totalValue.toLocaleString(), 'ر.س');
     console.log('');
-    console.log('📈 ملخص الأداء:');
-    console.log('   • Sharpe:', perf.sharpe, '(' + perf.sharpeLabel + ')');
-    console.log('   • Alpha:', (perf.alpha * 100).toFixed(2) + '%');
+    console.log('📉 Maximum Drawdown:', (risk.maxDrawdown * 100).toFixed(2) + '% (' + risk.drawdownLabel + ')');
     console.log('');
-    console.log('📉 Maximum Drawdown:');
-    console.log('   • القيمة:', (risk.maxDrawdown * 100).toFixed(2) + '%');
-    console.log('   • التصنيف:', risk.drawdownLabel);
+    console.log('🚨 VaR 95% vs CVaR 95%:');
     console.log('');
-    console.log('🚨 Value at Risk 95% (معيار JPMorgan):');
-    console.log('   • يومي:', (risk.var95Daily * 100).toFixed(2) + '% | ' + risk.var95DailySAR.toLocaleString() + ' ر.س');
-    console.log('   • أسبوعي:', (risk.var95Weekly * 100).toFixed(2) + '% | ' + risk.var95WeeklySAR.toLocaleString() + ' ر.س');
-    console.log('   • شهري:', (risk.var95Monthly * 100).toFixed(2) + '% | ' + risk.var95MonthlySAR.toLocaleString() + ' ر.س');
-    console.log('   • التصنيف:', risk.varLabel);
-    console.log('   • التفسير:', risk.varInterpretation);
+    console.log('   📊 VaR يومي:   ' + (risk.var95Daily * 100).toFixed(2) + '% | ' + risk.var95DailySAR.toLocaleString() + ' ر.س');
+    console.log('   ⚠️  CVaR يومي: ' + (risk.cvar95Daily * 100).toFixed(2) + '% | ' + risk.cvar95DailySAR.toLocaleString() + ' ر.س');
     console.log('');
-    console.log('💡 التفسير العملي:');
-    console.log('   🎯 في 95% من الأيام، خسارتك اليومية ≤ ' + risk.var95DailySAR.toLocaleString() + ' ر.س');
-    console.log('   ⚠️ في 5% من الأيام (1 من 20)، قد تتجاوز هذا الرقم');
+    console.log('   📊 VaR أسبوعي:   ' + (risk.var95Weekly * 100).toFixed(2) + '% | ' + risk.var95WeeklySAR.toLocaleString() + ' ر.س');
+    console.log('   ⚠️  CVaR أسبوعي: ' + (risk.cvar95Weekly * 100).toFixed(2) + '% | ' + risk.cvar95WeeklySAR.toLocaleString() + ' ر.س');
+    console.log('');
+    console.log('   📊 VaR شهري:   ' + (risk.var95Monthly * 100).toFixed(2) + '% | ' + risk.var95MonthlySAR.toLocaleString() + ' ر.س');
+    console.log('   ⚠️  CVaR شهري: ' + (risk.cvar95Monthly * 100).toFixed(2) + '% | ' + risk.cvar95MonthlySAR.toLocaleString() + ' ر.س');
+    console.log('');
+    console.log('💡 التفسير:');
+    console.log('   🎯 VaR يقول: "في 95% من الأيام، خسارتك ≤ ' + risk.var95DailySAR.toLocaleString() + ' ر.س"');
+    console.log('   🚨 CVaR يقول: "في الـ 5% الكارثية، متوسط خسارتك = ' + risk.cvar95DailySAR.toLocaleString() + ' ر.س"');
+    console.log('');
+    console.log('   • تصنيف VaR:', risk.varLabel);
+    console.log('   • تصنيف CVaR:', risk.cvarLabel);
+    console.log('   • تفسير CVaR:', risk.cvarInterpretation);
     console.log('═══════════════════════════════════════');
   }, [positions]);
     var positions=useMemo(function(){
