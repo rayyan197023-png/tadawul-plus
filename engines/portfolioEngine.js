@@ -218,12 +218,14 @@ export function analyzePortfolio(positions, tasiBars) {
       };
     })(),
 
-        
-        // التنويع (الخطوة 16 ✅ - بداية المرحلة 4)
+            // التنويع (الخطوات 16-17 ✅)
     diversification: (function() {
       // ⭐ HHI -- الخطوة 16
       var hhiMetrics = calcHHI(weights);
+      // ⭐ Correlation Matrix -- الخطوة 17
+      var corrResult = calcCorrelationMatrix(positions);
       return {
+        // HHI
         hhi: hhiMetrics.value,
         effectiveStocks: hhiMetrics.effectiveStocks,
         largestPosition: hhiMetrics.largestPosition,
@@ -232,12 +234,18 @@ export function analyzePortfolio(positions, tasiBars) {
         hhiLabel: hhiMetrics.label,
         hhiInterpretation: hhiMetrics.interpretation,
         concentrationWarning: hhiMetrics.concentrationWarning,
+        // ⭐ Correlation Matrix -- الخطوة 17
+        correlationMatrix: corrResult.matrix,
+        correlationSymbols: corrResult.symbols,
+        pairCount: corrResult.pairCount,
+        highCorrelations: corrResult.highCorrelations,
+        highCorrelationCount: corrResult.highCorrelationCount,
         // ستُضاف لاحقاً:
-        correlationMatrix: null,
         avgCorrelation: null,
         score: null,
       };
     })(),
+        
 
     // التقييم النهائي (سيُضاف في المرحلة 6)
     healthScore: null,
