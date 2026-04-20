@@ -88,17 +88,22 @@ export function analyzePortfolio(positions, tasiBars) {
     stockCount: positions.length,
     weights: weights,
 
-      // مقاييس الأداء -- العوائد (الخطوة 5 ✅)
+        // مقاييس الأداء -- العوائد + التذبذب (الخطوات 5-6 ✅)
   performance: (function() {
     var portfolioReturns = calcPortfolioReturns(positions, weights);
     var returnsMetrics = calcReturnsMetrics(portfolioReturns);
+    var volMetrics = calcVolatility(portfolioReturns);
     return {
       dailyReturn: returnsMetrics.daily,
       cumulativeReturn: returnsMetrics.cumulative,
       annualReturn: returnsMetrics.annual,
       periodDays: returnsMetrics.periodDays,
-      // ستُضاف في الخطوات القادمة:
-      volatility: null,
+      // التذبذب
+      volatilityDaily: volMetrics.daily,
+      volatility: volMetrics.annual,
+      volatilityClass: volMetrics.classification,
+      volatilityLabel: volMetrics.label,
+      // ستُضاف لاحقاً:
       sharpe: null,
       sortino: null,
       alpha: null,
