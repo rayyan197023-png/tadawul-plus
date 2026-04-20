@@ -160,15 +160,15 @@ export function analyzePortfolio(positions, tasiBars) {
     };
   })(),
 
-
-        // مقاييس المخاطر (الخطوة 11 ✅)
-        // مقاييس المخاطر (الخطوات 11-12 ✅)
+    // مقاييس المخاطر (الخطوات 11-13 ✅)
     risk: (function() {
       var portfolioReturns = calcPortfolioReturns(positions, weights);
       // ⭐ Maximum Drawdown -- الخطوة 11
       var ddMetrics = calcMaxDrawdown(portfolioReturns);
       // ⭐ Value at Risk -- الخطوة 12
       var varMetrics = calcVaR(portfolioReturns, 95, totalValue);
+      // ⭐ Conditional VaR -- الخطوة 13
+      var cvarMetrics = calcCVaR(portfolioReturns, 95, totalValue);
       return {
         // Max Drawdown
         maxDrawdown: ddMetrics.maxDrawdown,
@@ -177,7 +177,7 @@ export function analyzePortfolio(positions, tasiBars) {
         drawdownClass: ddMetrics.classification,
         drawdownLabel: ddMetrics.label,
         drawdownInterpretation: ddMetrics.interpretation,
-        // ⭐ VaR 95%
+        // VaR 95%
         var95Daily: varMetrics.daily,
         var95Weekly: varMetrics.weekly,
         var95Monthly: varMetrics.monthly,
@@ -187,13 +187,22 @@ export function analyzePortfolio(positions, tasiBars) {
         varClass: varMetrics.classification,
         varLabel: varMetrics.label,
         varInterpretation: varMetrics.interpretation,
+        // ⭐ CVaR 95% -- الخطوة 13
+        cvar95Daily: cvarMetrics.daily,
+        cvar95Weekly: cvarMetrics.weekly,
+        cvar95Monthly: cvarMetrics.monthly,
+        cvar95DailySAR: cvarMetrics.dailySAR,
+        cvar95WeeklySAR: cvarMetrics.weeklySAR,
+        cvar95MonthlySAR: cvarMetrics.monthlySAR,
+        cvarClass: cvarMetrics.classification,
+        cvarLabel: cvarMetrics.label,
+        cvarInterpretation: cvarMetrics.interpretation,
         // ستُضاف لاحقاً:
-        cvar95: null,
         downsideDeviation: null,
         calmar: null,
       };
     })(),
-
+        
     // التنويع (سيُضاف في المرحلة 4)
     diversification: {
       hhi: null,
