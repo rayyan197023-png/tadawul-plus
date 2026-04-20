@@ -831,6 +831,33 @@ useEffect(() => {
     }
   }
 
+  // ══════════════════════════════════════════════
+  // 🧪 اختبار الربط -- الخطوة 4 (مؤقت، سيُحذف لاحقاً)
+  // ══════════════════════════════════════════════
+  useEffect(function(){
+    console.log('🧪 ═══════ اختبار portfolioEngine ═══════');
+    console.log('✅ RISK_FREE_RATE المستورد:', RISK_FREE_RATE);
+    console.log('✅ HEALTH_GRADES عدد التصنيفات:', HEALTH_GRADES.length);
+
+    // اختبار تحليل محفظة فارغة
+    var emptyAnalysis = analyzePortfolio([], []);
+    console.log('✅ تحليل محفظة فارغة:', emptyAnalysis);
+
+    // اختبار محفظة تجريبية
+    var testPositions = [
+      { sym: '2222', qty: 100, value: 3000, bars: [{c:30},{c:31},{c:30.5},{c:32}] },
+      { sym: '1120', qty: 50,  value: 5000, bars: [{c:100},{c:102},{c:101},{c:103}] },
+    ];
+    var testTotal = calcTotalValue(testPositions);
+    var testWeights = calcWeights(testPositions, testTotal);
+    var testReturns = calcPortfolioReturns(testPositions, testWeights);
+
+    console.log('✅ القيمة الإجمالية التجريبية:', testTotal);
+    console.log('✅ الأوزان التجريبية:', testWeights);
+    console.log('✅ عوائد المحفظة التجريبية:', testReturns);
+    console.log('🎉 جميع الاختبارات نجحت!');
+    console.log('═══════════════════════════════════════');
+  }, []);
   var positions=useMemo(function(){
     var tv=port.reduce(function(s,pp){var stk=sl.find(function(x){return x.sym===pp.sym;});return s+(stk?stk.p:pp.avgCost)*pp.qty;},0)||1;
     return port.map(function(pp){
