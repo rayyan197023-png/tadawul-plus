@@ -1130,6 +1130,7 @@ function WatchlistTab(props) {
   var tp=props.p?props.p:props;
   var sub=tp.sub, setSub=tp.setSub;
   var watchlist=tp.watchlist||[], setWatchlist=tp.setWatchlist||function(){};
+  var nav=useNav();
   var stocksLive=tp.stocksLive||[];
   var BOX=tp.BOX, SHD=tp.SHD;
   var sAdd=useState(false); var showAdd=sAdd[0]; var setShowAdd=sAdd[1];
