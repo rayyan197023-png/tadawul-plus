@@ -208,6 +208,74 @@ export function calcPortfolioReturns(positions, weights) {
 }
 
 /* ══════════════════════════════════════════════════════════
+   ③ مقاييس الأداء -- العوائد
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * حساب مقاييس العائد الكاملة للمحفظة
+ *
+ * يحسب:
+ * - العائد اليومي المتوسط
+ * - العائد التراكمي للفترة
+ * - العائد السنوي المتوقع
+ * - عدد الأيام المستخدمة في الحساب
+ *
+ * @param {number[]} portfolioReturns - سلسلة العوائد اليومية للمحفظة
+ * @returns {Object} {daily, cumulative, annual, periodDays}
+ *
+ * @example
+ * var returns = calcPortfolioReturns(positions, weights);
+ * var perf = calcReturnsMetrics(returns);
+ * console.log(perf.annual); // 0.12 يعني 12% سنوياً
+ */
+export function calcReturnsMetrics(portfolioReturns) {
+  // فحص المدخلات
+  if (!portfolioReturns || portfolioReturns.length === 0) {
+    return {
+      daily: 0,
+      cumulative: 0,
+      annual: 0,
+      periodDays: 0,
+    };
+  }
+
+  var n = portfolioReturns.length;
+
+  // ① العائد اليومي المتوسط (Arithmetic Mean)
+  // R_daily = Σ R(t) / n
+  var sumReturns = 0;
+  for (var i = 0; i < n; i++) {
+    sumReturns += portfolioReturns[i];
+  }
+  var dailyReturn = sumReturns / n;
+
+  // ② العائد التراكمي (Geometric - يأخذ بعين الاعتبار Compounding)
+  // R_cum = (1 + r_1)(1 + r_2)...(1 + r_n) - 1
+  var cumulative = 1;
+  for (var j = 0; j < n; j++) {
+    cumulative *= (1 + portfolioReturns[j]);
+  }
+  cumulative -= 1;
+
+  // ③ العائد السنوي (Annualized)
+  // Method 1: من العائد التراكمي
+  // R_annual = (1 + R_cum)^(252/n) - 1
+  var annualFromCumulative = Math.pow(1 + cumulative, 252 / n) - 1;
+
+  // Method 2: من العائد اليومي (بديل للفترات الطويلة)
+  // R_annual = (1 + R_daily)^252 - 1
+  var annualFromDaily = Math.pow(1 + dailyReturn, 252) - 1;
+
+  // استخدام الطريقة الأولى (أكثر دقة) لكن نعرضهما معاً
+  return {
+    daily: +dailyReturn.toFixed(6),
+    cumulative: +cumulative.toFixed(4),
+    annual: +annualFromCumulative.toFixed(4),
+    annualFromDaily: +annualFromDaily.toFixed(4),
+    periodDays: n,
+  };
+}
+/* ══════════════════════════════════════════════════════════
    ③ حالة فارغة (للمحافظ الفارغة)
 ═══════════════════════════════════════════════════════════ */
 
