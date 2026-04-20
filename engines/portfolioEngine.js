@@ -1276,6 +1276,99 @@ export function calcCVaR(returns, confidence, portfolioValue) {
   };
 }
 /* ══════════════════════════════════════════════════════════
+   ⑬ Calmar Ratio -- "العائد مقابل أسوأ كارثة"
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * حساب Calmar Ratio للمحفظة
+ *
+ * المنهجية الأكاديمية (Young 1991):
+ * Calmar = Annual Return / |Max Drawdown|
+ *
+ * الفرق الجوهري عن Sharpe و Sortino:
+ * - Sharpe يقيس: العائد مقابل التذبذب الكامل
+ * - Sortino يقيس: العائد مقابل التذبذب السلبي
+ * - Calmar يقيس: العائد مقابل أسوأ كارثة تاريخية
+ *
+ * مزايا Calmar:
+ * ① يكشف المحافظ ذات "الكوارث التاريخية"
+ * ② مستخدم في Hedge Funds الكبرى
+ * ③ يحمي من الإغراء بالعوائد العالية
+ *
+ * تصنيف Calmar:
+ * - > 3.0: أسطوري
+ * - 2.0-3.0: ممتاز
+ * - 1.0-2.0: جيد جداً
+ * - 0.5-1.0: مقبول
+ * - 0-0.5: ضعيف
+ * - < 0: سلبي
+ *
+ * @param {number} annualReturn - العائد السنوي (decimal)
+ * @param {number} maxDrawdown - Max Drawdown (قيمة سالبة)
+ * @returns {Object} {value, classification, label, interpretation}
+ */
+export function calcCalmarRatio(annualReturn, maxDrawdown) {
+  // فحص المدخلات
+  if (annualReturn === undefined || annualReturn === null ||
+      maxDrawdown === undefined || maxDrawdown === null) {
+    return {
+      value: 0,
+      classification: 'unknown',
+      label: 'بيانات غير كافية',
+      interpretation: 'لا يمكن حساب Calmar بدون Max Drawdown',
+    };
+  }
+
+  // حالة حدية: لا توجد خسائر (محفظة مثالية)
+  if (maxDrawdown >= 0 || Math.abs(maxDrawdown) < 0.001) {
+    return {
+      value: Infinity,
+      classification: 'perfect',
+      label: 'لا خسائر',
+      interpretation: 'المحفظة لم تسجل تراجعات كبيرة -- مؤشر استثنائي',
+    };
+  }
+
+  // ① حساب Calmar Ratio
+  var calmar = annualReturn / Math.abs(maxDrawdown);
+
+  // ② التصنيف
+  var classification, label, interpretation;
+
+  if (calmar > 3.0) {
+    classification = 'legendary';
+    label = 'أسطوري';
+    interpretation = 'عائد استثنائي مقابل أقل كارثة -- نادر جداً عالمياً';
+  } else if (calmar > 2.0) {
+    classification = 'excellent';
+    label = 'ممتاز';
+    interpretation = 'عائد ممتاز مع حماية من التراجعات الحادة';
+  } else if (calmar > 1.0) {
+    classification = 'veryGood';
+    label = 'جيد جداً';
+    interpretation = 'توازن صحي بين العائد وأسوأ تراجع';
+  } else if (calmar > 0.5) {
+    classification = 'good';
+    label = 'مقبول';
+    interpretation = 'العائد يبرر التراجعات التاريخية -- لكن يحتاج صبر';
+  } else if (calmar > 0) {
+    classification = 'poor';
+    label = 'ضعيف';
+    interpretation = 'العائد لا يعوض المخاطر التاريخية بشكل كافٍ';
+  } else {
+    classification = 'negative';
+    label = 'سلبي';
+    interpretation = 'خسارة مع تراجعات -- محفظة خاسرة تاريخياً';
+  }
+
+  return {
+    value: calmar === Infinity ? 999 : +calmar.toFixed(3),
+    classification: classification,
+    label: label,
+    interpretation: interpretation,
+  };
+}
+/* ══════════════════════════════════════════════════════════
    ⑤ حالة فارغة (للمحافظ الفارغة)
 ═══════════════════════════════════════════════════════════ */
 
