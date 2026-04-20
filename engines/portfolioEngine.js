@@ -1155,6 +1155,118 @@ export function calcVaR(returns, confidence, portfolioValue) {
   };
 }
 /* ══════════════════════════════════════════════════════════
+   ⑫ Conditional VaR (CVaR) -- Expected Shortfall
+   معيار Basel III الحديث (2019+)
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * حساب Conditional Value at Risk (CVaR)
+ * المعروف أيضاً بـ Expected Shortfall (ES)
+ *
+ * المنهجية (Rockafellar & Uryasev 2000):
+ * CVaR_α = E[Loss | Loss > VaR_α]
+ *        = متوسط أسوأ (100-α)% من العوائد
+ *
+ * مزايا CVaR على VaR:
+ * ① يكشف المخاطر الذيلية (Tail Risk)
+ * ② Coherent Risk Measure (Artzner 1999)
+ * ③ معيار Basel III الحديث
+ * ④ مستخدم في BlackRock, Bridgewater, Goldman Sachs
+ *
+ * قاعدة: CVaR دائماً ≥ VaR
+ *
+ * @param {number[]} returns - سلسلة العوائد اليومية
+ * @param {number} confidence - مستوى الثقة (افتراضي 95)
+ * @param {number} portfolioValue - قيمة المحفظة
+ * @returns {Object} {daily, weekly, monthly, dailySAR, ...}
+ */
+export function calcCVaR(returns, confidence, portfolioValue) {
+  if (confidence === undefined) confidence = 95;
+  if (portfolioValue === undefined) portfolioValue = 0;
+
+  if (!returns || returns.length < 10) {
+    return {
+      daily: 0,
+      weekly: 0,
+      monthly: 0,
+      dailySAR: 0,
+      weeklySAR: 0,
+      monthlySAR: 0,
+      worstDays: [],
+      confidence: confidence,
+      classification: 'unknown',
+      label: 'بيانات غير كافية',
+      interpretation: 'تحتاج 10+ أيام من البيانات لحساب CVaR',
+    };
+  }
+
+  // ① ترتيب العوائد تصاعدياً
+  var sorted = returns.slice().sort(function(a, b) { return a - b; });
+
+  // ② تحديد عتبة VaR (عدد أسوأ الأيام)
+  var threshold = Math.floor((100 - confidence) / 100 * sorted.length);
+  if (threshold < 1) threshold = 1;
+
+  // ③ استخراج أسوأ الأيام
+  var worstDays = sorted.slice(0, threshold);
+
+  // ④ حساب متوسط الخسارة في أسوأ الأيام (CVaR)
+  var sumWorst = 0;
+  for (var i = 0; i < worstDays.length; i++) {
+    sumWorst += worstDays[i];
+  }
+  var cvarDaily = -sumWorst / worstDays.length;
+  if (cvarDaily < 0) cvarDaily = 0;
+
+  // ⑤ CVaR أسبوعي وشهري (قاعدة جذر الزمن)
+  var cvarWeekly = cvarDaily * Math.sqrt(5);
+  var cvarMonthly = cvarDaily * Math.sqrt(21);
+
+  // ⑥ تحويل إلى ريال سعودي
+  var dailySAR = cvarDaily * portfolioValue;
+  var weeklySAR = cvarWeekly * portfolioValue;
+  var monthlySAR = cvarMonthly * portfolioValue;
+
+  // ⑦ التصنيف
+  var classification, label, interpretation;
+
+  if (cvarDaily < 0.015) {
+    classification = 'conservative';
+    label = 'محافظة';
+    interpretation = 'خسائر الأيام الكارثية محدودة -- محفظة دفاعية';
+  } else if (cvarDaily < 0.025) {
+    classification = 'balanced';
+    label = 'متوازنة';
+    interpretation = 'خسائر كارثية معقولة -- مقبولة للاستثمار طويل المدى';
+  } else if (cvarDaily < 0.04) {
+    classification = 'growth';
+    label = 'نمو';
+    interpretation = 'خسائر كارثية محسوسة -- تتطلب قدرة نفسية عالية';
+  } else if (cvarDaily < 0.06) {
+    classification = 'aggressive';
+    label = 'عدوانية';
+    interpretation = 'خسائر كارثية كبيرة -- مناسبة للمستثمرين ذوي الخبرة';
+  } else {
+    classification = 'speculative';
+    label = 'مضاربية';
+    interpretation = 'خسائر كارثية خطرة -- مستوى مضاربة عالية';
+  }
+
+  return {
+    daily: +cvarDaily.toFixed(4),
+    weekly: +cvarWeekly.toFixed(4),
+    monthly: +cvarMonthly.toFixed(4),
+    dailySAR: +dailySAR.toFixed(0),
+    weeklySAR: +weeklySAR.toFixed(0),
+    monthlySAR: +monthlySAR.toFixed(0),
+    worstDaysCount: worstDays.length,
+    confidence: confidence,
+    classification: classification,
+    label: label,
+    interpretation: interpretation,
+  };
+}
+/* ══════════════════════════════════════════════════════════
    ⑤ حالة فارغة (للمحافظ الفارغة)
 ═══════════════════════════════════════════════════════════ */
 
