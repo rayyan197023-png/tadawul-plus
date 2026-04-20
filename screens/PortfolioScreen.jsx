@@ -832,12 +832,12 @@ useEffect(() => {
   }
 
   // ══════════════════════════════════════════════
-  // 🧪 اختبار الخطوة 6 -- العوائد + التذبذب (مؤقت)
+  // 🧪 اختبار الخطوة 7 -- Sharpe Ratio ⭐ (مؤقت)
   // ══════════════════════════════════════════════
   useEffect(function(){
     if (!positions || positions.length === 0) return;
 
-    console.log('📊 ═══════ تحليل المحفظة (الخطوة 6) ═══════');
+    console.log('📊 ═══════ تحليل المحفظة (الخطوة 7) ═══════');
 
     var positionsWithBars = positions.map(function(p) {
       var bars = genBars(p.stk, 60);
@@ -853,19 +853,19 @@ useEffect(() => {
     var perf = analysis.performance;
 
     console.log('💰 القيمة الإجمالية:', analysis.totalValue.toLocaleString(), 'ر.س');
-    console.log('📊 عدد الأسهم:', analysis.stockCount);
     console.log('');
     console.log('📈 مقاييس العائد:');
-    console.log('   • عائد يومي:', (perf.dailyReturn * 100).toFixed(3) + '%');
-    console.log('   • عائد تراكمي:', (perf.cumulativeReturn * 100).toFixed(2) + '%');
-    console.log('   • عائد سنوي متوقع:', (perf.annualReturn * 100).toFixed(2) + '%');
+    console.log('   • عائد سنوي:', (perf.annualReturn * 100).toFixed(2) + '%');
+    console.log('   • عائد زائد (فوق السايبور):', (perf.excessReturn * 100).toFixed(2) + '%');
     console.log('');
-    console.log('📉 مقاييس التذبذب:');
-    console.log('   • تذبذب يومي:', (perf.volatilityDaily * 100).toFixed(3) + '%');
+    console.log('📉 التذبذب:');
     console.log('   • تذبذب سنوي:', (perf.volatility * 100).toFixed(2) + '%');
     console.log('   • التصنيف:', perf.volatilityLabel);
     console.log('');
-    console.log('💡 نسبة العائد/التذبذب:', (perf.annualReturn / perf.volatility).toFixed(2));
+    console.log('⭐ Sharpe Ratio (نوبل 1990):');
+    console.log('   • القيمة:', perf.sharpe);
+    console.log('   • التصنيف:', perf.sharpeLabel);
+    console.log('   • التفسير:', perf.sharpeInterpretation);
     console.log('═══════════════════════════════════════');
   }, [positions]);
     var positions=useMemo(function(){
