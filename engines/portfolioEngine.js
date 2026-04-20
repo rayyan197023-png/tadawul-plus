@@ -765,6 +765,108 @@ export function calcPortfolioBeta(portfolioReturns, marketReturns) {
   };
 }
 /* ══════════════════════════════════════════════════════════
+   ⑨ Jensen's Alpha -- "هل أنت أذكى من السوق؟"
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * حساب Jensen's Alpha للمحفظة
+ *
+ * المعادلة الأكاديمية (Jensen 1968):
+ * α = R_p - [R_f + β × (R_m - R_f)]
+ *
+ * حيث:
+ * - R_p: العائد الفعلي للمحفظة
+ * - R_f: معدل خالي من المخاطر
+ * - β:  Beta المحفظة
+ * - R_m: عائد السوق (تاسي)
+ *
+ * التفسير:
+ * Alpha > 0 : تفوقت على السوق (بعد تعديل المخاطر)
+ * Alpha = 0 : أداؤك = أداء السوق (مؤشر)
+ * Alpha < 0 : أداؤك أقل من السوق
+ *
+ * تصنيف Alpha السنوي:
+ * - > +5%: استثنائي (مستوى Buffett)
+ * - +3% to +5%: ممتاز
+ * - +1% to +3%: جيد
+ * - 0% to +1%: محايد
+ * - 0% to -2%: ضعيف
+ * - < -2%: فاشل
+ *
+ * ملاحظة: 90% من الصناديق العالمية تحقق Alpha سالب على المدى الطويل
+ *
+ * @param {number} portfolioAnnualReturn - العائد السنوي للمحفظة
+ * @param {number} marketAnnualReturn - العائد السنوي لتاسي
+ * @param {number} beta - Beta المحفظة
+ * @param {number} riskFreeRate - معدل خالي من المخاطر
+ * @returns {Object} {value, expected, classification, label, interpretation}
+ */
+export function calcJensensAlpha(portfolioAnnualReturn, marketAnnualReturn, beta, riskFreeRate) {
+  // القيم الافتراضية
+  if (riskFreeRate === undefined) riskFreeRate = 0.06;
+  if (beta === undefined || beta === null) beta = 1.0;
+
+  // فحص المدخلات
+  if (portfolioAnnualReturn === undefined || portfolioAnnualReturn === null ||
+      marketAnnualReturn === undefined || marketAnnualReturn === null) {
+    return {
+      value: 0,
+      expected: 0,
+      classification: 'unknown',
+      label: 'بيانات غير كافية',
+      interpretation: 'لا يمكن حساب Alpha بدون بيانات كاملة',
+    };
+  }
+
+  // ① حساب العائد المتوقع حسب CAPM
+  // Expected = R_f + β × (R_m - R_f)
+  var marketRiskPremium = marketAnnualReturn - riskFreeRate;
+  var expectedReturn = riskFreeRate + beta * marketRiskPremium;
+
+  // ② حساب Alpha
+  // α = R_p - Expected
+  var alpha = portfolioAnnualReturn - expectedReturn;
+
+  // ③ التصنيف (معايير مهنية لإدارة الصناديق)
+  var classification, label, interpretation;
+
+  if (alpha > 0.05) {
+    classification = 'exceptional';
+    label = 'استثنائي';
+    interpretation = 'تتفوق على السوق بـ ' + (alpha * 100).toFixed(1) +
+                    '% سنوياً -- مستوى أفضل صناديق العالم';
+  } else if (alpha > 0.03) {
+    classification = 'excellent';
+    label = 'ممتاز';
+    interpretation = 'تتفوق على السوق بشكل ملحوظ -- اختيار أسهم احترافي';
+  } else if (alpha > 0.01) {
+    classification = 'good';
+    label = 'جيد';
+    interpretation = 'تتفوق على السوق قليلاً -- اختيار جيد للأسهم';
+  } else if (alpha > -0.01) {
+    classification = 'neutral';
+    label = 'محايد';
+    interpretation = 'أداؤك يطابق السوق تقريباً -- لا ميزة واضحة';
+  } else if (alpha > -0.03) {
+    classification = 'poor';
+    label = 'ضعيف';
+    interpretation = 'أداؤك أقل من السوق -- راجع اختياراتك';
+  } else {
+    classification = 'failing';
+    label = 'فاشل';
+    interpretation = 'أداؤك أقل بكثير من السوق -- شراء مؤشر تاسي أفضل';
+  }
+
+  return {
+    value: +alpha.toFixed(4),
+    expected: +expectedReturn.toFixed(4),
+    marketRiskPremium: +marketRiskPremium.toFixed(4),
+    classification: classification,
+    label: label,
+    interpretation: interpretation,
+  };
+}
+/* ══════════════════════════════════════════════════════════
    ⑤ حالة فارغة (للمحافظ الفارغة)
 ═══════════════════════════════════════════════════════════ */
 
