@@ -157,6 +157,8 @@ export default function RiskDashboard(props) {
   var perf = analysis.performance || {};
   var risk = analysis.risk || {};
   var div = analysis.diversification || {};
+  var layers = analysis.layersIntelligence || {};
+  var finalRec = analysis.finalRecommendation || {};
 
   return (
     <div style={{
