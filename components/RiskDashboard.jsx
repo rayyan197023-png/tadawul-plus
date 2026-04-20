@@ -401,6 +401,94 @@ export default function RiskDashboard(props) {
           </div>
         </div>
 
+        {/* ⭐ التوصية النهائية الذكية (الخطوة 25) */}
+        {finalRec && finalRec.label && (
+          <div style={{
+            background: finalRec.color === 'mint' ? "rgba(30,230,138,0.08)"
+                      : finalRec.color === 'amber' ? "rgba(251,191,36,0.08)"
+                      : "rgba(255,95,106,0.08)",
+            border: "1px solid " + (finalRec.color === 'mint' ? C.mint
+                                   : finalRec.color === 'amber' ? C.amber
+                                   : C.coral) + "44",
+            borderRadius: 12,
+            padding: "12px 14px",
+            marginBottom: 10,
+          }}>
+            <div style={{
+              fontSize: 10,
+              color: C.gold,
+              fontWeight: 700,
+              marginBottom: 6,
+              letterSpacing: "1px",
+            }}>
+              🏆 التوصية النهائية الذكية
+            </div>
+            <div style={{
+              fontSize: 15,
+              fontWeight: 900,
+              color: finalRec.color === 'mint' ? C.mint
+                   : finalRec.color === 'amber' ? C.amber
+                   : C.coral,
+              marginBottom: 6,
+            }}>
+              {finalRec.label}
+            </div>
+            <div style={{
+              fontSize: 11,
+              color: C.mist,
+              marginBottom: 8,
+            }}>
+              درجة الثقة: {finalRec.confidence}/100 · جودة الأسهم: {layers.weightedScore || '-'}/100
+            </div>
+
+            {finalRec.reasons && finalRec.reasons.length > 0 && (
+              <div style={{ marginTop: 8 }}>
+                {finalRec.reasons.map(function(reason, i) {
+                  return (
+                    <div key={i} style={{
+                      fontSize: 10,
+                      color: reason.positive ? C.mint : C.coral,
+                      lineHeight: 1.5,
+                      marginBottom: 2,
+                    }}>
+                      {reason.icon} {reason.text}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {finalRec.actions && finalRec.actions.length > 0 && (
+              <div style={{
+                marginTop: 10,
+                paddingTop: 8,
+                borderTop: "1px solid " + C.line + "33",
+              }}>
+                <div style={{
+                  fontSize: 9,
+                  color: C.gold,
+                  fontWeight: 700,
+                  marginBottom: 4,
+                }}>
+                  📋 الإجراءات الموصى بها:
+                </div>
+                {finalRec.actions.map(function(action, i) {
+                  return (
+                    <div key={i} style={{
+                      fontSize: 10,
+                      color: C.mist,
+                      lineHeight: 1.5,
+                      marginBottom: 2,
+                    }}>
+                      {action}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* زر التوسعة */}
         <button
           onClick={function () { setExpanded(!expanded); }}
