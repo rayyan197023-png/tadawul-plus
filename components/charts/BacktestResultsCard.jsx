@@ -1,0 +1,479 @@
+'use client';
+/**
+ * @module BacktestResultsCard
+ * @description بطاقة عرض نتائج Backtest الكاملة
+ * 
+ * تعرض 18+ مقياساً في واجهة احترافية
+ * مستوى Bloomberg Terminal + BlackRock Aladdin
+ * 
+ * @author تداول+
+ * @version 1.0
+ */
+
+import React from 'react';
+
+var C = {
+  ink: "#06080f", deep: "#090c16", void: "#0c1020",
+  layer1: "#141d2b", layer2: "#1e2d42",
+  edge: "#2e3e60", line: "#32426a",
+  snow: "#f0f6ff", mist: "#c8d8f0", smoke: "#90a4c8", ash: "#5a6e94",
+  gold: "#f0c050", goldL: "#ffd878",
+  mint: "#1ee68a", coral: "#ff5f6a", amber: "#fbbf24", teal: "#22d3ee",
+  plasma: "#a78bfa",
+};
+
+/**
+ * مكوّن قيمة مقياس واحد
+ */
+function MetricItem(props) {
+  return (
+    <div style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: "6px 8px",
+      background: props.highlight ? (props.color || C.gold) + "12" : "transparent",
+      borderRadius: 6,
+      borderLeft: props.highlight ? "2px solid " + (props.color || C.gold) : "none",
+    }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <span style={{ 
+          fontSize: 10, 
+          color: C.smoke, 
+          fontWeight: 700,
+        }}>
+          {props.label}
+        </span>
+        {props.sublabel && (
+          <span style={{ fontSize: 8, color: C.ash }}>
+            {props.sublabel}
+          </span>
+        )}
+      </div>
+      <div style={{
+        fontSize: 13,
+        fontWeight: 900,
+        color: props.color || C.snow,
+        fontFamily: "IBM Plex Mono,monospace",
+      }}>
+        {props.value}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * قسم كامل (Title + Metrics)
+ */
+function Section(props) {
+  return (
+    <div style={{
+      marginBottom: 12,
+      padding: "10px 12px",
+      background: C.void + "88",
+      borderRadius: 10,
+      border: "1px solid " + (props.color || C.line) + "22",
+    }}>
+      <div style={{
+        fontSize: 10,
+        color: props.color || C.gold,
+        fontWeight: 800,
+        letterSpacing: "1px",
+        marginBottom: 8,
+        paddingBottom: 6,
+        borderBottom: "1px solid " + (props.color || C.line) + "22",
+      }}>
+        {props.icon} {props.title}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        {props.children}
+      </div>
+    </div>
+  );
+}
+
+export default function BacktestResultsCard(props) {
+  var result = props.result;
+  var benchmarkResult = props.benchmarkResult;
+  var comparison = props.comparison;
+
+  if (!result || !result.success) {
+    return (
+      <div style={{
+        background: C.layer1,
+        borderRadius: 12,
+        padding: 20,
+        textAlign: 'center',
+        color: C.smoke,
+        fontSize: 12,
+        marginBottom: 12,
+      }}>
+        {result && result.error ? result.error : '📊 لا توجد نتائج Backtest'}
+      </div>
+    );
+  }
+
+  var perf = result.performance;
+  var summary = result.summary;
+
+  // ألوان ديناميكية
+  var annualReturnColor = perf.annualReturn >= 15 ? C.mint 
+                        : perf.annualReturn >= 5 ? C.amber 
+                        : C.coral;
+  
+  var sharpeColor = perf.sharpe >= 1.5 ? C.mint
+                  : perf.sharpe >= 1.0 ? C.teal
+                  : perf.sharpe >= 0.5 ? C.amber
+                  : C.coral;
+  
+  var ddColor = perf.maxDrawdown >= -10 ? C.mint
+              : perf.maxDrawdown >= -20 ? C.amber
+              : C.coral;
+  
+  var winRateColor = perf.winRate >= 60 ? C.mint
+                   : perf.winRate >= 50 ? C.amber
+                   : C.coral;
+
+  // لون التقييم
+  var summaryColor = C.mint;
+  if (summary.color === 'coral') summaryColor = C.coral;
+  else if (summary.color === 'amber') summaryColor = C.amber;
+  else if (summary.color === 'mint') summaryColor = C.mint;
+
+  return (
+    <div style={{
+      background: "linear-gradient(145deg," + C.layer1 + "," + C.layer2 + ")",
+      borderRadius: 14,
+      border: "1px solid " + summaryColor + "33",
+      padding: "14px 12px",
+      marginBottom: 12,
+    }}>
+      {/* Header */}
+      <div style={{
+        marginBottom: 14,
+        paddingBottom: 10,
+        borderBottom: "1px solid " + C.line + "44",
+      }}>
+        <div style={{ 
+          display: "flex", 
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          marginBottom: 6,
+        }}>
+          <div>
+            <div style={{
+              fontSize: 11,
+              color: C.gold,
+              fontWeight: 800,
+              letterSpacing: "1px",
+              marginBottom: 3,
+            }}>
+              🧪 نتائج Backtest
+            </div>
+            <div style={{
+              fontSize: 14,
+              color: C.snow,
+              fontWeight: 900,
+            }}>
+              {perf.years} سنة · {perf.totalDays} يوم
+            </div>
+          </div>
+          
+          <div style={{
+            padding: "4px 10px",
+            background: summaryColor + "22",
+            border: "1px solid " + summaryColor + "55",
+            borderRadius: 20,
+            fontSize: 10,
+            color: summaryColor,
+            fontWeight: 900,
+          }}>
+            {summary.label}
+          </div>
+        </div>
+        
+        {/* Summary Bar */}
+        <div style={{
+          display: "flex",
+          gap: 8,
+          marginTop: 8,
+        }}>
+          <div style={{ flex: 1, textAlign: "center" }}>
+            <div style={{
+              fontFamily: "IBM Plex Mono,monospace",
+              fontSize: 20,
+              fontWeight: 900,
+              color: annualReturnColor,
+              lineHeight: 1,
+            }}>
+              {perf.annualReturn >= 0 ? '+' : ''}{perf.annualReturn}%
+            </div>
+            <div style={{ fontSize: 9, color: C.smoke, marginTop: 3 }}>
+              عائد سنوي
+            </div>
+          </div>
+          
+          <div style={{ width: 1, background: C.line + "44" }} />
+          
+          <div style={{ flex: 1, textAlign: "center" }}>
+            <div style={{
+              fontFamily: "IBM Plex Mono,monospace",
+              fontSize: 20,
+              fontWeight: 900,
+              color: sharpeColor,
+              lineHeight: 1,
+            }}>
+              {perf.sharpe}
+            </div>
+            <div style={{ fontSize: 9, color: C.smoke, marginTop: 3 }}>
+              Sharpe
+            </div>
+          </div>
+          
+          <div style={{ width: 1, background: C.line + "44" }} />
+          
+          <div style={{ flex: 1, textAlign: "center" }}>
+            <div style={{
+              fontFamily: "IBM Plex Mono,monospace",
+              fontSize: 20,
+              fontWeight: 900,
+              color: ddColor,
+              lineHeight: 1,
+            }}>
+              {perf.maxDrawdown}%
+            </div>
+            <div style={{ fontSize: 9, color: C.smoke, marginTop: 3 }}>
+              أسوأ تراجع
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ⭐ المقاييس الرئيسية */}
+      <Section icon="⭐" title="المقاييس الرئيسية" color={C.gold}>
+        <MetricItem 
+          label="العائد الإجمالي"
+          sublabel="من بداية Backtest"
+          value={(perf.totalReturn >= 0 ? '+' : '') + perf.totalReturn + '%'}
+          color={perf.totalReturn >= 0 ? C.mint : C.coral}
+          highlight={true}
+        />
+        <MetricItem 
+          label="العائد السنوي"
+          sublabel="CAGR"
+          value={(perf.annualReturn >= 0 ? '+' : '') + perf.annualReturn + '%'}
+          color={annualReturnColor}
+        />
+        <MetricItem 
+          label="القيمة النهائية"
+          value={formatMoney(perf.finalValue)}
+          color={perf.finalValue >= 100000 ? C.mint : C.coral}
+        />
+        <MetricItem 
+          label="التذبذب السنوي"
+          sublabel="σ"
+          value={perf.volatility + '%'}
+          color={perf.volatility < 15 ? C.mint : perf.volatility < 25 ? C.amber : C.coral}
+        />
+      </Section>
+
+      {/* 📊 إحصاءات الصفقات */}
+      <Section icon="📊" title="إحصاءات الصفقات" color={C.teal}>
+        <MetricItem 
+          label="إجمالي الصفقات"
+          value={perf.totalTrades}
+          color={C.snow}
+        />
+        <MetricItem 
+          label="معدل الربح"
+          sublabel="Win Rate"
+          value={perf.winRate + '%'}
+          color={winRateColor}
+          highlight={true}
+        />
+        <MetricItem 
+          label="صفقات رابحة"
+          value={perf.winningTrades}
+          color={C.mint}
+        />
+        <MetricItem 
+          label="صفقات خاسرة"
+          value={perf.losingTrades}
+          color={C.coral}
+        />
+        <MetricItem 
+          label="متوسط الربح"
+          value={'+' + perf.avgWin}
+          color={C.mint}
+        />
+        <MetricItem 
+          label="متوسط الخسارة"
+          value={'-' + perf.avgLoss}
+          color={C.coral}
+        />
+        <MetricItem 
+          label="Profit Factor"
+          sublabel="إجمالي الأرباح / إجمالي الخسائر"
+          value={perf.profitFactor}
+          color={perf.profitFactor >= 2 ? C.mint : perf.profitFactor >= 1.5 ? C.amber : C.coral}
+          highlight={true}
+        />
+      </Section>
+
+      {/* ⚡ مقاييس المخاطر */}
+      <Section icon="⚡" title="مقاييس المخاطر" color={C.coral}>
+        <MetricItem 
+          label="Sharpe Ratio"
+          sublabel="عائد مُعدّل بالمخاطرة"
+          value={perf.sharpe}
+          color={sharpeColor}
+        />
+        <MetricItem 
+          label="Sortino Ratio"
+          sublabel="مُعدّل بالمخاطر السلبية فقط"
+          value={perf.sortino}
+          color={perf.sortino >= 1.5 ? C.mint : perf.sortino >= 1 ? C.amber : C.coral}
+        />
+        <MetricItem 
+          label="Calmar Ratio"
+          sublabel="العائد / أسوأ تراجع"
+          value={perf.calmar}
+          color={perf.calmar >= 2 ? C.mint : perf.calmar >= 1 ? C.amber : C.coral}
+        />
+        <MetricItem 
+          label="Max Drawdown"
+          sublabel={perf.maxDrawdownDate || ''}
+          value={perf.maxDrawdown + '%'}
+          color={ddColor}
+          highlight={true}
+        />
+        <MetricItem 
+          label="VaR 95%"
+          sublabel="خسارة محتملة يومياً"
+          value={'-' + perf.var95 + '%'}
+          color={C.amber}
+        />
+        <MetricItem 
+          label="CVaR 95%"
+          sublabel="متوسط أسوأ 5%"
+          value={'-' + perf.cvar95 + '%'}
+          color={C.coral}
+        />
+      </Section>
+
+      {/* 📅 إحصاءات الأيام */}
+      <Section icon="📅" title="إحصاءات الأيام" color={C.plasma}>
+        <MetricItem 
+          label="أيام رابحة"
+          value={perf.positiveDays + ' / ' + perf.totalDays}
+          color={C.mint}
+        />
+        <MetricItem 
+          label="معدل الأيام الإيجابية"
+          value={perf.positiveDaysPct + '%'}
+          color={perf.positiveDaysPct >= 55 ? C.mint : perf.positiveDaysPct >= 50 ? C.amber : C.coral}
+          highlight={true}
+        />
+        <MetricItem 
+          label="أفضل يوم"
+          value={'+' + perf.bestDay + '%'}
+          color={C.mint}
+        />
+        <MetricItem 
+          label="أسوأ يوم"
+          value={perf.worstDay + '%'}
+          color={C.coral}
+        />
+      </Section>
+
+      {/* ⚔️ مقارنة مع Benchmark */}
+      {comparison && (
+        <Section icon="⚔️" title="مقارنة مع تاسي" color={C.gold}>
+          <MetricItem 
+            label="Alpha"
+            sublabel="الفرق السنوي عن تاسي"
+            value={(comparison.alpha >= 0 ? '+' : '') + comparison.alpha + '%'}
+            color={comparison.alpha >= 0 ? C.mint : C.coral}
+            highlight={true}
+          />
+          <MetricItem 
+            label="فرق Sharpe"
+            value={(comparison.sharpeDiff >= 0 ? '+' : '') + comparison.sharpeDiff}
+            color={comparison.sharpeDiff >= 0 ? C.mint : C.coral}
+          />
+          <MetricItem 
+            label="فرق Max DD"
+            value={(comparison.maxDDDiff >= 0 ? '+' : '') + comparison.maxDDDiff + '%'}
+            color={comparison.maxDDDiff >= 0 ? C.mint : C.coral}
+          />
+          <MetricItem 
+            label="فرق التذبذب"
+            value={(comparison.volDiff >= 0 ? '+' : '') + comparison.volDiff + '%'}
+            color={C.smoke}
+          />
+          
+          <div style={{
+            marginTop: 8,
+            padding: "8px 10px",
+            background: (comparison.outperformance ? C.mint : C.coral) + "15",
+            border: "1px solid " + (comparison.outperformance ? C.mint : C.coral) + "33",
+            borderRadius: 8,
+            textAlign: "center",
+          }}>
+            <div style={{
+              fontSize: 11,
+              fontWeight: 800,
+              color: comparison.outperformance ? C.mint : C.coral,
+            }}>
+              {comparison.outperformance 
+                ? '🏆 استراتيجيتك تتفوّق على تاسي'
+                : '📊 تاسي يتفوّق على استراتيجيتك'}
+            </div>
+          </div>
+        </Section>
+      )}
+
+      {/* 🏆 نقاط القوة والضعف */}
+      {summary.keyPoints && summary.keyPoints.length > 0 && (
+        <div style={{
+          padding: "10px 12px",
+          background: summaryColor + "10",
+          border: "1px solid " + summaryColor + "33",
+          borderRadius: 10,
+        }}>
+          <div style={{
+            fontSize: 10,
+            color: summaryColor,
+            fontWeight: 800,
+            letterSpacing: "1px",
+            marginBottom: 8,
+          }}>
+            🎯 التحليل السريع
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            {summary.keyPoints.map(function(point, i) {
+              return (
+                <div key={'kp-' + i} style={{
+                  fontSize: 11,
+                  color: C.mist,
+                  padding: "4px 0",
+                }}>
+                  {point}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * تنسيق الأرقام المالية
+ */
+function formatMoney(value) {
+  if (value >= 1000000) return (value / 1000000).toFixed(2) + 'M ر.س';
+  if (value >= 1000) return (value / 1000).toFixed(1) + 'K ر.س';
+  return value.toFixed(0) + ' ر.س';
+}
