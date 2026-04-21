@@ -565,6 +565,62 @@ const { setTab } = useNav();
 </div>
       
       {!sub&&(
+      <>
+        {/* 🧪 بطاقة مختبر الاستراتيجيات */}
+        <div
+          onClick={function() { setTab(TAB_IDS.BACKTEST); }}
+          style={{
+            background: "linear-gradient(135deg, rgba(240, 192, 80, 0.18), rgba(30, 230, 138, 0.08))",
+            border: "1.5px solid rgba(240, 192, 80, 0.4)",
+            borderRadius: 14,
+            padding: "16px 14px",
+            margin: "12px",
+            cursor: "pointer",
+            boxShadow: "0 4px 14px rgba(240, 192, 80, 0.15)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{
+              width: 52, height: 52, borderRadius: 12,
+              background: "linear-gradient(135deg, #f0c050, #ffd878)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 26, flexShrink: 0,
+              boxShadow: "0 4px 10px rgba(240, 192, 80, 0.3)",
+            }}>
+              🧪
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 9, color: "#f0c050", fontWeight: 800, letterSpacing: "1.5px", marginBottom: 3 }}>
+                ✨ جديد
+              </div>
+              <div style={{ fontSize: 15, color: "#f0f6ff", fontWeight: 900, marginBottom: 4 }}>
+                مختبر الاستراتيجيات
+              </div>
+              <div style={{ fontSize: 11, color: "#c8d8f0", lineHeight: 1.5 }}>
+                اختبر محفظتك على سنوات + محاكاة 10,000 سيناريو
+              </div>
+            </div>
+            <div style={{ fontSize: 20, color: "#f0c050", fontWeight: 900, flexShrink: 0 }}>
+              ←
+            </div>
+          </div>
+          <div style={{
+            marginTop: 10, paddingTop: 10,
+            borderTop: "1px solid rgba(240, 192, 80, 0.2)",
+            display: "flex", gap: 6, flexWrap: "wrap",
+          }}>
+            <span style={{ fontSize: 9, padding: "3px 8px", background: "rgba(30, 230, 138, 0.15)", color: "#1ee68a", borderRadius: 10, fontWeight: 700 }}>
+              💼 محفظتي
+            </span>
+            <span style={{ fontSize: 9, padding: "3px 8px", background: "rgba(240, 192, 80, 0.15)", color: "#f0c050", borderRadius: 10, fontWeight: 700 }}>
+              🔍 الطبقات التسع
+            </span>
+            <span style={{ fontSize: 9, padding: "3px 8px", background: "rgba(34, 211, 238, 0.15)", color: "#22d3ee", borderRadius: 10, fontWeight: 700 }}>
+              🌐 السوق
+            </span>
+          </div>
+        </div>
+
         <div style={{padding:"12px 16px 24px",position:"relative",zIndex:1}}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
             {MENU.map(function(item,i){return(
