@@ -24,6 +24,7 @@ import { analyzePortfolio, addIntelligenceLayer, generatePortfolioValueChart, ge
 import RiskDashboard from '../components/RiskDashboard';
 import PortfolioValueChart from '../components/charts/PortfolioValueChart';
 import DrawdownChart from '../components/charts/DrawdownChart';
+import MonthlyReturnsHeatmap from '../components/charts/MonthlyReturnsHeatmap';
 import { RISK_FREE_RATE, HEALTH_GRADES } from '../constants/portfolioConfig';
 import { STOCKS } from '../constants/stocksData';
 import { useNav } from '../store';
