@@ -747,3 +747,245 @@ function generateInterpretation(mean, median, probProfit, worst5, best95) {
   return points;
 }
 
+
+/* ══════════════════════════════════════════════════════════
+   📦 Data Generators -- محوّلات بيانات المصادر المختلفة
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * توليد بيانات Backtest من المحفظة الحالية
+ * Mode 1: Buy & Hold للأسهم الموجودة في المحفظة
+ * 
+ * @param {Array} positions - مصفوفة المراكز الحالية
+ * @param {Function} genBarsFn - دالة genBars من analysisEngine
+ * @param {number} days - عدد الأيام
+ * @returns {Array} historical data
+ */
+export function generateDataFromPortfolio(positions, genBarsFn, days) {
+  if (!positions || positions.length === 0) {
+    return [];
+  }
+  days = days || 252;
+
+  // توليد bars لكل سهم في المحفظة
+  var stocksBars = {};
+  positions.forEach(function(p) {
+    var seed = p.sym || (p.stk ? p.stk.seed : p.sym);
+    stocksBars[p.sym] = genBarsFn(seed, days);
+  });
+
+  var data = [];
+  var today = new Date();
+
+  for (var i = 0; i < days; i++) {
+    var date = new Date(today);
+    date.setDate(date.getDate() - (days - i - 1));
+    
+    var prices = {};
+    var stocksData = [];
+    
+    positions.forEach(function(p) {
+      var bars = stocksBars[p.sym];
+      if (bars && bars[i]) {
+        prices[p.sym] = bars[i].c;
+        stocksData.push({
+          sym: p.sym,
+          name: p.stk ? p.stk.name : p.sym,
+          sector: p.stk ? p.stk.sector : '',
+          bars: bars.slice(0, i + 1),
+          currentPrice: bars[i].c,
+          // نضيف الوزن للمحفظة (للاستراتيجية)
+          targetWeight: p.weight || (1 / positions.length),
+        });
+      }
+    });
+
+    data.push({
+      date: date.toISOString().split('T')[0],
+      prices: prices,
+      stocksData: stocksData,
+    });
+  }
+
+  return data;
+}
+
+/**
+ * توليد بيانات Backtest من قائمة أسهم (التحليل)
+ * Mode 2: استراتيجية Tadawul على مجموعة مختارة
+ * 
+ * @param {Array} stocksList - قائمة الأسهم (من STOCKS)
+ * @param {Function} genBarsFn - دالة genBars
+ * @param {number} days - عدد الأيام
+ * @param {number} maxStocks - أقصى عدد أسهم (افتراضي 15)
+ * @returns {Array} historical data
+ */
+export function generateDataFromStockList(stocksList, genBarsFn, days, maxStocks) {
+  if (!stocksList || stocksList.length === 0) {
+    return [];
+  }
+  days = days || 252;
+  maxStocks = maxStocks || 15;
+
+  // اختيار أول N سهم
+  var selectedStocks = stocksList.slice(0, maxStocks);
+
+  // توليد bars لكل سهم
+  var stocksBars = {};
+  selectedStocks.forEach(function(stk) {
+    var seed = stk.seed || stk.sym;
+    stocksBars[stk.sym] = genBarsFn(seed, days);
+  });
+
+  var data = [];
+  var today = new Date();
+
+  for (var i = 0; i < days; i++) {
+    var date = new Date(today);
+    date.setDate(date.getDate() - (days - i - 1));
+    
+    var prices = {};
+    var stocksData = [];
+    
+    selectedStocks.forEach(function(stk) {
+      var bars = stocksBars[stk.sym];
+      if (bars && bars[i]) {
+        prices[stk.sym] = bars[i].c;
+        stocksData.push({
+          sym: stk.sym,
+          name: stk.name,
+          sector: stk.sector,
+          bars: bars.slice(0, i + 1),
+          currentPrice: bars[i].c,
+        });
+      }
+    });
+
+    data.push({
+      date: date.toISOString().split('T')[0],
+      prices: prices,
+      stocksData: stocksData,
+    });
+  }
+
+  return data;
+}
+
+/**
+ * توليد بيانات Backtest من السوق بالكامل
+ * Mode 3: استراتيجية Tadawul مع Sector Rotation
+ * 
+ * @param {Array} allStocks - كل الأسهم (STOCKS)
+ * @param {Function} genBarsFn
+ * @param {number} days
+ * @returns {Array} historical data with sector info
+ */
+export function generateDataFromMarket(allStocks, genBarsFn, days) {
+  if (!allStocks || allStocks.length === 0) {
+    return [];
+  }
+  days = days || 252;
+
+  // أخذ 30 سهم من قطاعات متنوعة
+  var sectorMap = {};
+  allStocks.forEach(function(stk) {
+    var sector = stk.sector || 'other';
+    if (!sectorMap[sector]) sectorMap[sector] = [];
+    sectorMap[sector].push(stk);
+  });
+
+  // اختيار 3-5 أسهم من كل قطاع
+  var selectedStocks = [];
+  Object.keys(sectorMap).forEach(function(sector) {
+    var sectorStocks = sectorMap[sector].slice(0, 5);
+    selectedStocks = selectedStocks.concat(sectorStocks);
+  });
+  
+  // حد أقصى 30 سهم
+  if (selectedStocks.length > 30) {
+    selectedStocks = selectedStocks.slice(0, 30);
+  }
+
+  // توليد bars
+  var stocksBars = {};
+  selectedStocks.forEach(function(stk) {
+    var seed = stk.seed || stk.sym;
+    stocksBars[stk.sym] = genBarsFn(seed, days);
+  });
+
+  var data = [];
+  var today = new Date();
+
+  for (var i = 0; i < days; i++) {
+    var date = new Date(today);
+    date.setDate(date.getDate() - (days - i - 1));
+    
+    var prices = {};
+    var stocksData = [];
+    
+    selectedStocks.forEach(function(stk) {
+      var bars = stocksBars[stk.sym];
+      if (bars && bars[i]) {
+        prices[stk.sym] = bars[i].c;
+        stocksData.push({
+          sym: stk.sym,
+          name: stk.name,
+          sector: stk.sector,
+          bars: bars.slice(0, i + 1),
+          currentPrice: bars[i].c,
+        });
+      }
+    });
+
+    data.push({
+      date: date.toISOString().split('T')[0],
+      prices: prices,
+      stocksData: stocksData,
+      marketMode: true,
+      totalSectors: Object.keys(sectorMap).length,
+    });
+  }
+
+  return data;
+}
+
+/**
+ * استراتيجية Buy & Hold محسّنة للمحفظة الحالية
+ * تشتري الأسهم بأوزانها الحالية ثم تحتفظ
+ */
+export function createPortfolioBuyAndHoldStrategy(positions) {
+  var hasBought = false;
+
+  return {
+    name: 'محفظتي الحالية (Buy & Hold)',
+    
+    generateSignals: function(day, state, historicalData, dayIndex) {
+      var signals = [];
+      
+      // في اليوم الأول فقط
+      if (!hasBought && day.stocksData) {
+        day.stocksData.forEach(function(stk) {
+          var weight = stk.targetWeight || (1 / day.stocksData.length);
+          var valueForStock = state.cash * weight * 0.95;
+          
+          if (valueForStock >= 1000) {
+            signals.push({
+              action: 'buy',
+              sym: stk.sym,
+              value: valueForStock,
+              reason: 'Portfolio allocation (' + (weight * 100).toFixed(0) + '%)',
+            });
+          }
+        });
+        
+        hasBought = true;
+      }
+      
+      return signals;
+    },
+    
+    reset: function() {
+      hasBought = false;
+    },
+  };
+}
