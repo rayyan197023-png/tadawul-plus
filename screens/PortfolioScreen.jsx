@@ -1416,6 +1416,77 @@ useEffect(() => {
              
               {portfolioAnalysis && <RiskDashboard analysis={portfolioAnalysis} />}
              {sorted.map(function(p,i){return <Card key={p.sym} p={p} i={i} capital={capital} setSellSheet={setSellSheet} onEdit={function(pos){setEditPos(pos);}}/>;}) }
+
+              {/* 🎨 زر التحليل المتقدم */}
+              <div style={{margin:"24px 0 12px"}}>
+                <button
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                  style={{
+                    width:"100%",
+                    padding:"16px 18px",
+                    background: showAdvanced
+                      ? "linear-gradient(135deg,rgba(240,192,80,0.18),rgba(240,192,80,0.08))"
+                      : "linear-gradient(135deg,rgba(77,159,255,0.15),rgba(77,159,255,0.05))",
+                    border: `1.5px solid ${showAdvanced ? "rgba(240,192,80,0.4)" : "rgba(77,159,255,0.35)"}`,
+                    borderRadius:16,
+                    cursor:"pointer",
+                    display:"flex",
+                    alignItems:"center",
+                    justifyContent:"space-between",
+                    transition:"all 0.3s ease",
+                    boxShadow: showAdvanced
+                      ? "0 4px 20px rgba(240,192,80,0.15)"
+                      : "0 4px 20px rgba(77,159,255,0.12)",
+                  }}
+                >
+                  <div style={{display:"flex",alignItems:"center",gap:12}}>
+                    <div style={{
+                      width:42,
+                      height:42,
+                      borderRadius:12,
+                      background: showAdvanced
+                        ? "linear-gradient(135deg,#f0c050,#ffd878)"
+                        : "linear-gradient(135deg,#4d9fff,#22d3ee)",
+                      display:"flex",
+                      alignItems:"center",
+                      justifyContent:"center",
+                      fontSize:22,
+                      boxShadow: showAdvanced
+                        ? "0 4px 12px rgba(240,192,80,0.3)"
+                        : "0 4px 12px rgba(77,159,255,0.3)",
+                    }}>
+                      📊
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div style={{
+                        fontSize:14,
+                        fontWeight:900,
+                        color:"#f0f6ff",
+                        fontFamily:"Cairo,sans-serif",
+                        marginBottom:2,
+                      }}>
+                        التحليل المتقدم
+                      </div>
+                      <div style={{
+                        fontSize:10,
+                        color:"#90a4c8",
+                        fontWeight:600,
+                      }}>
+                        {showAdvanced ? "7 تحليلات احترافية · اضغط للإخفاء" : "7 تحليلات احترافية + لوحة المخاطر"}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{
+                    fontSize:24,
+                    color: showAdvanced ? "#f0c050" : "#4d9fff",
+                    fontWeight:900,
+                    transition:"transform 0.3s ease",
+                    transform: showAdvanced ? "rotate(180deg)" : "rotate(0)",
+                  }}>
+                    ⌄
+                  </div>
+                </button>
+              </div> 
             </div>
           )}
         </div>
