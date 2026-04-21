@@ -1326,6 +1326,11 @@ useEffect(() => {
               {/* 📉 رسم بياني: Drawdown History */}
               {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.drawdown && portfolioAnalysis.chartData.drawdown.data && portfolioAnalysis.chartData.drawdown.data.length > 0 && (
                 <DrawdownChart data={portfolioAnalysis.chartData.drawdown} />
+              )} 
+
+              {/* 📅 جدول العوائد الشهرية */}
+              {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.monthlyReturns && portfolioAnalysis.chartData.monthlyReturns.months && portfolioAnalysis.chartData.monthlyReturns.months.length > 0 && (
+                <MonthlyReturnsHeatmap data={portfolioAnalysis.chartData.monthlyReturns} />
               )}              
               {portfolioAnalysis && <RiskDashboard analysis={portfolioAnalysis} />}
              {sorted.map(function(p,i){return <Card key={p.sym} p={p} i={i} capital={capital} setSellSheet={setSellSheet} onEdit={function(pos){setEditPos(pos);}}/>;}) }
