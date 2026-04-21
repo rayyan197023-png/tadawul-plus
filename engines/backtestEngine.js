@@ -1,0 +1,476 @@
+'use client';
+/**
+ * @module backtestEngine
+ * @description محرك اختبار الاستراتيجيات تاريخياً
+ * 
+ * المنهجية (Pardo 2008, Kestner 2003):
+ * ① تنفيذ الاستراتيجية يوماً بيوم
+ * ② حساب Equity Curve
+ * ③ حساب 18+ مقياس أداء
+ * ④ المقارنة مع TASI Benchmark
+ * 
+ * @author تداول+
+ * @version 1.0
+ */
+
+import { mean, std, simpleReturns } from '../utils/portfolioMath';
+
+/**
+ * إعدادات Backtest الافتراضية
+ */
+export var BACKTEST_DEFAULTS = {
+  initialCapital: 100000,      // رأس المال (100 ألف ر.س)
+  commissionRate: 0.00155,     // 0.155% عمولة
+  minCommission: 12,           // حد أدنى 12 ر.س
+  vatRate: 0.15,              // ضريبة القيمة المضافة
+  regulatoryFee: 0.00005,     // رسوم هيئة السوق
+  slippage: 0.001,            // 0.1% انزلاق سعري
+  riskFreeRate: 0.06,         // عائد خالي من المخاطر 6%
+  includeCosts: true,         // تفعيل التكاليف
+};
+
+/**
+ * حساب تكلفة الصفقة
+ */
+function calcTradeCost(tradeValue, config) {
+  var commission = Math.max(
+    tradeValue * config.commissionRate,
+    config.minCommission
+  );
+  var vat = commission * config.vatRate;
+  var regFees = tradeValue * config.regulatoryFee;
+  var slippageCost = tradeValue * config.slippage;
+  
+  return commission + vat + regFees + slippageCost;
+}
+
+/**
+ * المحرك الرئيسي: backtest
+ * 
+ * @param {Object} strategy - { name, generateSignals(day, state) }
+ * @param {Array} historicalData - [{ date, prices: {sym: price}, bars }]
+ * @param {Object} options - إعدادات اختيارية
+ * @returns {Object} نتائج Backtest كاملة
+ */
+export function backtest(strategy, historicalData, options) {
+  var config = Object.assign({}, BACKTEST_DEFAULTS, options || {});
+  
+  if (!historicalData || historicalData.length < 30) {
+    return {
+      error: 'بيانات غير كافية (يتطلب 30 يوماً على الأقل)',
+      success: false,
+    };
+  }
+
+  // ① حالة المحفظة
+  var state = {
+    cash: config.initialCapital,
+    positions: {}, // { sym: { shares, avgCost, entryDate } }
+    initialCapital: config.initialCapital,
+  };
+
+  var trades = [];        // سجل كل الصفقات
+  var equityCurve = [];   // قيمة المحفظة يومياً
+  var dailyReturns = [];  // العوائد اليومية
+  var benchmarkCurve = []; // TASI للمقارنة
+
+  // ② تشغيل المحاكاة يوماً بيوم
+  for (var i = 0; i < historicalData.length; i++) {
+    var day = historicalData[i];
+    var date = day.date;
+    var prices = day.prices;
+
+    // ٢.١ توليد الإشارات
+    var signals = [];
+    if (strategy && typeof strategy.generateSignals === 'function') {
+      try {
+        signals = strategy.generateSignals(day, state, historicalData, i) || [];
+      } catch (err) {
+        console.error('Strategy error:', err);
+        signals = [];
+      }
+    }
+
+    // ٢.٢ تنفيذ إشارات البيع أولاً (لتحرير رأس المال)
+    signals.filter(function(s) { return s.action === 'sell'; }).forEach(function(signal) {
+      executeSell(signal, state, prices, trades, date, config);
+    });
+
+    // ٢.٣ ثم تنفيذ إشارات الشراء
+    signals.filter(function(s) { return s.action === 'buy'; }).forEach(function(signal) {
+      executeBuy(signal, state, prices, trades, date, config);
+    });
+
+    // ٢.٤ حساب قيمة المحفظة اليوم
+    var totalValue = state.cash;
+    Object.keys(state.positions).forEach(function(sym) {
+      var pos = state.positions[sym];
+      var price = prices[sym];
+      if (price && pos.shares > 0) {
+        totalValue += pos.shares * price;
+      }
+    });
+
+    equityCurve.push({
+      date: date,
+      value: +totalValue.toFixed(2),
+      cash: +state.cash.toFixed(2),
+      invested: +(totalValue - state.cash).toFixed(2),
+      positions: Object.keys(state.positions).length,
+    });
+
+    // ٢.٥ حساب العائد اليومي
+    if (i > 0) {
+      var prevValue = equityCurve[i - 1].value;
+      var dailyRet = (totalValue - prevValue) / prevValue;
+      dailyReturns.push(dailyRet);
+    }
+
+    // ٢.٦ TASI Benchmark (متوسط تغير الأسعار)
+    if (i > 0 && day.tasiValue !== undefined) {
+      benchmarkCurve.push({
+        date: date,
+        value: day.tasiValue,
+      });
+    }
+  }
+
+  // ③ حساب مقاييس الأداء
+  var performance = calcPerformanceMetrics(
+    equityCurve,
+    dailyReturns,
+    trades,
+    config,
+    benchmarkCurve
+  );
+
+  return {
+    success: true,
+    config: config,
+    equityCurve: equityCurve,
+    benchmarkCurve: benchmarkCurve,
+    trades: trades,
+    tradeCount: trades.length,
+    dailyReturns: dailyReturns,
+    finalValue: equityCurve[equityCurve.length - 1].value,
+    performance: performance,
+    summary: generateSummary(performance, trades, config),
+  };
+}
+
+/**
+ * تنفيذ صفقة شراء
+ */
+function executeBuy(signal, state, prices, trades, date, config) {
+  var price = prices[signal.sym];
+  if (!price || price <= 0) return;
+
+  // حساب قيمة الصفقة
+  var desiredValue = signal.value || (signal.weight * (state.cash + calcInvestedValue(state, prices)));
+  if (desiredValue > state.cash) {
+    desiredValue = state.cash * 0.98; // ترك 2% احتياط
+  }
+  if (desiredValue < 100) return; // صفقة صغيرة جداً
+
+  // حساب التكاليف
+  var costs = config.includeCosts ? calcTradeCost(desiredValue, config) : 0;
+  var netValue = desiredValue - costs;
+
+  // حساب عدد الأسهم
+  var shares = Math.floor(netValue / price);
+  if (shares < 1) return;
+
+  var actualCost = (shares * price) + costs;
+  if (actualCost > state.cash) return;
+
+  // تنفيذ الصفقة
+  state.cash -= actualCost;
+
+  if (state.positions[signal.sym]) {
+    // إضافة لمركز قائم (متوسط التكلفة)
+    var existing = state.positions[signal.sym];
+    var totalShares = existing.shares + shares;
+    var totalCost = (existing.shares * existing.avgCost) + (shares * price);
+    state.positions[signal.sym] = {
+      shares: totalShares,
+      avgCost: totalCost / totalShares,
+      entryDate: existing.entryDate,
+    };
+  } else {
+    state.positions[signal.sym] = {
+      shares: shares,
+      avgCost: price,
+      entryDate: date,
+    };
+  }
+
+  trades.push({
+    date: date,
+    sym: signal.sym,
+    action: 'buy',
+    shares: shares,
+    price: +price.toFixed(2),
+    value: +(shares * price).toFixed(2),
+    cost: +costs.toFixed(2),
+    reason: signal.reason || '',
+  });
+}
+
+/**
+ * تنفيذ صفقة بيع
+ */
+function executeSell(signal, state, prices, trades, date, config) {
+  var position = state.positions[signal.sym];
+  if (!position || position.shares <= 0) return;
+
+  var price = prices[signal.sym];
+  if (!price || price <= 0) return;
+
+  var shares = signal.shares || position.shares;
+  if (shares > position.shares) shares = position.shares;
+
+  var grossValue = shares * price;
+  var costs = config.includeCosts ? calcTradeCost(grossValue, config) : 0;
+  var netValue = grossValue - costs;
+
+  // حساب الربح/الخسارة
+  var costBasis = shares * position.avgCost;
+  var pnl = netValue - costBasis;
+  var pnlPct = (pnl / costBasis) * 100;
+
+  // تنفيذ البيع
+  state.cash += netValue;
+
+  if (shares >= position.shares) {
+    delete state.positions[signal.sym];
+  } else {
+    state.positions[signal.sym].shares -= shares;
+  }
+
+  trades.push({
+    date: date,
+    sym: signal.sym,
+    action: 'sell',
+    shares: shares,
+    price: +price.toFixed(2),
+    value: +grossValue.toFixed(2),
+    cost: +costs.toFixed(2),
+    pnl: +pnl.toFixed(2),
+    pnlPct: +pnlPct.toFixed(2),
+    reason: signal.reason || '',
+  });
+}
+
+/**
+ * حساب القيمة المستثمرة حالياً
+ */
+function calcInvestedValue(state, prices) {
+  var total = 0;
+  Object.keys(state.positions).forEach(function(sym) {
+    var pos = state.positions[sym];
+    var price = prices[sym];
+    if (price && pos.shares > 0) {
+      total += pos.shares * price;
+    }
+  });
+  return total;
+}
+
+/**
+ * حساب مقاييس الأداء (18 مقياساً)
+ */
+function calcPerformanceMetrics(equityCurve, dailyReturns, trades, config, benchmarkCurve) {
+  if (equityCurve.length < 2) return {};
+
+  var initial = config.initialCapital;
+  var final = equityCurve[equityCurve.length - 1].value;
+
+  // ① العوائد الأساسية
+  var totalReturn = (final / initial) - 1;
+  var days = equityCurve.length;
+  var years = days / 252;
+  var annualReturn = years > 0 ? Math.pow(1 + totalReturn, 1 / years) - 1 : 0;
+
+  // ② التذبذب
+  var meanRet = dailyReturns.length > 0 ? mean(dailyReturns) : 0;
+  var stdRet = dailyReturns.length > 0 ? std(dailyReturns) : 0;
+  var volatility = stdRet * Math.sqrt(252);
+
+  // ③ Sharpe Ratio
+  var sharpe = volatility > 0 
+    ? (annualReturn - config.riskFreeRate) / volatility 
+    : 0;
+
+  // ④ Sortino Ratio (downside deviation)
+  var downReturns = dailyReturns.filter(function(r) { return r < 0; });
+  var downStd = downReturns.length > 0 ? std(downReturns) : 0;
+  var downsideVol = downStd * Math.sqrt(252);
+  var sortino = downsideVol > 0 
+    ? (annualReturn - config.riskFreeRate) / downsideVol 
+    : 0;
+
+  // ⑤ Max Drawdown
+  var peak = equityCurve[0].value;
+  var maxDD = 0;
+  var maxDDDate = null;
+  equityCurve.forEach(function(e) {
+    if (e.value > peak) peak = e.value;
+    var dd = (e.value - peak) / peak;
+    if (dd < maxDD) {
+      maxDD = dd;
+      maxDDDate = e.date;
+    }
+  });
+
+  // ⑥ Calmar Ratio
+  var calmar = maxDD < 0 ? annualReturn / Math.abs(maxDD) : 0;
+
+  // ⑦ إحصاءات الصفقات
+  var closedTrades = trades.filter(function(t) { return t.action === 'sell' && t.pnl !== undefined; });
+  var winningTrades = closedTrades.filter(function(t) { return t.pnl > 0; });
+  var losingTrades = closedTrades.filter(function(t) { return t.pnl < 0; });
+
+  var winRate = closedTrades.length > 0 
+    ? (winningTrades.length / closedTrades.length) * 100 
+    : 0;
+
+  var avgWin = winningTrades.length > 0 
+    ? mean(winningTrades.map(function(t) { return t.pnl; })) 
+    : 0;
+  var avgLoss = losingTrades.length > 0 
+    ? Math.abs(mean(losingTrades.map(function(t) { return t.pnl; })))
+    : 0;
+
+  // ⑧ Profit Factor
+  var grossProfit = winningTrades.reduce(function(s, t) { return s + t.pnl; }, 0);
+  var grossLoss = Math.abs(losingTrades.reduce(function(s, t) { return s + t.pnl; }, 0));
+  var profitFactor = grossLoss > 0 ? grossProfit / grossLoss : (grossProfit > 0 ? 999 : 0);
+
+  // ⑨ Expected Return per trade
+  var expectedReturn = closedTrades.length > 0
+    ? mean(closedTrades.map(function(t) { return t.pnlPct; }))
+    : 0;
+
+  // ⑩ VaR & CVaR
+  var sortedReturns = dailyReturns.slice().sort(function(a, b) { return a - b; });
+  var varIdx = Math.floor(0.05 * sortedReturns.length);
+  var var95 = sortedReturns.length > 0 ? -sortedReturns[varIdx] * 100 : 0;
+  
+  var cvarSum = 0;
+  for (var m = 0; m <= varIdx && m < sortedReturns.length; m++) {
+    cvarSum += sortedReturns[m];
+  }
+  var cvar95 = varIdx >= 0 ? -(cvarSum / (varIdx + 1)) * 100 : 0;
+
+  // ⑪ مقاييس إضافية
+  var bestDay = Math.max.apply(null, dailyReturns) * 100;
+  var worstDay = Math.min.apply(null, dailyReturns) * 100;
+  
+  var positiveDays = dailyReturns.filter(function(r) { return r > 0; }).length;
+  var negativeDays = dailyReturns.filter(function(r) { return r < 0; }).length;
+  var positiveDaysPct = (positiveDays / dailyReturns.length) * 100;
+
+  return {
+    // العوائد
+    totalReturn: +(totalReturn * 100).toFixed(2),
+    annualReturn: +(annualReturn * 100).toFixed(2),
+    finalValue: +final.toFixed(2),
+    
+    // المخاطر
+    volatility: +(volatility * 100).toFixed(2),
+    maxDrawdown: +(maxDD * 100).toFixed(2),
+    maxDrawdownDate: maxDDDate,
+    var95: +var95.toFixed(3),
+    cvar95: +cvar95.toFixed(3),
+    
+    // النسب
+    sharpe: +sharpe.toFixed(2),
+    sortino: +sortino.toFixed(2),
+    calmar: +calmar.toFixed(2),
+    profitFactor: +profitFactor.toFixed(2),
+    
+    // الصفقات
+    totalTrades: trades.length,
+    closedTrades: closedTrades.length,
+    winningTrades: winningTrades.length,
+    losingTrades: losingTrades.length,
+    winRate: +winRate.toFixed(1),
+    avgWin: +avgWin.toFixed(2),
+    avgLoss: +avgLoss.toFixed(2),
+    expectedReturn: +expectedReturn.toFixed(2),
+    
+    // أيام
+    totalDays: days,
+    years: +years.toFixed(2),
+    bestDay: +bestDay.toFixed(2),
+    worstDay: +worstDay.toFixed(2),
+    positiveDays: positiveDays,
+    negativeDays: negativeDays,
+    positiveDaysPct: +positiveDaysPct.toFixed(1),
+  };
+}
+
+/**
+ * توليد ملخص نصي
+ */
+function generateSummary(perf, trades, config) {
+  var summary = {
+    rating: 'neutral',
+    label: 'أداء متوسط',
+    color: 'amber',
+    keyPoints: [],
+  };
+
+  // تقييم الأداء
+  if (perf.sharpe >= 1.5 && perf.winRate >= 55) {
+    summary.rating = 'excellent';
+    summary.label = 'أداء استثنائي';
+    summary.color = 'mint';
+  } else if (perf.sharpe >= 1.0 && perf.winRate >= 50) {
+    summary.rating = 'good';
+    summary.label = 'أداء جيد';
+    summary.color = 'mint';
+  } else if (perf.sharpe >= 0.5) {
+    summary.rating = 'moderate';
+    summary.label = 'أداء مقبول';
+    summary.color = 'amber';
+  } else {
+    summary.rating = 'poor';
+    summary.label = 'أداء ضعيف';
+    summary.color = 'coral';
+  }
+
+  // نقاط القوة
+  if (perf.sharpe > 1.5) summary.keyPoints.push('✅ Sharpe ممتاز');
+  if (perf.winRate > 55) summary.keyPoints.push('✅ معدل ربح قوي');
+  if (perf.maxDrawdown > -15) summary.keyPoints.push('✅ تراجعات محدودة');
+  if (perf.profitFactor > 2) summary.keyPoints.push('✅ نسبة ربح/خسارة ممتازة');
+  
+  // نقاط الضعف
+  if (perf.maxDrawdown < -25) summary.keyPoints.push('⚠️ تراجعات كبيرة');
+  if (perf.winRate < 40) summary.keyPoints.push('⚠️ معدل ربح منخفض');
+  if (perf.sharpe < 0.5) summary.keyPoints.push('⚠️ Sharpe ضعيف');
+
+  return summary;
+}
+
+/**
+ * مقارنة مع TASI Benchmark
+ */
+export function compareWithBenchmark(backtestResult, benchmarkResult) {
+  if (!backtestResult.success || !benchmarkResult.success) {
+    return null;
+  }
+
+  var strategy = backtestResult.performance;
+  var bench = benchmarkResult.performance;
+
+  return {
+    alpha: +(strategy.annualReturn - bench.annualReturn).toFixed(2),
+    outperformance: strategy.annualReturn > bench.annualReturn,
+    sharpeDiff: +(strategy.sharpe - bench.sharpe).toFixed(2),
+    maxDDDiff: +(strategy.maxDrawdown - bench.maxDrawdown).toFixed(2),
+    volDiff: +(strategy.volatility - bench.volatility).toFixed(2),
+    winRateDiff: +(strategy.winRate - bench.winRate).toFixed(1),
+  };
+}
