@@ -369,7 +369,7 @@ const { activeTab: active, setTab } = useNav();
           direction: "rtl",
         }}
       >
-        {TABS.map(tab => (
+        {TABS.filter(t => !t.hidden).map(tab => (
           <NavTab
             key={tab.id}
             tab={tab}
