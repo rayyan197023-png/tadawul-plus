@@ -474,3 +474,276 @@ export function compareWithBenchmark(backtestResult, benchmarkResult) {
     winRateDiff: +(strategy.winRate - bench.winRate).toFixed(1),
   };
 }
+
+/* ══════════════════════════════════════════════════════════
+   🎰 Monte Carlo Simulation
+   Bootstrap Resampling (Efron 1979)
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * محاكاة Monte Carlo لنتائج Backtest
+ * 
+ * المنهجية:
+ * ① أخذ العوائد اليومية من Backtest الأصلي
+ * ② خلط الترتيب عشوائياً (Bootstrap)
+ * ③ حساب Equity Curve الجديد
+ * ④ تكرار N مرة
+ * ⑤ تحليل توزيع النتائج
+ * 
+ * @param {Object} backtestResult - نتيجة backtest()
+ * @param {number} iterations - عدد المحاكيات (10,000 افتراضي)
+ * @returns {Object} نتائج Monte Carlo
+ */
+export function monteCarloSimulation(backtestResult, iterations) {
+  iterations = iterations || 10000;
+  
+  if (!backtestResult || !backtestResult.success) {
+    return { error: 'نتائج Backtest غير صالحة', success: false };
+  }
+
+  var dailyReturns = backtestResult.dailyReturns || [];
+  if (dailyReturns.length < 30) {
+    return { error: 'بيانات غير كافية (30 يوم على الأقل)', success: false };
+  }
+
+  var initialCapital = backtestResult.config.initialCapital;
+  var totalDays = dailyReturns.length;
+
+  // ① تشغيل المحاكاة
+  var allResults = [];
+  var allMaxDrawdowns = [];
+  var allSharpes = [];
+  var allFinalValues = [];
+
+  for (var sim = 0; sim < iterations; sim++) {
+    // خلط العوائد (Bootstrap with replacement)
+    var shuffledReturns = [];
+    for (var d = 0; d < totalDays; d++) {
+      var randIdx = Math.floor(Math.random() * totalDays);
+      shuffledReturns.push(dailyReturns[randIdx]);
+    }
+
+    // حساب Equity Curve
+    var value = initialCapital;
+    var peak = value;
+    var maxDD = 0;
+
+    for (var t = 0; t < shuffledReturns.length; t++) {
+      value *= (1 + shuffledReturns[t]);
+      if (value > peak) peak = value;
+      var dd = (value - peak) / peak;
+      if (dd < maxDD) maxDD = dd;
+    }
+
+    var finalValue = value;
+    var totalReturn = (finalValue / initialCapital) - 1;
+    var years = totalDays / 252;
+    var annualReturn = years > 0 ? Math.pow(1 + totalReturn, 1 / years) - 1 : 0;
+
+    // حساب Sharpe للسيناريو
+    var simMean = 0;
+    for (var m = 0; m < shuffledReturns.length; m++) simMean += shuffledReturns[m];
+    simMean /= shuffledReturns.length;
+
+    var simVar = 0;
+    for (var v = 0; v < shuffledReturns.length; v++) {
+      simVar += Math.pow(shuffledReturns[v] - simMean, 2);
+    }
+    var simStd = Math.sqrt(simVar / shuffledReturns.length);
+    var simVol = simStd * Math.sqrt(252);
+    var simSharpe = simVol > 0 ? (annualReturn - 0.06) / simVol : 0;
+
+    allResults.push(annualReturn * 100);
+    allMaxDrawdowns.push(maxDD * 100);
+    allSharpes.push(simSharpe);
+    allFinalValues.push(finalValue);
+  }
+
+  // ② ترتيب النتائج
+  allResults.sort(function(a, b) { return a - b; });
+  allMaxDrawdowns.sort(function(a, b) { return a - b; });
+  allSharpes.sort(function(a, b) { return a - b; });
+  allFinalValues.sort(function(a, b) { return a - b; });
+
+  // ③ حساب الإحصاءات
+  var median = allResults[Math.floor(iterations / 2)];
+  var mean = allResults.reduce(function(s, r) { return s + r; }, 0) / iterations;
+  
+  var positiveCount = allResults.filter(function(r) { return r > 0; }).length;
+  var probabilityOfProfit = (positiveCount / iterations) * 100;
+
+  // ④ Percentiles
+  function getPercentile(sortedArr, p) {
+    var idx = Math.floor((p / 100) * sortedArr.length);
+    if (idx >= sortedArr.length) idx = sortedArr.length - 1;
+    return sortedArr[idx];
+  }
+
+  // ⑤ تصنيف المخاطر
+  var riskRating;
+  var riskColor;
+  var riskLabel;
+  
+  if (probabilityOfProfit > 80 && getPercentile(allResults, 5) > 0) {
+    riskRating = 'excellent';
+    riskColor = 'mint';
+    riskLabel = 'مخاطر منخفضة جداً';
+  } else if (probabilityOfProfit > 70) {
+    riskRating = 'good';
+    riskColor = 'mint';
+    riskLabel = 'مخاطر منخفضة';
+  } else if (probabilityOfProfit > 60) {
+    riskRating = 'moderate';
+    riskColor = 'amber';
+    riskLabel = 'مخاطر متوسطة';
+  } else if (probabilityOfProfit > 50) {
+    riskRating = 'elevated';
+    riskColor = 'amber';
+    riskLabel = 'مخاطر مرتفعة';
+  } else {
+    riskRating = 'high';
+    riskColor = 'coral';
+    riskLabel = 'مخاطر عالية جداً';
+  }
+
+  // ⑥ توزيع النتائج (20 bin)
+  var minResult = allResults[0];
+  var maxResult = allResults[allResults.length - 1];
+  var numBins = 20;
+  var binWidth = (maxResult - minResult) / numBins;
+  
+  var distribution = [];
+  for (var b = 0; b < numBins; b++) {
+    var binStart = minResult + b * binWidth;
+    var binEnd = binStart + binWidth;
+    var count = 0;
+    allResults.forEach(function(r) {
+      if (r >= binStart && r < binEnd) count++;
+      else if (b === numBins - 1 && r === binEnd) count++;
+    });
+    distribution.push({
+      start: +binStart.toFixed(2),
+      end: +binEnd.toFixed(2),
+      midpoint: +((binStart + binEnd) / 2).toFixed(2),
+      count: count,
+      pct: +((count / iterations) * 100).toFixed(1),
+      isNegative: (binStart + binEnd) / 2 < 0,
+    });
+  }
+
+  return {
+    success: true,
+    iterations: iterations,
+    
+    // إحصاءات العائد
+    returns: {
+      mean: +mean.toFixed(2),
+      median: +median.toFixed(2),
+      min: +minResult.toFixed(2),
+      max: +maxResult.toFixed(2),
+      percentile5: +getPercentile(allResults, 5).toFixed(2),
+      percentile10: +getPercentile(allResults, 10).toFixed(2),
+      percentile25: +getPercentile(allResults, 25).toFixed(2),
+      percentile75: +getPercentile(allResults, 75).toFixed(2),
+      percentile90: +getPercentile(allResults, 90).toFixed(2),
+      percentile95: +getPercentile(allResults, 95).toFixed(2),
+    },
+    
+    // إحصاءات Max Drawdown
+    maxDrawdowns: {
+      median: +allMaxDrawdowns[Math.floor(iterations / 2)].toFixed(2),
+      worst: +allMaxDrawdowns[0].toFixed(2),
+      percentile95: +allMaxDrawdowns[Math.floor(iterations * 0.05)].toFixed(2),
+    },
+    
+    // إحصاءات Sharpe
+    sharpes: {
+      median: +allSharpes[Math.floor(iterations / 2)].toFixed(2),
+      min: +allSharpes[0].toFixed(2),
+      max: +allSharpes[allSharpes.length - 1].toFixed(2),
+      percentile25: +getPercentile(allSharpes, 25).toFixed(2),
+      percentile75: +getPercentile(allSharpes, 75).toFixed(2),
+    },
+    
+    // إحصاءات القيمة النهائية
+    finalValues: {
+      median: +allFinalValues[Math.floor(iterations / 2)].toFixed(0),
+      min: +allFinalValues[0].toFixed(0),
+      max: +allFinalValues[allFinalValues.length - 1].toFixed(0),
+    },
+    
+    // الاحتماليات
+    probabilities: {
+      profit: +probabilityOfProfit.toFixed(1),
+      loss: +(100 - probabilityOfProfit).toFixed(1),
+      doubleMoney: +((allFinalValues.filter(function(v) { 
+        return v >= initialCapital * 2; 
+      }).length / iterations) * 100).toFixed(1),
+      halfMoney: +((allFinalValues.filter(function(v) { 
+        return v <= initialCapital * 0.5; 
+      }).length / iterations) * 100).toFixed(1),
+    },
+    
+    // التوزيع (للرسم)
+    distribution: distribution,
+    
+    // التقييم
+    riskRating: riskRating,
+    riskColor: riskColor,
+    riskLabel: riskLabel,
+    
+    // الملخص
+    interpretation: generateInterpretation(
+      mean, 
+      median, 
+      probabilityOfProfit, 
+      getPercentile(allResults, 5),
+      getPercentile(allResults, 95)
+    ),
+  };
+}
+
+/**
+ * توليد تفسير ذكي للنتائج
+ */
+function generateInterpretation(mean, median, probProfit, worst5, best95) {
+  var points = [];
+
+  // ① الاحتمالية العامة
+  if (probProfit > 85) {
+    points.push('🎯 احتمالية الربح عالية جداً (' + probProfit.toFixed(0) + '%)');
+  } else if (probProfit > 70) {
+    points.push('✅ احتمالية الربح جيدة (' + probProfit.toFixed(0) + '%)');
+  } else if (probProfit > 55) {
+    points.push('⚖️ احتمالية الربح متوسطة (' + probProfit.toFixed(0) + '%)');
+  } else {
+    points.push('⚠️ احتمالية الربح منخفضة (' + probProfit.toFixed(0) + '%)');
+  }
+
+  // ② السيناريو الأسوأ
+  if (worst5 > 0) {
+    points.push('🛡️ حتى في أسوأ 5% من الحالات، تحقق ربح');
+  } else if (worst5 > -10) {
+    points.push('💡 في أسوأ 5% من الحالات، الخسارة محدودة (' + worst5.toFixed(1) + '%)');
+  } else {
+    points.push('⚠️ في أسوأ 5% من الحالات، خسارة كبيرة (' + worst5.toFixed(1) + '%)');
+  }
+
+  // ③ السيناريو الأفضل
+  if (best95 > 30) {
+    points.push('🚀 في أفضل 5% من الحالات، أرباح استثنائية (' + best95.toFixed(1) + '%)');
+  } else if (best95 > 15) {
+    points.push('📈 في أفضل 5% من الحالات، أرباح ممتازة (' + best95.toFixed(1) + '%)');
+  }
+
+  // ④ الوسيط vs المتوسط (skewness)
+  var skewness = mean - median;
+  if (skewness > 2) {
+    points.push('📊 التوزيع مائل إيجابياً -- أرباح كبيرة نادرة');
+  } else if (skewness < -2) {
+    points.push('📊 التوزيع مائل سلبياً -- خسائر كبيرة نادرة ممكنة');
+  }
+
+  return points;
+}
+
