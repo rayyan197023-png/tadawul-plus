@@ -3441,6 +3441,128 @@ export function generateDrawdownChart(positions, days) {
   };
 }
 
+/**
+ * توليد بيانات جدول العوائد الشهرية (Heatmap)
+ * 
+ * المنهجية:
+ * ① تجميع العوائد حسب الشهر
+ * ② تنظيمها في مصفوفة (سنوات × أشهر)
+ * ③ حساب ملخصات
+ * 
+ * @param {Array} positions - مع bars لكل سهم
+ * @param {number} days - عدد الأيام (افتراضي 365)
+ * @returns {Object} {months, stats}
+ */
+export function generateMonthlyReturnsHeatmap(positions, days) {
+  if (!positions || positions.length === 0) {
+    return { months: [], stats: {} };
+  }
+  days = days || 365;
+
+  // ① حساب الأوزان
+  var weights = {};
+  var totalVal = 0;
+  positions.forEach(function(p) { totalVal += p.value || 0; });
+  positions.forEach(function(p) {
+    weights[p.sym] = (p.value || 0) / totalVal;
+  });
+
+  // ② حساب العوائد اليومية
+  var portfolioReturns = calcPortfolioReturns(positions, weights);
+  if (portfolioReturns.length < 20) {
+    return { months: [], stats: {} };
+  }
+
+  // ③ بناء تواريخ لكل عائد
+  var today = new Date();
+  var dailyData = [];
+  for (var i = 0; i < portfolioReturns.length; i++) {
+    var daysAgo = portfolioReturns.length - 1 - i;
+    var date = new Date(today);
+    date.setDate(date.getDate() - daysAgo);
+    dailyData.push({
+      date: date,
+      return: portfolioReturns[i],
+    });
+  }
+
+  // ④ تجميع العوائد شهرياً
+  var monthlyMap = {}; // "2026-03" → [returns array]
+  
+  dailyData.forEach(function(d) {
+    var year = d.date.getFullYear();
+    var month = d.date.getMonth() + 1; // 1-12
+    var key = year + '-' + (month < 10 ? '0' + month : month);
+    
+    if (!monthlyMap[key]) {
+      monthlyMap[key] = {
+        year: year,
+        month: month,
+        returns: [],
+      };
+    }
+    monthlyMap[key].returns.push(d.return);
+  });
+
+  // ⑤ حساب عائد مركب لكل شهر
+  var monthlyArray = [];
+  Object.keys(monthlyMap).forEach(function(key) {
+    var m = monthlyMap[key];
+    // Compound Return = Π(1 + r_i) - 1
+    var compound = 1;
+    m.returns.forEach(function(r) {
+      compound *= (1 + r);
+    });
+    var monthReturn = compound - 1;
+    
+    monthlyArray.push({
+      key: key,
+      year: m.year,
+      month: m.month,
+      return: +(monthReturn * 100).toFixed(2),
+      dayCount: m.returns.length,
+    });
+  });
+
+  // ترتيب زمنياً
+  monthlyArray.sort(function(a, b) {
+    return a.key.localeCompare(b.key);
+  });
+
+  // ⑥ حساب الإحصاءات
+  var stats = {
+    totalMonths: monthlyArray.length,
+    positiveMonths: 0,
+    negativeMonths: 0,
+    bestMonth: null,
+    worstMonth: null,
+    avgReturn: 0,
+  };
+
+  var sum = 0;
+  monthlyArray.forEach(function(m) {
+    if (m.return > 0) stats.positiveMonths++;
+    if (m.return < 0) stats.negativeMonths++;
+    if (!stats.bestMonth || m.return > stats.bestMonth.return) {
+      stats.bestMonth = m;
+    }
+    if (!stats.worstMonth || m.return < stats.worstMonth.return) {
+      stats.worstMonth = m;
+    }
+    sum += m.return;
+  });
+  stats.avgReturn = monthlyArray.length > 0 
+    ? +(sum / monthlyArray.length).toFixed(2) 
+    : 0;
+  stats.winRate = monthlyArray.length > 0
+    ? +((stats.positiveMonths / monthlyArray.length) * 100).toFixed(0)
+    : 0;
+
+  return {
+    months: monthlyArray,
+    stats: stats,
+  };
+}
 /* ══════════════════════════════════════════════════════════
    ⑥ دوال التصدير (للاستخدام في الشاشة)
 ═══════════════════════════════════════════════════════════ */
