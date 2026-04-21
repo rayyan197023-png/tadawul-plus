@@ -33,6 +33,7 @@ const TABS = [
   { id:"news",      label:"الأخبار",  Icon:Newspaper,  accent:C.gold, glow:"rgba(240,192,80,0.4)", glowBg:"rgba(240,192,80,0.07)", badge:3 },
   { id:"ai",        label:"تحليل AI", Icon:Sparkles,   accent:C.mint, glow:"rgba(30,230,138,0.4)", glowBg:"rgba(30,230,138,0.07)", isAI:true },
   { id:"more",      label:"المزيد",   Icon:LayoutGrid, accent:C.gold, glow:"rgba(240,192,80,0.4)", glowBg:"rgba(240,192,80,0.07)" },
+    { id:"backtest", label:"مختبر الاستراتيجيات", Icon:LayoutGrid, accent:C.gold, glow:"rgba(240,192,80,0.4)", glowBg:"rgba(240,192,80,0.07)", hidden:true },
 ];
 
 function useSpring(target, { stiffness = 320, damping = 28, mass = 1, onSettle } = {}) {
