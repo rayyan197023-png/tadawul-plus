@@ -469,7 +469,7 @@ export default function RebalancingScreen() {
   // جلب المحفظة من localStorage
   const positions = useMemo(() => {
     try {
-      const raw = typeof window !== 'undefined' && window.localStorage.getItem('tp_positions_v2');
+      const raw = typeof window !== 'undefined' && window.localStorage.getItem('tp_port')
       if (!raw) return [];
       const parsed = JSON.parse(raw);
       
