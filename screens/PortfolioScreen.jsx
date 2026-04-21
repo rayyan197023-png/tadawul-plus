@@ -22,10 +22,11 @@ import { useHaptic } from '../hooks/useHaptic';
 import { genBars, stockHealth } from '../engines/analysisEngine';
 import { analyzePortfolio, addIntelligenceLayer, generatePortfolioValueChart } from '../engines/portfolioEngine';
 import RiskDashboard from '../components/RiskDashboard';
+import PortfolioValueChart from '../components/charts/PortfolioValueChart';
 import { RISK_FREE_RATE, HEALTH_GRADES } from '../constants/portfolioConfig';
 import { STOCKS } from '../constants/stocksData';
 import { useNav } from '../store';
-import PortfolioValueChart from '../components/charts/PortfolioValueChart';
+
 /* ======================================================
    محفظة تداول+ - Terminal Obsidian x Saudi Gold
    نفس DNA الرئيسية بالضبط
