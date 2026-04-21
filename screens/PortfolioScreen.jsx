@@ -1484,7 +1484,9 @@ useEffect(() => {
 
               {/* 📊 رسم توزيع VaR */}
               {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.varDistribution && portfolioAnalysis.chartData.varDistribution.bins && portfolioAnalysis.chartData.varDistribution.bins.length >= 3 && (
-                <VaRDistributionChart data={portfolioAnalysis.chartData.varDistribution} />
+                            <VaRDistributionChart data={portfolioAnalysis.chartData.varDistribution} />
+              )}
+              </>
               )}
              
               {portfolioAnalysis && <RiskDashboard analysis={portfolioAnalysis} />}
