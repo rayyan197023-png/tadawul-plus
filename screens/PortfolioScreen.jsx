@@ -25,7 +25,7 @@ import RiskDashboard from '../components/RiskDashboard';
 import { RISK_FREE_RATE, HEALTH_GRADES } from '../constants/portfolioConfig';
 import { STOCKS } from '../constants/stocksData';
 import { useNav } from '../store';
-
+import PortfolioValueChart from '../components/charts/PortfolioValueChart';
 /* ======================================================
    محفظة تداول+ - Terminal Obsidian x Saudi Gold
    نفس DNA الرئيسية بالضبط
