@@ -3563,6 +3563,120 @@ export function generateMonthlyReturnsHeatmap(positions, days) {
     stats: stats,
   };
 }
+
+/**
+ * توليد بيانات Risk-Return Scatter Plot
+ * 
+ * المنهجية (Markowitz 1952 - Nobel 1990):
+ * لكل سهم: نحسب العائد السنوي والتذبذب السنوي
+ * ثم نرسم النقاط على محورين
+ * 
+ * + محفظتك + TASI كنقاط مرجعية
+ * 
+ * @param {Array} positions - مع bars لكل سهم
+ * @param {Object} analysisData - نتيجة analyzePortfolio
+ * @returns {Object} {stocks, portfolio, benchmark, quadrants}
+ */
+export function generateRiskReturnScatter(positions, analysisData) {
+  if (!positions || positions.length === 0) {
+    return { stocks: [], portfolio: null, benchmark: null };
+  }
+
+  var scatterData = [];
+
+  // ① حساب Risk-Return لكل سهم
+  positions.forEach(function(p) {
+    if (!p.bars || p.bars.length < 10) return;
+
+    // حساب العوائد اليومية للسهم
+    var returns = simpleReturns(p.bars);
+    if (returns.length < 5) return;
+
+    // المتوسط والتذبذب
+    var meanDaily = mean(returns);
+    var stdDaily = std(returns);
+
+    // تحويل سنوي
+    var annualReturn = meanDaily * 252;
+    var annualVol = stdDaily * Math.sqrt(252);
+
+    // Sharpe Ratio
+    var sharpe = annualVol > 0 
+      ? (annualReturn - 0.06) / annualVol  // 6% risk-free
+      : 0;
+
+    // تصنيف Quadrant
+    var quadrant;
+    if (annualReturn >= 0.15 && annualVol < 0.25) {
+      quadrant = 'nirvana'; // نجم: عائد عالٍ، مخاطرة منخفضة
+    } else if (annualReturn >= 0.10 && annualVol >= 0.25) {
+      quadrant = 'aggressive'; // عدواني: عائد عالٍ، مخاطرة عالية
+    } else if (annualReturn < 0.10 && annualVol < 0.25) {
+      quadrant = 'defensive'; // دفاعي: عائد منخفض، مخاطرة منخفضة
+    } else {
+      quadrant = 'avoid'; // تجنب: عائد منخفض، مخاطرة عالية
+    }
+
+    scatterData.push({
+      sym: p.sym,
+      name: p.stk ? p.stk.name : p.sym,
+      risk: +(annualVol * 100).toFixed(2),
+      return: +(annualReturn * 100).toFixed(2),
+      sharpe: +sharpe.toFixed(2),
+      weight: p.value ? +((p.value / analysisData.totalValue) * 100).toFixed(1) : 0,
+      quadrant: quadrant,
+      type: 'stock',
+    });
+  });
+
+  // ② إضافة نقطة المحفظة
+  var portfolio = null;
+  if (analysisData && analysisData.performance) {
+    portfolio = {
+      sym: 'محفظتك',
+      name: 'محفظتك',
+      risk: +((analysisData.performance.volatility || 0) * 100).toFixed(2),
+      return: +((analysisData.performance.annualReturn || 0) * 100).toFixed(2),
+      sharpe: analysisData.performance.sharpe || 0,
+      weight: 100,
+      type: 'portfolio',
+    };
+  }
+
+  // ③ إضافة نقطة TASI (متوسط الأسهم كمرجع اصطناعي)
+  var benchmark = null;
+  if (scatterData.length > 0) {
+    var avgRisk = scatterData.reduce(function(s, d) { return s + d.risk; }, 0) / scatterData.length;
+    var avgReturn = scatterData.reduce(function(s, d) { return s + d.return; }, 0) / scatterData.length;
+    benchmark = {
+      sym: 'TASI',
+      name: 'تاسي',
+      risk: +avgRisk.toFixed(2),
+      return: +avgReturn.toFixed(2),
+      sharpe: 0,
+      type: 'benchmark',
+    };
+  }
+
+  // ④ حساب إحصاءات القطاعات
+  var quadrantCounts = {
+    nirvana: 0,
+    aggressive: 0,
+    defensive: 0,
+    avoid: 0,
+  };
+  scatterData.forEach(function(d) {
+    quadrantCounts[d.quadrant]++;
+  });
+
+  return {
+    stocks: scatterData,
+    portfolio: portfolio,
+    benchmark: benchmark,
+    quadrantCounts: quadrantCounts,
+    totalStocks: scatterData.length,
+  };
+}
 /* ══════════════════════════════════════════════════════════
    ⑥ دوال التصدير (للاستخدام في الشاشة)
 ═══════════════════════════════════════════════════════════ */
