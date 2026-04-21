@@ -939,8 +939,17 @@ useEffect(() => {
         stk: p.stk,
       };
     });
-        var analysis = analyzePortfolio(positionsWithBars, []);
-    return addIntelligenceLayer(analysis, positionsWithBars, stockHealth);
+            var analysis = analyzePortfolio(positionsWithBars, []);
+    analysis = addIntelligenceLayer(analysis, positionsWithBars, stockHealth);
+    // ⭐ بيانات الرسم البياني
+    analysis.chartData = {
+      portfolioValue: generatePortfolioValueChart(
+        positionsWithBars, 
+        analysis.totalValue, 
+        60
+      ),
+    };
+    return analysis;
   }, [positions]);
     
 
