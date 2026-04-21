@@ -18,7 +18,7 @@ import { usePullToRefresh }   from '../hooks/usePullToRefresh';
 import config from '../constants/config';
 import { useMarketBridge } from '../hooks/useMarketBridge';
 import { calcEMA } from '../engines/technicalEngine';
-import BacktestScreen from './BacktestScreen';
+
 
 
 /* ─── Design tokens from screenshots ─── */
