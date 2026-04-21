@@ -1467,7 +1467,7 @@ useEffect(() => {
               )}
 
               {/* 📉 رسم بياني: Drawdown */}
-              {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.drawdown && portfolioAnalysis.chartData.drawdown.length > 0 && (
+                           {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.drawdown && portfolioAnalysis.chartData.drawdown.data && portfolioAnalysis.chartData.drawdown.data.length > 0 && (
                 <DrawdownChart data={portfolioAnalysis.chartData.drawdown} />
               )}
 
