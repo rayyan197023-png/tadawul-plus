@@ -1242,7 +1242,7 @@ useEffect(() => {
             </button>
             
             <button
-              onClick={function(){alert('Rebalancing Assistant قريباً 🚀');}}
+            onClick={function(){setTab(TAB_IDS.REBALANCING);}}
               style={{
                 flex:1,
                 padding:"14px 10px",
