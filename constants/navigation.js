@@ -60,12 +60,20 @@ export const TABS = [
     glowBg:  'rgba(30,230,138,0.07)',
     isAI:    true,
   },
-  {
+    {
     id:      TAB_IDS.MORE,
     label:   'المزيد',
     accent:  '#f0c050',
     glow:    'rgba(240,192,80,0.4)',
     glowBg:  'rgba(240,192,80,0.07)',
+  },
+  {
+    id:       TAB_IDS.BACKTEST,
+    label:    'مختبر الاستراتيجيات',
+    accent:   '#f0c050',
+    glow:     'rgba(240,192,80,0.4)',
+    glowBg:   'rgba(240,192,80,0.07)',
+    hidden:   true,  // 🔒 مخفية من الشريط السفلي
   },
 ];
 
