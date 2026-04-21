@@ -11,6 +11,7 @@ import { useHaptic } from './hooks/useHaptic';
 import { colors } from './theme/tokens';
 import { getGlobalStyles } from './theme/globalStyles';
 import PWAPrompt from './components/PWAPrompt';
+import BacktestScreen from './screens/BacktestScreen';
 const ChartScreen = lazy(() => import('./features/chart/ChartScreen'));
 const C = colors;
 
