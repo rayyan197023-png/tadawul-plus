@@ -305,4 +305,417 @@ export default function BacktestScreen() {
       <div style={{
         background: "linear-gradient(145deg," + C.layer1 + "," + C.layer2 + ")",
         borderRadius: 14,
-        border: "1px solid " + C.line​​​​​​​​​​​​​​​​
+        border: "1px solid " + C.line + "44",
+        padding: "14px 12px",
+        marginBottom: 12,
+      }}>
+        <div style={{
+          fontSize: 11,
+          color: C.gold,
+          fontWeight: 800,
+          letterSpacing: "1px",
+          marginBottom: 10,
+        }}>
+          🎯 اختر وضع Backtest
+        </div>
+
+        {/* Mode 1: محفظتي */}
+        <ModeCard
+          icon="💼"
+          title="محفظتي الحالية"
+          description={hasPortfolio 
+            ? "اختبار محفظتك الفعلية (" + positions.length + " أسهم)" 
+            : "⚠️ المحفظة فارغة -- أضف أسهماً أولاً"}
+          question="كيف كانت محفظتي ستؤدي تاريخياً؟"
+          color={C.mint}
+          active={config.mode === 'portfolio'}
+          onClick={function() { 
+            if (hasPortfolio) {
+              setConfig(Object.assign({}, config, { mode: 'portfolio' })); 
+            }
+          }}
+        />
+
+        {/* Mode 2: قائمة التحليل */}
+        <ModeCard
+          icon="🔍"
+          title="قائمة التحليل"
+          description={"استراتيجية الطبقات التسع على 15 سهم مختار"}
+          question="هل الطبقات التسع دقيقة فعلاً؟"
+          color={C.gold}
+          active={config.mode === 'analysis'}
+          onClick={function() { 
+            setConfig(Object.assign({}, config, { mode: 'analysis' })); 
+          }}
+        />
+
+        {/* Mode 3: السوق بالكامل */}
+        <ModeCard
+          icon="🌐"
+          title="السوق بالكامل"
+          description="Tadawul + Sector Rotation على 30 سهم من كل القطاعات"
+          question="هل النظام يكتشف أفضل الفرص في السوق؟"
+          color={C.teal}
+          active={config.mode === 'market'}
+          onClick={function() { 
+            setConfig(Object.assign({}, config, { mode: 'market' })); 
+          }}
+        />
+      </div>
+
+      {/* ⚙️ Config */}
+      <div style={{
+        background: "linear-gradient(145deg," + C.layer1 + "," + C.layer2 + ")",
+        borderRadius: 14,
+        border: "1px solid " + C.line + "44",
+        padding: "14px 12px",
+        marginBottom: 12,
+      }}>
+        <div style={{
+          fontSize: 11,
+          color: C.plasma,
+          fontWeight: 800,
+          letterSpacing: "1px",
+          marginBottom: 10,
+        }}>
+          ⚙️ الإعدادات
+        </div>
+
+        {/* رأس المال */}
+        <div style={{ marginBottom: 10 }}>
+          <div style={{
+            fontSize: 10,
+            color: C.smoke,
+            marginBottom: 4,
+          }}>
+            💰 رأس المال
+          </div>
+          <div style={{ display: "flex", gap: 6 }}>
+            {[50000, 100000, 250000, 500000].map(function(amt) {
+              return (
+                <button
+                  key={amt}
+                  onClick={function() { 
+                    setConfig(Object.assign({}, config, { initialCapital: amt })); 
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: "8px 4px",
+                    background: config.initialCapital === amt ? C.gold + "22" : C.void,
+                    border: "1px solid " + (config.initialCapital === amt ? C.gold : C.line) + "44",
+                    borderRadius: 6,
+                    color: config.initialCapital === amt ? C.gold : C.smoke,
+                    fontSize: 10,
+                    fontWeight: 800,
+                    cursor: "pointer",
+                    fontFamily: "IBM Plex Mono,monospace",
+                  }}
+                >
+                  {amt >= 1000 ? (amt / 1000) + 'K' : amt}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* الفترة */}
+        <div style={{ marginBottom: 10 }}>
+          <div style={{
+            fontSize: 10,
+            color: C.smoke,
+            marginBottom: 4,
+          }}>
+            📅 الفترة
+          </div>
+          <div style={{ display: "flex", gap: 6 }}>
+            {[
+              { days: 60, label: '3 أشهر' },
+              { days: 126, label: '6 أشهر' },
+              { days: 252, label: 'سنة' },
+              { days: 504, label: 'سنتين' },
+            ].map(function(opt) {
+              return (
+                <button
+                  key={opt.days}
+                  onClick={function() { 
+                    setConfig(Object.assign({}, config, { days: opt.days })); 
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: "8px 4px",
+                    background: config.days === opt.days ? C.teal + "22" : C.void,
+                    border: "1px solid " + (config.days === opt.days ? C.teal : C.line) + "44",
+                    borderRadius: 6,
+                    color: config.days === opt.days ? C.teal : C.smoke,
+                    fontSize: 10,
+                    fontWeight: 800,
+                    cursor: "pointer",
+                  }}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Checkboxes */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12 }}>
+          <label style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "6px 8px",
+            background: C.void,
+            borderRadius: 6,
+            cursor: "pointer",
+          }}>
+            <input
+              type="checkbox"
+              checked={config.includeCosts}
+              onChange={function(e) { 
+                setConfig(Object.assign({}, config, { includeCosts: e.target.checked })); 
+              }}
+              style={{ cursor: "pointer" }}
+            />
+            <span style={{ fontSize: 11, color: C.mist, fontWeight: 700 }}>
+              💸 تطبيق عمولات التداول (0.155%)
+            </span>
+          </label>
+
+          <label style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "6px 8px",
+            background: C.void,
+            borderRadius: 6,
+            cursor: "pointer",
+          }}>
+            <input
+              type="checkbox"
+              checked={config.runMonteCarlo}
+              onChange={function(e) { 
+                setConfig(Object.assign({}, config, { runMonteCarlo: e.target.checked })); 
+              }}
+              style={{ cursor: "pointer" }}
+            />
+            <span style={{ fontSize: 11, color: C.mist, fontWeight: 700 }}>
+              🎰 Monte Carlo ({config.monteCarloIterations.toLocaleString()} محاكاة)
+            </span>
+          </label>
+        </div>
+
+        {/* زر التشغيل */}
+        <button
+          onClick={runBacktest}
+          disabled={isRunning || (config.mode === 'portfolio' && !hasPortfolio)}
+          style={{
+            width: "100%",
+            padding: "12px",
+            background: isRunning || (config.mode === 'portfolio' && !hasPortfolio)
+              ? C.line 
+              : "linear-gradient(135deg," + C.gold + "," + C.goldL + ")",
+            border: "none",
+            borderRadius: 10,
+            color: isRunning || (config.mode === 'portfolio' && !hasPortfolio) ? C.smoke : C.ink,
+            fontSize: 13,
+            fontWeight: 900,
+            cursor: isRunning ? "not-allowed" : "pointer",
+            boxShadow: isRunning ? "none" : "0 4px 12px " + C.gold + "33",
+          }}
+        >
+          {isRunning ? "⏳ جاري التشغيل..." : "🚀 تشغيل Backtest"}
+        </button>
+      </div>
+
+      {/* Loading */}
+      {isRunning && (
+        <div style={{
+          background: C.layer1,
+          borderRadius: 12,
+          padding: 40,
+          textAlign: "center",
+          marginBottom: 12,
+        }}>
+          <div style={{
+            fontSize: 14,
+            color: C.gold,
+            marginBottom: 10,
+          }}>
+            🧪 جاري تشغيل المحاكاة...
+          </div>
+          <div style={{
+            fontSize: 10,
+            color: C.smoke,
+          }}>
+            يُحلّل {config.days} يوم تداول
+            {config.runMonteCarlo && ' · ' + config.monteCarloIterations.toLocaleString() + ' سيناريو'}
+          </div>
+        </div>
+      )}
+
+      {/* Error */}
+      {results && results.error && (
+        <div style={{
+          background: C.coral + "15",
+          border: "1px solid " + C.coral + "33",
+          borderRadius: 12,
+          padding: 20,
+          textAlign: "center",
+          color: C.coral,
+          fontSize: 12,
+          marginBottom: 12,
+        }}>
+          ⚠️ {results.error}
+        </div>
+      )}
+
+      {/* النتائج */}
+      {results && !results.error && results.strategy && results.strategy.success && (
+        <>
+          {/* Mode Label */}
+          <div style={{
+            background: C.gold + "12",
+            border: "1px solid " + C.gold + "33",
+            borderRadius: 10,
+            padding: "8px 12px",
+            marginBottom: 12,
+            textAlign: "center",
+          }}>
+            <div style={{
+              fontSize: 10,
+              color: C.gold,
+              fontWeight: 800,
+              letterSpacing: "1px",
+              marginBottom: 2,
+            }}>
+              🎯 نتائج Backtest
+            </div>
+            <div style={{
+              fontSize: 12,
+              color: C.snow,
+              fontWeight: 900,
+            }}>
+              {results.modeLabel}
+            </div>
+          </div>
+
+          {/* Equity Curve */}
+          <EquityCurveChart
+            equityCurve={results.strategy.equityCurve}
+            benchmarkCurve={results.benchmark && results.benchmark.success 
+              ? results.benchmark.equityCurve.map(function(e) { 
+                  return { date: e.date, value: e.value }; 
+                })
+              : []}
+            initialCapital={config.initialCapital}
+            trades={results.strategy.trades}
+            showTrades={false}
+          />
+
+          {/* Backtest Results */}
+          <BacktestResultsCard
+            result={results.strategy}
+            benchmarkResult={results.benchmark}
+            comparison={results.comparison}
+          />
+
+          {/* Monte Carlo */}
+          {results.monteCarlo && results.monteCarlo.success && (
+            <MonteCarloChart data={results.monteCarlo} />
+          )}
+
+          {/* Trade Log */}
+          {results.strategy.trades && results.strategy.trades.length > 0 && (
+            <div style={{
+              background: "linear-gradient(145deg," + C.layer1 + "," + C.layer2 + ")",
+              borderRadius: 14,
+              border: "1px solid " + C.line + "44",
+              padding: "14px 12px",
+              marginBottom: 12,
+            }}>
+              <div style={{
+                fontSize: 11,
+                color: C.plasma,
+                fontWeight: 800,
+                letterSpacing: "1px",
+                marginBottom: 10,
+              }}>
+                📋 سجل الصفقات (آخر 15)
+              </div>
+              
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {results.strategy.trades.slice(-15).reverse().map(function(trade, i) {
+                  return (
+                    <div key={'trade-' + i} style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "6px 8px",
+                      background: C.void,
+                      borderRadius: 6,
+                      borderLeft: "2px solid " + (trade.action === 'buy' ? C.mint : C.coral),
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{
+                          fontSize: 9,
+                          color: trade.action === 'buy' ? C.mint : C.coral,
+                          fontWeight: 800,
+                          padding: "2px 6px",
+                          background: (trade.action === 'buy' ? C.mint : C.coral) + "15",
+                          borderRadius: 4,
+                        }}>
+                          {trade.action === 'buy' ? '🟢 شراء' : '🔴 بيع'}
+                        </span>
+                        <span style={{ fontSize: 10, color: C.snow, fontWeight: 700 }}>
+                          {trade.sym}
+                        </span>
+                      </div>
+                      <div style={{ textAlign: "left" }}>
+                        <div style={{
+                          fontSize: 10,
+                          color: trade.pnl !== undefined 
+                            ? (trade.pnl >= 0 ? C.mint : C.coral)
+                            : C.snow,
+                          fontWeight: 800,
+                          fontFamily: "IBM Plex Mono,monospace",
+                        }}>
+                          {trade.pnl !== undefined 
+                            ? (trade.pnl >= 0 ? '+' : '') + trade.pnlPct + '%'
+                            : trade.value.toFixed(0)}
+                        </div>
+                        <div style={{ fontSize: 8, color: C.ash }}>
+                          {trade.date}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Info Footer */}
+      {!isRunning && !results && (
+        <div style={{
+          padding: "14px 12px",
+          background: C.void + "88",
+          borderRadius: 10,
+          border: "1px solid " + C.line + "22",
+          textAlign: "center",
+        }}>
+          <div style={{
+            fontSize: 11,
+            color: C.smoke,
+            lineHeight: 1.6,
+          }}>
+            💡 اختر وضعاً ثم اضغط "تشغيل Backtest"
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
