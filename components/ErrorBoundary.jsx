@@ -47,9 +47,37 @@ export default class ErrorBoundary extends Component {
         <div style={{ fontSize: 13, fontWeight: 700, color: C.textPrimary, marginBottom: 6 }}>
           تعذّر تحميل {label}
         </div>
-        <div style={{ fontSize: 11, color: C.textSecondary, marginBottom: 16, lineHeight: 1.6 }}>
-          {this.state.error?.message ?? 'خطأ غير متوقع'} {typeof window !== 'undefined' && window.__LAST_ERROR__}
-        </div>
+        <div style={{ 
+  fontSize: 11, 
+  color: '#ff5f6a', 
+  marginBottom: 16, 
+  lineHeight: 1.6,
+  textAlign: 'left',
+  direction: 'ltr',
+  background: 'rgba(255, 95, 106, 0.1)',
+  padding: 10,
+  borderRadius: 6,
+  maxHeight: 300,
+  overflow: 'auto',
+  fontFamily: 'monospace',
+  fontSize: 10,
+}}>
+  <strong style={{color: '#ff5f6a', fontSize: 12}}>🐛 Error:</strong>
+  <br/>
+  {this.state.error?.message ?? 'Unknown error'}
+  <br/><br/>
+  <strong style={{color: '#f0c050', fontSize: 11}}>Stack:</strong>
+  <br/>
+  <pre style={{fontSize: 9, whiteSpace: 'pre-wrap', wordBreak: 'break-word'}}>
+    {this.state.error?.stack ?? 'No stack trace'}
+  </pre>
+  <br/>
+  <strong style={{color: '#22d3ee', fontSize: 11}}>Component:</strong>
+  <br/>
+  <span style={{fontSize: 9}}>
+    {typeof window !== 'undefined' && window.__LAST_ERROR__}
+  </span>
+</div>
         <button
           onClick={() => this.setState({ hasError: false, error: null })}
           style={{
