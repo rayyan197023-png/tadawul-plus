@@ -1320,7 +1320,11 @@ useEffect(() => {
               {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.portfolioValue && portfolioAnalysis.chartData.portfolioValue.length > 0 && (
                 <PortfolioValueChart data={portfolioAnalysis.chartData.portfolioValue} />
               )}
-               
+ 
+              {/* 📉 رسم بياني: Drawdown History */}
+              {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.drawdown && portfolioAnalysis.chartData.drawdown.data && portfolioAnalysis.chartData.drawdown.data.length > 0 && (
+                <DrawdownChart data={portfolioAnalysis.chartData.drawdown} />
+              )}              
               {portfolioAnalysis && <RiskDashboard analysis={portfolioAnalysis} />}
              {sorted.map(function(p,i){return <Card key={p.sym} p={p} i={i} capital={capital} setSellSheet={setSellSheet} onEdit={function(pos){setEditPos(pos);}}/>;}) }
             </div>
