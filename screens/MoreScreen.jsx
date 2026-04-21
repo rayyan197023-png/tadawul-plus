@@ -11,6 +11,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { STOCKS } from '../constants/stocksData';
+import { useNav } from '../store/navStore';
+import { TAB_IDS } from '../constants/navigation';
 import { useSharedPrices } from '../store';
 import { useHaptic } from '../hooks/useHaptic';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
