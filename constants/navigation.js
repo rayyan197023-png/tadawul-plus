@@ -12,6 +12,7 @@ export const TAB_IDS = {
   NEWS:      'news',
   AI:        'ai',
   MORE:      'more',
+  BACKTEST:  'backtest',
 };
 
 export const TABS = [
