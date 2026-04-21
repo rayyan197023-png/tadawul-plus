@@ -21,7 +21,6 @@ const PortfolioScreen = lazy(() => import('./screens/PortfolioScreen'));
 const NewsScreen      = lazy(() => import('./screens/NewsScreen'));
 const AIScreen        = lazy(() => import('./screens/AIScreen'));
 const MoreScreen      = lazy(() => import('./screens/MoreScreen'));
-const BacktestScreen   = lazy(() => import('./screens/BacktestScreen'));
 const StockDetail     = lazy(() => import('./features/stock/StockDetail'));
 
 const SCREEN_MAP = {
