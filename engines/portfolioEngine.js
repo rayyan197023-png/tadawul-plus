@@ -3287,6 +3287,84 @@ export function addIntelligenceLayer(analysis, positionsWithBars, stockHealthFun
   return analysis;
 }
 
+/* ══════════════════════════════════════════════════════════
+   ㉕ Chart Data Generators -- بيانات الرسوم البيانية
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * توليد بيانات منحنى قيمة المحفظة عبر الزمن
+ * 
+ * المنهجية:
+ * ① حساب عوائد المحفظة اليومية
+ * ② بناء منحنى تراكمي من القيمة الحالية للخلف
+ * ③ بناء منحنى TASI Synthetic للمقارنة
+ * 
+ * @param {Array} positions - مع bars لكل سهم
+ * @param {number} currentValue - القيمة الحالية للمحفظة
+ * @param {number} days - عدد الأيام (افتراضي 60)
+ * @returns {Array} [{date, portfolio, benchmark, alpha}]
+ */
+export function generatePortfolioValueChart(positions, currentValue, days) {
+  if (!positions || positions.length === 0 || !currentValue) {
+    return [];
+  }
+  days = days || 60;
+
+  // ① حساب الأوزان
+  var weights = {};
+  var totalVal = 0;
+  positions.forEach(function(p) { totalVal += p.value || 0; });
+  positions.forEach(function(p) {
+    weights[p.sym] = (p.value || 0) / totalVal;
+  });
+
+  // ② حساب عوائد المحفظة اليومية
+  var portfolioReturns = calcPortfolioReturns(positions, weights);
+  
+  // ③ حساب عوائد TASI الاصطناعي
+  var tasiReturns = buildTasiSyntheticReturns(positions);
+
+  // ④ بناء المنحنيين (نبدأ من القيمة الحالية ونمشي للخلف)
+  var chartData = [];
+  var portfolioValue = currentValue;
+  var tasiValue = currentValue; // يبدأ من نفس النقطة للمقارنة
+
+  // نعكس العوائد لنبني من الماضي للحاضر
+  var numPoints = Math.min(portfolioReturns.length, tasiReturns.length, days);
+  
+  // قيم البداية (نحسبها بقسمة على حاصل ضرب 1+العوائد)
+  var portfolioStartValue = currentValue;
+  var tasiStartValue = currentValue;
+  
+  for (var i = 0; i < numPoints; i++) {
+    portfolioStartValue = portfolioStartValue / (1 + portfolioReturns[portfolioReturns.length - 1 - i]);
+    tasiStartValue = tasiStartValue / (1 + tasiReturns[tasiReturns.length - 1 - i]);
+  }
+
+  // الآن نبني المنحنى من البداية للنهاية
+  var currentPortfolio = portfolioStartValue;
+  var currentTasi = tasiStartValue;
+
+  for (var j = 0; j < numPoints; j++) {
+    var dateObj = new Date();
+    dateObj.setDate(dateObj.getDate() - (numPoints - j - 1));
+    
+    if (j > 0) {
+      currentPortfolio *= (1 + portfolioReturns[portfolioReturns.length - numPoints + j]);
+      currentTasi *= (1 + tasiReturns[tasiReturns.length - numPoints + j]);
+    }
+
+    chartData.push({
+      date: dateObj.getTime(),
+      dateLabel: (dateObj.getMonth() + 1) + '/' + dateObj.getDate(),
+      portfolio: Math.round(currentPortfolio),
+      benchmark: Math.round(currentTasi),
+      alpha: Math.round(currentPortfolio - currentTasi),
+    });
+  }
+
+  return chartData;
+}
 
 /* ══════════════════════════════════════════════════════════
    ⑥ دوال التصدير (للاستخدام في الشاشة)
