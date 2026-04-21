@@ -32,6 +32,7 @@ const SCREEN_MAP = {
   [TAB_IDS.NEWS]:      NewsScreen,
   [TAB_IDS.AI]:        AIScreen,
   [TAB_IDS.MORE]:      MoreScreen,
+  backtest:            BacktestScreen,
 };
 
 function Loader() {
