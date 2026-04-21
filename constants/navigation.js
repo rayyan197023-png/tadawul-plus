@@ -60,7 +60,7 @@ export const TABS = [
     glowBg:  'rgba(30,230,138,0.07)',
     isAI:    true,
   },
-    {
+      {
     id:      TAB_IDS.MORE,
     label:   'المزيد',
     accent:  '#f0c050',
