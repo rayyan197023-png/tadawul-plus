@@ -93,7 +93,7 @@ function Shell() {
     : activeStock;
 
   const tabDef = TABS.find(t => t.id === activeTab) ?? TABS[0];
-  const ActiveScreen = SCREEN_MAP[activeTab] ?? HomeScreen;
+  const ActiveScreen = BacktestScreen;
 
   return (
     <div style={{
