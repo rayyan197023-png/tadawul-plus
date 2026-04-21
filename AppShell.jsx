@@ -34,6 +34,7 @@ const SCREEN_MAP = {
   [TAB_IDS.AI]:        AIScreen,
   [TAB_IDS.MORE]:      MoreScreen,
     [TAB_IDS.BACKTEST]:  BacktestScreen,
+    [TAB_IDS.REBALANCING]: RebalancingScreen,
 };
 
 function Loader() {
