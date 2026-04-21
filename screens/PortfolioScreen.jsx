@@ -1333,7 +1333,12 @@ useEffect(() => {
               {/* 📅 جدول العوائد الشهرية */}
               {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.monthlyReturns && portfolioAnalysis.chartData.monthlyReturns.months && portfolioAnalysis.chartData.monthlyReturns.months.length > 0 && (
                 <MonthlyReturnsHeatmap data={portfolioAnalysis.chartData.monthlyReturns} />
-              )}              
+              )} 
+              
+              {/* 📊 رسم المخاطرة vs العائد */}
+              {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.riskReturn && portfolioAnalysis.chartData.riskReturn.stocks && portfolioAnalysis.chartData.riskReturn.stocks.length > 0 && (
+                <RiskReturnScatter data={portfolioAnalysis.chartData.riskReturn} />
+              )}             
               {portfolioAnalysis && <RiskDashboard analysis={portfolioAnalysis} />}
              {sorted.map(function(p,i){return <Card key={p.sym} p={p} i={i} capital={capital} setSellSheet={setSellSheet} onEdit={function(pos){setEditPos(pos);}}/>;}) }
             </div>
