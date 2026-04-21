@@ -1211,8 +1211,7 @@ useEffect(() => {
               <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:12,fontWeight:800,color:s.c}}>{s.v}</div>
             </div>
           );})}
-        </div>)}
-        <div 
+        </div>)} 
         {!headerMin && (
           <div style={{display:"flex",gap:10,marginTop:12,marginBottom:4}}>
             <button
