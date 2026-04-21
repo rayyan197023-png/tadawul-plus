@@ -1341,6 +1341,11 @@ useEffect(() => {
               {/* 📊 رسم المخاطرة vs العائد */}
               {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.riskReturn && portfolioAnalysis.chartData.riskReturn.stocks && portfolioAnalysis.chartData.riskReturn.stocks.length > 0 && (
                 <RiskReturnScatter data={portfolioAnalysis.chartData.riskReturn} />
+              )} 
+
+              {/* 🔗 مصفوفة الارتباط */}
+              {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.correlation && portfolioAnalysis.chartData.correlation.matrix && portfolioAnalysis.chartData.correlation.matrix.length >= 2 && (
+                <CorrelationHeatmap data={portfolioAnalysis.chartData.correlation} />
               )}             
               {portfolioAnalysis && <RiskDashboard analysis={portfolioAnalysis} />}
              {sorted.map(function(p,i){return <Card key={p.sym} p={p} i={i} capital={capital} setSellSheet={setSellSheet} onEdit={function(pos){setEditPos(pos);}}/>;}) }
