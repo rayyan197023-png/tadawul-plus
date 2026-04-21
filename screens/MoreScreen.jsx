@@ -35,7 +35,7 @@ export default function MoreScreen({
   commData: extCommData, setCommData: setExtCommData,
 } = {}) {
   const liveStocks = useSharedPrices();
-
+const { setTab } = useNav();
   // ── UX hooks ──────────────────────────────────────────────────
   const haptic  = useHaptic();
   const scrollRef = useRef(null);
