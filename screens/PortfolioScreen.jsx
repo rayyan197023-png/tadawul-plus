@@ -1212,7 +1212,63 @@ useEffect(() => {
             </div>
           );})}
         </div>)}
-        <div style={{display:"flex",gap:0,marginTop:8}}>
+        <div 
+        {!headerMin && (
+          <div style={{display:"flex",gap:10,marginTop:12,marginBottom:4}}>
+            <button
+              onClick={function(){switchTab("decisions");}}
+              style={{
+                flex:1,
+                padding:"14px 10px",
+                background:"linear-gradient(135deg,"+C.gold+"18,"+C.gold+"08)",
+                border:"1px solid "+C.gold+"33",
+                borderRadius:14,
+                cursor:"pointer",
+                display:"flex",
+                flexDirection:"column",
+                alignItems:"center",
+                gap:6,
+                boxShadow:"0 4px 12px "+C.gold+"15",
+                transition:"all 0.2s",
+              }}
+            >
+              <div style={{fontSize:22}}>🔍</div>
+              <div style={{fontSize:12,fontWeight:900,color:C.gold,fontFamily:"Cairo,sans-serif"}}>
+                التحليل
+              </div>
+              <div style={{fontSize:9,color:C.smoke,fontWeight:600}}>
+                9 طبقات
+              </div>
+            </button>
+            
+            <button
+              onClick={function(){alert('Rebalancing Assistant قريباً 🚀');}}
+              style={{
+                flex:1,
+                padding:"14px 10px",
+                background:"linear-gradient(135deg,"+C.electric+"18,"+C.electric+"08)",
+                border:"1px solid "+C.electric+"33",
+                borderRadius:14,
+                cursor:"pointer",
+                display:"flex",
+                flexDirection:"column",
+                alignItems:"center",
+                gap:6,
+                boxShadow:"0 4px 12px "+C.electric+"15",
+                transition:"all 0.2s",
+              }}
+            >
+              <div style={{fontSize:22}}>⚖️</div>
+              <div style={{fontSize:12,fontWeight:900,color:C.electric,fontFamily:"Cairo,sans-serif"}}>
+                توازن المحفظة
+              </div>
+              <div style={{fontSize:9,color:C.smoke,fontWeight:600}}>
+                قريباً ✨
+              </div>
+            </button>
+          </div>
+        )}
+        style={{display:"flex",gap:0,marginTop:8}}>
           {[{id:"decisions",l:"القرارات"},{id:"log",l:"السجل"},{id:"compare",l:"المقارنة"}].map(function(t){return(
             <button key={t.id} onClick={function(){switchTab(t.id);}} style={{flex:1,padding:"9px 0",background:"transparent",border:"none",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"Cairo,sans-serif",color:activeTab===t.id?C.snow:C.smoke,borderBottom:"2px solid "+(activeTab===t.id?C.gold:"transparent"),transition:"all .2s"}}>
               {t.l}
