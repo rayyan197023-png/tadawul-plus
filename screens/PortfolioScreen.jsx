@@ -1383,7 +1383,9 @@ useEffect(() => {
  
                
 
-               {/* ═══ لوحة المخاطر الشاملة ═══ */}
+                             {/* ═══ لوحة المخاطر الشاملة (قابلة للطي) ═══ */}
+              {showAdvanced && (
+              <>
               {/* 📈 رسم بياني: قيمة المحفظة عبر الزمن */}
               {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.portfolioValue && portfolioAnalysis.chartData.portfolioValue.length > 0 && (
                 <PortfolioValueChart data={portfolioAnalysis.chartData.portfolioValue} />
