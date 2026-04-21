@@ -13,6 +13,7 @@ export const TAB_IDS = {
   AI:        'ai',
   MORE:      'more',
   BACKTEST:  'backtest',
+  REBALANCING: 'rebalancing',
 };
 
 export const TABS = [
