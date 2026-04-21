@@ -23,6 +23,7 @@ import { genBars, stockHealth } from '../engines/analysisEngine';
 import { analyzePortfolio, addIntelligenceLayer, generatePortfolioValueChart } from '../engines/portfolioEngine';
 import RiskDashboard from '../components/RiskDashboard';
 import PortfolioValueChart from '../components/charts/PortfolioValueChart';
+import DrawdownChart from '../components/charts/DrawdownChart';
 import { RISK_FREE_RATE, HEALTH_GRADES } from '../constants/portfolioConfig';
 import { STOCKS } from '../constants/stocksData';
 import { useNav } from '../store';
