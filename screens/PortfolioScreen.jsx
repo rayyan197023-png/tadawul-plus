@@ -578,7 +578,7 @@ function SellSheet(props) {
 
 
 export default function PortfolioScreen() {
-  const { openStock } = useNav();
+  const { openStock, setTab } = useNav();
 
   // ── حساب بيانات الصحة من محرك التحليل الاحترافي ──────────────
   // allData: نفس البنية التي تنتجها AnalysisScreen
