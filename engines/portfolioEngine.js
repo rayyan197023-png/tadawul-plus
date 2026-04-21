@@ -3366,6 +3366,81 @@ export function generatePortfolioValueChart(positions, currentValue, days) {
   return chartData;
 }
 
+/**
+ * توليد بيانات منحنى Drawdown عبر الزمن
+ * 
+ * المنهجية (Kestner 2003):
+ * DD(t) = (V(t) - Peak(t)) / Peak(t)
+ * 
+ * يُظهر "أسوأ رحلة نفسية" للمستثمر
+ */
+export function generateDrawdownChart(positions, days) {
+  if (!positions || positions.length === 0) {
+    return { data: [], maxDrawdown: 0, maxDrawdownIdx: 0 };
+  }
+  days = days || 60;
+
+  // ① حساب الأوزان
+  var weights = {};
+  var totalVal = 0;
+  positions.forEach(function(p) { totalVal += p.value || 0; });
+  positions.forEach(function(p) {
+    weights[p.sym] = (p.value || 0) / totalVal;
+  });
+
+  // ② حساب عوائد المحفظة
+  var portfolioReturns = calcPortfolioReturns(positions, weights);
+  if (portfolioReturns.length < 2) {
+    return { data: [], maxDrawdown: 0, maxDrawdownIdx: 0 };
+  }
+
+  var numPoints = Math.min(portfolioReturns.length, days);
+  var startIdx = portfolioReturns.length - numPoints;
+
+  // ③ بناء منحنى القيمة التراكمية
+  var cumValue = [1.0];
+  for (var i = 0; i < numPoints; i++) {
+    cumValue.push(cumValue[cumValue.length - 1] * (1 + portfolioReturns[startIdx + i]));
+  }
+
+  // ④ تتبع القمم المتحركة
+  var runningMax = [cumValue[0]];
+  for (var j = 1; j < cumValue.length; j++) {
+    runningMax.push(Math.max(runningMax[j - 1], cumValue[j]));
+  }
+
+  // ⑤ حساب Drawdown في كل نقطة
+  var chartData = [];
+  var maxDD = 0;
+  var maxDDIdx = 0;
+
+  for (var k = 0; k < cumValue.length; k++) {
+    var dd = (cumValue[k] / runningMax[k]) - 1;
+    if (dd < maxDD) {
+      maxDD = dd;
+      maxDDIdx = k;
+    }
+
+    var dateObj = new Date();
+    dateObj.setDate(dateObj.getDate() - (cumValue.length - k - 1));
+
+    chartData.push({
+      date: dateObj.getTime(),
+      dateLabel: (dateObj.getMonth() + 1) + '/' + dateObj.getDate(),
+      drawdown: +(dd * 100).toFixed(2),
+      cumValue: +cumValue[k].toFixed(4),
+      peak: +runningMax[k].toFixed(4),
+    });
+  }
+
+  return {
+    data: chartData,
+    maxDrawdown: +(maxDD * 100).toFixed(2),
+    maxDrawdownIdx: maxDDIdx,
+    maxDrawdownDate: chartData[maxDDIdx] ? chartData[maxDDIdx].dateLabel : null,
+  };
+}
+
 /* ══════════════════════════════════════════════════════════
    ⑥ دوال التصدير (للاستخدام في الشاشة)
 ═══════════════════════════════════════════════════════════ */
