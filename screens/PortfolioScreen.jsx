@@ -1314,6 +1314,11 @@ useEffect(() => {
               </div>
  
                {/* ═══ لوحة المخاطر الشاملة ═══ */}
+              {/* 📈 رسم بياني: قيمة المحفظة عبر الزمن */}
+              {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.portfolioValue && portfolioAnalysis.chartData.portfolioValue.length > 0 && (
+                <PortfolioValueChart data={portfolioAnalysis.chartData.portfolioValue} />
+              )}
+               
               {portfolioAnalysis && <RiskDashboard analysis={portfolioAnalysis} />}
              {sorted.map(function(p,i){return <Card key={p.sym} p={p} i={i} capital={capital} setSellSheet={setSellSheet} onEdit={function(pos){setEditPos(pos);}}/>;}) }
             </div>
