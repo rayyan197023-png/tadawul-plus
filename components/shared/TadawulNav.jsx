@@ -34,6 +34,7 @@ const TABS = [
   { id:"ai",        label:"تحليل AI", Icon:Sparkles,   accent:C.mint, glow:"rgba(30,230,138,0.4)", glowBg:"rgba(30,230,138,0.07)", isAI:true },
   { id:"more",      label:"المزيد",   Icon:LayoutGrid, accent:C.gold, glow:"rgba(240,192,80,0.4)", glowBg:"rgba(240,192,80,0.07)" },
     { id:"backtest", label:"مختبر الاستراتيجيات", Icon:LayoutGrid, accent:C.gold, glow:"rgba(240,192,80,0.4)", glowBg:"rgba(240,192,80,0.07)", hidden:true },
+      { id:"rebalancing", label:"توازن المحفظة", Icon:LayoutGrid, accent:C.electric, glow:"rgba(77,159,255,0.4)", glowBg:"rgba(77,159,255,0.07)", hidden:true },
 ];
 
 function useSpring(target, { stiffness = 320, damping = 28, mass = 1, onSettle } = {}) {
