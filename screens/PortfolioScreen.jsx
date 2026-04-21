@@ -592,6 +592,7 @@ export default function PortfolioScreen() {
 
   var stocks = STOCKS;
 const [isLoading, setIsLoading] = useState(true);
+const [showAdvanced, setShowAdvanced] = useState(false);
 useEffect(() => {
   const t = setTimeout(() => setIsLoading(false), 600);
   return () => clearTimeout(t);
