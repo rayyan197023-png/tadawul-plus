@@ -1263,7 +1263,7 @@ useEffect(() => {
                 توازن المحفظة
               </div>
               <div style={{fontSize:9,color:C.smoke,fontWeight:600}}>
-                قريباً ✨
+                Rebalance
               </div>
             </button>
           </div>
