@@ -12,6 +12,7 @@ import { colors } from './theme/tokens';
 import { getGlobalStyles } from './theme/globalStyles';
 import PWAPrompt from './components/PWAPrompt';
 import BacktestScreen from './screens/BacktestScreen';
+import RebalancingScreen from './screens/RebalancingScreen';
 const ChartScreen = lazy(() => import('./features/chart/ChartScreen'));
 const C = colors;
 
