@@ -943,12 +943,13 @@ useEffect(() => {
             var analysis = analyzePortfolio(positionsWithBars, []);
     analysis = addIntelligenceLayer(analysis, positionsWithBars, stockHealth);
     // ⭐ بيانات الرسم البياني
-    analysis.chartData = {
+     analysis.chartData = {
       portfolioValue: generatePortfolioValueChart(
         positionsWithBars, 
         analysis.totalValue, 
         60
       ),
+      drawdown: generateDrawdownChart(positionsWithBars, 60),
     };
     return analysis;
   }, [positions]);
