@@ -76,6 +76,14 @@ export const TABS = [
     glowBg:   'rgba(240,192,80,0.07)',
     hidden:   true,  // 🔒 مخفية من الشريط السفلي
   },
+    {
+    id:       TAB_IDS.REBALANCING,
+    label:    'توازن المحفظة',
+    accent:   '#4d9fff',
+    glow:     'rgba(77,159,255,0.4)',
+    glowBg:   'rgba(77,159,255,0.07)',
+    hidden:   true,
+  },
 ];
 
 // ① TABS_MAP للتبويبات المرئية في الشريط السفلي
