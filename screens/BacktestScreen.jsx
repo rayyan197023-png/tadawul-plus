@@ -1,16 +1,10 @@
-
 'use client';
 /**
  * @module BacktestScreen
  * @description شاشة Backtesting مع 3 أوضاع
  * 
- * الأوضاع:
- * - Mode 1: محفظتي (Buy & Hold)
- * - Mode 2: قائمة التحليل (Tadawul Strategy)
- * - Mode 3: السوق بالكامل (Tadawul + Diversification)
- * 
  * @author تداول+
- * @version 2.0
+ * @version 2.1 (Fixed useNav)
  */
 
 import React, { useState } from 'react';
@@ -29,7 +23,6 @@ import EquityCurveChart from '../components/charts/EquityCurveChart';
 import BacktestResultsCard from '../components/charts/BacktestResultsCard';
 import MonteCarloChart from '../components/charts/MonteCarloChart';
 import { STOCKS } from '../constants/stocksData';
-import { useNav } from '../store';
 
 var C = {
   ink: "#06080f", deep: "#090c16", void: "#0c1020",
@@ -132,7 +125,9 @@ function ModeCard(props) {
 }
 
 export default function BacktestScreen() {
-  var positions = useNav(function(s) { return s.positions; }) || [];
+  // 🔧 ملاحظة: positions سيُمرَّر من AppShell لاحقاً كـ prop
+  // الآن نستخدم [] كافتراضي
+  var positions = [];
   
   var [config, setConfig] = useState({
     mode: 'analysis', // portfolio / analysis / market
@@ -146,14 +141,8 @@ export default function BacktestScreen() {
   var [isRunning, setIsRunning] = useState(false);
   var [results, setResults] = useState(null);
 
-  /**
-   * التحقق من وضع المحفظة
-   */
   var hasPortfolio = positions && positions.length > 0;
 
-  /**
-   * تشغيل Backtest
-   */
   function runBacktest() {
     setIsRunning(true);
     setResults(null);
@@ -165,9 +154,7 @@ export default function BacktestScreen() {
         var benchmarkStrategy;
         var modeLabel;
 
-        // تحديد الوضع
         if (config.mode === 'portfolio') {
-          // Mode 1: المحفظة الحالية
           if (!hasPortfolio) {
             setResults({ error: 'المحفظة فارغة! أضف أسهماً أولاً.' });
             setIsRunning(false);
@@ -178,30 +165,26 @@ export default function BacktestScreen() {
           historicalData = generateDataFromPortfolio(positions, genBars, config.days);
           strategy = createPortfolioBuyAndHoldStrategy(positions);
           
-          // Benchmark: نفس الأسهم لكن بأوزان متساوية
           var equalWeightPositions = positions.map(function(p) {
             return Object.assign({}, p, { weight: 1 / positions.length });
           });
           benchmarkStrategy = createPortfolioBuyAndHoldStrategy(equalWeightPositions);
         
         } else if (config.mode === 'analysis') {
-          // Mode 2: قائمة التحليل
           modeLabel = 'قائمة التحليل (Tadawul Strategy)';
           historicalData = generateDataFromStockList(STOCKS, genBars, config.days, 15);
           strategy = createTadawulStrategy(stockHealth);
           
-          // Benchmark: Buy & Hold على أول 5 أسهم
           var benchmarkSymbols = historicalData[0].stocksData.slice(0, 5).map(function(s) { 
             return s.sym; 
           });
           benchmarkStrategy = createBuyAndHoldStrategy(benchmarkSymbols);
         
         } else if (config.mode === 'market') {
-          // Mode 3: السوق بالكامل
           modeLabel = 'السوق بالكامل (Sector Rotation)';
           historicalData = generateDataFromMarket(STOCKS, genBars, config.days);
           strategy = createTadawulStrategy(stockHealth, {
-            maxPositions: 10, // أكثر تنويعاً
+            maxPositions: 10,
             maxPositionWeight: 0.15,
           });
           
@@ -217,25 +200,21 @@ export default function BacktestScreen() {
           return;
         }
 
-        // تشغيل Backtest للاستراتيجية
         var strategyResult = backtest(strategy, historicalData, {
           initialCapital: config.initialCapital,
           includeCosts: config.includeCosts,
         });
 
-        // تشغيل Benchmark
         var benchmarkResult = backtest(benchmarkStrategy, historicalData, {
           initialCapital: config.initialCapital,
           includeCosts: config.includeCosts,
         });
 
-        // مقارنة
         var comparison = null;
         if (strategyResult.success && benchmarkResult.success) {
           comparison = compareWithBenchmark(strategyResult, benchmarkResult);
         }
 
-        // Monte Carlo
         var monteCarloResult = null;
         if (config.runMonteCarlo && strategyResult.success) {
           monteCarloResult = monteCarloSimulation(
@@ -302,7 +281,7 @@ export default function BacktestScreen() {
         </div>
       </div>
 
-      {/* 🎯 Mode Selection */}
+      {/* Mode Selection */}
       <div style={{
         background: "linear-gradient(145deg," + C.layer1 + "," + C.layer2 + ")",
         borderRadius: 14,
@@ -320,7 +299,6 @@ export default function BacktestScreen() {
           🎯 اختر وضع Backtest
         </div>
 
-        {/* Mode 1: محفظتي */}
         <ModeCard
           icon="💼"
           title="محفظتي الحالية"
@@ -337,7 +315,6 @@ export default function BacktestScreen() {
           }}
         />
 
-        {/* Mode 2: قائمة التحليل */}
         <ModeCard
           icon="🔍"
           title="قائمة التحليل"
@@ -350,7 +327,6 @@ export default function BacktestScreen() {
           }}
         />
 
-        {/* Mode 3: السوق بالكامل */}
         <ModeCard
           icon="🌐"
           title="السوق بالكامل"
@@ -364,7 +340,7 @@ export default function BacktestScreen() {
         />
       </div>
 
-      {/* ⚙️ Config */}
+      {/* Config */}
       <div style={{
         background: "linear-gradient(145deg," + C.layer1 + "," + C.layer2 + ")",
         borderRadius: 14,
@@ -382,13 +358,8 @@ export default function BacktestScreen() {
           ⚙️ الإعدادات
         </div>
 
-        {/* رأس المال */}
         <div style={{ marginBottom: 10 }}>
-          <div style={{
-            fontSize: 10,
-            color: C.smoke,
-            marginBottom: 4,
-          }}>
+          <div style={{ fontSize: 10, color: C.smoke, marginBottom: 4 }}>
             💰 رأس المال
           </div>
           <div style={{ display: "flex", gap: 6 }}>
@@ -419,13 +390,8 @@ export default function BacktestScreen() {
           </div>
         </div>
 
-        {/* الفترة */}
         <div style={{ marginBottom: 10 }}>
-          <div style={{
-            fontSize: 10,
-            color: C.smoke,
-            marginBottom: 4,
-          }}>
+          <div style={{ fontSize: 10, color: C.smoke, marginBottom: 4 }}>
             📅 الفترة
           </div>
           <div style={{ display: "flex", gap: 6 }}>
@@ -460,7 +426,6 @@ export default function BacktestScreen() {
           </div>
         </div>
 
-        {/* Checkboxes */}
         <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12 }}>
           <label style={{
             display: "flex",
@@ -507,7 +472,6 @@ export default function BacktestScreen() {
           </label>
         </div>
 
-        {/* زر التشغيل */}
         <button
           onClick={runBacktest}
           disabled={isRunning || (config.mode === 'portfolio' && !hasPortfolio)}
@@ -539,17 +503,10 @@ export default function BacktestScreen() {
           textAlign: "center",
           marginBottom: 12,
         }}>
-          <div style={{
-            fontSize: 14,
-            color: C.gold,
-            marginBottom: 10,
-          }}>
+          <div style={{ fontSize: 14, color: C.gold, marginBottom: 10 }}>
             🧪 جاري تشغيل المحاكاة...
           </div>
-          <div style={{
-            fontSize: 10,
-            color: C.smoke,
-          }}>
+          <div style={{ fontSize: 10, color: C.smoke }}>
             يُحلّل {config.days} يوم تداول
             {config.runMonteCarlo && ' · ' + config.monteCarloIterations.toLocaleString() + ' سيناريو'}
           </div>
@@ -575,7 +532,6 @@ export default function BacktestScreen() {
       {/* النتائج */}
       {results && !results.error && results.strategy && results.strategy.success && (
         <>
-          {/* Mode Label */}
           <div style={{
             background: C.gold + "12",
             border: "1px solid " + C.gold + "33",
@@ -602,7 +558,6 @@ export default function BacktestScreen() {
             </div>
           </div>
 
-          {/* Equity Curve */}
           <EquityCurveChart
             equityCurve={results.strategy.equityCurve}
             benchmarkCurve={results.benchmark && results.benchmark.success 
@@ -615,19 +570,16 @@ export default function BacktestScreen() {
             showTrades={false}
           />
 
-          {/* Backtest Results */}
           <BacktestResultsCard
             result={results.strategy}
             benchmarkResult={results.benchmark}
             comparison={results.comparison}
           />
 
-          {/* Monte Carlo */}
           {results.monteCarlo && results.monteCarlo.success && (
             <MonteCarloChart data={results.monteCarlo} />
           )}
 
-          {/* Trade Log */}
           {results.strategy.trades && results.strategy.trades.length > 0 && (
             <div style={{
               background: "linear-gradient(145deg," + C.layer1 + "," + C.layer2 + ")",
@@ -699,7 +651,6 @@ export default function BacktestScreen() {
         </>
       )}
 
-      {/* Info Footer */}
       {!isRunning && !results && (
         <div style={{
           padding: "14px 12px",
@@ -708,11 +659,7 @@ export default function BacktestScreen() {
           border: "1px solid " + C.line + "22",
           textAlign: "center",
         }}>
-          <div style={{
-            fontSize: 11,
-            color: C.smoke,
-            lineHeight: 1.6,
-          }}>
+          <div style={{ fontSize: 11, color: C.smoke, lineHeight: 1.6 }}>
             💡 اختر وضعاً ثم اضغط "تشغيل Backtest"
           </div>
         </div>
