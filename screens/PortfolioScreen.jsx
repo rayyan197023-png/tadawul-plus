@@ -945,7 +945,7 @@ useEffect(() => {
             var analysis = analyzePortfolio(positionsWithBars, []);
     analysis = addIntelligenceLayer(analysis, positionsWithBars, stockHealth);
     // ⭐ بيانات الرسم البياني
-         analysis.chartData = {
+             analysis.chartData = {
       portfolioValue: generatePortfolioValueChart(
         positionsWithBars, 
         analysis.totalValue, 
@@ -953,6 +953,7 @@ useEffect(() => {
       ),
       drawdown: generateDrawdownChart(positionsWithBars, 60),
       monthlyReturns: generateMonthlyReturnsHeatmap(positionsWithBars, 365),
+      riskReturn: generateRiskReturnScatter(positionsWithBars, analysis),
     };
     return analysis;
   }, [positions]);
