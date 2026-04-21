@@ -31,6 +31,7 @@ import VaRDistributionChart from '../components/charts/VaRDistributionChart';
 import { RISK_FREE_RATE, HEALTH_GRADES } from '../constants/portfolioConfig';
 import { STOCKS } from '../constants/stocksData';
 import { useNav } from '../store';
+import { TAB_IDS } from '../constants/navigation';
 
 /* ======================================================
    محفظة تداول+ - Terminal Obsidian x Saudi Gold
