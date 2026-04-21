@@ -3779,6 +3779,137 @@ export function generateCorrelationHeatmap(positions) {
   };
 }
 
+/**
+ * توليد بيانات VaR Distribution Chart
+ * 
+ * المنهجية:
+ * ① توزيع العوائد اليومية إلى Bins
+ * ② حساب VaR و CVaR
+ * ③ إحصاءات التوزيع (Mean, Median, Skew, Kurtosis)
+ * 
+ * @param {Array} positions - مع bars لكل سهم
+ * @returns {Object} {bins, varLine, cvarLine, stats}
+ */
+export function generateVaRDistribution(positions) {
+  if (!positions || positions.length === 0) {
+    return { bins: [], stats: {} };
+  }
+
+  // ① حساب الأوزان
+  var weights = {};
+  var totalVal = 0;
+  positions.forEach(function(p) { totalVal += p.value || 0; });
+  positions.forEach(function(p) {
+    weights[p.sym] = (p.value || 0) / totalVal;
+  });
+
+  // ② حساب العوائد اليومية
+  var portfolioReturns = calcPortfolioReturns(positions, weights);
+  if (portfolioReturns.length < 10) {
+    return { bins: [], stats: {} };
+  }
+
+  // تحويل إلى نسب مئوية
+  var returns = portfolioReturns.map(function(r) { return r * 100; });
+
+  // ③ حساب الإحصاءات
+  var n = returns.length;
+  var sum = 0;
+  for (var i = 0; i < n; i++) sum += returns[i];
+  var meanReturn = sum / n;
+
+  // الانحراف المعياري
+  var sumSq = 0;
+  for (var j = 0; j < n; j++) {
+    sumSq += Math.pow(returns[j] - meanReturn, 2);
+  }
+  var stdDev = Math.sqrt(sumSq / n);
+
+  // الوسيط
+  var sortedReturns = returns.slice().sort(function(a, b) { return a - b; });
+  var median = sortedReturns[Math.floor(n / 2)];
+
+  // Skewness (الانحراف)
+  var sumCube = 0;
+  for (var k = 0; k < n; k++) {
+    sumCube += Math.pow((returns[k] - meanReturn) / stdDev, 3);
+  }
+  var skewness = sumCube / n;
+
+  // Kurtosis (التفرطح)
+  var sumQuad = 0;
+  for (var l = 0; l < n; l++) {
+    sumQuad += Math.pow((returns[l] - meanReturn) / stdDev, 4);
+  }
+  var kurtosis = (sumQuad / n) - 3; // Excess Kurtosis
+
+  // ④ VaR و CVaR
+  var varIdx = Math.floor(0.05 * n);
+  var var95 = -sortedReturns[varIdx];
+
+  var cvarSum = 0;
+  for (var m = 0; m <= varIdx; m++) {
+    cvarSum += sortedReturns[m];
+  }
+  var cvar95 = -cvarSum / (varIdx + 1);
+
+  // ⑤ بناء Histogram
+  var minReturn = sortedReturns[0];
+  var maxReturn = sortedReturns[n - 1];
+  var range = maxReturn - minReturn;
+  
+  // عدد Bins (قاعدة Sturges: k = 1 + log2(n))
+  var numBins = Math.max(10, Math.min(30, Math.ceil(1 + Math.log2(n))));
+  var binWidth = range / numBins;
+
+  var bins = [];
+  for (var b = 0; b < numBins; b++) {
+    var binStart = minReturn + b * binWidth;
+    var binEnd = binStart + binWidth;
+    bins.push({
+      start: +binStart.toFixed(2),
+      end: +binEnd.toFixed(2),
+      midpoint: +((binStart + binEnd) / 2).toFixed(2),
+      count: 0,
+      isNegative: (binStart + binEnd) / 2 < 0,
+    });
+  }
+
+  // توزيع العوائد
+  returns.forEach(function(r) {
+    var binIdx = Math.min(numBins - 1, Math.floor((r - minReturn) / binWidth));
+    if (binIdx >= 0 && binIdx < numBins) {
+      bins[binIdx].count++;
+    }
+  });
+
+  // عدّ الأيام الإيجابية والسلبية
+  var positiveCount = 0;
+  var negativeCount = 0;
+  returns.forEach(function(r) {
+    if (r > 0) positiveCount++;
+    else if (r < 0) negativeCount++;
+  });
+
+  return {
+    bins: bins,
+    stats: {
+      mean: +meanReturn.toFixed(3),
+      median: +median.toFixed(3),
+      stdDev: +stdDev.toFixed(3),
+      skewness: +skewness.toFixed(2),
+      kurtosis: +kurtosis.toFixed(2),
+      var95: +var95.toFixed(3),
+      cvar95: +cvar95.toFixed(3),
+      min: +minReturn.toFixed(3),
+      max: +maxReturn.toFixed(3),
+      totalDays: n,
+      positiveDays: positiveCount,
+      negativeDays: negativeCount,
+      positiveDaysPct: +((positiveCount / n) * 100).toFixed(1),
+    },
+  };
+}
 /* ══════════════════════════════════════════════════════════
    ⑥ دوال التصدير (للاستخدام في الشاشة)
 ═══════════════════════════════════════════════════════════ */
