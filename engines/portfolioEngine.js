@@ -3677,6 +3677,108 @@ export function generateRiskReturnScatter(positions, analysisData) {
     totalStocks: scatterData.length,
   };
 }
+
+/**
+ * توليد بيانات Correlation Heatmap
+ * 
+ * المنهجية (Markowitz 1952):
+ * Pearson Correlation بين كل زوج من الأسهم
+ * 
+ * @param {Array} positions - مع bars لكل سهم
+ * @returns {Object} {matrix, symbols, highCorrelations, avgCorrelation}
+ */
+export function generateCorrelationHeatmap(positions) {
+  if (!positions || positions.length < 2) {
+    return { matrix: [], symbols: [], avgCorrelation: 0 };
+  }
+
+  // ① بناء مصفوفة العوائد
+  var validPositions = positions.filter(function(p) {
+    return p.bars && p.bars.length >= 10;
+  });
+
+  if (validPositions.length < 2) {
+    return { matrix: [], symbols: [], avgCorrelation: 0 };
+  }
+
+  var symbols = validPositions.map(function(p) { return p.sym; });
+  var names = validPositions.map(function(p) { 
+    return p.stk ? p.stk.name : p.sym; 
+  });
+
+  // حساب العوائد لكل سهم
+  var allReturns = validPositions.map(function(p) {
+    return simpleReturns(p.bars);
+  });
+
+  // ② بناء المصفوفة
+  var matrix = [];
+  var highCorrelations = [];
+  var sumCorrelations = 0;
+  var pairCount = 0;
+
+  for (var i = 0; i < symbols.length; i++) {
+    var row = [];
+    for (var j = 0; j < symbols.length; j++) {
+      var corr;
+      if (i === j) {
+        corr = 1.0; // السهم مع نفسه
+      } else {
+        // مزامنة الطول
+        var minLen = Math.min(allReturns[i].length, allReturns[j].length);
+        var retsA = allReturns[i].slice(-minLen);
+        var retsB = allReturns[j].slice(-minLen);
+        corr = correlation(retsA, retsB);
+        
+        if (i < j) {
+          sumCorrelations += corr;
+          pairCount++;
+          
+          if (Math.abs(corr) > 0.7) {
+            highCorrelations.push({
+              symA: symbols[i],
+              symB: symbols[j],
+              correlation: +corr.toFixed(3),
+            });
+          }
+        }
+      }
+      row.push(+corr.toFixed(3));
+    }
+    matrix.push(row);
+  }
+
+  var avgCorrelation = pairCount > 0 ? sumCorrelations / pairCount : 0;
+
+  // تصنيف
+  var classification, label;
+  if (avgCorrelation < 0.20) {
+    classification = 'excellent';
+    label = 'تنويع حقيقي';
+  } else if (avgCorrelation < 0.40) {
+    classification = 'good';
+    label = 'تنويع جيد';
+  } else if (avgCorrelation < 0.60) {
+    classification = 'moderate';
+    label = 'متوسط';
+  } else {
+    classification = 'poor';
+    label = 'تنويع ضعيف';
+  }
+
+  return {
+    matrix: matrix,
+    symbols: symbols,
+    names: names,
+    avgCorrelation: +avgCorrelation.toFixed(3),
+    highCorrelations: highCorrelations,
+    highCount: highCorrelations.length,
+    classification: classification,
+    label: label,
+    totalPairs: pairCount,
+  };
+}
+
 /* ══════════════════════════════════════════════════════════
    ⑥ دوال التصدير (للاستخدام في الشاشة)
 ═══════════════════════════════════════════════════════════ */
