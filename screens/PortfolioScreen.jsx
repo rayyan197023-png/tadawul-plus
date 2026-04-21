@@ -1348,7 +1348,13 @@ useEffect(() => {
               {/* 🔗 مصفوفة الارتباط */}
               {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.correlation && portfolioAnalysis.chartData.correlation.matrix && portfolioAnalysis.chartData.correlation.matrix.length >= 2 && (
                 <CorrelationHeatmap data={portfolioAnalysis.chartData.correlation} />
-              )}             
+              )} 
+
+              {/* 📊 رسم توزيع VaR */}
+              {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.varDistribution && portfolioAnalysis.chartData.varDistribution.bins && portfolioAnalysis.chartData.varDistribution.bins.length >= 3 && (
+                <VaRDistributionChart data={portfolioAnalysis.chartData.varDistribution} />
+              )}
+             
               {portfolioAnalysis && <RiskDashboard analysis={portfolioAnalysis} />}
              {sorted.map(function(p,i){return <Card key={p.sym} p={p} i={i} capital={capital} setSellSheet={setSellSheet} onEdit={function(pos){setEditPos(pos);}}/>;}) }
             </div>
