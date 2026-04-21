@@ -2,12 +2,6 @@
 /**
  * @module MonthlyReturnsHeatmap
  * @description جدول ملوّن للعوائد الشهرية
- *
- * يُظهر الأداء شهرياً عبر السنوات بألوان متدرّجة
- * الإلهام: Wealthfront, Betterment, Morningstar
- *
- * @author تداول+
- * @version 1.0
  */
 
 import React from 'react';
@@ -21,15 +15,11 @@ var C = {
   electric: "#4d9fff", mint: "#1ee68a", coral: "#ff5f6a", amber: "#fbbf24",
 };
 
-// أسماء الأشهر بالعربية
 var MONTH_NAMES_SHORT = [
   'ينا', 'فبر', 'مار', 'أبر', 'ماي', 'يون',
   'يول', 'أغس', 'سبت', 'أكت', 'نوف', 'ديس'
 ];
 
-/**
- * حساب لون الخلية بناءً على قيمة العائد
- */
 function getCellColor(returnValue, maxAbs) {
   if (returnValue === null || returnValue === undefined) {
     return { bg: C.layer1, text: C.smoke, opacity: 0.3 };
@@ -38,21 +28,18 @@ function getCellColor(returnValue, maxAbs) {
   var intensity = Math.min(Math.abs(returnValue) / maxAbs, 1);
   
   if (returnValue > 0) {
-    // أخضر متدرج
     return {
       bg: 'rgba(30, 230, 138, ' + (0.15 + intensity * 0.45) + ')',
       text: intensity > 0.5 ? C.snow : C.mint,
       opacity: 1,
     };
   } else if (returnValue < 0) {
-    // أحمر متدرج
     return {
       bg: 'rgba(255, 95, 106, ' + (0.15 + intensity * 0.45) + ')',
       text: intensity > 0.5 ? C.snow : C.coral,
       opacity: 1,
     };
   } else {
-    // حيادي
     return {
       bg: 'rgba(144, 164, 200, 0.1)',
       text: C.smoke,
@@ -82,8 +69,7 @@ export default function MonthlyReturnsHeatmap(props) {
     );
   }
 
-  // ① تنظيم البيانات: سنوات × أشهر
-  var yearMap = {}; // "2026" → {1: {...}, 2: {...}, ...}
+  var yearMap = {};
   months.forEach(function(m) {
     if (!yearMap[m.year]) yearMap[m.year] = {};
     yearMap[m.year][m.month] = m;
@@ -91,7 +77,6 @@ export default function MonthlyReturnsHeatmap(props) {
 
   var years = Object.keys(yearMap).sort();
 
-  // ② حساب أقصى قيمة مطلقة لتدرج الألوان
   var maxAbs = 1;
   months.forEach(function(m) {
     if (Math.abs(m.return) > maxAbs) maxAbs = Math.abs(m.return);
@@ -105,7 +90,6 @@ export default function MonthlyReturnsHeatmap(props) {
       padding: "14px 12px",
       marginBottom: 12,
     }}>
-      {/* ── Header ── */}
       <div style={{
         display: "flex",
         justifyContent: "space-between",
@@ -143,9 +127,7 @@ export default function MonthlyReturnsHeatmap(props) {
             fontFamily: "IBM Plex Mono,monospace",
             fontSize: 18,
             fontWeight: 900,
-            color: stats.winRate >= 60 ? C.mint 
-                 : stats.winRate >= 50 ? C.amber 
-                 : C.coral,
+            color: stats.winRate >= 60 ? C.mint : stats.winRate >= 50 ? C.amber : C.coral,
             lineHeight: 1,
           }}>
             {stats.winRate}%
@@ -153,7 +135,6 @@ export default function MonthlyReturnsHeatmap(props) {
         </div>
       </div>
 
-      {/* ── الجدول (Heatmap) ── */}
       <div style={{
         overflowX: 'auto',
         paddingBottom: 4,
@@ -164,7 +145,6 @@ export default function MonthlyReturnsHeatmap(props) {
           borderSpacing: '2px',
           fontFamily: "IBM Plex Mono,monospace",
         }}>
-          {/* Header: أشهر */}
           <thead>
             <tr>
               <th style={{
@@ -200,12 +180,10 @@ export default function MonthlyReturnsHeatmap(props) {
             </tr>
           </thead>
 
-          {/* Rows: سنوات */}
           <tbody>
             {years.map(function(year) {
               return (
                 <tr key={year}>
-                  {/* خلية السنة */}
                   <td style={{
                     fontSize: 10,
                     fontWeight: 800,
@@ -218,7 +196,6 @@ export default function MonthlyReturnsHeatmap(props) {
                     {year}
                   </td>
 
-                  {/* خلايا الأشهر */}
                   {MONTH_NAMES_SHORT.map(function(_, i) {
                     var monthNum = i + 1;
                     var cell = yearMap[year][monthNum];
@@ -240,7 +217,6 @@ export default function MonthlyReturnsHeatmap(props) {
                           textAlign: 'center',
                           borderRadius: 4,
                           minWidth: 28,
-                          transition: 'all 0.2s',
                         }}
                       >
                         {cell 
@@ -257,7 +233,6 @@ export default function MonthlyReturnsHeatmap(props) {
         </table>
       </div>
 
-      {/* ── Stats ── */}
       <div style={{
         display: "flex",
         justifyContent: "space-around",
@@ -265,7 +240,6 @@ export default function MonthlyReturnsHeatmap(props) {
         paddingTop: 10,
         borderTop: "1px solid " + C.line + "33",
       }}>
-        {/* أفضل شهر */}
         <div style={{ textAlign: 'center', flex: 1 }}>
           <div style={{
             fontSize: 9,
@@ -303,7 +277,6 @@ export default function MonthlyReturnsHeatmap(props) {
           margin: "0 4px",
         }} />
 
-        {/* المتوسط */}
         <div style={{ textAlign: 'center', flex: 1 }}>
           <div style={{
             fontSize: 9,
@@ -325,4 +298,105 @@ export default function MonthlyReturnsHeatmap(props) {
             color: C.ash,
             marginTop: 1,
           }}>
-            شهر​​​​​​​​​​​​​​​​
+            شهرياً
+          </div>
+        </div>
+
+        <div style={{ 
+          width: 1, 
+          background: C.line + "33",
+          margin: "0 4px",
+        }} />
+
+        <div style={{ textAlign: 'center', flex: 1 }}>
+          <div style={{
+            fontSize: 9,
+            color: C.smoke,
+            marginBottom: 3,
+          }}>
+            أسوأ شهر
+          </div>
+          <div style={{
+            fontSize: 12,
+            fontWeight: 800,
+            color: C.coral,
+            fontFamily: "IBM Plex Mono,monospace",
+          }}>
+            {stats.worstMonth 
+              ? stats.worstMonth.return.toFixed(1) + '%'
+              : '--'
+            }
+          </div>
+          <div style={{
+            fontSize: 8,
+            color: C.ash,
+            marginTop: 1,
+          }}>
+            {stats.worstMonth 
+              ? MONTH_NAMES_SHORT[stats.worstMonth.month - 1] + ' ' + stats.worstMonth.year
+              : ''
+            }
+          </div>
+        </div>
+      </div>
+
+      <div style={{
+        marginTop: 10,
+        display: "flex",
+        gap: 8,
+      }}>
+        <div style={{
+          flex: 1,
+          padding: "6px 8px",
+          background: C.mint + "15",
+          border: "1px solid " + C.mint + "33",
+          borderRadius: 6,
+          textAlign: 'center',
+        }}>
+          <div style={{
+            fontSize: 9,
+            color: C.mint,
+            fontWeight: 700,
+            marginBottom: 2,
+          }}>
+            ↑ أشهر رابحة
+          </div>
+          <div style={{
+            fontSize: 14,
+            color: C.mint,
+            fontWeight: 900,
+            fontFamily: "IBM Plex Mono,monospace",
+          }}>
+            {stats.positiveMonths}
+          </div>
+        </div>
+
+        <div style={{
+          flex: 1,
+          padding: "6px 8px",
+          background: C.coral + "15",
+          border: "1px solid " + C.coral + "33",
+          borderRadius: 6,
+          textAlign: 'center',
+        }}>
+          <div style={{
+            fontSize: 9,
+            color: C.coral,
+            fontWeight: 700,
+            marginBottom: 2,
+          }}>
+            ↓ أشهر خاسرة
+          </div>
+          <div style={{
+            fontSize: 14,
+            color: C.coral,
+            fontWeight: 900,
+            fontFamily: "IBM Plex Mono,monospace",
+          }}>
+            {stats.negativeMonths}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
