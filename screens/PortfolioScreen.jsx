@@ -20,7 +20,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useHaptic } from '../hooks/useHaptic';
 import { genBars, stockHealth } from '../engines/analysisEngine';
-import { analyzePortfolio, addIntelligenceLayer } from '../engines/portfolioEngine';
+import { analyzePortfolio, addIntelligenceLayer, generatePortfolioValueChart } from '../engines/portfolioEngine';
 import RiskDashboard from '../components/RiskDashboard';
 import { RISK_FREE_RATE, HEALTH_GRADES } from '../constants/portfolioConfig';
 import { STOCKS } from '../constants/stocksData';
