@@ -389,110 +389,7 @@ const { setTab } = useNav();
   };
   return(
     <div className="root-wrap">
-      
-      <div className="hdr">
-        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
-          {!sub?(
-            <div>
-              <div style={{fontSize:10,color:C.gold,fontWeight:700,letterSpacing:"3px",marginBottom:3}}>TADAWUL+</div>
-              <div className="glow-white" style={{fontSize:20,fontWeight:900,color:C.snow,lineHeight:1.1,letterSpacing:"-0.5px"}}>
-                الأدوات{" "}
-                <span style={{background:"linear-gradient(90deg,"+C.gold+","+C.goldL+")",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>والتحليلات</span>
-              </div>
-              
-              <div className="live-bar">
-                <div style={{width:3,height:4, borderRadius:2,background:C.mint,opacity:rankTick%5===0?1:0.2}}/>
-                <div style={{width:3,height:8, borderRadius:2,background:C.mint,opacity:rankTick%5===1?1:0.2}}/>
-                <div style={{width:3,height:12,borderRadius:2,background:C.mint,opacity:rankTick%5===2?1:0.2}}/>
-                <div style={{width:3,height:6, borderRadius:2,background:C.mint,opacity:rankTick%5===3?1:0.2}}/>
-                <div style={{width:3,height:10,borderRadius:2,background:C.mint,opacity:rankTick%5===4?1:0.2}}/>
-                <span style={{fontSize:8,fontWeight:700,color:C.mint,marginRight:2}}>مباشر</span>
-                <span className="m" style={{fontSize:8,color:C.smoke}}>{fmtT}</span>
-              </div>
-            </div>
-          ):(
-            <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <button onClick={function(){setSub("");}} style={{width:40,height:40,borderRadius:12,cursor:"pointer",background:"linear-gradient(135deg,"+C.layer2+","+C.layer3+")",border:"1px solid "+C.line,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 10px rgba(0,0,0,.25)"}}><Ico k="back" color={C.smoke} size={18}/></button>
-              <div>
-                <div style={{fontSize:9,color:subColor,fontWeight:700,letterSpacing:"2px",opacity:0.7}}>TADAWUL+</div>
-                <div style={{fontSize:16,fontWeight:900,color:subColor,letterSpacing:"-0.3px",textShadow:"0 0 12px "+subColor+"44"}}>{subLabel}</div>
-              </div>
-            </div>
-          )}
-          {!sub&&(
-          <div style={{display:"flex",gap:6}}>
-            <button onClick={function(){setSub(sub==="snapshots"?"":"snapshots");}} style={{
-              width:44,height:44,borderRadius:12,cursor:"pointer",position:"relative",
-              background:sub==="snapshots"?"linear-gradient(135deg,"+C.teal+"22,"+C.teal+"11)":"linear-gradient(135deg,"+C.layer2+","+C.layer3+")",
-              border:"1px solid "+(sub==="snapshots"?C.teal+"44":C.line),
-              display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,
-              boxShadow:sub==="snapshots"?"0 0 16px "+C.teal+"33, 0 2px 10px rgba(0,0,0,.25)":"0 2px 10px rgba(0,0,0,.25)",
-            }}>
-              <Ico k="camera" color={C.teal} size={18}/>
-              <span style={{fontSize:7,color:sub==="snapshots"?C.teal:C.smoke,fontWeight:600}}>لقطاتي</span>
-              {snaps.length>0&&<div style={{position:"absolute",top:5,left:5,width:14,height:14,borderRadius:7,background:C.coral,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 6px "+C.coral+"88"}}><span style={{fontSize:7,color:"white",fontWeight:800}}>{snaps.length}</span></div>}
-            </button>
-            <button onClick={function(){setShowAlerts(true);}} style={{
-              width:44,height:44,borderRadius:12,cursor:"pointer",position:"relative",
-              background:sub==="alerts"?"linear-gradient(135deg,"+C.coral+"22,"+C.coral+"11)":"linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,.02))",
-              border:"1px solid "+(showAlerts?C.coral+"44":C.line),
-              display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,
-              boxShadow:showAlerts?"0 0 16px "+C.coral+"33, 0 2px 10px rgba(0,0,0,.25)":"0 2px 10px rgba(0,0,0,.2)",
-            }}>
-              <Ico k="bell" color={C.coral} size={18}/>
-              <span style={{fontSize:7,color:showAlerts?C.coral:C.smoke,fontWeight:600}}>التنبيهات</span>
-            </button>
-            <button onClick={function(){setSub(sub==="settings"?"":"settings");}} style={{
-              width:44,height:44,borderRadius:12,cursor:"pointer",
-              background:sub==="settings"?"linear-gradient(135deg,"+C.gold+"22,"+C.goldD+"11)":"linear-gradient(135deg,"+C.layer2+","+C.layer3+")",
-              border:"1px solid "+(sub==="settings"?C.gold+"44":C.line),
-              display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,
-              boxShadow:sub==="settings"?"0 0 16px "+C.gold+"33, 0 2px 10px rgba(0,0,0,.25)":"0 2px 10px rgba(0,0,0,.25)",
-            }}>
-              <Ico k="settings" color={C.gold} size={18}/>
-              <span style={{fontSize:7,color:sub==="settings"?C.gold:C.smoke,fontWeight:600}}>إعدادات</span>
-            </button>
-          </div>
-          )}
-        </div>
-      </div>
-
-      
-      {!sub&&(
-        <div style={{padding:"12px 16px 24px",position:"relative",zIndex:1}}>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-            {MENU.map(function(item,i){return(
-              <button key={item.id} className={"card-enter"+(flashCard===item.id?" flash":"")} onClick={function(){setFlashCard(item.id);setTimeout(function(){setFlashCard(null);},350);handle(item.id);}}
-                style={{
-                  animationDelay:(i*0.05)+"s",
-                  background:BOX,
-                  border:"1px solid "+item.color+"22",
-                  borderRadius:20,
-                  padding:"20px 10px 18px",
-                  minHeight:130,
-                  display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:10,
-                  cursor:"pointer",
-                  boxShadow:"0 8px 24px rgba(0,0,0,.35), 0 0 0 1px "+item.color+"18, inset 0 1px 0 "+C.layer3,
-                  position:"relative",overflowX:"hidden",
-                  transition:"all .3s cubic-bezier(.4,0,.2,1)",
-                }}>
-                <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse 80% 80% at 50% 30%,"+item.color+"12,transparent)"}}/>
-                <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,transparent,"+item.color+"70,transparent)",borderRadius:"20px 20px 0 0"}}/>
-                <div className="breathe" style={{position:"relative",width:56,height:56,borderRadius:16,background:"linear-gradient(135deg,"+item.color+"22,"+item.color+"0a)",border:"1px solid "+item.color+"44",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 20px "+item.color+"33, inset 0 1px 0 "+item.color+"15"}}>
-                  <Ico k={item.icoK} color={item.color} size={28}/>
-                </div>
-                <div style={{position:"relative",textAlign:"center"}}>
-                  <div style={{fontSize:12,fontWeight:800,color:C.snow,lineHeight:1.3}}>{item.label}</div>
-                  <div style={{fontSize:8,color:item.color,marginTop:4,opacity:0.8,fontWeight:500}}>{item.sub}</div>
-                </div>
-                <div style={{position:"absolute",bottom:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,"+item.color+"40,transparent)"}}/>
-              </button>
-            );})}
-          </div>
-        </div>
-      )}
-
-{/* 🧪 بطاقة مختبر الاستراتيجيات */}
+    {/* 🧪 بطاقة مختبر الاستراتيجيات */}
 <div
   onClick={function() { setTab(TAB_IDS.BACKTEST); }}
   style={{
@@ -599,6 +496,109 @@ const { setTab } = useNav();
     </span>
   </div>
 </div>
+      
+      <div className="hdr">
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
+          {!sub?(
+            <div>
+              <div style={{fontSize:10,color:C.gold,fontWeight:700,letterSpacing:"3px",marginBottom:3}}>TADAWUL+</div>
+              <div className="glow-white" style={{fontSize:20,fontWeight:900,color:C.snow,lineHeight:1.1,letterSpacing:"-0.5px"}}>
+                الأدوات{" "}
+                <span style={{background:"linear-gradient(90deg,"+C.gold+","+C.goldL+")",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>والتحليلات</span>
+              </div>
+              
+              <div className="live-bar">
+                <div style={{width:3,height:4, borderRadius:2,background:C.mint,opacity:rankTick%5===0?1:0.2}}/>
+                <div style={{width:3,height:8, borderRadius:2,background:C.mint,opacity:rankTick%5===1?1:0.2}}/>
+                <div style={{width:3,height:12,borderRadius:2,background:C.mint,opacity:rankTick%5===2?1:0.2}}/>
+                <div style={{width:3,height:6, borderRadius:2,background:C.mint,opacity:rankTick%5===3?1:0.2}}/>
+                <div style={{width:3,height:10,borderRadius:2,background:C.mint,opacity:rankTick%5===4?1:0.2}}/>
+                <span style={{fontSize:8,fontWeight:700,color:C.mint,marginRight:2}}>مباشر</span>
+                <span className="m" style={{fontSize:8,color:C.smoke}}>{fmtT}</span>
+              </div>
+            </div>
+          ):(
+            <div style={{display:"flex",alignItems:"center",gap:10}}>
+              <button onClick={function(){setSub("");}} style={{width:40,height:40,borderRadius:12,cursor:"pointer",background:"linear-gradient(135deg,"+C.layer2+","+C.layer3+")",border:"1px solid "+C.line,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 10px rgba(0,0,0,.25)"}}><Ico k="back" color={C.smoke} size={18}/></button>
+              <div>
+                <div style={{fontSize:9,color:subColor,fontWeight:700,letterSpacing:"2px",opacity:0.7}}>TADAWUL+</div>
+                <div style={{fontSize:16,fontWeight:900,color:subColor,letterSpacing:"-0.3px",textShadow:"0 0 12px "+subColor+"44"}}>{subLabel}</div>
+              </div>
+            </div>
+          )}
+          {!sub&&(
+          <div style={{display:"flex",gap:6}}>
+            <button onClick={function(){setSub(sub==="snapshots"?"":"snapshots");}} style={{
+              width:44,height:44,borderRadius:12,cursor:"pointer",position:"relative",
+              background:sub==="snapshots"?"linear-gradient(135deg,"+C.teal+"22,"+C.teal+"11)":"linear-gradient(135deg,"+C.layer2+","+C.layer3+")",
+              border:"1px solid "+(sub==="snapshots"?C.teal+"44":C.line),
+              display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,
+              boxShadow:sub==="snapshots"?"0 0 16px "+C.teal+"33, 0 2px 10px rgba(0,0,0,.25)":"0 2px 10px rgba(0,0,0,.25)",
+            }}>
+              <Ico k="camera" color={C.teal} size={18}/>
+              <span style={{fontSize:7,color:sub==="snapshots"?C.teal:C.smoke,fontWeight:600}}>لقطاتي</span>
+              {snaps.length>0&&<div style={{position:"absolute",top:5,left:5,width:14,height:14,borderRadius:7,background:C.coral,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 6px "+C.coral+"88"}}><span style={{fontSize:7,color:"white",fontWeight:800}}>{snaps.length}</span></div>}
+            </button>
+            <button onClick={function(){setShowAlerts(true);}} style={{
+              width:44,height:44,borderRadius:12,cursor:"pointer",position:"relative",
+              background:sub==="alerts"?"linear-gradient(135deg,"+C.coral+"22,"+C.coral+"11)":"linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,.02))",
+              border:"1px solid "+(showAlerts?C.coral+"44":C.line),
+              display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,
+              boxShadow:showAlerts?"0 0 16px "+C.coral+"33, 0 2px 10px rgba(0,0,0,.25)":"0 2px 10px rgba(0,0,0,.2)",
+            }}>
+              <Ico k="bell" color={C.coral} size={18}/>
+              <span style={{fontSize:7,color:showAlerts?C.coral:C.smoke,fontWeight:600}}>التنبيهات</span>
+            </button>
+            <button onClick={function(){setSub(sub==="settings"?"":"settings");}} style={{
+              width:44,height:44,borderRadius:12,cursor:"pointer",
+              background:sub==="settings"?"linear-gradient(135deg,"+C.gold+"22,"+C.goldD+"11)":"linear-gradient(135deg,"+C.layer2+","+C.layer3+")",
+              border:"1px solid "+(sub==="settings"?C.gold+"44":C.line),
+              display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,
+              boxShadow:sub==="settings"?"0 0 16px "+C.gold+"33, 0 2px 10px rgba(0,0,0,.25)":"0 2px 10px rgba(0,0,0,.25)",
+            }}>
+              <Ico k="settings" color={C.gold} size={18}/>
+              <span style={{fontSize:7,color:sub==="settings"?C.gold:C.smoke,fontWeight:600}}>إعدادات</span>
+            </button>
+          </div>
+          )}
+        </div>
+      </div>
+
+      
+      {!sub&&(
+        <div style={{padding:"12px 16px 24px",position:"relative",zIndex:1}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+            {MENU.map(function(item,i){return(
+              <button key={item.id} className={"card-enter"+(flashCard===item.id?" flash":"")} onClick={function(){setFlashCard(item.id);setTimeout(function(){setFlashCard(null);},350);handle(item.id);}}
+                style={{
+                  animationDelay:(i*0.05)+"s",
+                  background:BOX,
+                  border:"1px solid "+item.color+"22",
+                  borderRadius:20,
+                  padding:"20px 10px 18px",
+                  minHeight:130,
+                  display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:10,
+                  cursor:"pointer",
+                  boxShadow:"0 8px 24px rgba(0,0,0,.35), 0 0 0 1px "+item.color+"18, inset 0 1px 0 "+C.layer3,
+                  position:"relative",overflowX:"hidden",
+                  transition:"all .3s cubic-bezier(.4,0,.2,1)",
+                }}>
+                <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse 80% 80% at 50% 30%,"+item.color+"12,transparent)"}}/>
+                <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,transparent,"+item.color+"70,transparent)",borderRadius:"20px 20px 0 0"}}/>
+                <div className="breathe" style={{position:"relative",width:56,height:56,borderRadius:16,background:"linear-gradient(135deg,"+item.color+"22,"+item.color+"0a)",border:"1px solid "+item.color+"44",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 20px "+item.color+"33, inset 0 1px 0 "+item.color+"15"}}>
+                  <Ico k={item.icoK} color={item.color} size={28}/>
+                </div>
+                <div style={{position:"relative",textAlign:"center"}}>
+                  <div style={{fontSize:12,fontWeight:800,color:C.snow,lineHeight:1.3}}>{item.label}</div>
+                  <div style={{fontSize:8,color:item.color,marginTop:4,opacity:0.8,fontWeight:500}}>{item.sub}</div>
+                </div>
+                <div style={{position:"absolute",bottom:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,"+item.color+"40,transparent)"}}/>
+              </button>
+            );})}
+          </div>
+        </div>
+      )}
+
 
       
       {sub==="rankings"&&<RankingsTab p={tabProps}/>}
