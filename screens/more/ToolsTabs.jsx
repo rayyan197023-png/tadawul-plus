@@ -1135,7 +1135,8 @@ function AlertsPanel(props) {
             )}
           </button>
         </div>
-        <div style={{padding:14,display:"flex",flexDirection:"column",gap:10}}>
+                <div style={{padding:14,display:"flex",flexDirection:"column",gap:10}}>
+          {activeTab==="manual"&&(
           <div style={{background:C.layer3,borderRadius:14,padding:14,border:"1px solid "+C.line}}>
             <div style={{fontSize:10,color:C.smoke,marginBottom:8,textAlign:"right",fontWeight:700}}>السهم</div>
             <select value={sym.sym} onChange={function(e){var f=STOCKS.filter(function(s){return s.sym===e.target.value;});if(f[0])setSym(f[0]);}}
