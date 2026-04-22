@@ -11,6 +11,13 @@ const IDEAL_SECTORS = 5;            // العدد المثالي للقطاعا�
 const HIGH_CORRELATION = 0.7;       // ارتباط عالٍ (خطر)
 const IDEAL_CORRELATION = 0.4;      // ارتباط مثالي
 
+// ─── ثوابت متقدمة للسيناريوهات الجديدة ────────
+const HIGH_VOLATILITY = 0.30;       // تذبذب عالٍ (> 30%)
+const MIN_SHARPE = 0.5;             // Sharpe Ratio الأدنى
+const IDEAL_SHARPE = 1.0;           // Sharpe مثالي
+const HIGH_BETA = 1.5;              // بيتا عالٍ
+const MIN_DIVIDEND_YIELD = 0.03;    // توزيعات مثالية (3%+)
+
 // ─── الدالة الرئيسية: تحليل شامل ─────────────
 export function analyzePortfolio(positions, marketData) {
   if (!positions || positions.length === 0) {
