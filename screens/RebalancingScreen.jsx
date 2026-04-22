@@ -531,6 +531,10 @@ function SectorsDonutChart({ sectors }) {
             </div>
           ))}
         </div>
+      </div>
+    </div>
+  );
+}
 
 // ─── بطاقة ملخّص الأرقام ───────────────────────
 function SummaryCard({ summary }) {
