@@ -1179,13 +1179,133 @@ function AlertsPanel(props) {
             </button>
           </div>
           )}
-          {sortedAlerts.length===0&&(
+                    {sortedAlerts.length===0&&(
             <div style={{textAlign:"center",padding:"32px 20px",color:C.smoke}}>
-              <div style={{marginBottom:8,display:"flex",justifyContent:"center"}}><Ico k="bell" color={C.electric+"55"} size={44}/></div>
-              <div style={{fontSize:13,fontWeight:700,color:C.mist}}>لا توجد تنبيهات</div>
+              <div style={{marginBottom:8,display:"flex",justifyContent:"center"}}>
+                {activeTab==="smart"?<span style={{fontSize:44}}>✨</span>:<Ico k="bell" color={C.electric+"55"} size={44}/>}
+              </div>
+              <div style={{fontSize:13,fontWeight:700,color:C.mist}}>
+                {activeTab==="smart"?"لا توجد تنبيهات ذكية بعد":"لا توجد تنبيهات"}
+              </div>
+              {activeTab==="smart"&&(
+                <div style={{fontSize:11,color:C.smoke,marginTop:8,lineHeight:1.6,fontFamily:"Cairo,sans-serif"}}>
+                  المحرك يراقب الأسهم تلقائياً<br/>
+                  سيخبرك عند أي فرصة أو مخاطرة
+                </div>
+              )}
             </div>
           )}
           {sortedAlerts.map(function(al){
+            // التنبيهات الذكية تعرض بشكل مختلف
+            if(al.smart){
+              return(
+                <div key={al.id} style={{
+                  background:"linear-gradient(135deg,"+al.color+"18,"+al.color+"08)",
+                  borderRadius:14,
+                  padding:"14px 16px",
+                  border:"1px solid "+al.color+"44",
+                  position:"relative",
+                  boxShadow:"0 4px 16px "+al.color+"22",
+                }}>
+                  {/* Header: icon + title + delete */}
+                  <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:10}}>
+                    <div style={{
+                      width:40,
+                      height:40,
+                      borderRadius:10,
+                      background:al.color+"22",
+                      border:"1px solid "+al.color+"55",
+                      display:"flex",
+                      alignItems:"center",
+                      justifyContent:"center",
+                      fontSize:22,
+                      flexShrink:0,
+                    }}>
+                      {al.icon}
+                    </div>
+                    <div style={{flex:1,textAlign:"right"}}>
+                      <div style={{
+                        fontSize:13,
+                        fontWeight:900,
+                        color:al.color,
+                        fontFamily:"Cairo,sans-serif",
+                        marginBottom:3,
+                      }}>
+                        {al.title}
+                      </div>
+                      <div style={{
+                        fontSize:11,
+                        color:C.snow,
+                        fontWeight:700,
+                      }}>
+                        {al.name} <span style={{color:C.smoke,fontSize:9,marginRight:4}}>({al.sym})</span>
+                      </div>
+                    </div>
+                    <button onClick={function(){setAlerts(function(p){return p.filter(function(x){return x.id!==al.id;});});}}
+                      style={{
+                        background:"transparent",
+                        border:"none",
+                        color:C.smoke,
+                        cursor:"pointer",
+                        padding:4,
+                        fontSize:14,
+                      }}>
+                      ✕
+                    </button>
+                  </div>
+                  
+                  {/* Body */}
+                  <div style={{
+                    background:C.layer2+"88",
+                    padding:"8px 10px",
+                    borderRadius:8,
+                    marginBottom:8,
+                  }}>
+                    <div style={{
+                      fontSize:12,
+                      color:C.mist,
+                      fontWeight:700,
+                      marginBottom:3,
+                      fontFamily:"Cairo,sans-serif",
+                    }}>
+                      {al.message}
+                    </div>
+                    <div style={{
+                      fontSize:10,
+                      color:C.smoke,
+                      lineHeight:1.5,
+                      fontFamily:"Cairo,sans-serif",
+                    }}>
+                      {al.detail}
+                    </div>
+                  </div>
+                  
+                  {/* Footer: priority + time */}
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                    <div style={{
+                      display:"inline-flex",
+                      alignItems:"center",
+                      gap:4,
+                      fontSize:9,
+                      color:al.color,
+                      background:al.color+"15",
+                      padding:"3px 8px",
+                      borderRadius:6,
+                      fontWeight:700,
+                      border:"1px solid "+al.color+"33",
+                    }}>
+                      {al.label}
+                    </div>
+                    <div style={{fontSize:9,color:C.smoke}}>
+                      {al.timestamp?new Date(al.timestamp).toLocaleString('ar-SA',{hour:'2-digit',minute:'2-digit'}):''}
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+            
+            // التنبيهات اليدوية (الكود الأصلي)
+
             var tColor=al.type==="above"?C.mint:al.type==="below"?C.coral:al.type==="volume"?C.amber:C.electric;
             var prColor=al.priority==="high"?C.coral:al.priority==="medium"?C.amber:C.mint;
             return(
