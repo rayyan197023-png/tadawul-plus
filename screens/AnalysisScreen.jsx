@@ -1612,7 +1612,10 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                                     borderRadius:10,padding:"8px 8px 6px",
                                     textAlign:"center",
                                   }}>
-                                    <div style={{fontSize:7,color:C.ash,marginBottom:3}}>{it.l}</div>
+                                          <div style={{fontSize:7,color:C.ash,marginBottom:3,display:"flex",alignItems:"center",justifyContent:"center",gap:3}}>
+                                      {it.l}
+                                      <Tooltip termKey={it.l} size="small"/>
+                                    </div>
                                     <div style={{fontSize:12,fontWeight:800,color:it.c,lineHeight:1}}>{it.v}</div>
                                     <div style={{fontSize:7,color:C.ash,marginTop:3,lineHeight:1.3}}>{it.s}</div>
                                   </div>
