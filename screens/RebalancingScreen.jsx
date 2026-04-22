@@ -284,9 +284,9 @@ function HealthScoreCard({ score }) {
     return '🚨 حرجة';
   };
 
-  const color = getColor(score);
+    const color = getColor(score);
   const circumference = 2 * Math.PI * 70;
-  const offset = circumference * (1 - score / 10);
+  const offset = circumference * (1 - animatedScore / 10);
 
   return (
     <div style={{
