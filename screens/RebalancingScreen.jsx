@@ -868,6 +868,40 @@ export default function RebalancingScreen() {
         <ImpactSummary impact={analysis.impactSummary}/>
       )}
 
+      {/* 🚀 زر طبّق الاقتراحات تلقائياً */}
+      {analysis.issues.length > 0 && (
+        <button
+          onClick={() => setShowAutoApply(true)}
+          style={{
+            width: "100%",
+            padding: "18px 20px",
+            background: "linear-gradient(135deg," + C.gold + "," + C.goldL + ")",
+            border: "none",
+            borderRadius: 16,
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 12,
+            boxShadow: "0 6px 24px " + C.gold + "55, 0 0 40px " + C.gold + "22",
+            fontFamily: "Cairo,sans-serif",
+            marginTop: 12,
+            marginBottom: 12,
+            transition: "all 0.2s",
+          }}
+        >
+          <span style={{fontSize: 22}}>⚡</span>
+          <span style={{
+            fontSize: 15,
+            fontWeight: 900,
+            color: C.ink,
+            letterSpacing: "0.5px",
+          }}>
+            طبّق الاقتراحات تلقائياً
+          </span>
+        </button>
+      )}
+
       {/* Footer Note */}
       <div style={{
         padding: "12px 14px",
