@@ -8,6 +8,7 @@ import { STOCKS } from '../../constants/stocksData';
 import { C, Ico, MiniLine, PRIORITY_ORDER, SectionHeader, SparkLine, TagFilter } from './MoreShared';
 import { useHaptic } from '../../hooks/useHaptic';
 import { useNav } from '../../store';
+import { SOUND_PRESETS, loadAlertSettings, saveAlertSettings, playAlertSound } from '../../engines/smartAlertsEngine';
 
 function SnapshotsTab(props) {
   var tp=props.p?props.p:props;
