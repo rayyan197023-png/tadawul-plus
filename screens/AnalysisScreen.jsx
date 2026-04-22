@@ -1639,9 +1639,12 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                                       overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{wyPh}</div>
                                   </div>
                                 )}
-                                {msLbl&&(
+                                                                {msLbl&&(
                                   <div style={{flex:1,minWidth:0}}>
-                                    <div style={{fontSize:7,color:C.ash,marginBottom:2}}>الهيكل</div>
+                                    <div style={{fontSize:7,color:C.ash,marginBottom:2,display:"flex",alignItems:"center",gap:3,justifyContent:"center"}}>
+                                      الهيكل
+                                      <Tooltip termKey="BOS" size="small"/>
+                                    </div>
                                     <div style={{fontSize:9,fontWeight:700,color:ex.bosBull?C.mint:C.coral,
                                       overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{msLbl}</div>
                                   </div>
