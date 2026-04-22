@@ -820,6 +820,10 @@ export default function RebalancingScreen() {
       {/* Summary */}
       <SummaryCard summary={analysis.summary}/>
 
+      {/* Donut Chart للقطاعات */}
+      {analysis.sectors && analysis.sectors.length > 0 && (
+        <SectorsDonutChart sectors={analysis.sectors}/>
+      )}
       {/* Issues */}
       {analysis.issues.length > 0 && (
         <>
