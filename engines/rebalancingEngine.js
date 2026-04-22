@@ -158,6 +158,128 @@ export function analyzePortfolio(positions, marketData) {
       },
     });
   }
+  // ─── 5. فحص التذبذب (Volatility) ────────────
+  const avgVolatility = calculateAvgVolatility(weightedPositions);
+  if (avgVolatility > HIGH_VOLATILITY) {
+    issues.push({
+      id: 'volatility',
+      severity: 'high',
+      icon: '⚡',
+      title: 'تذبذب عالٍ جداً',
+      description: `متوسط تذبذب المحفظة: ${Math.round(avgVolatility * 100)}%`,
+      ideal: `المثالي: أقل من ${Math.round(HIGH_VOLATILITY * 100)}%`,
+      impact: {
+        stress: '-40%',
+        stability: '+30%',
+      },
+      solution: {
+        action: 'stabilize',
+        message: 'أضف أسهماً دفاعية مستقرة (STC, Bupa, الاتصالات)',
+      },
+    });
+  } else if (avgVolatility < 0.15) {
+    issues.push({
+      id: 'volatility-good',
+      severity: 'good',
+      icon: '🛡️',
+      title: 'محفظة مستقرة',
+      description: `تذبذب منخفض: ${Math.round(avgVolatility * 100)}%`,
+      ideal: 'مستقرة نفسياً!',
+      solution: {
+        action: 'maintain',
+        message: 'يسهل الاحتفاظ بها على المدى الطويل',
+      },
+    });
+  }
+
+  // ─── 6. فحص Sharpe Ratio (العائد مقابل المخاطرة) ────
+  const portfolioSharpe = calculatePortfolioSharpe(weightedPositions);
+  if (portfolioSharpe < MIN_SHARPE) {
+    issues.push({
+      id: 'sharpe',
+      severity: 'medium',
+      icon: '📉',
+      title: 'عائد ضعيف مقابل المخاطرة',
+      description: `Sharpe Ratio: ${portfolioSharpe.toFixed(2)}`,
+      ideal: `المثالي: ${IDEAL_SHARPE}+`,
+      impact: {
+        efficiency: `+${Math.round((IDEAL_SHARPE - portfolioSharpe) * 100)}%`,
+        returns: '+25%',
+      },
+      solution: {
+        action: 'optimize',
+        message: 'استبدل الأسهم ذات الأداء الضعيف بأسهم ذات Sharpe أعلى',
+      },
+    });
+  } else if (portfolioSharpe >= IDEAL_SHARPE) {
+    issues.push({
+      id: 'sharpe-good',
+      severity: 'good',
+      icon: '🎯',
+      title: 'كفاءة عالية',
+      description: `Sharpe Ratio: ${portfolioSharpe.toFixed(2)}`,
+      ideal: 'عائد ممتاز مقابل المخاطرة!',
+      solution: {
+        action: 'maintain',
+        message: 'محفظتك تستخدم المخاطرة بذكاء',
+      },
+    });
+  }
+
+  // ─── 7. فحص توزيعات الأرباح (Dividend Yield) ──────
+  const avgDividendYield = calculateAvgDividendYield(weightedPositions);
+  if (avgDividendYield < 0.02 && positions.length >= 3) {
+    issues.push({
+      id: 'dividends',
+      severity: 'medium',
+      icon: '💰',
+      title: 'توزيعات أرباح منخفضة',
+      description: `متوسط العائد: ${(avgDividendYield * 100).toFixed(1)}%`,
+      ideal: `المثالي: ${(MIN_DIVIDEND_YIELD * 100).toFixed(0)}%+`,
+      impact: {
+        passive_income: '+150%',
+        annual_return: '+3%',
+      },
+      solution: {
+        action: 'add_dividends',
+        message: 'أضف أسهماً توزيعية (الراجحي، STC، معادن)',
+      },
+    });
+  } else if (avgDividendYield >= 0.05) {
+    issues.push({
+      id: 'dividends-good',
+      severity: 'good',
+      icon: '💵',
+      title: 'دخل سلبي ممتاز',
+      description: `توزيعات: ${(avgDividendYield * 100).toFixed(1)}% سنوياً`,
+      ideal: 'محفظة توزيعية قوية!',
+      solution: {
+        action: 'maintain',
+        message: 'دخل سلبي مستقر',
+      },
+    });
+  }
+
+  // ─── 8. فحص توازن Growth vs Value ──────────────
+  const growthValueBalance = calculateGrowthValueBalance(weightedPositions);
+  if (growthValueBalance.imbalanced) {
+    issues.push({
+      id: 'growth-value',
+      severity: 'medium',
+      icon: '⚖️',
+      title: `تركيز على ${growthValueBalance.dominant}`,
+      description: `${growthValueBalance.dominantPct}% من المحفظة`,
+      ideal: 'المثالي: توازن 50/50 بين Growth وValue',
+      impact: {
+        diversification: '+25%',
+        cycle_resilience: '+35%',
+      },
+      solution: {
+        action: 'rebalance',
+        message: growthValueBalance.suggestion,
+      },
+    });
+  }
 
   // 4. فحص عدد المراكز
   if (positions.length < 3) {
