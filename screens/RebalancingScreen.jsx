@@ -1147,55 +1147,7 @@ export default function RebalancingScreen() {
               </div>
             </div>
 
-                                    </div>
-            {/* الأزرار - ثابتة في الأسفل */}
-            <div style={{
-              padding: "12px 16px 20px",
-              borderTop: "1px solid " + C.line + "44",
-              background: C.ink,
-              display: "flex",
-              gap: 10,
-              flexShrink: 0,
-            }}>
-              <button
-                onClick={() => setShowAutoApply(false)}
-                style={{
-                  flex: 1,
-                  padding: "14px",
-                  background: C.layer2,
-                  border: "1px solid " + C.line,
-                  borderRadius: 12,
-                  color: C.mist,
-                  fontSize: 13,
-                  fontWeight: 800,
-                  cursor: "pointer",
-                  fontFamily: "Cairo,sans-serif",
-                }}
-              >
-                إغلاق
-              </button>
-              <button
-                onClick={() => {
-                  setShowAutoApply(false);
-                  setTab('portfolio');
-                }}
-                style={{
-                  flex: 1.5,
-                  padding: "14px",
-                  background: "linear-gradient(135deg," + C.gold + "," + C.goldL + ")",
-                  border: "none",
-                  borderRadius: 12,
-                  color: C.ink,
-                  fontSize: 13,
-                  fontWeight: 900,
-                  cursor: "pointer",
-                  fontFamily: "Cairo,sans-serif",
-                  boxShadow: "0 4px 16px " + C.gold + "55",
-                }}
-              >
-                ← الذهاب للمحفظة
-              </button>
-            </div>
+                                    </
           </div>
         </div>
       )}
