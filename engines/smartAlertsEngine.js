@@ -511,30 +511,44 @@ export function runSmartAlertsEngine(currentStocks, positions = [], options = {}
   };
 }
 
-// ─── صوت التنبيه ──────────────────────────────
-function playAlertSound() {
+// ─── صوت التنبيه (ديناميكي مع النغمات) ─────────
+export function playAlertSound(presetId, volume = 0.3) {
   if (typeof window === 'undefined') return;
+  
+  // تحميل الإعدادات
+  const settings = loadAlertSettings();
+  const finalPresetId = presetId || settings.soundPreset || 'classic';
+  const finalVolume = volume !== undefined ? volume : settings.volume || 0.3;
+  
+  const preset = SOUND_PRESETS[finalPresetId] || SOUND_PRESETS.classic;
   
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
     
-    osc.connect(gain);
-    gain.connect(ctx.destination);
+    // تشغيل كل نغمة من الـ preset
+    preset.notes.forEach(note => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.frequency.setValueAtTime(note.freq, ctx.currentTime + note.time);
+      
+      gain.gain.setValueAtTime(finalVolume, ctx.currentTime + note.time);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + note.time + note.duration);
+      
+      osc.start(ctx.currentTime + note.time);
+      osc.stop(ctx.currentTime + note.time + note.duration);
+    });
     
-    // نغمة ثلاثية (مميّزة)
-    osc.frequency.setValueAtTime(1200, ctx.currentTime);
-    osc.frequency.setValueAtTime(800, ctx.currentTime + 0.15);
-    osc.frequency.setValueAtTime(1200, ctx.currentTime + 0.3);
-    
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
-    
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.6);
+    // اهتزاز (على الموبايل)
+    if (settings.vibration && 'vibrate' in navigator) {
+      navigator.vibrate([100, 50, 100]);
+    }
   } catch (e) {}
 }
+
 
 // ─── إحصائيات التنبيهات ──────────────────────
 export function getAlertsStats() {
