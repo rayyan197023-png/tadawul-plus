@@ -475,7 +475,8 @@ export function sendBrowserNotification(alert) {
 
 // ─── تشغيل المحرك الكامل ──────────────────────
 export function runSmartAlertsEngine(currentStocks, positions = [], options = {}) {
-  const { enableBrowserNotif = true, enableSound = true } = options;
+  // تحميل الإعدادات من localStorage
+  const settings = loadAlertSettings();
   
   // توليد التنبيهات
   const newAlerts = generateSmartAlerts(currentStocks, positions);
@@ -485,8 +486,8 @@ export function runSmartAlertsEngine(currentStocks, positions = [], options = {}
   // حفظ في localStorage
   saveSmartAlerts(newAlerts);
   
-  // إرسال Browser Notifications للأولويات العالية
-  if (enableBrowserNotif) {
+  // إرسال Browser Notifications (احترام الإعدادات)
+  if (settings.browserNotifications) {
     newAlerts.forEach(alert => {
       if (alert.priority === PRIORITY.CRITICAL || alert.priority === PRIORITY.HIGH) {
         sendBrowserNotification(alert);
@@ -494,9 +495,15 @@ export function runSmartAlertsEngine(currentStocks, positions = [], options = {}
     });
   }
   
-  // تشغيل صوت للأولوية الحرجة
-  if (enableSound && newAlerts.some(a => a.priority === PRIORITY.CRITICAL)) {
-    playAlertSound();
+  // تشغيل الصوت (احترام الإعدادات)
+  if (settings.soundEnabled && settings.soundMode !== 'off') {
+    const shouldPlay = settings.soundMode === 'all' 
+      ? newAlerts.length > 0 
+      : newAlerts.some(a => a.priority === PRIORITY.CRITICAL);
+    
+    if (shouldPlay) {
+      playAlertSound(settings.soundPreset, settings.volume);
+    }
   }
   
   return {
@@ -510,6 +517,7 @@ export function runSmartAlertsEngine(currentStocks, positions = [], options = {}
     },
   };
 }
+
 
 // ─── صوت التنبيه (ديناميكي مع النغمات) ─────────
 export function playAlertSound(presetId, volume = 0.3) {
