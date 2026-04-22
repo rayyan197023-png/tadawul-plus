@@ -930,21 +930,24 @@ export default function RebalancingScreen() {
             padding: 0,
           }}
         >
-                              <div
+                                        <div
             onClick={(e) => e.stopPropagation()}
             style={{
               width: "100%",
-              maxHeight: "85vh",
+              height: "90vh",
+              maxHeight: "90vh",
               background: "linear-gradient(180deg," + C.layer1 + "," + C.ink + ")",
               borderTopLeftRadius: 24,
               borderTopRightRadius: 24,
               border: "1px solid " + C.gold + "44",
-              padding: "20px 16px 30px",
+              padding: "20px 16px 60px",
               overflowY: "auto",
               WebkitOverflowScrolling: "touch",
+              overscrollBehavior: "contain",
               boxShadow: "0 -10px 40px rgba(0,0,0,0.6)",
             }}
           >
+          
             {/* Handle */}
             <div style={{
               width: 40,
