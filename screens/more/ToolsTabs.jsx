@@ -596,6 +596,49 @@ function SettingsTab(props) {
                 fontFamily:"Cairo,sans-serif",
               }}>سياسة الخصوصية</button>
           </div>
+                    {/* ═══ نافذة إعدادات التنبيهات الذكية ═══ */}
+          {showSmartPanel&&(
+            <div style={{position:"fixed",inset:0,background:"rgba(6,8,15,.96)",zIndex:999,display:"flex",flexDirection:"column",justifyContent:"flex-end"}}>
+              <div style={{background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",borderRadius:"20px 20px 0 0",maxHeight:"90vh",overflowY:"auto",padding:"24px 16px 40px",border:"1px solid "+C.line}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+                  <button onClick={function(){setShowSmartPanel(false);}} style={{background:C.layer3,border:"1px solid "+C.line,color:C.smoke,padding:"7px 14px",borderRadius:10,cursor:"pointer",fontSize:12}}>
+                    <Ico k="back" color={C.smoke} size={14}/>
+                  </button>
+                  <div style={{textAlign:"center"}}>
+                    <div style={{fontSize:9,color:C.plasma,fontWeight:700,letterSpacing:"2px"}}>TADAWUL+</div>
+                    <div style={{fontSize:15,fontWeight:800,color:C.snow}}>✨ التنبيهات الذكية</div>
+                  </div>
+                  <div style={{width:36}}/>
+                </div>
+                
+                <div style={{display:"flex",flexDirection:"column",gap:14}}>
+                  
+                  {/* 🔊 قسم الصوت */}
+                  <div style={{background:"linear-gradient(135deg,"+C.layer2+","+C.layer3+")",borderRadius:14,padding:16,border:"1px solid "+C.line}}>
+                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
+                      <span style={{fontSize:20}}>🔊</span>
+                      <div style={{fontSize:14,fontWeight:900,color:C.snow,fontFamily:"Cairo,sans-serif"}}>الصوت</div>
+                    </div>
+                    
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px",background:C.layer2,borderRadius:10,marginBottom:10,border:"1px solid "+C.line+"44"}}>
+                      <div style={{fontSize:12,color:C.mist,fontWeight:700,fontFamily:"Cairo,sans-serif"}}>تفعيل الصوت</div>
+                      <button onClick={function(){updateAlertSettings({soundEnabled:!alertSettings.soundEnabled});}} style={{width:48,height:26,borderRadius:13,background:alertSettings.soundEnabled?C.mint:C.line,border:"none",cursor:"pointer",position:"relative",transition:"all 0.3s"}}>
+                        <div style={{position:"absolute",top:3,right:alertSettings.soundEnabled?3:25,width:20,height:20,borderRadius:10,background:C.snow,transition:"all 0.3s",boxShadow:"0 2px 6px rgba(0,0,0,0.3)"}}/>
+                      </button>
+                    </div>
+
+                    {alertSettings.soundEnabled && (
+                      <>
+                        <div style={{fontSize:10,color:C.smoke,marginBottom:8,fontWeight:700,textAlign:"right"}}>متى يُشغّل الصوت؟</div>
+                        {[
+                          {k:"all",l:"كل التنبيهات",d:"حتى الأولويات المتوسطة والمنخفضة"},
+                          {k:"critical",l:"الحرجة فقط",d:"الأولويات الحرجة (Critical/High)"},
+                          {k:"off",l:"صامت",d:"لا صوت لكن التنبيهات تظهر"},
+                        ].map(function(opt){
+                          var isActive = alertSettings.soundMode === opt.k;
+                          return (
+                            <button key={opt.k} onClick={function(){updateAlertSettings({soundMode:opt.k});}} style={{width:"100%",padding:"12px",background:isActive?C.electric+"18":C.layer2,border:"1px solid "+(isActive?C.electric+"55":C.line+"44"),borderRadius:10,cursor:"pointer",marginBottom:8,textAlign:"right",transition:"all 0.2s"}}>
+                              <div style={{fontS​​​​​​​​​​​​​​​​
           {showPrivacy&&(
             <div style={{position:"fixed",inset:0,background:"rgba(6,8,15,.97)",zIndex:999,overflowY:"auto"}}>
               <div style={{background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",minHeight:"100vh",padding:"0 0 40px"}}>
