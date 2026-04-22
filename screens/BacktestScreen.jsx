@@ -16,6 +16,8 @@ import EquityCurveChart from '../components/charts/EquityCurveChart';
 import BacktestResultsCard from '../components/charts/BacktestResultsCard';
 import MonteCarloChart from '../components/charts/MonteCarloChart';
 import { STOCKS } from '../constants/stocksData';
+import { useNav } from '../store';
+
 
 var C = {
   ink: "#06080f", deep: "#090c16", void: "#0c1020",
