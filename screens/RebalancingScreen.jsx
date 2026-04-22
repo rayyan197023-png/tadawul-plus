@@ -927,7 +927,7 @@ export default function RebalancingScreen() {
               borderTopLeftRadius: 24,
               borderTopRightRadius: 24,
               border: "1px solid " + C.gold + "44",
-              padding: "20px 16px",
+                            padding: "20px 16px 40px",
               overflowY: "auto",
               boxShadow: "0 -10px 40px rgba(0,0,0,0.6)",
             }}
