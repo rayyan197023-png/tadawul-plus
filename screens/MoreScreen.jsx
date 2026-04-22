@@ -240,7 +240,7 @@ const { setTab } = useNav();
     }
   },[]);
 
-  // ── Smart Alerts Engine -- تشغيل دوري ────────────────────────────
+    // ── Smart Alerts Engine -- تشغيل دوري ────────────────────────────
   useEffect(function() {
     if (typeof window === 'undefined') return;
     
@@ -250,21 +250,33 @@ const { setTab } = useNav();
     // تشغيل المحرك كل 30 ثانية
     const runEngine = () => {
       try {
-        // إعداد بيانات الأسهم للتحليل
+        // إعداد بيانات الأسهم للتحليل -- استخدام analyzeStockRadar (التحليل العميق)
         const stocksForAnalysis = stocksLive.map(stock => {
-          const bars = genBars(stock);
-          const healthData = stockHealth(stock, bars);
-          return {
-            sym: stock.sym,
-            name: stock.name,
-            p: stock.p,
-            pct: stock.pct,
-            health: healthData?.score || 50,
-            rsi: healthData?.rsi || 50,
-            macd: healthData?.macdSignal || 'neutral',
-            bos: healthData?.bos || null,
-          };
-        });
+          try {
+            const analysis = analyzeStockRadar(stock);
+            return {
+              sym: stock.sym,
+              name: stock.name,
+              p: stock.p,
+              pct: stock.pct,
+              health: analysis.total,
+              rsi: analysis.mom?.rsi || 50,
+              macd: analysis.mom?.macd ? 'bullish' : 'bearish',
+              bos: analysis.ms?.bosBull ? 'bullish' : (analysis.ms?.bosBear ? 'bearish' : null),
+              choch: analysis.ms?.choch || false,
+              oversold: analysis.mom?.oversold || false,
+              overbought: analysis.mom?.overbought || false,
+              smDetected: analysis.liq?.smDetected || false,
+              cats: analysis.cats || [],
+              target: analysis.target,
+              stop: analysis.stop,
+              scoreCol: analysis.scoreCol,
+            };
+          } catch(e) {
+            return null;
+          }
+        }).filter(s => s !== null);
+
         
         // جلب المحفظة
         let positions = [];
