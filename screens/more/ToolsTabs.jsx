@@ -1167,7 +1167,7 @@ function AlertsPanel(props) {
             </span>
           </button>
         </div>
-                style={{padding:14,display:"flex",flexDirection:"column",gap:10}}>
+                <div style={{padding:14,display:"flex",flexDirection:"column",gap:10}}>
           
           {/* ═══ صفحة الإعدادات ═══ */}
           {activeTab==="settings"&&(
