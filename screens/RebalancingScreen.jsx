@@ -902,6 +902,291 @@ export default function RebalancingScreen() {
         </button>
       )}
 
+      {/* ⚡ Modal: طبّق الاقتراحات تلقائياً */}
+      {showAutoApply && (
+        <div
+          onClick={() => setShowAutoApply(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.85)",
+            backdropFilter: "blur(12px)",
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "center",
+            padding: 0,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: "100%",
+              maxHeight: "85vh",
+              background: "linear-gradient(180deg," + C.layer1 + "," + C.ink + ")",
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
+              border: "1px solid " + C.gold + "44",
+              padding: "20px 16px",
+              overflowY: "auto",
+              boxShadow: "0 -10px 40px rgba(0,0,0,0.6)",
+            }}
+          >
+            {/* Handle */}
+            <div style={{
+              width: 40,
+              height: 4,
+              background: C.smoke,
+              borderRadius: 2,
+              margin: "0 auto 16px",
+              opacity: 0.5,
+            }}/>
+
+            {/* Header */}
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              marginBottom: 18,
+            }}>
+              <div style={{
+                width: 44,
+                height: 44,
+                borderRadius: 12,
+                background: "linear-gradient(135deg," + C.gold + "," + C.goldL + ")",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 22,
+                boxShadow: "0 4px 12px " + C.gold + "44",
+              }}>
+                ⚡
+              </div>
+              <div style={{flex: 1}}>
+                <div style={{
+                  fontSize: 17,
+                  fontWeight: 900,
+                  color: C.snow,
+                  fontFamily: "Cairo,sans-serif",
+                }}>
+                  الخطة التلقائية
+                </div>
+                <div style={{
+                  fontSize: 10,
+                  color: C.smoke,
+                  marginTop: 2,
+                }}>
+                  قائمة الصفقات المقترحة
+                </div>
+              </div>
+              <button
+                onClick={() => setShowAutoApply(false)}
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 10,
+                  border: "1px solid " + C.line,
+                  background: C.layer2,
+                  color: C.smoke,
+                  fontSize: 16,
+                  cursor: "pointer",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* قائمة الصفقات */}
+            <div style={{marginBottom: 16}}>
+              {analysis.issues
+                .filter(i => i.solution && i.solution.action === 'sell')
+                .map((issue, i) => (
+                  <div key={i} style={{
+                    background: C.coral + "12",
+                    border: "1px solid " + C.coral + "33",
+                    borderRadius: 12,
+                    padding: "12px 14px",
+                    marginBottom: 10,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                  }}>
+                    <div style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 10,
+                      background: C.coral + "22",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 18,
+                      flexShrink: 0,
+                    }}>
+                      📉
+                    </div>
+                    <div style={{flex: 1}}>
+                      <div style={{
+                        fontSize: 13,
+                        fontWeight: 900,
+                        color: C.coral,
+                        fontFamily: "Cairo,sans-serif",
+                      }}>
+                        بيع {issue.solution.percentage}% من {issue.solution.name}
+                      </div>
+                      <div style={{
+                        fontSize: 10,
+                        color: C.smoke,
+                        marginTop: 3,
+                        fontFamily: "IBM Plex Mono,monospace",
+                      }}>
+                        ≈ {formatCurrency(issue.solution.amount)} ريال
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+              {analysis.issues
+                .filter(i => i.solution && (i.solution.action === 'add' || i.solution.suggestions))
+                .map((issue, i) => (
+                  <div key={'add-' + i} style={{
+                    background: C.mint + "12",
+                    border: "1px solid " + C.mint + "33",
+                    borderRadius: 12,
+                    padding: "12px 14px",
+                    marginBottom: 10,
+                  }}>
+                    <div style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      marginBottom: 8,
+                    }}>
+                      <div style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 10,
+                        background: C.mint + "22",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 18,
+                        flexShrink: 0,
+                      }}>
+                        📈
+                      </div>
+                      <div style={{flex: 1}}>
+                        <div style={{
+                          fontSize: 13,
+                          fontWeight: 900,
+                          color: C.mint,
+                          fontFamily: "Cairo,sans-serif",
+                        }}>
+                          إضافة: {issue.title}
+                        </div>
+                      </div>
+                    </div>
+                    {issue.solution.suggestions && (
+                      <div style={{paddingRight: 50}}>
+                        {issue.solution.suggestions.map((s, idx) => (
+                          <div key={idx} style={{
+                            fontSize: 11,
+                            color: C.mist,
+                            padding: "3px 0",
+                            fontFamily: "Cairo,sans-serif",
+                          }}>
+                            • <span style={{color: C.gold, fontWeight: 700}}>{s.sector}</span>
+                            <span style={{color: C.smoke}}> ({s.examples.join('، ')})</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {issue.solution.message && !issue.solution.suggestions && (
+                      <div style={{
+                        paddingRight: 50,
+                        fontSize: 11,
+                        color: C.mist,
+                        fontFamily: "Cairo,sans-serif",
+                      }}>
+                        {issue.solution.message}
+                      </div>
+                    )}
+                  </div>
+                ))}
+            </div>
+
+            {/* ملاحظة */}
+            <div style={{
+              padding: "14px 16px",
+              background: C.amber + "10",
+              border: "1px solid " + C.amber + "33",
+              borderRadius: 12,
+              marginBottom: 16,
+            }}>
+              <div style={{
+                fontSize: 11,
+                color: C.amber,
+                fontWeight: 800,
+                marginBottom: 6,
+              }}>
+                ⚠️ تنويه مهم
+              </div>
+              <div style={{
+                fontSize: 11,
+                color: C.mist,
+                lineHeight: 1.7,
+                fontFamily: "Cairo,sans-serif",
+              }}>
+                هذه خطة استرشادية. تنفيذ الصفقات يتم من شاشة المحفظة الرئيسية.
+                القرار النهائي يعود لك بناءً على ظروف السوق.
+              </div>
+            </div>
+
+            {/* الأزرار */}
+            <div style={{display: "flex", gap: 10}}>
+              <button
+                onClick={() => setShowAutoApply(false)}
+                style={{
+                  flex: 1,
+                  padding: "14px",
+                  background: C.layer2,
+                  border: "1px solid " + C.line,
+                  borderRadius: 12,
+                  color: C.mist,
+                  fontSize: 13,
+                  fontWeight: 800,
+                  cursor: "pointer",
+                  fontFamily: "Cairo,sans-serif",
+                }}
+              >
+                إغلاق
+              </button>
+              <button
+                onClick={() => {
+                  setShowAutoApply(false);
+                  setTab('portfolio');
+                }}
+                style={{
+                  flex: 1.5,
+                  padding: "14px",
+                  background: "linear-gradient(135deg," + C.gold + "," + C.goldL + ")",
+                  border: "none",
+                  borderRadius: 12,
+                  color: C.ink,
+                  fontSize: 13,
+                  fontWeight: 900,
+                  cursor: "pointer",
+                  fontFamily: "Cairo,sans-serif",
+                  boxShadow: "0 4px 16px " + C.gold + "55",
+                }}
+              >
+                ← الذهاب للمحفظة
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
       {/* Footer Note */}
       <div style={{
         padding: "12px 14px",
