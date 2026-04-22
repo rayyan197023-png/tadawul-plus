@@ -356,6 +356,131 @@ function calculateHealthScore({ maxPosition, numSectors, numPositions, avgCorrel
 
   return Math.max(0, Math.min(10, Number(score.toFixed(1))));
 }
+// ─── حساب متوسط التذبذب (Volatility) ──────────
+function calculateAvgVolatility(positions) {
+  if (positions.length === 0) return 0;
+  
+  // نستخدم قيم تقديرية بناءً على القطاع
+  const sectorVolatility = {
+    'تقنية': 0.35,
+    'طاقة': 0.32,
+    'مصارف': 0.20,
+    'اتصالات': 0.18,
+    'صحة': 0.22,
+    'عقاري': 0.28,
+    'استهلاكي': 0.24,
+    'صناعي': 0.30,
+    'مواد بناء': 0.26,
+    'غير محدد': 0.25,
+  };
+  
+  let weightedVol = 0;
+  positions.forEach(p => {
+    const sector = p.stk?.sec || 'غير محدد';
+    const vol = sectorVolatility[sector] || 0.25;
+    weightedVol += vol * p.weight;
+  });
+  
+  return weightedVol;
+}
+
+// ─── حساب Sharpe Ratio للمحفظة ────────────────
+function calculatePortfolioSharpe(positions) {
+  if (positions.length === 0) return 0;
+  
+  // نستخدم Health Score كـ proxy للعائد
+  // Sharpe = (Return - RiskFree) / Volatility
+  let weightedHealthScore = 0;
+  positions.forEach(p => {
+    const health = p.health || 50;
+    weightedHealthScore += (health / 100) * p.weight;
+  });
+  
+  const vol = calculateAvgVolatility(positions);
+  const riskFree = 0.04; // معدل سايبور ~4%
+  const expectedReturn = weightedHealthScore * 0.15; // تقدير
+  
+  if (vol === 0) return 0;
+  return (expectedReturn - riskFree) / vol;
+}
+
+// ─── حساب متوسط توزيعات الأرباح ──────────────
+function calculateAvgDividendYield(positions) {
+  if (positions.length === 0) return 0;
+  
+  // تقدير بناءً على القطاع
+  const sectorDividends = {
+    'مصارف': 0.045,       // 4.5%
+    'اتصالات': 0.055,     // 5.5%
+    'طاقة': 0.060,        // 6%
+    'مواد بناء': 0.035,   // 3.5%
+    'صناعي': 0.030,       // 3%
+    'عقاري': 0.040,       // 4%
+    'استهلاكي': 0.025,    // 2.5%
+    'تقنية': 0.015,       // 1.5%
+    'صحة': 0.020,         // 2%
+    'غير محدد': 0.020,
+  };
+  
+  let weightedDiv = 0;
+  positions.forEach(p => {
+    const sector = p.stk?.sec || 'غير محدد';
+    const div = sectorDividends[sector] || 0.020;
+    weightedDiv += div * p.weight;
+  });
+  
+  return weightedDiv;
+}
+
+// ─── حساب توازن Growth vs Value ──────────────
+function calculateGrowthValueBalance(positions) {
+  if (positions.length < 2) {
+    return { imbalanced: false };
+  }
+  
+  // تصنيف القطاعات
+  const growthSectors = ['تقنية', 'صحة', 'استهلاكي'];
+  const valueSectors = ['مصارف', 'طاقة', 'اتصالات', 'مواد بناء', 'صناعي', 'عقاري'];
+  
+  let growthWeight = 0;
+  let valueWeight = 0;
+  
+  positions.forEach(p => {
+    const sector = p.stk?.sec || 'غير محدد';
+    if (growthSectors.includes(sector)) {
+      growthWeight += p.weight;
+    } else if (valueSectors.includes(sector)) {
+      valueWeight += p.weight;
+    }
+  });
+  
+  const total = growthWeight + valueWeight;
+  if (total === 0) return { imbalanced: false };
+  
+  const growthPct = growthWeight / total;
+  const valuePct = valueWeight / total;
+  
+  // اعتبار غير متوازن إذا كان أحدهما > 80%
+  if (growthPct > 0.80) {
+    return {
+      imbalanced: true,
+      dominant: 'Growth (نمو)',
+      dominantPct: Math.round(growthPct * 100),
+      suggestion: 'أضف أسهم Value (مصارف، طاقة، اتصالات)',
+    };
+  }
+  
+  if (valuePct > 0.80) {
+    return {
+      imbalanced: true,
+      dominant: 'Value (قيمة)',
+      dominantPct: Math.round(valuePct * 100),
+      suggestion: 'أضف أسهم Growth (تقنية، صحة، استهلاكي)',
+    };
+  }
+  
+  return { imbalanced: false };
+}
 
 // ─── حساب الارتباط المتوسط ───────────────────
 function calculateAvgCorrelation(positions, marketData) {
