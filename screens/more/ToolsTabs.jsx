@@ -1021,9 +1021,15 @@ function AlertsPanel(props) {
     });
     setPrice(""); setNote(""); setExpiry("");
   }
-  var sortedAlerts=alerts.slice().sort(function(a,b){
+    // فصل التنبيهات
+  var smartAlerts=alerts.filter(function(a){return a.smart===true;}).sort(function(a,b){
+    return (b.timestamp||0)-(a.timestamp||0);
+  });
+  var manualAlerts=alerts.filter(function(a){return !a.smart;}).sort(function(a,b){
     return (PRIORITY_ORDER[a.priority]||1)-(PRIORITY_ORDER[b.priority]||1);
   });
+  var sortedAlerts=activeTab==="smart"?smartAlerts:manualAlerts;
+
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(6,8,15,.95)",zIndex:999,display:"flex",flexDirection:"column",justifyContent:"flex-end"}}>
       <div style={{background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",borderRadius:"20px 20px 0 0",maxHeight:"92vh",overflowY:"auto",paddingBottom:"80px"
