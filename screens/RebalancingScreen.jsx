@@ -243,7 +243,33 @@ function IssueCard({ issue, index }) {
 
 // ─── بطاقة Health Score الكبيرة ─────────────────
 function HealthScoreCard({ score }) {
+  const [animatedScore, setAnimatedScore] = useState(0);
+
+  useEffect(() => {
+    const duration = 1800; // مدة الانيميشن بالملي ثانية
+    const startTime = performance.now();
+
+    const animate = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Ease-out cubic للحركة الطبيعية
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = eased * score;
+      
+      setAnimatedScore(Number(current.toFixed(1)));
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    const frameId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frameId);
+  }, [score]);
+
   const getColor = (s) => {
+  
     if (s >= 8) return C.mint;
     if (s >= 6) return C.amber;
     if (s >= 4) return C.gold;
