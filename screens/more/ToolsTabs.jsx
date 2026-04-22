@@ -596,7 +596,7 @@ function SettingsTab(props) {
                 fontFamily:"Cairo,sans-serif",
               }}>سياسة الخصوصية</button>
           </div>
-                    {/* ═══ نافذة إعدادات التنبيهات الذكية ═══ */}
+            {/* ═══ نافذة إعدادات التنبيهات الذكية ═══ */}
           {showSmartPanel&&(
             <div style={{position:"fixed",inset:0,background:"rgba(6,8,15,.96)",zIndex:999,display:"flex",flexDirection:"column",justifyContent:"flex-end"}}>
               <div style={{background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",borderRadius:"20px 20px 0 0",maxHeight:"90vh",overflowY:"auto",padding:"24px 16px 40px",border:"1px solid "+C.line}}>
@@ -638,7 +638,84 @@ function SettingsTab(props) {
                           var isActive = alertSettings.soundMode === opt.k;
                           return (
                             <button key={opt.k} onClick={function(){updateAlertSettings({soundMode:opt.k});}} style={{width:"100%",padding:"12px",background:isActive?C.electric+"18":C.layer2,border:"1px solid "+(isActive?C.electric+"55":C.line+"44"),borderRadius:10,cursor:"pointer",marginBottom:8,textAlign:"right",transition:"all 0.2s"}}>
-                              <div style={{fontS​​​​​​​​​​​​​​​​
+                              <div style={{fontSize:12,fontWeight:800,color:isActive?C.electric:C.mist,fontFamily:"Cairo,sans-serif",marginBottom:3}}>
+                                {isActive && "● "}{opt.l}
+                              </div>
+                              <div style={{fontSize:9,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>{opt.d}</div>
+                            </button>
+                          );
+                        })}
+                      </>
+                    )}
+                  </div>
+
+                  {/* 🎵 اختيار النغمة */}
+                  {alertSettings.soundEnabled && alertSettings.soundMode !== 'off' && (
+                    <div style={{background:"linear-gradient(135deg,"+C.layer2+","+C.layer3+")",borderRadius:14,padding:16,border:"1px solid "+C.line}}>
+                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
+                        <span style={{fontSize:20}}>🎵</span>
+                        <div style={{fontSize:14,fontWeight:900,color:C.snow,fontFamily:"Cairo,sans-serif"}}>نغمة التنبيه</div>
+                      </div>
+
+                      {Object.values(SOUND_PRESETS).map(function(preset){
+                        var isActive = alertSettings.soundPreset === preset.id;
+                        return (
+                          <div key={preset.id} style={{display:"flex",alignItems:"center",gap:10,padding:"12px",background:isActive?C.gold+"12":C.layer2,border:"1px solid "+(isActive?C.gold+"55":C.line+"44"),borderRadius:10,marginBottom:8,cursor:"pointer"}} onClick={function(){updateAlertSettings({soundPreset:preset.id});}}>
+                            <div style={{width:20,height:20,borderRadius:10,border:"2px solid "+(isActive?C.gold:C.line),background:isActive?C.gold:"transparent",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                              {isActive && <div style={{width:8,height:8,borderRadius:4,background:C.ink}}/>}
+                            </div>
+                            <div style={{flex:1,textAlign:"right"}}>
+                              <div style={{fontSize:13,fontWeight:800,color:isActive?C.gold:C.snow,fontFamily:"Cairo,sans-serif",marginBottom:2}}>{preset.name}</div>
+                              <div style={{fontSize:10,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>{preset.description}</div>
+                            </div>
+                            <button onClick={function(e){e.stopPropagation();playAlertSound(preset.id, alertSettings.volume);}} style={{width:36,height:36,borderRadius:10,background:C.electric+"22",border:"1px solid "+C.electric+"44",color:C.electric,fontSize:16,cursor:"pointer",flexShrink:0}}>▶</button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* 📱 الإشعارات */}
+                  <div style={{background:"linear-gradient(135deg,"+C.layer2+","+C.layer3+")",borderRadius:14,padding:16,border:"1px solid "+C.line}}>
+                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
+                      <span style={{fontSize:20}}>📱</span>
+                      <div style={{fontSize:14,fontWeight:900,color:C.snow,fontFamily:"Cairo,sans-serif"}}>الإشعارات</div>
+                    </div>
+
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px",background:C.layer2,borderRadius:10,marginBottom:10,border:"1px solid "+C.line+"44"}}>
+                      <div>
+                        <div style={{fontSize:12,color:C.mist,fontWeight:700,fontFamily:"Cairo,sans-serif",marginBottom:3}}>Browser Notifications</div>
+                        <div style={{fontSize:9,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>تنبيه حتى لو التطبيق مغلق</div>
+                      </div>
+                      <button onClick={function(){updateAlertSettings({browserNotifications:!alertSettings.browserNotifications});}} style={{width:48,height:26,borderRadius:13,background:alertSettings.browserNotifications?C.mint:C.line,border:"none",cursor:"pointer",position:"relative",transition:"all 0.3s",flexShrink:0}}>
+                        <div style={{position:"absolute",top:3,right:alertSettings.browserNotifications?3:25,width:20,height:20,borderRadius:10,background:C.snow,transition:"all 0.3s",boxShadow:"0 2px 6px rgba(0,0,0,0.3)"}}/>
+                      </button>
+                    </div>
+
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px",background:C.layer2,borderRadius:10,border:"1px solid "+C.line+"44"}}>
+                      <div>
+                        <div style={{fontSize:12,color:C.mist,fontWeight:700,fontFamily:"Cairo,sans-serif",marginBottom:3}}>الاهتزاز</div>
+                        <div style={{fontSize:9,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>اهتزاز على الموبايل مع الصوت</div>
+                      </div>
+                      <button onClick={function(){updateAlertSettings({vibration:!alertSettings.vibration});}} style={{width:48,height:26,borderRadius:13,background:alertSettings.vibration?C.mint:C.line,border:"none",cursor:"pointer",position:"relative",transition:"all 0.3s",flexShrink:0}}>
+                        <div style={{position:"absolute",top:3,right:alertSettings.vibration?3:25,width:20,height:20,borderRadius:10,background:C.snow,transition:"all 0.3s",boxShadow:"0 2px 6px rgba(0,0,0,0.3)"}}/>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* ℹ️ ملاحظة */}
+                  <div style={{padding:"12px 14px",background:C.plasma+"10",border:"1px solid "+C.plasma+"33",borderRadius:10,marginTop:4}}>
+                    <div style={{fontSize:10,color:C.plasma,fontWeight:800,marginBottom:5}}>ℹ️ ملاحظة</div>
+                    <div style={{fontSize:10,color:C.mist,lineHeight:1.6,fontFamily:"Cairo,sans-serif"}}>
+                      هذه الإعدادات تُطبّق على التنبيهات الذكية التلقائية فقط.
+                      التنبيهات اليدوية لها إعدادات منفصلة.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
           {showPrivacy&&(
             <div style={{position:"fixed",inset:0,background:"rgba(6,8,15,.97)",zIndex:999,overflowY:"auto"}}>
               <div style={{background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",minHeight:"100vh",padding:"0 0 40px"}}>
