@@ -340,7 +340,7 @@ function HealthScoreCard({ score }) {
           alignItems: "center",
           justifyContent: "center",
         }}>
-          <div style={{
+                    <div style={{
             fontFamily: "IBM Plex Mono,monospace",
             fontSize: 36,
             fontWeight: 900,
@@ -348,7 +348,7 @@ function HealthScoreCard({ score }) {
             lineHeight: 1,
             textShadow: "0 0 20px " + color + "88",
           }}>
-            {score}
+            {animatedScore}
           </div>
           <div style={{
             fontSize: 11,
