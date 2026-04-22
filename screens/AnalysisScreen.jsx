@@ -33,6 +33,8 @@ import {
   C,
 } from '../components/analysis/AnalysisHelpers';
 
+import Tooltip from '../components/Tooltip';
+
 export default function AnalysisScreen({ commData: extCommData } = {}) {
   const liveStocks = useSharedPrices(); // أسعار مشتركة محدَّثة
   
