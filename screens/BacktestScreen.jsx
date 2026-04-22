@@ -186,7 +186,7 @@ export default function BacktestScreen() {
       fontFamily: "Cairo,sans-serif",
       direction: "rtl",
     }}>
-          }}>
+
       {/* 🔙 زر الرجوع */}
       <div style={{
         display: "flex",
