@@ -16,7 +16,8 @@ import { TAB_IDS } from '../constants/navigation';
 import { useSharedPrices } from '../store';
 import { useHaptic } from '../hooks/useHaptic';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
-
+import { runSmartAlertsEngine, requestNotificationPermission } from '../engines/smartAlertsEngine';
+import { stockHealth, genBars } from '../engines/analysisEngine';
 // ── Shared constants + UI
 import { C, Ico, COMM, PRIORITY_ORDER, WATCHLIST_DEFAULT, RANKINGS, FUNDS, IPOS, EVENTS, DIVS, CSS_STR, TADAWUL, WTI } from './more/MoreShared'; 
 
