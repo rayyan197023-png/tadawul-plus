@@ -482,7 +482,7 @@ function SettingsTab(props) {
               <div onClick={function(){
                 var shareData={title:"تداول+ | تطبيق الأسهم السعودية",text:"تطبيق تداول+ المتكامل لتحليل سوق الأسهم السعودية بالذكاء الاصطناعي",url:"https://claude.ai"};
                 var tryShare=function(w){if(w&&w.navigator&&w.navigator.share){w.navigator.share(shareData).catch(function(){});return true;}return false;};
-                if(!tryShare(window)){try{if(!tryShare(window.top))tryShare(window.parent);}catch(e){}}
+              if(!tryShare(window)){try{if(!tryShare(window.top))tryShare(window.parent);}catch(e){}}
               }} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 20px",cursor:"pointer"}}>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={C.smoke} strokeWidth="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                 <span style={{fontSize:13,color:C.snow}}>مشاركة التطبيق</span>
