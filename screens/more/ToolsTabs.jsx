@@ -1047,6 +1047,94 @@ function AlertsPanel(props) {
             <span style={{fontSize:9,color:C.smoke}}> نشط</span>
           </div>
         </div>
+        
+        {/* 📑 التبويبات -- يدوية / ذكية */}
+        <div style={{
+          display: "flex",
+          gap: 8,
+          padding: "12px 14px 0",
+          borderBottom: "1px solid " + C.line + "44",
+        }}>
+          <button
+            onClick={function() { setActiveTab("manual"); }}
+            style={{
+              flex: 1,
+              padding: "10px",
+              background: activeTab === "manual"
+                ? "linear-gradient(135deg," + C.electric + "22," + C.electric + "08)"
+                : "transparent",
+              border: "1px solid " + (activeTab === "manual" ? C.electric + "55" : C.line + "44"),
+              borderRadius: 10,
+              color: activeTab === "manual" ? C.electric : C.smoke,
+              fontSize: 12,
+              fontWeight: 800,
+              cursor: "pointer",
+              fontFamily: "Cairo,sans-serif",
+              position: "relative",
+              transition: "all 0.2s",
+            }}
+          >
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <Ico k="bell" color={activeTab === "manual" ? C.electric : C.smoke} size={13} />
+              يدوية
+            </span>
+            {manualAlerts.length > 0 && (
+              <span style={{
+                position: "absolute",
+                top: 6,
+                right: 8,
+                background: C.electric + "33",
+                color: C.electric,
+                fontSize: 9,
+                padding: "1px 6px",
+                borderRadius: 6,
+                fontWeight: 800,
+              }}>
+                {manualAlerts.length}
+              </span>
+            )}
+          </button>
+
+          <button
+            onClick={function() { setActiveTab("smart"); }}
+            style={{
+              flex: 1,
+              padding: "10px",
+              background: activeTab === "smart"
+                ? "linear-gradient(135deg," + C.gold + "22," + C.gold + "08)"
+                : "transparent",
+              border: "1px solid " + (activeTab === "smart" ? C.gold + "55" : C.line + "44"),
+              borderRadius: 10,
+              color: activeTab === "smart" ? C.gold : C.smoke,
+              fontSize: 12,
+              fontWeight: 800,
+              cursor: "pointer",
+              fontFamily: "Cairo,sans-serif",
+              position: "relative",
+              transition: "all 0.2s",
+            }}
+          >
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <span style={{ fontSize: 14 }}>✨</span>
+              الذكية
+            </span>
+            {smartAlerts.length > 0 && (
+              <span style={{
+                position: "absolute",
+                top: 6,
+                right: 8,
+                background: C.gold + "33",
+                color: C.gold,
+                fontSize: 9,
+                padding: "1px 6px",
+                borderRadius: 6,
+                fontWeight: 800,
+              }}>
+                {smartAlerts.length}
+              </span>
+            )}
+          </button>
+        </div>
         <div style={{padding:14,display:"flex",flexDirection:"column",gap:10}}>
           <div style={{background:C.layer3,borderRadius:14,padding:14,border:"1px solid "+C.line}}>
             <div style={{fontSize:10,color:C.smoke,marginBottom:8,textAlign:"right",fontWeight:700}}>السهم</div>
