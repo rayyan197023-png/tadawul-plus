@@ -679,6 +679,18 @@ export default function RebalancingScreen() {
   const { setTab } = useNav(); 
   const [showAutoApply, setShowAutoApply] = useState(false);
 
+  // منع scroll في الصفحة الخلفية عند فتح Modal
+  useEffect(() => {
+    if (showAutoApply) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showAutoApply]);
+
   // جلب المحفظة من localStorage
   const positions = useMemo(() => {
     try {
