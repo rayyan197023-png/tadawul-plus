@@ -1629,9 +1629,12 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                                 borderRadius:10,padding:"8px 10px",
                                 display:"flex",gap:8,alignItems:"flex-start",
                               }}>
-                                {wyPh&&(
+                                                                {wyPh&&(
                                   <div style={{flex:1,minWidth:0}}>
-                                    <div style={{fontSize:7,color:C.ash,marginBottom:2}}>وايكوف</div>
+                                    <div style={{fontSize:7,color:C.ash,marginBottom:2,display:"flex",alignItems:"center",gap:3,justifyContent:"center"}}>
+                                      وايكوف
+                                      <Tooltip termKey="Wyckoff" size="small"/>
+                                    </div>
                                     <div style={{fontSize:10,fontWeight:700,color:C.teal,
                                       overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{wyPh}</div>
                                   </div>
