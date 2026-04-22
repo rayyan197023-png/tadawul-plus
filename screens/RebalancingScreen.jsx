@@ -200,6 +200,29 @@ function IssueCard({ issue, index }) {
               {issue.solution.message}
             </div>
           )}
+          {issue.solution.action === 'stabilize' && (
+            <div style={{fontSize: 12, color: C.snow, fontFamily: "Cairo,sans-serif"}}>
+              {issue.solution.message}
+            </div>
+          )}
+
+          {issue.solution.action === 'optimize' && (
+            <div style={{fontSize: 12, color: C.snow, fontFamily: "Cairo,sans-serif"}}>
+              {issue.solution.message}
+            </div>
+          )}
+
+          {issue.solution.action === 'add_dividends' && (
+            <div style={{fontSize: 12, color: C.snow, fontFamily: "Cairo,sans-serif"}}>
+              {issue.solution.message}
+            </div>
+          )}
+
+          {issue.solution.action === 'rebalance' && (
+            <div style={{fontSize: 12, color: C.snow, fontFamily: "Cairo,sans-serif"}}>
+              {issue.solution.message}
+            </div>
+          )}
 
           {issue.solution.action === 'maintain' && (
             <div style={{fontSize: 12, color: C.snow, fontFamily: "Cairo,sans-serif"}}>
