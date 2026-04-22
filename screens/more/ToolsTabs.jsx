@@ -1048,7 +1048,7 @@ function AlertsPanel(props) {
           </button>
           <div style={{textAlign:"center"}}>
             <div style={{fontSize:9,color:C.electric,fontWeight:700,letterSpacing:"2px"}}>TADAWUL+</div>
-            <div style={{fontSize:15,fontWeight:800,color:C.snow}}>التنبيهات السعرية</div>
+            <div style={{fontSize:15,fontWeight:800,color:C.snow}}>التنبيهات السعرية</div> 
           </div>
           <div style={{background:C.electric+"18",borderRadius:10,padding:"4px 10px",border:"1px solid "+C.electric+"33"}}>
             <span className="num" style={{fontSize:11,fontWeight:700,color:C.electric}}>{alerts.filter(function(a){return a.active;}).length}</span>
