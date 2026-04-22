@@ -465,6 +465,13 @@ function SettingsTab(props) {
                   <span style={{fontSize:13,color:C.snow}}>الإشعارات</span>
                 </div>
               </div>
+                            <div onClick={function(){setShowSmartPanel(true);}} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 20px",borderBottom:"1px solid "+C.line,cursor:"pointer"}}>
+                <Ico k="back" color={C.smoke} size={13}/>
+                <div style={{display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{fontSize:15}}>✨</span>
+                  <span style={{fontSize:13,color:C.snow}}>التنبيهات الذكية</span>
+                </div>
+              </div>
               <div onClick={function(){setShowRatingPanel(true);}} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 20px",borderBottom:"1px solid "+C.line,cursor:"pointer"}}>
                 <Ico k="back" color={C.smoke} size={13}/>
                 <div style={{display:"flex",alignItems:"center",gap:8}}>
