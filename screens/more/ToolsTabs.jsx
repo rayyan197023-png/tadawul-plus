@@ -523,7 +523,7 @@ function SettingsTab(props) {
                       </div>
                     </div>
                   </div>
-                  <div style={{background:C.layer3,borderRadius:14,padding:"14px 16px",border:"1px solid "+C.line,opacity:0.5}}>
+                                    <div style={{background:C.layer3,borderRadius:14,padding:"14px 16px",border:"1px solid "+C.line,opacity:0.5}}>
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                       <div style={{width:44,height:24,borderRadius:12,background:C.edge,position:"relative",flexShrink:0}}>
                         <div style={{width:20,height:20,borderRadius:10,background:C.snow,position:"absolute",top:2,left:2}}/>
@@ -535,9 +535,11 @@ function SettingsTab(props) {
                     </div>
                   </div>
                 </div>
+                </div>
               </div>
             </div>
           )}
+
           {showRatingPanel&&(
             <div style={{position:"fixed",inset:0,background:"rgba(6,8,15,.96)",zIndex:999,display:"flex",flexDirection:"column",justifyContent:"flex-end"}}>
               <div style={{background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",borderRadius:"20px 20px 0 0",padding:"24px 20px 40px",border:"1px solid "+C.line}}>
