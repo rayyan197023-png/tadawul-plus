@@ -42,6 +42,101 @@ export const ALERT_TYPES = {
   STOP_LOSS:        'stopLossBreach',   // 🛑 كسر Stop Loss
   REBALANCE_NEEDED: 'rebalanceNeeded',  // ⚖️ إعادة توازن مطلوبة
 };
+// ─── مكتبة النغمات (6 نغمات احترافية) ──────────
+export const SOUND_PRESETS = {
+  classic: {
+    id: 'classic',
+    name: '🎯 كلاسيكي',
+    description: 'نغمة ثلاثية متصاعدة',
+    notes: [
+      { freq: 1200, time: 0, duration: 0.15 },
+      { freq: 800, time: 0.15, duration: 0.15 },
+      { freq: 1200, time: 0.3, duration: 0.3 },
+    ],
+  },
+  gentle: {
+    id: 'gentle',
+    name: '✨ ناعم',
+    description: 'نغمة هادئة مريحة',
+    notes: [
+      { freq: 523, time: 0, duration: 0.2 },
+      { freq: 659, time: 0.2, duration: 0.4 },
+    ],
+  },
+  energy: {
+    id: 'energy',
+    name: '⚡ طاقة',
+    description: 'نغمة حيوية نشطة',
+    notes: [
+      { freq: 880, time: 0, duration: 0.1 },
+      { freq: 1046, time: 0.1, duration: 0.1 },
+      { freq: 1318, time: 0.2, duration: 0.1 },
+      { freq: 1568, time: 0.3, duration: 0.3 },
+    ],
+  },
+  alert: {
+    id: 'alert',
+    name: '🚨 تنبيه',
+    description: 'نغمة طوارئ حادة',
+    notes: [
+      { freq: 1500, time: 0, duration: 0.1 },
+      { freq: 1500, time: 0.15, duration: 0.1 },
+      { freq: 1500, time: 0.3, duration: 0.2 },
+    ],
+  },
+  calm: {
+    id: 'calm',
+    name: '🧘 هدوء',
+    description: 'نغمة ناعمة جداً',
+    notes: [
+      { freq: 440, time: 0, duration: 0.5 },
+    ],
+  },
+  pulse: {
+    id: 'pulse',
+    name: '💓 نبض',
+    description: 'نغمة نبضات القلب',
+    notes: [
+      { freq: 600, time: 0, duration: 0.08 },
+      { freq: 600, time: 0.1, duration: 0.08 },
+      { freq: 600, time: 0.4, duration: 0.08 },
+      { freq: 600, time: 0.5, duration: 0.08 },
+    ],
+  },
+};
+
+// ─── حالة الإعدادات (تحميل من localStorage) ───────
+export function loadAlertSettings() {
+  if (typeof window === 'undefined') {
+    return getDefaultSettings();
+  }
+  try {
+    const raw = window.localStorage.getItem('tadawul_alert_settings');
+    if (!raw) return getDefaultSettings();
+    return { ...getDefaultSettings(), ...JSON.parse(raw) };
+  } catch (e) {
+    return getDefaultSettings();
+  }
+}
+
+export function saveAlertSettings(settings) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem('tadawul_alert_settings', JSON.stringify(settings));
+  } catch (e) {}
+}
+
+function getDefaultSettings() {
+  return {
+    soundEnabled: true,
+    soundMode: 'critical',        // 'all' | 'critical' | 'off'
+    soundPreset: 'classic',
+    browserNotifications: true,
+    vibration: true,
+    volume: 0.3,
+  };
+}
+
 
 // ─── مستويات الأولوية ─────────────────────────
 export const PRIORITY = {
