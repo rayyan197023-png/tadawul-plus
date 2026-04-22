@@ -1141,8 +1141,17 @@ export default function RebalancingScreen() {
               </div>
             </div>
 
-            {/* الأزرار */}
-            <div style={{display: "flex", gap: 10}}>
+                        {/* الأزرار - Sticky */}
+            <div style={{
+              position: "sticky",
+              bottom: 0,
+              background: "linear-gradient(180deg, transparent 0%, " + C.ink + " 20%)",
+              paddingTop: 16,
+              paddingBottom: 8,
+              marginTop: 8,
+              display: "flex",
+              gap: 10,
+            }}>
               <button
                 onClick={() => setShowAutoApply(false)}
                 style={{
