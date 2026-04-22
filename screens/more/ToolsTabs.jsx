@@ -356,6 +356,17 @@ function SettingsTab(props) {
   var sRP=useState(false); var showRatingPanel=sRP[0]; var setShowRatingPanel=sRP[1];
   var sRated=useState(0); var ratingVal=sRated[0]; var setRatingVal=sRated[1];
   var sPP=useState(false); var showPrivacy=sPP[0]; var setShowPrivacy=sPP[1];
+    
+  // ── إعدادات التنبيهات الذكية ──
+  var sSmartPanel=useState(false); var showSmartPanel=sSmartPanel[0]; var setShowSmartPanel=sSmartPanel[1];
+  var sAlertSet=useState(function(){return loadAlertSettings();}); var alertSettings=sAlertSet[0]; var setAlertSettings=sAlertSet[1];
+  
+  function updateAlertSettings(newValues) {
+    var updated = Object.assign({}, alertSettings, newValues);
+    setAlertSettings(updated);
+    saveAlertSettings(updated);
+  }
+
   return(
         <div style={{position:"relative",zIndex:1}}>
           <div style={{background:C.layer1,borderTop:"1px solid "+C.line}}>
