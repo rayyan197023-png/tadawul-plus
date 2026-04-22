@@ -996,6 +996,8 @@ function AlertsPanel(props) {
     {k:"medium", l:"متوسط",  c:C.amber},
     {k:"low",    l:"منخفض",  c:C.mint},
   ];
+    var sTab=useState("manual"); var activeTab=sTab[0]; var setActiveTab=sTab[1];
+
   var sA=useState(function(){
     try{var r=window.localStorage.getItem("tadawul_alerts");return r?JSON.parse(r):[];}catch(e){return [];}
   }); var alerts=sA[0]; var setAlerts=sA[1];
