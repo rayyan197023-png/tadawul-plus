@@ -1170,7 +1170,7 @@ function AlertsPanel(props) {
             </div>
             <input type="date" value={expiry} onChange={function(e){setExpiry(e.target.value);}}
               style={{width:"100%",background:C.layer2,border:"1px solid "+C.line,borderRadius:9,padding:"9px 12px",color:C.smoke,fontSize:11,outline:"none",boxSizing:"border-box",marginBottom:10}}/>
-            <button onClick={function(){add();}}
+                        <button onClick={function(){add();}}
               style={{width:"100%",background:"linear-gradient(135deg,"+C.electric+","+C.electric+"cc)",color:C.snow,border:"none",padding:"12px",borderRadius:11,fontSize:13,cursor:"pointer",fontWeight:800}}>
               <span style={{display:"inline-flex",alignItems:"center",gap:6}}>
                 <Ico k="plus" color={C.snow} size={14}/>
@@ -1178,6 +1178,7 @@ function AlertsPanel(props) {
               </span>
             </button>
           </div>
+          )}
           {sortedAlerts.length===0&&(
             <div style={{textAlign:"center",padding:"32px 20px",color:C.smoke}}>
               <div style={{marginBottom:8,display:"flex",justifyContent:"center"}}><Ico k="bell" color={C.electric+"55"} size={44}/></div>
