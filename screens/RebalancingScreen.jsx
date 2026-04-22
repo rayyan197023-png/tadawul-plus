@@ -676,7 +676,8 @@ function ImpactSummary({ impact }) {
 
 // ─── الشاشة الرئيسية ─────────────────────────
 export default function RebalancingScreen() {
-  const { setTab } = useNav();
+  const { setTab } = useNav(); 
+  const [showAutoApply, setShowAutoApply] = useState(false);
 
   // جلب المحفظة من localStorage
   const positions = useMemo(() => {
