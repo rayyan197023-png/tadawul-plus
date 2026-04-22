@@ -240,6 +240,66 @@ const { setTab } = useNav();
     }
   },[]);
 
+  // ── Smart Alerts Engine -- تشغيل دوري ────────────────────────────
+  useEffect(function() {
+    if (typeof window === 'undefined') return;
+    
+    // طلب إذن Browser Notifications
+    requestNotificationPermission();
+    
+    // تشغيل المحرك كل 30 ثانية
+    const runEngine = () => {
+      try {
+        // إعداد بيانات الأسهم للتحليل
+        const stocksForAnalysis = stocksLive.map(stock => {
+          const bars = genBars(stock);
+          const healthData = stockHealth(stock, bars);
+          return {
+            sym: stock.sym,
+            name: stock.name,
+            p: stock.p,
+            pct: stock.pct,
+            health: healthData?.score || 50,
+            rsi: healthData?.rsi || 50,
+            macd: healthData?.macdSignal || 'neutral',
+            bos: healthData?.bos || null,
+          };
+        });
+        
+        // جلب المحفظة
+        let positions = [];
+        try {
+          const portRaw = window.localStorage.getItem('tp_port');
+          if (portRaw) positions = JSON.parse(portRaw);
+        } catch(e) {}
+        
+        // تشغيل المحرك
+        const result = runSmartAlertsEngine(stocksForAnalysis, positions, {
+          enableBrowserNotif: true,
+          enableSound: notifSound,
+        });
+        
+        // Console log للمراقبة (اختياري)
+        if (result.count > 0) {
+          console.log(`🔔 Smart Alerts: ${result.count} new alerts`, result.summary);
+        }
+      } catch(e) {
+        console.error('Smart Alerts Error:', e);
+      }
+    };
+    
+    // تشغيل أول مرة بعد 10 ثواني (لإعطاء وقت للتهيئة)
+    const initialTimer = setTimeout(runEngine, 10000);
+    
+    // ثم كل 30 ثانية
+    const interval = setInterval(runEngine, 30000);
+    
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
+  }, [stocksLive, notifSound]);
+
   function sendPushNotif(title, body, icon) {
     if('Notification' in window && Notification.permission === 'granted'){
       try {
