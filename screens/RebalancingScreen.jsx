@@ -918,7 +918,7 @@ export default function RebalancingScreen() {
             padding: 0,
           }}
         >
-          <div
+                    <div
             onClick={(e) => e.stopPropagation()}
             style={{
               width: "100%",
@@ -927,11 +927,17 @@ export default function RebalancingScreen() {
               borderTopLeftRadius: 24,
               borderTopRightRadius: 24,
               border: "1px solid " + C.gold + "44",
-                            padding: "20px 16px 40px",
-              overflowY: "auto",
               boxShadow: "0 -10px 40px rgba(0,0,0,0.6)",
+              display: "flex",
+              flexDirection: "column",
             }}
           >
+          <div style={{
+            padding: "20px 16px 0",
+            overflowY: "auto",
+            flex: 1,
+            WebkitOverflowScrolling: "touch",
+          }}>
             {/* Handle */}
             <div style={{
               width: 40,
