@@ -512,28 +512,6 @@ function SettingsTab(props) {
                       </div>
                     </div>
                   </div>
-                  <div style={{background:C.layer3,borderRadius:14,padding:"14px 16px",border:"1px solid "+C.line,opacity:0.5}}>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                      <div style={{width:44,height:24,borderRadius:12,background:C.edge,position:"relative",flexShrink:0}}>
-                        <div style={{width:20,height:20,borderRadius:10,background:C.snow,position:"absolute",top:2,left:2}}/>
-                      </div>
-                      <div style={{textAlign:"right"}}>
-                        <div style={{fontSize:13,fontWeight:700,color:C.smoke}}>الإشعارات الفورية</div>
-                        <div style={{fontSize:9,color:C.ash,marginTop:2}}>يتطلب نسخة التطبيق الكامل</div>
-                      </div>
-                    </div>
-                  </div>
-                                    <div style={{background:C.layer3,borderRadius:14,padding:"14px 16px",border:"1px solid "+C.line,opacity:0.5}}>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                      <div style={{width:44,height:24,borderRadius:12,background:C.edge,position:"relative",flexShrink:0}}>
-                        <div style={{width:20,height:20,borderRadius:10,background:C.snow,position:"absolute",top:2,left:2}}/>
-                      </div>
-                      <div style={{textAlign:"right"}}>
-                        <div style={{fontSize:13,fontWeight:700,color:C.smoke}}>ملخص السوق اليومي</div>
-                        <div style={{fontSize:9,color:C.ash,marginTop:2}}>إشعار يومي عند إغلاق السوق</div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
                 </div>
               </div>
