@@ -372,6 +372,165 @@ function HealthScoreCard({ score }) {
     </div>
   );
 }
+// ─── Donut Chart للقطاعات ─────────────────────
+function SectorsDonutChart({ sectors }) {
+  if (!sectors || sectors.length === 0) return null;
+
+  // ألوان القطاعات
+  const SECTOR_COLORS = [
+    C.gold,      // ذهبي
+    C.electric,  // أزرق
+    C.mint,      // أخضر
+    C.amber,     // برتقالي
+    C.coral,     // مرجاني
+    C.plasma,    // بنفسجي
+    C.teal,      // تركواز
+  ];
+
+  const size = 180;
+  const radius = 70;
+  const strokeWidth = 26;
+  const center = size / 2;
+  const circumference = 2 * Math.PI * radius;
+
+  // حساب زوايا القطاعات
+  let cumulativeOffset = 0;
+  const segments = sectors.map((sector, idx) => {
+    const percentage = sector.weight;
+    const dashLength = percentage * circumference;
+    const segment = {
+      ...sector,
+      color: SECTOR_COLORS[idx % SECTOR_COLORS.length],
+      dashArray: `${dashLength} ${circumference - dashLength}`,
+      dashOffset: -cumulativeOffset,
+    };
+    cumulativeOffset += dashLength;
+    return segment;
+  });
+
+  return (
+    <div style={{
+      background: "linear-gradient(145deg," + C.layer1 + "," + C.layer2 + ")",
+      border: "1px solid " + C.line + "44",
+      borderRadius: 16,
+      padding: "18px 14px",
+      marginBottom: 16,
+      boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+    }}>
+      <div style={{
+        fontSize: 11,
+        color: C.gold,
+        fontWeight: 800,
+        letterSpacing: "1px",
+        marginBottom: 14,
+        textAlign: "center",
+      }}>
+        🎯 توزيع القطاعات
+      </div>
+
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 16,
+        flexWrap: "wrap",
+      }}>
+        {/* الرسم الدائري */}
+        <div style={{
+          position: "relative",
+          width: size,
+          height: size,
+          flexShrink: 0,
+        }}>
+          <svg width={size} height={size} style={{transform: "rotate(-90deg)"}}>
+            {/* الخلفية */}
+            <circle
+              cx={center}
+              cy={center}
+              r={radius}
+              fill="none"
+              stroke={C.line + "22"}
+              strokeWidth={strokeWidth}
+            />
+            {/* القطاعات */}
+            {segments.map((seg, i) => (
+              <circle
+                key={i}
+                cx={center}
+                cy={center}
+                r={radius}
+                fill="none"
+                stroke={seg.color}
+                strokeWidth={strokeWidth}
+                strokeDasharray={seg.dashArray}
+                strokeDashoffset={seg.dashOffset}
+                style={{
+                  filter: "drop-shadow(0 0 8px " + seg.color + "66)",
+                  transition: "all 0.8s ease",
+                }}
+              />
+            ))}
+          </svg>
+          <div style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+            <div style={{
+              fontFamily: "IBM Plex Mono,monospace",
+              fontSize: 26,
+              fontWeight: 900,
+              color: C.snow,
+              lineHeight: 1,
+            }}>
+              {sectors.length}
+            </div>
+            <div style={{
+              fontSize: 10,
+              color: C.smoke,
+              fontWeight: 600,
+              marginTop: 4,
+            }}>
+              قطاع{sectors.length > 1 ? 'ات' : ''}
+            </div>
+          </div>
+        </div>
+
+        {/* المفتاح (Legend) */}
+        <div style={{flex: 1, minWidth: 120}}>
+          {segments.map((seg, i) => (
+            <div key={i} style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "6px 0",
+              borderBottom: i < segments.length - 1 ? "1px solid " + C.line + "22" : "none",
+            }}>
+              <div style={{
+                width: 12,
+                height: 12,
+                borderRadius: 3,
+                background: seg.color,
+                flexShrink: 0,
+                boxShadow: "0 0 8px " + seg.color + "66",
+              }}/>
+              <div style={{flex: 1, fontSize: 11, color: C.mist, fontFamily: "Cairo,sans-serif"}}>
+                {seg.sector}
+              </div>
+              <div style={{
+                fontSize: 12,
+                fontWeight: 800,
+                color: seg.color,
+                fontFamily: "IBM Plex Mono,monospace",
+              }}>
+                {Math.round(seg.weightPct)}%
+              </div>
+            </div>
+          ))}
+        </div>
 
 // ─── بطاقة ملخّص الأرقام ───────────────────────
 function SummaryCard({ summary }) {
