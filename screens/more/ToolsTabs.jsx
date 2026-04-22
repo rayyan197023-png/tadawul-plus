@@ -489,11 +489,10 @@ function SettingsTab(props) {
               </div>
             </div>
 
-          
-
-                   {showNotifPanel&&(
-            <div style={{position:"fixed",inset:0,background:"rgba(6,8,15,.96)",zIndex:999,display:"flex",flexDirection:"column",justifyContent:"flex-end"}}>
-              <div style={{background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",borderRadius:"20px 20px 0 0",maxHeight:"80vh",overflowY:"auto",WebkitOverflowScrolling:"touch",overscrollBehavior:"contain",padding:"24px 20px 80px",border:"1px solid "+C.line}}>
+                    {showNotifPanel&&(
+            <div style={{position:"fixed",inset:0,background:"rgba(6,8,15,.96)",zIndex:999,display:"flex",flexDirection:"column",justifyContent:"flex-end",overflow:"hidden"}}>
+              <div style={{background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",borderRadius:"20px 20px 0 0",height:"85vh",display:"flex",flexDirection:"column",border:"1px solid "+C.line}}>
+                <div style={{overflowY:"auto",WebkitOverflowScrolling:"touch",overscrollBehavior:"contain",padding:"24px 20px 80px",flex:1}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
                   <button onClick={function(){setShowNotifPanel(false);}} style={{background:C.layer3,border:"1px solid "+C.line,color:C.smoke,padding:"7px 14px",borderRadius:10,cursor:"pointer",fontSize:12}}>
                     <Ico k="back" color={C.smoke} size={14}/>
