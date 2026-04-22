@@ -186,6 +186,38 @@ export default function BacktestScreen() {
       fontFamily: "Cairo,sans-serif",
       direction: "rtl",
     }}>
+          }}>
+      {/* 🔙 زر الرجوع */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        marginBottom: 14,
+      }}>
+        <button
+          onClick={function() { nav.setTab('more'); }}
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            border: "1px solid " + C.line,
+            background: C.layer1,
+            color: C.snow,
+            fontSize: 18,
+            fontWeight: 900,
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          →
+        </button>
+        <div style={{ fontSize: 15, fontWeight: 900, color: C.snow }}>
+          مختبر الاستراتيجيات
+        </div>
+      </div>
+
       <div style={{
         background: "linear-gradient(145deg," + C.layer1 + "," + C.layer2 + ")",
         borderRadius: 14,
@@ -195,6 +227,7 @@ export default function BacktestScreen() {
       }}>
         <div style={{ fontSize: 11, color: C.gold, fontWeight: 800, letterSpacing: "1px", marginBottom: 4 }}>
           🧪 محرك Backtesting
+          
         </div>
         <div style={{ fontSize: 15, color: C.snow, fontWeight: 900, marginBottom: 4 }}>
           اختبار الاستراتيجية التاريخية
