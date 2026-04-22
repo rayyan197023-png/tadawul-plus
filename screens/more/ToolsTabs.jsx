@@ -998,6 +998,13 @@ function AlertsPanel(props) {
     {k:"low",    l:"منخفض",  c:C.mint},
   ];
     var sTab=useState("manual"); var activeTab=sTab[0]; var setActiveTab=sTab[1];
+  var sSet=useState(function(){return loadAlertSettings();}); var settings=sSet[0]; var setSettings=sSet[1];
+  
+  function updateSettings(newValues) {
+    var updated = Object.assign({}, settings, newValues);
+    setSettings(updated);
+    saveAlertSettings(updated);
+  }
 
   var sA=useState(function(){
     try{var r=window.localStorage.getItem("tadawul_alerts");return r?JSON.parse(r):[];}catch(e){return [];}
