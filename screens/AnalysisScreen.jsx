@@ -1601,7 +1601,7 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                                 {l:"OBV", v:obvUp!=null?(obvUp?"صاعد ↑":"هابط ↓"):"-",
                                   c:obvUp?C.mint:C.coral,
                                   s:obvUp?"تأكيد صعود":"تباعد"},
-                                {l:"VWAP%", v:vwapD!=null?vwapD.toFixed(1)+"%":"-",
+                                {l:"VWAP", v:vwapD!=null?vwapD.toFixed(1)+"%":"-"
                                   c:vwapD>0?C.mint:vwapD<-3?C.coral:C.amber,
                                   s:vwapD>2?"فوق VWAP":vwapD<-2?"تحت VWAP":"عند VWAP"},
                               ].map(function(it,i){
