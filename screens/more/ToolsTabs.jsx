@@ -1142,30 +1142,6 @@ function AlertsPanel(props) {
               </span>
             )}
           </button>
-
-          <button
-            onClick={function() { setActiveTab("settings"); }}
-            style={{
-              flex: 1,
-              padding: "10px",
-              background: activeTab === "settings"
-                ? "linear-gradient(135deg," + C.plasma + "22," + C.plasma + "08)"
-                : "transparent",
-              border: "1px solid " + (activeTab === "settings" ? C.plasma + "55" : C.line + "44"),
-              borderRadius: 10,
-              color: activeTab === "settings" ? C.plasma : C.smoke,
-              fontSize: 12,
-              fontWeight: 800,
-              cursor: "pointer",
-              fontFamily: "Cairo,sans-serif",
-              transition: "all 0.2s",
-            }}
-          >
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-              <Ico k="settings" color={activeTab === "settings" ? C.plasma : C.smoke} size={13} />
-              إعدادات
-            </span>
-          </button>
         </div>
                 <div style={{padding:14,display:"flex",flexDirection:"column",gap:10}}>
           
