@@ -1530,7 +1530,11 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                                   display:"flex",flexDirection:"column",
                                   alignItems:"center",justifyContent:"center",
                                 }}>
-                                  <div style={{fontSize:8,color:C.smoke,marginBottom:4}}>الثقة</div>
+                                  <div   style={{fontSize:8,color:C.smoke,marginBottom:4,display:"flex",alignItems:"center",gap:3,justifyContent:"flex-end"}}>
+                                    الثقة
+                                    <Tooltip termKey="الثقة" size="small"/>
+                                  </div>
+
                                   <div style={{
                                     fontSize:22,fontWeight:900,
                                     color:conf>=70?C.mint:conf>=50?C.amber:C.coral,
