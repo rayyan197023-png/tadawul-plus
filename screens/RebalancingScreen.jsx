@@ -596,7 +596,7 @@ function ImpactSummary({ impact }) {
         letterSpacing: "1px",
         marginBottom: 10,
       }}>
-       📊 ملخّص التأثير إذا طبّقت الاقتراحات 🔥
+       📊 ملخّص التأثير إذا طبّقت الاقتراحات
       </div>
 
       <div style={{display: "flex", gap: 8, marginBottom: 8}}>
