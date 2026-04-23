@@ -116,7 +116,7 @@ function MetricCard(props) {
         gap: 4,
       }}>
         <span>{label}</span>
-        <Tooltip 
+                <Tooltip 
           termKey={
             label === "Sharpe" ? "Sharpe Ratio" :
             label === "Sortino" ? "Sortino Ratio" :
@@ -124,8 +124,20 @@ function MetricCard(props) {
             label === "Beta" ? "Beta" :
             label === "Calmar" ? "Calmar Ratio" :
             label === "VaR" ? "VaR" :
+            label === "VaR 95" ? "VaR" :
+            label === "VaR 95%" ? "VaR" :
             label === "CVaR" ? "CVaR" :
+            label === "CVaR 95" ? "CVaR" :
+            label === "CVaR 95%" ? "CVaR" :
             label === "Max DD" ? "Maximum Drawdown" :
+            label === "Maximum Drawdown" ? "Maximum Drawdown" :
+            label === "HHI" ? "HHI" :
+            label === "Avg Corr" ? "Avg Corr" :
+            label === "Score" ? "Score" :
+            label === "المتوسط μ" ? "المتوسط μ" :
+            label === "VaR Distribution" ? "VaR Distribution" :
+            label === "Correlation Matrix" ? "Correlation" :
+            label === "خريطة Markowitz" ? "Markowitz" :
             label
           } 
           size="small"
