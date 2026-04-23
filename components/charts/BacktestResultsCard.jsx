@@ -11,6 +11,7 @@
  */
 
 import React from 'react';
+import Tooltip from '../Tooltip';
 
 var C = {
   ink: "#06080f", deep: "#090c16", void: "#0c1020",
