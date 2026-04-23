@@ -154,7 +154,7 @@ export default function Tooltip({ termKey, label, size = 'small' }) {
             background: 'rgba(6,8,15,0.85)',
             backdropFilter: 'blur(8px)',
             WebkitBackdropFilter: 'blur(8px)',
-            zIndex: 99999,
+            zIndex: 999999,
             display: 'flex',
             alignItems: 'flex-end',
             justifyContent: 'center',
