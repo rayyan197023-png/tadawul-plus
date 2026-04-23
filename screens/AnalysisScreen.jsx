@@ -1511,7 +1511,10 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                                   border:"1px solid "+C.edge,
                                   borderRadius:12,padding:"10px 12px",
                                 }}>
-                                  <div style={{fontSize:8,color:C.smoke,marginBottom:4}}>حجم المركز (Half-Kelly)</div>
+                                                                    <div style={{fontSize:8,color:C.smoke,marginBottom:4,display:"flex",alignItems:"center",gap:3,justifyContent:"flex-end"}}>
+                                    حجم المركز (Half-Kelly)
+                                    <Tooltip termKey="حجم المركز" size="small"/>
+                                  </div>
                                   <div style={{
                                     fontSize:22,fontWeight:900,
                                     color:health.sigC||C.gold,lineHeight:1,
