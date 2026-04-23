@@ -13,6 +13,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
+import Tooltip from './Tooltip';
 
 const C = {
   ink: "#06080f", deep: "#090c16", void: "#0c1020",
