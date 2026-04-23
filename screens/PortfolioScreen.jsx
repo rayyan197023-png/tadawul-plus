@@ -22,6 +22,7 @@ import { useHaptic } from '../hooks/useHaptic';
 import { genBars, stockHealth } from '../engines/analysisEngine';
 import { analyzePortfolio, addIntelligenceLayer, generatePortfolioValueChart, generateDrawdownChart, generateMonthlyReturnsHeatmap, generateRiskReturnScatter, generateCorrelationHeatmap, generateVaRDistribution } from '../engines/portfolioEngine';
 import RiskDashboard from '../components/RiskDashboard';
+import Tooltip from '../components/Tooltip';
 import PortfolioValueChart from '../components/charts/PortfolioValueChart';
 import DrawdownChart from '../components/charts/DrawdownChart';
 import MonthlyReturnsHeatmap from '../components/charts/MonthlyReturnsHeatmap';
