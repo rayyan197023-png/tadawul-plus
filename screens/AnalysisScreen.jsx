@@ -1571,7 +1571,8 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                             {/* Row 1: RSI + MACD + ADX */}
                             <div style={{display:"flex",gap:5,marginBottom:5}}>
                               {[
-                                {l:"RSI(14)", v:rsiV!=null?rsiV.toFixed(0):"-", c:rsiColor,
+                                {l:"RSI", v:rsiV!=null?rsiV.toFixed(0):"-", c:rsiColor,
+
                                   s:rsiV>70?"ذروة شراء":rsiV<30?"ذروة بيع":"محايد"},
                                 {l:"MACD", v:macdH!=null?(macdH>0?"+":"")+macdH:"-", c:macdColor,
                                   s:macdH>0?"إيجابي":"سلبي"},
