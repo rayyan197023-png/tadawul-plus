@@ -374,8 +374,9 @@ export default function BacktestScreen() {
               onChange={function(e) { setConfig(Object.assign({}, config, { runMonteCarlo: e.target.checked })); }}
               style={{ cursor: "pointer" }}
             />
-            <span style={{ fontSize: 11, color: C.mist, fontWeight: 700 }}>
+                        <span style={{ fontSize: 11, color: C.mist, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 4 }}>
               🎰 Monte Carlo ({config.monteCarloIterations.toLocaleString()} محاكاة)
+              <Tooltip termKey="Monte Carlo" size="small"/>
             </span>
           </label>
         </div>
