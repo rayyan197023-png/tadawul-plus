@@ -226,8 +226,9 @@ export default function BacktestResultsCard(props) {
             }}>
               {perf.sharpe}
             </div>
-            <div style={{ fontSize: 9, color: C.smoke, marginTop: 3 }}>
+                        <div style={{ fontSize: 9, color: C.smoke, marginTop: 3, display: "flex", alignItems: "center", justifyContent: "center", gap: 3 }}>
               Sharpe
+              <Tooltip termKey="Sharpe Ratio" size="small"/>
             </div>
           </div>
           
