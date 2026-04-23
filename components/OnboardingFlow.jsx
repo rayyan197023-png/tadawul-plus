@@ -173,19 +173,29 @@ export default function OnboardingFlow({ onComplete }) {
         {currentScreen + 1} / {screens.length}
       </div>
 
-      {/* Current Screen */}
+            {/* Current Screen */}
       <div style={{
         flex: 1,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '60px 20px 40px',
+        padding: '80px 20px 60px',
         opacity: fadeIn ? 1 : 0,
         transition: 'opacity 0.2s ease',
         position: 'relative',
         zIndex: 1,
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        overscrollBehavior: 'contain',
       }}>
-        {screens[currentScreen]}
+        <div style={{
+          width: '100%',
+          maxWidth: 500,
+          paddingTop: 40,
+          paddingBottom: 40,
+        }}>
+          {screens[currentScreen]}
+        </div>
       </div>
     </div>
   );
