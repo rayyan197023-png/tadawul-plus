@@ -5,6 +5,7 @@ import { useNav } from '../store';
 import { analyzePortfolio, formatCurrency } from '../engines/rebalancingEngine';
 import { STOCKS } from '../constants/stocksData';
 import { genBars, stockHealth } from '../engines/analysisEngine';
+import Tooltip from '../components/Tooltip';
 
 const C = {
   ink: "#06080f",
