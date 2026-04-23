@@ -452,7 +452,7 @@ export default function Tooltip({ termKey, label, size = 'small' }) {
             </div>
           </div>
           
-          {/* Animations */}
+                   {/* Animations */}
           <style jsx>{`
             @keyframes fadeIn {
               from { opacity: 0; }
@@ -463,7 +463,8 @@ export default function Tooltip({ termKey, label, size = 'small' }) {
               to { transform: translateY(0); }
             }
           `}</style>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
