@@ -2949,7 +2949,10 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                               fontSize:9,fontWeight:700,color:ly.color,
                               background:ly.color+"18",padding:"1px 6px",borderRadius:4,
                             }}>طبقة {ly.n}</span>
-                            <span style={{fontSize:12,fontWeight:800,color:C.snow}}>{ly.title}</span>
+                                                        <span style={{fontSize:12,fontWeight:800,color:C.snow,display:"inline-flex",alignItems:"center",gap:3}}>
+                              {ly.title}
+                              <Tooltip termKey={ly.title.includes("سيولة")?"السيولة":ly.title.includes("هيكل")?"الهيكل":ly.title.includes("احتمالية")?"Softmax":ly.title.includes("جدوى")?"Half-Kelly":ly.title.includes("مؤشرات")?"RSI":ly.title.includes("الفرصة")?"Wyckoff":ly.title.includes("الحجم")?"OBV":ly.title.includes("انتظام")?"ATR":"BOS"} size="small"/>
+                            </span>
                             <span style={{
                               fontSize:8,fontWeight:700,
                               color:ly.weight>=15?C.gold:ly.weight>=9?C.mist:C.smoke,
