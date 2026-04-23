@@ -104,14 +104,32 @@ function MetricCard(props) {
       flex: 1,
       minWidth: 0,
     }}>
-      <div style={{
+            <div style={{
         fontSize: 10,
         color: C.smoke,
         fontWeight: 600,
         marginBottom: 4,
         letterSpacing: "0.3px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 4,
       }}>
-        {label}
+        <span>{label}</span>
+        <Tooltip 
+          termKey={
+            label === "Sharpe" ? "Sharpe Ratio" :
+            label === "Sortino" ? "Sortino Ratio" :
+            label === "Alpha" ? "Alpha" :
+            label === "Beta" ? "Beta" :
+            label === "Calmar" ? "Calmar Ratio" :
+            label === "VaR" ? "VaR" :
+            label === "CVaR" ? "CVaR" :
+            label === "Max DD" ? "Maximum Drawdown" :
+            label
+          } 
+          size="small"
+        />
       </div>
       <div style={{
         fontFamily: "IBM Plex Mono,monospace",
