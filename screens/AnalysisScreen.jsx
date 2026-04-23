@@ -1470,8 +1470,9 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                                 background:C.layer2,border:"1px solid "+C.edge,
                                 borderRadius:12,padding:"10px 12px",
                               }}>
-                                <div style={{fontSize:8,color:C.smoke,marginBottom:8,fontWeight:600}}>
-                                  الاحتمال الموزون — Softmax₃
+                                                                <div style={{fontSize:8,color:C.smoke,marginBottom:8,fontWeight:600,display:"flex",alignItems:"center",gap:3,justifyContent:"flex-end"}}>
+                                  الاحتمال الموزون -- Softmax₃
+                                  <Tooltip termKey="Softmax" size="small"/>
                                 </div>
                                 <div style={{display:"flex",gap:6}}>
                                   {[
