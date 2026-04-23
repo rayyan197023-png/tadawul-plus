@@ -163,13 +163,14 @@ export default function Tooltip({ termKey, label, size = 'small' }) {
           }}
         >
 
-          <div
+                    <div
             onClick={(e) => e.stopPropagation()}
             style={{
               background: 'linear-gradient(160deg,' + C.layer1 + ',' + C.layer2 + ')',
               borderRadius: '24px 24px 0 0',
               width: '100%',
               maxWidth: 500,
+              height: '85vh',
               maxHeight: '85vh',
               display: 'flex',
               flexDirection: 'column',
