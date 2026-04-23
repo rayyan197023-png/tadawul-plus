@@ -393,7 +393,115 @@ export const TOOLTIPS = {
     example: 'Kelly = 10% يعني استثمر 10% من رأس المال في الصفقة.',
     category: 'backtest',
   },
+    // ═══════════════════════════════════════════════
+  // 🎯 إدارة المخاطر المتقدمة
+  // ═══════════════════════════════════════════════
   
+  'Half-Kelly': {
+    title: 'نصف كيلي',
+    subtitle: 'Half-Kelly Position Sizing',
+    description: 'استراتيجية متحفظة لتحديد حجم الصفقة -- تستخدم نصف القيمة المُحسبة من معادلة كيلي.',
+    details: [
+      { label: 'Full Kelly', value: '⚡ مخاطرة عالية - 100% من المُحسب' },
+      { label: 'Half Kelly', value: '🛡️ المعتمد عالمياً - 50% من المُحسب' },
+      { label: 'Quarter Kelly', value: '🟢 محافظ جداً - 25% من المُحسب' },
+    ],
+    example: 'إذا Kelly = 20%، Half-Kelly = 10% من رأس المال - أكثر أماناً.',
+    category: 'risk',
+  },
+  
+  'Position Size': {
+    title: 'حجم المركز',
+    subtitle: 'Position Size',
+    description: 'النسبة المئوية المثالية من رأس المال لاستثمارها في صفقة واحدة.',
+    details: [
+      { label: 'صفقة قوية', value: '💪 5-10% من رأس المال' },
+      { label: 'صفقة متوسطة', value: '✅ 2-5% من رأس المال' },
+      { label: 'صفقة محفوفة', value: '⚠️ 1-2% من رأس المال' },
+    ],
+    example: 'إذا رأس مالك 100,000 ريال، حجم مركز 5% = 5,000 ريال للصفقة.',
+    category: 'risk',
+  },
+  
+  'حجم المركز': {
+    title: 'حجم المركز',
+    subtitle: 'Position Sizing',
+    description: 'النسبة المثالية من رأس المال لاستثمارها في صفقة واحدة - مبنية على معادلة كيلي.',
+    details: [
+      { label: 'Half-Kelly', value: '🛡️ النصف من المُحسب (موصى به)' },
+      { label: 'Quarter-Kelly', value: '🟢 الربع من المُحسب (محافظ)' },
+      { label: 'Full-Kelly', value: '⚡ كامل المُحسب (خطر)' },
+    ],
+    example: 'حجم مركز 8% يعني استثمار 8% من رأس المال في هذه الصفقة.',
+    category: 'risk',
+  },
+  
+  'الثقة': {
+    title: 'مستوى الثقة',
+    subtitle: 'Confidence Level',
+    description: 'مدى ثقة المحرك في التوصية - مبنية على عدد الإشارات المُتوافقة.',
+    details: [
+      { label: 'فوق 80%', value: '🏆 ثقة عالية جداً' },
+      { label: '60-80%', value: '✅ ثقة جيدة' },
+      { label: '40-60%', value: '🟡 ثقة متوسطة' },
+      { label: 'تحت 40%', value: '⚠️ ثقة منخفضة' },
+    ],
+    example: 'ثقة 85% تعني 8.5 من 9 طبقات تُؤيد التوصية.',
+    category: 'risk',
+  },
+  
+  'Softmax': {
+    title: 'الاحتمال الموزون',
+    subtitle: 'Softmax Probability',
+    description: 'تحويل النتائج إلى احتمالات (شراء/بيع/انتظار) باستخدام معادلة Softmax الرياضية.',
+    details: [
+      { label: 'شراء', value: '✅ احتمال الصعود' },
+      { label: 'بيع', value: '⚠️ احتمال الهبوط' },
+      { label: 'انتظار', value: '🟡 احتمال الاستقرار' },
+    ],
+    example: 'شراء 65% + بيع 20% + انتظار 15% = إشارة شراء قوية.',
+    category: 'technical',
+  },
+  
+  'الزخم': {
+    title: 'الزخم',
+    subtitle: 'Momentum',
+    description: 'قوة وسرعة حركة السهم - يجمع RSI + MACD + Stochastic.',
+    details: [
+      { label: 'زخم قوي صاعد', value: '🚀 RSI > 60 + MACD موجب' },
+      { label: 'زخم متوسط', value: '🟡 RSI = 40-60' },
+      { label: 'زخم ضعيف', value: '⚠️ RSI < 40 + MACD سالب' },
+    ],
+    example: 'زخم قوي + حجم متزايد = استمرار الصعود محتمل.',
+    category: 'technical',
+  },
+  
+  'السيولة': {
+    title: 'السيولة',
+    subtitle: 'Liquidity',
+    description: 'سهولة شراء/بيع السهم - تجمع OBV + CMF + الحجم.',
+    details: [
+      { label: 'سيولة عالية', value: '✅ سهل الدخول والخروج' },
+      { label: 'سيولة متوسطة', value: '🟡 طبيعي' },
+      { label: 'سيولة منخفضة', value: '⚠️ صعب الخروج بسرعة' },
+    ],
+    example: 'سيولة عالية + حجم كبير = أمان أكبر للصفقات الكبيرة.',
+    category: 'technical',
+  },
+  
+  'الهيكل': {
+    title: 'هيكل السوق',
+    subtitle: 'Market Structure',
+    description: 'تحديد اتجاه السوق من خلال القمم والقيعان - يكتشف BOS و CHOCH.',
+    details: [
+      { label: 'BOS صاعد', value: '✅ كسر قمة - اتجاه صاعد مؤكد' },
+      { label: 'BOS هابط', value: '⚠️ كسر قاع - اتجاه هابط' },
+      { label: 'CHOCH', value: '🔄 احتمال انعكاس الاتجاه' },
+    ],
+    example: 'BOS صاعد + Order Block = فرصة شراء قوية.',
+    category: 'technical',
+  },
+
   // ═══════════════════════════════════════════════
   // ⚖️ Rebalancing
   // ═══════════════════════════════════════════════
