@@ -55,6 +55,10 @@ function MetricItem(props) {
               props.label === "Sortino Ratio" ? "Sortino Ratio" :
               props.label === "Calmar Ratio" ? "Calmar Ratio" :
               props.label === "Max Drawdown" ? "Maximum Drawdown" :
+                            props.label === "VaR 95%" ? "VaR" :
+              props.label === "CVaR 95%" ? "CVaR" :
+              props.label === "VaR" ? "VaR" :
+              props.label === "CVaR" ? "CVaR" :
               props.label === "صفقات رابحة" ? "Win Rate" :
               props.label === "صفقات خاسرة" ? "Win Rate" :
               props.label === "متوسط الربح" ? "Profit Factor" :
