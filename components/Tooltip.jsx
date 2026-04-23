@@ -146,7 +146,7 @@ export default function Tooltip({ termKey, label, size = 'small' }) {
       
       {/* Bottom Sheet Modal */}
       {showModal && (
-        <div
+                <div
           onClick={() => setShowModal(false)}
           style={{
             position: 'fixed',
@@ -154,13 +154,15 @@ export default function Tooltip({ termKey, label, size = 'small' }) {
             background: 'rgba(6,8,15,0.85)',
             backdropFilter: 'blur(8px)',
             WebkitBackdropFilter: 'blur(8px)',
-            zIndex: 9999,
+            zIndex: 99999,
             display: 'flex',
             alignItems: 'flex-end',
             justifyContent: 'center',
             animation: 'fadeIn 0.25s ease-out',
+            overflow: 'hidden',
           }}
         >
+
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
