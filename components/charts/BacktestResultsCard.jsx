@@ -37,13 +37,32 @@ function MetricItem(props) {
       borderRadius: 6,
       borderLeft: props.highlight ? "2px solid " + (props.color || C.gold) : "none",
     }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <span style={{ 
           fontSize: 10, 
           color: C.smoke, 
           fontWeight: 700,
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 4,
         }}>
           {props.label}
+          <Tooltip 
+            termKey={
+              props.label === "معدل الربح" ? "Win Rate" :
+              props.label === "Profit Factor" ? "Profit Factor" :
+              props.label === "Sharpe Ratio" ? "Sharpe Ratio" :
+              props.label === "Sortino Ratio" ? "Sortino Ratio" :
+              props.label === "Calmar Ratio" ? "Calmar Ratio" :
+              props.label === "Max Drawdown" ? "Maximum Drawdown" :
+              props.label === "صفقات رابحة" ? "Win Rate" :
+              props.label === "صفقات خاسرة" ? "Win Rate" :
+              props.label === "متوسط الربح" ? "Profit Factor" :
+              props.label === "متوسط الخسارة" ? "Profit Factor" :
+              props.label
+            } 
+            size="small"
+          />
         </span>
         {props.sublabel && (
           <span style={{ fontSize: 8, color: C.ash }}>
