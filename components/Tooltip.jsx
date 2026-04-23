@@ -145,9 +145,9 @@ export default function Tooltip({ termKey, label, size = 'small' }) {
         </span>
       )}
       
-      {/* Bottom Sheet Modal */}
-      {showModal && (
-                <div
+            {/* Bottom Sheet Modal - يُعرض عبر Portal خارج أي Modal آخر */}
+      {showModal && typeof document !== 'undefined' && createPortal(
+        <div
           onClick={() => setShowModal(false)}
           style={{
             position: 'fixed',
