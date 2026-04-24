@@ -1909,8 +1909,8 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                         </div>
 
                         {/* ══ زر التحليل الكامل — بارز دائماً ══ */}
-                        <button
-                          onClick={e=>{ e.stopPropagation(); setFullAnalysis(stk.sym); }}
+                                                <button
+                          onClick={e=>{ e.stopPropagation(); haptic.strong(); setFullAnalysis(stk.sym); }}
                           style={{
                             width:"100%",padding:"13px",borderRadius:12,cursor:"pointer",
                             fontFamily:"Cairo,sans-serif",fontSize:13,fontWeight:800,
