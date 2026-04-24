@@ -22,7 +22,7 @@ var C = {
  * مكوّن رسم بياني SVG خفيف (بدون مكتبات خارجية)
  * يستخدم SVG أصلي للأداء الأمثل على الجوال
  */
-export default function PortfolioValueChart(props) {
+const PortfolioValueChart = React.memo(function PortfolioValueChart(props) {
   var data = props.data || [];
   var height = props.height || 200;
 
