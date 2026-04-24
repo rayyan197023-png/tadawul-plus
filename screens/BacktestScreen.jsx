@@ -197,7 +197,7 @@ export default function BacktestScreen() {
         marginBottom: 14,
       }}>
         <button
-          onClick={function() { nav.setTab('more'); }}
+                    onClick={function() { haptic.tap(); nav.setTab('more'); }}
           style={{
             width: 40,
             height: 40,
