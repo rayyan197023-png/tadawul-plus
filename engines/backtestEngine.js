@@ -248,7 +248,7 @@ function executeSell(signal, state, prices, trades, date, config) {
     state.positions[signal.sym].shares -= shares;
   }
 
-  trades.push({
+    trades.push({
     date: date,
     sym: signal.sym,
     action: 'sell',
@@ -260,6 +260,31 @@ function executeSell(signal, state, prices, trades, date, config) {
     pnlPct: +pnlPct.toFixed(2),
     reason: signal.reason || '',
   });
+
+  // ✨ AI Learning - تسجيل feedback تلقائياً
+  try {
+    var holdingDays = Math.round(
+      (new Date(date).getTime() - new Date(position.entryDate).getTime()) / (1000 * 60 * 60 * 24)
+    );
+    
+    var outcome = pnl > 0 ? 'WIN' : pnl < 0 ? 'LOSS' : 'NEUTRAL';
+    var quality = Math.abs(pnlPct) > 5 ? 'STRONG' : 'WEAK';
+    
+    recordFeedback({
+      sym: signal.sym,
+      outcome: outcome,
+      quality: quality,
+      pnl: pnl,
+      pnlPct: pnlPct,
+      holdingDays: holdingDays,
+      entryPrice: position.avgCost,
+      exitPrice: price,
+      source: 'backtest',
+      timestamp: new Date(date).getTime(),
+    });
+  } catch (e) {
+    // فشل صامت - لا يؤثر على Backtest
+  }
 }
 
 /**
