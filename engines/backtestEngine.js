@@ -14,6 +14,7 @@
  */
 
 import { mean, std, simpleReturns } from '../utils/portfolioMath';
+import { recordFeedback } from './analysisEngine';
 
 /**
  * إعدادات Backtest الافتراضية
