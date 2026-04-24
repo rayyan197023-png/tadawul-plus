@@ -341,6 +341,8 @@ const PortfolioValueChart = React.memo(function PortfolioValueChart(props) {
           </div>
         </div>
       </div>
-    </div>
+        </div>
   );
-}
+});
+
+export default PortfolioValueChart;
