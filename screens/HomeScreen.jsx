@@ -654,9 +654,9 @@ function useMarketEngine() {
           chgVal:   chgV,
         };
       });
-    }, 2000);
+        }, 5000);
     return () => clearInterval(id);
-  }, []);
+  }, [])
 
   return marketState;
 }
