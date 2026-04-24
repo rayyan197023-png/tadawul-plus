@@ -38,6 +38,7 @@ import { useHaptic } from '../hooks/useHaptic';
 
 export default function AnalysisScreen({ commData: extCommData } = {}) {
   const liveStocks = useSharedPrices(); // أسعار مشتركة محدَّثة
+  const haptic = useHaptic();
   
   // ── تحديث MACRO من الأسعار الحية (commData من AppShell) ──────────
   // هذا يجعل محرك 9 الطبقات يعمل بأسعار نفط/ذهب/دولار حقيقية
