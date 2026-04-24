@@ -463,8 +463,9 @@ animation:'shimmer 1.4s ease infinite',
                 {/* أزرار الإعدادات — 44px touch target (Apple HIG) */}
                 <div style={{display:"flex",gap:6,alignItems:"center"}}>
                   {/* Dark/Light Mode */}
-                  <button
-                    onClick={function(){ setDarkMode(function(d){ return !d; }); }}
+                                    <button
+                    onClick={function(){ haptic.toggle(); setDarkMode(function(d){ return !d; }); }}
+
                     style={{
                       width:44,height:44,borderRadius:12,cursor:"pointer",
                       background: darkMode
