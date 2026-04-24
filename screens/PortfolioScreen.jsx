@@ -496,8 +496,30 @@ function SellSheet(props) {
   var pnlAmt=(price-sellSheet.avgCost)*qty;
   var pnlPct=sellSheet.avgCost>0?(price-sellSheet.avgCost)/sellSheet.avgCost*100:0;
   var canSell=qty>0&&price>0&&qty<=sellSheet.qty;
-  function doSell() {
+    function doSell() {
     if(!canSell) return;
+    
+    // ✨ AI Learning - تسجيل نتيجة الصفقة
+    try {
+      var pnlPct = sellSheet.avgCost > 0 ? ((price - sellSheet.avgCost) / sellSheet.avgCost) * 100 : 0;
+      
+      // فقط إذا النتيجة واضحة (ربح +3% أو خسارة -3%)
+      if (Math.abs(pnlPct) > 3) {
+        var actualOutcome = pnlPct > 0 ? 1 : -1;
+        var signalTaken = pnlPct > 0 ? 'شراء قوي' : 'تخفيف';
+        
+        // Layers محفوظة من وقت الشراء (أو افتراضية)
+        var layersUsed = sellSheet.layersAtEntry || {
+          L1: 60, L2: 60, L3: 60, L4: 60, L5: 60,
+          L6: 60, L7: 60, L8: 60, L9: 60
+        };
+        
+        recordFeedback(sellSheet.sym, signalTaken, layersUsed, actualOutcome);
+      }
+    } catch (e) {
+      // فشل صامت
+    }
+    
     setTradeLog(function(prev){return [{id:Date.now(),sym:sellSheet.sym,name:sellSheet.name,action:"بيع",qty:qty,price:price,date:new Date().toISOString().slice(0,10),signal:"-",score:0,note:"تسجيل بيع"}].concat(prev);});
     setPort(function(prev){return prev.map(function(pp){if(pp.sym!==sellSheet.sym)return pp;var rem=pp.qty-qty;if(rem<=0)return null;return Object.assign({},pp,{qty:rem});}).filter(Boolean);});
     // تحديث perfHistory
