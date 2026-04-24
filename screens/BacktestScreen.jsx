@@ -257,8 +257,9 @@ export default function BacktestScreen() {
           question="كيف كانت محفظتي ستؤدي تاريخياً؟"
           color={C.mint}
           active={config.mode === 'portfolio'}
-          onClick={function() { 
-            if (hasPortfolio) setConfig(Object.assign({}, config, { mode: 'portfolio' })); 
+                    onClick={function() { 
+            haptic.tap();
+            if (hasPortfolio) setConfig(Object.assign({}, config, { mode: 'portfolio' }));  
           }}
         />
 
