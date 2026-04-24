@@ -466,10 +466,12 @@ const EquityCurveChart = React.memo(function EquityCurveChart(props) {
           : benchmarkValues.length > 0
           ? ' -- أقل من تاسي بـ ' + alpha.toFixed(1) + '%'
           : ''}
-      </div>
+  </div>
     </div>
   );
-}
+});
+
+export default EquityCurveChart;
 
 /**
  * تنسيق الأرقام المالية
