@@ -469,5 +469,8 @@ const VaRDistributionChart = React.memo(function VaRDistributionChart(props) {
         {stats.skewness < -0.5 && ' · التوزيع مائل سلبياً (خسائر كبيرة محتملة) ⚠️'}
       </div>
     </div>
-  );
-}
+    );
+});
+
+export default VaRDistributionChart;
+
