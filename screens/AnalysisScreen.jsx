@@ -2269,8 +2269,8 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                   </button>
                 )}
               </div>
-              <button
-                onClick={function(){ setPortSheet("add"); }}
+                            <button
+                onClick={function(){ haptic.strong(); setPortSheet("add"); }}
                 style={{
                   background:"linear-gradient(135deg,"+C.electric+"33,"+C.electric+"18)",
                   border:"1px solid "+C.electric+"55",
