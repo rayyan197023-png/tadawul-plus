@@ -2453,9 +2453,10 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                             />
                           </div>
                         </div>
-                        <button
+                                                <button
                           onClick={function(){
                             if(!canAdd) return;
+                            haptic.success();
                             setPort(function(prev){
                               const existing = prev.find(function(x){ return x.sym===addSym; });
                               if(existing){
