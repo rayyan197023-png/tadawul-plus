@@ -454,5 +454,7 @@ const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
         💡 النقطة الذهبية = محفظتك · الدائرة المقطّعة = تاسي
       </div>
     </div>
-  );
-}
+    );
+});
+
+export default RiskReturnScatter;
