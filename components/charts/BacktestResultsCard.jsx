@@ -116,7 +116,7 @@ function Section(props) {
   );
 }
 
-export default function BacktestResultsCard(props) {
+const BacktestResultsCard = React.memo(function BacktestResultsCard(props) {
   var result = props.result;
   var benchmarkResult = props.benchmarkResult;
   var comparison = props.comparison;
