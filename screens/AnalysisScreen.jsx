@@ -929,11 +929,12 @@ animation:'shimmer 1.4s ease infinite',
               const isFlashing = flashCard === stk.sym;
               const level = cardLevel[stk.sym] || 1; // 1=مبسط 2=كامل
               return(
-                <div key={stk.sym}
+                                <div key={stk.sym}
                   className="card-enter"
                   style={{animationDelay:`${idx*.07}s`}}
                   onClick={function(){
-                    // Micro-feedback — وميض لحظي
+                    haptic.tap();
+                    // Micro-feedback -- وميض لحظي
                     setFlashCard(stk.sym);
                     setTimeout(function(){ setFlashCard(null); }, 350);
                     // Progressive Disclosure — تقدّم في المستويات
