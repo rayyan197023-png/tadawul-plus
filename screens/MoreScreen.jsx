@@ -42,7 +42,7 @@ const { setTab } = useNav();
   const haptic  = useHaptic();
   const scrollRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
-
+  const [aiLearningOpen, setAiLearningOpen] = useState(false);
   const handleRefresh = useCallback(async () => {
     haptic.success();
     await new Promise(r => setTimeout(r, 800));
