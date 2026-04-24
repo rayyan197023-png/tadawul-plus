@@ -279,7 +279,7 @@ export default function BacktestScreen() {
           question="هل النظام يكتشف أفضل الفرص في السوق؟"
           color={C.teal}
           active={config.mode === 'market'}
-          onClick={function() { setConfig(Object.assign({}, config, { mode: 'market' })); }}
+                    onClick={function() { haptic.tap(); setConfig(Object.assign({}, config, { mode: 'market' })); }}
         />
       </div>
 
