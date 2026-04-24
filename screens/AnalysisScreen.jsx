@@ -896,7 +896,8 @@ animation:'shimmer 1.4s ease infinite',
               {k:"watch", l:"مراقبة",    c:C.amber},
               {k:"reduce",l:"تخفيف",    c:C.coral},
             ].map(({k,l,c})=>(
-              <button key={k} onClick={()=>setTab(k)} style={{
+                            <button key={k} onClick={()=>{ haptic.tap(); setTab(k); }} style={{
+
                 flex:1,padding:"8px 4px",borderRadius:10,cursor:"pointer",
                 fontFamily:"Cairo,sans-serif",fontSize:10,fontWeight:700,
                 background:tab===k ? c+"22" : "transparent",
