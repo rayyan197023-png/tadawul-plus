@@ -91,12 +91,50 @@ const config = {
     newsArticles:     'mock',       // mock data in newsApi.js
   },
 
-  // ── Polling intervals (ms) — only active when liveMarketData=true
-  intervals: {
-    marketData:  900_000,  // 15 دقيقة بدلاً من 30 ثانية
-    portfolio:   900_000,
-    news:        900_000,
-},
+    // ── Polling intervals (ms) -- تتكيف مع نوع الاشتراك
+  intervals: (function() {
+    // تحديد نوع الاشتراك من env variable
+    const tier = process.env.NEXT_PUBLIC_API_TIER || 'free';
+    
+    // free   → 20 طلب/يوم (EODHD Free)
+    // basic  → 100,000 طلب/شهر (EODHD $20/mo)
+    // premium → 1,000,000 طلب/شهر (EODHD $100/mo)
+    // realtime → WebSocket (لحظي)
+    
+    if (tier === 'realtime') {
+      // WebSocket - لحظي
+      return {
+        marketData:  5_000,    // 5 ثواني (fallback)
+        portfolio:   10_000,   // 10 ثواني
+        news:        60_000,   // دقيقة
+      };
+    }
+    
+    if (tier === 'premium') {
+      // Premium - كل 30 ثانية
+      return {
+        marketData:  30_000,   // 30 ثانية
+        portfolio:   60_000,   // دقيقة
+        news:        300_000,  // 5 دقائق
+      };
+    }
+    
+    if (tier === 'basic') {
+      // Basic - كل 3 دقائق
+      return {
+        marketData:  180_000,  // 3 دقائق
+        portfolio:   300_000,  // 5 دقائق
+        news:        600_000,  // 10 دقائق
+      };
+    }
+    
+    // Free - كل 15 دقيقة (الافتراضي)
+    return {
+      marketData:  900_000,   // 15 دقيقة
+      portfolio:   900_000,   // 15 دقيقة
+      news:        900_000,   // 15 دقيقة
+    };
+  })(),
 };
 
 export default config;
