@@ -696,9 +696,23 @@ const { setTab } = useNav();
       {sub==="macro"&&<MacroTab p={tabProps}/>}
       {sub==="watchlist"&&<WatchlistTab p={tabProps}/>}
 
-      {showCalc&&<ProfitCalc onClose={function(){setShowCalc(false);}}/>}
+            {showCalc&&<ProfitCalc onClose={function(){setShowCalc(false);}}/>}
       {showCompare&&<CompareView onClose={function(){setShowCompare(false);}}/>}
       {showAlerts&&<AlertsPanel onClose={function(){setShowAlerts(false);}}/>}
+      
+      {/* 🧠 AI Learning Dashboard */}
+      {aiLearningOpen && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 9999,
+          background: '#0a0e1a',
+          overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch',
+        }}>
+          <AILearningDashboard onBack={() => setAiLearningOpen(false)} />
+        </div>
+      )}
     </div>
   );
 }
