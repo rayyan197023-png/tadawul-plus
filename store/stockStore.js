@@ -243,7 +243,7 @@ const dispatch = useStockDispatch();
         };
       });
       dispatch({ type: 'UPDATE_PRICES', payload: updates });
-    }, 3000);
+        }, 5000);
 
     return () => clearInterval(tickRef.current);
   }, []); // يبدأ مرة واحدة فقط
