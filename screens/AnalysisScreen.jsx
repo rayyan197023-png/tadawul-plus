@@ -1988,7 +1988,7 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
             return(
               <div style={{marginBottom:16}}>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-                  <button onClick={function(){setScreenerOpen(function(v){return !v;});}} style={{
+                                    <button onClick={function(){ haptic.toggle(); setScreenerOpen(function(v){return !v;});}} style={{
                     display:"flex",alignItems:"center",gap:6,padding:"7px 14px",
                     background:screenerOpen?"linear-gradient(135deg,"+C.electric+"22,"+C.electric+"11)":C.layer2,
                     border:"1px solid "+(screenerOpen?C.electric+"55":C.line),
