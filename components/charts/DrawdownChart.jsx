@@ -25,7 +25,7 @@ var C = {
  * مكوّن منحنى Drawdown
  * SVG خفيف بدون مكتبات خارجية
  */
-export default function DrawdownChart(props) {
+const DrawdownChart = React.memo(function DrawdownChart(props) {
   var chartResult = props.data || { data: [], maxDrawdown: 0 };
   var data = chartResult.data || [];
   var maxDrawdown = chartResult.maxDrawdown || 0;
