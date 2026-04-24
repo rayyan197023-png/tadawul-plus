@@ -2798,7 +2798,7 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
             WebkitBackdropFilter:"blur(14px)",
             display:"flex",alignItems:"flex-end",justifyContent:"center",
             animation:"fadeIn .25s ease both",
-          }} onClick={()=>setFullAnalysis(null)}>
+                    }} onClick={()=>{ haptic.tap(); setFullAnalysis(null); }}>
             {/* الدرج المنزلق من الأسفل */}
             <div
               onClick={e=>e.stopPropagation()}
