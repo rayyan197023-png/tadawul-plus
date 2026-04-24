@@ -86,7 +86,7 @@ function getGradeInfo(score) {
 /* ══════════════════════════════════════════════════════════
    ④ كرت مقياس واحد
 ═══════════════════════════════════════════════════════════ */
-function MetricCard(props) {
+const MetricCard = React.memo(function MetricCard(props) {
   var label = props.label;
   var value = props.value;
   var unit = props.unit || '';
