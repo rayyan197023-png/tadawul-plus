@@ -530,8 +530,53 @@ const { setTab } = useNav();
         </div>
       </div>
       
-      {!sub&&(
+            {!sub&&(
       <>
+        {/* 🧠 بطاقة AI Learning */}
+        <div
+          onClick={function() { setAiLearningOpen(true); }}
+          style={{
+            background: "linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(59, 130, 246, 0.08))",
+            border: "1.5px solid rgba(139, 92, 246, 0.4)",
+            borderRadius: 14,
+            padding: "16px 14px",
+            margin: "12px",
+            cursor: "pointer",
+            boxShadow: "0 4px 14px rgba(139, 92, 246, 0.15)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{
+              width: 52, height: 52, borderRadius: 12,
+              background: "linear-gradient(135deg, #8b5cf6, #3b82f6)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 26, flexShrink: 0,
+              boxShadow: "0 4px 10px rgba(139, 92, 246, 0.3)",
+            }}>
+              🧠
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 9, color: "#8b5cf6", fontWeight: 800, letterSpacing: "1.5px", marginBottom: 3 }}>
+                ✨ ذكاء متطوّر
+              </div>
+              <div style={{ fontSize: 15, fontWeight: 900, color: C.snow, marginBottom: 3, fontFamily: "Cairo,sans-serif" }}>
+                AI Learning Dashboard
+              </div>
+              <div style={{ fontSize: 11, color: C.mist, lineHeight: 1.5, fontFamily: "Cairo,sans-serif" }}>
+                راقب تعلّم النظام وخبرته المتراكمة
+              </div>
+            </div>
+            <div style={{
+              fontSize: 22,
+              color: "#8b5cf6",
+              fontWeight: 900,
+              transform: "rotate(180deg)",
+            }}>
+              →
+            </div>
+          </div>
+        </div>
+
         {/* 🧪 بطاقة مختبر الاستراتيجيات */}
         <div
           onClick={function() { setTab(TAB_IDS.BACKTEST); }}
