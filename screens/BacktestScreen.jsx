@@ -33,7 +33,7 @@ var C = {
 function ModeCard(props) {
   return (
     <div
-      onClick={props.onClick}
+      onClick={() => { if(props.onClick) props.onClick(); }}
       style={{
         padding: "14px 12px",
         background: props.active 
