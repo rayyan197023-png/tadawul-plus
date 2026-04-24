@@ -489,10 +489,12 @@ const BacktestResultsCard = React.memo(function BacktestResultsCard(props) {
             })}
           </div>
         </div>
-      )}
+            )}
     </div>
   );
-}
+});
+
+export default BacktestResultsCard;
 
 /**
  * تنسيق الأرقام المالية
