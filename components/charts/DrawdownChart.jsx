@@ -416,5 +416,7 @@ const DrawdownChart = React.memo(function DrawdownChart(props) {
         }
       </div>
     </div>
-  );
-}
+    );
+});
+
+export default DrawdownChart;
