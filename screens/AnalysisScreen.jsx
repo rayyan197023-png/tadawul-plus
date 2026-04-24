@@ -2821,8 +2821,8 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                 display:"flex",alignItems:"center",justifyContent:"space-between",
                 padding:"10px 16px 0",
               }}>
-                <button
-                  onClick={()=>setFullAnalysis(null)}
+                                <button
+                  onClick={()=>{ haptic.tap(); setFullAnalysis(null); }}
                   style={{
                     width:44,height:44,borderRadius:12,border:"1px solid " + C.line,
                     background:C.layer3,color:C.mist,fontSize:18,cursor:"pointer",
