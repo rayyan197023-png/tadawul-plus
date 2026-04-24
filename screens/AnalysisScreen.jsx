@@ -779,7 +779,7 @@ animation:'shimmer 1.4s ease infinite',
                     return(
                       <div
                         key={d.stk.sym}
-                        onClick={function(e){ e.stopPropagation(); setSel(d.stk.sym); }}
+                                                onClick={function(e){ e.stopPropagation(); haptic.tap(); setSel(d.stk.sym); }}
                         style={{
                           flex:1,display:"flex",flexDirection:"column",
                           alignItems:"center",justifyContent:"flex-end",
