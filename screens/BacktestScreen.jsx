@@ -83,6 +83,7 @@ function ModeCard(props) {
 
 export default function BacktestScreen() {
   var nav = useNav();
+  var haptic = useHaptic();
   var positions = [];
   
   var [config, setConfig] = useState({
