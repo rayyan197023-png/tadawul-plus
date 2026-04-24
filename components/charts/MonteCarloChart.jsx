@@ -505,6 +505,8 @@ const MonteCarloChart = React.memo(function MonteCarloChart(props) {
           </div>
         </div>
       )}
-    </div>
+        </div>
   );
-}
+});
+
+export default MonteCarloChart;
