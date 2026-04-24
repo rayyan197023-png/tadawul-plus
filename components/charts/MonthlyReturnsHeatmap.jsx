@@ -398,5 +398,7 @@ const MonthlyReturnsHeatmap = React.memo(function MonthlyReturnsHeatmap(props) {
         </div>
       </div>
     </div>
-  );
-}
+    );
+});
+
+export default MonthlyReturnsHeatmap;     
