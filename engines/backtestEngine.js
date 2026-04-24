@@ -197,11 +197,12 @@ function executeBuy(signal, state, prices, trades, date, config) {
       avgCost: totalCost / totalShares,
       entryDate: existing.entryDate,
     };
-  } else {
+    } else {
     state.positions[signal.sym] = {
       shares: shares,
       avgCost: price,
       entryDate: date,
+      layersAtEntry: signal.layers || null,  // ✨ حفظ layers للـ AI Learning
     };
   }
 
