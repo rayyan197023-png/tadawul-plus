@@ -153,7 +153,7 @@ const MetricCard = React.memo(function MetricCard(props) {
       }}>
         {value}{unit}
       </div>
-      {description && (
+           {description && (
         <div style={{
           fontSize: 9,
           color: C.ash,
@@ -165,7 +165,7 @@ const MetricCard = React.memo(function MetricCard(props) {
       )}
     </div>
   );
-}
+});
 
 /* ══════════════════════════════════════════════════════════
    ⑤ Risk Dashboard الرئيسي
