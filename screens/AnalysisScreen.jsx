@@ -94,7 +94,8 @@ const [filters, setFilters] = useState({
 
   // عداد ثانية للساعة الحية فقط
   useEffect(()=>{
-    const t = setInterval(function(){ setLiveTime(new Date()); setTick(function(n){ return n+1; }); }, 1000);
+       const t = setInterval(function(){ setLiveTime(new Date()); setTick(function(n){ return n+1; }); }, 30000);
+
     return function(){ clearInterval(t); };
   },[]);
 
