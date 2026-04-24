@@ -18,6 +18,7 @@ import MonteCarloChart from '../components/charts/MonteCarloChart';
 import { STOCKS } from '../constants/stocksData';
 import { useNav } from '../store';
 import Tooltip from '../components/Tooltip';
+import { useHaptic } from '../hooks/useHaptic';
 
 var C = {
   ink: "#06080f", deep: "#090c16", void: "#0c1020",
