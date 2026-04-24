@@ -846,8 +846,8 @@ animation:'shimmer 1.4s ease infinite',
 
           {/* ─── زر الإشارات ─── */}
           <div style={{padding:"0 16px 10px"}}>
-            <button
-              onClick={()=>setPage("signals")}
+                        <button
+              onClick={()=>{ haptic.tap(); setPage("signals"); }}
               style={{
                 width:"100%",
                 background:"linear-gradient(135deg,"+C.electric+"22,"+C.mint+"18)",
