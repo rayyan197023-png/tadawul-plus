@@ -2353,8 +2353,8 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                       </div>
 
                       {/* حذف */}
-                      <button
-                        onClick={function(){ setPort(function(prev){ return prev.filter(function(x){ return x.sym!==p.sym; }); }); }}
+                                            <button
+                        onClick={function(){ haptic.error(); setPort(function(prev){ return prev.filter(function(x){ return x.sym!==p.sym; }); }); }}
                         style={{
                           background:"rgba(240,79,90,.12)",border:"1px solid rgba(240,79,90,.2)",
                           borderRadius:8,width:28,height:28,cursor:"pointer",
