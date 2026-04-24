@@ -21,7 +21,7 @@ var C = {
   mint: "#1ee68a", coral: "#ff5f6a", amber: "#fbbf24", teal: "#22d3ee",
 };
 
-export default function VaRDistributionChart(props) {
+const VaRDistributionChart = React.memo(function VaRDistributionChart(props) {
   var data = props.data || { bins: [], stats: {} };
   var bins = data.bins || [];
   var stats = data.stats || {};
