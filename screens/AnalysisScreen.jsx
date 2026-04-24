@@ -2070,7 +2070,7 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                           ].map(function(o){return(<option key={o.v} value={o.v}>{o.l}</option>);})}
                         </select>
                       </div>
-                      <button onClick={function(){setFilters({minScore:0,maxScore:100,sig:'all',sector:'all',minPE:0,maxPE:200,minDivY:0,minROE:0,minUpside:-100,regime:'all',gatesAll:false});}}
+                                            <button onClick={function(){ haptic.tap(); setFilters({minScore:0,maxScore:100,sig:'all',sector:'all',minPE:0,maxPE:200,minDivY:0,minROE:0,minUpside:-100,regime:'all',gatesAll:false});}}
                         style={{padding:"3px 10px",borderRadius:6,background:"none",border:"1px solid "+C.line,color:C.smoke,fontSize:9,cursor:"pointer"}}>
                         إعادة ضبط
                       </button>
