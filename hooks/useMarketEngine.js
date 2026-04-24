@@ -109,7 +109,7 @@ export function useMarketEngine() {
           chgVal:   +(next - prev.open).toFixed(2),
         };
       });
-    }, 2000);
+        }, 5000);
     return () => clearInterval(id);
   }, []);
 
