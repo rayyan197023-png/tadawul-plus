@@ -1699,9 +1699,10 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                               <span style={{fontSize:8,color:C.smoke}}>اضغط للتفاصيل</span>
                             )
                           }
-                          <button
+                                                    <button
                             onClick={function(e){
                               e.stopPropagation();
+                              haptic.strong();
                               setFullAnalysis(stk.sym);
                               setDiscovered(function(prev){
                                 if(prev.indexOf(stk.sym) !== -1) return prev;
