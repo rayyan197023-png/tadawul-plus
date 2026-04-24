@@ -2406,8 +2406,8 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                           <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                             {STOCKS.map(function(s){
                               return(
-                                <button key={s.sym}
-                                  onClick={function(){ setAddSym(s.sym); setAddCost(s.p.toFixed(2)); }}
+                                                                <button key={s.sym}
+                                  onClick={function(){ haptic.tap(); setAddSym(s.sym); setAddCost(s.p.toFixed(2)); }}
                                   style={{
                                     background:addSym===s.sym?s.sec==="طاقة"?C.gold+"22":C.electric+"22":"transparent",
                                     border:"1px solid "+(addSym===s.sym?C.electric+"66":C.line),
