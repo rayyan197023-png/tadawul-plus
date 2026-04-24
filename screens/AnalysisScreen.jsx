@@ -2605,7 +2605,7 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
           {navItems.map(({id,icon,label})=>{
             const active=page===id;
             return(
-              <button key={id} onClick={()=>setPage(id)} style={{
+                            <button key={id} onClick={()=>{ haptic.tap(); setPage(id); }} style={{
                 flex:1,display:"flex",flexDirection:"column",
                 alignItems:"center",gap:4,cursor:"pointer",
                 background:"none",border:"none",padding:"6px 0",
