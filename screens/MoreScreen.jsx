@@ -15,6 +15,7 @@ import { useNav } from '../store/navStore';
 import { TAB_IDS } from '../constants/navigation';
 import { useSharedPrices } from '../store';
 import { useHaptic } from '../hooks/useHaptic';
+import AILearningDashboard from '../components/AILearningDashboard';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
 import { runSmartAlertsEngine, requestNotificationPermission } from '../engines/smartAlertsEngine';
 import { analyzeStockRadar } from '../engines/analysisEngine';
