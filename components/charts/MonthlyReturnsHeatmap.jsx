@@ -48,7 +48,7 @@ function getCellColor(returnValue, maxAbs) {
   }
 }
 
-export default function MonthlyReturnsHeatmap(props) {
+const MonthlyReturnsHeatmap = React.memo(function MonthlyReturnsHeatmap(props) {
   var result = props.data || { months: [], stats: {} };
   var months = result.months || [];
   var stats = result.stats || {};
