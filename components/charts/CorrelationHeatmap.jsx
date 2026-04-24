@@ -67,7 +67,7 @@ function getCorrelationColor(value, isDiagonal) {
   }
 }
 
-export default function CorrelationHeatmap(props) {
+const CorrelationHeatmap = React.memo(function CorrelationHeatmap(props) {
   var data = props.data || { matrix: [], symbols: [] };
   var matrix = data.matrix || [];
   var symbols = data.symbols || [];
