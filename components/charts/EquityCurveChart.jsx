@@ -24,7 +24,7 @@ var C = {
   mint: "#1ee68a", coral: "#ff5f6a", amber: "#fbbf24", teal: "#22d3ee",
 };
 
-export default function EquityCurveChart(props) {
+const EquityCurveChart = React.memo(function EquityCurveChart(props) {
   var equityCurve = props.equityCurve || [];
   var benchmarkCurve = props.benchmarkCurve || [];
   var initialCapital = props.initialCapital || 100000;
