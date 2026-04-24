@@ -261,27 +261,24 @@ function executeSell(signal, state, prices, trades, date, config) {
     reason: signal.reason || '',
   });
 
-  // ✨ AI Learning - تسجيل feedback تلقائياً
+    // ✨ AI Learning - تسجيل feedback تلقائياً
   try {
-    var holdingDays = Math.round(
-      (new Date(date).getTime() - new Date(position.entryDate).getTime()) / (1000 * 60 * 60 * 24)
-    );
+    // النتيجة: +1 صح (ربح كبير) أو -1 خطأ (خسارة)
+    var actualOutcome = pnlPct > 2 ? 1 : pnlPct < -2 ? -1 : 0;
     
-    var outcome = pnl > 0 ? 'WIN' : pnl < 0 ? 'LOSS' : 'NEUTRAL';
-    var quality = Math.abs(pnlPct) > 5 ? 'STRONG' : 'WEAK';
-    
-    recordFeedback({
-      sym: signal.sym,
-      outcome: outcome,
-      quality: quality,
-      pnl: pnl,
-      pnlPct: pnlPct,
-      holdingDays: holdingDays,
-      entryPrice: position.avgCost,
-      exitPrice: price,
-      source: 'backtest',
-      timestamp: new Date(date).getTime(),
-    });
+    // فقط إذا كانت النتيجة واضحة
+    if (actualOutcome !== 0) {
+      // الإشارة المُتخذة = شراء قوي (لأن الصفقة فُتحت)
+      var signalTaken = pnlPct > 0 ? 'شراء قوي' : 'تخفيف';
+      
+      // Layers افتراضية (في Backtest لا نملك تحليل layers)
+      var layersUsed = position.layersAtEntry || {
+        L1: 60, L2: 60, L3: 60, L4: 60, L5: 60,
+        L6: 60, L7: 60, L8: 60, L9: 60
+      };
+      
+      recordFeedback(signal.sym, signalTaken, layersUsed, actualOutcome);
+    }
   } catch (e) {
     // فشل صامت - لا يؤثر على Backtest
   }
