@@ -34,6 +34,7 @@ import {
 } from '../components/analysis/AnalysisHelpers';
 
 import Tooltip from '../components/Tooltip';
+import { useHaptic } from '../hooks/useHaptic';
 
 export default function AnalysisScreen({ commData: extCommData } = {}) {
   const liveStocks = useSharedPrices(); // أسعار مشتركة محدَّثة
