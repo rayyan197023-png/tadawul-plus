@@ -37,7 +37,7 @@ var QUADRANT_LABELS = {
   avoid: '❌ تجنب',
 };
 
-export default function RiskReturnScatter(props) {
+const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
   var data = props.data || { stocks: [], portfolio: null, benchmark: null };
   var stocks = data.stocks || [];
   var portfolio = data.portfolio;
