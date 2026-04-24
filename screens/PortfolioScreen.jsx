@@ -1038,13 +1038,18 @@ useEffect(() => {
   function doAdd(){
     if(!canAdd) return;
     haptic.success(); // نجاح إضافة مركز
-    var qty=parseFloat(addQty), cost=parseFloat(addCost);
+        var qty=parseFloat(addQty), cost=parseFloat(addCost);
     var h=allData.find(function(d){return d.stk&&d.stk.sym===addSym;}); h=h?h.health:null;
+    
+    // ✨ AI Learning - حفظ layers عند الشراء لاستخدامها عند البيع
+    var layersAtEntry = h ? h.layers || null : null;
+    
     setPort(function(prev){
       var ex=prev.find(function(x){return x.sym===addSym;});
-      if(ex) return prev.map(function(x){return x.sym!==addSym?x:Object.assign({},x,{qty:x.qty+qty,avgCost:(x.avgCost*x.qty+cost*qty)/(x.qty+qty)});});
-      return prev.concat([{sym:addSym,qty:qty,avgCost:cost}]);
+      if(ex) return prev.map(function(x){return x.sym!==addSym?x:Object.assign({},x,{qty:x.qty+qty,avgCost:(x.avgCost*x.qty+cost*qty)/(x.qty+qty), layersAtEntry: layersAtEntry || x.layersAtEntry});});
+      return prev.concat([{sym:addSym,qty:qty,avgCost:cost, layersAtEntry: layersAtEntry}]);
     });
+
     setTradeLog(function(prev){return [{id:Date.now(),sym:addSym,name:found?found.name:addSym,action:"شراء",qty:qty,price:cost,date:new Date().toISOString().slice(0,10),signal:h?h.sig||"-":"-",score:h?h.score||0:0}].concat(prev);});
     setSheet(false); setAddSym(""); setAddQty(""); setAddCost("");
     // سجّل نقطة أداء
