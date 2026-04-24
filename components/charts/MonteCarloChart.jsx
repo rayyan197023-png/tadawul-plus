@@ -25,7 +25,7 @@ var C = {
   plasma: "#a78bfa",
 };
 
-export default function MonteCarloChart(props) {
+const MonteCarloChart = React.memo(function MonteCarloChart(props) {
   var mc = props.data;
 
   if (!mc || !mc.success) {
