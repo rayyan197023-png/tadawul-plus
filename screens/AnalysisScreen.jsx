@@ -2374,7 +2374,7 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
               <div style={{
                 position:"fixed",inset:0,background:"rgba(0,0,0,.7)",
                 zIndex:200,display:"flex",alignItems:"flex-end",
-              }} onClick={function(){ setPortSheet(null); }}>
+                            }} onClick={function(){ haptic.tap(); setPortSheet(null); }}>
   <div style={{
   width:"100%",background:C.layer1,
   borderRadius:"20px 20px 0 0",
