@@ -1754,9 +1754,10 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                         animation:"expandDown .3s cubic-bezier(.16,1,.3,1) both",
                       }}>
                         {/* زر الطي — في الأعلى لراحة اليد الواحدة */}
-                        <button
+                                                <button
                           onClick={function(e){
                             e.stopPropagation();
+                            haptic.tap();
                             setSel(null);
                             setRareAlert(null);
                           }}
