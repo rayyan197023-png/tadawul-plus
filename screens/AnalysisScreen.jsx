@@ -1947,7 +1947,7 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
       ══════════════════════════════════ */}
       {page==="signals"&&(
         <div style={{padding:"90px 20px 90px",position:"relative",zIndex:1}}>
-<button onClick={()=>setPage("home")} style={{
+<button onClick={()=>{ haptic.tap(); setPage("home"); }} style={{
   position:"absolute",top:52,right:16,
   background:C.layer2,border:"1px solid "+C.line,
   borderRadius:10,padding:"7px 14px",
