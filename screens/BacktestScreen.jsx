@@ -383,8 +383,8 @@ export default function BacktestScreen() {
           </label>
         </div>
 
-        <button
-          onClick={runBacktest}
+                <button
+          onClick={() => { haptic.strong(); runBacktest(); }}
           disabled={isRunning || (config.mode === 'portfolio' && !hasPortfolio)}
           style={{
             width: "100%", padding: "12px",
