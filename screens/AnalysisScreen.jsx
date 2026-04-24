@@ -2262,7 +2262,8 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
                   }}
                 />
                 {portSrch&&(
-                  <button onClick={function(){ setPortSrch(""); }}
+                                    <button onClick={function(){ haptic.tap(); setPortSrch(""); }}
+
                     style={{background:"transparent",border:"none",cursor:"pointer",color:C.smoke,fontSize:12}}>
                     ×
                   </button>
