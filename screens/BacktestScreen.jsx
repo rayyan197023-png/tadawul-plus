@@ -269,7 +269,7 @@ export default function BacktestScreen() {
           question="هل الطبقات التسع دقيقة فعلاً؟"
           color={C.gold}
           active={config.mode === 'analysis'}
-          onClick={function() { setConfig(Object.assign({}, config, { mode: 'analysis' })); }}
+                    onClick={function() { haptic.tap(); setConfig(Object.assign({}, config, { mode: 'analysis' })); }}
         />
 
         <ModeCard
