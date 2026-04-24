@@ -374,5 +374,8 @@ const CorrelationHeatmap = React.memo(function CorrelationHeatmap(props) {
         </div>
       )}
     </div>
-  );
-}
+    );
+});
+
+export default CorrelationHeatmap;
+
