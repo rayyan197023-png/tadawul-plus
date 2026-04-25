@@ -499,16 +499,32 @@ function SellSheet(props) {
     function doSell() {
     if(!canSell) return;
     
-    // ✨ AI Learning - تسجيل نتيجة الصفقة
+        // ✨ AI Smart Weighted Learning - مبني على أبحاث Quant Finance
     try {
       var pnlPct = sellSheet.avgCost > 0 ? ((price - sellSheet.avgCost) / sellSheet.avgCost) * 100 : 0;
       
-      // فقط إذا النتيجة واضحة (ربح +3% أو خسارة -3%)
-      if (Math.abs(pnlPct) > 3) {
-        var actualOutcome = pnlPct > 0 ? 1 : -1;
-        var signalTaken = pnlPct > 0 ? 'شراء قوي' : 'تخفيف';
+      // 🎯 القاعدة 1: Dead Zone - تجاهل الضوضاء (±0.5%)
+      // 🎯 القاعدة 2: Anomaly Filter - تجاهل الحركات الاستثنائية (±20%)
+      if (Math.abs(pnlPct) >= 0.5 && Math.abs(pnlPct) <= 20) {
+        // 🎯 القاعدة 3: Weighted Learning - كل صفقة بقوتها
+        var actualOutcome = 0;
         
-        // Layers محفوظة من وقت الشراء (أو افتراضية)
+        // النتائج الإيجابية
+        if (pnlPct >= 10)      actualOutcome = 2.0;   // ممتاز
+        else if (pnlPct >= 5)  actualOutcome = 1.5;   // قوي
+        else if (pnlPct >= 3)  actualOutcome = 1.0;   // واضح
+        else if (pnlPct >= 1)  actualOutcome = 0.5;   // ضعيف
+        else if (pnlPct > 0)   actualOutcome = 0.2;   // طفيف
+        // النتائج السلبية
+        else if (pnlPct >= -1)  actualOutcome = -0.2;
+        else if (pnlPct >= -3)  actualOutcome = -0.5;
+        else if (pnlPct >= -5)  actualOutcome = -1.0;
+        else if (pnlPct >= -10) actualOutcome = -1.5;
+        else                    actualOutcome = -2.0;
+        
+        var signalTaken = pnlPct >= 0 ? 'شراء قوي' : 'تخفيف';
+        
+        // Layers محفوظة من وقت الشراء
         var layersUsed = sellSheet.layersAtEntry || {
           L1: 60, L2: 60, L3: 60, L4: 60, L5: 60,
           L6: 60, L7: 60, L8: 60, L9: 60
