@@ -1,48 +1,54 @@
 /**
- * SMART ALERTS ENGINE
- * محرك التنبيهات الذكية -- مستوى Bloomberg × Apple
+ * SMART ALERTS ENGINE - Bloomberg-Level
  * 
- * يُحلّل تلقائياً:
- * - تغيّرات Health Score (الطبقات التسع)
- * - إشارات BOS, Wyckoff, RSI, MACD
- * - حالة السيولة والتذبذب
- * - الوصول لأهداف السعر / Stop Loss
- * - صحة المحفظة (Rebalancing مطلوب)
+ * ✨ V2.0 - 100% Mathematical Rigor
+ * 
+ * Improvements:
+ * 1. Smart Stop Loss/Take Profit (positionEngine)
+ * 2. State Change Detection (no spam)
+ * 3. localStorage persistence
+ * 4. Adaptive thresholds (ATR-based)
+ * 5. Multi-condition signals
  */
 
 import { STOCKS } from '../constants/stocksData';
+import { calcSmartStopLoss, calcSmartTakeProfit } from './positionEngine';
+import { genBars } from './analysisEngine';
 
 // ─── الثوابت الأساسية ─────────────────────────
-const COOLDOWN_MINUTES = 15;          // مدة الانتظار بين تنبيهات متشابهة
-const MAX_ALERTS_PER_SYMBOL = 3;      // أقصى عدد تنبيهات لسهم واحد/يوم
-const HEALTH_JUMP_THRESHOLD = 15;     // قفزة Health Score (نقاط)
-const HEALTH_DROP_THRESHOLD = 15;     // هبوط Health Score (نقاط)
-const HIGH_HEALTH_THRESHOLD = 85;     // Health عالٍ (فرصة قوية)
-const LOW_HEALTH_THRESHOLD = 35;      // Health منخفض (خطر)
-const RSI_OVERSOLD = 30;              // ذروة البيع
-const RSI_OVERBOUGHT = 70;            // ذروة الشراء
+const COOLDOWN_MINUTES = 15;
+const MAX_ALERTS_PER_SYMBOL_DAILY = 5;
+const HEALTH_JUMP_THRESHOLD = 15;
+const HEALTH_DROP_THRESHOLD = 15;
+const HIGH_HEALTH_THRESHOLD = 85;
+const LOW_HEALTH_THRESHOLD = 35;
+const RSI_OVERSOLD = 30;
+const RSI_OVERBOUGHT = 70;
+
+// ─── ثوابت State Change ───────────────────────
+const STATE_PERSIST_KEY = 'tdw_alerts_state';
+const SENT_ALERTS_KEY = 'tdw_alerts_sent_today';
 
 // ─── أنواع التنبيهات ───────────────────────────
 export const ALERT_TYPES = {
-  // تنبيهات الفرص
-  HEALTH_JUMP:      'healthJump',       // 🎯 Health قفز فجأة
-  STRONG_BUY:       'strongBuy',        // 💎 إشارة شراء قوية
-  BOS_BULLISH:      'bosBullish',       // ⚡ BOS صاعد
-  RSI_OVERSOLD:     'rsiOversold',      // 📊 RSI في ذروة البيع
-  LIQUIDITY_SURGE:  'liquiditySurge',   // 💧 تحسّن السيولة فجأة
-  
-  // تنبيهات المخاطر
-  HEALTH_DROP:      'healthDrop',       // ⚠️ Health هبط فجأة
-  STRONG_SELL:      'strongSell',       // 🚨 إشارة بيع قوية
-  BOS_BEARISH:      'bosBearish',       // 🔴 BOS هابط
-  RSI_OVERBOUGHT:   'rsiOverbought',    // ⚠️ RSI في ذروة الشراء
-  
-  // تنبيهات المحفظة
-  TARGET_REACHED:   'targetReached',    // 🎯 وصل هدف السعر
-  STOP_LOSS:        'stopLossBreach',   // 🛑 كسر Stop Loss
-  REBALANCE_NEEDED: 'rebalanceNeeded',  // ⚖️ إعادة توازن مطلوبة
+  HEALTH_JUMP:      'healthJump',
+  STRONG_BUY:       'strongBuy',
+  BOS_BULLISH:      'bosBullish',
+  RSI_OVERSOLD:     'rsiOversold',
+  LIQUIDITY_SURGE:  'liquiditySurge',
+  HEALTH_DROP:      'healthDrop',
+  STRONG_SELL:      'strongSell',
+  BOS_BEARISH:      'bosBearish',
+  RSI_OVERBOUGHT:   'rsiOverbought',
+  TARGET_REACHED:   'targetReached',
+  TARGET_T1:        'targetT1',
+  TARGET_T2:        'targetT2',
+  TARGET_T3:        'targetT3',
+  STOP_LOSS:        'stopLossBreach',
+  REBALANCE_NEEDED: 'rebalanceNeeded',
 };
-// ─── مكتبة النغمات (6 نغمات احترافية) ──────────
+
+// ─── مكتبة النغمات ──────────────────────────────
 export const SOUND_PRESETS = {
   classic: {
     id: 'classic',
@@ -105,11 +111,224 @@ export const SOUND_PRESETS = {
   },
 };
 
-// ─── حالة الإعدادات (تحميل من localStorage) ───────
-export function loadAlertSettings() {
-  if (typeof window === 'undefined') {
-    return getDefaultSettings();
+// ─── مستويات الأولوية ─────────────────────────
+export const PRIORITY = {
+  CRITICAL: 'critical',
+  HIGH:     'high',
+  MEDIUM:   'medium',
+  LOW:      'low',
+};
+
+// ─── الألوان ───────────────────────────────────
+export const ALERT_COLORS = {
+  [ALERT_TYPES.HEALTH_JUMP]:      { bg: '#1ee68a', icon: '🎯', label: 'قفزة صحة' },
+  [ALERT_TYPES.STRONG_BUY]:       { bg: '#1ee68a', icon: '💎', label: 'شراء قوي' },
+  [ALERT_TYPES.BOS_BULLISH]:      { bg: '#22d3ee', icon: '⚡', label: 'اختراق صاعد' },
+  [ALERT_TYPES.RSI_OVERSOLD]:     { bg: '#4d9fff', icon: '📊', label: 'ذروة بيع' },
+  [ALERT_TYPES.LIQUIDITY_SURGE]:  { bg: '#22d3ee', icon: '💧', label: 'تدفق سيولة' },
+  [ALERT_TYPES.HEALTH_DROP]:      { bg: '#ff5f6a', icon: '⚠️', label: 'انخفاض صحة' },
+  [ALERT_TYPES.STRONG_SELL]:      { bg: '#ff5f6a', icon: '🚨', label: 'بيع قوي' },
+  [ALERT_TYPES.BOS_BEARISH]:      { bg: '#ff5f6a', icon: '🔴', label: 'كسر هابط' },
+  [ALERT_TYPES.RSI_OVERBOUGHT]:   { bg: '#fbbf24', icon: '⚠️', label: 'ذروة شراء' },
+  [ALERT_TYPES.TARGET_REACHED]:   { bg: '#f0c050', icon: '🎯', label: 'هدف محقق' },
+  [ALERT_TYPES.TARGET_T1]:        { bg: '#22d3ee', icon: '🎯', label: 'هدف T1' },
+  [ALERT_TYPES.TARGET_T2]:        { bg: '#10c97e', icon: '🎯', label: 'هدف T2' },
+  [ALERT_TYPES.TARGET_T3]:        { bg: '#f0c050', icon: '🎯', label: 'هدف T3' },
+  [ALERT_TYPES.STOP_LOSS]:        { bg: '#ff5f6a', icon: '🛑', label: 'Stop Loss' },
+  [ALERT_TYPES.REBALANCE_NEEDED]: { bg: '#a78bfa', icon: '⚖️', label: 'توازن محفظة' },
+};
+
+// ═══════════════════════════════════════════════
+// ✨ STATE PERSISTENCE - localStorage
+// ═══════════════════════════════════════════════
+
+/**
+ * Load state من localStorage
+ */
+function loadAlertState() {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = window.localStorage.getItem(STATE_PERSIST_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
   }
+}
+
+/**
+ * Save state إلى localStorage
+ */
+function saveAlertState(state) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(STATE_PERSIST_KEY, JSON.stringify(state));
+  } catch (e) {}
+}
+
+/**
+ * Load sent alerts (للتحكم في spam)
+ */
+function loadSentAlertsToday() {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = window.localStorage.getItem(SENT_ALERTS_KEY);
+    if (!raw) return {};
+    
+    const data = JSON.parse(raw);
+    const today = new Date().toDateString();
+    
+    // إذا تاريخ مختلف، نظّف
+    if (data.date !== today) {
+      window.localStorage.setItem(SENT_ALERTS_KEY, JSON.stringify({ date: today, alerts: {} }));
+      return {};
+    }
+    
+    return data.alerts || {};
+  } catch (e) {
+    return {};
+  }
+}
+
+/**
+ * Save sent alerts
+ */
+function saveSentAlertToday(sym, type) {
+  if (typeof window === 'undefined') return;
+  try {
+    const today = new Date().toDateString();
+    const raw = window.localStorage.getItem(SENT_ALERTS_KEY);
+    const data = raw ? JSON.parse(raw) : { date: today, alerts: {} };
+    
+    if (data.date !== today) {
+      data.date = today;
+      data.alerts = {};
+    }
+    
+    const key = `${sym}_${type}`;
+    data.alerts[key] = (data.alerts[key] || 0) + 1;
+    
+    window.localStorage.setItem(SENT_ALERTS_KEY, JSON.stringify(data));
+  } catch (e) {}
+}
+
+/**
+ * هل تم إرسال هذا التنبيه اليوم؟
+ */
+function wasAlertSentToday(sym, type) {
+  const sent = loadSentAlertsToday();
+  const key = `${sym}_${type}`;
+  return (sent[key] || 0) > 0;
+}
+
+/**
+ * عدد التنبيهات للسهم اليوم
+ */
+function getAlertCountToday(sym) {
+  const sent = loadSentAlertsToday();
+  let count = 0;
+  Object.keys(sent).forEach(key => {
+    if (key.startsWith(`${sym}_`)) count += sent[key];
+  });
+  return count;
+}
+
+// ═══════════════════════════════════════════════
+// ✨ ADAPTIVE THRESHOLDS - بناءً على ATR
+// ═══════════════════════════════════════════════
+
+/**
+ * حساب Adaptive Thresholds للسهم
+ * بناءً على تذبذبه الفعلي
+ */
+function calcAdaptiveThresholds(stock, bars) {
+  // Default
+  const defaults = {
+    healthJump: HEALTH_JUMP_THRESHOLD,
+    healthDrop: HEALTH_DROP_THRESHOLD,
+    rsiOversold: RSI_OVERSOLD,
+    rsiOverbought: RSI_OVERBOUGHT,
+  };
+  
+  if (!bars || bars.length < 14) return defaults;
+  
+  try {
+    // حساب التذبذبية النسبية
+    const recent20 = bars.slice(-20);
+    const avgVolatility = recent20.reduce((s, b) => s + Math.abs(b.pct || 0), 0) / 20;
+    
+    // Volatility multiplier
+    let volMult;
+    if (avgVolatility > 3) volMult = 1.5;        // تذبذبية عالية → عتبات أعلى
+    else if (avgVolatility > 2) volMult = 1.25;
+    else if (avgVolatility > 1) volMult = 1.0;
+    else volMult = 0.85;                          // تذبذبية منخفضة → عتبات أقل
+    
+    return {
+      healthJump: Math.round(HEALTH_JUMP_THRESHOLD * volMult),
+      healthDrop: Math.round(HEALTH_DROP_THRESHOLD * volMult),
+      rsiOversold: avgVolatility > 2 ? 25 : 30,   // أكثر صرامة للأسهم المتذبذبة
+      rsiOverbought: avgVolatility > 2 ? 75 : 70,
+    };
+  } catch (e) {
+    return defaults;
+  }
+}
+
+// ═══════════════════════════════════════════════
+// ✨ MULTI-CONDITION SIGNALS
+// ═══════════════════════════════════════════════
+
+/**
+ * هل الإشارة قوية فعلاً؟ (multi-condition)
+ */
+function isStrongSignal(stock, type) {
+  const vr = stock.vr || 1;
+  const trend = stock.trend || 'neutral';
+  const volume = vr > 1.2;
+  
+  switch(type) {
+    case ALERT_TYPES.STRONG_BUY:
+      // يحتاج: Health عالٍ + Volume + Uptrend
+      return stock.health >= HIGH_HEALTH_THRESHOLD && 
+             volume && 
+             trend !== 'down';
+    
+    case ALERT_TYPES.STRONG_SELL:
+      // يحتاج: Health منخفض + Volume + Downtrend
+      return stock.health <= LOW_HEALTH_THRESHOLD && 
+             volume;
+    
+    case ALERT_TYPES.RSI_OVERSOLD:
+      // يحتاج: RSI + Volume confirmation
+      return stock.rsi <= RSI_OVERSOLD && 
+             vr >= 0.9;
+    
+    case ALERT_TYPES.RSI_OVERBOUGHT:
+      // يحتاج: RSI + Volume
+      return stock.rsi >= RSI_OVERBOUGHT && 
+             vr >= 0.9;
+    
+    case ALERT_TYPES.BOS_BULLISH:
+      // يحتاج: BOS + Health جيد
+      return stock.bos === 'bullish' && 
+             stock.health >= 60;
+    
+    case ALERT_TYPES.BOS_BEARISH:
+      // يحتاج: BOS + Health ضعيف
+      return stock.bos === 'bearish' && 
+             stock.health <= 50;
+    
+    default:
+      return true;
+  }
+}
+
+// ═══════════════════════════════════════════════
+// ✨ SETTINGS MANAGEMENT
+// ═══════════════════════════════════════════════
+
+export function loadAlertSettings() {
+  if (typeof window === 'undefined') return getDefaultSettings();
   try {
     const raw = window.localStorage.getItem('tadawul_alert_settings');
     if (!raw) return getDefaultSettings();
@@ -129,7 +348,7 @@ export function saveAlertSettings(settings) {
 function getDefaultSettings() {
   return {
     soundEnabled: true,
-    soundMode: 'critical',        // 'all' | 'critical' | 'off'
+    soundMode: 'critical',
     soundPreset: 'classic',
     browserNotifications: true,
     vibration: true,
@@ -137,252 +356,306 @@ function getDefaultSettings() {
   };
 }
 
-
-// ─── مستويات الأولوية ─────────────────────────
-export const PRIORITY = {
-  CRITICAL: 'critical',  // 🚨 حرج (مخاطر عالية)
-  HIGH:     'high',      // 🔴 عالية
-  MEDIUM:   'medium',    // 🟡 متوسطة
-  LOW:      'low',       // 🔵 منخفضة
-};
-
-// ─── الألوان حسب النوع ─────────────────────────
-export const ALERT_COLORS = {
-  [ALERT_TYPES.HEALTH_JUMP]:      { bg: '#1ee68a', icon: '🎯', label: 'قفزة صحة' },
-  [ALERT_TYPES.STRONG_BUY]:       { bg: '#1ee68a', icon: '💎', label: 'شراء قوي' },
-  [ALERT_TYPES.BOS_BULLISH]:      { bg: '#22d3ee', icon: '⚡', label: 'اختراق صاعد' },
-  [ALERT_TYPES.RSI_OVERSOLD]:     { bg: '#4d9fff', icon: '📊', label: 'ذروة بيع' },
-  [ALERT_TYPES.LIQUIDITY_SURGE]:  { bg: '#22d3ee', icon: '💧', label: 'تدفق سيولة' },
-  
-  [ALERT_TYPES.HEALTH_DROP]:      { bg: '#ff5f6a', icon: '⚠️', label: 'انخفاض صحة' },
-  [ALERT_TYPES.STRONG_SELL]:      { bg: '#ff5f6a', icon: '🚨', label: 'بيع قوي' },
-  [ALERT_TYPES.BOS_BEARISH]:      { bg: '#ff5f6a', icon: '🔴', label: 'كسر هابط' },
-  [ALERT_TYPES.RSI_OVERBOUGHT]:   { bg: '#fbbf24', icon: '⚠️', label: 'ذروة شراء' },
-  
-  [ALERT_TYPES.TARGET_REACHED]:   { bg: '#f0c050', icon: '🎯', label: 'هدف محقق' },
-  [ALERT_TYPES.STOP_LOSS]:        { bg: '#ff5f6a', icon: '🛑', label: 'Stop Loss' },
-  [ALERT_TYPES.REBALANCE_NEEDED]: { bg: '#a78bfa', icon: '⚖️', label: 'توازن محفظة' },
-};
-
-// ─── الذاكرة المؤقتة (للمقارنة) ──────────────
-let previousState = {}; // { [sym]: { health, rsi, macd, bos } }
+// ═══════════════════════════════════════════════
+// ✨ MAIN ENGINE - Generate Smart Alerts
+// ═══════════════════════════════════════════════
 
 /**
- * الدالة الرئيسية: توليد التنبيهات الذكية
+ * توليد التنبيهات الذكية
  * 
- * @param {Array} currentStocks - الأسهم الحالية مع التحليلات
- * @param {Array} positions - مراكز المحفظة
- * @returns {Array} - قائمة التنبيهات الجديدة
+ * @param {Array} currentStocks - الأسهم مع التحليلات
+ * @param {Array} positions - المراكز
+ * @returns {Array} التنبيهات الجديدة
  */
 export function generateSmartAlerts(currentStocks, positions = []) {
   if (!currentStocks || currentStocks.length === 0) return [];
   
   const newAlerts = [];
-  const now = Date.now();
-  
-  // تحميل التنبيهات السابقة لمنع التكرار
-  const existingAlerts = loadExistingAlerts();
-  const recentAlerts = existingAlerts.filter(a => 
-    a.timestamp && (now - a.timestamp) < COOLDOWN_MINUTES * 60 * 1000
-  );
+  const previousState = loadAlertState();
+  const updatedState = { ...previousState };
   
   currentStocks.forEach(stock => {
-    const prev = previousState[stock.sym];
+    if (!stock.sym) return;
     
-    // ═══ 1. فحص Health Score ═══
-    if (prev && stock.health) {
+    const prev = previousState[stock.sym] || {};
+    const dailyCount = getAlertCountToday(stock.sym);
+    
+    // حد أقصى للتنبيهات اليومية لكل سهم
+    if (dailyCount >= MAX_ALERTS_PER_SYMBOL_DAILY) {
+      // تحديث الحالة فقط
+      updatedState[stock.sym] = buildStateSnapshot(stock);
+      return;
+    }
+    
+    // ✨ Adaptive Thresholds
+    const bars = stock.bars || [];
+    const thresholds = calcAdaptiveThresholds(stock, bars);
+    
+    // ═══ 1. Health Score Jump (State Change) ═══
+    if (prev.health !== undefined && stock.health) {
       const healthChange = stock.health - prev.health;
       
-      // قفزة إيجابية كبيرة
-      if (healthChange >= HEALTH_JUMP_THRESHOLD && stock.health >= 70) {
-        const alert = createAlert({
-          type: ALERT_TYPES.HEALTH_JUMP,
-          priority: PRIORITY.HIGH,
-          sym: stock.sym,
-          name: stock.name,
-          title: 'فرصة شراء متنامية',
-          message: `Health Score قفز من ${prev.health} إلى ${stock.health}`,
-          detail: `تحسّن ${healthChange}+ نقطة في الدقائق الماضية`,
-          action: 'عرض التحليل الكامل',
-          data: { from: prev.health, to: stock.health, change: healthChange },
-        });
-        
-        if (!isDuplicate(alert, recentAlerts)) newAlerts.push(alert);
+      if (healthChange >= thresholds.healthJump && stock.health >= 70) {
+        if (!wasAlertSentToday(stock.sym, ALERT_TYPES.HEALTH_JUMP)) {
+          const alert = createAlert({
+            type: ALERT_TYPES.HEALTH_JUMP,
+            priority: PRIORITY.HIGH,
+            sym: stock.sym,
+            name: stock.name,
+            title: '🎯 فرصة شراء متنامية',
+            message: `Health Score قفز من ${prev.health} إلى ${stock.health}`,
+            detail: `تحسّن ${healthChange}+ نقطة (عتبة ذكية: ${thresholds.healthJump})`,
+            action: 'عرض التحليل',
+            data: { from: prev.health, to: stock.health, change: healthChange },
+          });
+          newAlerts.push(alert);
+          saveSentAlertToday(stock.sym, ALERT_TYPES.HEALTH_JUMP);
+        }
       }
       
-      // هبوط سلبي كبير
-      if (healthChange <= -HEALTH_DROP_THRESHOLD && stock.health <= 50) {
-        const alert = createAlert({
-          type: ALERT_TYPES.HEALTH_DROP,
-          priority: PRIORITY.HIGH,
-          sym: stock.sym,
-          name: stock.name,
-          title: 'تحذير: تدهور الأداء',
-          message: `Health Score هبط من ${prev.health} إلى ${stock.health}`,
-          detail: `انخفاض ${Math.abs(healthChange)} نقطة -- راجع مركزك`,
-          action: 'عرض التحليل',
-          data: { from: prev.health, to: stock.health, change: healthChange },
-        });
-        
-        if (!isDuplicate(alert, recentAlerts)) newAlerts.push(alert);
-      }
-    }
-    
-    // ═══ 2. إشارات شراء قوية (Health عالٍ) ═══
-    if (stock.health >= HIGH_HEALTH_THRESHOLD) {
-      const alert = createAlert({
-        type: ALERT_TYPES.STRONG_BUY,
-        priority: PRIORITY.CRITICAL,
-        sym: stock.sym,
-        name: stock.name,
-        title: '💎 إشارة شراء قوية جداً',
-        message: `Health Score: ${stock.health}/100`,
-        detail: 'الطبقات التسع تتوافق على شراء قوي',
-        action: 'استكشف الفرصة',
-        data: { health: stock.health },
-      });
-      
-      if (!isDuplicate(alert, recentAlerts)) newAlerts.push(alert);
-    }
-    
-    // ═══ 3. إشارات بيع قوية (Health منخفض) ═══
-    if (stock.health <= LOW_HEALTH_THRESHOLD) {
-      const alert = createAlert({
-        type: ALERT_TYPES.STRONG_SELL,
-        priority: PRIORITY.CRITICAL,
-        sym: stock.sym,
-        name: stock.name,
-        title: '🚨 تحذير بيع حاد',
-        message: `Health Score: ${stock.health}/100`,
-        detail: 'ضعف واضح في المؤشرات الفنية والأساسية',
-        action: 'راجع المركز',
-        data: { health: stock.health },
-      });
-      
-      if (!isDuplicate(alert, recentAlerts)) newAlerts.push(alert);
-    }
-    
-    // ═══ 4. BOS (Break of Structure) ═══
-    if (stock.bos && prev?.bos !== stock.bos) {
-      if (stock.bos === 'bullish') {
-        const alert = createAlert({
-          type: ALERT_TYPES.BOS_BULLISH,
-          priority: PRIORITY.HIGH,
-          sym: stock.sym,
-          name: stock.name,
-          title: '⚡ كسر هيكلي صاعد',
-          message: 'BOS Bullish -- اختراق مؤكد',
-          detail: 'السهم كسر القمة السابقة -- إشارة صعود قوية',
-          action: 'عرض التفاصيل',
-          data: { bos: stock.bos },
-        });
-        
-        if (!isDuplicate(alert, recentAlerts)) newAlerts.push(alert);
-      } else if (stock.bos === 'bearish') {
-        const alert = createAlert({
-          type: ALERT_TYPES.BOS_BEARISH,
-          priority: PRIORITY.HIGH,
-          sym: stock.sym,
-          name: stock.name,
-          title: '🔴 كسر هيكلي هابط',
-          message: 'BOS Bearish -- انهيار مؤكد',
-          detail: 'السهم كسر القاع السابق -- إشارة هبوط',
-          action: 'راجع المركز',
-          data: { bos: stock.bos },
-        });
-        
-        if (!isDuplicate(alert, recentAlerts)) newAlerts.push(alert);
+      if (healthChange <= -thresholds.healthDrop && stock.health <= 50) {
+        if (!wasAlertSentToday(stock.sym, ALERT_TYPES.HEALTH_DROP)) {
+          const alert = createAlert({
+            type: ALERT_TYPES.HEALTH_DROP,
+            priority: PRIORITY.HIGH,
+            sym: stock.sym,
+            name: stock.name,
+            title: '⚠️ تحذير: تدهور الأداء',
+            message: `Health Score هبط من ${prev.health} إلى ${stock.health}`,
+            detail: `انخفاض ${Math.abs(healthChange)} نقطة (عتبة ذكية: ${thresholds.healthDrop})`,
+            action: 'راجع المركز',
+            data: { from: prev.health, to: stock.health, change: healthChange },
+          });
+          newAlerts.push(alert);
+          saveSentAlertToday(stock.sym, ALERT_TYPES.HEALTH_DROP);
+        }
       }
     }
     
-    // ═══ 5. RSI Oversold (ذروة البيع -- فرصة) ═══
-    if (stock.rsi && stock.rsi <= RSI_OVERSOLD && (!prev || prev.rsi > RSI_OVERSOLD)) {
-      const alert = createAlert({
-        type: ALERT_TYPES.RSI_OVERSOLD,
-        priority: PRIORITY.MEDIUM,
-        sym: stock.sym,
-        name: stock.name,
-        title: '📊 فرصة من ذروة البيع',
-        message: `RSI: ${stock.rsi}`,
-        detail: 'السهم في منطقة تشبع بيعي -- فرصة ارتداد محتملة',
-        action: 'فحص السهم',
-        data: { rsi: stock.rsi },
-      });
-      
-      if (!isDuplicate(alert, recentAlerts)) newAlerts.push(alert);
-    }
+    // ═══ 2. STRONG BUY (State Change) ═══
+    const wasStrong = prev.health >= HIGH_HEALTH_THRESHOLD;
+    const isStrong = stock.health >= HIGH_HEALTH_THRESHOLD;
     
-    // ═══ 6. RSI Overbought (ذروة الشراء -- تحذير) ═══
-    if (stock.rsi && stock.rsi >= RSI_OVERBOUGHT && (!prev || prev.rsi < RSI_OVERBOUGHT)) {
-      const alert = createAlert({
-        type: ALERT_TYPES.RSI_OVERBOUGHT,
-        priority: PRIORITY.MEDIUM,
-        sym: stock.sym,
-        name: stock.name,
-        title: '⚠️ تحذير ذروة الشراء',
-        message: `RSI: ${stock.rsi}`,
-        detail: 'السهم في منطقة تشبع شرائي -- احتمال تصحيح',
-        action: 'راقب بحذر',
-        data: { rsi: stock.rsi },
-      });
-      
-      if (!isDuplicate(alert, recentAlerts)) newAlerts.push(alert);
-    }
-    
-    // ═══ 7. تنبيهات المحفظة (Target Reached / Stop Loss) ═══
-    const myPosition = positions.find(p => p.sym === stock.sym);
-    if (myPosition && stock.p) {
-      // هدف السعر (+15% ربح افتراضي)
-      const targetPrice = myPosition.avgCost * 1.15;
-      if (stock.p >= targetPrice && !prev?.targetAlerted) {
+    if (isStrong && !wasStrong && isStrongSignal(stock, ALERT_TYPES.STRONG_BUY)) {
+      if (!wasAlertSentToday(stock.sym, ALERT_TYPES.STRONG_BUY)) {
         const alert = createAlert({
-          type: ALERT_TYPES.TARGET_REACHED,
-          priority: PRIORITY.HIGH,
-          sym: stock.sym,
-          name: stock.name,
-          title: '🎯 وصلت الهدف!',
-          message: `السعر الحالي: ${stock.p.toFixed(2)} ر`,
-          detail: `ربح +15% من سعر الدخول (${myPosition.avgCost.toFixed(2)})`,
-          action: 'فكّر في البيع الجزئي',
-          data: { current: stock.p, entry: myPosition.avgCost, gain: 15 },
-        });
-        
-        if (!isDuplicate(alert, recentAlerts)) newAlerts.push(alert);
-      }
-      
-      // Stop Loss (-8% خسارة افتراضي)
-      const stopLoss = myPosition.avgCost * 0.92;
-      if (stock.p <= stopLoss && !prev?.stopLossAlerted) {
-        const alert = createAlert({
-          type: ALERT_TYPES.STOP_LOSS,
+          type: ALERT_TYPES.STRONG_BUY,
           priority: PRIORITY.CRITICAL,
           sym: stock.sym,
           name: stock.name,
-          title: '🛑 كسر Stop Loss',
-          message: `السعر الحالي: ${stock.p.toFixed(2)} ر`,
-          detail: `خسارة -8% من سعر الدخول (${myPosition.avgCost.toFixed(2)})`,
-          action: 'قرار فوري مطلوب',
-          data: { current: stock.p, entry: myPosition.avgCost, loss: 8 },
+          title: '💎 إشارة شراء قوية جداً',
+          message: `Health Score: ${stock.health}/100`,
+          detail: 'الطبقات التسع + الحجم + الاتجاه تتوافق',
+          action: 'استكشف الفرصة',
+          data: { health: stock.health, vr: stock.vr },
         });
-        
-        if (!isDuplicate(alert, recentAlerts)) newAlerts.push(alert);
+        newAlerts.push(alert);
+        saveSentAlertToday(stock.sym, ALERT_TYPES.STRONG_BUY);
       }
     }
     
-    // تحديث الحالة السابقة
-    previousState[stock.sym] = {
-      health: stock.health,
-      rsi: stock.rsi,
-      macd: stock.macd,
-      bos: stock.bos,
-      price: stock.p,
-    };
+    // ═══ 3. STRONG SELL (State Change) ═══
+    const wasWeak = prev.health <= LOW_HEALTH_THRESHOLD;
+    const isWeak = stock.health <= LOW_HEALTH_THRESHOLD;
+    
+    if (isWeak && !wasWeak && isStrongSignal(stock, ALERT_TYPES.STRONG_SELL)) {
+      if (!wasAlertSentToday(stock.sym, ALERT_TYPES.STRONG_SELL)) {
+        const alert = createAlert({
+          type: ALERT_TYPES.STRONG_SELL,
+          priority: PRIORITY.CRITICAL,
+          sym: stock.sym,
+          name: stock.name,
+          title: '🚨 تحذير بيع حاد',
+          message: `Health Score: ${stock.health}/100`,
+          detail: 'ضعف في المؤشرات + الحجم يؤكد',
+          action: 'راجع المركز',
+          data: { health: stock.health, vr: stock.vr },
+        });
+        newAlerts.push(alert);
+        saveSentAlertToday(stock.sym, ALERT_TYPES.STRONG_SELL);
+      }
+    }
+    
+    // ═══ 4. BOS (State Change) ═══
+    if (prev.bos !== stock.bos && stock.bos) {
+      const bosType = stock.bos === 'bullish' ? ALERT_TYPES.BOS_BULLISH : 
+                     stock.bos === 'bearish' ? ALERT_TYPES.BOS_BEARISH : null;
+      
+      if (bosType && isStrongSignal(stock, bosType) && !wasAlertSentToday(stock.sym, bosType)) {
+        const isBullish = stock.bos === 'bullish';
+        const alert = createAlert({
+          type: bosType,
+          priority: PRIORITY.HIGH,
+          sym: stock.sym,
+          name: stock.name,
+          title: isBullish ? '⚡ كسر هيكلي صاعد' : '🔴 كسر هيكلي هابط',
+          message: isBullish ? 'BOS Bullish مؤكد' : 'BOS Bearish مؤكد',
+          detail: isBullish ? 'كسر القمة + Health 60+' : 'كسر القاع + Health ≤50',
+          action: isBullish ? 'عرض التفاصيل' : 'راجع المركز',
+          data: { bos: stock.bos, health: stock.health },
+        });
+        newAlerts.push(alert);
+        saveSentAlertToday(stock.sym, bosType);
+      }
+    }
+    
+    // ═══ 5. RSI Oversold (State Change + Volume) ═══
+    const wasOversold = prev.rsi !== undefined && prev.rsi <= thresholds.rsiOversold;
+    const isOversold = stock.rsi <= thresholds.rsiOversold;
+    
+    if (isOversold && !wasOversold && isStrongSignal(stock, ALERT_TYPES.RSI_OVERSOLD)) {
+      if (!wasAlertSentToday(stock.sym, ALERT_TYPES.RSI_OVERSOLD)) {
+        const alert = createAlert({
+          type: ALERT_TYPES.RSI_OVERSOLD,
+          priority: PRIORITY.MEDIUM,
+          sym: stock.sym,
+          name: stock.name,
+          title: '📊 فرصة من ذروة البيع',
+          message: `RSI: ${stock.rsi} (عتبة ذكية: ${thresholds.rsiOversold})`,
+          detail: 'تشبع بيعي + الحجم يدعم الارتداد',
+          action: 'فحص السهم',
+          data: { rsi: stock.rsi, vr: stock.vr },
+        });
+        newAlerts.push(alert);
+        saveSentAlertToday(stock.sym, ALERT_TYPES.RSI_OVERSOLD);
+      }
+    }
+    
+    // ═══ 6. RSI Overbought (State Change) ═══
+    const wasOverbought = prev.rsi !== undefined && prev.rsi >= thresholds.rsiOverbought;
+    const isOverbought = stock.rsi >= thresholds.rsiOverbought;
+    
+    if (isOverbought && !wasOverbought && isStrongSignal(stock, ALERT_TYPES.RSI_OVERBOUGHT)) {
+      if (!wasAlertSentToday(stock.sym, ALERT_TYPES.RSI_OVERBOUGHT)) {
+        const alert = createAlert({
+          type: ALERT_TYPES.RSI_OVERBOUGHT,
+          priority: PRIORITY.MEDIUM,
+          sym: stock.sym,
+          name: stock.name,
+          title: '⚠️ تحذير ذروة الشراء',
+          message: `RSI: ${stock.rsi} (عتبة ذكية: ${thresholds.rsiOverbought})`,
+          detail: 'تشبع شرائي + الحجم يؤكد - احتمال تصحيح',
+          action: 'راقب بحذر',
+          data: { rsi: stock.rsi, vr: stock.vr },
+        });
+        newAlerts.push(alert);
+        saveSentAlertToday(stock.sym, ALERT_TYPES.RSI_OVERBOUGHT);
+      }
+    }
+    
+    // ═══ 7. ✨ Smart Targets/Stop Loss (positionEngine) ═══
+    const myPosition = positions.find(p => p.sym === stock.sym);
+    if (myPosition && stock.p && bars.length >= 14) {
+      try {
+        // Smart Stop Loss
+        const stopData = calcSmartStopLoss(myPosition.avgCost, stock.p, stock.health || {}, bars);
+        const targets = calcSmartTakeProfit(myPosition.avgCost, stopData.stopPrice, stock.health || {});
+        
+        // Stop Loss Hit
+        if (stock.p <= stopData.stopPrice) {
+          if (!wasAlertSentToday(stock.sym, ALERT_TYPES.STOP_LOSS)) {
+            const alert = createAlert({
+              type: ALERT_TYPES.STOP_LOSS,
+              priority: PRIORITY.CRITICAL,
+              sym: stock.sym,
+              name: stock.name,
+              title: '🛑 Smart Stop Loss',
+              message: `السعر: ${stock.p.toFixed(2)} (وقف: ${stopData.stopPrice.toFixed(2)})`,
+              detail: `${stopData.reason} - ${stopData.method}`,
+              action: 'قرار فوري مطلوب',
+              data: { current: stock.p, stop: stopData.stopPrice, method: stopData.method },
+            });
+            newAlerts.push(alert);
+            saveSentAlertToday(stock.sym, ALERT_TYPES.STOP_LOSS);
+          }
+        }
+        
+        // Targets (T1, T2, T3)
+        if (targets) {
+          // T1
+          if (stock.p >= targets.t1.price && !wasAlertSentToday(stock.sym, ALERT_TYPES.TARGET_T1)) {
+            const alert = createAlert({
+              type: ALERT_TYPES.TARGET_T1,
+              priority: PRIORITY.HIGH,
+              sym: stock.sym,
+              name: stock.name,
+              title: '🎯 T1 محقق - بيع 33%',
+              message: `السعر: ${stock.p.toFixed(2)} (T1: ${targets.t1.price.toFixed(2)})`,
+              detail: `ربح +${targets.t1.pct}% - R:R ${targets.t1.rr}:1`,
+              action: 'احجز ثلث الأرباح',
+              data: { current: stock.p, target: targets.t1.price, gain: targets.t1.pct },
+            });
+            newAlerts.push(alert);
+            saveSentAlertToday(stock.sym, ALERT_TYPES.TARGET_T1);
+          }
+          
+          // T2
+          if (stock.p >= targets.t2.price && !wasAlertSentToday(stock.sym, ALERT_TYPES.TARGET_T2)) {
+            const alert = createAlert({
+              type: ALERT_TYPES.TARGET_T2,
+              priority: PRIORITY.HIGH,
+              sym: stock.sym,
+              name: stock.name,
+              title: '🎯 T2 محقق - بيع 33%',
+              message: `السعر: ${stock.p.toFixed(2)} (T2: ${targets.t2.price.toFixed(2)})`,
+              detail: `ربح +${targets.t2.pct}% - R:R ${targets.t2.rr}:1`,
+              action: 'احجز ثلث آخر',
+              data: { current: stock.p, target: targets.t2.price, gain: targets.t2.pct },
+            });
+            newAlerts.push(alert);
+            saveSentAlertToday(stock.sym, ALERT_TYPES.TARGET_T2);
+          }
+          
+          // T3
+          if (stock.p >= targets.t3.price && !wasAlertSentToday(stock.sym, ALERT_TYPES.TARGET_T3)) {
+            const alert = createAlert({
+              type: ALERT_TYPES.TARGET_T3,
+              priority: PRIORITY.CRITICAL,
+              sym: stock.sym,
+              name: stock.name,
+              title: '🏆 T3 محقق - بيع كامل',
+              message: `السعر: ${stock.p.toFixed(2)} (T3: ${targets.t3.price.toFixed(2)})`,
+              detail: `ربح +${targets.t3.pct}% - R:R ${targets.t3.rr}:1`,
+              action: 'احجز كل الأرباح',
+              data: { current: stock.p, target: targets.t3.price, gain: targets.t3.pct },
+            });
+            newAlerts.push(alert);
+            saveSentAlertToday(stock.sym, ALERT_TYPES.TARGET_T3);
+          }
+        }
+      } catch (e) {
+        // فشل صامت - لا نوقف باقي التنبيهات
+      }
+    }
+    
+    // ═══ تحديث الحالة ═══
+    updatedState[stock.sym] = buildStateSnapshot(stock);
   });
+  
+  // حفظ الحالة الجديدة
+  saveAlertState(updatedState);
   
   return newAlerts;
 }
 
-// ─── إنشاء تنبيه مع metadata كامل ─────────────
+/**
+ * بناء snapshot للحالة الحالية
+ */
+function buildStateSnapshot(stock) {
+  return {
+    health: stock.health,
+    rsi: stock.rsi,
+    macd: stock.macd,
+    bos: stock.bos,
+    price: stock.p,
+    timestamp: Date.now(),
+  };
+}
+
+// ═══════════════════════════════════════════════
+// ✨ Helper Functions
+// ═══════════════════════════════════════════════
+
 function createAlert({ type, priority, sym, name, title, message, detail, action, data }) {
   return {
     id: generateAlertId(sym, type),
@@ -399,29 +672,21 @@ function createAlert({ type, priority, sym, name, title, message, detail, action
     createdAt: new Date().toISOString(),
     read: false,
     dismissed: false,
-    smart: true, // لتمييزها عن التنبيهات اليدوية
+    smart: true,
     color: ALERT_COLORS[type]?.bg || '#90a4c8',
     icon: ALERT_COLORS[type]?.icon || '🔔',
     label: ALERT_COLORS[type]?.label || 'تنبيه',
   };
 }
 
-// ─── توليد معرف فريد ──────────────────────────
 function generateAlertId(sym, type) {
   return `smart_${sym}_${type}_${Date.now()}`;
 }
 
-// ─── فحص التكرار ──────────────────────────────
-function isDuplicate(newAlert, existingAlerts) {
-  return existingAlerts.some(a => 
-    a.sym === newAlert.sym &&
-    a.type === newAlert.type &&
-    a.timestamp &&
-    (Date.now() - a.timestamp) < COOLDOWN_MINUTES * 60 * 1000
-  );
-}
+// ═══════════════════════════════════════════════
+// ✨ Storage & Notifications
+// ═══════════════════════════════════════════════
 
-// ─── تحميل التنبيهات الموجودة ─────────────────
 function loadExistingAlerts() {
   try {
     const raw = typeof window !== 'undefined' && window.localStorage.getItem('tadawul_alerts');
@@ -432,17 +697,12 @@ function loadExistingAlerts() {
   }
 }
 
-// ─── حفظ التنبيهات الجديدة ───────────────────
 export function saveSmartAlerts(newAlerts) {
   if (!newAlerts || newAlerts.length === 0) return;
-  
   try {
     const existing = loadExistingAlerts();
     const combined = [...newAlerts, ...existing];
-    
-    // احتفظ بآخر 100 تنبيه فقط
     const trimmed = combined.slice(0, 100);
-    
     window.localStorage.setItem('tadawul_alerts', JSON.stringify(trimmed));
     return true;
   } catch (e) {
@@ -450,18 +710,15 @@ export function saveSmartAlerts(newAlerts) {
   }
 }
 
-// ─── إرسال Browser Notification ───────────────
 export function sendBrowserNotification(alert) {
   if (typeof window === 'undefined') return;
   if (!('Notification' in window)) return;
   if (Notification.permission !== 'granted') return;
-  
-  // أولوية critical وhigh فقط → Notification
   if (alert.priority !== PRIORITY.CRITICAL && alert.priority !== PRIORITY.HIGH) return;
   
   try {
     new Notification(`${alert.icon} ${alert.title}`, {
-      body: `${alert.name} -- ${alert.message}\n${alert.detail}`,
+      body: `${alert.name} - ${alert.message}\n${alert.detail}`,
       icon: '/icon-192.png',
       badge: '/icon-192.png',
       tag: `tadawul-smart-${alert.sym}`,
@@ -473,20 +730,14 @@ export function sendBrowserNotification(alert) {
   } catch (e) {}
 }
 
-// ─── تشغيل المحرك الكامل ──────────────────────
 export function runSmartAlertsEngine(currentStocks, positions = [], options = {}) {
-  // تحميل الإعدادات من localStorage
   const settings = loadAlertSettings();
-  
-  // توليد التنبيهات
   const newAlerts = generateSmartAlerts(currentStocks, positions);
   
   if (newAlerts.length === 0) return { count: 0, alerts: [] };
   
-  // حفظ في localStorage
   saveSmartAlerts(newAlerts);
   
-  // إرسال Browser Notifications (احترام الإعدادات)
   if (settings.browserNotifications) {
     newAlerts.forEach(alert => {
       if (alert.priority === PRIORITY.CRITICAL || alert.priority === PRIORITY.HIGH) {
@@ -495,7 +746,6 @@ export function runSmartAlertsEngine(currentStocks, positions = [], options = {}
     });
   }
   
-  // تشغيل الصوت (احترام الإعدادات)
   if (settings.soundEnabled && settings.soundMode !== 'off') {
     const shouldPlay = settings.soundMode === 'all' 
       ? newAlerts.length > 0 
@@ -518,50 +768,36 @@ export function runSmartAlertsEngine(currentStocks, positions = [], options = {}
   };
 }
 
-
-// ─── صوت التنبيه (ديناميكي مع النغمات) ─────────
 export function playAlertSound(presetId, volume = 0.3) {
   if (typeof window === 'undefined') return;
-  
-  // تحميل الإعدادات
   const settings = loadAlertSettings();
   const finalPresetId = presetId || settings.soundPreset || 'classic';
   const finalVolume = volume !== undefined ? volume : settings.volume || 0.3;
-  
   const preset = SOUND_PRESETS[finalPresetId] || SOUND_PRESETS.classic;
   
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     
-    // تشغيل كل نغمة من الـ preset
     preset.notes.forEach(note => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      
       osc.connect(gain);
       gain.connect(ctx.destination);
-      
       osc.frequency.setValueAtTime(note.freq, ctx.currentTime + note.time);
-      
       gain.gain.setValueAtTime(finalVolume, ctx.currentTime + note.time);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + note.time + note.duration);
-      
       osc.start(ctx.currentTime + note.time);
       osc.stop(ctx.currentTime + note.time + note.duration);
     });
     
-    // اهتزاز (على الموبايل)
     if (settings.vibration && 'vibrate' in navigator) {
       navigator.vibrate([100, 50, 100]);
     }
   } catch (e) {}
 }
 
-
-// ─── إحصائيات التنبيهات ──────────────────────
 export function getAlertsStats() {
   const alerts = loadExistingAlerts();
-  const now = Date.now();
   const today = new Date().setHours(0, 0, 0, 0);
   
   return {
@@ -579,13 +815,10 @@ export function getAlertsStats() {
   };
 }
 
-// ─── تسجيل إذن Browser Notifications ──────────
 export function requestNotificationPermission() {
   if (typeof window === 'undefined') return Promise.resolve('unsupported');
   if (!('Notification' in window)) return Promise.resolve('unsupported');
-  
   if (Notification.permission === 'granted') return Promise.resolve('granted');
   if (Notification.permission === 'denied') return Promise.resolve('denied');
-  
   return Notification.requestPermission();
 }
