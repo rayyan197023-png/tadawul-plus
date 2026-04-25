@@ -488,6 +488,143 @@ function Card(props) {
               <div style={{fontSize:12,color:C.smoke,lineHeight:1.5,borderTop:"1px solid "+d.color+"20",paddingTop:6}}>{d.detail}</div>
             )}
           </div>
+          {/* ✨ Smart Position Panel - Bloomberg Level */}
+          {d.smartData && d.smartData.stopPrice && (
+            <div style={{
+              background: "linear-gradient(135deg, " + C.layer3 + "60, " + C.layer2 + "40)",
+              border: "1px solid " + C.line,
+              borderRadius: 12,
+              padding: "10px 12px",
+              marginBottom: 10,
+            }}>
+              {/* Header */}
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 8,
+                paddingBottom: 6,
+                borderBottom: "1px solid " + C.line + "44",
+              }}>
+                <div style={{display:"flex",alignItems:"center",gap:6}}>
+                  <span style={{fontSize:14}}>🎯</span>
+                  <span style={{fontSize:11,fontWeight:800,color:C.snow}}>إدارة المركز الذكية</span>
+                </div>
+                {d.smartData.confidence && (
+                  <div style={{
+                    fontSize:9,
+                    color:d.smartData.confidence>=80?C.mint:d.smartData.confidence>=60?C.amber:C.coral,
+                    background:(d.smartData.confidence>=80?C.mint:d.smartData.confidence>=60?C.amber:C.coral)+"15",
+                    padding:"2px 8px",
+                    borderRadius:6,
+                    fontWeight:800,
+                  }}>
+                    ثقة {d.smartData.confidence}%
+                  </div>
+                )}
+              </div>
+              
+              {/* Stop Loss + Targets Grid */}
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:d.smartData.targets?8:0}}>
+                {/* Stop Loss */}
+                <div style={{
+                  background: C.coral + "10",
+                  border: "1px solid " + C.coral + "30",
+                  borderRadius: 8,
+                  padding: "6px 8px",
+                }}>
+                  <div style={{fontSize:8,color:C.smoke,fontWeight:700,marginBottom:2}}>🛑 وقف الخسارة</div>
+                  <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:13,fontWeight:900,color:C.coral}}>
+                    {d.smartData.stopPrice.toFixed(2)}
+                  </div>
+                  <div style={{fontSize:9,color:C.coral,fontWeight:700}}>
+                    {d.smartData.stopPct}%
+                  </div>
+                </div>
+                
+                {/* Position Health */}
+                {d.smartData.positionHealth && (
+                  <div style={{
+                    background: (d.smartData.positionHealth.composite>=70?C.mint:d.smartData.positionHealth.composite>=50?C.amber:C.coral) + "10",
+                    border: "1px solid " + (d.smartData.positionHealth.composite>=70?C.mint:d.smartData.positionHealth.composite>=50?C.amber:C.coral) + "30",
+                    borderRadius: 8,
+                    padding: "6px 8px",
+                  }}>
+                    <div style={{fontSize:8,color:C.smoke,fontWeight:700,marginBottom:2}}>💚 صحة المركز</div>
+                    <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:13,fontWeight:900,color:d.smartData.positionHealth.composite>=70?C.mint:d.smartData.positionHealth.composite>=50?C.amber:C.coral}}>
+                      {d.smartData.positionHealth.composite}
+                    </div>
+                    <div style={{fontSize:9,color:d.smartData.positionHealth.composite>=70?C.mint:d.smartData.positionHealth.composite>=50?C.amber:C.coral,fontWeight:700}}>
+                      {d.smartData.positionHealth.label}
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Take Profit Targets */}
+              {d.smartData.targets && (
+                <div>
+                  <div style={{fontSize:9,color:C.smoke,fontWeight:700,marginBottom:5}}>🎯 أهداف جني الأرباح:</div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:5}}>
+                    {/* T1 */}
+                    <div style={{
+                      background: p.curPrice>=d.smartData.targets.t1.price ? C.mint+"25" : C.teal + "10",
+                      border: "1px solid " + (p.curPrice>=d.smartData.targets.t1.price ? C.mint+"55" : C.teal + "25"),
+                      borderRadius: 6,
+                      padding: "5px 6px",
+                      textAlign:"center",
+                    }}>
+                      <div style={{fontSize:7,color:C.smoke,fontWeight:700,marginBottom:1}}>T1 (33%)</div>
+                      <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:11,fontWeight:900,color:p.curPrice>=d.smartData.targets.t1.price?C.mint:C.teal}}>
+                        {d.smartData.targets.t1.price.toFixed(2)}
+                      </div>
+                      <div style={{fontSize:8,color:p.curPrice>=d.smartData.targets.t1.price?C.mint:C.teal,fontWeight:700}}>
+                        +{d.smartData.targets.t1.pct}%
+                      </div>
+                    </div>
+                    
+                    {/* T2 */}
+                    <div style={{
+                      background: p.curPrice>=d.smartData.targets.t2.price ? C.mint+"25" : C.amber + "10",
+                      border: "1px solid " + (p.curPrice>=d.smartData.targets.t2.price ? C.mint+"55" : C.amber + "25"),
+                      borderRadius: 6,
+                      padding: "5px 6px",
+                      textAlign:"center",
+                    }}>
+                      <div style={{fontSize:7,color:C.smoke,fontWeight:700,marginBottom:1}}>T2 (33%)</div>
+                      <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:11,fontWeight:900,color:p.curPrice>=d.smartData.targets.t2.price?C.mint:C.amber}}>
+                        {d.smartData.targets.t2.price.toFixed(2)}
+                      </div>
+                      <div style={{fontSize:8,color:p.curPrice>=d.smartData.targets.t2.price?C.mint:C.amber,fontWeight:700}}>
+                        +{d.smartData.targets.t2.pct}%
+                      </div>
+                    </div>
+                    
+                    {/* T3 */}
+                    <div style={{
+                      background: p.curPrice>=d.smartData.targets.t3.price ? C.mint+"25" : C.gold + "10",
+                      border: "1px solid " + (p.curPrice>=d.smartData.targets.t3.price ? C.mint+"55" : C.gold + "25"),
+                      borderRadius: 6,
+                      padding: "5px 6px",
+                      textAlign:"center",
+                    }}>
+                      <div style={{fontSize:7,color:C.smoke,fontWeight:700,marginBottom:1}}>T3 (34%)</div>
+                      <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:11,fontWeight:900,color:p.curPrice>=d.smartData.targets.t3.price?C.mint:C.gold}}>
+                        {d.smartData.targets.t3.price.toFixed(2)}
+                      </div>
+                      <div style={{fontSize:8,color:p.curPrice>=d.smartData.targets.t3.price?C.mint:C.gold,fontWeight:700}}>
+                        +{d.smartData.targets.t3.pct}%
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{fontSize:9,color:C.smoke,marginTop:5,textAlign:"center",fontWeight:600}}>
+                    R:R المتوقع: <span style={{color:C.gold,fontWeight:800}}>{d.smartData.targets.expectedRR}:1</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          
 
           {/* pills المعلومات */}
           <div style={{display:"flex",gap:6,marginBottom:10,flexWrap:"wrap"}}>
