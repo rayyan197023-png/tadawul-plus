@@ -1539,7 +1539,11 @@ function calcFactorModel(stk,bars){
 
 /* ══ Earnings Model (2-Stage DDM) ══ */
 function calcEarningsModel(stk){
+  // ✨ Validation
+  if (!stk) return {eps: 0, ddmValue: 0, peValue: 0, targetPrice: 0, upside: 0, signal: "بيانات غير كافية"};
+  
   var eps=stk.eps||stk.p/(stk.pe||15);
+
   var g1=Math.min((stk.epsGrw||3)/100,0.15);
   var g2=Math.min(g1*0.4,MACRO.gdpGrowth/100||0.03);
   var ke=0.08+(stk.sector_beta||1)*0.055;
