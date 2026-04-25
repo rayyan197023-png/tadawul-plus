@@ -73,6 +73,48 @@ function SvgIcon(props) {
 }
 
 function getDecision(p) {
+  // ✨ إذا smartAction متوفر، استخدمه (Bloomberg-level)
+  if(p.smartAction) {
+    var sa = p.smartAction;
+    var iconMap = {
+      'بيع كامل': 'sell',
+      'بيع 75%': 'sell',
+      'بيع 50%': 'sell',
+      'بيع 33%': 'sell',
+      'بيع 25%': 'sell',
+      'بيع جزئي': 'sell',
+      'وقف خسارة': 'stop',
+      'زد المركز': 'add',
+      'اشتري': 'buy',
+      'احتفظ': 'hold',
+      'انتظر': 'watch',
+      'لا تدخل': 'block',
+    };
+    
+    return {
+      act: sa.action,
+      pct: sa.percent,
+      color: sa.color,
+      icon: iconMap[sa.action] || 'hold',
+      reason: sa.reason,
+      detail: sa.positionHealth ? 
+        `صحة المركز: ${sa.positionHealth.composite}/100 (${sa.positionHealth.label}) · ${sa.positionHealth.daysHeld} يوم · ثقة ${sa.confidence}%` :
+        `ثقة ${sa.confidence}%`,
+      urgent: sa.urgency === 'critical' || sa.urgency === 'high',
+      upside: null,
+      rr: sa.targets ? sa.targets.expectedRR : null,
+      // ✨ بيانات إضافية من Smart Engine
+      smartData: {
+        stopPrice: sa.stopData ? sa.stopData.stopPrice : null,
+        stopPct: sa.stopData ? sa.stopData.stopPct : null,
+        targets: sa.targets,
+        positionHealth: sa.positionHealth,
+        confidence: sa.confidence,
+      },
+    };
+  }
+  
+  // ── Fallback: Logic القديم (إذا smartAction غير متوفر) ──
   var sig=p.health?p.health.sig||"":"", score=p.health?p.health.score||50:50;
   var ps=p.health?p.health.positionSize||{pct:10,b:1.5}:{pct:10,b:1.5};
   var gate=p.health?p.health.riskGate||"SAFE":"SAFE";
@@ -85,19 +127,18 @@ function getDecision(p) {
   var upside=target&&p.curPrice?((target-p.curPrice)/p.curPrice*100):null;
   var vrText=vr>=1.5?"الحجم "+Math.round(vr*100-100)+"% فوق المعدل":"الحجم طبيعي";
 
-  // ── ATR-based Stop Loss (أدق من -7% ثابت) ──
   var atrStop = risk.stopLoss ? risk.stopLoss : null;
   var trailStop = risk.trailingStop ? risk.trailingStop : null;
-  // حد الخسارة: ATR×2.5 أو 7% كحد أقصى
   var stopPct = atrStop && p.curPrice > 0 ? (atrStop / p.curPrice * 100) : 7;
-  stopPct = Math.min(stopPct, 10); // لا تتجاوز -10% مهما كان ATR
+  stopPct = Math.min(stopPct, 10);
 
   if(gate==="DANGER") return {act:"بيع كامل",pct:100,color:C.coral,icon:"danger",reason:"السوق في خطر نظامي - اغلق جميع المراكز فوراً",detail:"ضغط بيعي استثنائي على مستوى السوق كله",urgent:true,upside:null,rr:null};
 
   if(sig==="شراء قوي"&&score>=75) {
     if(wNow===0) return {act:"اشتري",pct:wRec,color:C.mint,icon:"buy",reason:"ادخل بـ "+wRec+"% . "+vrText+" . "+(ch>=0?"الزخم إيجابي":"تراجع طفيف - فرصة"),detail:(ch>=0?"الزخم إيجابي يدعم الدخول":"تراجع طفيف يمنح فرصة دخول أفضل")+(upside?" . السهم لديه مساحة صعود":""),urgent:false,upside:upside,rr:ps.b||1.5};
     if(wNow<wRec*0.75) return {act:"زد المركز",pct:Math.round(wRec-wNow),color:C.mint,icon:"add",reason:"أضف "+Math.round(wRec-wNow)+"% للوصول للحجم المثالي . "+vrText,detail:"المحرك يؤكد قوة الاتجاه . زيادة المركز الآن تحسّن متوسط الدخول",urgent:false,upside:upside,rr:ps.b||1.5};
-    var trailText = trailStop&&p.curPrice>0?" . trailing stop: "+(p.curPrice-trailStop).toFixed(2)+" ر.س":"";    return {act:"احتفظ",pct:0,color:C.teal,icon:"hold",reason:"المركز مثالي . الإشارة لا تزال قوية"+trailText,detail:"المحرك يؤكد الاحتفاظ . لا تتسرع في البيع"+(upside?" . السهم لم يبلغ هدفه بعد":""),urgent:false,upside:upside,rr:ps.b||1.5};
+    var trailText = trailStop&&p.curPrice>0?" . trailing stop: "+(p.curPrice-trailStop).toFixed(2)+" ر.س":"";
+    return {act:"احتفظ",pct:0,color:C.teal,icon:"hold",reason:"المركز مثالي . الإشارة لا تزال قوية"+trailText,detail:"المحرك يؤكد الاحتفاظ . لا تتسرع في البيع"+(upside?" . السهم لم يبلغ هدفه بعد":""),urgent:false,upside:upside,rr:ps.b||1.5};
   }
 
   if(sig==="مراقبة") {
