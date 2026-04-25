@@ -2341,9 +2341,20 @@ function calc9Layers(stk, bars){
   const last20 = bars.slice(-20);
   const last14 = bars.slice(-14);
 
-  // تحويل bars للصيغة المتوافقة مع محركات الرادار
+   // ✨ تحويل bars - يدعم both formats (b.c لـ technicalEngine + b.close للقديمة)
   const rBars = bars.map(function(b){
-    return{open:b.o||b.c,hi:b.hi,lo:b.lo,close:b.c,vol:b.vol,pct:b.pct};
+    return {
+      o: b.o || b.c,        // open
+      open: b.o || b.c,     // open (للقديمة)
+      hi: b.hi,             // high
+      high: b.hi,           // high (للقديمة)
+      lo: b.lo,             // low
+      low: b.lo,            // low (للقديمة)
+      c: b.c,               // close (للجديدة)
+      close: b.c,           // close (للقديمة)
+      vol: b.vol,
+      pct: b.pct
+    };
   });
 
   const avgVol = bars.reduce((s,b)=>s+b.vol,0)/bars.length;
