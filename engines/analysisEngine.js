@@ -3371,12 +3371,21 @@ function calcPortfolioSharpe(allHealthData){
 }
 
 function stockHealth(stk, bars){
+  // ✨ Validation - حماية من Edge Cases
+  if (!stk || typeof stk !== 'object') {
+    return _emptyHealthResult();
+  }
+  if (!bars || !Array.isArray(bars) || bars.length < 5) {
+    return _emptyHealthResult();
+  }
+  
   // ════════════════════════════════════════════════
   //  STEP 1: المحركات الأساسية الثلاثة (LA, LB, LC)
   // ════════════════════════════════════════════════
   
   // ── A) المحرك التقني
   var tech   = calc9Layers(stk, bars);
+
   var LA     = tech.score;
   var regime = tech.regime;
   var layers = tech.layers;
