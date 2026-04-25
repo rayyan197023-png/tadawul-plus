@@ -1189,12 +1189,12 @@ animation:'shimmer 1.4s ease infinite',
                               :"احتاط"}
                             </div>
                             <div style={{fontSize:8.5,color:C.smoke,lineHeight:1.3}}>
-                                                            {health.score>=75?"السيولة والزخم يدعمان"
+                                                                                          {health.score>=75?"السيولة والزخم يدعمان"
                               :health.score>=60?"انتظر تأكيد الحجم"
                               :health.score>=45?"الإشارة غير حاسمة"
-                              :health.score>=30?"إشارة ضعيفة"
-                              :"ضغط بيعي مرتفع"}
-
+                              :health.score>=30 && stk.ch >= -2?"إشارة ضعيفة"
+                              :stk.ch < -2?"ضغط بيعي مرتفع"
+                              :"إشارة ضعيفة"}
                             </div>
                           </div>
                         </div>
