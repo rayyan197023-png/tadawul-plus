@@ -242,35 +242,36 @@ function IssueCard({ issue, index }) {
   );
 }
 
-// ─── بطاقة Health Score الكبيرة ─────────────────
+// ─── بطاقة Health Score الكبيرة (مُصلحة!) ─────────────────
 function HealthScoreCard({ score }) {
   const [animatedScore, setAnimatedScore] = useState(0);
 
   useEffect(() => {
-    const duration = 1800; // مدة الانيميشن بالملي ثانية
+    const duration = 1800;
     const startTime = performance.now();
+    let frameId;
 
     const animate = (currentTime) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
       
-      // Ease-out cubic للحركة الطبيعية
       const eased = 1 - Math.pow(1 - progress, 3);
       const current = eased * score;
       
       setAnimatedScore(Number(current.toFixed(1)));
       
       if (progress < 1) {
-        requestAnimationFrame(animate);
+        frameId = requestAnimationFrame(animate);
       }
     };
 
-    const frameId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frameId);
+    frameId = requestAnimationFrame(animate);
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId);
+    };
   }, [score]);
 
   const getColor = (s) => {
-  
     if (s >= 8) return C.mint;
     if (s >= 6) return C.amber;
     if (s >= 4) return C.gold;
@@ -285,7 +286,7 @@ function HealthScoreCard({ score }) {
     return '🚨 حرجة';
   };
 
-    const color = getColor(score);
+  const color = getColor(score);
   const circumference = 2 * Math.PI * 70;
   const offset = circumference * (1 - animatedScore / 10);
 
@@ -316,7 +317,14 @@ function HealthScoreCard({ score }) {
         margin: "16px auto",
       }}>
         <svg width={160} height={160} style={{transform: "rotate(-90deg)"}}>
-          <circle cx={80} cy={80} r={70} fill="none" stroke={C.line + "33"} strokeWidth={8}/>
+          <circle 
+            cx={80} 
+            cy={80} 
+            r={70} 
+            fill="none" 
+            stroke={C.line + "33"} 
+            strokeWidth={8}
+          />
           <circle
             cx={80}
             cy={80}
@@ -329,7 +337,6 @@ function HealthScoreCard({ score }) {
             strokeLinecap="round"
             style={{
               filter: "drop-shadow(0 0 10px " + color + "aa)",
-              transition: "stroke-dashoffset 1.5s ease",
             }}
           />
         </svg>
@@ -341,7 +348,7 @@ function HealthScoreCard({ score }) {
           alignItems: "center",
           justifyContent: "center",
         }}>
-                    <div style={{
+          <div style={{
             fontFamily: "IBM Plex Mono,monospace",
             fontSize: 36,
             fontWeight: 900,
@@ -373,6 +380,7 @@ function HealthScoreCard({ score }) {
     </div>
   );
 }
+
 // ─── Donut Chart للقطاعات ─────────────────────
 function SectorsDonutChart({ sectors }) {
   if (!sectors || sectors.length === 0) return null;
