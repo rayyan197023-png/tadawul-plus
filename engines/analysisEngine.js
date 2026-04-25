@@ -986,35 +986,7 @@ function calcATRFull(bars, period) {
   
   return Math.max(0, +atr.toFixed(4));
 }
-function calcVWAPFull(bars){
-  let sv=0,svol=0;
-  for(const b of bars){const tp=(b.hi+b.lo+b.close)/3;sv+=tp*b.vol;svol+=b.vol;}
-  return svol>0?sv/svol:0;
-}
-function calcCMFFull(bars,period){
-  const n=bars.length;
-  period=period||Math.min(20,Math.max(10,Math.round(n*0.20)));
-  const sl=bars.slice(-period);let sm=0,sv=0;
-  for(const b of sl){
-    const r=b.hi-b.lo;if(r===0)continue;
-    sm+=((b.close-b.lo)-(b.hi-b.close))/r*b.vol;sv+=b.vol;
-  }
-  return sv>0?Math.round(sm/sv*100)/100:0;
-}
-function calcOBVFull(bars){
-  let obv=0;const arr=[0];
-  for(let i=1;i<bars.length;i++){
-    if(bars[i].close>bars[i-1].close)obv+=bars[i].vol;
-    else if(bars[i].close<bars[i-1].close)obv-=bars[i].vol;
-    arr.push(obv);
-  }
-  const mean=arr.reduce((s,v)=>s+v,0)/arr.length;
-  const std=Math.sqrt(arr.reduce((s,v)=>s+Math.pow(v-mean,2),0)/arr.length)||1;
-  const obvZ=(arr[arr.length-1]-mean)/std;
-  const l5=arr.slice(-5),nm=l5.length,xm=2,ym=l5.reduce((s,v)=>s+v,0)/nm;
-  let num=0,den=0;
-  for(let i=0;i<nm;i++){num+=(i-xm)*(l5[i]-ym);den+=(i-xm)**2;}
-  return{slope:den?num/den:0,rising:den&&num/den>0,obvZ:+obvZ.toFixed(2)};
+
 }
 function calcMarketStructureFull(bars){
   if(bars.length<10)return{trend:"محايد",bos:false,choch:false,score:5,label:"هيكل محايد"};
