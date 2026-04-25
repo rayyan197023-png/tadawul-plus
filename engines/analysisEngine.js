@@ -1579,7 +1579,11 @@ function calcEarningsModel(stk){
 
 /* ══ DCF ══ */
 function calcDCF(stk){
+  // ✨ Validation
+  if (!stk) return {intrinsic: 0, upside: 0, wacc: 8, dcfScore: 50, signal: "بيانات غير كافية", rating: "احتفاظ"};
+  
   var eps=stk.eps||stk.p/(stk.pe||15);
+
   var ke=0.08+(stk.sector_beta||1)*0.055;
   var roe=(stk.roe||12)/100;
   // bookValue الفعلي أدق من تقدير bvps
