@@ -943,11 +943,41 @@ useEffect(() => {
   }, [positions]);
     var positions=useMemo(function(){
     var tv=port.reduce(function(s,pp){var stk=sl.find(function(x){return x.sym===pp.sym;});return s+(stk?stk.p:pp.avgCost)*pp.qty;},0)||1;
-    return port.map(function(pp){
+        return port.map(function(pp){
       var stk=sl.find(function(x){return x.sym===pp.sym;})||{sym:pp.sym,name:pp.sym,p:pp.avgCost,ch:0,sec:"-"};
       var h=allData.find(function(d){return d.stk&&d.stk.sym===pp.sym;}); h=h?h.health:null;
       var value=stk.p*pp.qty, cost=pp.avgCost*pp.qty, pnl=value-cost;
-      return Object.assign({},pp,{stk:stk,health:h,value:value,cost:cost,pnl:pnl,pnlPct:cost>0?pnl/cost*100:0,dayPnl:stk.ch/100*value,curPrice:stk.p,curWeightPct:value/tv*100});
+      
+      // ✨ Smart Action Engine - تحليل احترافي لكل مركز
+      var smartBars = genBars(stk, 60);
+      var smartAction = null;
+      try {
+        if(h && smartBars && smartBars.length >= 14) {
+          var positionData = {
+            sym: pp.sym,
+            avgCost: pp.avgCost,
+            curPrice: stk.p,
+            qty: pp.qty,
+            entryDate: pp.entryDate || new Date().toISOString(),
+          };
+          smartAction = calcSmartAction(positionData, h, smartBars, h.riskGate || 'SAFE');
+        }
+      } catch(e) {
+        // فشل صامت
+      }
+      
+      return Object.assign({}, pp, {
+        stk: stk,
+        health: h,
+        value: value,
+        cost: cost,
+        pnl: pnl,
+        pnlPct: cost>0 ? pnl/cost*100 : 0,
+        dayPnl: stk.ch/100*value,
+        curPrice: stk.p,
+        curWeightPct: value/tv*100,
+        smartAction: smartAction, // ✨ جديد!
+      });
     });
   },[port,sl,allData]);
 
