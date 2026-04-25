@@ -21,11 +21,57 @@ import { STOCKS } from '../constants/stocksData';
 import { calcRSI, calcATR, calcVWAP, calcCMF, calcOBV, calcMACD, calcMarketStructure } from './technicalEngine';
 import { calcOrderBlocks, calcLiqSweep } from './radarEngine';
 
-// stub: calcMacroScore
+/**
+ * ✨ Macro Score - النسخة الموسّعة للرادار
+ * 
+ * تُستخدم في analyzeStockRadar
+ * تأخذ في الاعتبار:
+ * - Oil price (للقطاعات الحساسة)
+ * - Interest rates (للبنوك والقطاعات الحساسة للفائدة)
+ * - VIX (مؤشر الخوف العالمي)
+ * - GDP Growth
+ * - PE Ratio
+ */
 function calcMacroScore(stk) {
+  // ① PE component (40%)
   const pe = stk.pe || 20;
-  const score = Math.max(0, Math.min(100, 100 - (pe - 15) * 2));
-  return { score };
+  const peScore = Math.max(0, Math.min(100, 100 - (pe - 15) * 2));
+  
+  // ② Oil component (25%) - للقطاعات الحساسة
+  const oilSens = OIL_SENS[stk.sec] || 0.5;
+  const oilDelta = (MACRO.oilPrice - MACRO.oilTarget) / MACRO.oilTarget;
+  const oilScore = Math.max(0, Math.min(100, 50 + oilSens * oilDelta * 80));
+  
+  // ③ Rate component (15%) - للبنوك والقطاعات
+  const rateSens = RATE_SENS[stk.sec] || 0.3;
+  const realRate = MACRO.saudiRepoRate - MACRO.cpi;
+  const rateScore = Math.max(0, Math.min(100, 50 + rateSens * (realRate - 1.5) * 15));
+  
+  // ④ VIX component (10%) - inverse
+  const vixScore = Math.max(0, Math.min(100, 100 - (MACRO.vix - 20) * 3));
+  
+  // ⑤ GDP component (10%)
+  const gdpScore = Math.max(0, Math.min(100, 50 + (MACRO.gdpGrowth - 2.5) * 15));
+  
+  // ⑥ Composite score (weighted)
+  const score = Math.round(
+    peScore * 0.40 +
+    oilScore * 0.25 +
+    rateScore * 0.15 +
+    vixScore * 0.10 +
+    gdpScore * 0.10
+  );
+  
+  return {
+    score: Math.max(0, Math.min(100, score)),
+    components: {
+      pe: Math.round(peScore),
+      oil: Math.round(oilScore),
+      rate: Math.round(rateScore),
+      vix: Math.round(vixScore),
+      gdp: Math.round(gdpScore),
+    },
+  };
 }
 
 
