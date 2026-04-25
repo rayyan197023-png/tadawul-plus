@@ -3125,34 +3125,54 @@ function getAdaptiveWeightAdjustment(sym){
 }
 
 function recordFeedback(sym, signal, layers, actualOutcome){
-  /* actualOutcome: +1 صح، -1 خطأ
-     يُسجَّل من خارج الدالة عند توفر نتيجة فعلية */
+  /* ✨ Smart Weighted Learning System
+     actualOutcome: قيمة بين -2.0 إلى +2.0 (مرجّحة حسب قوة النتيجة)
+     - 2.0 = إشارة ممتازة (ربح +10%)
+     - 1.5 = إشارة قوية (ربح +5%)
+     - 1.0 = إشارة واضحة (ربح +3%)
+     - 0.5 = إشارة ضعيفة (ربح +1%)
+     - 0.2 = إشارة طفيفة (ربح <1%)
+     (والقيم السالبة للخسائر) */
+  
   const state = loadFeedbackState() || {};
-  if(!state[sym]) state[sym] = {total:0, correct:0, layers:{}};
+  if(!state[sym]) state[sym] = {total:0, correct:0, weight:0, layers:{}};
   const perf = state[sym];
-  perf.total++;
-  if(actualOutcome > 0) perf.correct++;
+  
+  // 🎯 Weighted Counting بدل Counting بسيط
+  const weight = Math.abs(actualOutcome); // قوة الإشارة (0.2 إلى 2.0)
+  perf.total += weight;
+  if(actualOutcome > 0) perf.correct += weight;
+  perf.weight = (perf.weight || 0) + weight;
 
-  // تتبع دقة كل طبقة
+  // تتبع دقة كل طبقة (Weighted)
   const lnames = ['L1','L2','L3','L4','L5','L6','L7','L8','L9'];
   lnames.forEach(k=>{
     if(layers[k] === undefined) return;
     if(!perf.layers[k]) perf.layers[k] = {total:0, correct:0};
-    perf.layers[k].total++;
-    // الطبقة "صح" إذا كانت تشير نفس الاتجاه للنتيجة الفعلية
+    perf.layers[k].total += weight;
+    
     const layerDir = layers[k] > 55 ? 1 : layers[k] < 45 ? -1 : 0;
     const signalDir = signal==='شراء قوي'||signal==='مراقبة' ? 1
                     : signal==='تخفيف' ? -1 : 0;
+    
+    // الطبقة "صح" إذا توافقت مع النتيجة الفعلية
     if(layerDir !== 0 && layerDir === signalDir && actualOutcome > 0)
-      perf.layers[k].correct++;
+      perf.layers[k].correct += weight;
     else if(layerDir !== 0 && layerDir !== signalDir && actualOutcome < 0)
-      perf.layers[k].correct++;
+      perf.layers[k].correct += weight;
   });
 
-  // احتفظ بآخر 100 سجل فقط
-  if(perf.total > 100){ perf.total=50; perf.correct=Math.round(perf.correct*0.5); }
+  // احتفظ بآخر 100 صفقة (مع الحفاظ على النسبة)
+  if(perf.total > 100){
+    const ratio = perf.correct / perf.total;
+    perf.total = 50;
+    perf.correct = +(50 * ratio).toFixed(2);
+    perf.weight = 50;
+  }
+  
   saveFeedbackState(state);
 }
+
 
 /* ══ applyFeedbackToWeights: تطبيق الضبط التكيّفي على الأوزان ══ */
 function applyFeedbackToWeights(WC, sym){
