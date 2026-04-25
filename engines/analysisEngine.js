@@ -3632,20 +3632,30 @@ function calcConfidenceThreshold(score, layers, ensemble, conflictCount, gates, 
 ══════════════════════════════════════════════════════════════ */
 const FEEDBACK_STORE_KEY = 'tdw_feedback_state';
 
+/**
+ * ✨ Persistent Storage - يبقى التعلم بين الجلسات
+ * يستخدم localStorage بدلاً من sessionStorage
+ */
 function loadFeedbackState(){
   try{
-    const raw = typeof sessionStorage !== 'undefined'
-      ? sessionStorage.getItem(FEEDBACK_STORE_KEY) : null;
+    if(typeof localStorage === 'undefined') return null;
+    const raw = localStorage.getItem(FEEDBACK_STORE_KEY);
     if(!raw) return null;
     return JSON.parse(raw);
-  }catch(e){return null;}
+  }catch(e){
+    console.warn('[Feedback] Load failed:', e);
+    return null;
+  }
 }
 
 function saveFeedbackState(state){
   try{
-    if(typeof sessionStorage !== 'undefined')
-      sessionStorage.setItem(FEEDBACK_STORE_KEY, JSON.stringify(state));
-  }catch(e){}
+    if(typeof localStorage === 'undefined') return;
+    if(!state || typeof state !== 'object') return;
+    localStorage.setItem(FEEDBACK_STORE_KEY, JSON.stringify(state));
+  }catch(e){
+    console.warn('[Feedback] Save failed:', e);
+  }
 }
 
 function getAdaptiveWeightAdjustment(sym){
