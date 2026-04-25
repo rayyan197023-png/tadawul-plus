@@ -1186,7 +1186,6 @@ function calcOBVFull(bars) {
   };
 }
 
-}
 function calcMarketStructureFull(bars){
   if(bars.length<10)return{trend:"محايد",bos:false,choch:false,score:5,label:"هيكل محايد"};
 
