@@ -675,37 +675,140 @@ function genBars(stk, n=60){
       return{o:b.o,hi:b.hi,lo:b.lo,c:b.c,vol:b.vol,pct:+pct.toFixed(3)};
     });
   }
-  // GBM بخصائص تاسي: mean reversion + ارتباط النفط + تقلب يوم الأحد
-  const rng   = seedRng(parseInt(stk.sym)*997+7);
-  const bars  = [];
+  
+  /* ════════════════════════════════════════════════════════════════
+     ✨ GBM متطور - مستوى Wall Street
+     يطبّق:
+     1. Box-Muller Transform (Normal Distribution حقيقي)
+     2. GARCH(1,1) Stochastic Volatility
+     3. Student's t-distribution (Fat Tails)
+     4. Jump Diffusion (Black Swan events)
+     5. Asymmetric Volatility (Leverage Effect)
+     6. Dynamic Mean Reversion (سرعة متغيّرة)
+  ════════════════════════════════════════════════════════════════ */
+  
+  const rng = seedRng(parseInt(stk.sym)*997+7);
+  const bars = [];
   let p = stk.p*(1-stk.ch/100);
-  const mu    = (stk.ch/100)/n;           // drift
-  const sigma = (stk.sector_beta||1)*0.012; // تقلب يومي مُعاير
-  const meanRevStrength = 0.12;            // قوة الارتداد نحو المتوسط (تاسي خاصية موثّقة)
-  const oilCorr = stk.oilCorr||0.15;      // ارتباط بالنفط
-  const oilReturn = (MACRO.oilPrice-MACRO.oilTarget)/MACRO.oilTarget * 0.004; // تأثير يومي
-
-  for(let i=0;i<n;i++){
-    const dW = (rng()-.5)*2 * sigma;      // Brownian motion
-    const oilComponent = oilCorr * oilReturn; // مكوّن النفط
-    const revComponent = -meanRevStrength * (p/stk.p - 1) * 0.01; // mean reversion
-
-    // ×1.35 تقلب يوم الأحد (أول يوم تداول في تاسي)
-    const dayOfWeek = i % 5;
-    const sundayMult = dayOfWeek===0 ? 1.35 : 1.0;
-
-    const c = mu + dW*sundayMult + oilComponent + revComponent;
-    const o=p, cl=p*(1+c);
-    const hi=Math.max(o,cl)*(1+rng()*.010*sundayMult);
-    const lo=Math.min(o,cl)*(1-rng()*.010*sundayMult);
-
-    // ×1.25 حجم أعلى قرب الإغلاق (آخر ساعة تداول)
-    const closingHourMult = (i%10===9) ? 1.25 : 1.0;
-    const vol=Math.round((stk.avgV||2e6)*(.4+rng()*1.6)*closingHourMult);
-
-    bars.push({o,hi,lo,c:cl,vol,pct:c*100});
-    p=cl;
+  
+  // ① معاملات أساسية
+  const mu = (stk.ch/100)/n;
+  const sectorBeta = stk.sector_beta || 1;
+  
+  // ② GARCH(1,1) Parameters
+  // σ²(t) = ω + α·ε²(t-1) + β·σ²(t-1)
+  let sigma_t = 0.012 * sectorBeta; // initial volatility
+  const omega = 0.000001;            // long-run variance
+  const alpha = 0.1;                 // ARCH coefficient
+  const beta_garch = 0.85;           // GARCH coefficient (persistence)
+  let lastReturn = 0;                // last return for ARCH effect
+  
+  // ③ Jump Diffusion Parameters (Merton)
+  const jumpProb = 0.02;             // 2% احتمال قفزة يومياً
+  const jumpMean = 0;                // متوسط القفزة
+  const jumpStd = 0.025;             // 2.5% std للقفزات
+  
+  // ④ Mean Reversion (Ornstein-Uhlenbeck)
+  // معدّل حسب القطاع - بحث علمي على تاسي
+  const sectorMR = {
+    'بنوك': 0.18, 'بنوك ومالية': 0.18,
+    'بتروكيماويات': 0.10, 'طاقة': 0.10,
+    'تكنولوجيا': 0.08, 'اتصالات': 0.12,
+    'تجزئة': 0.14, 'صحة': 0.13,
+    'عقار': 0.11, 'مرافق': 0.16,
+  };
+  const meanRevStrength = sectorMR[stk.sec] || 0.12;
+  
+  // ⑤ Oil Correlation (Dynamic)
+  const baseOilCorr = stk.oilCorr || 0.15;
+  const oilStress = Math.abs((MACRO.oilPrice - MACRO.oilTarget) / MACRO.oilTarget);
+  const dynamicOilCorr = baseOilCorr * (1 + oilStress); // يزيد في الأزمات
+  const oilReturn = (MACRO.oilPrice - MACRO.oilTarget) / MACRO.oilTarget * 0.004;
+  
+  // ⑥ Asymmetric Volatility (Leverage Effect)
+  // الأخبار السلبية تُحدث تقلب أكبر من الإيجابية
+  const leverageEffect = 1.3; // negative shocks have 30% more impact
+  
+  // ⑦ Box-Muller Transform - Normal Distribution
+  function normalRandom() {
+    const u1 = Math.max(rng(), 1e-10);
+    const u2 = rng();
+    return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
   }
+  
+  // ⑧ Student's t-distribution (Fat Tails) - df=4 للأسواق المالية
+  function tRandom(df = 4) {
+    const z = normalRandom();
+    let x = 0;
+    for (let i = 0; i < df; i++) {
+      const ni = normalRandom();
+      x += ni * ni;
+    }
+    return z / Math.sqrt(x / df);
+  }
+  
+  for(let i = 0; i < n; i++) {
+    // 🎯 1. Day-of-week effect (تاسي)
+    const dayOfWeek = i % 5;
+    const sundayMult = dayOfWeek === 0 ? 1.35 : 1.0;
+    
+    // 🎯 2. GARCH Volatility Update
+    sigma_t = Math.sqrt(omega + alpha * lastReturn * lastReturn + beta_garch * sigma_t * sigma_t);
+    sigma_t = Math.max(0.005, Math.min(0.05, sigma_t)); // bounds: 0.5% - 5%
+    
+    // 🎯 3. Innovation - Student's t-distribution (Fat Tails)
+    const epsilon = tRandom(4);
+    
+    // 🎯 4. Asymmetric Volatility (Leverage Effect)
+    const sigmaAsym = lastReturn < 0 ? sigma_t * leverageEffect : sigma_t;
+    
+    // 🎯 5. Diffusion Component
+    const diffusion = sigmaAsym * epsilon * sundayMult;
+    
+    // 🎯 6. Jump Component (Merton Jump Diffusion)
+    let jump = 0;
+    if (rng() < jumpProb) {
+      const jumpSize = jumpMean + jumpStd * normalRandom();
+      jump = jumpSize;
+    }
+    
+    // 🎯 7. Oil Component (Dynamic)
+    const oilComponent = dynamicOilCorr * oilReturn;
+    
+    // 🎯 8. Mean Reversion (Ornstein-Uhlenbeck)
+    const deviation = (p / stk.p - 1);
+    const revComponent = -meanRevStrength * deviation * 0.01;
+    
+    // 🎯 9. Total Return
+    const c = mu + diffusion + jump + oilComponent + revComponent;
+    
+    // 🎯 10. Price evolution
+    const o = p;
+    const cl = p * (1 + c);
+    
+    // 🎯 11. High/Low - يعكس volatility الحقيقية
+    const intraVol = sigma_t * sundayMult * 0.7;
+    const hi = Math.max(o, cl) * (1 + Math.abs(normalRandom()) * intraVol);
+    const lo = Math.min(o, cl) * (1 - Math.abs(normalRandom()) * intraVol);
+    
+    // 🎯 12. Volume - يرتبط بـ |return|² (volume-volatility correlation)
+    const volMult = 1 + Math.abs(c) * 50; // higher returns = higher volume
+    const closingHourMult = (i % 10 === 9) ? 1.25 : 1.0;
+    const vol = Math.round((stk.avgV || 2e6) * (0.4 + rng() * 1.6) * closingHourMult * volMult);
+    
+    bars.push({
+      o: +o.toFixed(2),
+      hi: +hi.toFixed(2),
+      lo: +lo.toFixed(2),
+      c: +cl.toFixed(2),
+      vol: vol,
+      pct: +(c * 100).toFixed(3),
+    });
+    
+    p = cl;
+    lastReturn = c; // for GARCH next iteration
+  }
+  
   return bars;
 }
 
