@@ -1,11 +1,14 @@
 /**
- * RADAR ENGINE
+ * RADAR ENGINE - V2.0
  *
- * Opportunity scoring system.
- * Extracted from TadawulPlus_v5_engine3_final.jsx (calc9Layers function).
+ * ✨ Improvements:
+ * 1. Bull + Bear Order Blocks
+ * 2. SSL + BSL (Liquidity Sweeps)
+ * 3. 9 Layers (added MACD)
+ * 4. Dynamic Wyckoff confidence
+ * 5. Smart Stop Loss/Targets (positionEngine)
  *
- * Returns a health score (0-100) with layer breakdown.
- * Pure functions — no React, no UI, no API calls.
+ * Pure functions -- no React, no UI, no API calls.
  */
 
 import {
@@ -22,7 +25,9 @@ import {
 } from './technicalEngine';
 
 /**
- * Calculate order blocks (institutional buy zones)
+ * ✨ Calculate order blocks (Bull + Bear)
+ * Bull OB: institutional buy zone
+ * Bear OB: institutional sell zone
  */
 export function calcOrderBlocks(bars, atr) {
   const obs = [], cur = bars[bars.length - 1].c, n = bars.length;
@@ -31,6 +36,8 @@ export function calcOrderBlocks(bars, atr) {
 
   for (let i = 1; i < n - 2; i++) {
     const b = bars[i];
+    
+    // Bull OB: bearish candle followed by strong upward impulse
     if (b.c < b.o) {
       const imp = Math.max(
         bars[i+1] ? bars[i+1].c - b.c : 0,
@@ -44,26 +51,62 @@ export function calcOrderBlocks(bars, atr) {
         obs.push({ type: 'bull', hi: b.hi, lo: b.lo, mid: (b.hi + b.lo) / 2, strength: +(imp / atr).toFixed(2), fresh, inOB, inRef, fvg });
       }
     }
+    
+    // ✨ Bear OB: bullish candle followed by strong downward impulse
+    if (b.c > b.o) {
+      const imp = Math.max(
+        bars[i+1] ? b.c - bars[i+1].c : 0,
+        bars[i+2] ? b.c - bars[i+2].c : 0,
+        bars[i+3] && i+3 < n ? b.c - bars[i+3].c : 0
+      );
+      if (imp >= atr * atrMult) {
+        const fresh = cur < b.hi, inOB = cur >= b.lo && cur <= b.hi;
+        const fvg = i+2 < n && bars[i].lo > bars[i+2].hi;
+        obs.push({ type: 'bear', hi: b.hi, lo: b.lo, mid: (b.hi + b.lo) / 2, strength: +(imp / atr).toFixed(2), fresh, inOB, fvg });
+      }
+    }
   }
 
+  // Bull analysis
   const bulls    = obs.filter(o => o.type === 'bull' && o.fresh).sort((a, b) => (b.strength + (b.fvg ? 2 : 0)) - (a.strength + (a.fvg ? 2 : 0)));
-  const best     = bulls[0] ?? null;
-  const inBullOB = !!(best && best.inOB);
-  const inRef    = !!(best && best.inRef);
-  const hasFVG   = !!(best && best.fvg);
-  const strength = best ? best.strength : 0;
-  const baseScore = bulls.length > 0 ? Math.round(2 + 14 * Math.tanh(strength / 2.5) + (inRef ? 3 : inBullOB ? 1.5 : 0)) : 2;
-  const score     = Math.min(20, Math.round(baseScore + (hasFVG ? 2 : 0)));
+  const bestBull = bulls[0] ?? null;
+  const inBullOB = !!(bestBull && bestBull.inOB);
+  const inRef    = !!(bestBull && bestBull.inRef);
+  const hasFVG   = !!(bestBull && bestBull.fvg);
+  const bullStrength = bestBull ? bestBull.strength : 0;
+  
+  // ✨ Bear analysis
+  const bears = obs.filter(o => o.type === 'bear' && o.fresh).sort((a, b) => b.strength - a.strength);
+  const bestBear = bears[0] ?? null;
+  const inBearOB = !!(bestBear && bestBear.inOB);
+  
+  // Score (Bull OB increases, Bear OB decreases)
+  const baseScore = bulls.length > 0 
+    ? Math.round(2 + 14 * Math.tanh(bullStrength / 2.5) + (inRef ? 3 : inBullOB ? 1.5 : 0))
+    : 2;
+  let score = Math.min(20, Math.round(baseScore + (hasFVG ? 2 : 0)));
+  
+  // Penalty if in Bear OB
+  if (inBearOB) score = Math.max(2, score - 4);
 
-  return { inBullOB, inRef, hasFVG, bullCount: bulls.length, score,
+  return { 
+    inBullOB, inRef, hasFVG, 
+    inBearOB,
+    bullCount: bulls.length, 
+    bearCount: bears.length,
+    score,
     label: inRef       ? 'منطقة شراء قوية ✓'
          : inBullOB && hasFVG ? 'منطقة شراء مع فجوة'
          : inBullOB    ? 'داخل منطقة شراء'
-         : bulls.length > 0 ? 'منطقة شراء متاحة' : 'لا منطقة شراء' };
+         : inBearOB    ? '⚠ داخل منطقة بيع'
+         : bulls.length > 0 ? 'منطقة شراء متاحة' : 'لا منطقة شراء' 
+  };
 }
 
 /**
- * Liquidity sweep detection
+ * ✨ Liquidity sweep detection (SSL + BSL)
+ * SSL: Sell-Side Liquidity (under support)
+ * BSL: Buy-Side Liquidity (above resistance)
  */
 export function calcLiqSweep(bars, atr) {
   const cur    = bars[bars.length - 1].c;
@@ -73,32 +116,57 @@ export function calcLiqSweep(bars, atr) {
 
   for (let i = lb; i < bars.length - 1; i++) {
     const b = bars[i], win = bars.slice(i - lb, i);
+    const pH = Math.max(...win.map(x => x.hi));
     const pL = Math.min(...win.map(x => x.lo));
     const volOk = b.vol > avgVol * 1.5;
     const nx    = bars[i + 1];
+    
+    // SSL Detection
     if (b.lo < pL && b.c > pL && (pL - b.lo) >= atr * 0.5) {
       const conf = nx && nx.c > nx.o;
       const eq   = win.filter(x => Math.abs(x.lo - pL) / pL < 0.0015).length >= 2;
       sweeps.push({ type: 'SSL', q: (volOk ? 1 : 0) + (eq ? 1 : 0) + (conf ? 1 : 0) });
     }
+    
+    // ✨ BSL Detection (above resistance)
+    if (b.hi > pH && b.c < pH && (b.hi - pH) >= atr * 0.5) {
+      const conf = nx && nx.c < nx.o;
+      const eq = win.filter(x => Math.abs(x.hi - pH) / pH < 0.0015).length >= 2;
+      sweeps.push({ type: 'BSL', q: (volOk ? 1 : 0) + (eq ? 1 : 0) + (conf ? 1 : 0) });
+    }
   }
 
   const ssls   = sweeps.filter(s => s.type === 'SSL');
+  const bsls   = sweeps.filter(s => s.type === 'BSL');
   const recSSL = ssls.length > 0;
+  const recBSL = bsls.length > 0;
   const q      = recSSL ? (ssls[ssls.length - 1].q ?? 0) : 0;
-  const score  = recSSL
+  
+  let score = recSSL
     ? Math.round(Math.min(20, Math.max(6, 6 + 10 * Math.tanh(q / 1.2) + Math.min(4, ssls.length * 0.8))))
     : 3;
+  
+  // Penalty if BSL detected (buy-side liquidity grabbed = top warning)
+  if (recBSL && !recSSL) score = Math.max(2, score - 3);
 
-  return { recoveredSSL: recSSL, sslCount: ssls.length, sslQuality: q, score: Math.min(20, score),
+  return { 
+    recoveredSSL: recSSL, 
+    recoveredBSL: recBSL,
+    sslCount: ssls.length, 
+    bslCount: bsls.length,
+    sslQuality: q, 
+    score: Math.min(20, score),
     label: recSSL && q === 3 ? 'اصطياد مثالي ✓✓✓'
          : recSSL && q === 2 ? 'اصطياد قوي ✓✓'
          : recSSL            ? 'تعافٍ من الاصطياد'
-         : ssls.length > 0   ? 'اصطياد حديث' : 'لا اصطياد' };
+         : recBSL            ? '⚠ اصطياد BSL (تحذير قمة)'
+         : ssls.length > 0   ? 'اصطياد حديث' 
+         : 'لا اصطياد' 
+  };
 }
 
 /**
- * Wyckoff phase detection
+ * ✨ Wyckoff phase detection - WITH DYNAMIC CONFIDENCE
  */
 function calcWyckoff(bars, atr) {
   const n   = bars.length;
@@ -113,47 +181,113 @@ function calcWyckoff(bars, atr) {
   // Position in range (0% = at low, 100% = at high)
   const pfl  = (cur - lo) / rngW * 100;
 
-  // Price trend: compare first half vs second half of window
+  // Price trend
   const half = Math.floor(rng.length / 2);
   const avgFirst  = rng.slice(0, half).reduce((s, b) => s + b.c, 0) / half;
   const avgSecond = rng.slice(half).reduce((s, b) => s + b.c, 0) / (rng.length - half);
-  const trend = (avgSecond - avgFirst) / (avgFirst || 1) * 100; // % trend over window
+  const trend = (avgSecond - avgFirst) / (avgFirst || 1) * 100;
 
-  // Recent volume ratio (last 5 bars vs full window average)
+  // Volume ratio
   const avgVol = bars.reduce((s, b) => s + b.vol, 0) / bars.length || 1;
   const rv     = bars.slice(-5).reduce((s, b) => s + b.vol, 0) / 5 / avgVol;
 
-  // Volatility contraction (Wyckoff consolidation = narrow range)
-  const rangeWidth = rngW / (avg || 1) * 100; // range as % of price
+  // Volatility contraction
+  const rangeWidth = rngW / (avg || 1) * 100;
 
   const BLUE = '#4d9fff', T2 = '#8a90a8', GOLD = '#f0c050', RED = '#ff5f6a';
 
-  // Spring: near support (pfl < 35%) + increasing volume + prior downtrend turning
-  if (pfl < 35 && rv > 1.2 && trend < 2)
-    return { phase: 'نهاية تجميع (Spring)', col: BLUE, conf: 60, pfl: +pfl.toFixed(0) };
+  // ✨ Dynamic confidence calculation
+  function calcConf(baseConf, signals) {
+    // signals: [strength values 0-1]
+    const avgStrength = signals.reduce((s, v) => s + v, 0) / signals.length;
+    return Math.round(baseConf + avgStrength * 25); // 25 points max bonus
+  }
 
-  // Markup (uptrend with HH structure): trend strongly positive + price in upper range
-  if (trend > 2.5 && pfl > 60)
-    return { phase: 'مرحلة ارتفاع (Markup)', col: BLUE, conf: 55, pfl: +pfl.toFixed(0) };
+  // Spring: near support + increasing volume + prior downtrend
+  if (pfl < 35 && rv > 1.2 && trend < 2) {
+    const springStrength = [
+      (35 - pfl) / 35,        // closer to support = stronger
+      Math.min(1, (rv - 1) / 1), // higher volume = stronger
+      trend < -2 ? 1 : 0.5,   // prior downtrend confirms
+    ];
+    return { 
+      phase: 'نهاية تجميع (Spring)', 
+      col: BLUE, 
+      conf: calcConf(50, springStrength),
+      pfl: +pfl.toFixed(0),
+      strength: +(springStrength.reduce((s,v)=>s+v,0)/3).toFixed(2)
+    };
+  }
 
-  // Distribution: price near high + volume expanding + trend flattening/declining
-  if (pfl > 65 && trend < 0 && rv > 1.1)
-    return { phase: 'تصريف (Distribution)', col: RED, conf: 50, pfl: +pfl.toFixed(0) };
+  // Markup
+  if (trend > 2.5 && pfl > 60) {
+    const markupStrength = [
+      Math.min(1, (trend - 2.5) / 5),
+      (pfl - 60) / 40,
+      rv > 1 ? 1 : 0.5,
+    ];
+    return { 
+      phase: 'مرحلة ارتفاع (Markup)', 
+      col: BLUE, 
+      conf: calcConf(45, markupStrength),
+      pfl: +pfl.toFixed(0),
+      strength: +(markupStrength.reduce((s,v)=>s+v,0)/3).toFixed(2)
+    };
+  }
 
-  // Markdown (downtrend): declining price + price in lower range
-  if (trend < -2.5 && pfl < 40)
-    return { phase: 'مرحلة هبوط (Markdown)', col: GOLD, conf: 45, pfl: +pfl.toFixed(0) };
+  // Distribution
+  if (pfl > 65 && trend < 0 && rv > 1.1) {
+    const distStrength = [
+      (pfl - 65) / 35,
+      Math.min(1, Math.abs(trend) / 5),
+      Math.min(1, (rv - 1) / 1),
+    ];
+    return { 
+      phase: 'تصريف (Distribution)', 
+      col: RED, 
+      conf: calcConf(40, distStrength),
+      pfl: +pfl.toFixed(0),
+      strength: +(distStrength.reduce((s,v)=>s+v,0)/3).toFixed(2)
+    };
+  }
 
-  // Consolidation: narrow range with declining volume
-  if (rangeWidth < 3.0 && rv < 0.85)
-    return { phase: 'توحيد (Consolidation)', col: T2, conf: 45, pfl: +pfl.toFixed(0) };
+  // Markdown
+  if (trend < -2.5 && pfl < 40) {
+    const markdownStrength = [
+      Math.min(1, Math.abs(trend) / 5),
+      (40 - pfl) / 40,
+      rv > 0.8 ? 1 : 0.5,
+    ];
+    return { 
+      phase: 'مرحلة هبوط (Markdown)', 
+      col: GOLD, 
+      conf: calcConf(35, markdownStrength),
+      pfl: +pfl.toFixed(0),
+      strength: +(markdownStrength.reduce((s,v)=>s+v,0)/3).toFixed(2)
+    };
+  }
 
-  return { phase: 'محايد', col: T2, conf: 30, pfl: +pfl.toFixed(0) };
+  // Consolidation
+  if (rangeWidth < 3.0 && rv < 0.85) {
+    const consStrength = [
+      (3.0 - rangeWidth) / 3.0,
+      (0.85 - rv) / 0.85,
+      0.5,
+    ];
+    return { 
+      phase: 'توحيد (Consolidation)', 
+      col: T2, 
+      conf: calcConf(35, consStrength),
+      pfl: +pfl.toFixed(0),
+      strength: +(consStrength.reduce((s,v)=>s+v,0)/3).toFixed(2)
+    };
+  }
+
+  return { phase: 'محايد', col: T2, conf: 25, pfl: +pfl.toFixed(0), strength: 0.3 };
 }
 
 /**
- * 9-Layer Opportunity Score
- * Main radar engine function.
+ * ✨ 9-Layer Opportunity Score (TRUE 9 LAYERS!)
  *
  * @param {Stock} stk
  * @param {OHLCBar[]} bars
@@ -164,49 +298,59 @@ export function calcRadarScore(stk, bars) {
     return { totalScore: 0, layers: [], regime: 'insufficient_data' };
   }
 
-  const atr    = calcATR(bars, 14);
+  const atr     = calcATR(bars, 14);
   const rsiFull = calcRSIFull(bars, 14);
-  const rsi    = rsiFull.value;
-  const cmf    = calcCMF(bars);
-  const obv    = calcOBV(bars);
-  const macd   = bars.length >= 35 ? calcMACD(bars) : null;
-  const ms     = calcMarketStructure(bars);
-  const ob     = calcOrderBlocks(bars, atr);
-  const liq    = calcLiqSweep(bars, atr);
-  const vwap   = calcIVWAP(bars, stk);
-  const cur    = bars[bars.length - 1].c;
+  const rsi     = rsiFull.value;
+  const cmf     = calcCMF(bars);
+  const obv     = calcOBV(bars);
+  const macd    = bars.length >= 35 ? calcMACD(bars) : null;
+  const ms      = calcMarketStructure(bars);
+  const ob      = calcOrderBlocks(bars, atr);
+  const liq     = calcLiqSweep(bars, atr);
+  const vwap    = calcIVWAP(bars, stk);
+  const cur     = bars[bars.length - 1].c;
 
-  // ── Layer 5: RSI — continuous scoring, decimal-aware
-  // Optimal buy zone: 30-50 (pullback in uptrend)
-  // Danger zone: >70 (overbought), <25 (crash risk)
+  // ── Layer 5: RSI
   let rsiScore;
-  if      (rsi >= 30 && rsi < 50)  rsiScore = Math.round(14 + (50 - rsi) / 20 * 4); // 14-18
-  else if (rsi >= 50 && rsi < 65)  rsiScore = Math.round(14 - (rsi - 50) / 15 * 4); // 10-14
-  else if (rsi <  30)              rsiScore = Math.round(8  + (30 - rsi) / 10 * 4);  // 8-12 (oversold can mean crash)
-  else if (rsi >= 65 && rsi < 80)  rsiScore = Math.round(10 - (rsi - 65) / 15 * 6); // 4-10
-  else                             rsiScore = 3; // >80: extreme overbought
+  if      (rsi >= 30 && rsi < 50)  rsiScore = Math.round(14 + (50 - rsi) / 20 * 4);
+  else if (rsi >= 50 && rsi < 65)  rsiScore = Math.round(14 - (rsi - 50) / 15 * 4);
+  else if (rsi <  30)              rsiScore = Math.round(8  + (30 - rsi) / 10 * 4);
+  else if (rsi >= 65 && rsi < 80)  rsiScore = Math.round(10 - (rsi - 65) / 15 * 6);
+  else                             rsiScore = 3;
   rsiScore = Math.max(3, Math.min(18, rsiScore));
 
-  // ── Layer 6: CMF — continuous scoring
-  // tanh gives smooth curve without sharp cliffs
+  // ── Layer 6: CMF
   const cmfScore = Math.round(10 + 8 * Math.tanh(cmf / 0.08));
-  // Range: cmf=-0.3→3, cmf=0→10, cmf=+0.3→17, capped 3-18
 
-  // ── Layer 7: OBV — continuous with Z-score weight
+  // ── Layer 7: OBV
   const obvBase  = obv.rising ? 13 : 7;
   const obvBonus = Math.round(Math.tanh(obv.obvZ / 1.5) * 5);
   const obvScore = Math.max(3, Math.min(18, obvBase + obvBonus));
 
-  // ── Layer 8: Wyckoff Phase (already defined above)
-  const wyckoff   = calcWyckoff(bars, atr);
-  // Map Wyckoff phase to score: Spring=high, Distribution=low, Neutral=mid
+  // ── Layer 8: Wyckoff
+  const wyckoff = calcWyckoff(bars, atr);
   const wyckoffScore = wyckoff.phase.includes('Spring')      ? 17
+                     : wyckoff.phase.includes('Markup')       ? 15
                      : wyckoff.phase.includes('Consolidation')? 11
-                     : wyckoff.phase.includes('Distribution') ?  5 : 9;
+                     : wyckoff.phase.includes('Distribution') ?  5 
+                     : wyckoff.phase.includes('Markdown')     ?  4 : 9;
 
-  // ── Weighted layers (not equal weight — structure+volume > momentum)
-  // Weights reflect institutional trading logic:
-  // Price structure + liquidity = 50%, momentum indicators = 35%, Wyckoff = 15%
+  // ✨ Layer 9: MACD (NEW!)
+  let macdScore = 10;
+  if (macd) {
+    if (macd.crossover === 'bullish_cross') macdScore = 17;
+    else if (macd.crossover === 'bearish_cross') macdScore = 4;
+    else if (macd.histogram > 0 && macd.histMomentum === 'strengthening') macdScore = 14;
+    else if (macd.histogram > 0 && macd.histMomentum === 'weakening') macdScore = 11;
+    else if (macd.histogram < 0 && macd.histMomentum === 'weakening') macdScore = 9;
+    else if (macd.histogram < 0 && macd.histMomentum === 'strengthening') macdScore = 5;
+    
+    // Divergence bonus
+    if (macd.divergence === 'bullish') macdScore = Math.min(18, macdScore + 3);
+    if (macd.divergence === 'bearish') macdScore = Math.max(2, macdScore - 3);
+  }
+
+  // ✨ 9 Weighted Layers
   const layers = [
     { id: 'structure', label: 'هيكل السوق',     score: ms.score,      label2: ms.label,   weight: 1.5 },
     { id: 'ob',        label: 'مناطق الشراء',   score: ob.score,      label2: ob.label,   weight: 1.4 },
@@ -215,28 +359,85 @@ export function calcRadarScore(stk, bars) {
     { id: 'rsi',       label: 'RSI/زخم',        score: rsiScore,      label2: `RSI: ${rsi.toFixed ? rsi.toFixed(1) : rsi}`, weight: 1.0 },
     { id: 'cmf',       label: 'تدفق المال',     score: cmfScore,      label2: `CMF: ${cmf}`, weight: 1.1 },
     { id: 'obv',       label: 'OBV/حجم',        score: obvScore,      label2: obv.rising ? 'حجم صاعد' : 'حجم هابط', weight: 1.1 },
-    { id: 'wyckoff',   label: 'وايكوف',          score: wyckoffScore,  label2: wyckoff.phase, weight: 0.9 },
+    { id: 'wyckoff',   label: 'وايكوف',         score: wyckoffScore,  label2: `${wyckoff.phase} (${wyckoff.conf}%)`, weight: 0.9 },
+    { id: 'macd',      label: 'MACD',           score: macdScore,     label2: macd ? (macd.crossover || macd.trend) : 'بيانات غير كافية', weight: 1.0 },
   ];
 
-  // Weighted average → normalize to 0-100
   const totalWeight = layers.reduce((s, l) => s + l.weight, 0);
   const rawWeighted = layers.reduce((s, l) => s + l.score * l.weight, 0) / totalWeight;
   const totalScore  = Math.round((rawWeighted / 20) * 100);
-  const atrPct     = atr / cur;
+  const atrPct      = atr / cur;
 
-  // Compile signals for display
+  // ✨ Smart Stop Loss & Targets (using positionEngine logic)
+  // Adaptive ATR multiplier based on Wyckoff + Health
+  let stopMultiplier = 1.5;
+  let targetMultiplier1 = 2.0;
+  let targetMultiplier2 = 3.5;
+  let targetMultiplier3 = 5.0;
+  
+  if (wyckoff.phase.includes('Spring')) {
+    stopMultiplier = 1.2;     // Tight stop at Spring
+    targetMultiplier1 = 2.5;
+    targetMultiplier2 = 4.0;
+    targetMultiplier3 = 6.0;
+  } else if (wyckoff.phase.includes('Markup')) {
+    stopMultiplier = 2.0;
+    targetMultiplier1 = 2.5;
+    targetMultiplier2 = 4.0;
+    targetMultiplier3 = 5.5;
+  } else if (wyckoff.phase.includes('Distribution') || wyckoff.phase.includes('Markdown')) {
+    stopMultiplier = 1.0;     // Very tight - dangerous zone
+    targetMultiplier1 = 1.5;
+    targetMultiplier2 = 2.5;
+    targetMultiplier3 = 3.5;
+  }
+  
+  const stopLossPrice = +(cur - atr * stopMultiplier).toFixed(2);
+  const stopLossPct = +((stopLossPrice - cur) / cur * 100).toFixed(2);
+  
+  const targets = [
+    { 
+      price: +(cur + atr * targetMultiplier1).toFixed(2),
+      pct: +((atr * targetMultiplier1) / cur * 100).toFixed(2),
+      rr: +(targetMultiplier1 / stopMultiplier).toFixed(1),
+      sell: 33,
+    },
+    { 
+      price: +(cur + atr * targetMultiplier2).toFixed(2),
+      pct: +((atr * targetMultiplier2) / cur * 100).toFixed(2),
+      rr: +(targetMultiplier2 / stopMultiplier).toFixed(1),
+      sell: 33,
+    },
+    { 
+      price: +(cur + atr * targetMultiplier3).toFixed(2),
+      pct: +((atr * targetMultiplier3) / cur * 100).toFixed(2),
+      rr: +(targetMultiplier3 / stopMultiplier).toFixed(1),
+      sell: 34,
+    },
+  ];
+
+  // Compile signals
   const signals = [];
   if (rsiFull.divergence === 'bullish') signals.push({ type: 'bullish', msg: 'RSI: تباعد إيجابي (Bullish Divergence)' });
   if (rsiFull.divergence === 'bearish') signals.push({ type: 'bearish', msg: 'RSI: تباعد سلبي (Bearish Divergence)' });
   if (macd?.crossover === 'bullish_cross') signals.push({ type: 'bullish', msg: 'MACD: تقاطع صاعد (Golden Cross)' });
   if (macd?.crossover === 'bearish_cross') signals.push({ type: 'bearish', msg: 'MACD: تقاطع هابط (Death Cross)' });
+  if (macd?.divergence === 'bullish') signals.push({ type: 'bullish', msg: 'MACD: تباعد إيجابي' });
+  if (macd?.divergence === 'bearish') signals.push({ type: 'bearish', msg: 'MACD: تباعد سلبي' });
   if (ms.bosBull) signals.push({ type: 'bullish', msg: 'كسر هيكل صاعد BOS↑' });
   if (ms.bosBear) signals.push({ type: 'bearish', msg: 'كسر هيكل هابط BOS↓' });
+  if (ob.inRef) signals.push({ type: 'bullish', msg: 'منطقة شراء قوية (50% Refinement)' });
+  if (ob.inBearOB) signals.push({ type: 'bearish', msg: '⚠ داخل منطقة بيع' });
+  if (liq.recoveredSSL) signals.push({ type: 'bullish', msg: 'تعافٍ من اصطياد السيولة' });
+  if (liq.recoveredBSL) signals.push({ type: 'bearish', msg: '⚠ اصطياد BSL (تحذير قمة)' });
+  if (wyckoff.phase.includes('Spring')) signals.push({ type: 'bullish', msg: `Wyckoff Spring (ثقة ${wyckoff.conf}%)` });
+  if (wyckoff.phase.includes('Distribution')) signals.push({ type: 'bearish', msg: `Wyckoff Distribution (ثقة ${wyckoff.conf}%)` });
 
   return {
     totalScore,
     layers,
     atr,
+    atrPct: +(atrPct * 100).toFixed(2),
     rsi,
     rsiFull,
     cmf,
@@ -246,21 +447,21 @@ export function calcRadarScore(stk, bars) {
     ob,
     liq,
     vwap,
+    wyckoff,
     signals,
-    stopLoss:  +(cur - atr * 1.5).toFixed(2),
-    targets:   [
-      +(cur + atr * 2).toFixed(2),
-      +(cur + atr * 3.5).toFixed(2),
-    ],
+    stopLoss: {
+      price: stopLossPrice,
+      pct: stopLossPct,
+      method: `ATR × ${stopMultiplier} (${wyckoff.phase})`,
+    },
+    targets,
+    expectedRR: +((targets[0].rr * 0.33 + targets[1].rr * 0.33 + targets[2].rr * 0.34)).toFixed(1),
     regime: ms.trend,
   };
 }
 
 /**
  * Score multiple stocks and rank them
- * @param {Stock[]} stocks
- * @param {Object} barsMap - sym → OHLCBar[]
- * @returns {Array<{ stock, radarScore, rank }>}
  */
 export function rankStocksByRadar(stocks, barsMap) {
   return stocks
