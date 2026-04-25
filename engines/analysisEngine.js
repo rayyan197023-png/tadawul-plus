@@ -2458,10 +2458,19 @@ function analyzeStockRadar(stk){
 ══════════════════════════════════════════════════════════════ */
 
 function calc9Layers(stk, bars){
+  // ✨ Validation - حماية من Edge Cases
+  if (!stk || typeof stk !== 'object') {
+    return _emptyHealthResult();
+  }
+  if (!bars || !Array.isArray(bars) || bars.length < 5) {
+    return _emptyHealthResult();
+  }
+  
   const last5  = bars.slice(-5);
   const last10 = bars.slice(-10);
   const last20 = bars.slice(-20);
   const last14 = bars.slice(-14);
+
 
    // ✨ تحويل bars - يدعم both formats (b.c لـ technicalEngine + b.close للقديمة)
   const rBars = bars.map(function(b){
