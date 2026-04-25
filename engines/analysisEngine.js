@@ -3630,7 +3630,7 @@ function calcConfidenceThreshold(score, layers, ensemble, conflictCount, gates, 
    مبدأ: الطبقات التي أثبتت دقتها تحصل على وزن أعلى
    التخزين: sessionStorage (مؤقت، يُصفَّر بكل جلسة)
 ══════════════════════════════════════════════════════════════ */
-const FEEDBACK_STORE_KEY = 'tdw_feedback_v2';
+const FEEDBACK_STORE_KEY = 'tdw_feedback_state';
 
 function loadFeedbackState(){
   try{
