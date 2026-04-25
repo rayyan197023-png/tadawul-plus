@@ -2715,9 +2715,13 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
           ? `نسبة الدخول المثلى: ${(kelAdj*100).toFixed(1)}% من المحفظة — الصفقة مبررة رياضياً ✅`
           : `نسبة الدخول: ${(kelAdj*100).toFixed(1)}% — صغيرة جداً، المخاطرة أكبر من العائد ❌`;
 
-        const bayPrior = Math.round((L1+L2+L3+L4+L5+L6)/600*100);
-        const bayDelta = L7-bayPrior;
-        const bayDesc  = `الاحتمالية الأولية: ${bayPrior}% ← بعد تحليل الحجم والاتجاه: ${L7}% (${bayDelta>=0?"تحسّن +":"تراجع "}${Math.abs(bayDelta)}%)`;
+                // ✨ Bayesian Prior - متوسط الطبقات الأخرى (ليس شاملاً L7)
+        // الـ Prior هو الاعتقاد الأولي قبل تحديث Bayesian
+        const bayPrior = Math.round((L1 + L2 + L3 + L4 + L5 + L6) / 6);
+        // الـ Posterior هو L7 (بعد التحديث Bayesian)
+        const bayPosterior = Math.min(100, Math.max(0, L7));
+        const bayDelta = bayPosterior - bayPrior;
+        const bayDesc  = `الاحتمالية الأولية: ${bayPrior}% ← بعد تحليل الحجم والاتجاه: ${bayPosterior}% (${bayDelta >= 0 ? "تحسّن +" : "تراجع "}${Math.abs(bayDelta)}%)`;
 
         const radarGrade = L8>=80?"S":L8>=70?"A":L8>=60?"B":L8>=50?"C":"D";
         const radarColor = L8>=75?C.mint:L8>=60?C.amber:L8>=45?C.teal:C.coral;
