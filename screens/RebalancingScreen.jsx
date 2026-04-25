@@ -168,74 +168,62 @@ function IssueCard({ issue, index }) {
             🎯 الحل المقترح
           </div>
           
-          {issue.solution.action === 'sell' && (
-            <div style={{fontSize: 12, color: C.snow, fontWeight: 700, fontFamily: "Cairo,sans-serif"}}>
-              بع <span style={{color: color}}>{issue.solution.percentage}%</span> من {issue.solution.name}
-              <div style={{fontSize: 10, color: C.smoke, marginTop: 4, fontFamily: "IBM Plex Mono,monospace"}}>
-                ≈ {formatCurrency(issue.solution.amount)} ريال
-              </div>
-            </div>
-          )}
+          {/* الحل المقترح - عرض موحّد لكل أنواع الـ actions */}
+{issue.solution.action === 'sell' && (
+  <div style={{fontSize: 12, color: C.snow, fontWeight: 700, fontFamily: "Cairo,sans-serif"}}>
+    بع <span style={{color: color}}>{issue.solution.percentage}%</span> من {issue.solution.name}
+    <div style={{fontSize: 10, color: C.smoke, marginTop: 4, fontFamily: "IBM Plex Mono,monospace"}}>
+      ≈ {formatCurrency(issue.solution.amount)} ريال
+    </div>
+  </div>
+)}
 
-          {issue.solution.action === 'add' && issue.solution.suggestions && (
-            <div>
-              <div style={{fontSize: 12, color: C.snow, marginBottom: 6, fontFamily: "Cairo,sans-serif"}}>
-                أضف من هذه القطاعات:
-              </div>
-              {issue.solution.suggestions.map((s, i) => (
-                <div key={i} style={{
-                  fontSize: 11,
-                  color: C.mist,
-                  padding: "3px 0",
-                  fontFamily: "Cairo,sans-serif",
-                }}>
-                  • <span style={{color: C.gold, fontWeight: 700}}>{s.sector}</span>
-                  <span style={{color: C.smoke}}> ({s.examples.join('، ')})</span>
-                </div>
-              ))}
-            </div>
-          )}
+{/* اقتراحات قطاعات (add أو add_sector) */}
+{(issue.solution.action === 'add' || issue.solution.action === 'add_sector') && issue.solution.suggestions && (
+  <div>
+    <div style={{fontSize: 12, color: C.snow, marginBottom: 6, fontFamily: "Cairo,sans-serif"}}>
+      أضف من هذه القطاعات:
+    </div>
+    {issue.solution.suggestions.map((s, i) => (
+      <div key={i} style={{
+        fontSize: 11,
+        color: C.mist,
+        padding: "3px 0",
+        fontFamily: "Cairo,sans-serif",
+      }}>
+        • <span style={{color: C.gold, fontWeight: 700}}>{s.sector}</span>
+        <span style={{color: C.smoke}}> ({s.examples ? s.examples.join('، ') : ''})</span>
+        {s.reason && (
+          <span style={{color: C.smoke, fontSize: 10, marginRight: 6}}>
+            - {s.reason}
+          </span>
+        )}
+      </div>
+    ))}
+  </div>
+)}
 
-          {issue.solution.action === 'add' && !issue.solution.suggestions && (
-            <div style={{fontSize: 12, color: C.snow, fontFamily: "Cairo,sans-serif"}}>
-              {issue.solution.message}
-            </div>
-          )}
-          {issue.solution.action === 'stabilize' && (
-            <div style={{fontSize: 12, color: C.snow, fontFamily: "Cairo,sans-serif"}}>
-              {issue.solution.message}
-            </div>
-          )}
+{/* أسهم ضعيفة محددة (replace_weak) */}
+{issue.solution.action === 'replace_weak' && issue.weakStocks && issue.weakStocks.length > 0 && (
+  <div>
+    <div style={{fontSize: 12, color: C.snow, marginBottom: 6, fontFamily: "Cairo,sans-serif"}}>
+      {issue.solution.message}
+    </div>
+    <div style={{fontSize: 11, color: C.coral, fontWeight: 700, fontFamily: "Cairo,sans-serif"}}>
+      الأسهم الضعيفة: {issue.weakStocks.join('، ')}
+    </div>
+  </div>
+)}
 
-          {issue.solution.action === 'optimize' && (
-            <div style={{fontSize: 12, color: C.snow, fontFamily: "Cairo,sans-serif"}}>
-              {issue.solution.message}
-            </div>
-          )}
-
-          {issue.solution.action === 'add_dividends' && (
-            <div style={{fontSize: 12, color: C.snow, fontFamily: "Cairo,sans-serif"}}>
-              {issue.solution.message}
-            </div>
-          )}
-
-          {issue.solution.action === 'rebalance' && (
-            <div style={{fontSize: 12, color: C.snow, fontFamily: "Cairo,sans-serif"}}>
-              {issue.solution.message}
-            </div>
-          )}
-
-          {issue.solution.action === 'maintain' && (
-            <div style={{fontSize: 12, color: C.snow, fontFamily: "Cairo,sans-serif"}}>
-              {issue.solution.message}
-            </div>
-          )}
-
-          {issue.solution.action === 'diversify' && (
-            <div style={{fontSize: 12, color: C.snow, fontFamily: "Cairo,sans-serif"}}>
-              {issue.solution.message}
-            </div>
-          )}
+{/* ✨ Fallback شامل - يعرض الـ message لأي action آخر */}
+{issue.solution.message && 
+ issue.solution.action !== 'sell' && 
+ !((issue.solution.action === 'add' || issue.solution.action === 'add_sector') && issue.solution.suggestions) &&
+ !(issue.solution.action === 'replace_weak' && issue.weakStocks) && (
+  <div style={{fontSize: 12, color: C.snow, fontFamily: "Cairo,sans-serif"}}>
+    {issue.solution.message}
+  </div>
+)}
         </div>
       )}
     </div>
