@@ -262,17 +262,29 @@ function executeSell(signal, state, prices, trades, date, config) {
     reason: signal.reason || '',
   });
 
-    // ✨ AI Learning - تسجيل feedback تلقائياً
+      // ✨ AI Smart Weighted Learning - مبني على أبحاث Quant Finance
   try {
-    // النتيجة: +1 صح (ربح كبير) أو -1 خطأ (خسارة)
-    var actualOutcome = pnlPct > 2 ? 1 : pnlPct < -2 ? -1 : 0;
-    
-    // فقط إذا كانت النتيجة واضحة
-    if (actualOutcome !== 0) {
-      // الإشارة المُتخذة = شراء قوي (لأن الصفقة فُتحت)
-      var signalTaken = pnlPct > 0 ? 'شراء قوي' : 'تخفيف';
+    // 🎯 القاعدة 1: Dead Zone - تجاهل الضوضاء (±0.5%)
+    // 🎯 القاعدة 2: Anomaly Filter - تجاهل الحركات الاستثنائية (±20%)
+    if (Math.abs(pnlPct) >= 0.5 && Math.abs(pnlPct) <= 20) {
+      // 🎯 القاعدة 3: Weighted Learning - كل صفقة بقوتها
+      var actualOutcome = 0;
       
-      // Layers افتراضية (في Backtest لا نملك تحليل layers)
+      // النتائج الإيجابية
+      if (pnlPct >= 10)      actualOutcome = 2.0;
+      else if (pnlPct >= 5)  actualOutcome = 1.5;
+      else if (pnlPct >= 3)  actualOutcome = 1.0;
+      else if (pnlPct >= 1)  actualOutcome = 0.5;
+      else if (pnlPct > 0)   actualOutcome = 0.2;
+      // النتائج السلبية
+      else if (pnlPct >= -1)  actualOutcome = -0.2;
+      else if (pnlPct >= -3)  actualOutcome = -0.5;
+      else if (pnlPct >= -5)  actualOutcome = -1.0;
+      else if (pnlPct >= -10) actualOutcome = -1.5;
+      else                    actualOutcome = -2.0;
+      
+      var signalTaken = pnlPct >= 0 ? 'شراء قوي' : 'تخفيف';
+      
       var layersUsed = position.layersAtEntry || {
         L1: 60, L2: 60, L3: 60, L4: 60, L5: 60,
         L6: 60, L7: 60, L8: 60, L9: 60
@@ -281,7 +293,7 @@ function executeSell(signal, state, prices, trades, date, config) {
       recordFeedback(signal.sym, signalTaken, layersUsed, actualOutcome);
     }
   } catch (e) {
-    // فشل صامت - لا يؤثر على Backtest
+    // فشل صامت
   }
 }
 
