@@ -744,13 +744,59 @@ function LayerPerformance({ layers }) {
     L9: 'الاتجاه',
   };
   
+  // ✨ Confidence levels based on sample size
+  const getConfidence = (total) => {
+    if (total === 0) return { icon: '⚪', label: 'لا بيانات', color: C.smoke };
+    if (total < 5) return { icon: '🔴', label: 'غير موثوقة', color: C.coral };
+    if (total < 10) return { icon: '🟡', label: 'عينة صغيرة', color: C.amber };
+    if (total < 30) return { icon: '🟢', label: 'محدودة', color: C.mint };
+    return { icon: '✅', label: 'موثوقة', color: C.mint };
+  };
+  
+  // ✨ تحذير عام إذا كل الطبقات لها عينة صغيرة
+  const totalSample = layers.reduce((sum, l) => sum + (l.total || 0), 0) / layers.length;
+  const showSampleWarning = totalSample < 10;
+  
   return (
     <div>
+      {/* ✨ تحذير العينة الصغيرة */}
+      {showSampleWarning && (
+        <div style={{
+          padding: '10px 12px',
+          background: `linear-gradient(135deg, ${C.amber}15, ${C.amber}05)`,
+          border: `1px solid ${C.amber}44`,
+          borderRadius: 10,
+          marginBottom: 14,
+        }}>
+          <div style={{
+            fontSize: 11,
+            color: C.amber,
+            fontWeight: 800,
+            marginBottom: 4,
+          }}>
+            ⚠️ عينة صغيرة جداً
+          </div>
+          <div style={{
+            fontSize: 11,
+            color: C.mist,
+            lineHeight: 1.6,
+          }}>
+            النسب الحالية مبنية على {Math.round(totalSample)} صفقة فقط.
+            <br/>
+            تحتاج <strong style={{color: C.gold}}>30+ صفقة</strong> للحصول على نسب موثوقة.
+          </div>
+        </div>
+      )}
+      
       {layers.map((l, i) => {
         const color = l.accuracy >= 70 ? C.mint : l.accuracy >= 50 ? C.amber : C.coral;
+        const confidence = getConfidence(l.total || 0);
+        const isReliable = (l.total || 0) >= 10;
+        
         return (
           <div key={l.layer} style={{
             marginBottom: i < layers.length - 1 ? 12 : 0,
+            opacity: isReliable ? 1 : 0.7, // ✨ خفّض السطوع للعينات الصغيرة
           }}>
             <div style={{
               display: 'flex',
@@ -762,15 +808,40 @@ function LayerPerformance({ layers }) {
                 fontSize: 11,
                 fontWeight: 700,
                 color: C.snow,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
               }}>
                 {l.layer} • {layerNames[l.layer]}
+                {/* ✨ confidence indicator */}
+                <span style={{
+                  fontSize: 9,
+                  color: confidence.color,
+                  marginRight: 4,
+                }}>
+                  {confidence.icon}
+                </span>
               </div>
               <div style={{
-                fontSize: 13,
-                fontWeight: 900,
-                color: color,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
               }}>
-                {l.total > 0 ? `${l.accuracy.toFixed(0)}%` : '--'}
+                {/* ✨ عدد الصفقات */}
+                <span style={{
+                  fontSize: 9,
+                  color: C.smoke,
+                  fontFamily: 'IBM Plex Mono, monospace',
+                }}>
+                  ({Math.round(l.total || 0)})
+                </span>
+                <div style={{
+                  fontSize: 13,
+                  fontWeight: 900,
+                  color: isReliable ? color : C.smoke, // ✨ لون باهت للعينات الصغيرة
+                }}>
+                  {l.total > 0 ? `${l.accuracy.toFixed(0)}%` : '--'}
+                </div>
               </div>
             </div>
             <div style={{
@@ -782,15 +853,31 @@ function LayerPerformance({ layers }) {
               <div style={{
                 height: '100%',
                 width: `${l.accuracy}%`,
-                background: color,
+                background: isReliable ? color : `${color}66`, // ✨ شفاف للعينات الصغيرة
                 borderRadius: 3,
                 transition: 'width 1s cubic-bezier(0.16, 1, 0.3, 1)',
-                boxShadow: `0 0 8px ${color}88`,
-              }} />
+                boxShadow: isReliable ? `0 0 8px ${color}88` : 'none',
+              }}/>
             </div>
           </div>
         );
       })}
+      
+      {/* ✨ نصيحة للمستخدم */}
+      {showSampleWarning && (
+        <div style={{
+          marginTop: 14,
+          padding: '8px 10px',
+          background: C.void + '88',
+          borderRadius: 8,
+          fontSize: 10,
+          color: C.smoke,
+          textAlign: 'center',
+          lineHeight: 1.6,
+        }}>
+          💡 أجرِ Backtests متعددة في صفحة Backtest Lab لتدريب AI
+        </div>
+      )}
     </div>
   );
 }
