@@ -1803,10 +1803,67 @@ function calcMicrostructure(stk,bars){
 /* ── مساعد: clamp + sigmoid + softmax ── */
 function _clamp(v,lo,hi){return Math.min(hi,Math.max(lo,v));}
 function _sig(x){return 1/(1+Math.exp(-x));}
-function _softmax3(a,b,c){
-  const ea=Math.exp(_clamp(a/30,-4,4)),eb=Math.exp(_clamp(b/30,-4,4)),ec=Math.exp(_clamp(c/30,-4,4));
-  const s=ea+eb+ec;
-  return{bull:Math.round(ea/s*100),bear:Math.round(eb/s*100),neutral:Math.round(ec/s*100)};
+/**
+ * ✨ Softmax 3-way - Mathematical Probability Distribution
+ * 
+ * Mathematical Foundation:
+ * P(i) = e^(x_i / T) / Σ e^(x_j / T)
+ * 
+ * Where T (temperature) controls distribution sharpness:
+ * - High T (e.g., 50): Smoother distribution
+ * - Low T (e.g., 10): Sharper distribution
+ * 
+ * Returns probabilities that sum to exactly 100%
+ */
+function _softmax3(a, b, c){
+  // ① Validation
+  a = typeof a === 'number' && !isNaN(a) ? a : 0;
+  b = typeof b === 'number' && !isNaN(b) ? b : 0;
+  c = typeof c === 'number' && !isNaN(c) ? c : 0;
+  
+  // ② Subtract max (numerical stability - prevents overflow)
+  const maxVal = Math.max(a, b, c);
+  const T = 50; // Temperature - higher = smoother
+  
+  // ③ Calculate exponentials (centered around max)
+  const ea = Math.exp(_clamp((a - maxVal) / T, -10, 0));
+  const eb = Math.exp(_clamp((b - maxVal) / T, -10, 0));
+  const ec = Math.exp(_clamp((c - maxVal) / T, -10, 0));
+  
+  // ④ Sum
+  const s = ea + eb + ec;
+  
+  // ⑤ Edge case
+  if (s === 0 || !isFinite(s)) {
+    return { bull: 33, bear: 33, neutral: 34 };
+  }
+  
+  // ⑥ Calculate probabilities (raw)
+  let bullProb = (ea / s) * 100;
+  let bearProb = (eb / s) * 100;
+  let neutralProb = (ec / s) * 100;
+  
+  // ⑦ Round
+  let bull = Math.round(bullProb);
+  let bear = Math.round(bearProb);
+  let neutral = Math.round(neutralProb);
+  
+  // ⑧ Force sum = 100 (correct rounding errors)
+  const total = bull + bear + neutral;
+  if (total !== 100) {
+    const diff = 100 - total;
+    // Add diff to the largest probability
+    if (bull >= bear && bull >= neutral) bull += diff;
+    else if (bear >= bull && bear >= neutral) bear += diff;
+    else neutral += diff;
+  }
+  
+  // ⑨ Final bounds check
+  return {
+    bull: Math.max(0, Math.min(100, bull)),
+    bear: Math.max(0, Math.min(100, bear)),
+    neutral: Math.max(0, Math.min(100, neutral))
+  };
 }
 
 /* ── 1) detectMarketRegime الموسّع ── */
