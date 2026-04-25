@@ -2056,17 +2056,118 @@ function generateBarsRadar(stk,days=60){
   return bars;
 }
 
-function calcStoch(bars,kP=14){
-  if(bars.length<kP)return 50;
-  const sl=bars.slice(-kP);
-  const lo=Math.min(...sl.map(b=>b.lo)),hi=Math.max(...sl.map(b=>b.hi));
-  const c=bars[bars.length-1].close;
-  return hi===lo?50:Math.round((c-lo)/(hi-lo)*100);
+/**
+ * ✨ Stochastic Oscillator %K - George Lane Original
+ * 
+ * Mathematical Foundation:
+ * %K = ((Close - Lowest Low) / (Highest High - Lowest Low)) × 100
+ * Range: [0, 100]
+ * 
+ * Interpretation:
+ * - > 80: Overbought
+ * - < 20: Oversold
+ * - 50: Neutral
+ */
+function calcStoch(bars, kP = 14) {
+  // ① Validation
+  if (!bars || !Array.isArray(bars) || bars.length === 0) return 50;
+  if (kP < 1) kP = 14;
+  if (bars.length < kP) return 50;
+  
+  // ② Helper functions
+  const getC = (b) => {
+    if (!b) return null;
+    return typeof b.c === 'number' ? b.c : 
+           typeof b.close === 'number' ? b.close : null;
+  };
+  const getH = (b) => {
+    if (!b) return null;
+    return typeof b.hi === 'number' ? b.hi : 
+           typeof b.high === 'number' ? b.high : null;
+  };
+  const getL = (b) => {
+    if (!b) return null;
+    return typeof b.lo === 'number' ? b.lo : 
+           typeof b.low === 'number' ? b.low : null;
+  };
+  
+  // ③ Get last kP bars
+  const slice = bars.slice(-kP);
+  
+  // ④ Find highest high and lowest low
+  let highestHigh = -Infinity;
+  let lowestLow = Infinity;
+  
+  for (const b of slice) {
+    const h = getH(b);
+    const l = getL(b);
+    if (h !== null && h > highestHigh) highestHigh = h;
+    if (l !== null && l < lowestLow) lowestLow = l;
+  }
+  
+  // ⑤ Get current close
+  const currentClose = getC(bars[bars.length - 1]);
+  
+  // ⑥ Edge cases
+  if (currentClose === null) return 50;
+  if (highestHigh === -Infinity || lowestLow === Infinity) return 50;
+  
+  const range = highestHigh - lowestLow;
+  if (range === 0) return 50; // No movement
+  
+  // ⑦ Calculate %K
+  const k = ((currentClose - lowestLow) / range) * 100;
+  
+  // ⑧ Bound to [0, 100] with 2 decimal precision
+  return +Math.max(0, Math.min(100, k)).toFixed(2);
 }
 
-function calcSMA(bars,period){
-  if(bars.length<period)return bars[bars.length-1]?.close||0;
-  return bars.slice(-period).reduce((s,b)=>s+b.close,0)/period;
+/**
+ * ✨ SMA (Simple Moving Average)
+ * 
+ * Mathematical Foundation:
+ * SMA = (Σ Close prices over period) / period
+ * 
+ * Used as:
+ * - Trend identification
+ * - Support/Resistance levels
+ * - Crossover signals (50/200 SMA Golden/Death Cross)
+ */
+function calcSMA(bars, period) {
+  // ① Validation
+  if (!bars || !Array.isArray(bars) || bars.length === 0) return 0;
+  if (!period || period < 1) period = 20;
+  
+  // ② Helper to get close
+  const getC = (b) => {
+    if (!b) return null;
+    return typeof b.c === 'number' ? b.c : 
+           typeof b.close === 'number' ? b.close : null;
+  };
+  
+  // ③ Edge case: less data than period
+  if (bars.length < period) {
+    const lastClose = getC(bars[bars.length - 1]);
+    return lastClose !== null ? +lastClose.toFixed(4) : 0;
+  }
+  
+  // ④ Calculate sum of last 'period' closes
+  const slice = bars.slice(-period);
+  let sum = 0;
+  let validCount = 0;
+  
+  for (const b of slice) {
+    const c = getC(b);
+    if (c !== null) {
+      sum += c;
+      validCount++;
+    }
+  }
+  
+  if (validCount === 0) return 0;
+  
+  // ⑤ Return average with 4 decimal precision
+  return +(sum / validCount).toFixed(4);
 }
 
 /* ══════════════════════════════════════════════════════════════
