@@ -1505,7 +1505,12 @@ function calcVPVR(bars,levels){
 
 /* ══ Factor Model ══ */
 function calcFactorModel(stk,bars){
+  // ✨ Validation
+  if (!stk) return {composite: 50, factors: {}, alpha: 0, beta: 1, grade: "D", signal: "بيانات غير كافية"};
+  bars = Array.isArray(bars) ? bars : [];
+  
   var sectorPE_static={"طاقة":20,"بنوك":14,"بترو":18,"غذاء":22,"تقنية":18,"تعدين":16,"تجزئة":20,"تأمين":15};
+
   var sectorStocksForPE=STOCKS.filter(function(x){return x.sec===stk.sec&&x.pe>0&&x.pe<60;});
   var benchPE=sectorStocksForPE.length>=2?sectorStocksForPE.reduce(function(s,x){return s+x.pe;},0)/sectorStocksForPE.length:(sectorPE_static[stk.sec]||18);
   var valueScore=stk.pe>0?Math.round(Math.min(95,Math.max(5,50-45*Math.tanh((stk.pe/benchPE-1)*1.5)))):50;
