@@ -203,24 +203,50 @@ export function calcOBV(bars) {
  * @param {{ fast?, slow?, signal? }} options
  * @returns {{ macd, signal, histogram, trend }}
  */
+/**
+ * MACD -- Moving Average Convergence/Divergence
+ * O(n) implementation -- single pass, no re-computation per bar.
+ * Uses SMA seed for first EMA values (Bloomberg standard).
+ *
+ * ✨ V2.0 - Mathematical Rigor:
+ * - Accurate prevHistogram (using prevSignal, not current)
+ * - Histogram momentum based on histogram itself (not MACD)
+ * - Crossover detection with proper signal series
+ * - Divergence detection
+ *
+ * @param {OHLCBar[]} bars
+ * @param {{ fast?, slow?, signal? }} options
+ * @returns {{ macd, signal, histogram, trend, histMomentum, crossover }}
+ */
 export function calcMACD(bars, { fast = 12, slow = 26, signal = 9 } = {}) {
   const minBars = slow + signal;
   if (bars.length < minBars) {
-    return { macd: 0, signal: 0, histogram: 0, trend: 'neutral' };
+    return { 
+      macd: 0, 
+      signal: 0, 
+      histogram: 0, 
+      trend: 'neutral',
+      histMomentum: 'neutral',
+      crossover: null,
+      aboveZero: false,
+    };
   }
+  
   const closes = bars.map(b => b.c);
   const kFast  = 2 / (fast   + 1);
   const kSlow  = 2 / (slow   + 1);
   const kSig   = 2 / (signal + 1);
 
-  // Seed EMAs with SMA
+  // Seed EMAs with SMA (Bloomberg standard)
   let emaFast = closes.slice(0, fast).reduce((a, b) => a + b, 0) / fast;
   let emaSlow = closes.slice(0, slow).reduce((a, b) => a + b, 0) / slow;
 
   // Advance fast EMA to index slow-1 (sync starting point)
-  for (let i = fast; i < slow; i++) emaFast = closes[i] * kFast + emaFast * (1 - kFast);
+  for (let i = fast; i < slow; i++) {
+    emaFast = closes[i] * kFast + emaFast * (1 - kFast);
+  }
 
-  // Build MACD series O(n) — single pass from slow onwards
+  // ✨ Build full MACD series O(n) -- single pass from slow onwards
   const macdSeries = [];
   for (let i = slow; i < closes.length; i++) {
     emaFast = closes[i] * kFast + emaFast * (1 - kFast);
@@ -228,41 +254,97 @@ export function calcMACD(bars, { fast = 12, slow = 26, signal = 9 } = {}) {
     macdSeries.push(emaFast - emaSlow);
   }
 
-  // Signal line: EMA(signal) of MACD series
-  let sigVal = macdSeries.slice(0, signal).reduce((a, b) => a + b, 0) / signal;
-  for (let i = signal; i < macdSeries.length; i++) {
-    sigVal = macdSeries[i] * kSig + sigVal * (1 - kSig);
+  if (macdSeries.length < signal) {
+    return {
+      macd: +macdSeries[macdSeries.length - 1].toFixed(4),
+      signal: 0,
+      histogram: 0,
+      trend: 'neutral',
+      histMomentum: 'neutral',
+      crossover: null,
+      aboveZero: macdSeries[macdSeries.length - 1] > 0,
+    };
   }
 
-  const macdVal  = macdSeries[macdSeries.length - 1];
-  const histogram = macdVal - sigVal;
+  // ✨ Build full Signal series (للحصول على prevSignal دقيق)
+  const signalSeries = [];
+  let sigVal = macdSeries.slice(0, signal).reduce((a, b) => a + b, 0) / signal;
+  signalSeries.push(sigVal);
+  
+  for (let i = signal; i < macdSeries.length; i++) {
+    sigVal = macdSeries[i] * kSig + sigVal * (1 - kSig);
+    signalSeries.push(sigVal);
+  }
 
-  // Histogram momentum (is it increasing or decreasing?)
-  const histArr = macdSeries.map((m, i) => {
-    // Rebuild signal at each point (simplified — last 3 bars)
-    return m;
-  });
-  // Previous histogram (approximation from last 2 MACD values)
-  const prevMacd = macdSeries[macdSeries.length - 2] ?? macdVal;
-  const histMomentum = histogram > 0
-    ? (macdVal > prevMacd ? 'strengthening' : 'weakening')
-    : (macdVal < prevMacd ? 'strengthening' : 'weakening');
+  // ✨ Build full Histogram series
+  const histSeries = [];
+  for (let i = 0; i < signalSeries.length; i++) {
+    const macdIdx = signal - 1 + i; // align indices
+    if (macdIdx < macdSeries.length) {
+      histSeries.push(macdSeries[macdIdx] - signalSeries[i]);
+    }
+  }
 
-  // Crossover detection (signal line cross in last 2 bars)
-  const prevHistogram = (macdSeries[macdSeries.length - 2] ?? macdVal) - sigVal;
-  const crossover = (prevHistogram <= 0 && histogram > 0) ? 'bullish_cross'
-                  : (prevHistogram >= 0 && histogram < 0) ? 'bearish_cross'
-                  : null;
+  // ✨ Current values
+  const macdVal = macdSeries[macdSeries.length - 1];
+  const signalVal = signalSeries[signalSeries.length - 1];
+  const histogram = histSeries[histSeries.length - 1];
+  
+  // ✨ Previous histogram (دقيق - من الـ series)
+  const prevHistogram = histSeries.length >= 2 ? histSeries[histSeries.length - 2] : histogram;
+
+  // ✨ Histogram Momentum - بناءً على histogram نفسه (وليس MACD)
+  let histMomentum;
+  if (histogram > 0) {
+    // Bullish histogram
+    histMomentum = histogram > prevHistogram ? 'strengthening' : 'weakening';
+  } else if (histogram < 0) {
+    // Bearish histogram - "strengthening" يعني الـ momentum السلبي يزداد
+    histMomentum = histogram < prevHistogram ? 'strengthening' : 'weakening';
+  } else {
+    histMomentum = 'neutral';
+  }
+
+  // ✨ Crossover Detection (دقيق)
+  let crossover = null;
+  if (histSeries.length >= 2) {
+    if (prevHistogram <= 0 && histogram > 0) {
+      crossover = 'bullish_cross';
+    } else if (prevHistogram >= 0 && histogram < 0) {
+      crossover = 'bearish_cross';
+    }
+  }
+
+  // ✨ Divergence Detection (bonus)
+  let divergence = null;
+  if (closes.length >= 14 && macdSeries.length >= 14) {
+    const recentCloses = closes.slice(-14);
+    const recentMACD = macdSeries.slice(-14);
+    
+    const priceMakesHigh = recentCloses[13] > recentCloses[0];
+    const priceMakesLow = recentCloses[13] < recentCloses[0];
+    const macdMakesHigh = recentMACD[13] > recentMACD[0];
+    const macdMakesLow = recentMACD[13] < recentMACD[0];
+    
+    if (priceMakesHigh && macdMakesLow) {
+      divergence = 'bearish'; // price up, MACD down (warning)
+    } else if (priceMakesLow && macdMakesHigh) {
+      divergence = 'bullish'; // price down, MACD up (opportunity)
+    }
+  }
 
   return {
-    macd:          +macdVal.toFixed(4),
-    signal:        +sigVal.toFixed(4),
-    histogram:     +histogram.toFixed(4),
-    trend:         histogram > 0 ? 'bullish' : 'bearish',
+    macd: +macdVal.toFixed(4),
+    signal: +signalVal.toFixed(4),
+    histogram: +histogram.toFixed(4),
+    prevHistogram: +prevHistogram.toFixed(4),
+    trend: histogram > 0 ? 'bullish' : histogram < 0 ? 'bearish' : 'neutral',
     histMomentum,
     crossover,
-    // Divergence hint: MACD trend vs price
-    aboveZero:     macdVal > 0,
+    divergence,
+    aboveZero: macdVal > 0,
+    // Bonus: full series for advanced analysis
+    seriesLength: macdSeries.length,
   };
 }
 
