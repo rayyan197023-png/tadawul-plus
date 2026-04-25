@@ -3166,222 +3166,251 @@ function calcPortfolioSharpe(allHealthData){
   };
 }
 
-function stockHealth(stk,bars){
+function stockHealth(stk, bars){
+  // ════════════════════════════════════════════════
+  //  STEP 1: المحركات الأساسية الثلاثة (LA, LB, LC)
+  // ════════════════════════════════════════════════
+  
   // ── A) المحرك التقني
-  var tech   = calc9Layers(stk,bars);
+  var tech   = calc9Layers(stk, bars);
   var LA     = tech.score;
   var regime = tech.regime;
   var layers = tech.layers;
 
   // ── B) المحرك الأساسي
-  var fm  = calcFactorModel(stk,bars);
+  var fm  = calcFactorModel(stk, bars);
   var em  = calcEarningsModel(stk);
   var dcf = calcDCF(stk);
   var eq  = calcEarningsQuality(stk);
   var dcfScore = Math.round(_clamp(100/(1+Math.exp(-0.06*(dcf.upside-5))), 10, 95));
   var emScore  = Math.round(_clamp(100/(1+Math.exp(-0.05*(em.upside-8))),  10, 95));
-  var fundConflict = (dcfScore>70&&eq.composite<40)?6:(dcfScore<40&&fm.composite>70)?4:0;
-  var LB = _clamp(Math.round(dcfScore*0.35+fm.composite*0.30+emScore*0.20+eq.composite*0.15-fundConflict),0,100);
+  var fundConflict = (dcfScore>70 && eq.composite<40) ? 6 : (dcfScore<40 && fm.composite>70) ? 4 : 0;
+  var LB = _clamp(Math.round(dcfScore*0.35 + fm.composite*0.30 + emScore*0.20 + eq.composite*0.15 - fundConflict), 0, 100);
 
   // ── C) المحرك السلوكي المُعزَّز
-  var opt = calcOptionsFlow(stk,bars);
-  var ins = calcInsiderTransactions(stk,bars);
-  var alt = calcAlternativeData(stk,bars);
-  var optScore = _clamp(Math.round(80-(opt.putCallRatio-0.7)*60+(opt.unusualActivity&&opt.putCallRatio<0.9?10:0)),0,100);
+  var opt = calcOptionsFlow(stk, bars);
+  var ins = calcInsiderTransactions(stk, bars);
+  var alt = calcAlternativeData(stk, bars);
+  var optScore = _clamp(Math.round(80 - (opt.putCallRatio-0.7)*60 + (opt.unusualActivity && opt.putCallRatio<0.9 ? 10 : 0)), 0, 100);
 
-  // ④ Earnings Surprise — هل الأرباح الفعلية تتجاوز التوقعات؟
-  // eps_q1/q2/q3 متوفرة من STOCKS → نحسب الاتجاه
-  var earningsSurprise = 50; // default محايد
+  // Earnings Surprise
+  var earningsSurprise = 50;
   if(stk.eps_q1 && stk.eps_q2 && stk.eps_q3){
-    var qVals=[stk.eps_q1,stk.eps_q2,stk.eps_q3];
-    var qTrend=(qVals[2]-qVals[0])/Math.max(Math.abs(qVals[0]),0.01); // نمو ربعي
-    var qConsist=qVals[2]>qVals[1]&&qVals[1]>qVals[0]?1:qVals[2]<qVals[1]&&qVals[1]<qVals[0]?-1:0;
-    earningsSurprise=_clamp(Math.round(50+qTrend*100+qConsist*12),0,100);
+    var qVals = [stk.eps_q1, stk.eps_q2, stk.eps_q3];
+    var qTrend = (qVals[2]-qVals[0])/Math.max(Math.abs(qVals[0]), 0.01);
+    var qConsist = qVals[2]>qVals[1] && qVals[1]>qVals[0] ? 1 : qVals[2]<qVals[1] && qVals[1]<qVals[0] ? -1 : 0;
+    earningsSurprise = _clamp(Math.round(50 + qTrend*100 + qConsist*12), 0, 100);
   } else if(stk.epsGrw>0){
-    earningsSurprise=_clamp(Math.round(50+stk.epsGrw*2.5),0,100);
+    earningsSurprise = _clamp(Math.round(50 + stk.epsGrw*2.5), 0, 100);
   }
 
-  // ⑤ Sector Rotation Score — أيّ القطاعات تتصاعد الآن؟
-  // نقارن أداء قطاع السهم بمتوسط السوق مع تعديل Macro
-  var sectorStocks=STOCKS.filter(function(x){return x.sec===stk.sec;});
-  var sectorAvgCh=sectorStocks.reduce(function(s,x){return s+x.ch;},0)/sectorStocks.length;
-  var mktAvgCh=STOCKS.reduce(function(s,x){return s+x.ch;},0)/STOCKS.length;
-  var sectorRot=sectorAvgCh-mktAvgCh; // القطاع يتفوق على السوق؟
-  // مع تعزيز من oilCorr في بيئة oil premium
-  if(MACRO.oilWarPremium&&stk.oilCorr>0.5)sectorRot+=MACRO.oilPrice>MACRO.oilTarget?1.5:-1.5;
-  var sectorRotScore=_clamp(Math.round(50+sectorRot*15),0,100);
+  // Sector Rotation Score
+  var sectorStocks = STOCKS.filter(function(x){return x.sec===stk.sec;});
+  var sectorAvgCh = sectorStocks.length>0 ? sectorStocks.reduce(function(s,x){return s+x.ch;},0)/sectorStocks.length : 0;
+  var mktAvgCh = STOCKS.length>0 ? STOCKS.reduce(function(s,x){return s+x.ch;},0)/STOCKS.length : 0;
+  var sectorRot = sectorAvgCh - mktAvgCh;
+  if(MACRO.oilWarPremium && stk.oilCorr>0.5) sectorRot += MACRO.oilPrice>MACRO.oilTarget ? 1.5 : -1.5;
+  var sectorRotScore = _clamp(Math.round(50 + sectorRot*15), 0, 100);
 
-  // دمج LC مع المصادر الجديدة (أكثر استقلالية)
   var LC = Math.round(
     optScore*0.30 + ins.score*0.30 + alt.composite*0.15 +
     earningsSurprise*0.15 + sectorRotScore*0.10
   );
-  var lbLcConflict = (LB>72&&LC<33)?5:(LC>72&&LB<33)?4:0;
+  var lbLcConflict = (LB>72 && LC<33) ? 5 : (LC>72 && LB<33) ? 4 : 0;
 
   // ── D) المضاعفات الخارجية
-  var risk  = calcRiskAttribution(stk,bars);
+  var risk  = calcRiskAttribution(stk, bars);
   var inter = calcIntermarket(stk);
-  var micro = calcMicrostructure(stk,bars);
-  var riskMult = risk.sortino>2.0?1.07:risk.sortino>1.0?1.03:risk.sharpe>0.5?1.00:risk.sharpe>0?0.96:0.89;
-  var finalMult = _clamp(riskMult*inter.multiplier*(micro?micro.multiplier:1.0),0.70,1.30);
+  var micro = calcMicrostructure(stk, bars);
+  var riskMult = risk.sortino>2.0 ? 1.07 : risk.sortino>1.0 ? 1.03 : risk.sharpe>0.5 ? 1.00 : risk.sharpe>0 ? 0.96 : 0.89;
+  var finalMult = _clamp(riskMult * inter.multiplier * (micro ? micro.multiplier : 1.0), 0.70, 1.30);
 
   // ── E) الأوزان الديناميكية LA/LB/LC
-  var wA,wB,wC;
+  var wA, wB, wC;
   switch(regime){
-    case "bull":        wA=0.32;wB=0.40;wC=0.28;break;
-    case "bear":        wA=0.28;wB=0.38;wC=0.34;break;
-    case "sideways":    wA=0.40;wB=0.35;wC=0.25;break;
-    case "volatile":    wA=0.45;wB=0.30;wC=0.25;break;
-    case "news-driven": wA=0.35;wB=0.28;wC=0.37;break;
-    default:            wA=0.38;wB=0.32;wC=0.30;
+    case "bull":        wA=0.32; wB=0.40; wC=0.28; break;
+    case "bear":        wA=0.28; wB=0.38; wC=0.34; break;
+    case "sideways":    wA=0.40; wB=0.35; wC=0.25; break;
+    case "volatile":    wA=0.45; wB=0.30; wC=0.25; break;
+    case "news-driven": wA=0.35; wB=0.28; wC=0.37; break;
+    default:            wA=0.38; wB=0.32; wC=0.30;
   }
-  var bayesAdj = tech.extras&&tech.extras.bayesMult?tech.extras.bayesMult:1.0;
-
-  // ── TASI Context من tech.tasiCtx ──
+  var bayesAdj = tech.extras && tech.extras.bayesMult ? tech.extras.bayesMult : 1.0;
   var tasiCtx = tech.tasiCtx || null;
 
-  // ── F) Conviction الأساسي مع تعزيز عند الاتفاق الكامل ──
-  var rawConviction = (LA*wA+LB*wB+LC*wC)*finalMult*bayesAdj;
+  // ════════════════════════════════════════════════
+  //  STEP 2: ENSEMBLE VOTING (يُحسب أولاً!)
+  // ════════════════════════════════════════════════
+  var ensemble = ensembleVote(LA, LB, LC, regime, tech.gates ? tech.gates.passed : 0, layers);
 
-  // تعزيز إضافي: إذا كان LA عالياً جداً والـ Ensemble متفق كلياً
-  if(ensemble && ensemble.agreementBoost>=1.10 && LA>=75){
-    var laBoost = 1.0 + (LA-75)/200;
-    rawConviction = (LA*wA*laBoost + LB*wB + LC*wC)*finalMult*bayesAdj;
+  // ════════════════════════════════════════════════
+  //  STEP 3: حساب Conviction (مع ensemble متاح)
+  // ════════════════════════════════════════════════
+  
+  // ── F.1) Raw Conviction الأساسي
+  var rawConviction = (LA*wA + LB*wB + LC*wC) * finalMult * bayesAdj;
+  
+  // ── F.2) LA Boost إذا الاتفاق قوي و LA عالي (الآن يعمل!)
+  if(ensemble.agreementBoost >= 1.10 && LA >= 75){
+    var laBoost = 1.0 + (LA - 75) / 200; // boost: 1.000 إلى 1.125
+    rawConviction = (LA*wA*laBoost + LB*wB + LC*wC) * finalMult * bayesAdj;
   }
-  var conviction0 = _clamp(Math.round(rawConviction-lbLcConflict),0,100);
-
-  // ══════════════════════════════════════════════
-  //  ① ENSEMBLE VOTING
-  // ══════════════════════════════════════════════
-  var ensemble = ensembleVote(LA, LB, LC, regime, tech.gates?tech.gates.passed:0, layers);
+  
+  // ── F.3) Conviction الأولي
+  var conviction0 = _clamp(Math.round(rawConviction - lbLcConflict), 0, 100);
+  
+  // ── F.4) تطبيق Agreement Boost
   var conviction = _clamp(Math.round(conviction0 * ensemble.agreementBoost), 0, 100);
 
-  // ── Soft Vote تعديل للحالات الحدية ──
-  if(Math.abs(conviction-50) < 10 && ensemble.softBull !== undefined){
-    conviction = _clamp(Math.round(conviction + ensemble.softBull*6), 0, 100);
+  // ── F.5) Soft Vote Adjustment (للحالات الحدية)
+  if(Math.abs(conviction - 50) < 10 && ensemble.softBull !== undefined){
+    conviction = _clamp(Math.round(conviction + ensemble.softBull * 6), 0, 100);
   }
-  // ── Tech Consensus تعزيز ──
+  
+  // ── F.6) Tech Consensus Boost
   if(ensemble.techConsensus !== 0){
-    conviction = _clamp(conviction + ensemble.techConsensus*3, 0, 100);
+    conviction = _clamp(conviction + ensemble.techConsensus * 3, 0, 100);
   }
 
-  // ── TASI Context تعزيز — فريد لتاسي ──
+  // ── F.7) TASI Context Adjustments
   if(tasiCtx){
-    // ① TASI Dominance: كبار الأسهم يتفقون مع الاتجاه
     if(tasiCtx.domDir !== 0){
       var tasiDomBoost = tasiCtx.domDir * (Math.abs(tasiCtx.domDir)===1 ? 5 : 2);
       conviction = _clamp(conviction + tasiDomBoost, 0, 100);
     }
-    // ② Oil-TASI Regime: CRASH خطير، RALLY داعم
     if(tasiCtx.tasiRegime === "CRASH")   conviction = _clamp(Math.round(conviction*0.88), 0, 100);
     if(tasiCtx.tasiRegime === "RALLY")   conviction = _clamp(Math.round(conviction*1.04), 0, 100);
     if(tasiCtx.tasiRegime === "DIVERGE") conviction = _clamp(Math.round(conviction*0.94), 0, 100);
-    // ③ Retail Euphoria: إذا الأفراد يبالغون في التفاؤل → خطر انعكاس
     if(tasiCtx.retailEuphoria && conviction > 65)
       conviction = _clamp(conviction - 6, 0, 100);
-    // ④ Sunday Effect: الأحد أقل موثوقية
     if(tasiCtx.isSunday && Math.abs(conviction-50) < 15)
-      conviction = _clamp(conviction + (conviction>50?-3:3), 0, 100);
+      conviction = _clamp(conviction + (conviction>50 ? -3 : 3), 0, 100);
   }
 
-  // ══════════════════════════════════════════════
-  //  ② FEEDBACK LOOP — الأوزان التكيّفية
-  // ══════════════════════════════════════════════
-  var WC_adapted = applyFeedbackToWeights(tech.weights||{}, stk.sym);
+  // ════════════════════════════════════════════════
+  //  STEP 4: FEEDBACK LOOP (الأوزان التكيّفية)
+  // ════════════════════════════════════════════════
+  var WC_adapted = applyFeedbackToWeights(tech.weights || {}, stk.sym);
   if(WC_adapted !== tech.weights){
     var L = layers;
     var rawAdapted = Math.round(
-      (L.L9||0)*WC_adapted.L9+(L.L1||0)*WC_adapted.L1+(L.L5||0)*WC_adapted.L5+
-      (L.L4||0)*WC_adapted.L4+(L.L8||0)*WC_adapted.L8+(L.L7||0)*WC_adapted.L7+
-      (L.L6||0)*WC_adapted.L6+(L.L2||0)*WC_adapted.L2+(L.L3||0)*WC_adapted.L3
+      (L.L9||0)*WC_adapted.L9 + (L.L1||0)*WC_adapted.L1 + (L.L5||0)*WC_adapted.L5 +
+      (L.L4||0)*WC_adapted.L4 + (L.L8||0)*WC_adapted.L8 + (L.L7||0)*WC_adapted.L7 +
+      (L.L6||0)*WC_adapted.L6 + (L.L2||0)*WC_adapted.L2 + (L.L3||0)*WC_adapted.L3
     );
     var LA_adapted = _clamp(rawAdapted, 0, 100);
     conviction = _clamp(Math.round(
       conviction*0.70 +
-      (LA_adapted*wA+LB*wB+LC*wC)*finalMult*bayesAdj*ensemble.agreementBoost*0.30
+      (LA_adapted*wA + LB*wB + LC*wC) * finalMult * bayesAdj * ensemble.agreementBoost * 0.30
     ), 0, 100);
   }
 
-  // ══════════════════════════════════════════════
-  //  ③ CONFIDENCE THRESHOLD
-  // ══════════════════════════════════════════════
-  var conflictCnt = tech.extras&&tech.extras.conflictCount?tech.extras.conflictCount:0;
+  // ════════════════════════════════════════════════
+  //  STEP 5: CONFIDENCE THRESHOLD
+  // ════════════════════════════════════════════════
+  var conflictCnt = tech.extras && tech.extras.conflictCount ? tech.extras.conflictCount : 0;
   var ct = calcConfidenceThreshold(
     conviction, layers, ensemble, conflictCnt,
-    tech.gates?tech.gates.passed:0, regime
+    tech.gates ? tech.gates.passed : 0, regime
   );
 
-  // ── G) الإشارة النهائية المُعدَّلة ──
+  // ════════════════════════════════════════════════
+  //  STEP 6: تحديد الإشارة النهائية (Logic مُصلح)
+  // ════════════════════════════════════════════════
   var merged = tech;
   merged.score = conviction;
-  merged.grade = conviction>=85?"S":conviction>=75?"A":conviction>=65?"B":conviction>=55?"C":conviction>=45?"D":"F";
+  merged.grade = conviction>=85 ? "S" : conviction>=75 ? "A" : conviction>=65 ? "B" : conviction>=55 ? "C" : conviction>=45 ? "D" : "F";
 
   var sig, sigC;
+  
+  // ── أولوية 1: shouldAbstain = "انتظر" دائماً (لا منطق متناقض)
   if(ct.shouldAbstain){
-    // تحقق إضافي: حتى لو ct.shouldAbstain، إذا كان Soft قوي جداً نُصدر إشارة
-    var softAbs=ensemble.softBull||0;
-    if(Math.abs(softAbs)>0.45&&ensemble.techConsensus!==0&&Math.sign(softAbs)===ensemble.techConsensus){
-      // Soft قوي + Tech Consensus = إشارة موثوقة رغم الامتناع
-      sig  = softAbs>0?"مراقبة":"تخفيف";
-      sigC = softAbs>0?"#f59e0b":"#f04f5a";
-    } else {
-      sig="انتظر"; sigC="#6b7280";
-    }
-  } else if(tech.gates&&tech.gates.passed===3&&conviction>=75&&ensemble.bullCount>=2&&ct.isStrong){
-    sig="شراء قوي"; sigC="#10c97e";
-  } else if(tech.gates&&tech.gates.passed===3&&conviction>=75&&ensemble.ensembleSig==="هبوطي"&&ct.isStrong){
-    sig="مراقبة"; sigC="#f59e0b";
-  } else if(tech.gates&&tech.gates.passed>=2&&conviction>=60&&ct.isNormal){
-    sig="مراقبة"; sigC="#f59e0b";
-  } else if(conviction>=48&&tech.gates&&tech.gates.passed>=1&&!ct.shouldAbstain){
-    // تعزيز: إذا كان Soft + TC يتفقان مع الإشارة → رفع لـ "مراقبة"
-    var softCV=ensemble.softBull||0;
-    if(conviction>=52&&Math.abs(softCV)>0.30&&ensemble.techConsensus!==0&&
-       Math.sign(softCV)===Math.sign(conviction-50)){
-      sig="مراقبة"; sigC="#f59e0b";
-    } else {
-      sig="محايد"; sigC="#06b6d4";
-    }
-  } else if(conviction<40&&ensemble.bearCount>=2){
-    sig="تخفيف"; sigC="#f04f5a";
-  } else if(conviction<45&&!ct.shouldAbstain){
-    sig="تخفيف"; sigC="#f04f5a";
-  } else {
-    sig="محايد"; sigC="#06b6d4";
+    sig = "انتظر";
+    sigC = "#6b7280";
   }
-  merged.sig  = sig;
+  // ── أولوية 2: شراء قوي (3 gates + conviction>=75 + bullish ensemble + strong)
+  else if(tech.gates && tech.gates.passed===3 && conviction>=75 && ensemble.bullCount>=2 && ct.isStrong){
+    sig = "شراء قوي";
+    sigC = "#10c97e";
+  }
+  // ── أولوية 3: مراقبة قوية (gates + conviction + bearish hint)
+  else if(tech.gates && tech.gates.passed===3 && conviction>=75 && ensemble.ensembleSig==="هبوطي" && ct.isStrong){
+    sig = "مراقبة";
+    sigC = "#f59e0b";
+  }
+  // ── أولوية 4: مراقبة عادية
+  else if(tech.gates && tech.gates.passed>=2 && conviction>=60 && ct.isNormal){
+    sig = "مراقبة";
+    sigC = "#f59e0b";
+  }
+  // ── أولوية 5: مراقبة بـ Soft + TC
+  else if(conviction>=52 && tech.gates && tech.gates.passed>=1){
+    var softCV = ensemble.softBull || 0;
+    if(Math.abs(softCV)>0.30 && ensemble.techConsensus!==0 &&
+       Math.sign(softCV) === Math.sign(conviction-50)){
+      sig = "مراقبة";
+      sigC = "#f59e0b";
+    } else {
+      sig = "محايد";
+      sigC = "#06b6d4";
+    }
+  }
+  // ── أولوية 6: تخفيف (conviction منخفض + bear)
+  else if(conviction<40 && ensemble.bearCount>=2){
+    sig = "تخفيف";
+    sigC = "#f04f5a";
+  }
+  // ── أولوية 7: تخفيف عام
+  else if(conviction<45){
+    sig = "تخفيف";
+    sigC = "#f04f5a";
+  }
+  // ── الافتراضي: محايد
+  else {
+    sig = "محايد";
+    sigC = "#06b6d4";
+  }
+  
+  merged.sig = sig;
   merged.sigC = sigC;
 
-  // ── H) Probability مُعدَّلة ──
-  var bullBoost = ensemble.bullCount===3?15:ensemble.bullCount===2?8:0;
-  var bearBoost = ensemble.bearCount===3?15:ensemble.bearCount===2?8:0;
-  var pBull   = _clamp(conviction+bullBoost-bearBoost,0,100);
-  var pBear   = _clamp(100-conviction+bearBoost-bullBoost-(tech.gates&&tech.gates.all?10:0),0,100);
-  var pNeutral= _clamp(100-pBull-pBear+10,0,100);
+  // ════════════════════════════════════════════════
+  //  STEP 7: Probability (Softmax 3-way)
+  // ════════════════════════════════════════════════
+  var bullBoost = ensemble.bullCount===3 ? 15 : ensemble.bullCount===2 ? 8 : 0;
+  var bearBoost = ensemble.bearCount===3 ? 15 : ensemble.bearCount===2 ? 8 : 0;
+  var pBull = _clamp(conviction + bullBoost - bearBoost, 0, 100);
+  var pBear = _clamp(100 - conviction + bearBoost - bullBoost - (tech.gates && tech.gates.all ? 10 : 0), 0, 100);
+  var pNeutral = _clamp(100 - pBull - pBear + 10, 0, 100);
   merged.probability = _softmax3(pBull, pBear, pNeutral);
 
-  // ── I) Portfolio Engine ──
+  // ════════════════════════════════════════════════
+  //  STEP 8: Portfolio Engine
+  // ════════════════════════════════════════════════
   var riskGateLevel = calcRiskGateLevel();
-  merged.positionSize     = calcPositionSize(merged, riskGateLevel);
+  merged.positionSize = calcPositionSize(merged, riskGateLevel);
   merged.correlationGuard = checkCorrelationGuard(stk.sym, []);
-  merged.riskGate         = riskGateLevel;
-  merged.confidence       = ct ? ct.confidence : 50;
+  merged.riskGate = riskGateLevel;
+  merged.confidence = ct ? ct.confidence : 50;
 
-  // ── J) metadata الكاملة ──
+  // ════════════════════════════════════════════════
+  //  STEP 9: Metadata
+  // ════════════════════════════════════════════════
   merged.conviction = {
     LA, LB, LC, wA, wB, wC,
-    riskMult:+riskMult.toFixed(2), finalMult:+finalMult.toFixed(3),
-    dcfScore, fmScore:fm.composite, emScore,
-    eqScore:eq.composite, eqGrade:eq.grade,
-    optScore, insScore:ins.score, altScore:alt.composite,
-    dcfUpside:dcf.upside, emUpside:em.upside,
-    dcfRating:dcf.rating, fmGrade:fm.grade,
+    riskMult: +riskMult.toFixed(2),
+    finalMult: +finalMult.toFixed(3),
+    dcfScore, fmScore: fm.composite, emScore,
+    eqScore: eq.composite, eqGrade: eq.grade,
+    optScore, insScore: ins.score, altScore: alt.composite,
+    dcfUpside: dcf.upside, emUpside: em.upside,
+    dcfRating: dcf.rating, fmGrade: fm.grade,
     fundConflict, lbLcConflict, conviction0,
-    ensemble, confidenceThreshold:ct,
-    feedbackApplied: WC_adapted!==tech.weights,
-    risk:{sharpe:risk.sharpe,sortino:risk.sortino,alpha:risk.alpha,volatility:risk.volatility},
-    inter:{multiplier:inter.multiplier,signal:inter.signal},
-    micro:micro?{composite:micro.composite,ofi:micro.ofi}:null,
+    ensemble, confidenceThreshold: ct,
+    feedbackApplied: WC_adapted !== tech.weights,
+    risk: {sharpe: risk.sharpe, sortino: risk.sortino, alpha: risk.alpha, volatility: risk.volatility},
+    inter: {multiplier: inter.multiplier, signal: inter.signal},
+    micro: micro ? {composite: micro.composite, ofi: micro.ofi} : null,
     regime,
     tasiCtx: tech.tasiCtx || null,
   };
