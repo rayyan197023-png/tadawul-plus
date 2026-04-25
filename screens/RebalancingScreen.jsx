@@ -35,6 +35,7 @@ function IssueCard({ issue, index }) {
   const severityColors = {
     high: C.coral,
     medium: C.amber,
+    low: C.smoke,
     good: C.mint,
   };
   const color = severityColors[issue.severity] || C.smoke;
@@ -150,7 +151,7 @@ function IssueCard({ issue, index }) {
         </div>
       )}
 
-      {/* الحل المقترح */}
+      {/* الحل المقترح ✨ مُصلح ✨ */}
       {issue.solution && (
         <div style={{
           padding: "10px 12px",
@@ -168,69 +169,90 @@ function IssueCard({ issue, index }) {
             🎯 الحل المقترح
           </div>
           
-          {/* الحل المقترح - عرض موحّد لكل أنواع الـ actions */}
-{issue.solution.action === 'sell' && (
-  <div style={{fontSize: 12, color: C.snow, fontWeight: 700, fontFamily: "Cairo,sans-serif"}}>
-    بع <span style={{color: color}}>{issue.solution.percentage}%</span> من {issue.solution.name}
-    <div style={{fontSize: 10, color: C.smoke, marginTop: 4, fontFamily: "IBM Plex Mono,monospace"}}>
-      ≈ {formatCurrency(issue.solution.amount)} ريال
-    </div>
-  </div>
-)}
+          {/* sell */}
+          {issue.solution.action === 'sell' && (
+            <div style={{fontSize: 12, color: C.snow, fontWeight: 700, fontFamily: "Cairo,sans-serif"}}>
+              بع <span style={{color: color}}>{issue.solution.percentage}%</span> من {issue.solution.name}
+              <div style={{fontSize: 10, color: C.smoke, marginTop: 4, fontFamily: "IBM Plex Mono,monospace"}}>
+                ≈ {formatCurrency(issue.solution.amount)} ريال
+              </div>
+            </div>
+          )}
 
-{/* اقتراحات قطاعات (add أو add_sector) */}
-{(issue.solution.action === 'add' || issue.solution.action === 'add_sector') && issue.solution.suggestions && (
-  <div>
-    <div style={{fontSize: 12, color: C.snow, marginBottom: 6, fontFamily: "Cairo,sans-serif"}}>
-      أضف من هذه القطاعات:
-    </div>
-    {issue.solution.suggestions.map((s, i) => (
-      <div key={i} style={{
-        fontSize: 11,
-        color: C.mist,
-        padding: "3px 0",
-        fontFamily: "Cairo,sans-serif",
-      }}>
-        • <span style={{color: C.gold, fontWeight: 700}}>{s.sector}</span>
-        <span style={{color: C.smoke}}> ({s.examples ? s.examples.join('، ') : ''})</span>
-        {s.reason && (
-          <span style={{color: C.smoke, fontSize: 10, marginRight: 6}}>
-            - {s.reason}
-          </span>
-        )}
-      </div>
-    ))}
-  </div>
-)}
+          {/* اقتراحات قطاعات (add أو add_sector) */}
+          {(issue.solution.action === 'add' || issue.solution.action === 'add_sector') && issue.solution.suggestions && (
+            <div>
+              <div style={{fontSize: 12, color: C.snow, marginBottom: 6, fontFamily: "Cairo,sans-serif"}}>
+                أضف من هذه القطاعات:
+              </div>
+              {issue.solution.suggestions.map((s, i) => (
+                <div key={i} style={{
+                  fontSize: 11,
+                  color: C.mist,
+                  padding: "4px 0",
+                  fontFamily: "Cairo,sans-serif",
+                  borderBottom: i < issue.solution.suggestions.length - 1 ? "1px solid " + C.line + "22" : "none",
+                }}>
+                  <div>
+                    • <span style={{color: C.gold, fontWeight: 700}}>{s.sector}</span>
+                    {s.examples && (
+                      <span style={{color: C.smoke}}> ({s.examples.join('، ')})</span>
+                    )}
+                  </div>
+                  {s.reason && (
+                    <div style={{
+                      fontSize: 10,
+                      color: C.smoke,
+                      marginTop: 2,
+                      paddingRight: 12,
+                    }}>
+                      ↳ {s.reason}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
 
-{/* أسهم ضعيفة محددة (replace_weak) */}
-{issue.solution.action === 'replace_weak' && issue.weakStocks && issue.weakStocks.length > 0 && (
-  <div>
-    <div style={{fontSize: 12, color: C.snow, marginBottom: 6, fontFamily: "Cairo,sans-serif"}}>
-      {issue.solution.message}
-    </div>
-    <div style={{fontSize: 11, color: C.coral, fontWeight: 700, fontFamily: "Cairo,sans-serif"}}>
-      الأسهم الضعيفة: {issue.weakStocks.join('، ')}
-    </div>
-  </div>
-)}
+          {/* أسهم ضعيفة (replace_weak) */}
+          {issue.solution.action === 'replace_weak' && issue.weakStocks && issue.weakStocks.length > 0 && (
+            <div>
+              <div style={{fontSize: 12, color: C.snow, marginBottom: 6, fontFamily: "Cairo,sans-serif"}}>
+                {issue.solution.message}
+              </div>
+              <div style={{
+                padding: "6px 10px",
+                background: C.coral + "18",
+                border: "1px solid " + C.coral + "44",
+                borderRadius: 6,
+                marginTop: 6,
+              }}>
+                <div style={{fontSize: 10, color: C.coral, fontWeight: 800, marginBottom: 4}}>
+                  ⚠️ الأسهم الضعيفة:
+                </div>
+                <div style={{fontSize: 12, color: C.snow, fontWeight: 700, fontFamily: "Cairo,sans-serif"}}>
+                  {issue.weakStocks.join('، ')}
+                </div>
+              </div>
+            </div>
+          )}
 
-{/* ✨ Fallback شامل - يعرض الـ message لأي action آخر */}
-{issue.solution.message && 
- issue.solution.action !== 'sell' && 
- !((issue.solution.action === 'add' || issue.solution.action === 'add_sector') && issue.solution.suggestions) &&
- !(issue.solution.action === 'replace_weak' && issue.weakStocks) && (
-  <div style={{fontSize: 12, color: C.snow, fontFamily: "Cairo,sans-serif"}}>
-    {issue.solution.message}
-  </div>
-)}
+          {/* ✨ Fallback شامل - يعرض الـ message لأي action آخر */}
+          {issue.solution.message && 
+           issue.solution.action !== 'sell' && 
+           !((issue.solution.action === 'add' || issue.solution.action === 'add_sector') && issue.solution.suggestions) &&
+           !(issue.solution.action === 'replace_weak' && issue.weakStocks && issue.weakStocks.length > 0) && (
+            <div style={{fontSize: 12, color: C.snow, fontFamily: "Cairo,sans-serif", lineHeight: 1.6}}>
+              {issue.solution.message}
+            </div>
+          )}
         </div>
       )}
     </div>
   );
 }
 
-// ─── بطاقة Health Score الكبيرة (مُصلحة!) ─────────────────
+// ─── بطاقة Health Score الكبيرة ✨ مُصلحة ✨ ─────────────────
 function HealthScoreCard({ score }) {
   const [animatedScore, setAnimatedScore] = useState(0);
 
@@ -260,23 +282,24 @@ function HealthScoreCard({ score }) {
   }, [score]);
 
   const getColor = (s) => {
-    if (s >= 8) return C.mint;
-    if (s >= 6) return C.amber;
-    if (s >= 4) return C.gold;
+    if (s >= 80) return C.mint;
+    if (s >= 60) return C.amber;
+    if (s >= 40) return C.gold;
     return C.coral;
   };
 
   const getLabel = (s) => {
-    if (s >= 9) return '🏆 ممتازة';
-    if (s >= 7) return '✅ جيدة';
-    if (s >= 5) return '⚠️ متوسطة';
-    if (s >= 3) return '⚠️ ضعيفة';
+    if (s >= 90) return '🏆 ممتازة';
+    if (s >= 70) return '✅ جيدة';
+    if (s >= 50) return '⚠️ متوسطة';
+    if (s >= 30) return '⚠️ ضعيفة';
     return '🚨 حرجة';
   };
 
   const color = getColor(score);
   const circumference = 2 * Math.PI * 70;
-  const offset = circumference * (1 - animatedScore / 10);
+  // ✨ Score من 0-100 (وليس 0-10)
+  const offset = circumference * (1 - animatedScore / 100);
 
   return (
     <div style={{
@@ -344,7 +367,7 @@ function HealthScoreCard({ score }) {
             lineHeight: 1,
             textShadow: "0 0 20px " + color + "88",
           }}>
-            {animatedScore}
+            {Math.round(animatedScore)}
           </div>
           <div style={{
             fontSize: 11,
@@ -352,7 +375,7 @@ function HealthScoreCard({ score }) {
             fontWeight: 600,
             marginTop: 4,
           }}>
-            من 10
+            من 100
           </div>
         </div>
       </div>
@@ -373,15 +396,8 @@ function HealthScoreCard({ score }) {
 function SectorsDonutChart({ sectors }) {
   if (!sectors || sectors.length === 0) return null;
 
-  // ألوان القطاعات
   const SECTOR_COLORS = [
-    C.gold,      // ذهبي
-    C.electric,  // أزرق
-    C.mint,      // أخضر
-    C.amber,     // برتقالي
-    C.coral,     // مرجاني
-    C.plasma,    // بنفسجي
-    C.teal,      // تركواز
+    C.gold, C.electric, C.mint, C.amber, C.coral, C.plasma, C.teal,
   ];
 
   const size = 180;
@@ -390,7 +406,6 @@ function SectorsDonutChart({ sectors }) {
   const center = size / 2;
   const circumference = 2 * Math.PI * radius;
 
-  // حساب زوايا القطاعات
   let cumulativeOffset = 0;
   const segments = sectors.map((sector, idx) => {
     const percentage = sector.weight;
@@ -432,7 +447,6 @@ function SectorsDonutChart({ sectors }) {
         gap: 16,
         flexWrap: "wrap",
       }}>
-        {/* الرسم الدائري */}
         <div style={{
           position: "relative",
           width: size,
@@ -440,7 +454,6 @@ function SectorsDonutChart({ sectors }) {
           flexShrink: 0,
         }}>
           <svg width={size} height={size} style={{transform: "rotate(-90deg)"}}>
-            {/* الخلفية */}
             <circle
               cx={center}
               cy={center}
@@ -449,7 +462,6 @@ function SectorsDonutChart({ sectors }) {
               stroke={C.line + "22"}
               strokeWidth={strokeWidth}
             />
-            {/* القطاعات */}
             {segments.map((seg, i) => (
               <circle
                 key={i}
@@ -463,7 +475,6 @@ function SectorsDonutChart({ sectors }) {
                 strokeDashoffset={seg.dashOffset}
                 style={{
                   filter: "drop-shadow(0 0 8px " + seg.color + "66)",
-                  transition: "all 0.8s ease",
                 }}
               />
             ))}
@@ -496,7 +507,6 @@ function SectorsDonutChart({ sectors }) {
           </div>
         </div>
 
-        {/* المفتاح (Legend) */}
         <div style={{flex: 1, minWidth: 120}}>
           {segments.map((seg, i) => (
             <div key={i} style={{
@@ -538,7 +548,7 @@ function SummaryCard({ summary }) {
   const items = [
     {label: 'الأسهم', value: summary.numPositions, icon: '📊'},
     {label: 'القطاعات', value: summary.numSectors, icon: '🎯'},
-    {label: 'أكبر مركز', value: summary.largestPositionPct + '%', icon: '⚖️'},
+    {label: 'أكبر مركز', value: (summary.largestPositionPct || 0).toFixed(1) + '%', icon: '⚖️'},
     {label: 'الإجمالي', value: formatCurrency(summary.totalValue), icon: '💰', unit: 'ر'},
   ];
 
@@ -577,6 +587,8 @@ function SummaryCard({ summary }) {
 
 // ─── ملخّص التأثير ────────────────────────────
 function ImpactSummary({ impact }) {
+  if (!impact || !impact.before || !impact.after) return null;
+  
   return (
     <div style={{
       background: "linear-gradient(145deg," + C.mint + "15," + C.mint + "05)",
@@ -608,18 +620,18 @@ function ImpactSummary({ impact }) {
       {[
         {
           label: 'Health Score',
-          before: impact.before.healthScore + '/10',
-          after: impact.after.healthScore + '/10',
+          before: (impact.before.healthScore || 0).toFixed(0) + '/100',
+          after: (impact.after.healthScore || 0).toFixed(0) + '/100',
         },
         {
           label: 'Sharpe Ratio',
-          before: impact.before.sharpe,
-          after: impact.after.sharpe,
+          before: (impact.before.sharpe || 0).toFixed(2),
+          after: (impact.after.sharpe || 0).toFixed(2),
         },
         {
           label: 'Max Drawdown',
-          before: impact.before.maxDD + '%',
-          after: impact.after.maxDD + '%',
+          before: ((impact.before.maxDD || 0) * 100).toFixed(1) + '%',
+          after: ((impact.after.maxDD || 0) * 100).toFixed(1) + '%',
         },
       ].map((row, i) => (
         <div key={i} style={{
@@ -629,7 +641,7 @@ function ImpactSummary({ impact }) {
           padding: "6px 0",
           borderBottom: i < 2 ? "1px solid " + C.line + "22" : "none",
         }}>
-                    <div style={{flex: 1, fontSize: 11, color: C.mist, fontFamily: "Cairo,sans-serif", display: "flex", alignItems: "center", gap: 4}}>
+          <div style={{flex: 1, fontSize: 11, color: C.mist, fontFamily: "Cairo,sans-serif", display: "flex", alignItems: "center", gap: 4}}>
             {row.label}
             <Tooltip 
               termKey={
@@ -664,18 +676,20 @@ function ImpactSummary({ impact }) {
         </div>
       ))}
 
-      <div style={{
-        marginTop: 10,
-        padding: "8px 10px",
-        background: C.void + "aa",
-        borderRadius: 8,
-        textAlign: "center",
-      }}>
-        <span style={{fontSize: 10, color: C.smoke}}>💰 التكلفة المتوقعة: </span>
-        <span style={{fontSize: 12, color: C.gold, fontWeight: 800, fontFamily: "IBM Plex Mono,monospace"}}>
-          {impact.estimatedCost} ريال
-        </span>
-      </div>
+      {impact.estimatedTime && (
+        <div style={{
+          marginTop: 10,
+          padding: "8px 10px",
+          background: C.void + "aa",
+          borderRadius: 8,
+          textAlign: "center",
+        }}>
+          <span style={{fontSize: 10, color: C.smoke}}>⏱️ الوقت المتوقع: </span>
+          <span style={{fontSize: 12, color: C.gold, fontWeight: 800, fontFamily: "IBM Plex Mono,monospace"}}>
+            {impact.estimatedTime}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
@@ -685,7 +699,6 @@ export default function RebalancingScreen() {
   const { setTab } = useNav(); 
   const [showAutoApply, setShowAutoApply] = useState(false);
 
-  // منع scroll في الصفحة الخلفية عند فتح Modal
   useEffect(() => {
     if (showAutoApply) {
       document.body.style.overflow = 'hidden';
@@ -697,14 +710,12 @@ export default function RebalancingScreen() {
     };
   }, [showAutoApply]);
 
-  // جلب المحفظة من localStorage
   const positions = useMemo(() => {
     try {
-      const raw = typeof window !== 'undefined' && window.localStorage.getItem('tp_port')
+      const raw = typeof window !== 'undefined' && window.localStorage.getItem('tp_port');
       if (!raw) return [];
       const parsed = JSON.parse(raw);
       
-      // ربط كل مركز بـ stock data
       return parsed.map(p => {
         const stk = STOCKS.find(s => s.sym === p.sym);
         return { ...p, stk };
@@ -714,12 +725,10 @@ export default function RebalancingScreen() {
     }
   }, []);
 
-  // تحليل المحفظة
   const analysis = useMemo(() => {
     return analyzePortfolio(positions);
   }, [positions]);
 
-  // حالة فارغة
   if (analysis.isEmpty) {
     return (
       <div style={{
@@ -800,7 +809,6 @@ export default function RebalancingScreen() {
       fontFamily: "Cairo,sans-serif",
       direction: "rtl",
     }}>
-      {/* الهيدر */}
       <div style={{
         display: "flex",
         alignItems: "center",
@@ -833,17 +841,13 @@ export default function RebalancingScreen() {
         </div>
       </div>
 
-      {/* Health Score */}
       <HealthScoreCard score={analysis.healthScore}/>
-
-      {/* Summary */}
       <SummaryCard summary={analysis.summary}/>
 
-      {/* Donut Chart للقطاعات */}
       {analysis.sectors && analysis.sectors.length > 0 && (
         <SectorsDonutChart sectors={analysis.sectors}/>
       )}
-      {/* Issues */}
+
       {analysis.issues.length > 0 && (
         <>
           <div style={{
@@ -862,7 +866,6 @@ export default function RebalancingScreen() {
         </>
       )}
 
-      {/* Positive Notes */}
       {analysis.positiveNotes.length > 0 && (
         <>
           <div style={{
@@ -881,12 +884,10 @@ export default function RebalancingScreen() {
         </>
       )}
 
-      {/* Impact Summary */}
       {analysis.issues.length > 0 && analysis.impactSummary && (
         <ImpactSummary impact={analysis.impactSummary}/>
       )}
 
-      {/* 🚀 زر طبّق الاقتراحات تلقائياً */}
       {analysis.issues.length > 0 && (
         <button
           onClick={() => setShowAutoApply(true)}
@@ -905,7 +906,6 @@ export default function RebalancingScreen() {
             fontFamily: "Cairo,sans-serif",
             marginTop: 12,
             marginBottom: 12,
-            transition: "all 0.2s",
           }}
         >
           <span style={{fontSize: 22}}>⚡</span>
@@ -920,7 +920,6 @@ export default function RebalancingScreen() {
         </button>
       )}
 
-      {/* ⚡ Modal: طبّق الاقتراحات تلقائياً */}
       {showAutoApply && (
         <div
           onClick={() => setShowAutoApply(false)}
@@ -936,7 +935,7 @@ export default function RebalancingScreen() {
             padding: 0,
           }}
         >
-                                        <div
+          <div
             onClick={(e) => e.stopPropagation()}
             style={{
               width: "100%",
@@ -953,8 +952,6 @@ export default function RebalancingScreen() {
               boxShadow: "0 -10px 40px rgba(0,0,0,0.6)",
             }}
           >
-          
-            {/* Handle */}
             <div style={{
               width: 40,
               height: 4,
@@ -964,7 +961,6 @@ export default function RebalancingScreen() {
               opacity: 0.5,
             }}/>
 
-            {/* Header */}
             <div style={{
               display: "flex",
               alignItems: "center",
@@ -1018,7 +1014,6 @@ export default function RebalancingScreen() {
               </button>
             </div>
 
-            {/* قائمة الصفقات */}
             <div style={{marginBottom: 16}}>
               {analysis.issues
                 .filter(i => i.solution && i.solution.action === 'sell')
@@ -1068,7 +1063,7 @@ export default function RebalancingScreen() {
                 ))}
 
               {analysis.issues
-                .filter(i => i.solution && (i.solution.action === 'add' || i.solution.suggestions))
+                .filter(i => i.solution && i.solution.suggestions)
                 .map((issue, i) => (
                   <div key={'add-' + i} style={{
                     background: C.mint + "12",
@@ -1117,26 +1112,17 @@ export default function RebalancingScreen() {
                             fontFamily: "Cairo,sans-serif",
                           }}>
                             • <span style={{color: C.gold, fontWeight: 700}}>{s.sector}</span>
-                            <span style={{color: C.smoke}}> ({s.examples.join('، ')})</span>
+                            {s.examples && (
+                              <span style={{color: C.smoke}}> ({s.examples.join('، ')})</span>
+                            )}
                           </div>
                         ))}
-                      </div>
-                    )}
-                    {issue.solution.message && !issue.solution.suggestions && (
-                      <div style={{
-                        paddingRight: 50,
-                        fontSize: 11,
-                        color: C.mist,
-                        fontFamily: "Cairo,sans-serif",
-                      }}>
-                        {issue.solution.message}
                       </div>
                     )}
                   </div>
                 ))}
             </div>
 
-            {/* ملاحظة */}
             <div style={{
               padding: "14px 16px",
               background: C.amber + "10",
@@ -1161,14 +1147,11 @@ export default function RebalancingScreen() {
                 هذه خطة استرشادية. تنفيذ الصفقات يتم من شاشة المحفظة الرئيسية.
                 القرار النهائي يعود لك بناءً على ظروف السوق.
               </div>
-                        </div>
-
+            </div>
           </div>
         </div>
       )}
 
-
-      {/* Footer Note */}
       <div style={{
         padding: "12px 14px",
         background: C.void + "88",
