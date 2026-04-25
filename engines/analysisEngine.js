@@ -824,34 +824,167 @@ function calcEMA(vs,p){
   for(let i=1;i<vs.length;i++)e=vs[i]*k+e*(1-k);
   return e;
 }
-function calcRSIFull(bars,period){
-  period=period||14;
-  if(bars.length<period+1)return 50;
-  let ag=0,al=0;
-  for(let i=1;i<=period;i++){
-    const d=bars[i].close-bars[i-1].close;
-    if(d>0)ag+=d; else al+=Math.abs(d);
+/**
+ * ✨ RSI (Relative Strength Index) - Wilder's Original Formula 1978
+ * 
+ * Mathematical Foundation:
+ * - Uses Wilder's Smoothing (modified EMA with α = 1/period)
+ * - Better than SMA for noise reduction
+ * - Asymptotic at 0 and 100
+ * 
+ * Formula:
+ * RS = AvgGain / AvgLoss
+ * RSI = 100 - (100 / (1 + RS))
+ * 
+ * Edge cases handled:
+ * - Empty bars → 50 (neutral)
+ * - All gains (no losses) → 100
+ * - Invalid period → 14 (Wilder's default)
+ * - Bar without 'c' property → uses 'close' as fallback
+ */
+function calcRSIFull(bars, period) {
+  // ① Validation
+  period = period || 14;
+  if (period < 2) period = 14;
+  if (!bars || bars.length < period + 1) return 50;
+  
+  // ② Helper to get close price (handles both .c and .close)
+  const getClose = (bar) => {
+    if (!bar) return null;
+    return typeof bar.c === 'number' ? bar.c : 
+           typeof bar.close === 'number' ? bar.close : null;
+  };
+  
+  // ③ First calculation: Simple averages for first 'period' bars
+  let avgGain = 0;
+  let avgLoss = 0;
+  let validCount = 0;
+  
+  for (let i = 1; i <= period; i++) {
+    const curr = getClose(bars[i]);
+    const prev = getClose(bars[i - 1]);
+    if (curr === null || prev === null) continue;
+    
+    const change = curr - prev;
+    if (change > 0) avgGain += change;
+    else if (change < 0) avgLoss += Math.abs(change);
+    validCount++;
   }
-  ag/=period; al/=period;
-  for(let i=period+1;i<bars.length;i++){
-    const d=bars[i].close-bars[i-1].close;
-    ag=(ag*(period-1)+(d>0?d:0))/period;
-    al=(al*(period-1)+(d<0?-d:0))/period;
+  
+  if (validCount === 0) return 50;
+  
+  avgGain /= period;
+  avgLoss /= period;
+  
+  // ④ Wilder's Smoothing for remaining bars
+  // Formula: avgGain(t) = [avgGain(t-1) * (period-1) + currentGain] / period
+  for (let i = period + 1; i < bars.length; i++) {
+    const curr = getClose(bars[i]);
+    const prev = getClose(bars[i - 1]);
+    if (curr === null || prev === null) continue;
+    
+    const change = curr - prev;
+    const gain = change > 0 ? change : 0;
+    const loss = change < 0 ? Math.abs(change) : 0;
+    
+    avgGain = (avgGain * (period - 1) + gain) / period;
+    avgLoss = (avgLoss * (period - 1) + loss) / period;
   }
-  return al===0?100:Math.round(100-100/(1+ag/al));
+  
+  // ⑤ Calculate RSI
+  if (avgLoss === 0) return avgGain === 0 ? 50 : 100;
+  
+  const rs = avgGain / avgLoss;
+  const rsi = 100 - (100 / (1 + rs));
+  
+  // ⑥ Bound to [0, 100] and return with 2 decimal precision
+  return Math.max(0, Math.min(100, +rsi.toFixed(2)));
 }
-function calcATRFull(bars,period){
-  period=period||14;
-  if(bars.length<period+1)return 0;
-  let atr=0;
-  for(let i=1;i<=period;i++)
-    atr+=Math.max(bars[i].hi-bars[i].lo,Math.abs(bars[i].hi-bars[i-1].close),Math.abs(bars[i].lo-bars[i-1].close));
-  atr/=period;
-  for(let i=period+1;i<bars.length;i++){
-    const tr=Math.max(bars[i].hi-bars[i].lo,Math.abs(bars[i].hi-bars[i-1].close),Math.abs(bars[i].lo-bars[i-1].close));
-    atr=(atr*(period-1)+tr)/period;
+
+/**
+ * ✨ ATR (Average True Range) - Wilder 1978
+ * 
+ * Mathematical Foundation:
+ * True Range (TR) = max(
+ *   high - low,
+ *   |high - prev_close|,
+ *   |low - prev_close|
+ * )
+ * 
+ * ATR uses Wilder's Smoothing for stability
+ * 
+ * Used for:
+ * - Volatility measurement
+ * - Position sizing (Kelly)
+ * - Stop loss calculation
+ */
+function calcATRFull(bars, period) {
+  // ① Validation
+  period = period || 14;
+  if (period < 1) period = 14;
+  if (!bars || bars.length < period + 1) return 0;
+  
+  // ② Helper functions
+  const getClose = (bar) => {
+    if (!bar) return null;
+    return typeof bar.c === 'number' ? bar.c : 
+           typeof bar.close === 'number' ? bar.close : null;
+  };
+  
+  const getHigh = (bar) => {
+    if (!bar) return null;
+    return typeof bar.hi === 'number' ? bar.hi : 
+           typeof bar.high === 'number' ? bar.high : null;
+  };
+  
+  const getLow = (bar) => {
+    if (!bar) return null;
+    return typeof bar.lo === 'number' ? bar.lo : 
+           typeof bar.low === 'number' ? bar.low : null;
+  };
+  
+  // ③ Calculate True Range for a single bar
+  const calcTR = (curr, prev) => {
+    const hi = getHigh(curr);
+    const lo = getLow(curr);
+    const prevClose = getClose(prev);
+    
+    if (hi === null || lo === null) return 0;
+    
+    const range1 = hi - lo;
+    
+    if (prevClose === null) return range1;
+    
+    const range2 = Math.abs(hi - prevClose);
+    const range3 = Math.abs(lo - prevClose);
+    
+    return Math.max(range1, range2, range3);
+  };
+  
+  // ④ First ATR: average of first 'period' True Ranges
+  let atr = 0;
+  let validCount = 0;
+  
+  for (let i = 1; i <= period; i++) {
+    const tr = calcTR(bars[i], bars[i - 1]);
+    if (tr > 0) {
+      atr += tr;
+      validCount++;
+    }
   }
-  return atr;
+  
+  if (validCount === 0) return 0;
+  atr /= period;
+  
+  // ⑤ Wilder's Smoothing for remaining bars
+  for (let i = period + 1; i < bars.length; i++) {
+    const tr = calcTR(bars[i], bars[i - 1]);
+    if (tr >= 0) {
+      atr = (atr * (period - 1) + tr) / period;
+    }
+  }
+  
+  return Math.max(0, +atr.toFixed(4));
 }
 function calcVWAPFull(bars){
   let sv=0,svol=0;
