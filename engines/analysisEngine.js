@@ -986,6 +986,205 @@ function calcATRFull(bars, period) {
   
   return Math.max(0, +atr.toFixed(4));
 }
+/**
+ * ✨ VWAP (Volume Weighted Average Price)
+ * 
+ * Mathematical Foundation:
+ * VWAP = Σ(Typical Price × Volume) / Σ(Volume)
+ * Typical Price = (High + Low + Close) / 3
+ * 
+ * Used for:
+ * - Institutional benchmark
+ * - Support/Resistance levels
+ * - Mean reversion target
+ */
+function calcVWAPFull(bars) {
+  if (!bars || bars.length === 0) return 0;
+  
+  // Helper to extract values
+  const getC = (b) => typeof b.c === 'number' ? b.c : (typeof b.close === 'number' ? b.close : null);
+  const getH = (b) => typeof b.hi === 'number' ? b.hi : (typeof b.high === 'number' ? b.high : null);
+  const getL = (b) => typeof b.lo === 'number' ? b.lo : (typeof b.low === 'number' ? b.low : null);
+  const getV = (b) => typeof b.vol === 'number' && b.vol > 0 ? b.vol : 0;
+  
+  let sumPV = 0;  // Σ(price × volume)
+  let sumV = 0;   // Σ(volume)
+  let validBars = 0;
+  
+  for (const b of bars) {
+    const hi = getH(b);
+    const lo = getL(b);
+    const c = getC(b);
+    const v = getV(b);
+    
+    if (hi === null || lo === null || c === null || v === 0) continue;
+    
+    const typicalPrice = (hi + lo + c) / 3;
+    sumPV += typicalPrice * v;
+    sumV += v;
+    validBars++;
+  }
+  
+  // Edge case: no valid bars or zero volume
+  if (validBars === 0 || sumV === 0) {
+    // Fallback: return simple average of closes
+    let sum = 0, count = 0;
+    for (const b of bars) {
+      const c = getC(b);
+      if (c !== null) { sum += c; count++; }
+    }
+    return count > 0 ? +(sum / count).toFixed(4) : 0;
+  }
+  
+  return +(sumPV / sumV).toFixed(4);
+}
+
+/**
+ * ✨ CMF (Chaikin Money Flow) - Marc Chaikin Original
+ * 
+ * Mathematical Foundation:
+ * Money Flow Multiplier = ((Close - Low) - (High - Close)) / (High - Low)
+ * Money Flow Volume = Money Flow Multiplier × Volume
+ * CMF = Σ(MFV) over period / Σ(Volume) over period
+ * 
+ * Range: [-1, +1]
+ * Interpretation:
+ * - > 0.05: Buying pressure (accumulation)
+ * - < -0.05: Selling pressure (distribution)
+ * - Otherwise: Neutral
+ */
+function calcCMFFull(bars, period) {
+  if (!bars || bars.length === 0) return 0;
+  
+  // Helper functions
+  const getC = (b) => typeof b.c === 'number' ? b.c : (typeof b.close === 'number' ? b.close : null);
+  const getH = (b) => typeof b.hi === 'number' ? b.hi : (typeof b.high === 'number' ? b.high : null);
+  const getL = (b) => typeof b.lo === 'number' ? b.lo : (typeof b.low === 'number' ? b.low : null);
+  const getV = (b) => typeof b.vol === 'number' && b.vol > 0 ? b.vol : 0;
+  
+  // Adaptive period: 10-20 days based on data
+  const n = bars.length;
+  period = period || Math.min(20, Math.max(10, Math.round(n * 0.20)));
+  if (period < 2) period = Math.min(10, n);
+  
+  const slice = bars.slice(-period);
+  let sumMFV = 0;  // Σ Money Flow Volume
+  let sumV = 0;    // Σ Volume
+  
+  for (const b of slice) {
+    const hi = getH(b);
+    const lo = getL(b);
+    const c = getC(b);
+    const v = getV(b);
+    
+    if (hi === null || lo === null || c === null || v === 0) continue;
+    
+    const range = hi - lo;
+    
+    // Edge case: high == low (no movement) → skip bar
+    if (range === 0) continue;
+    
+    // Money Flow Multiplier (bound [-1, +1])
+    const mfm = ((c - lo) - (hi - c)) / range;
+    
+    // Money Flow Volume
+    const mfv = mfm * v;
+    
+    sumMFV += mfv;
+    sumV += v;
+  }
+  
+  if (sumV === 0) return 0;
+  
+  // CMF in range [-1, +1]
+  const cmf = sumMFV / sumV;
+  
+  return +Math.max(-1, Math.min(1, cmf)).toFixed(4);
+}
+
+/**
+ * ✨ OBV (On-Balance Volume) - Joe Granville 1963
+ * 
+ * Mathematical Foundation:
+ * If Close(t) > Close(t-1): OBV(t) = OBV(t-1) + Volume(t)
+ * If Close(t) < Close(t-1): OBV(t) = OBV(t-1) - Volume(t)
+ * If Close(t) == Close(t-1): OBV(t) = OBV(t-1)
+ * 
+ * Returns:
+ * - slope: linear regression slope of last 5 days
+ * - rising: boolean (slope > 0)
+ * - obvZ: z-score (normalized OBV)
+ */
+function calcOBVFull(bars) {
+  if (!bars || bars.length < 2) {
+    return { slope: 0, rising: false, obvZ: 0 };
+  }
+  
+  // Helper functions
+  const getC = (b) => typeof b.c === 'number' ? b.c : (typeof b.close === 'number' ? b.close : null);
+  const getV = (b) => typeof b.vol === 'number' && b.vol > 0 ? b.vol : 0;
+  
+  // ① Calculate OBV series
+  let obv = 0;
+  const obvArr = [0];
+  
+  for (let i = 1; i < bars.length; i++) {
+    const curr = getC(bars[i]);
+    const prev = getC(bars[i - 1]);
+    const v = getV(bars[i]);
+    
+    if (curr === null || prev === null || v === 0) {
+      obvArr.push(obv);
+      continue;
+    }
+    
+    if (curr > prev) obv += v;
+    else if (curr < prev) obv -= v;
+    // else: no change
+    
+    obvArr.push(obv);
+  }
+  
+  if (obvArr.length === 0) {
+    return { slope: 0, rising: false, obvZ: 0 };
+  }
+  
+  // ② Z-score calculation
+  const mean = obvArr.reduce((s, v) => s + v, 0) / obvArr.length;
+  const variance = obvArr.reduce((s, v) => s + Math.pow(v - mean, 2), 0) / obvArr.length;
+  const std = Math.sqrt(variance);
+  
+  const obvZ = std > 0 
+    ? (obvArr[obvArr.length - 1] - mean) / std 
+    : 0;
+  
+  // ③ Linear Regression on last 5 days
+  // Slope formula: Σ((x - x̄)(y - ȳ)) / Σ((x - x̄)²)
+  const lookback = Math.min(5, obvArr.length);
+  const last = obvArr.slice(-lookback);
+  
+  let slope = 0;
+  if (last.length >= 2) {
+    const xMean = (lookback - 1) / 2;
+    const yMean = last.reduce((s, v) => s + v, 0) / lookback;
+    
+    let numerator = 0;
+    let denominator = 0;
+    
+    for (let i = 0; i < lookback; i++) {
+      numerator += (i - xMean) * (last[i] - yMean);
+      denominator += (i - xMean) * (i - xMean);
+    }
+    
+    slope = denominator !== 0 ? numerator / denominator : 0;
+  }
+  
+  return {
+    slope: +slope.toFixed(4),
+    rising: slope > 0,
+    obvZ: +obvZ.toFixed(4),
+  };
+}
 
 }
 function calcMarketStructureFull(bars){
