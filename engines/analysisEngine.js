@@ -2371,8 +2371,8 @@ function calc9Layers(stk, bars){
   const cmf  = calcCMF(rBars);              // period ديناميكي من volatility
   const obv  = calcOBV(rBars);
   const ms   = calcMarketStructure(rBars);
-  const ob   = calcOrderBlocksFull(rBars,atr);
-  const ls   = calcLiqSweepFull(rBars,atr);
+    const ob   = calcOrderBlocksFull(rBars, atr);  // الآن تعمل بسبب dual format
+  const ls   = calcLiqSweepFull(rBars, atr);     // الآن تعمل بسبب dual format
   const vi   = calcIVWAP(rBars,stk);
   const mc   = calcMacroFull(stk);
   const tc_tasi = calcTasiContext(stk, bars, STOCKS);
