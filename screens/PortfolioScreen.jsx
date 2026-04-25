@@ -1140,8 +1140,8 @@ useEffect(() => {
           };
           smartAction = calcSmartAction(positionData, h, smartBars, h.riskGate || 'SAFE');
         }
-      } catch(e) {
-        // فشل صامت
+            } catch(e) {
+        console.error('[SmartAction Error]', pp.sym, e.message, e);
       }
       
       return Object.assign({}, pp, {
