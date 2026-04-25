@@ -2253,12 +2253,12 @@ function calc9Layers(stk, bars){
   let _s = parseInt(stk.sym)*997+13;
   const rng = ()=>{ _s=(_s*1664525+1013904223)&0xffffffff; return(_s>>>0)/0xffffffff; };
 
-  // ── محركات الرادار المدمجة ──
-  const atr  = calcATRFull(rBars,14)||stk.p*0.015;
-  const rsiV = calcRSIFull(rBars,14);
-  const cmf  = calcCMFFull(rBars);          // period ديناميكي من volatility
-  const obv  = calcOBVFull(rBars);
-  const ms   = calcMarketStructureFull(rBars);
+    // ── محركات الرادار المدمجة (✨ من technicalEngine - الصحيحة رياضياً) ──
+  const atr  = calcATR(rBars, 14) || stk.p * 0.015;
+  const rsiV = calcRSI(rBars, 14);
+  const cmf  = calcCMF(rBars);              // period ديناميكي من volatility
+  const obv  = calcOBV(rBars);
+  const ms   = calcMarketStructure(rBars);
   const ob   = calcOrderBlocksFull(rBars,atr);
   const ls   = calcLiqSweepFull(rBars,atr);
   const vi   = calcIVWAP(rBars,stk);
