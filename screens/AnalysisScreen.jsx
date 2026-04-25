@@ -2715,11 +2715,11 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
           ? `نسبة الدخول المثلى: ${(kelAdj*100).toFixed(1)}% من المحفظة — الصفقة مبررة رياضياً ✅`
           : `نسبة الدخول: ${(kelAdj*100).toFixed(1)}% — صغيرة جداً، المخاطرة أكبر من العائد ❌`;
 
-                // ✨ Bayesian Prior - متوسط الطبقات الأخرى (ليس شاملاً L7)
-        // الـ Prior هو الاعتقاد الأولي قبل تحديث Bayesian
+                        // ✨ Bayesian Prior - متوسط الطبقات الأخرى (ليس شاملاً L7)
         const bayPrior = Math.round((L1 + L2 + L3 + L4 + L5 + L6) / 6);
-        // الـ Posterior هو L7 (بعد التحديث Bayesian)
-        const bayPosterior = Math.min(100, Math.max(0, L7));
+        // ✨ Bayesian Posterior - مع سقف 95% (في Bayesian لا يوجد 100% يقين!)
+        // 100% posterior يعني يقين مطلق - مستحيل رياضياً
+        const bayPosterior = Math.min(95, Math.max(5, L7));
         const bayDelta = bayPosterior - bayPrior;
         const bayDesc  = `الاحتمالية الأولية: ${bayPrior}% ← بعد تحليل الحجم والاتجاه: ${bayPosterior}% (${bayDelta >= 0 ? "تحسّن +" : "تراجع "}${Math.abs(bayDelta)}%)`;
 
