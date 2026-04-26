@@ -3,16 +3,15 @@
  * @module CorrelationHeatmap
  * @description مصفوفة الارتباط الملوّنة بين أسهم المحفظة
  * 
- * يكشف "التنويع الوهمي" بصرياً
- * Modern Portfolio Theory (Markowitz 1952)
+ * ✨ V2.0 - Performance Optimized
  *
  * @author تداول+
- * @version 1.0
+ * @version 2.0
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 
-var C = {
+const C = {
   ink: "#06080f", deep: "#090c16", void: "#0c1020",
   layer1: "#141d2b", layer2: "#1e2d42",
   edge: "#2e3e60", line: "#32426a",
@@ -21,45 +20,35 @@ var C = {
   mint: "#1ee68a", coral: "#ff5f6a", amber: "#fbbf24", teal: "#22d3ee",
 };
 
-/**
- * حساب لون الخلية بناءً على قيمة الارتباط
- * -1 (سلبي قوي) → أخضر
- *  0 (محايد) → رمادي
- * +1 (موجب قوي) → أحمر
- */
+// Cached outside component
 function getCorrelationColor(value, isDiagonal) {
   if (isDiagonal) {
     return { bg: C.gold + "40", text: C.gold };
   }
 
-  var absVal = Math.abs(value);
+  const absVal = Math.abs(value);
 
   if (value > 0.7) {
-    // ارتباط موجب قوي (خطر = تنويع وهمي)
     return {
       bg: 'rgba(255, 95, 106, ' + (0.3 + absVal * 0.4) + ')',
       text: C.snow,
     };
   } else if (value > 0.4) {
-    // ارتباط موجب متوسط
     return {
       bg: 'rgba(251, 191, 36, ' + (0.2 + absVal * 0.3) + ')',
       text: absVal > 0.5 ? C.snow : C.amber,
     };
   } else if (value > -0.4) {
-    // ارتباط ضعيف (جيد = تنويع حقيقي)
     return {
       bg: 'rgba(30, 230, 138, ' + (0.15 + (0.4 - absVal) * 0.3) + ')',
       text: C.mint,
     };
   } else if (value > -0.7) {
-    // ارتباط سلبي متوسط
     return {
       bg: 'rgba(34, 211, 238, ' + (0.2 + absVal * 0.3) + ')',
       text: C.teal,
     };
   } else {
-    // ارتباط سلبي قوي (تحوط!)
     return {
       bg: 'rgba(77, 159, 255, ' + (0.3 + absVal * 0.4) + ')',
       text: C.snow,
@@ -68,15 +57,61 @@ function getCorrelationColor(value, isDiagonal) {
 }
 
 const CorrelationHeatmap = React.memo(function CorrelationHeatmap(props) {
-  var data = props.data || { matrix: [], symbols: [] };
-  var matrix = data.matrix || [];
-  var symbols = data.symbols || [];
-  var avgCorrelation = data.avgCorrelation || 0;
-  var highCount = data.highCount || 0;
-  var label = data.label || 'غير محدد';
-  var classification = data.classification || 'unknown';
+  const data = props.data || { matrix: [], symbols: [] };
+  const matrix = data.matrix || [];
+  const symbols = data.symbols || [];
+  const avgCorrelation = data.avgCorrelation || 0;
+  const highCount = data.highCount || 0;
+  const label = data.label || 'غير محدد';
+  const classification = data.classification || 'unknown';
 
-  if (!matrix || matrix.length < 2) {
+  // ═══════════════════════════════════════════════
+  // ✨ Heavy calculations - memoized
+  // ═══════════════════════════════════════════════
+  
+  const heatmapData = useMemo(() => {
+    if (!matrix || matrix.length < 2) return null;
+
+    // Cell size + font size
+    const cellSize = Math.max(30, Math.min(50, 240 / symbols.length));
+    const fontSize = symbols.length > 6 ? 8 : 10;
+
+    // Pre-calculate all cell colors
+    const rowsData = matrix.map((row, i) => ({
+      i,
+      symbol: symbols[i],
+      cells: row.map((value, j) => {
+        const isDiagonal = i === j;
+        const colors = getCorrelationColor(value, isDiagonal);
+        return {
+          j,
+          value,
+          isDiagonal,
+          colors,
+        };
+      }),
+    }));
+
+    // Classification color
+    let classColor;
+    if (classification === 'excellent' || classification === 'good') {
+      classColor = C.mint;
+    } else if (classification === 'moderate') {
+      classColor = C.amber;
+    } else {
+      classColor = C.coral;
+    }
+
+    return {
+      cellSize,
+      fontSize,
+      rowsData,
+      classColor,
+    };
+  }, [matrix, symbols, classification]);
+
+  // Empty state
+  if (!heatmapData) {
     return (
       <div style={{
         background: C.layer1,
@@ -92,19 +127,7 @@ const CorrelationHeatmap = React.memo(function CorrelationHeatmap(props) {
     );
   }
 
-  // لون التصنيف
-  var classColor;
-  if (classification === 'excellent' || classification === 'good') {
-    classColor = C.mint;
-  } else if (classification === 'moderate') {
-    classColor = C.amber;
-  } else {
-    classColor = C.coral;
-  }
-
-  // حجم الخلية (ديناميكي بناءً على عدد الأسهم)
-  var cellSize = Math.max(30, Math.min(50, 240 / symbols.length));
-  var fontSize = symbols.length > 6 ? 8 : 10;
+  const { cellSize, fontSize, rowsData, classColor } = heatmapData;
 
   return (
     <div style={{
@@ -168,7 +191,7 @@ const CorrelationHeatmap = React.memo(function CorrelationHeatmap(props) {
         </div>
       </div>
 
-      {/* المصفوفة */}
+      {/* Matrix */}
       <div style={{
         overflowX: 'auto',
         paddingBottom: 4,
@@ -186,69 +209,60 @@ const CorrelationHeatmap = React.memo(function CorrelationHeatmap(props) {
                 width: cellSize * 0.7,
                 height: cellSize * 0.6,
               }}></th>
-              {symbols.map(function(sym, i) {
-                return (
-                  <th
-                    key={'header-' + i}
-                    style={{
-                      fontSize: fontSize,
-                      color: C.gold,
-                      fontWeight: 700,
-                      padding: '4px 2px',
-                      textAlign: 'center',
-                      background: C.void,
-                      borderRadius: 4,
-                      width: cellSize,
-                      height: cellSize * 0.6,
-                    }}
-                  >
-                    {sym}
-                  </th>
-                );
-              })}
+              {symbols.map((sym, i) => (
+                <th
+                  key={'header-' + i}
+                  style={{
+                    fontSize: fontSize,
+                    color: C.gold,
+                    fontWeight: 700,
+                    padding: '4px 2px',
+                    textAlign: 'center',
+                    background: C.void,
+                    borderRadius: 4,
+                    width: cellSize,
+                    height: cellSize * 0.6,
+                  }}
+                >
+                  {sym}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {matrix.map(function(row, i) {
-              return (
-                <tr key={'row-' + i}>
-                  <td style={{
-                    fontSize: fontSize,
-                    fontWeight: 800,
-                    color: C.gold,
-                    textAlign: 'center',
-                    padding: '4px',
-                    background: C.void,
-                    borderRadius: 4,
-                  }}>
-                    {symbols[i]}
+            {rowsData.map(({ i, symbol, cells }) => (
+              <tr key={'row-' + i}>
+                <td style={{
+                  fontSize: fontSize,
+                  fontWeight: 800,
+                  color: C.gold,
+                  textAlign: 'center',
+                  padding: '4px',
+                  background: C.void,
+                  borderRadius: 4,
+                }}>
+                  {symbol}
+                </td>
+                {cells.map(({ j, value, isDiagonal, colors }) => (
+                  <td
+                    key={'cell-' + i + '-' + j}
+                    style={{
+                      background: colors.bg,
+                      color: colors.text,
+                      width: cellSize,
+                      height: cellSize,
+                      fontSize: fontSize,
+                      fontWeight: 800,
+                      textAlign: 'center',
+                      borderRadius: 4,
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    {isDiagonal ? '--' : value.toFixed(2)}
                   </td>
-                  {row.map(function(value, j) {
-                    var isDiagonal = i === j;
-                    var colors = getCorrelationColor(value, isDiagonal);
-                    
-                    return (
-                      <td
-                        key={'cell-' + i + '-' + j}
-                        style={{
-                          background: colors.bg,
-                          color: colors.text,
-                          width: cellSize,
-                          height: cellSize,
-                          fontSize: fontSize,
-                          fontWeight: 800,
-                          textAlign: 'center',
-                          borderRadius: 4,
-                          transition: 'all 0.2s',
-                        }}
-                      >
-                        {isDiagonal ? '--' : value.toFixed(2)}
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
+                ))}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -327,7 +341,7 @@ const CorrelationHeatmap = React.memo(function CorrelationHeatmap(props) {
         </div>
       </div>
 
-      {/* تنبيهات الارتباط العالي */}
+      {/* High correlation alerts */}
       {highCount > 0 && (
         <div style={{
           marginTop: 10,
@@ -354,7 +368,7 @@ const CorrelationHeatmap = React.memo(function CorrelationHeatmap(props) {
         </div>
       )}
 
-      {/* تهنئة للتنويع الجيد */}
+      {/* Good diversification congrats */}
       {highCount === 0 && (
         <div style={{
           marginTop: 10,
@@ -374,8 +388,18 @@ const CorrelationHeatmap = React.memo(function CorrelationHeatmap(props) {
         </div>
       )}
     </div>
-    );
+  );
+}, (prev, next) => {
+  // Custom comparison
+  if (prev.data === next.data) return true;
+  if (!prev.data || !next.data) return false;
+  if (prev.data.matrix !== next.data.matrix) return false;
+  if (prev.data.symbols !== next.data.symbols) return false;
+  if (prev.data.avgCorrelation !== next.data.avgCorrelation) return false;
+  if (prev.data.highCount !== next.data.highCount) return false;
+  return true;
 });
 
-export default CorrelationHeatmap;
+CorrelationHeatmap.displayName = 'CorrelationHeatmap';
 
+export default CorrelationHeatmap;
