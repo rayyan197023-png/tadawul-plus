@@ -160,57 +160,78 @@ function Shell() {
       registerServiceWorker();
     });
     
-    // ✨ Smart Alerts Engine - يعمل كل 60 ثانية
+        // ✨ Smart Alerts Engine - يستخدم analyzeStockRadar (deep analysis)
     let alertsInterval;
+    let alertsInitialTimer;
     const initAlerts = async () => {
       try {
-        const { runSmartAlertsEngine } = await import('./engines/smartAlertsEngine');
+        const { runSmartAlertsEngine, requestNotificationPermission } = await import('./engines/smartAlertsEngine');
         const { STOCKS } = await import('./constants/stocksData');
-        const { genBars, stockHealth } = await import('./engines/analysisEngine');
+        const { analyzeStockRadar } = await import('./engines/analysisEngine');
         
-        const runAlerts = () => {
+        // طلب إذن Browser Notifications
+        requestNotificationPermission();
+        
+        const runEngine = () => {
           try {
-            // Build current stocks with health data
-            const currentStocks = STOCKS.map(s => {
-              const bars = genBars(s, 60);
-              const health = stockHealth(s, bars);
-              return {
-                ...s,
-                bars,
-                health: health?.score || 0,
-                rsi: health?.layers?.rsi?.value || 50,
-                macd: health?.layers?.macd?.value || 0,
-                bos: health?.layers?.structure?.bos || null,
-                vr: health?.layers?.cmf?.volRatio || 1,
-                trend: health?.layers?.structure?.trend || 'neutral',
-              };
-            });
+            // إعداد بيانات الأسهم باستخدام analyzeStockRadar (التحليل العميق)
+            const stocksForAnalysis = STOCKS.map(stock => {
+              try {
+                const analysis = analyzeStockRadar(stock);
+                return {
+                  sym: stock.sym,
+                  name: stock.name,
+                  p: stock.p,
+                  pct: stock.pct,
+                  health: analysis.total,
+                  rsi: analysis.mom?.rsi || 50,
+                  macd: analysis.mom?.macd ? 'bullish' : 'bearish',
+                  bos: analysis.ms?.bosBull ? 'bullish' : (analysis.ms?.bosBear ? 'bearish' : null),
+                  choch: analysis.ms?.choch || false,
+                  oversold: analysis.mom?.oversold || false,
+                  overbought: analysis.mom?.overbought || false,
+                  smDetected: analysis.liq?.smDetected || false,
+                  cats: analysis.cats || [],
+                  target: analysis.target,
+                  stop: analysis.stop,
+                  scoreCol: analysis.scoreCol,
+                };
+              } catch (e) {
+                return null;
+              }
+            }).filter(s => s !== null);
             
-            // Get positions
+            // جلب المحفظة
             let positions = [];
             try {
               const portRaw = window.localStorage.getItem('tp_port');
-              positions = portRaw ? JSON.parse(portRaw) : [];
+              if (portRaw) positions = JSON.parse(portRaw);
             } catch (e) {}
             
-            // Run engine
-            runSmartAlertsEngine(currentStocks, positions);
+            // تشغيل المحرك
+            const result = runSmartAlertsEngine(stocksForAnalysis, positions, {
+              enableBrowserNotif: true,
+              enableSound: true,
+            });
+            
+            if (result.count > 0) {
+              console.log(`🔔 Smart Alerts: ${result.count} new alerts`, result.summary);
+            }
           } catch (e) {
             console.warn('[Alerts] Run failed:', e.message);
           }
         };
         
-        // Initial run after 5 seconds
-        setTimeout(runAlerts, 5000);
+        // أول تشغيل بعد 10 ثوان
+        alertsInitialTimer = setTimeout(runEngine, 10000);
         
-        // Then every 60 seconds
-        alertsInterval = setInterval(runAlerts, 60000);
+        // ثم كل 30 ثانية
+        alertsInterval = setInterval(runEngine, 30000);
       } catch (e) {
         console.warn('[Alerts] Init failed:', e.message);
       }
     };
     
-    // Start alerts after idle
     if ('requestIdleCallback' in window) {
       requestIdleCallback(initAlerts, { timeout: 3000 });
     } else {
