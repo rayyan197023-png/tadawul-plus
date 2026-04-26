@@ -2,11 +2,13 @@
 /**
  * @module MonthlyReturnsHeatmap
  * @description جدول ملوّن للعوائد الشهرية
+ * 
+ * ✨ V2.0 - Performance Optimized
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 
-var C = {
+const C = {
   ink: "#06080f", deep: "#090c16", void: "#0c1020",
   layer1: "#141d2b", layer2: "#1e2d42",
   edge: "#2e3e60", line: "#32426a",
@@ -15,17 +17,18 @@ var C = {
   electric: "#4d9fff", mint: "#1ee68a", coral: "#ff5f6a", amber: "#fbbf24",
 };
 
-var MONTH_NAMES_SHORT = [
+const MONTH_NAMES_SHORT = [
   'ينا', 'فبر', 'مار', 'أبر', 'ماي', 'يون',
   'يول', 'أغس', 'سبت', 'أكت', 'نوف', 'ديس'
 ];
 
+// Cached outside component
 function getCellColor(returnValue, maxAbs) {
   if (returnValue === null || returnValue === undefined) {
     return { bg: C.layer1, text: C.smoke, opacity: 0.3 };
   }
 
-  var intensity = Math.min(Math.abs(returnValue) / maxAbs, 1);
+  const intensity = Math.min(Math.abs(returnValue) / maxAbs, 1);
   
   if (returnValue > 0) {
     return {
@@ -49,11 +52,68 @@ function getCellColor(returnValue, maxAbs) {
 }
 
 const MonthlyReturnsHeatmap = React.memo(function MonthlyReturnsHeatmap(props) {
-  var result = props.data || { months: [], stats: {} };
-  var months = result.months || [];
-  var stats = result.stats || {};
+  const result = props.data || { months: [], stats: {} };
+  const months = result.months || [];
+  const stats = result.stats || {};
 
-  if (!months || months.length === 0) {
+  // ═══════════════════════════════════════════════
+  // ✨ Heavy calculations - memoized
+  // ═══════════════════════════════════════════════
+  
+  const heatmapData = useMemo(() => {
+    if (!months || months.length === 0) return null;
+
+    // Build year map
+    const yearMap = {};
+    months.forEach((m) => {
+      if (!yearMap[m.year]) yearMap[m.year] = {};
+      yearMap[m.year][m.month] = m;
+    });
+
+    const years = Object.keys(yearMap).sort();
+
+    // Find maxAbs for color intensity
+    let maxAbs = 1;
+    months.forEach((m) => {
+      if (Math.abs(m.return) > maxAbs) maxAbs = Math.abs(m.return);
+    });
+
+    // Pre-calculate cell colors for all cells
+    const cellsData = years.map((year) => ({
+      year,
+      cells: MONTH_NAMES_SHORT.map((_, i) => {
+        const monthNum = i + 1;
+        const cell = yearMap[year][monthNum];
+        const colors = getCellColor(cell ? cell.return : null, maxAbs);
+        return {
+          monthNum,
+          cell,
+          colors,
+        };
+      }),
+    }));
+
+    return {
+      yearMap,
+      years,
+      maxAbs,
+      cellsData,
+    };
+  }, [months]);
+
+  // ═══════════════════════════════════════════════
+  // ✨ Stats colors - memoized
+  // ═══════════════════════════════════════════════
+  
+  const statsColors = useMemo(() => ({
+    winRate: stats.winRate >= 60 ? C.mint 
+           : stats.winRate >= 50 ? C.amber 
+           : C.coral,
+    avgReturn: stats.avgReturn >= 0 ? C.mint : C.coral,
+  }), [stats.winRate, stats.avgReturn]);
+
+  // Empty state
+  if (!heatmapData) {
     return (
       <div style={{
         background: C.layer1,
@@ -69,18 +129,7 @@ const MonthlyReturnsHeatmap = React.memo(function MonthlyReturnsHeatmap(props) {
     );
   }
 
-  var yearMap = {};
-  months.forEach(function(m) {
-    if (!yearMap[m.year]) yearMap[m.year] = {};
-    yearMap[m.year][m.month] = m;
-  });
-
-  var years = Object.keys(yearMap).sort();
-
-  var maxAbs = 1;
-  months.forEach(function(m) {
-    if (Math.abs(m.return) > maxAbs) maxAbs = Math.abs(m.return);
-  });
+  const { years, cellsData } = heatmapData;
 
   return (
     <div style={{
@@ -127,7 +176,7 @@ const MonthlyReturnsHeatmap = React.memo(function MonthlyReturnsHeatmap(props) {
             fontFamily: "IBM Plex Mono,monospace",
             fontSize: 18,
             fontWeight: 900,
-            color: stats.winRate >= 60 ? C.mint : stats.winRate >= 50 ? C.amber : C.coral,
+            color: statsColors.winRate,
             lineHeight: 1,
           }}>
             {stats.winRate}%
@@ -158,77 +207,64 @@ const MonthlyReturnsHeatmap = React.memo(function MonthlyReturnsHeatmap(props) {
               }}>
                 سنة
               </th>
-              {MONTH_NAMES_SHORT.map(function(name, i) {
-                return (
-                  <th
-                    key={i}
-                    style={{
-                      fontSize: 8,
-                      color: C.smoke,
-                      fontWeight: 700,
-                      padding: '4px 2px',
-                      textAlign: 'center',
-                      background: C.void,
-                      borderRadius: 4,
-                      minWidth: 28,
-                    }}
-                  >
-                    {name}
-                  </th>
-                );
-              })}
+              {MONTH_NAMES_SHORT.map((name, i) => (
+                <th
+                  key={i}
+                  style={{
+                    fontSize: 8,
+                    color: C.smoke,
+                    fontWeight: 700,
+                    padding: '4px 2px',
+                    textAlign: 'center',
+                    background: C.void,
+                    borderRadius: 4,
+                    minWidth: 28,
+                  }}
+                >
+                  {name}
+                </th>
+              ))}
             </tr>
           </thead>
 
           <tbody>
-            {years.map(function(year) {
-              return (
-                <tr key={year}>
-                  <td style={{
-                    fontSize: 10,
-                    fontWeight: 800,
-                    color: C.gold,
-                    textAlign: 'center',
-                    padding: '6px',
-                    background: C.void,
-                    borderRadius: 4,
-                  }}>
-                    {year}
+            {cellsData.map(({ year, cells }) => (
+              <tr key={year}>
+                <td style={{
+                  fontSize: 10,
+                  fontWeight: 800,
+                  color: C.gold,
+                  textAlign: 'center',
+                  padding: '6px',
+                  background: C.void,
+                  borderRadius: 4,
+                }}>
+                  {year}
+                </td>
+
+                {cells.map(({ monthNum, cell, colors }) => (
+                  <td
+                    key={monthNum}
+                    style={{
+                      background: colors.bg,
+                      color: colors.text,
+                      opacity: colors.opacity,
+                      padding: '6px 2px',
+                      fontSize: 9,
+                      fontWeight: 800,
+                      textAlign: 'center',
+                      borderRadius: 4,
+                      minWidth: 28,
+                    }}
+                  >
+                    {cell 
+                      ? (cell.return > 0 ? '+' : '') + cell.return.toFixed(1)
+                      : '--'
+                    }
                   </td>
-
-                  {MONTH_NAMES_SHORT.map(function(_, i) {
-                    var monthNum = i + 1;
-                    var cell = yearMap[year][monthNum];
-                    var colors = getCellColor(
-                      cell ? cell.return : null,
-                      maxAbs
-                    );
-
-                    return (
-                      <td
-                        key={monthNum}
-                        style={{
-                          background: colors.bg,
-                          color: colors.text,
-                          opacity: colors.opacity,
-                          padding: '6px 2px',
-                          fontSize: 9,
-                          fontWeight: 800,
-                          textAlign: 'center',
-                          borderRadius: 4,
-                          minWidth: 28,
-                        }}
-                      >
-                        {cell 
-                          ? (cell.return > 0 ? '+' : '') + cell.return.toFixed(1)
-                          : '--'
-                        }
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
+                ))}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -288,7 +324,7 @@ const MonthlyReturnsHeatmap = React.memo(function MonthlyReturnsHeatmap(props) {
           <div style={{
             fontSize: 12,
             fontWeight: 800,
-            color: stats.avgReturn >= 0 ? C.mint : C.coral,
+            color: statsColors.avgReturn,
             fontFamily: "IBM Plex Mono,monospace",
           }}>
             {stats.avgReturn >= 0 ? '+' : ''}{stats.avgReturn.toFixed(1)}%
@@ -398,7 +434,16 @@ const MonthlyReturnsHeatmap = React.memo(function MonthlyReturnsHeatmap(props) {
         </div>
       </div>
     </div>
-    );
+  );
+}, (prev, next) => {
+  // Custom comparison
+  if (prev.data === next.data) return true;
+  if (!prev.data || !next.data) return false;
+  if (prev.data.months !== next.data.months) return false;
+  if (prev.data.stats !== next.data.stats) return false;
+  return true;
 });
 
-export default MonthlyReturnsHeatmap;     
+MonthlyReturnsHeatmap.displayName = 'MonthlyReturnsHeatmap';
+
+export default MonthlyReturnsHeatmap;
