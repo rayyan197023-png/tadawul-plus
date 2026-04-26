@@ -3,17 +3,20 @@
  * @module BacktestResultsCard
  * @description بطاقة عرض نتائج Backtest الكاملة
  * 
- * تعرض 18+ مقياساً في واجهة احترافية
- * مستوى Bloomberg Terminal + BlackRock Aladdin
+ * ✨ V2.0 - Performance Optimized:
+ * - useMemo for color calculations
+ * - React.memo on sub-components
+ * - Custom comparison
+ * - Modern JS
  * 
  * @author تداول+
- * @version 1.0
+ * @version 2.0
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Tooltip from '../Tooltip';
 
-var C = {
+const C = {
   ink: "#06080f", deep: "#090c16", void: "#0c1020",
   layer1: "#141d2b", layer2: "#1e2d42",
   edge: "#2e3e60", line: "#32426a",
@@ -23,10 +26,30 @@ var C = {
   plasma: "#a78bfa",
 };
 
+// Tooltip key mapping (cached outside component)
+const TOOLTIP_MAP = {
+  "معدل الربح": "Win Rate",
+  "Profit Factor": "Profit Factor",
+  "Sharpe Ratio": "Sharpe Ratio",
+  "Sortino Ratio": "Sortino Ratio",
+  "Calmar Ratio": "Calmar Ratio",
+  "Max Drawdown": "Maximum Drawdown",
+  "VaR 95%": "VaR",
+  "CVaR 95%": "CVaR",
+  "VaR": "VaR",
+  "CVaR": "CVaR",
+  "صفقات رابحة": "Win Rate",
+  "صفقات خاسرة": "Win Rate",
+  "متوسط الربح": "Profit Factor",
+  "متوسط الخسارة": "Profit Factor",
+};
+
 /**
- * مكوّن قيمة مقياس واحد
+ * مكوّن قيمة مقياس واحد - memoized
  */
-function MetricItem(props) {
+const MetricItem = React.memo(function MetricItem(props) {
+  const tooltipKey = TOOLTIP_MAP[props.label] || props.label;
+  
   return (
     <div style={{
       display: "flex",
@@ -37,7 +60,7 @@ function MetricItem(props) {
       borderRadius: 6,
       borderLeft: props.highlight ? "2px solid " + (props.color || C.gold) : "none",
     }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <span style={{ 
           fontSize: 10, 
           color: C.smoke, 
@@ -47,26 +70,7 @@ function MetricItem(props) {
           gap: 4,
         }}>
           {props.label}
-          <Tooltip 
-            termKey={
-              props.label === "معدل الربح" ? "Win Rate" :
-              props.label === "Profit Factor" ? "Profit Factor" :
-              props.label === "Sharpe Ratio" ? "Sharpe Ratio" :
-              props.label === "Sortino Ratio" ? "Sortino Ratio" :
-              props.label === "Calmar Ratio" ? "Calmar Ratio" :
-              props.label === "Max Drawdown" ? "Maximum Drawdown" :
-                            props.label === "VaR 95%" ? "VaR" :
-              props.label === "CVaR 95%" ? "CVaR" :
-              props.label === "VaR" ? "VaR" :
-              props.label === "CVaR" ? "CVaR" :
-              props.label === "صفقات رابحة" ? "Win Rate" :
-              props.label === "صفقات خاسرة" ? "Win Rate" :
-              props.label === "متوسط الربح" ? "Profit Factor" :
-              props.label === "متوسط الخسارة" ? "Profit Factor" :
-              props.label
-            } 
-            size="small"
-          />
+          <Tooltip termKey={tooltipKey} size="small" />
         </span>
         {props.sublabel && (
           <span style={{ fontSize: 8, color: C.ash }}>
@@ -84,12 +88,14 @@ function MetricItem(props) {
       </div>
     </div>
   );
-}
+});
+
+MetricItem.displayName = 'MetricItem';
 
 /**
- * قسم كامل (Title + Metrics)
+ * قسم كامل (Title + Metrics) - memoized
  */
-function Section(props) {
+const Section = React.memo(function Section(props) {
   return (
     <div style={{
       marginBottom: 12,
@@ -114,13 +120,71 @@ function Section(props) {
       </div>
     </div>
   );
+});
+
+Section.displayName = 'Section';
+
+/**
+ * Format money utility
+ */
+function formatMoney(value) {
+  if (value >= 1000000) return (value / 1000000).toFixed(2) + 'M ر.س';
+  if (value >= 1000) return (value / 1000).toFixed(1) + 'K ر.س';
+  return value.toFixed(0) + ' ر.س';
 }
 
+/**
+ * Main BacktestResultsCard component
+ */
 const BacktestResultsCard = React.memo(function BacktestResultsCard(props) {
-  var result = props.result;
-  var benchmarkResult = props.benchmarkResult;
-  var comparison = props.comparison;
+  const result = props.result;
+  const benchmarkResult = props.benchmarkResult;
+  const comparison = props.comparison;
 
+  // ═══════════════════════════════════════════════
+  // ✨ Color calculations - memoized
+  // ═══════════════════════════════════════════════
+  
+  const colors = useMemo(() => {
+    if (!result || !result.success) return null;
+    const perf = result.performance;
+    
+    return {
+      annualReturn: perf.annualReturn >= 15 ? C.mint 
+                  : perf.annualReturn >= 5 ? C.amber 
+                  : C.coral,
+      sharpe: perf.sharpe >= 1.5 ? C.mint
+            : perf.sharpe >= 1.0 ? C.teal
+            : perf.sharpe >= 0.5 ? C.amber
+            : C.coral,
+      dd: perf.maxDrawdown >= -10 ? C.mint
+        : perf.maxDrawdown >= -20 ? C.amber
+        : C.coral,
+      winRate: perf.winRate >= 60 ? C.mint
+             : perf.winRate >= 50 ? C.amber
+             : C.coral,
+      summary: result.summary.color === 'coral' ? C.coral
+             : result.summary.color === 'amber' ? C.amber
+             : C.mint,
+      sortino: perf.sortino >= 1.5 ? C.mint 
+             : perf.sortino >= 1 ? C.amber 
+             : C.coral,
+      calmar: perf.calmar >= 2 ? C.mint 
+            : perf.calmar >= 1 ? C.amber 
+            : C.coral,
+      profitFactor: perf.profitFactor >= 2 ? C.mint 
+                  : perf.profitFactor >= 1.5 ? C.amber 
+                  : C.coral,
+      volatility: perf.volatility < 15 ? C.mint 
+                : perf.volatility < 25 ? C.amber 
+                : C.coral,
+      positiveDays: perf.positiveDaysPct >= 55 ? C.mint 
+                  : perf.positiveDaysPct >= 50 ? C.amber 
+                  : C.coral,
+    };
+  }, [result]);
+
+  // Empty state
   if (!result || !result.success) {
     return (
       <div style={{
@@ -137,38 +201,14 @@ const BacktestResultsCard = React.memo(function BacktestResultsCard(props) {
     );
   }
 
-  var perf = result.performance;
-  var summary = result.summary;
-
-  // ألوان ديناميكية
-  var annualReturnColor = perf.annualReturn >= 15 ? C.mint 
-                        : perf.annualReturn >= 5 ? C.amber 
-                        : C.coral;
-  
-  var sharpeColor = perf.sharpe >= 1.5 ? C.mint
-                  : perf.sharpe >= 1.0 ? C.teal
-                  : perf.sharpe >= 0.5 ? C.amber
-                  : C.coral;
-  
-  var ddColor = perf.maxDrawdown >= -10 ? C.mint
-              : perf.maxDrawdown >= -20 ? C.amber
-              : C.coral;
-  
-  var winRateColor = perf.winRate >= 60 ? C.mint
-                   : perf.winRate >= 50 ? C.amber
-                   : C.coral;
-
-  // لون التقييم
-  var summaryColor = C.mint;
-  if (summary.color === 'coral') summaryColor = C.coral;
-  else if (summary.color === 'amber') summaryColor = C.amber;
-  else if (summary.color === 'mint') summaryColor = C.mint;
+  const perf = result.performance;
+  const summary = result.summary;
 
   return (
     <div style={{
       background: "linear-gradient(145deg," + C.layer1 + "," + C.layer2 + ")",
       borderRadius: 14,
-      border: "1px solid " + summaryColor + "33",
+      border: "1px solid " + colors.summary + "33",
       padding: "14px 12px",
       marginBottom: 12,
     }}>
@@ -205,11 +245,11 @@ const BacktestResultsCard = React.memo(function BacktestResultsCard(props) {
           
           <div style={{
             padding: "4px 10px",
-            background: summaryColor + "22",
-            border: "1px solid " + summaryColor + "55",
+            background: colors.summary + "22",
+            border: "1px solid " + colors.summary + "55",
             borderRadius: 20,
             fontSize: 10,
-            color: summaryColor,
+            color: colors.summary,
             fontWeight: 900,
           }}>
             {summary.label}
@@ -217,17 +257,13 @@ const BacktestResultsCard = React.memo(function BacktestResultsCard(props) {
         </div>
         
         {/* Summary Bar */}
-        <div style={{
-          display: "flex",
-          gap: 8,
-          marginTop: 8,
-        }}>
+        <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
           <div style={{ flex: 1, textAlign: "center" }}>
             <div style={{
               fontFamily: "IBM Plex Mono,monospace",
               fontSize: 20,
               fontWeight: 900,
-              color: annualReturnColor,
+              color: colors.annualReturn,
               lineHeight: 1,
             }}>
               {perf.annualReturn >= 0 ? '+' : ''}{perf.annualReturn}%
@@ -244,12 +280,12 @@ const BacktestResultsCard = React.memo(function BacktestResultsCard(props) {
               fontFamily: "IBM Plex Mono,monospace",
               fontSize: 20,
               fontWeight: 900,
-              color: sharpeColor,
+              color: colors.sharpe,
               lineHeight: 1,
             }}>
               {perf.sharpe}
             </div>
-                        <div style={{ fontSize: 9, color: C.smoke, marginTop: 3, display: "flex", alignItems: "center", justifyContent: "center", gap: 3 }}>
+            <div style={{ fontSize: 9, color: C.smoke, marginTop: 3, display: "flex", alignItems: "center", justifyContent: "center", gap: 3 }}>
               Sharpe
               <Tooltip termKey="Sharpe Ratio" size="small"/>
             </div>
@@ -262,7 +298,7 @@ const BacktestResultsCard = React.memo(function BacktestResultsCard(props) {
               fontFamily: "IBM Plex Mono,monospace",
               fontSize: 20,
               fontWeight: 900,
-              color: ddColor,
+              color: colors.dd,
               lineHeight: 1,
             }}>
               {perf.maxDrawdown}%
@@ -287,7 +323,7 @@ const BacktestResultsCard = React.memo(function BacktestResultsCard(props) {
           label="العائد السنوي"
           sublabel="CAGR"
           value={(perf.annualReturn >= 0 ? '+' : '') + perf.annualReturn + '%'}
-          color={annualReturnColor}
+          color={colors.annualReturn}
         />
         <MetricItem 
           label="القيمة النهائية"
@@ -298,117 +334,54 @@ const BacktestResultsCard = React.memo(function BacktestResultsCard(props) {
           label="التذبذب السنوي"
           sublabel="σ"
           value={perf.volatility + '%'}
-          color={perf.volatility < 15 ? C.mint : perf.volatility < 25 ? C.amber : C.coral}
+          color={colors.volatility}
         />
       </Section>
 
       {/* 📊 إحصاءات الصفقات */}
       <Section icon="📊" title="إحصاءات الصفقات" color={C.teal}>
-        <MetricItem 
-          label="إجمالي الصفقات"
-          value={perf.totalTrades}
-          color={C.snow}
-        />
-        <MetricItem 
-          label="معدل الربح"
-          sublabel="Win Rate"
-          value={perf.winRate + '%'}
-          color={winRateColor}
-          highlight={true}
-        />
-        <MetricItem 
-          label="صفقات رابحة"
-          value={perf.winningTrades}
-          color={C.mint}
-        />
-        <MetricItem 
-          label="صفقات خاسرة"
-          value={perf.losingTrades}
-          color={C.coral}
-        />
-        <MetricItem 
-          label="متوسط الربح"
-          value={'+' + perf.avgWin}
-          color={C.mint}
-        />
-        <MetricItem 
-          label="متوسط الخسارة"
-          value={'-' + perf.avgLoss}
-          color={C.coral}
-        />
+        <MetricItem label="إجمالي الصفقات" value={perf.totalTrades} color={C.snow} />
+        <MetricItem label="معدل الربح" sublabel="Win Rate" value={perf.winRate + '%'} color={colors.winRate} highlight={true} />
+        <MetricItem label="صفقات رابحة" value={perf.winningTrades} color={C.mint} />
+        <MetricItem label="صفقات خاسرة" value={perf.losingTrades} color={C.coral} />
+        <MetricItem label="متوسط الربح" value={'+' + perf.avgWin} color={C.mint} />
+        <MetricItem label="متوسط الخسارة" value={'-' + perf.avgLoss} color={C.coral} />
         <MetricItem 
           label="Profit Factor"
           sublabel="إجمالي الأرباح / إجمالي الخسائر"
           value={perf.profitFactor}
-          color={perf.profitFactor >= 2 ? C.mint : perf.profitFactor >= 1.5 ? C.amber : C.coral}
+          color={colors.profitFactor}
           highlight={true}
         />
       </Section>
 
       {/* ⚡ مقاييس المخاطر */}
       <Section icon="⚡" title="مقاييس المخاطر" color={C.coral}>
-        <MetricItem 
-          label="Sharpe Ratio"
-          sublabel="عائد مُعدّل بالمخاطرة"
-          value={perf.sharpe}
-          color={sharpeColor}
-        />
-        <MetricItem 
-          label="Sortino Ratio"
-          sublabel="مُعدّل بالمخاطر السلبية فقط"
-          value={perf.sortino}
-          color={perf.sortino >= 1.5 ? C.mint : perf.sortino >= 1 ? C.amber : C.coral}
-        />
-        <MetricItem 
-          label="Calmar Ratio"
-          sublabel="العائد / أسوأ تراجع"
-          value={perf.calmar}
-          color={perf.calmar >= 2 ? C.mint : perf.calmar >= 1 ? C.amber : C.coral}
-        />
+        <MetricItem label="Sharpe Ratio" sublabel="عائد مُعدّل بالمخاطرة" value={perf.sharpe} color={colors.sharpe} />
+        <MetricItem label="Sortino Ratio" sublabel="مُعدّل بالمخاطر السلبية فقط" value={perf.sortino} color={colors.sortino} />
+        <MetricItem label="Calmar Ratio" sublabel="العائد / أسوأ تراجع" value={perf.calmar} color={colors.calmar} />
         <MetricItem 
           label="Max Drawdown"
           sublabel={perf.maxDrawdownDate || ''}
           value={perf.maxDrawdown + '%'}
-          color={ddColor}
+          color={colors.dd}
           highlight={true}
         />
-        <MetricItem 
-          label="VaR 95%"
-          sublabel="خسارة محتملة يومياً"
-          value={'-' + perf.var95 + '%'}
-          color={C.amber}
-        />
-        <MetricItem 
-          label="CVaR 95%"
-          sublabel="متوسط أسوأ 5%"
-          value={'-' + perf.cvar95 + '%'}
-          color={C.coral}
-        />
+        <MetricItem label="VaR 95%" sublabel="خسارة محتملة يومياً" value={'-' + perf.var95 + '%'} color={C.amber} />
+        <MetricItem label="CVaR 95%" sublabel="متوسط أسوأ 5%" value={'-' + perf.cvar95 + '%'} color={C.coral} />
       </Section>
 
       {/* 📅 إحصاءات الأيام */}
       <Section icon="📅" title="إحصاءات الأيام" color={C.plasma}>
-        <MetricItem 
-          label="أيام رابحة"
-          value={perf.positiveDays + ' / ' + perf.totalDays}
-          color={C.mint}
-        />
+        <MetricItem label="أيام رابحة" value={perf.positiveDays + ' / ' + perf.totalDays} color={C.mint} />
         <MetricItem 
           label="معدل الأيام الإيجابية"
           value={perf.positiveDaysPct + '%'}
-          color={perf.positiveDaysPct >= 55 ? C.mint : perf.positiveDaysPct >= 50 ? C.amber : C.coral}
+          color={colors.positiveDays}
           highlight={true}
         />
-        <MetricItem 
-          label="أفضل يوم"
-          value={'+' + perf.bestDay + '%'}
-          color={C.mint}
-        />
-        <MetricItem 
-          label="أسوأ يوم"
-          value={perf.worstDay + '%'}
-          color={C.coral}
-        />
+        <MetricItem label="أفضل يوم" value={'+' + perf.bestDay + '%'} color={C.mint} />
+        <MetricItem label="أسوأ يوم" value={perf.worstDay + '%'} color={C.coral} />
       </Section>
 
       {/* ⚔️ مقارنة مع Benchmark */}
@@ -462,13 +435,13 @@ const BacktestResultsCard = React.memo(function BacktestResultsCard(props) {
       {summary.keyPoints && summary.keyPoints.length > 0 && (
         <div style={{
           padding: "10px 12px",
-          background: summaryColor + "10",
-          border: "1px solid " + summaryColor + "33",
+          background: colors.summary + "10",
+          border: "1px solid " + colors.summary + "33",
           borderRadius: 10,
         }}>
           <div style={{
             fontSize: 10,
-            color: summaryColor,
+            color: colors.summary,
             fontWeight: 800,
             letterSpacing: "1px",
             marginBottom: 8,
@@ -476,31 +449,28 @@ const BacktestResultsCard = React.memo(function BacktestResultsCard(props) {
             🎯 التحليل السريع
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            {summary.keyPoints.map(function(point, i) {
-              return (
-                <div key={'kp-' + i} style={{
-                  fontSize: 11,
-                  color: C.mist,
-                  padding: "4px 0",
-                }}>
-                  {point}
-                </div>
-              );
-            })}
+            {summary.keyPoints.map((point, i) => (
+              <div key={'kp-' + i} style={{
+                fontSize: 11,
+                color: C.mist,
+                padding: "4px 0",
+              }}>
+                {point}
+              </div>
+            ))}
           </div>
         </div>
-            )}
+      )}
     </div>
   );
+}, (prev, next) => {
+  // Custom comparison
+  if (prev.result !== next.result) return false;
+  if (prev.benchmarkResult !== next.benchmarkResult) return false;
+  if (prev.comparison !== next.comparison) return false;
+  return true;
 });
 
-export default BacktestResultsCard;
+BacktestResultsCard.displayName = 'BacktestResultsCard';
 
-/**
- * تنسيق الأرقام المالية
- */
-function formatMoney(value) {
-  if (value >= 1000000) return (value / 1000000).toFixed(2) + 'M ر.س';
-  if (value >= 1000) return (value / 1000).toFixed(1) + 'K ر.س';
-  return value.toFixed(0) + ' ر.س';
-}
+export default BacktestResultsCard;
