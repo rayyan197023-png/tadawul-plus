@@ -23,7 +23,6 @@ import {
   TASI_CORR_GROUPS, KELLY_CONFIG, RISK_GATE,
   applyFeedbackToWeights, loadFeedbackState,
   saveFeedbackState, getAdaptiveWeightAdjustment,
-  recordFeedback,
 } from '../engines/analysisEngine';
 
 // ── مكونات UI المساعدة
