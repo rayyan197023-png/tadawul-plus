@@ -433,16 +433,16 @@ const { setTab } = useNav();
               <span style={{fontSize:7,color:sub==="snapshots"?C.teal:C.smoke,fontWeight:600}}>لقطاتي</span>
               {snaps.length>0&&<div style={{position:"absolute",top:5,left:5,width:14,height:14,borderRadius:7,background:C.coral,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 6px "+C.coral+"88"}}><span style={{fontSize:7,color:"white",fontWeight:800}}>{snaps.length}</span></div>}
             </button>
-            <button onClick={function(){setTab(TAB_IDS.ALERTS);}} style={{
+                        <button onClick={function(){setTab(TAB_IDS.ALERTS);}} style={{
               width:44,height:44,borderRadius:12,cursor:"pointer",position:"relative",
-              background:sub==="alerts"?"linear-gradient(135deg,"+C.coral+"22,"+C.coral+"11)":"linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,.02))",
-              border:"1px solid "+(showAlerts?C.coral+"44":C.line),
+              background:"linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,.02))",
+              border:"1px solid "+C.line,
               display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,
-              boxShadow:showAlerts?"0 0 16px "+C.coral+"33, 0 2px 10px rgba(0,0,0,.25)":"0 2px 10px rgba(0,0,0,.2)",
+              boxShadow:"0 2px 10px rgba(0,0,0,.2)",
             }}>
               <Ico k="bell" color={C.coral} size={18}/>
-              <span style={{fontSize:7,color:showAlerts?C.coral:C.smoke,fontWeight:600}}>التنبيهات</span>
-            </button>
+              <span style={{fontSize:7,color:C.smoke,fontWeight:600}}>التنبيهات</span>
+            </button> 
             <button onClick={function(){setSub(sub==="settings"?"":"settings");}} style={{
               width:44,height:44,borderRadius:12,cursor:"pointer",
               background:sub==="settings"?"linear-gradient(135deg,"+C.gold+"22,"+C.goldD+"11)":"linear-gradient(135deg,"+C.layer2+","+C.layer3+")",
