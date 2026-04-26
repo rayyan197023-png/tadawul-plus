@@ -5,21 +5,23 @@ import { Cairo, IBM_Plex_Mono } from 'next/font/google';
 // ═══════════════════════════════════════════════
 
 const cairo = Cairo({
-  subsets: ['arabic', 'latin'],
+  subsets: ['arabic'],
   display: 'swap',
   variable: '--font-cairo',
-  weight: ['400', '600', '700', '800', '900'],
+  weight: ['400', '700', '900'],
   preload: true,
+  fallback: ['system-ui', 'arial', 'sans-serif'],
+  adjustFontFallback: true,
 });
 
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-mono',
-  weight: ['400', '500', '600', '700'],
-  preload: false, // load when needed
+  weight: ['500', '700'],
+  preload: false,
+  fallback: ['Consolas', 'Monaco', 'monospace'],
 });
-
 // ═══════════════════════════════════════════════
 // 📋 Metadata (SEO + Social + PWA)
 // ═══════════════════════════════════════════════
