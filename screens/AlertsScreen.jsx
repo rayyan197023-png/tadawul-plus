@@ -20,7 +20,7 @@ import {
   getAlertsStats,
   requestNotificationPermission,
 } from '../engines/smartAlertsEngine';
-import { useNav } from '../store';
+import { useNav } from '../store/navStore';
 import { useHaptic } from '../hooks/useHaptic';
 
 const C = {
