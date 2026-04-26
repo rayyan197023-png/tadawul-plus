@@ -8,7 +8,7 @@
  */
 
 const CACHE_NAME = 'tadawul-plus-v1';
-const STATIC_CACHE = 'tdw-static-v1';
+const STATIC_CACHE = 'tdw-static-v2';
 const RUNTIME_CACHE = 'tdw-runtime-v1';
 
 // Files to cache on install
