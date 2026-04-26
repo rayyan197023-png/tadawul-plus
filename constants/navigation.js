@@ -5,15 +5,16 @@
  */
 
 export const TAB_IDS = {
-  HOME:      'home',
-  STOCKS:    'stocks',
-  ANALYSIS:  'analysis',
-  PORTFOLIO: 'portfolio',
-  NEWS:      'news',
-  AI:        'ai',
-  MORE:      'more',
-  BACKTEST:  'backtest',
+  HOME:        'home',
+  STOCKS:      'stocks',
+  ANALYSIS:    'analysis',
+  PORTFOLIO:   'portfolio',
+  NEWS:        'news',
+  AI:          'ai',
+  MORE:        'more',
+  BACKTEST:    'backtest',
   REBALANCING: 'rebalancing',
+  ALERTS:      'alerts',
 };
 
 export const TABS = [
@@ -61,7 +62,7 @@ export const TABS = [
     glowBg:  'rgba(30,230,138,0.07)',
     isAI:    true,
   },
-      {
+  {
     id:      TAB_IDS.MORE,
     label:   'المزيد',
     accent:  '#f0c050',
@@ -76,13 +77,21 @@ export const TABS = [
     glowBg:   'rgba(240,192,80,0.07)',
     hidden:   true,  // 🔒 مخفية من الشريط السفلي
   },
-    {
+  {
     id:       TAB_IDS.REBALANCING,
     label:    'توازن المحفظة',
     accent:   '#4d9fff',
     glow:     'rgba(77,159,255,0.4)',
     glowBg:   'rgba(77,159,255,0.07)',
     hidden:   true,
+  },
+  {
+    id:       TAB_IDS.ALERTS,
+    label:    'التنبيهات',
+    accent:   '#fbbf24',
+    glow:     'rgba(251,191,36,0.4)',
+    glowBg:   'rgba(251,191,36,0.07)',
+    hidden:   true,  // 🔒 يُفتح من More أو Badge
   },
 ];
 
@@ -98,6 +107,14 @@ export const SCREENS_MAP = {
     accent:  '#f0c050',
     glow:    'rgba(240,192,80,0.4)',
     glowBg:  'rgba(240,192,80,0.07)',
+    hidden:  true,
+  },
+  [TAB_IDS.ALERTS]: {
+    id:      TAB_IDS.ALERTS,
+    label:   'التنبيهات',
+    accent:  '#fbbf24',
+    glow:    'rgba(251,191,36,0.4)',
+    glowBg:  'rgba(251,191,36,0.07)',
     hidden:  true,
   },
 };
