@@ -294,7 +294,15 @@ export default function AlertsScreen() {
   const [filter, setFilter] = useState('all');
   const [stats, setStats] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
-  const [settings, setSettings] = useState(loadAlertSettings());
+  const [settings, setSettings] = useState({
+  soundEnabled: true,
+  browserNotifications: true,
+  vibration: true,
+});
+
+useEffect(() => {
+  setSettings(loadAlertSettings());
+}, []);
 
   // Load alerts on mount + every 5 seconds
   useEffect(() => {
