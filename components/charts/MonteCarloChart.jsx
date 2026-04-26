@@ -3,19 +3,15 @@
  * @module MonteCarloChart
  * @description رسم توزيع نتائج Monte Carlo
  * 
- * يعرض:
- * - Histogram لـ 10,000 محاكاة
- * - Percentiles (5, 25, 50, 75, 95)
- * - الاحتماليات الرئيسية
- * - تصنيف المخاطر
- * 
+ * ✨ V2.0 - Performance Optimized
+ *
  * @author تداول+
- * @version 1.0
+ * @version 2.0
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 
-var C = {
+const C = {
   ink: "#06080f", deep: "#090c16", void: "#0c1020",
   layer1: "#141d2b", layer2: "#1e2d42",
   edge: "#2e3e60", line: "#32426a",
@@ -26,9 +22,121 @@ var C = {
 };
 
 const MonteCarloChart = React.memo(function MonteCarloChart(props) {
-  var mc = props.data;
+  const mc = props.data;
 
-  if (!mc || !mc.success) {
+  // ═══════════════════════════════════════════════
+  // ✨ Heavy calculations - memoized
+  // ═══════════════════════════════════════════════
+  
+  const chartData = useMemo(() => {
+    if (!mc || !mc.success) return null;
+
+    // Dimensions
+    const width = 350;
+    const height = 200;
+    const padding = { top: 20, right: 10, bottom: 35, left: 40 };
+    const chartWidth = width - padding.left - padding.right;
+    const chartHeight = height - padding.top - padding.bottom;
+
+    const distribution = mc.distribution || [];
+    
+    // Max count
+    let maxCount = 1;
+    distribution.forEach((d) => {
+      if (d.count > maxCount) maxCount = d.count;
+    });
+
+    // X-axis bounds
+    const minX = distribution.length > 0 ? distribution[0].start : -20;
+    const maxX = distribution.length > 0 ? distribution[distribution.length - 1].end : 40;
+    const xRange = maxX - minX || 1;
+
+    const xScale = (value) => padding.left + ((value - minX) / xRange) * chartWidth;
+    const yScale = (count) => padding.top + ((maxCount - count) / maxCount) * chartHeight;
+
+    // Bar width
+    const barWidth = distribution.length > 0 
+      ? chartWidth / distribution.length 
+      : 10;
+
+    // Pre-calculate bar data with colors
+    const barData = distribution.map((bin, i) => {
+      const barHeight = (bin.count / maxCount) * chartHeight;
+      const barX = padding.left + i * barWidth + 0.5;
+      const barY = padding.top + chartHeight - barHeight;
+      
+      let color;
+      if (bin.isNegative) {
+        const negIntensity = Math.abs(bin.midpoint) / Math.abs(minX);
+        color = 'rgba(255, 95, 106, ' + (0.4 + Math.min(negIntensity, 1) * 0.5) + ')';
+      } else {
+        const posIntensity = bin.midpoint / maxX;
+        color = 'rgba(30, 230, 138, ' + (0.4 + Math.min(posIntensity, 1) * 0.5) + ')';
+      }
+      
+      return {
+        ...bin,
+        barHeight,
+        barX,
+        barY,
+        color,
+      };
+    });
+
+    // Percentile lines
+    const percentileLines = [
+      { value: mc.returns.percentile5, label: 'P5', color: C.coral },
+      { value: mc.returns.median, label: 'P50', color: C.gold },
+      { value: mc.returns.percentile95, label: 'P95', color: C.mint },
+    ].map((p) => ({
+      ...p,
+      x: xScale(p.value),
+      visible: xScale(p.value) >= padding.left && xScale(p.value) <= width - padding.right,
+    }));
+
+    // X-axis labels
+    const xLabels = [];
+    for (let i = 0; i <= 4; i++) {
+      const val = minX + (xRange * i / 4);
+      xLabels.push({
+        value: val,
+        x: xScale(val),
+        label: val.toFixed(0) + '%',
+      });
+    }
+
+    // Risk color
+    let riskColor = C.amber;
+    if (mc.riskColor === 'mint') riskColor = C.mint;
+    else if (mc.riskColor === 'coral') riskColor = C.coral;
+
+    // Profit color
+    const profitColor = mc.probabilities.profit >= 80 ? C.mint
+                      : mc.probabilities.profit >= 65 ? C.teal
+                      : mc.probabilities.profit >= 50 ? C.amber
+                      : C.coral;
+
+    // Range data (5 rows)
+    const rangeRows = [
+      { label: 'أسوأ 5% (الكارثي)', value: mc.returns.percentile5, color: C.coral },
+      { label: 'أسوأ 10%', value: mc.returns.percentile10, color: C.amber },
+      { label: 'الوسيط (متوقع)', value: mc.returns.median, color: C.gold, bold: true },
+      { label: 'أفضل 10%', value: mc.returns.percentile90, color: C.mint },
+      { label: 'أفضل 5% (مثالي)', value: mc.returns.percentile95, color: C.mint },
+    ];
+
+    return {
+      width, height, padding, chartWidth, chartHeight,
+      maxCount, minX, maxX, xRange,
+      xScale, yScale,
+      barData, percentileLines, xLabels,
+      riskColor, profitColor,
+      rangeRows,
+    };
+  }, [mc]);
+
+  // Empty state
+  if (!chartData) {
     return (
       <div style={{
         background: C.layer1,
@@ -44,66 +152,14 @@ const MonteCarloChart = React.memo(function MonteCarloChart(props) {
     );
   }
 
-  // ① أبعاد الرسم
-  var width = 350;
-  var height = 200;
-  var padding = { top: 20, right: 10, bottom: 35, left: 40 };
-  var chartWidth = width - padding.left - padding.right;
-  var chartHeight = height - padding.top - padding.bottom;
-
-  // ② أعلى تكرار في التوزيع
-  var distribution = mc.distribution || [];
-  var maxCount = 1;
-  distribution.forEach(function(d) {
-    if (d.count > maxCount) maxCount = d.count;
-  });
-
-  // ③ حدود المحور السيني
-  var minX = distribution.length > 0 ? distribution[0].start : -20;
-  var maxX = distribution.length > 0 ? distribution[distribution.length - 1].end : 40;
-  var xRange = maxX - minX || 1;
-
-  function xScale(value) {
-    return padding.left + ((value - minX) / xRange) * chartWidth;
-  }
-
-  function yScale(count) {
-    return padding.top + ((maxCount - count) / maxCount) * chartHeight;
-  }
-
-  // ④ عرض العمود
-  var barWidth = distribution.length > 0 
-    ? chartWidth / distribution.length 
-    : 10;
-
-  // ⑤ مواقع الـ Percentiles
-  var percentileLines = [
-    { value: mc.returns.percentile5, label: 'P5', color: C.coral },
-    { value: mc.returns.median, label: 'P50', color: C.gold },
-    { value: mc.returns.percentile95, label: 'P95', color: C.mint },
-  ];
-
-  // ⑥ X-Axis Labels
-  var xLabels = [];
-  for (var i = 0; i <= 4; i++) {
-    var val = minX + (xRange * i / 4);
-    xLabels.push({
-      value: val,
-      x: xScale(val),
-      label: val.toFixed(0) + '%',
-    });
-  }
-
-  // ⑦ ألوان تصنيف المخاطر
-  var riskColor = C.amber;
-  if (mc.riskColor === 'mint') riskColor = C.mint;
-  else if (mc.riskColor === 'coral') riskColor = C.coral;
-
-  // ⑧ احتمالية الربح - لون
-  var profitColor = mc.probabilities.profit >= 80 ? C.mint
-                  : mc.probabilities.profit >= 65 ? C.teal
-                  : mc.probabilities.profit >= 50 ? C.amber
-                  : C.coral;
+  const {
+    width, height, padding, chartWidth, chartHeight,
+    maxCount,
+    xScale,
+    barData, percentileLines, xLabels,
+    riskColor, profitColor,
+    rangeRows,
+  } = chartData;
 
   return (
     <div style={{
@@ -182,8 +238,8 @@ const MonteCarloChart = React.memo(function MonteCarloChart(props) {
       {/* SVG Histogram */}
       <svg width={width} height={height} style={{ width: '100%', maxWidth: width }}>
         {/* Grid Lines */}
-        {[0, 1, 2, 3].map(function(i) {
-          var y = padding.top + (chartHeight / 4) * i;
+        {[0, 1, 2, 3].map((i) => {
+          const y = padding.top + (chartHeight / 4) * i;
           return (
             <line
               key={'grid-' + i}
@@ -196,37 +252,22 @@ const MonteCarloChart = React.memo(function MonteCarloChart(props) {
           );
         })}
 
-        {/* الأعمدة (Histogram) */}
-        {distribution.map(function(bin, i) {
-          var barHeight = (bin.count / maxCount) * chartHeight;
-          var barX = padding.left + i * barWidth + 0.5;
-          var barY = padding.top + chartHeight - barHeight;
-          
-          var color;
-          if (bin.isNegative) {
-            var negIntensity = Math.abs(bin.midpoint) / Math.abs(minX);
-            color = 'rgba(255, 95, 106, ' + (0.4 + Math.min(negIntensity, 1) * 0.5) + ')';
-          } else {
-            var posIntensity = bin.midpoint / maxX;
-            color = 'rgba(30, 230, 138, ' + (0.4 + Math.min(posIntensity, 1) * 0.5) + ')';
-          }
-          
-          return (
-            <rect
-              key={'bar-' + i}
-              x={barX}
-              y={barY}
-              width={Math.max(1, barWidth - 1)}
-              height={barHeight}
-              fill={color}
-              stroke={bin.isNegative ? C.coral : C.mint}
-              strokeOpacity={0.3}
-              strokeWidth={0.5}
-            />
-          );
-        })}
+        {/* Histogram Bars */}
+        {barData.map((bar, i) => (
+          <rect
+            key={'bar-' + i}
+            x={bar.barX}
+            y={bar.barY}
+            width={Math.max(1, chartData.barData[0] ? (chartWidth / barData.length) - 1 : 1)}
+            height={bar.barHeight}
+            fill={bar.color}
+            stroke={bar.isNegative ? C.coral : C.mint}
+            strokeOpacity={0.3}
+            strokeWidth={0.5}
+          />
+        ))}
 
-        {/* خط الصفر */}
+        {/* Zero Line */}
         <line
           x1={xScale(0)} y1={padding.top}
           x2={xScale(0)} y2={height - padding.bottom}
@@ -236,22 +277,21 @@ const MonteCarloChart = React.memo(function MonteCarloChart(props) {
           strokeDasharray="3,2"
         />
 
-        {/* خطوط Percentiles */}
-        {percentileLines.map(function(p, i) {
-          var x = xScale(p.value);
-          if (x < padding.left || x > width - padding.right) return null;
+        {/* Percentile Lines */}
+        {percentileLines.map((p, i) => {
+          if (!p.visible) return null;
           
           return (
             <g key={'perc-' + i}>
               <line
-                x1={x} y1={padding.top}
-                x2={x} y2={height - padding.bottom}
+                x1={p.x} y1={padding.top}
+                x2={p.x} y2={height - padding.bottom}
                 stroke={p.color}
                 strokeWidth={2}
                 strokeDasharray="4,3"
               />
               <text
-                x={x}
+                x={p.x}
                 y={padding.top - 3}
                 textAnchor="middle"
                 fontSize={8}
@@ -265,21 +305,19 @@ const MonteCarloChart = React.memo(function MonteCarloChart(props) {
         })}
 
         {/* X-Axis Labels */}
-        {xLabels.map(function(label, i) {
-          return (
-            <text
-              key={'xlabel-' + i}
-              x={label.x}
-              y={height - padding.bottom + 12}
-              textAnchor="middle"
-              fontSize={8}
-              fill={C.smoke}
-              fontFamily="IBM Plex Mono,monospace"
-            >
-              {label.label}
-            </text>
-          );
-        })}
+        {xLabels.map((label, i) => (
+          <text
+            key={'xlabel-' + i}
+            x={label.x}
+            y={height - padding.bottom + 12}
+            textAnchor="middle"
+            fontSize={8}
+            fill={C.smoke}
+            fontFamily="IBM Plex Mono,monospace"
+          >
+            {label.label}
+          </text>
+        ))}
 
         {/* Y-Axis Label */}
         <text
@@ -292,7 +330,7 @@ const MonteCarloChart = React.memo(function MonteCarloChart(props) {
           {maxCount}
         </text>
 
-        {/* Title X */}
+        {/* Title */}
         <text
           x={padding.left + chartWidth / 2}
           y={height - 3}
@@ -305,7 +343,7 @@ const MonteCarloChart = React.memo(function MonteCarloChart(props) {
         </text>
       </svg>
 
-      {/* 📊 نطاق النتائج */}
+      {/* 📊 Range */}
       <div style={{
         marginTop: 12,
         padding: "10px 12px",
@@ -326,45 +364,37 @@ const MonteCarloChart = React.memo(function MonteCarloChart(props) {
         </div>
         
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          {[
-            { label: 'أسوأ 5% (الكارثي)', value: mc.returns.percentile5, color: C.coral },
-            { label: 'أسوأ 10%', value: mc.returns.percentile10, color: C.amber },
-            { label: 'الوسيط (متوقع)', value: mc.returns.median, color: C.gold, bold: true },
-            { label: 'أفضل 10%', value: mc.returns.percentile90, color: C.mint },
-            { label: 'أفضل 5% (مثالي)', value: mc.returns.percentile95, color: C.mint },
-          ].map(function(row, i) {
-            return (
-              <div key={'range-' + i} style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "4px 6px",
-                background: row.bold ? row.color + "12" : "transparent",
-                borderRadius: 4,
-                borderLeft: row.bold ? "2px solid " + row.color : "none",
+          {rangeRows.map((row, i) => (
+            <div key={'range-' + i} style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "4px 6px",
+              background: row.bold ? row.color + "12" : "transparent",
+              borderRadius: 4,
+              borderLeft: row.bold ? "2px solid " + row.color : "none",
+            }}>
+              <span style={{
+                fontSize: 10,
+                color: C.smoke,
+                fontWeight: row.bold ? 800 : 600,
               }}>
-                <span style={{
-                  fontSize: 10,
-                  color: C.smoke,
-                  fontWeight: row.bold ? 800 : 600,
-                }}>
-                  {row.label}
-                </span>
-                <span style={{
-                  fontSize: 12,
-                  fontWeight: 900,
-                  color: row.color,
-                  fontFamily: "IBM Plex Mono,monospace",
-                }}>
-                  {row.value >= 0 ? '+' : ''}{row.value}%
-                </span>
-              </div>
-            );
-          })}
+                {row.label}
+              </span>
+              <span style={{
+                fontSize: 12,
+                fontWeight: 900,
+                color: row.color,
+                fontFamily: "IBM Plex Mono,monospace",
+              }}>
+                {row.value >= 0 ? '+' : ''}{row.value}%
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* 💰 الاحتماليات */}
+      {/* 💰 Probabilities */}
       <div style={{
         marginTop: 10,
         padding: "10px 12px",
@@ -471,7 +501,7 @@ const MonteCarloChart = React.memo(function MonteCarloChart(props) {
         </div>
       </div>
 
-      {/* 💡 التفسير */}
+      {/* 💡 Interpretation */}
       {mc.interpretation && mc.interpretation.length > 0 && (
         <div style={{
           marginTop: 10,
@@ -490,23 +520,27 @@ const MonteCarloChart = React.memo(function MonteCarloChart(props) {
             💡 التفسير الذكي
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            {mc.interpretation.map(function(point, i) {
-              return (
-                <div key={'interp-' + i} style={{
-                  fontSize: 11,
-                  color: C.mist,
-                  padding: "3px 0",
-                  lineHeight: 1.5,
-                }}>
-                  {point}
-                </div>
-              );
-            })}
+            {mc.interpretation.map((point, i) => (
+              <div key={'interp-' + i} style={{
+                fontSize: 11,
+                color: C.mist,
+                padding: "3px 0",
+                lineHeight: 1.5,
+              }}>
+                {point}
+              </div>
+            ))}
           </div>
         </div>
       )}
-        </div>
+    </div>
   );
+}, (prev, next) => {
+  // Custom comparison
+  if (prev.data === next.data) return true;
+  return false;
 });
+
+MonteCarloChart.displayName = 'MonteCarloChart';
 
 export default MonteCarloChart;
