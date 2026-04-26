@@ -1,5 +1,4 @@
 import { Cairo, IBM_Plex_Mono } from 'next/font/google';
-import './globals.css';
 
 // ═══════════════════════════════════════════════
 // 🎨 Fonts (Optimized with subsets + display swap)
