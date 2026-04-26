@@ -3,19 +3,15 @@
  * @module EquityCurveChart
  * @description رسم منحنى نمو المحفظة عبر الزمن
  * 
- * يعرض:
- * - Equity Curve للاستراتيجية
- * - Benchmark Curve (TASI / Buy & Hold)
- * - Alpha Zone (الفجوة)
- * - نقاط الصفقات (اختياري)
+ * ✨ V2.0 - Performance Optimized
  * 
  * @author تداول+
- * @version 1.0
+ * @version 2.0
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 
-var C = {
+const C = {
   ink: "#06080f", deep: "#090c16", void: "#0c1020",
   layer1: "#141d2b", layer2: "#1e2d42",
   edge: "#2e3e60", line: "#32426a",
@@ -24,15 +20,158 @@ var C = {
   mint: "#1ee68a", coral: "#ff5f6a", amber: "#fbbf24", teal: "#22d3ee",
 };
 
-const EquityCurveChart = React.memo(function EquityCurveChart(props) {
-  var equityCurve = props.equityCurve || [];
-  var benchmarkCurve = props.benchmarkCurve || [];
-  var initialCapital = props.initialCapital || 100000;
-  var showTrades = props.showTrades || false;
-  var trades = props.trades || [];
-  var height = props.height || 260;
+// Utility functions (cached outside component)
+function formatMoney(value) {
+  if (value >= 1000000) return (value / 1000000).toFixed(2) + 'M';
+  if (value >= 1000) return (value / 1000).toFixed(1) + 'K';
+  return value.toFixed(0);
+}
 
-  if (!equityCurve || equityCurve.length < 2) {
+function formatDate(date) {
+  if (!date) return '';
+  if (typeof date === 'string') {
+    const parts = date.split('-');
+    if (parts.length >= 2) return parts[1] + '/' + (parts[2] || '01');
+  }
+  if (date instanceof Date) {
+    return (date.getMonth() + 1) + '/' + date.getDate();
+  }
+  return '';
+}
+
+const EquityCurveChart = React.memo(function EquityCurveChart(props) {
+  const equityCurve = props.equityCurve || [];
+  const benchmarkCurve = props.benchmarkCurve || [];
+  const initialCapital = props.initialCapital || 100000;
+  const showTrades = props.showTrades || false;
+  const trades = props.trades || [];
+  const height = props.height || 260;
+
+  // ═══════════════════════════════════════════════
+  // ✨ Heavy calculations - memoized
+  // ═══════════════════════════════════════════════
+  
+  const chartData = useMemo(() => {
+    if (!equityCurve || equityCurve.length < 2) return null;
+
+    // ① Values
+    const allValues = equityCurve.map((e) => e.value);
+    
+    let benchmarkValues = [];
+    if (benchmarkCurve && benchmarkCurve.length > 0) {
+      const firstBench = benchmarkCurve[0].value;
+      benchmarkValues = benchmarkCurve.map((b) => (b.value / firstBench) * initialCapital);
+      benchmarkValues.forEach((v) => allValues.push(v));
+    }
+
+    let minVal = Math.min.apply(null, allValues);
+    let maxVal = Math.max.apply(null, allValues);
+    let range = maxVal - minVal || 1;
+    
+    // padding
+    minVal -= range * 0.05;
+    maxVal += range * 0.05;
+    range = maxVal - minVal;
+
+    // ② Dimensions
+    const width = 350;
+    const padding = { top: 20, right: 10, bottom: 35, left: 55 };
+    const chartWidth = width - padding.left - padding.right;
+    const chartHeight = height - padding.top - padding.bottom;
+
+    // ③ Scaling
+    const xScale = (index) => padding.left + (index / (equityCurve.length - 1)) * chartWidth;
+    const yScale = (value) => padding.top + ((maxVal - value) / range) * chartHeight;
+
+    // ④ Paths
+    const strategyPath = equityCurve.map((e, i) => 
+      (i === 0 ? 'M' : 'L') + xScale(i) + ',' + yScale(e.value)
+    ).join(' ');
+
+    let benchmarkPath = '';
+    if (benchmarkValues.length > 0) {
+      benchmarkPath = benchmarkValues.map((v, i) => 
+        (i === 0 ? 'M' : 'L') + xScale(i) + ',' + yScale(v)
+      ).join(' ');
+    }
+
+    // ⑤ Alpha area
+    let alphaPath = '';
+    if (benchmarkValues.length > 0) {
+      const alphaTop = equityCurve.map((e, i) => 
+        (i === 0 ? 'M' : 'L') + xScale(i) + ',' + yScale(e.value)
+      ).join(' ');
+      
+      let alphaBottom = '';
+      for (let k = equityCurve.length - 1; k >= 0; k--) {
+        const benchVal = benchmarkValues[k] || equityCurve[k].value;
+        alphaBottom += 'L' + xScale(k) + ',' + yScale(benchVal) + ' ';
+      }
+      alphaPath = alphaTop + ' ' + alphaBottom + ' Z';
+    }
+
+    // ⑥ Initial capital line
+    const initialLine = yScale(initialCapital);
+
+    // ⑦ Stats
+    const startValue = initialCapital;
+    const endValue = equityCurve[equityCurve.length - 1].value;
+    const totalReturn = ((endValue - startValue) / startValue) * 100;
+    
+    let benchReturn = 0;
+    if (benchmarkValues.length > 0) {
+      const benchEnd = benchmarkValues[benchmarkValues.length - 1];
+      benchReturn = ((benchEnd - initialCapital) / initialCapital) * 100;
+    }
+    
+    const alpha = totalReturn - benchReturn;
+
+    // ⑧ Y-Axis labels
+    const yLabels = [];
+    for (let i = 0; i <= 4; i++) {
+      const val = minVal + (range * i / 4);
+      yLabels.push({
+        value: val,
+        y: yScale(val),
+        label: val >= 1000000 
+          ? (val / 1000000).toFixed(2) + 'M' 
+          : val >= 1000 
+            ? (val / 1000).toFixed(0) + 'K' 
+            : val.toFixed(0),
+      });
+    }
+
+    // ⑨ Trade markers
+    const tradeMarkers = [];
+    if (showTrades && trades.length > 0) {
+      trades.slice(-20).forEach((trade) => {
+        const dayIndex = equityCurve.findIndex((e) => e.date === trade.date);
+        if (dayIndex < 0) return;
+        
+        tradeMarkers.push({
+          x: xScale(dayIndex),
+          y: yScale(equityCurve[dayIndex].value),
+          action: trade.action,
+        });
+      });
+    }
+
+    return {
+      width, height, padding, chartWidth, chartHeight,
+      benchmarkValues,
+      xScale, yScale,
+      strategyPath, benchmarkPath, alphaPath,
+      initialLine,
+      endValue, totalReturn, benchReturn, alpha,
+      yLabels, tradeMarkers,
+    };
+  }, [equityCurve, benchmarkCurve, initialCapital, showTrades, trades, height]);
+
+  // ═══════════════════════════════════════════════
+  // ✨ Empty state
+  // ═══════════════════════════════════════════════
+  
+  if (!chartData) {
     return (
       <div style={{
         background: C.layer1,
@@ -48,117 +187,13 @@ const EquityCurveChart = React.memo(function EquityCurveChart(props) {
     );
   }
 
-  // ① حساب الحدود
-  var allValues = equityCurve.map(function(e) { return e.value; });
-  
-  // إضافة قيم Benchmark إن وُجدت
-  var benchmarkValues = [];
-  if (benchmarkCurve && benchmarkCurve.length > 0) {
-    // تطبيع Benchmark على نفس Initial Capital
-    var firstBench = benchmarkCurve[0].value;
-    benchmarkValues = benchmarkCurve.map(function(b) {
-      return (b.value / firstBench) * initialCapital;
-    });
-    benchmarkValues.forEach(function(v) { allValues.push(v); });
-  }
-
-  var minVal = Math.min.apply(null, allValues);
-  var maxVal = Math.max.apply(null, allValues);
-  var range = maxVal - minVal || 1;
-  
-  // padding
-  minVal -= range * 0.05;
-  maxVal += range * 0.05;
-  range = maxVal - minVal;
-
-  // ② أبعاد الرسم
-  var width = 350;
-  var padding = { top: 20, right: 10, bottom: 35, left: 55 };
-  var chartWidth = width - padding.left - padding.right;
-  var chartHeight = height - padding.top - padding.bottom;
-
-  // ③ Scaling
-  function xScale(index) {
-    return padding.left + (index / (equityCurve.length - 1)) * chartWidth;
-  }
-  function yScale(value) {
-    return padding.top + ((maxVal - value) / range) * chartHeight;
-  }
-
-  // ④ بناء المسارات
-  var strategyPath = equityCurve.map(function(e, i) {
-    return (i === 0 ? 'M' : 'L') + xScale(i) + ',' + yScale(e.value);
-  }).join(' ');
-
-  // مسار Benchmark (إذا وُجد)
-  var benchmarkPath = '';
-  if (benchmarkValues.length > 0) {
-    benchmarkPath = benchmarkValues.map(function(v, i) {
-      return (i === 0 ? 'M' : 'L') + xScale(i) + ',' + yScale(v);
-    }).join(' ');
-  }
-
-  // ⑤ منطقة Alpha (بين الخطين)
-  var alphaPath = '';
-  if (benchmarkValues.length > 0) {
-    var alphaTop = equityCurve.map(function(e, i) {
-      return (i === 0 ? 'M' : 'L') + xScale(i) + ',' + yScale(e.value);
-    }).join(' ');
-    
-    var alphaBottom = '';
-    for (var k = equityCurve.length - 1; k >= 0; k--) {
-      var benchVal = benchmarkValues[k] || equityCurve[k].value;
-      alphaBottom += 'L' + xScale(k) + ',' + yScale(benchVal) + ' ';
-    }
-    alphaPath = alphaTop + ' ' + alphaBottom + ' Z';
-  }
-
-  // ⑥ خط رأس المال الأولي
-  var initialLine = yScale(initialCapital);
-
-  // ⑦ حساب الإحصاءات
-  var startValue = initialCapital;
-  var endValue = equityCurve[equityCurve.length - 1].value;
-  var totalReturn = ((endValue - startValue) / startValue) * 100;
-  
-  var benchReturn = 0;
-  if (benchmarkValues.length > 0) {
-    var benchEnd = benchmarkValues[benchmarkValues.length - 1];
-    benchReturn = ((benchEnd - initialCapital) / initialCapital) * 100;
-  }
-  
-  var alpha = totalReturn - benchReturn;
-
-  // ⑧ تسميات المحور Y
-  var yLabels = [];
-  for (var i = 0; i <= 4; i++) {
-    var val = minVal + (range * i / 4);
-    yLabels.push({
-      value: val,
-      y: yScale(val),
-      label: val >= 1000000 
-        ? (val / 1000000).toFixed(2) + 'M' 
-        : val >= 1000 
-          ? (val / 1000).toFixed(0) + 'K' 
-          : val.toFixed(0),
-    });
-  }
-
-  // ⑨ علامات الصفقات
-  var tradeMarkers = [];
-  if (showTrades && trades.length > 0) {
-    trades.slice(-20).forEach(function(trade) {
-      // ابحث عن اليوم في equity curve
-      var dayIndex = equityCurve.findIndex(function(e) { return e.date === trade.date; });
-      if (dayIndex < 0) return;
-      
-      tradeMarkers.push({
-        x: xScale(dayIndex),
-        y: yScale(equityCurve[dayIndex].value),
-        action: trade.action,
-      });
-    });
-  }
+  const {
+    width, padding, benchmarkValues,
+    xScale, yScale,
+    strategyPath, benchmarkPath, alphaPath,
+    initialLine, endValue, totalReturn, alpha,
+    yLabels, tradeMarkers,
+  } = chartData;
 
   return (
     <div style={{
@@ -217,33 +252,29 @@ const EquityCurveChart = React.memo(function EquityCurveChart(props) {
       {/* SVG Chart */}
       <svg width={width} height={height} style={{ width: '100%', maxWidth: width }}>
         {/* Grid Lines */}
-        {yLabels.map(function(label, i) {
-          return (
-            <line
-              key={'grid-' + i}
-              x1={padding.left} y1={label.y}
-              x2={width - padding.right} y2={label.y}
-              stroke={C.line} strokeOpacity={0.15}
-              strokeDasharray="2,3"
-            />
-          );
-        })}
+        {yLabels.map((label, i) => (
+          <line
+            key={'grid-' + i}
+            x1={padding.left} y1={label.y}
+            x2={width - padding.right} y2={label.y}
+            stroke={C.line} strokeOpacity={0.15}
+            strokeDasharray="2,3"
+          />
+        ))}
 
         {/* Y-Axis Labels */}
-        {yLabels.map(function(label, i) {
-          return (
-            <text
-              key={'ylabel-' + i}
-              x={padding.left - 5} y={label.y + 3}
-              textAnchor="end" fontSize={9}
-              fill={C.smoke} fontFamily="IBM Plex Mono,monospace"
-            >
-              {label.label}
-            </text>
-          );
-        })}
+        {yLabels.map((label, i) => (
+          <text
+            key={'ylabel-' + i}
+            x={padding.left - 5} y={label.y + 3}
+            textAnchor="end" fontSize={9}
+            fill={C.smoke} fontFamily="IBM Plex Mono,monospace"
+          >
+            {label.label}
+          </text>
+        ))}
 
-        {/* خط رأس المال الأولي */}
+        {/* Initial Capital Line */}
         <line
           x1={padding.left} y1={initialLine}
           x2={width - padding.right} y2={initialLine}
@@ -251,7 +282,7 @@ const EquityCurveChart = React.memo(function EquityCurveChart(props) {
           strokeDasharray="3,3"
         />
 
-        {/* منطقة Alpha */}
+        {/* Alpha Area */}
         {alphaPath && (
           <path
             d={alphaPath}
@@ -272,7 +303,7 @@ const EquityCurveChart = React.memo(function EquityCurveChart(props) {
           />
         )}
 
-        {/* Strategy Line (الأهم) */}
+        {/* Strategy Line */}
         <path
           d={strategyPath}
           fill="none"
@@ -285,7 +316,7 @@ const EquityCurveChart = React.memo(function EquityCurveChart(props) {
           }}
         />
 
-        {/* نقطة النهاية */}
+        {/* End Point */}
         <circle
           cx={xScale(equityCurve.length - 1)}
           cy={yScale(endValue)}
@@ -295,21 +326,19 @@ const EquityCurveChart = React.memo(function EquityCurveChart(props) {
           strokeWidth={2}
         />
 
-        {/* علامات الصفقات */}
-        {tradeMarkers.map(function(marker, i) {
-          return (
-            <circle
-              key={'trade-' + i}
-              cx={marker.x}
-              cy={marker.y}
-              r={2.5}
-              fill={marker.action === 'buy' ? C.mint : C.coral}
-              fillOpacity={0.7}
-              stroke={C.ink}
-              strokeWidth={0.5}
-            />
-          );
-        })}
+        {/* Trade Markers */}
+        {tradeMarkers.map((marker, i) => (
+          <circle
+            key={'trade-' + i}
+            cx={marker.x}
+            cy={marker.y}
+            r={2.5}
+            fill={marker.action === 'buy' ? C.mint : C.coral}
+            fillOpacity={0.7}
+            stroke={C.ink}
+            strokeWidth={0.5}
+          />
+        ))}
 
         {/* X-Axis Labels */}
         <text
@@ -337,7 +366,6 @@ const EquityCurveChart = React.memo(function EquityCurveChart(props) {
         gap: 6,
         marginTop: 10,
       }}>
-        {/* رأس المال الأولي */}
         <div style={{
           background: C.void + "88",
           borderRadius: 8,
@@ -357,7 +385,6 @@ const EquityCurveChart = React.memo(function EquityCurveChart(props) {
           </div>
         </div>
 
-        {/* القيمة النهائية */}
         <div style={{
           background: (totalReturn >= 0 ? C.mint : C.coral) + "15",
           border: "1px solid " + (totalReturn >= 0 ? C.mint : C.coral) + "33",
@@ -383,7 +410,6 @@ const EquityCurveChart = React.memo(function EquityCurveChart(props) {
           </div>
         </div>
 
-        {/* Alpha */}
         {benchmarkValues.length > 0 && (
           <div style={{
             background: C.gold + "15",
@@ -447,7 +473,7 @@ const EquityCurveChart = React.memo(function EquityCurveChart(props) {
         )}
       </div>
 
-      {/* تفسير */}
+      {/* Insight */}
       <div style={{
         marginTop: 8,
         padding: "8px 10px",
@@ -466,33 +492,20 @@ const EquityCurveChart = React.memo(function EquityCurveChart(props) {
           : benchmarkValues.length > 0
           ? ' -- أقل من تاسي بـ ' + alpha.toFixed(1) + '%'
           : ''}
-  </div>
+      </div>
     </div>
   );
+}, (prev, next) => {
+  // Custom comparison
+  if (prev.equityCurve !== next.equityCurve) return false;
+  if (prev.benchmarkCurve !== next.benchmarkCurve) return false;
+  if (prev.initialCapital !== next.initialCapital) return false;
+  if (prev.showTrades !== next.showTrades) return false;
+  if (prev.trades !== next.trades) return false;
+  if (prev.height !== next.height) return false;
+  return true;
 });
 
+EquityCurveChart.displayName = 'EquityCurveChart';
+
 export default EquityCurveChart;
-
-/**
- * تنسيق الأرقام المالية
- */
-function formatMoney(value) {
-  if (value >= 1000000) return (value / 1000000).toFixed(2) + 'M';
-  if (value >= 1000) return (value / 1000).toFixed(1) + 'K';
-  return value.toFixed(0);
-}
-
-/**
- * تنسيق التاريخ
- */
-function formatDate(date) {
-  if (!date) return '';
-  if (typeof date === 'string') {
-    var parts = date.split('-');
-    if (parts.length >= 2) return parts[1] + '/' + (parts[2] || '01');
-  }
-  if (date instanceof Date) {
-    return (date.getMonth() + 1) + '/' + date.getDate();
-  }
-  return '';
-}
