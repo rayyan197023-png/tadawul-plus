@@ -155,10 +155,10 @@ function Shell() {
     import('./lib/webVitals').then(({ reportWebVitals }) => {
       reportWebVitals();
     });
-        // ✨ Service Worker registration (PWA + Offline)
-    import('./lib/registerSW').then(({ registerServiceWorker }) => {
-      registerServiceWorker();
-    });
+        // ✨ Service Worker - UNREGISTER OLD VERSIONS (debug)
+import('./lib/registerSW').then(({ unregisterServiceWorker }) => {
+  unregisterServiceWorker();
+});
     
         // ✨ Smart Alerts Engine - يستخدم analyzeStockRadar (deep analysis)
     let alertsInterval;
