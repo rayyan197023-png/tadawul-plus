@@ -3,16 +3,18 @@
  * @module VaRDistributionChart
  * @description رسم توزيع العوائد مع خطوط VaR و CVaR
  *
- * Histogram of Returns + Risk Lines
- * منهجية: JPMorgan RiskMetrics + Basel III
+ * ✨ V2.0 - Performance Optimized:
+ * - useMemo for all heavy calculations
+ * - Custom comparison
+ * - Modern JS
  *
  * @author تداول+
- * @version 1.0
+ * @version 2.0
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 
-var C = {
+const C = {
   ink: "#06080f", deep: "#090c16", void: "#0c1020",
   layer1: "#141d2b", layer2: "#1e2d42",
   edge: "#2e3e60", line: "#32426a",
@@ -22,11 +24,110 @@ var C = {
 };
 
 const VaRDistributionChart = React.memo(function VaRDistributionChart(props) {
-  var data = props.data || { bins: [], stats: {} };
-  var bins = data.bins || [];
-  var stats = data.stats || {};
+  const data = props.data || { bins: [], stats: {} };
+  const bins = data.bins || [];
+  const stats = data.stats || {};
 
-  if (!bins || bins.length < 3) {
+  // ═══════════════════════════════════════════════
+  // ✨ Heavy calculations - memoized
+  // ═══════════════════════════════════════════════
+  
+  const chartData = useMemo(() => {
+    if (!bins || bins.length < 3) return null;
+
+    const width = 350;
+    const height = 220;
+    const padding = { top: 20, right: 10, bottom: 40, left: 40 };
+    const chartWidth = width - padding.left - padding.right;
+    const chartHeight = height - padding.top - padding.bottom;
+
+    // Max count
+    let maxCount = 1;
+    bins.forEach((b) => {
+      if (b.count > maxCount) maxCount = b.count;
+    });
+
+    const barWidth = chartWidth / bins.length;
+    const barGap = 1;
+
+    // X-axis bounds
+    const minX = bins[0].start;
+    const maxX = bins[bins.length - 1].end;
+    const xRange = maxX - minX;
+
+    const xScale = (value) => padding.left + ((value - minX) / xRange) * chartWidth;
+    const yScale = (count) => padding.top + ((maxCount - count) / maxCount) * chartHeight;
+
+    // Critical lines positions
+    const varX = xScale(-stats.var95);
+    const cvarX = xScale(-stats.cvar95);
+    const meanX = xScale(stats.mean);
+
+    // X-Axis Labels (5)
+    const xLabels = [];
+    for (let i = 0; i <= 4; i++) {
+      const val = minX + (xRange * i / 4);
+      xLabels.push({
+        value: val,
+        x: xScale(val),
+        label: val.toFixed(1) + '%',
+      });
+    }
+
+    // Y-Axis Labels
+    const yLabels = [];
+    const yStep = Math.ceil(maxCount / 4);
+    for (let j = 0; j <= 4; j++) {
+      const count = j * yStep;
+      yLabels.push({
+        count: count,
+        y: yScale(count),
+        label: count.toString(),
+      });
+    }
+
+    // Pre-calculate bar data with colors
+    const barData = bins.map((bin, i) => {
+      const barHeight = (bin.count / maxCount) * chartHeight;
+      const barX = padding.left + i * barWidth + barGap / 2;
+      const barY = padding.top + chartHeight - barHeight;
+      
+      let color;
+      if (bin.isNegative) {
+        const negIntensity = Math.abs(bin.midpoint) / Math.abs(minX);
+        color = 'rgba(255, 95, 106, ' + (0.4 + negIntensity * 0.5) + ')';
+      } else {
+        const posIntensity = bin.midpoint / maxX;
+        color = 'rgba(30, 230, 138, ' + (0.4 + posIntensity * 0.5) + ')';
+      }
+      
+      return { ...bin, barHeight, barX, barY, barWidth, color };
+    });
+
+    return {
+      width, height, padding, chartWidth, chartHeight,
+      maxCount, barWidth, barGap, minX, maxX, xRange,
+      xScale, yScale, varX, cvarX, meanX,
+      xLabels, yLabels, barData,
+    };
+  }, [bins, stats.var95, stats.cvar95, stats.mean]);
+
+  // ═══════════════════════════════════════════════
+  // ✨ Stats colors - memoized
+  // ═══════════════════════════════════════════════
+  
+  const statsColors = useMemo(() => ({
+    positiveDaysPct: stats.positiveDaysPct >= 55 ? C.mint 
+                   : stats.positiveDaysPct >= 45 ? C.amber 
+                   : C.coral,
+    mean: stats.mean >= 0 ? C.mint : C.coral,
+  }), [stats.positiveDaysPct, stats.mean]);
+
+  // ═══════════════════════════════════════════════
+  // ✨ Empty state
+  // ═══════════════════════════════════════════════
+  
+  if (!chartData) {
     return (
       <div style={{
         background: C.layer1,
@@ -42,63 +143,11 @@ const VaRDistributionChart = React.memo(function VaRDistributionChart(props) {
     );
   }
 
-  // ① أبعاد الرسم
-  var width = 350;
-  var height = 220;
-  var padding = { top: 20, right: 10, bottom: 40, left: 40 };
-  var chartWidth = width - padding.left - padding.right;
-  var chartHeight = height - padding.top - padding.bottom;
-
-  // ② أعلى تكرار
-  var maxCount = 1;
-  bins.forEach(function(b) {
-    if (b.count > maxCount) maxCount = b.count;
-  });
-
-  // ③ أبعاد العمود
-  var barWidth = chartWidth / bins.length;
-  var barGap = 1;
-
-  // ④ حدود المحور السيني
-  var minX = bins[0].start;
-  var maxX = bins[bins.length - 1].end;
-  var xRange = maxX - minX;
-
-  function xScale(value) {
-    return padding.left + ((value - minX) / xRange) * chartWidth;
-  }
-  
-  function yScale(count) {
-    return padding.top + ((maxCount - count) / maxCount) * chartHeight;
-  }
-
-  // ⑤ مواقع الخطوط الحرجة
-  var varX = xScale(-stats.var95);
-  var cvarX = xScale(-stats.cvar95);
-  var meanX = xScale(stats.mean);
-
-  // ⑥ X-Axis Labels (5 قيم)
-  var xLabels = [];
-  for (var i = 0; i <= 4; i++) {
-    var val = minX + (xRange * i / 4);
-    xLabels.push({
-      value: val,
-      x: xScale(val),
-      label: val.toFixed(1) + '%',
-    });
-  }
-
-  // ⑦ Y-Axis Labels
-  var yLabels = [];
-  var yStep = Math.ceil(maxCount / 4);
-  for (var j = 0; j <= 4; j++) {
-    var count = j * yStep;
-    yLabels.push({
-      count: count,
-      y: yScale(count),
-      label: count.toString(),
-    });
-  }
+  const {
+    width, height, padding, chartWidth,
+    xScale, yScale, varX, cvarX, meanX,
+    xLabels, yLabels, barData, barGap,
+  } = chartData;
 
   return (
     <div style={{
@@ -146,7 +195,7 @@ const VaRDistributionChart = React.memo(function VaRDistributionChart(props) {
             fontFamily: "IBM Plex Mono,monospace",
             fontSize: 18,
             fontWeight: 900,
-            color: stats.positiveDaysPct >= 55 ? C.mint : stats.positiveDaysPct >= 45 ? C.amber : C.coral,
+            color: statsColors.positiveDaysPct,
             lineHeight: 1,
           }}>
             {stats.positiveDaysPct}%
@@ -156,73 +205,51 @@ const VaRDistributionChart = React.memo(function VaRDistributionChart(props) {
 
       {/* SVG Chart */}
       <svg width={width} height={height} style={{ width: '100%', maxWidth: width }}>
-        {/* Grid Lines - أفقية */}
-        {yLabels.map(function(label, i) {
-          return (
-            <line
-              key={'ygrid-' + i}
-              x1={padding.left}
-              y1={label.y}
-              x2={width - padding.right}
-              y2={label.y}
-              stroke={C.line}
-              strokeOpacity={0.15}
-              strokeDasharray="2,3"
-            />
-          );
-        })}
+        {/* Grid Lines */}
+        {yLabels.map((label, i) => (
+          <line
+            key={'ygrid-' + i}
+            x1={padding.left}
+            y1={label.y}
+            x2={width - padding.right}
+            y2={label.y}
+            stroke={C.line}
+            strokeOpacity={0.15}
+            strokeDasharray="2,3"
+          />
+        ))}
 
         {/* Y-Axis Labels */}
-        {yLabels.map(function(label, i) {
-          return (
-            <text
-              key={'ylabel-' + i}
-              x={padding.left - 5}
-              y={label.y + 3}
-              textAnchor="end"
-              fontSize={8}
-              fill={C.smoke}
-              fontFamily="IBM Plex Mono,monospace"
-            >
-              {label.label}
-            </text>
-          );
-        })}
+        {yLabels.map((label, i) => (
+          <text
+            key={'ylabel-' + i}
+            x={padding.left - 5}
+            y={label.y + 3}
+            textAnchor="end"
+            fontSize={8}
+            fill={C.smoke}
+            fontFamily="IBM Plex Mono,monospace"
+          >
+            {label.label}
+          </text>
+        ))}
 
-        {/* الأعمدة (Histogram) */}
-        {bins.map(function(bin, i) {
-          var barHeight = (bin.count / maxCount) * chartHeight;
-          var barX = padding.left + i * barWidth + barGap / 2;
-          var barY = padding.top + chartHeight - barHeight;
-          
-          // اللون بناءً على العلامة
-          var color;
-          if (bin.isNegative) {
-            // أحمر متدرج للسلبية
-            var negIntensity = Math.abs(bin.midpoint) / Math.abs(minX);
-            color = 'rgba(255, 95, 106, ' + (0.4 + negIntensity * 0.5) + ')';
-          } else {
-            // أخضر متدرج للإيجابية
-            var posIntensity = bin.midpoint / maxX;
-            color = 'rgba(30, 230, 138, ' + (0.4 + posIntensity * 0.5) + ')';
-          }
-          
-          return (
-            <rect
-              key={'bar-' + i}
-              x={barX}
-              y={barY}
-              width={barWidth - barGap}
-              height={barHeight}
-              fill={color}
-              stroke={bin.isNegative ? C.coral : C.mint}
-              strokeOpacity={0.3}
-              strokeWidth={0.5}
-            />
-          );
-        })}
+        {/* Histogram Bars */}
+        {barData.map((bar, i) => (
+          <rect
+            key={'bar-' + i}
+            x={bar.barX}
+            y={bar.barY}
+            width={bar.barWidth - barGap}
+            height={bar.barHeight}
+            fill={bar.color}
+            stroke={bar.isNegative ? C.coral : C.mint}
+            strokeOpacity={0.3}
+            strokeWidth={0.5}
+          />
+        ))}
 
-        {/* خط الصفر */}
+        {/* Zero Line */}
         <line
           x1={xScale(0)}
           y1={padding.top}
@@ -234,7 +261,7 @@ const VaRDistributionChart = React.memo(function VaRDistributionChart(props) {
           strokeDasharray="3,2"
         />
 
-        {/* خط VaR 95% */}
+        {/* VaR 95% Line */}
         <line
           x1={varX}
           y1={padding.top}
@@ -255,7 +282,7 @@ const VaRDistributionChart = React.memo(function VaRDistributionChart(props) {
           VaR
         </text>
 
-        {/* خط CVaR 95% */}
+        {/* CVaR 95% Line */}
         <line
           x1={cvarX}
           y1={padding.top}
@@ -276,7 +303,7 @@ const VaRDistributionChart = React.memo(function VaRDistributionChart(props) {
           CVaR
         </text>
 
-        {/* خط المتوسط */}
+        {/* Mean Line */}
         <line
           x1={meanX}
           y1={padding.top}
@@ -298,21 +325,19 @@ const VaRDistributionChart = React.memo(function VaRDistributionChart(props) {
         </text>
 
         {/* X-Axis Labels */}
-        {xLabels.map(function(label, i) {
-          return (
-            <text
-              key={'xlabel-' + i}
-              x={label.x}
-              y={height - padding.bottom + 12}
-              textAnchor="middle"
-              fontSize={8}
-              fill={C.smoke}
-              fontFamily="IBM Plex Mono,monospace"
-            >
-              {label.label}
-            </text>
-          );
-        })}
+        {xLabels.map((label, i) => (
+          <text
+            key={'xlabel-' + i}
+            x={label.x}
+            y={height - padding.bottom + 12}
+            textAnchor="middle"
+            fontSize={8}
+            fill={C.smoke}
+            fontFamily="IBM Plex Mono,monospace"
+          >
+            {label.label}
+          </text>
+        ))}
 
         {/* Title */}
         <text
@@ -347,7 +372,7 @@ const VaRDistributionChart = React.memo(function VaRDistributionChart(props) {
           <div style={{
             fontSize: 12,
             fontWeight: 900,
-            color: stats.mean >= 0 ? C.mint : C.coral,
+            color: statsColors.mean,
             fontFamily: "IBM Plex Mono,monospace",
           }}>
             {stats.mean >= 0 ? '+' : ''}{stats.mean}%
@@ -454,7 +479,7 @@ const VaRDistributionChart = React.memo(function VaRDistributionChart(props) {
         </div>
       </div>
 
-      {/* تفسير */}
+      {/* Insight */}
       <div style={{
         marginTop: 10,
         padding: "8px 10px",
@@ -469,8 +494,25 @@ const VaRDistributionChart = React.memo(function VaRDistributionChart(props) {
         {stats.skewness < -0.5 && ' · التوزيع مائل سلبياً (خسائر كبيرة محتملة) ⚠️'}
       </div>
     </div>
-    );
+  );
+}, (prev, next) => {
+  // Custom comparison
+  if (prev.data === next.data) return true;
+  if (!prev.data || !next.data) return false;
+  
+  // Compare bins reference
+  if (prev.data.bins !== next.data.bins) return false;
+  
+  // Compare key stats
+  const ps = prev.data.stats || {};
+  const ns = next.data.stats || {};
+  if (ps.var95 !== ns.var95) return false;
+  if (ps.cvar95 !== ns.cvar95) return false;
+  if (ps.mean !== ns.mean) return false;
+  
+  return true;
 });
 
-export default VaRDistributionChart;
+VaRDistributionChart.displayName = 'VaRDistributionChart';
 
+export default VaRDistributionChart;
