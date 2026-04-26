@@ -625,7 +625,7 @@ const { setTab } = useNav();
 
             {showCalc&&<ProfitCalc onClose={function(){setShowCalc(false);}}/>}
       {showCompare&&<CompareView onClose={function(){setShowCompare(false);}}/>}
-      {showAlerts&&<AlertsPanel onClose={function(){setShowAlerts(false);}}/>}
+      
       
       {/* 🧠 AI Learning Dashboard */}
       {aiLearningOpen && (
