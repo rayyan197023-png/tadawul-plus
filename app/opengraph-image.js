@@ -1,6 +1,5 @@
 import { ImageResponse } from 'next/og';
 
-// Image metadata
 export const alt = 'تداول+ - تحليل ذكي للأسهم السعودية';
 export const size = {
   width: 1200,
@@ -8,7 +7,6 @@ export const size = {
 };
 export const contentType = 'image/png';
 
-// Image generation
 export default async function Image() {
   return new ImageResponse(
     (
@@ -23,72 +21,64 @@ export default async function Image() {
           alignItems: 'center',
           justifyContent: 'center',
           backgroundImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(240, 192, 80, 0.15) 0%, transparent 70%)',
-          fontFamily: 'sans-serif',
         }}
       >
-        {/* Logo/Title */}
+        {/* Title */}
         <div
           style={{
-            fontSize: 120,
+            fontSize: 140,
             fontWeight: 900,
             color: '#f0c050',
             letterSpacing: '-2px',
-            marginBottom: 20,
+            marginBottom: 30,
             textShadow: '0 0 40px rgba(240, 192, 80, 0.5)',
           }}
         >
-          تداول+
+          Tadawul+
         </div>
         
         {/* Subtitle */}
         <div
           style={{
-            fontSize: 36,
+            fontSize: 42,
             color: '#f0f6ff',
             fontWeight: 700,
-            marginBottom: 40,
+            marginBottom: 50,
           }}
         >
-          تحليل ذكي للأسهم السعودية
+          Saudi Stock Market AI Analysis
         </div>
         
         {/* Features */}
         <div
           style={{
             display: 'flex',
-            gap: 30,
-            fontSize: 24,
+            gap: 40,
+            fontSize: 28,
             color: '#90a4c8',
             fontWeight: 600,
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ color: '#1ee68a' }}>✓</span>
-            <span>9 طبقات تحليل</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ color: '#1ee68a' }}>✓</span>
-            <span>ذكاء اصطناعي</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ color: '#1ee68a' }}>✓</span>
-            <span>Backtest</span>
-          </div>
+          <div style={{ color: '#1ee68a' }}>9 Layers AI</div>
+          <div style={{ color: '#1ee68a' }}>•</div>
+          <div style={{ color: '#1ee68a' }}>Backtest</div>
+          <div style={{ color: '#1ee68a' }}>•</div>
+          <div style={{ color: '#1ee68a' }}>Smart Alerts</div>
         </div>
         
-        {/* Bottom Bar */}
+        {/* Bottom */}
         <div
           style={{
             position: 'absolute',
-            bottom: 40,
+            bottom: 50,
             display: 'flex',
             alignItems: 'center',
             gap: 15,
-            fontSize: 20,
+            fontSize: 22,
             color: '#5a6e94',
           }}
         >
-          <span>tadawul-plus.vercel.app</span>
+          tadawul-plus.vercel.app
         </div>
       </div>
     ),
