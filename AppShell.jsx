@@ -159,6 +159,63 @@ function Shell() {
     import('./lib/registerSW').then(({ registerServiceWorker }) => {
       registerServiceWorker();
     });
+    
+    // ✨ Smart Alerts Engine - يعمل كل 60 ثانية
+    let alertsInterval;
+    const initAlerts = async () => {
+      try {
+        const { runSmartAlertsEngine } = await import('./engines/smartAlertsEngine');
+        const { STOCKS } = await import('./constants/stocksData');
+        const { genBars, stockHealth } = await import('./engines/analysisEngine');
+        
+        const runAlerts = () => {
+          try {
+            // Build current stocks with health data
+            const currentStocks = STOCKS.map(s => {
+              const bars = genBars(s, 60);
+              const health = stockHealth(s, bars);
+              return {
+                ...s,
+                bars,
+                health: health?.score || 0,
+                rsi: health?.layers?.rsi?.value || 50,
+                macd: health?.layers?.macd?.value || 0,
+                bos: health?.layers?.structure?.bos || null,
+                vr: health?.layers?.cmf?.volRatio || 1,
+                trend: health?.layers?.structure?.trend || 'neutral',
+              };
+            });
+            
+            // Get positions
+            let positions = [];
+            try {
+              const portRaw = window.localStorage.getItem('tp_port');
+              positions = portRaw ? JSON.parse(portRaw) : [];
+            } catch (e) {}
+            
+            // Run engine
+            runSmartAlertsEngine(currentStocks, positions);
+          } catch (e) {
+            console.warn('[Alerts] Run failed:', e.message);
+          }
+        };
+        
+        // Initial run after 5 seconds
+        setTimeout(runAlerts, 5000);
+        
+        // Then every 60 seconds
+        alertsInterval = setInterval(runAlerts, 60000);
+      } catch (e) {
+        console.warn('[Alerts] Init failed:', e.message);
+      }
+    };
+    
+    // Start alerts after idle
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(initAlerts, { timeout: 3000 });
+    } else {
+      setTimeout(initAlerts, 3000);
+    }
 
     // Preload most-used screens after initial paint
     const preloadScreens = () => {
