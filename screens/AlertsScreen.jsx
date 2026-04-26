@@ -2,12 +2,6 @@
 /**
  * @module AlertsScreen
  * @description Alert Center - شاشة التنبيهات الكاملة
- * 
- * Features:
- * - عرض كل التنبيهات
- * - Filtering (Priority, Type, Date)
- * - Mark as read/Dismiss
- * - Settings access
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -20,8 +14,6 @@ import {
   getAlertsStats,
   requestNotificationPermission,
 } from '../engines/smartAlertsEngine';
-import { useNav } from '../store/navStore';
-import { useHaptic } from '../hooks/useHaptic';
 
 const C = {
   ink: "#06080f", deep: "#090c16", void: "#0c1020",
@@ -33,7 +25,6 @@ const C = {
   amber: "#fbbf24", teal: "#22d3ee", plasma: "#a78bfa",
 };
 
-// Priority colors
 const PRIORITY_COLORS = {
   [PRIORITY.CRITICAL]: C.coral,
   [PRIORITY.HIGH]: C.amber,
@@ -48,8 +39,8 @@ const PRIORITY_LABELS = {
   [PRIORITY.LOW]: 'عادي',
 };
 
-// Time formatter
 function formatTime(timestamp) {
+  if (!timestamp) return '';
   const now = Date.now();
   const diff = now - timestamp;
   const mins = Math.floor(diff / 60000);
@@ -61,13 +52,16 @@ function formatTime(timestamp) {
   if (hours < 24) return `قبل ${hours} س`;
   if (days < 7) return `قبل ${days} يوم`;
   
-  return new Date(timestamp).toLocaleDateString('ar-SA');
+  try {
+    return new Date(timestamp).toLocaleDateString('ar-SA');
+  } catch (e) {
+    return '';
+  }
 }
 
-// Alert Card Component
 const AlertCard = React.memo(function AlertCard({ alert, onDismiss, onMarkRead }) {
   const priorityColor = PRIORITY_COLORS[alert.priority] || C.smoke;
-  const haptic = useHaptic();
+  const alertColor = alert.color || C.smoke;
   
   return (
     <div
@@ -75,9 +69,9 @@ const AlertCard = React.memo(function AlertCard({ alert, onDismiss, onMarkRead }
       style={{
         background: alert.read 
           ? `linear-gradient(135deg, ${C.layer1}, ${C.layer2})`
-          : `linear-gradient(135deg, ${alert.color}15, ${alert.color}08)`,
+          : `linear-gradient(135deg, ${alertColor}15, ${alertColor}08)`,
         borderRadius: 14,
-        border: `1px solid ${alert.read ? C.line : alert.color + '44'}`,
+        border: `1px solid ${alert.read ? C.line : alertColor + '44'}`,
         padding: '12px 14px',
         marginBottom: 10,
         cursor: 'pointer',
@@ -85,7 +79,6 @@ const AlertCard = React.memo(function AlertCard({ alert, onDismiss, onMarkRead }
         transition: 'all 0.2s',
       }}
     >
-      {/* Unread indicator */}
       {!alert.read && (
         <div style={{
           position: 'absolute',
@@ -94,30 +87,27 @@ const AlertCard = React.memo(function AlertCard({ alert, onDismiss, onMarkRead }
           width: 8,
           height: 8,
           borderRadius: '50%',
-          background: alert.color,
-          boxShadow: `0 0 8px ${alert.color}`,
+          background: alertColor,
+          boxShadow: `0 0 8px ${alertColor}`,
         }} />
       )}
       
-      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
-        {/* Icon */}
         <div style={{
           width: 40,
           height: 40,
           borderRadius: 10,
-          background: alert.color + '22',
-          border: `1px solid ${alert.color}44`,
+          background: alertColor + '22',
+          border: `1px solid ${alertColor}44`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           fontSize: 20,
           flexShrink: 0,
         }}>
-          {alert.icon}
+          {alert.icon || '🔔'}
         </div>
         
-        {/* Title + meta */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
             fontSize: 13,
@@ -126,31 +116,35 @@ const AlertCard = React.memo(function AlertCard({ alert, onDismiss, onMarkRead }
             marginBottom: 4,
             lineHeight: 1.3,
           }}>
-            {alert.title}
+            {alert.title || 'تنبيه'}
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <span style={{
-              fontSize: 10,
-              fontWeight: 700,
-              color: alert.color,
-              background: alert.color + '15',
-              padding: '2px 8px',
-              borderRadius: 5,
-            }}>
-              {alert.sym}
-            </span>
+            {alert.sym && (
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                color: alertColor,
+                background: alertColor + '15',
+                padding: '2px 8px',
+                borderRadius: 5,
+              }}>
+                {alert.sym}
+              </span>
+            )}
             
-            <span style={{
-              fontSize: 10,
-              fontWeight: 700,
-              color: priorityColor,
-              background: priorityColor + '15',
-              padding: '2px 8px',
-              borderRadius: 5,
-            }}>
-              {PRIORITY_LABELS[alert.priority]}
-            </span>
+            {alert.priority && (
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                color: priorityColor,
+                background: priorityColor + '15',
+                padding: '2px 8px',
+                borderRadius: 5,
+              }}>
+                {PRIORITY_LABELS[alert.priority] || ''}
+              </span>
+            )}
             
             <span style={{ fontSize: 10, color: C.smoke }}>
               {formatTime(alert.timestamp)}
@@ -159,17 +153,17 @@ const AlertCard = React.memo(function AlertCard({ alert, onDismiss, onMarkRead }
         </div>
       </div>
       
-      {/* Message */}
-      <div style={{
-        fontSize: 12,
-        color: C.mist,
-        lineHeight: 1.5,
-        marginBottom: 8,
-      }}>
-        {alert.message}
-      </div>
+      {alert.message && (
+        <div style={{
+          fontSize: 12,
+          color: C.mist,
+          lineHeight: 1.5,
+          marginBottom: 8,
+        }}>
+          {alert.message}
+        </div>
+      )}
       
-      {/* Detail */}
       {alert.detail && (
         <div style={{
           fontSize: 11,
@@ -184,12 +178,10 @@ const AlertCard = React.memo(function AlertCard({ alert, onDismiss, onMarkRead }
         </div>
       )}
       
-      {/* Actions */}
       <div style={{ display: 'flex', gap: 8 }}>
         <button
           onClick={(e) => { 
-            e.stopPropagation(); 
-            haptic.tap();
+            e.stopPropagation();
             onDismiss(alert.id); 
           }}
           style={{
@@ -209,20 +201,17 @@ const AlertCard = React.memo(function AlertCard({ alert, onDismiss, onMarkRead }
         </button>
         
         <button
-          onClick={(e) => { 
-            e.stopPropagation();
-            haptic.tap();
-          }}
+          onClick={(e) => e.stopPropagation()}
           style={{
             flex: 2,
             padding: '8px',
-            background: `linear-gradient(135deg, ${alert.color}25, ${alert.color}10)`,
-            border: `1px solid ${alert.color}44`,
+            background: `linear-gradient(135deg, ${alertColor}25, ${alertColor}10)`,
+            border: `1px solid ${alertColor}44`,
             borderRadius: 8,
             cursor: 'pointer',
             fontSize: 11,
             fontWeight: 800,
-            color: alert.color,
+            color: alertColor,
             fontFamily: 'inherit',
           }}
         >
@@ -235,7 +224,6 @@ const AlertCard = React.memo(function AlertCard({ alert, onDismiss, onMarkRead }
 
 AlertCard.displayName = 'AlertCard';
 
-// Empty State
 function EmptyState() {
   return (
     <div style={{
@@ -279,7 +267,6 @@ function EmptyState() {
   );
 }
 
-// Filter Tabs
 const FILTERS = [
   { id: 'all', label: 'الكل', color: C.smoke },
   { id: 'unread', label: 'غير مقروء', color: C.electric },
@@ -287,22 +274,25 @@ const FILTERS = [
   { id: PRIORITY.HIGH, label: 'عاجل', color: C.amber },
 ];
 
-// Main Screen
 export default function AlertsScreen() {
-  const haptic = useHaptic();
   const [alerts, setAlerts] = useState([]);
   const [filter, setFilter] = useState('all');
   const [stats, setStats] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const [settings, setSettings] = useState({
-  soundEnabled: true,
-  browserNotifications: true,
-  vibration: true,
-});
+    soundEnabled: true,
+    browserNotifications: true,
+    vibration: true,
+  });
 
-useEffect(() => {
-  setSettings(loadAlertSettings());
-}, []);
+  // Load settings on mount (SSR-safe)
+  useEffect(() => {
+    try {
+      setSettings(loadAlertSettings());
+    } catch (e) {
+      console.warn('[Alerts] Settings load failed:', e);
+    }
+  }, []);
 
   // Load alerts on mount + every 5 seconds
   useEffect(() => {
@@ -311,9 +301,15 @@ useEffect(() => {
         if (typeof window === 'undefined') return;
         const raw = window.localStorage.getItem('tadawul_alerts');
         const data = raw ? JSON.parse(raw) : [];
-        setAlerts(data);
-        setStats(getAlertsStats());
-      } catch (e) {}
+        setAlerts(Array.isArray(data) ? data : []);
+        
+        try {
+          setStats(getAlertsStats());
+        } catch (e) {}
+      } catch (e) {
+        console.warn('[Alerts] Load failed:', e);
+        setAlerts([]);
+      }
     }
     
     loadAlerts();
@@ -321,83 +317,85 @@ useEffect(() => {
     return () => clearInterval(interval);
   }, []);
 
-  // Mark as read
   const markAsRead = useCallback((id) => {
     setAlerts(prev => {
       const updated = prev.map(a => a.id === id ? { ...a, read: true } : a);
       try {
-        window.localStorage.setItem('tadawul_alerts', JSON.stringify(updated));
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem('tadawul_alerts', JSON.stringify(updated));
+        }
       } catch (e) {}
       return updated;
     });
   }, []);
 
-  // Dismiss alert
   const dismissAlert = useCallback((id) => {
-    haptic.tap();
     setAlerts(prev => {
       const updated = prev.filter(a => a.id !== id);
       try {
-        window.localStorage.setItem('tadawul_alerts', JSON.stringify(updated));
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem('tadawul_alerts', JSON.stringify(updated));
+        }
       } catch (e) {}
       return updated;
     });
-  }, [haptic]);
+  }, []);
 
-  // Mark all as read
   const markAllAsRead = useCallback(() => {
-    haptic.tap();
     setAlerts(prev => {
       const updated = prev.map(a => ({ ...a, read: true }));
       try {
-        window.localStorage.setItem('tadawul_alerts', JSON.stringify(updated));
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem('tadawul_alerts', JSON.stringify(updated));
+        }
       } catch (e) {}
       return updated;
     });
-  }, [haptic]);
+  }, []);
 
-  // Clear all
   const clearAll = useCallback(() => {
-    haptic.tap();
-    if (confirm('هل أنت متأكد من حذف كل التنبيهات؟')) {
+    if (typeof window === 'undefined') return;
+    if (window.confirm('هل أنت متأكد من حذف كل التنبيهات؟')) {
       setAlerts([]);
       try {
         window.localStorage.setItem('tadawul_alerts', JSON.stringify([]));
       } catch (e) {}
     }
-  }, [haptic]);
+  }, []);
 
-  // Filter alerts
   const filteredAlerts = useMemo(() => {
     if (filter === 'all') return alerts;
     if (filter === 'unread') return alerts.filter(a => !a.read);
     return alerts.filter(a => a.priority === filter);
   }, [alerts, filter]);
 
-  // Update setting
   const updateSetting = useCallback((key, value) => {
-    haptic.tap();
-    const updated = { ...settings, [key]: value };
-    setSettings(updated);
-    saveAlertSettings(updated);
-  }, [settings, haptic]);
+    setSettings(prev => {
+      const updated = { ...prev, [key]: value };
+      try {
+        saveAlertSettings(updated);
+      } catch (e) {}
+      return updated;
+    });
+  }, []);
 
-  // Request permission
   const requestPermission = useCallback(async () => {
-    haptic.tap();
-    const result = await requestNotificationPermission();
-    if (result === 'granted') {
-      updateSetting('browserNotifications', true);
-    }
-  }, [haptic, updateSetting]);
+    try {
+      const result = await requestNotificationPermission();
+      if (result === 'granted') {
+        updateSetting('browserNotifications', true);
+      }
+    } catch (e) {}
+  }, [updateSetting]);
 
   return (
     <div style={{
       minHeight: '100vh',
       background: C.ink,
       paddingBottom: 100,
+      direction: 'rtl',
+      fontFamily: 'Cairo, sans-serif',
     }}>
-      {/* Header */}
       <div style={{
         position: 'sticky',
         top: 0,
@@ -446,7 +444,6 @@ useEffect(() => {
           </button>
         </div>
 
-        {/* Stats */}
         {stats && (
           <div style={{
             display: 'flex',
@@ -455,35 +452,34 @@ useEffect(() => {
           }}>
             <div style={{ flex: 1, background: C.layer3, padding: '8px', borderRadius: 8, textAlign: 'center' }}>
               <div style={{ fontSize: 16, fontWeight: 900, color: C.snow }}>
-                {stats.total}
+                {stats.total || 0}
               </div>
               <div style={{ fontSize: 9, color: C.smoke, marginTop: 2 }}>الإجمالي</div>
             </div>
             
             <div style={{ flex: 1, background: C.electric + '15', padding: '8px', borderRadius: 8, textAlign: 'center' }}>
               <div style={{ fontSize: 16, fontWeight: 900, color: C.electric }}>
-                {stats.unread}
+                {stats.unread || 0}
               </div>
               <div style={{ fontSize: 9, color: C.smoke, marginTop: 2 }}>غير مقروء</div>
             </div>
             
             <div style={{ flex: 1, background: C.coral + '15', padding: '8px', borderRadius: 8, textAlign: 'center' }}>
               <div style={{ fontSize: 16, fontWeight: 900, color: C.coral }}>
-                {stats.byPriority.critical}
+                {stats.byPriority?.critical || 0}
               </div>
               <div style={{ fontSize: 9, color: C.smoke, marginTop: 2 }}>حرج</div>
             </div>
             
             <div style={{ flex: 1, background: C.amber + '15', padding: '8px', borderRadius: 8, textAlign: 'center' }}>
               <div style={{ fontSize: 16, fontWeight: 900, color: C.amber }}>
-                {stats.byPriority.high}
+                {stats.byPriority?.high || 0}
               </div>
               <div style={{ fontSize: 9, color: C.smoke, marginTop: 2 }}>عاجل</div>
             </div>
           </div>
         )}
 
-        {/* Filters */}
         <div style={{
           display: 'flex',
           gap: 6,
@@ -493,7 +489,7 @@ useEffect(() => {
           {FILTERS.map(f => (
             <button
               key={f.id}
-              onClick={() => { haptic.tap(); setFilter(f.id); }}
+              onClick={() => setFilter(f.id)}
               style={{
                 padding: '6px 12px',
                 background: filter === f.id 
@@ -516,7 +512,6 @@ useEffect(() => {
         </div>
       </div>
 
-      {/* Settings Panel */}
       {showSettings && (
         <div style={{
           margin: '10px 20px',
@@ -535,7 +530,6 @@ useEffect(() => {
             ⚙️ الإعدادات
           </div>
           
-          {/* Browser Notifications */}
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -579,7 +573,6 @@ useEffect(() => {
             </button>
           </div>
           
-          {/* Sound */}
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -621,7 +614,6 @@ useEffect(() => {
             </button>
           </div>
           
-          {/* Vibration */}
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -664,7 +656,6 @@ useEffect(() => {
         </div>
       )}
 
-      {/* Action Bar */}
       {alerts.length > 0 && (
         <div style={{
           padding: '10px 20px',
@@ -709,7 +700,6 @@ useEffect(() => {
         </div>
       )}
 
-      {/* Alerts List */}
       <div style={{ padding: '0 20px' }}>
         {filteredAlerts.length === 0 ? (
           <EmptyState />
