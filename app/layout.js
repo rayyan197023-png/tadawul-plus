@@ -22,40 +22,27 @@ const ibmPlexMono = IBM_Plex_Mono({
   preload: false,
   fallback: ['Consolas', 'Monaco', 'monospace'],
 });
+
 // ═══════════════════════════════════════════════
 // 📋 Metadata (SEO + Social + PWA)
 // ═══════════════════════════════════════════════
 
 export const metadata = {
-  // Basic
   title: {
     default: 'تداول+ | تحليل ذكي للأسهم السعودية',
     template: '%s | تداول+',
   },
   description: 'تطبيق احترافي لتحليل الأسهم السعودية (تاسي) باستخدام الذكاء الاصطناعي والطبقات التسع. مع Backtest، إدارة محفظة، تنبيهات ذكية، ونظام توصيات متقدم.',
   keywords: [
-    'تاسي',
-    'أسهم سعودية',
-    'تحليل أسهم',
-    'سوق الأسهم السعودي',
-    'تداول',
-    'استثمار',
-    'محفظة استثمارية',
-    'ذكاء اصطناعي',
-    'تحليل فني',
-    'Wyckoff',
-    'الراجحي',
-    'أرامكو',
-    'STC',
-    'Tadawul',
-    'Saudi Stock Market',
-    'TASI',
+    'تاسي', 'أسهم سعودية', 'تحليل أسهم', 'سوق الأسهم السعودي',
+    'تداول', 'استثمار', 'محفظة استثمارية', 'ذكاء اصطناعي',
+    'تحليل فني', 'Wyckoff', 'الراجحي', 'أرامكو', 'STC',
+    'Tadawul', 'Saudi Stock Market', 'TASI',
   ],
   authors: [{ name: 'Tadawul Plus Team' }],
   creator: 'Tadawul Plus',
   publisher: 'Tadawul Plus',
   
-  // Robots
   robots: {
     index: true,
     follow: true,
@@ -68,7 +55,6 @@ export const metadata = {
     },
   },
   
-  // Open Graph (Facebook, WhatsApp, LinkedIn)
   openGraph: {
     type: 'website',
     locale: 'ar_SA',
@@ -86,7 +72,6 @@ export const metadata = {
     ],
   },
   
-  // Twitter Cards
   twitter: {
     card: 'summary_large_image',
     title: 'تداول+ | تحليل ذكي للأسهم السعودية',
@@ -94,7 +79,6 @@ export const metadata = {
     images: ['/og-image.png'],
   },
   
-  // PWA
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -102,19 +86,12 @@ export const metadata = {
     title: 'تداول+',
   },
   
-  // Verification (لاحقاً عند Google Search Console)
-  // verification: {
-  //   google: 'your-google-verification-code',
-  // },
-  
-  // Format detection
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
   
-  // Icons
   icons: {
     icon: [
       { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
@@ -125,20 +102,11 @@ export const metadata = {
     ],
   },
   
-  // Categories (for app stores)
   category: 'finance',
-  
-  // Alternate languages (future)
-  // alternates: {
-  //   languages: {
-  //     'ar-SA': '/ar',
-  //     'en-US': '/en',
-  //   },
-  // },
 };
 
 // ═══════════════════════════════════════════════
-// 📱 Viewport (separate export in Next.js 14+)
+// 📱 Viewport
 // ═══════════════════════════════════════════════
 
 export const viewport = {
@@ -165,98 +133,64 @@ export default function RootLayout({ children }) {
       className={`${cairo.variable} ${ibmPlexMono.variable}`}
     >
       <head>
-  {/* ═════════════════════════════════════════
-      🚀 Performance: Preconnect (highest priority)
-      ═════════════════════════════════════════ */}
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-  
-  {/* ═════════════════════════════════════════
-      🌐 Performance: DNS Prefetch
-      ═════════════════════════════════════════ */}
-  <link rel="dns-prefetch" href="https://eodhd.com" />
-  <link rel="dns-prefetch" href="https://supabase.co" />
-  
-  {/* ═════════════════════════════════════════
-      📦 Performance: Resource Hints
-      ═════════════════════════════════════════ */}
-  <meta httpEquiv="x-dns-prefetch-control" content="on" />
-  
-  {/* ═════════════════════════════════════════
-      🎨 Critical CSS Hint
-      ═════════════════════════════════════════ */}
-  <meta name="color-scheme" content="dark" />
-  
-  <head>
-  {/* ═════════════════════════════════════════
-      🚀 Performance: Preconnect (highest priority)
-      ═════════════════════════════════════════ */}
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-  
-  {/* ═════════════════════════════════════════
-      🌐 Performance: DNS Prefetch
-      ═════════════════════════════════════════ */}
-  <link rel="dns-prefetch" href="https://eodhd.com" />
-  <link rel="dns-prefetch" href="https://supabase.co" />
-  
-  {/* ═════════════════════════════════════════
-      📦 Performance: Resource Hints
-      ═════════════════════════════════════════ */}
-  <meta httpEquiv="x-dns-prefetch-control" content="on" />
-  
-  {/* ═════════════════════════════════════════
-      🎨 Critical CSS Hint
-      ═════════════════════════════════════════ */}
-  <meta name="color-scheme" content="dark" />
-</head>
-
+        {/* Preconnect */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* DNS Prefetch */}
+        <link rel="dns-prefetch" href="https://eodhd.com" />
+        <link rel="dns-prefetch" href="https://supabase.co" />
+        
+        {/* Resource Hints */}
+        <meta httpEquiv="x-dns-prefetch-control" content="on" />
+        
+        {/* Theme */}
+        <meta name="color-scheme" content="dark" />
+      </head>
+      
       <body 
-  style={{
-    fontFamily: 'var(--font-cairo), Cairo, sans-serif',
-    background: '#06080f',
-    color: '#f0f6ff',
-    margin: 0,
-    padding: 0,
-    minHeight: '100vh',
-    WebkitFontSmoothing: 'antialiased',
-    MozOsxFontSmoothing: 'grayscale',
-    textRendering: 'optimizeLegibility',
-  }}
->
-  {children}
-  
-  {/* ═════════════════════════════════════════
-      🌐 Schema.org Structured Data (deferred)
-      ═════════════════════════════════════════ */}
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{
-      __html: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'WebApplication',
-        name: 'تداول+',
-        alternateName: 'Tadawul Plus',
-        description: 'تطبيق احترافي لتحليل الأسهم السعودية بالذكاء الاصطناعي',
-        url: 'https://tadawul-plus.vercel.app',
-        applicationCategory: 'FinanceApplication',
-        operatingSystem: 'Any',
-        browserRequirements: 'Requires JavaScript',
-                inLanguage: 'ar-SA',
-        offers: {
-          '@type': 'Offer',
-          price: '0',
-          priceCurrency: 'SAR',
-        },
-        author: {
-          '@type': 'Organization',
-          name: 'Tadawul Plus',
-        },
-      }),
-    }}
-  />
-</body>
+        style={{
+          fontFamily: 'var(--font-cairo), Cairo, sans-serif',
+          background: '#06080f',
+          color: '#f0f6ff',
+          margin: 0,
+          padding: 0,
+          minHeight: '100vh',
+          WebkitFontSmoothing: 'antialiased',
+          MozOsxFontSmoothing: 'grayscale',
+          textRendering: 'optimizeLegibility',
+        }}
+      >
+        {children}
+        
+        {/* Schema.org (deferred) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebApplication',
+              name: 'تداول+',
+              alternateName: 'Tadawul Plus',
+              description: 'تطبيق احترافي لتحليل الأسهم السعودية بالذكاء الاصطناعي',
+              url: 'https://tadawul-plus.vercel.app',
+              applicationCategory: 'FinanceApplication',
+              operatingSystem: 'Any',
+              browserRequirements: 'Requires JavaScript',
+              inLanguage: 'ar-SA',
+              offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'SAR',
+              },
+              author: {
+                '@type': 'Organization',
+                name: 'Tadawul Plus',
+              },
+            }),
+          }}
+        />
+      </body>
     </html>
   );
 }
-
