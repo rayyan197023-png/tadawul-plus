@@ -153,7 +153,11 @@ function Shell() {
     import('./lib/webVitals').then(({ reportWebVitals }) => {
       reportWebVitals();
     });
-    
+        // ✨ Service Worker registration (PWA + Offline)
+    import('./lib/registerSW').then(({ registerServiceWorker }) => {
+      registerServiceWorker();
+    });
+
     // Preload most-used screens after initial paint
     const preloadScreens = () => {
       // Priority 1: Most used (Stocks, Analysis)
