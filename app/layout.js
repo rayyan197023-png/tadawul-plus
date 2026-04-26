@@ -212,20 +212,48 @@ export default function RootLayout({ children }) {
 </head>
 
       <body 
-        style={{
-          fontFamily: 'var(--font-cairo), Cairo, sans-serif',
-          background: '#06080f',
-          color: '#f0f6ff',
-          margin: 0,
-          padding: 0,
-          minHeight: '100vh',
-          WebkitFontSmoothing: 'antialiased',
-          MozOsxFontSmoothing: 'grayscale',
-          textRendering: 'optimizeLegibility',
-        }}
-      >
-        {children}
-      </body>
-    </html>
-  );
-}
+  style={{
+    fontFamily: 'var(--font-cairo), Cairo, sans-serif',
+    background: '#06080f',
+    color: '#f0f6ff',
+    margin: 0,
+    padding: 0,
+    minHeight: '100vh',
+    WebkitFontSmoothing: 'antialiased',
+    MozOsxFontSmoothing: 'grayscale',
+    textRendering: 'optimizeLegibility',
+  }}
+>
+  {children}
+  
+  {/* ═════════════════════════════════════════
+      🌐 Schema.org Structured Data (deferred)
+      ═════════════════════════════════════════ */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebApplication',
+        name: 'تداول+',
+        alternateName: 'Tadawul Plus',
+        description: 'تطبيق احترافي لتحليل الأسهم السعودية بالذكاء الاصطناعي',
+        url: 'https://tadawul-plus.vercel.app',
+        applicationCategory: 'FinanceApplication',
+        operatingSystem: 'Any',
+        browserRequirements: 'Requires JavaScript',
+        inLanguage: 'ar-SA',
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'SAR',
+        },
+        author: {
+          '@type': 'Organization',
+          name: 'Tadawul Plus',
+        },
+      }),
+    }}
+  />
+</body>
+
