@@ -1,18 +1,71 @@
 {
-  "name": "تداول+ | محرك التعلم الذاتي",
-  "short_name": "TADAWUL+",
-  "description": "AI investment learning engine for Saudi market",
-  "start_url": "/admin/learning",
+  "name": "تداول+ | تحليل ذكي للأسهم السعودية",
+  "short_name": "تداول+",
+  "description": "تطبيق احترافي لتحليل الأسهم السعودية (تاسي) باستخدام الذكاء الاصطناعي والطبقات التسع",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#06080f",
-  "theme_color": "#C9A84C",
   "orientation": "portrait",
+  "background_color": "#06080f",
+  "theme_color": "#f0c050",
+  "lang": "ar-SA",
+  "dir": "rtl",
+  "categories": ["finance", "business", "productivity"],
   "icons": [
     {
       "src": "/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "التحليل",
+      "short_name": "تحليل",
+      "description": "تحليل سريع للأسهم",
+      "url": "/?tab=analysis",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "المحفظة",
+      "short_name": "محفظة",
+      "description": "إدارة محفظتك",
+      "url": "/?tab=portfolio",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Backtest",
+      "short_name": "اختبار",
+      "description": "اختبار الاستراتيجيات",
+      "url": "/?tab=backtest",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "prefer_related_applications": false,
+  "screenshots": []
 }
