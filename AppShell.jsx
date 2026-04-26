@@ -115,8 +115,13 @@ function Shell() {
   // 🎯 Smart Preloading (on idle)
   // ═══════════════════════════════════════════════
   
-  useEffect(() => {
+    useEffect(() => {
     if (typeof window === 'undefined') return;
+    
+    // ✨ Web Vitals reporting (Real User Monitoring)
+    import('./lib/webVitals').then(({ reportWebVitals }) => {
+      reportWebVitals();
+    });
     
     // Preload most-used screens after initial paint
     const preloadScreens = () => {
