@@ -433,11 +433,8 @@ const { setTab } = useNav();
               <span style={{fontSize:7,color:sub==="snapshots"?C.teal:C.smoke,fontWeight:600}}>لقطاتي</span>
               {snaps.length>0&&<div style={{position:"absolute",top:5,left:5,width:14,height:14,borderRadius:7,background:C.coral,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 6px "+C.coral+"88"}}><span style={{fontSize:7,color:"white",fontWeight:800}}>{snaps.length}</span></div>}
             </button>
-                        <button onClick={function(){
-  console.log('Click! Setting tab to alerts');
-  console.log('TAB_IDS.ALERTS =', TAB_IDS.ALERTS);
-  setTab(TAB_IDS.ALERTS);
-}}
+                        <button onClick={function(){setShowAlerts(true);}}
+
 style={{
               width:44,height:44,borderRadius:12,cursor:"pointer",position:"relative",
               background:"linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,.02))",
