@@ -242,7 +242,7 @@ export default function RootLayout({ children }) {
         applicationCategory: 'FinanceApplication',
         operatingSystem: 'Any',
         browserRequirements: 'Requires JavaScript',
-        inLanguage: 'ar-SA',
+                inLanguage: 'ar-SA',
         offers: {
           '@type': 'Offer',
           price: '0',
@@ -256,4 +256,7 @@ export default function RootLayout({ children }) {
     }}
   />
 </body>
+    </html>
+  );
+}
 
