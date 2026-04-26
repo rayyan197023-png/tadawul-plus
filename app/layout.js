@@ -165,41 +165,58 @@ export default function RootLayout({ children }) {
       className={`${cairo.variable} ${ibmPlexMono.variable}`}
     >
       <head>
-        {/* Preconnect to external domains */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
-        {/* DNS Prefetch */}
-        <link rel="dns-prefetch" href="https://eodhd.com" />
-        
-        {/* Schema.org Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'WebApplication',
-              name: 'تداول+',
-              alternateName: 'Tadawul Plus',
-              description: 'تطبيق احترافي لتحليل الأسهم السعودية بالذكاء الاصطناعي',
-              url: 'https://tadawul-plus.vercel.app',
-              applicationCategory: 'FinanceApplication',
-              operatingSystem: 'Any',
-              browserRequirements: 'Requires JavaScript',
-              inLanguage: 'ar-SA',
-              offers: {
-                '@type': 'Offer',
-                price: '0',
-                priceCurrency: 'SAR',
-              },
-              author: {
-                '@type': 'Organization',
-                name: 'Tadawul Plus',
-              },
-            }),
-          }}
-        />
-      </head>
+  {/* ═════════════════════════════════════════
+      🚀 Performance: Preconnect (highest priority)
+      ═════════════════════════════════════════ */}
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+  
+  {/* ═════════════════════════════════════════
+      🌐 Performance: DNS Prefetch
+      ═════════════════════════════════════════ */}
+  <link rel="dns-prefetch" href="https://eodhd.com" />
+  <link rel="dns-prefetch" href="https://supabase.co" />
+  
+  {/* ═════════════════════════════════════════
+      📦 Performance: Resource Hints
+      ═════════════════════════════════════════ */}
+  <meta httpEquiv="x-dns-prefetch-control" content="on" />
+  
+  {/* ═════════════════════════════════════════
+      🎨 Critical CSS Hint
+      ═════════════════════════════════════════ */}
+  <meta name="color-scheme" content="dark" />
+  
+  {/* ═════════════════════════════════════════
+      🌐 Schema.org Structured Data
+      ═════════════════════════════════════════ */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebApplication',
+        name: 'تداول+',
+        alternateName: 'Tadawul Plus',
+        description: 'تطبيق احترافي لتحليل الأسهم السعودية بالذكاء الاصطناعي',
+        url: 'https://tadawul-plus.vercel.app',
+        applicationCategory: 'FinanceApplication',
+        operatingSystem: 'Any',
+        browserRequirements: 'Requires JavaScript',
+        inLanguage: 'ar-SA',
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'SAR',
+        },
+        author: {
+          '@type': 'Organization',
+          name: 'Tadawul Plus',
+        },
+      }),
+    }}
+  />
+</head>
       <body 
         style={{
           fontFamily: 'var(--font-cairo), Cairo, sans-serif',
