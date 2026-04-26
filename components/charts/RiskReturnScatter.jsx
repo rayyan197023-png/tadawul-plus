@@ -3,16 +3,15 @@
  * @module RiskReturnScatter
  * @description رسم Risk-Return Scatter Plot
  * 
- * أساس Modern Portfolio Theory (Markowitz 1952)
- * جائزة نوبل في الاقتصاد 1990
+ * ✨ V2.0 - Performance Optimized
  *
  * @author تداول+
- * @version 1.0
+ * @version 2.0
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 
-var C = {
+const C = {
   ink: "#06080f", deep: "#090c16", void: "#0c1020",
   layer1: "#141d2b", layer2: "#1e2d42",
   edge: "#2e3e60", line: "#32426a",
@@ -22,15 +21,14 @@ var C = {
   mint: "#1ee68a", coral: "#ff5f6a", amber: "#fbbf24", teal: "#22d3ee",
 };
 
-// ألوان القطاعات (Quadrants)
-var QUADRANT_COLORS = {
-  nirvana: C.mint,      // 🏆 نجم
-  aggressive: C.amber,  // ⚡ عدواني
-  defensive: C.teal,    // 🛡️ دفاعي
-  avoid: C.coral,       // ❌ تجنب
+const QUADRANT_COLORS = {
+  nirvana: C.mint,
+  aggressive: C.amber,
+  defensive: C.teal,
+  avoid: C.coral,
 };
 
-var QUADRANT_LABELS = {
+const QUADRANT_LABELS = {
   nirvana: '🏆 نجم',
   aggressive: '⚡ عدواني',
   defensive: '🛡️ دفاعي',
@@ -38,13 +36,100 @@ var QUADRANT_LABELS = {
 };
 
 const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
-  var data = props.data || { stocks: [], portfolio: null, benchmark: null };
-  var stocks = data.stocks || [];
-  var portfolio = data.portfolio;
-  var benchmark = data.benchmark;
-  var quadrantCounts = data.quadrantCounts || {};
+  const data = props.data || { stocks: [], portfolio: null, benchmark: null };
+  const stocks = data.stocks || [];
+  const portfolio = data.portfolio;
+  const benchmark = data.benchmark;
+  const quadrantCounts = data.quadrantCounts || {};
 
-  if (!stocks || stocks.length < 1) {
+  // ═══════════════════════════════════════════════
+  // ✨ Heavy calculations - memoized
+  // ═══════════════════════════════════════════════
+  
+  const chartData = useMemo(() => {
+    if (!stocks || stocks.length < 1) return null;
+
+    // ① Bounds
+    const allPoints = stocks.slice();
+    if (portfolio) allPoints.push(portfolio);
+    if (benchmark) allPoints.push(benchmark);
+
+    let minRisk = 0;
+    let maxRisk = 40;
+    let minReturn = -20;
+    let maxReturn = 40;
+
+    allPoints.forEach((p) => {
+      if (p.risk < minRisk) minRisk = Math.floor(p.risk / 5) * 5;
+      if (p.risk > maxRisk) maxRisk = Math.ceil(p.risk / 5) * 5;
+      if (p.return < minReturn) minReturn = Math.floor(p.return / 5) * 5;
+      if (p.return > maxReturn) maxReturn = Math.ceil(p.return / 5) * 5;
+    });
+
+    // ② Dimensions
+    const width = 350;
+    const height = 280;
+    const padding = { top: 20, right: 15, bottom: 40, left: 45 };
+    const chartWidth = width - padding.left - padding.right;
+    const chartHeight = height - padding.top - padding.bottom;
+
+    // ③ Scaling
+    const xScale = (risk) => padding.left + ((risk - minRisk) / (maxRisk - minRisk)) * chartWidth;
+    const yScale = (ret) => padding.top + ((maxReturn - ret) / (maxReturn - minReturn)) * chartHeight;
+
+    // ④ Grid values
+    const xGridValues = [];
+    const xStep = (maxRisk - minRisk) / 5;
+    for (let i = 0; i <= 5; i++) {
+      xGridValues.push(minRisk + xStep * i);
+    }
+
+    const yGridValues = [];
+    const yStep = (maxReturn - minReturn) / 5;
+    for (let j = 0; j <= 5; j++) {
+      yGridValues.push(minReturn + yStep * j);
+    }
+
+    // ⑤ Critical lines
+    const zeroY = yScale(0);
+    const midRisk = (minRisk + maxRisk) / 2;
+    const midX = xScale(midRisk);
+
+    // ⑥ Pre-calculate stock points
+    const stockPoints = stocks.map((stock) => {
+      const color = QUADRANT_COLORS[stock.quadrant] || C.smoke;
+      const radius = Math.max(4, Math.min(10, (stock.weight || 5) / 5 + 4));
+      return {
+        ...stock,
+        x: xScale(stock.risk),
+        y: yScale(stock.return),
+        color,
+        radius,
+      };
+    });
+
+    // ⑦ Portfolio + Benchmark positions
+    const portfolioPos = portfolio ? {
+      x: xScale(portfolio.risk),
+      y: yScale(portfolio.return),
+    } : null;
+
+    const benchmarkPos = benchmark ? {
+      x: xScale(benchmark.risk),
+      y: yScale(benchmark.return),
+    } : null;
+
+    return {
+      width, height, padding, chartWidth, chartHeight,
+      xScale, yScale,
+      xGridValues, yGridValues,
+      zeroY, midX,
+      stockPoints, portfolioPos, benchmarkPos,
+    };
+  }, [stocks, portfolio, benchmark]);
+
+  // Empty state
+  if (!chartData) {
     return (
       <div style={{
         background: C.layer1,
@@ -60,56 +145,12 @@ const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
     );
   }
 
-  // ① حساب الحدود
-  var allPoints = stocks.slice();
-  if (portfolio) allPoints.push(portfolio);
-  if (benchmark) allPoints.push(benchmark);
-
-  var minRisk = 0;
-  var maxRisk = 40;
-  var minReturn = -20;
-  var maxReturn = 40;
-
-  allPoints.forEach(function(p) {
-    if (p.risk < minRisk) minRisk = Math.floor(p.risk / 5) * 5;
-    if (p.risk > maxRisk) maxRisk = Math.ceil(p.risk / 5) * 5;
-    if (p.return < minReturn) minReturn = Math.floor(p.return / 5) * 5;
-    if (p.return > maxReturn) maxReturn = Math.ceil(p.return / 5) * 5;
-  });
-
-  // ② أبعاد الرسم
-  var width = 350;
-  var height = 280;
-  var padding = { top: 20, right: 15, bottom: 40, left: 45 };
-  var chartWidth = width - padding.left - padding.right;
-  var chartHeight = height - padding.top - padding.bottom;
-
-  // ③ التحويلات
-  function xScale(risk) {
-    return padding.left + ((risk - minRisk) / (maxRisk - minRisk)) * chartWidth;
-  }
-  function yScale(ret) {
-    return padding.top + ((maxReturn - ret) / (maxReturn - minReturn)) * chartHeight;
-  }
-
-  // ④ خطوط الشبكة
-  var xGridValues = [];
-  var xStep = (maxRisk - minRisk) / 5;
-  for (var i = 0; i <= 5; i++) {
-    xGridValues.push(minRisk + xStep * i);
-  }
-
-  var yGridValues = [];
-  var yStep = (maxReturn - minReturn) / 5;
-  for (var j = 0; j <= 5; j++) {
-    yGridValues.push(minReturn + yStep * j);
-  }
-
-  // خط الصفر للعائد
-  var zeroY = yScale(0);
-  // خط التذبذب 25% (فاصل المخاطرة)
-  var midRisk = (minRisk + maxRisk) / 2;
-  var midX = xScale(midRisk);
+  const {
+    width, height, padding, chartWidth,
+    xGridValues, yGridValues,
+    zeroY, midX,
+    stockPoints, portfolioPos, benchmarkPos,
+  } = chartData;
 
   return (
     <div style={{
@@ -164,7 +205,7 @@ const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
 
       {/* SVG */}
       <svg width={width} height={height} style={{ width: '100%', maxWidth: width }}>
-        {/* خلفيات القطاعات (Quadrants) */}
+        {/* Quadrant backgrounds */}
         <rect 
           x={padding.left} y={padding.top} 
           width={midX - padding.left} height={zeroY - padding.top}
@@ -186,38 +227,34 @@ const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
           fill={C.coral} fillOpacity={0.04}
         />
 
-        {/* خطوط الشبكة - عمودية */}
-        {xGridValues.map(function(val, i) {
-          return (
-            <line
-              key={'xgrid-' + i}
-              x1={xScale(val)} y1={padding.top}
-              x2={xScale(val)} y2={height - padding.bottom}
-              stroke={C.line} strokeOpacity={0.15} strokeDasharray="2,3"
-            />
-          );
-        })}
+        {/* Grid - vertical */}
+        {xGridValues.map((val, i) => (
+          <line
+            key={'xgrid-' + i}
+            x1={chartData.xScale(val)} y1={padding.top}
+            x2={chartData.xScale(val)} y2={height - padding.bottom}
+            stroke={C.line} strokeOpacity={0.15} strokeDasharray="2,3"
+          />
+        ))}
 
-        {/* خطوط الشبكة - أفقية */}
-        {yGridValues.map(function(val, i) {
-          return (
-            <line
-              key={'ygrid-' + i}
-              x1={padding.left} y1={yScale(val)}
-              x2={width - padding.right} y2={yScale(val)}
-              stroke={C.line} strokeOpacity={0.15} strokeDasharray="2,3"
-            />
-          );
-        })}
+        {/* Grid - horizontal */}
+        {yGridValues.map((val, i) => (
+          <line
+            key={'ygrid-' + i}
+            x1={padding.left} y1={chartData.yScale(val)}
+            x2={width - padding.right} y2={chartData.yScale(val)}
+            stroke={C.line} strokeOpacity={0.15} strokeDasharray="2,3"
+          />
+        ))}
 
-        {/* خط الصفر للعائد */}
+        {/* Zero return line */}
         <line
           x1={padding.left} y1={zeroY}
           x2={width - padding.right} y2={zeroY}
           stroke={C.smoke} strokeWidth={1} opacity={0.5}
         />
 
-        {/* خط فاصل المخاطرة */}
+        {/* Mid risk divider */}
         <line
           x1={midX} y1={padding.top}
           x2={midX} y2={height - padding.bottom}
@@ -225,34 +262,30 @@ const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
         />
 
         {/* Y-Axis Labels */}
-        {yGridValues.map(function(val, i) {
-          return (
-            <text
-              key={'ylabel-' + i}
-              x={padding.left - 5} y={yScale(val) + 3}
-              textAnchor="end" fontSize={8}
-              fill={C.smoke} fontFamily="IBM Plex Mono,monospace"
-            >
-              {val.toFixed(0)}%
-            </text>
-          );
-        })}
+        {yGridValues.map((val, i) => (
+          <text
+            key={'ylabel-' + i}
+            x={padding.left - 5} y={chartData.yScale(val) + 3}
+            textAnchor="end" fontSize={8}
+            fill={C.smoke} fontFamily="IBM Plex Mono,monospace"
+          >
+            {val.toFixed(0)}%
+          </text>
+        ))}
 
         {/* X-Axis Labels */}
-        {xGridValues.map(function(val, i) {
-          return (
-            <text
-              key={'xlabel-' + i}
-              x={xScale(val)} y={height - padding.bottom + 12}
-              textAnchor="middle" fontSize={8}
-              fill={C.smoke} fontFamily="IBM Plex Mono,monospace"
-            >
-              {val.toFixed(0)}%
-            </text>
-          );
-        })}
+        {xGridValues.map((val, i) => (
+          <text
+            key={'xlabel-' + i}
+            x={chartData.xScale(val)} y={height - padding.bottom + 12}
+            textAnchor="middle" fontSize={8}
+            fill={C.smoke} fontFamily="IBM Plex Mono,monospace"
+          >
+            {val.toFixed(0)}%
+          </text>
+        ))}
 
-        {/* Axis Titles */}
+        {/* Axis Title */}
         <text
           x={padding.left + chartWidth / 2}
           y={height - 5}
@@ -262,39 +295,35 @@ const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
           ← المخاطرة (التذبذب) →
         </text>
 
-        {/* نقاط الأسهم */}
-        {stocks.map(function(stock, i) {
-          var color = QUADRANT_COLORS[stock.quadrant] || C.smoke;
-          var radius = Math.max(4, Math.min(10, (stock.weight || 5) / 5 + 4));
-          return (
-            <g key={'stock-' + i}>
-              <circle
-                cx={xScale(stock.risk)}
-                cy={yScale(stock.return)}
-                r={radius}
-                fill={color}
-                fillOpacity={0.7}
-                stroke={color}
-                strokeWidth={1.5}
-              />
-              <text
-                x={xScale(stock.risk)}
-                y={yScale(stock.return) - radius - 3}
-                textAnchor="middle" fontSize={8}
-                fill={color} fontWeight="bold"
-              >
-                {stock.sym}
-              </text>
-            </g>
-          );
-        })}
+        {/* Stock points */}
+        {stockPoints.map((stock, i) => (
+          <g key={'stock-' + i}>
+            <circle
+              cx={stock.x}
+              cy={stock.y}
+              r={stock.radius}
+              fill={stock.color}
+              fillOpacity={0.7}
+              stroke={stock.color}
+              strokeWidth={1.5}
+            />
+            <text
+              x={stock.x}
+              y={stock.y - stock.radius - 3}
+              textAnchor="middle" fontSize={8}
+              fill={stock.color} fontWeight="bold"
+            >
+              {stock.sym}
+            </text>
+          </g>
+        ))}
 
-        {/* نقطة Benchmark (TASI) */}
-        {benchmark && (
+        {/* Benchmark point */}
+        {benchmarkPos && (
           <g>
             <circle
-              cx={xScale(benchmark.risk)}
-              cy={yScale(benchmark.return)}
+              cx={benchmarkPos.x}
+              cy={benchmarkPos.y}
               r={6}
               fill="none"
               stroke={C.smoke}
@@ -302,8 +331,8 @@ const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
               strokeDasharray="3,2"
             />
             <text
-              x={xScale(benchmark.risk)}
-              y={yScale(benchmark.return) + 16}
+              x={benchmarkPos.x}
+              y={benchmarkPos.y + 16}
               textAnchor="middle" fontSize={8}
               fill={C.smoke} fontWeight="bold"
             >
@@ -312,19 +341,19 @@ const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
           </g>
         )}
 
-        {/* نقطة المحفظة (الأهم) */}
-        {portfolio && (
+        {/* Portfolio point (most important) */}
+        {portfolioPos && (
           <g>
             <circle
-              cx={xScale(portfolio.risk)}
-              cy={yScale(portfolio.return)}
+              cx={portfolioPos.x}
+              cy={portfolioPos.y}
               r={10}
               fill={C.gold}
               fillOpacity={0.3}
             />
             <circle
-              cx={xScale(portfolio.risk)}
-              cy={yScale(portfolio.return)}
+              cx={portfolioPos.x}
+              cy={portfolioPos.y}
               r={6}
               fill={C.gold}
               stroke={C.ink}
@@ -334,8 +363,8 @@ const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
               }}
             />
             <text
-              x={xScale(portfolio.risk)}
-              y={yScale(portfolio.return) - 12}
+              x={portfolioPos.x}
+              y={portfolioPos.y - 12}
               textAnchor="middle" fontSize={9}
               fill={C.gold} fontWeight="bold"
             >
@@ -345,7 +374,7 @@ const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
         )}
       </svg>
 
-      {/* Legend - القطاعات الأربعة */}
+      {/* Legend - 4 Quadrants */}
       <div style={{
         marginTop: 10,
         display: "grid",
@@ -441,7 +470,7 @@ const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
         </div>
       </div>
 
-      {/* شرح */}
+      {/* Insight */}
       <div style={{
         marginTop: 10,
         padding: "8px 10px",
@@ -454,7 +483,18 @@ const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
         💡 النقطة الذهبية = محفظتك · الدائرة المقطّعة = تاسي
       </div>
     </div>
-    );
+  );
+}, (prev, next) => {
+  // Custom comparison
+  if (prev.data === next.data) return true;
+  if (!prev.data || !next.data) return false;
+  if (prev.data.stocks !== next.data.stocks) return false;
+  if (prev.data.portfolio !== next.data.portfolio) return false;
+  if (prev.data.benchmark !== next.data.benchmark) return false;
+  if (prev.data.quadrantCounts !== next.data.quadrantCounts) return false;
+  return true;
 });
+
+RiskReturnScatter.displayName = 'RiskReturnScatter';
 
 export default RiskReturnScatter;
