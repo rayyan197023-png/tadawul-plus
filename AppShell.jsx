@@ -49,27 +49,58 @@ const SCREEN_MAP = {
 function Loader() {
   return (
     <div style={{ 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      padding: 40, 
-      color: C.gold, 
-      fontFamily: 'Cairo',
+      padding: 16, 
       minHeight: '60vh',
     }}>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ 
-          width: 32, 
-          height: 32, 
-          borderRadius: '50%', 
-          border: '3px solid #222', 
-          borderTopColor: C.gold, 
-          animation: 'spin .8s linear infinite', 
-          margin: '0 auto 10px' 
+      {/* Skeleton placeholder */}
+      <div style={{
+        background: `linear-gradient(135deg, ${C.layer1}, ${C.layer2})`,
+        borderRadius: 16,
+        border: `1px solid ${C.line}`,
+        padding: 16,
+        marginBottom: 12,
+      }}>
+        <div style={{
+          width: '50%',
+          height: 18,
+          borderRadius: 8,
+          background: `linear-gradient(90deg, ${C.layer1} 25%, ${C.layer2} 50%, ${C.layer1} 75%)`,
+          backgroundSize: '200% 100%',
+          animation: 'skelShimmer 1.5s ease-in-out infinite',
+          marginBottom: 12,
         }} />
-        <div style={{ fontSize: 12 }}>جاري التحميل...</div>
+        <div style={{
+          width: '80%',
+          height: 24,
+          borderRadius: 8,
+          background: `linear-gradient(90deg, ${C.layer1} 25%, ${C.layer2} 50%, ${C.layer1} 75%)`,
+          backgroundSize: '200% 100%',
+          animation: 'skelShimmer 1.5s ease-in-out infinite',
+        }} />
       </div>
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      
+      {/* Cards skeleton */}
+      {[1, 2, 3].map(i => (
+        <div key={i} style={{
+          background: `linear-gradient(135deg, ${C.layer1}, ${C.layer2})`,
+          borderRadius: 14,
+          border: `1px solid ${C.line}`,
+          padding: 14,
+          marginBottom: 10,
+          height: 120,
+          background: `linear-gradient(90deg, ${C.layer1} 25%, ${C.layer2} 50%, ${C.layer1} 75%)`,
+          backgroundSize: '200% 100%',
+          animation: 'skelShimmer 1.5s ease-in-out infinite',
+          animationDelay: `${i * 0.1}s`,
+        }} />
+      ))}
+      
+      <style>{`
+        @keyframes skelShimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+      `}</style>
     </div>
   );
 }
