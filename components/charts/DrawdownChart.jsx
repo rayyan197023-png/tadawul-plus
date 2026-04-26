@@ -2,17 +2,19 @@
 /**
  * @module DrawdownChart
  * @description رسم بياني: منحنى Drawdown عبر الزمن
- *
- * يُظهر "أسوأ رحلة نفسية" للمستثمر
- * مع إبراز نقطة Max Drawdown
- *
+ * 
+ * ✨ V2.0 - Performance Optimized:
+ * - useMemo for heavy calculations
+ * - Custom memo comparison
+ * - Modern JS (const/let)
+ * 
  * @author تداول+
- * @version 1.0
+ * @version 2.0
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 
-var C = {
+const C = {
   ink: "#06080f", deep: "#090c16", void: "#0c1020",
   layer1: "#141d2b", layer2: "#1e2d42",
   edge: "#2e3e60", line: "#32426a",
@@ -26,13 +28,104 @@ var C = {
  * SVG خفيف بدون مكتبات خارجية
  */
 const DrawdownChart = React.memo(function DrawdownChart(props) {
-  var chartResult = props.data || { data: [], maxDrawdown: 0 };
-  var data = chartResult.data || [];
-  var maxDrawdown = chartResult.maxDrawdown || 0;
-  var maxDrawdownIdx = chartResult.maxDrawdownIdx || 0;
-  var height = props.height || 200;
+  const chartResult = props.data || { data: [], maxDrawdown: 0 };
+  const data = chartResult.data || [];
+  const maxDrawdown = chartResult.maxDrawdown || 0;
+  const maxDrawdownIdx = chartResult.maxDrawdownIdx || 0;
+  const height = props.height || 200;
 
-  if (!data || data.length < 2) {
+  // ═══════════════════════════════════════════════
+  // ✨ Heavy calculations - memoized
+  // ═══════════════════════════════════════════════
+  
+  const chartData = useMemo(() => {
+    if (!data || data.length < 2) return null;
+
+    // ① حساب الحدود
+    let minDD = 0;
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].drawdown < minDD) minDD = data[i].drawdown;
+    }
+    minDD = Math.min(minDD - 2, -5);
+    const maxDD = 2;
+    const range = maxDD - minDD;
+
+    // ② أبعاد الرسم
+    const width = 350;
+    const padding = { top: 20, right: 10, bottom: 30, left: 50 };
+    const chartWidth = width - padding.left - padding.right;
+    const chartHeight = height - padding.top - padding.bottom;
+
+    // ③ تحويل البيانات
+    const xScale = (index) => padding.left + (index / (data.length - 1)) * chartWidth;
+    const yScale = (value) => padding.top + ((maxDD - value) / range) * chartHeight;
+
+    // ④ بناء المسار
+    const drawdownPath = data.map((d, i) => 
+      (i === 0 ? 'M' : 'L') + xScale(i) + ',' + yScale(d.drawdown)
+    ).join(' ');
+
+    // ⑤ منطقة الظل
+    const areaPath = drawdownPath + 
+      ' L' + xScale(data.length - 1) + ',' + yScale(0) +
+      ' L' + xScale(0) + ',' + yScale(0) + ' Z';
+
+    // ⑥ تسميات Y
+    const yLabels = [];
+    for (let m = 0; m <= 4; m++) {
+      const val = minDD + (range * m / 4);
+      yLabels.push({
+        value: val,
+        y: yScale(val),
+        label: val.toFixed(1) + '%',
+      });
+    }
+
+    // ⑦ خطوط حرجة
+    const criticalLines = [
+      { value: -5, label: '-5%', color: C.amber },
+      { value: -10, label: '-10%', color: C.coral },
+      { value: -20, label: '-20%', color: C.coral },
+    ].filter((line) => line.value >= minDD && line.value <= maxDD);
+
+    return {
+      width, height, padding, chartWidth, chartHeight,
+      minDD, maxDD, range,
+      xScale, yScale,
+      drawdownPath, areaPath,
+      yLabels, criticalLines,
+    };
+  }, [data, height]);
+
+  // ═══════════════════════════════════════════════
+  // ✨ Severity classification - memoized
+  // ═══════════════════════════════════════════════
+  
+  const severityInfo = useMemo(() => {
+    if (maxDrawdown > -5) return { severity: 'ممتاز', color: C.mint };
+    if (maxDrawdown > -10) return { severity: 'جيد', color: C.mint };
+    if (maxDrawdown > -20) return { severity: 'مقبول', color: C.amber };
+    if (maxDrawdown > -30) return { severity: 'صعب', color: C.coral };
+    return { severity: 'كارثي', color: C.coral };
+  }, [maxDrawdown]);
+
+  // ═══════════════════════════════════════════════
+  // ✨ Psychological message - memoized
+  // ═══════════════════════════════════════════════
+  
+  const psychMessage = useMemo(() => {
+    if (maxDrawdown > -5) return 'محفظتك مستقرة جداً -- يسهل الاحتفاظ بها نفسياً';
+    if (maxDrawdown > -10) return 'تراجعات طبيعية -- معظم المستثمرين يتحملون هذا المستوى';
+    if (maxDrawdown > -20) return 'يتطلب صبراً -- 80% من المستثمرين يتحملون هذا';
+    if (maxDrawdown > -30) return 'صعب نفسياً -- معظم المستثمرين يبيعون هنا';
+    return 'تراجع حاد -- يتطلب تحمّل استثنائي';
+  }, [maxDrawdown]);
+
+  // ═══════════════════════════════════════════════
+  // 🎨 Empty state
+  // ═══════════════════════════════════════════════
+  
+  if (!chartData) {
     return (
       <div style={{
         background: C.layer1,
@@ -48,79 +141,21 @@ const DrawdownChart = React.memo(function DrawdownChart(props) {
     );
   }
 
-  // ① حساب الحدود
-  var minDD = 0;
-  for (var i = 0; i < data.length; i++) {
-    if (data[i].drawdown < minDD) minDD = data[i].drawdown;
-  }
-  // padding تحت الحد الأدنى
-  minDD = Math.min(minDD - 2, -5);
-  var maxDD = 2; // دائماً يبدأ من صفر + padding
+  const {
+    width, padding,
+    xScale, yScale,
+    drawdownPath, areaPath,
+    yLabels, criticalLines,
+  } = chartData;
 
-  var range = maxDD - minDD;
-
-  // ② أبعاد الرسم
-  var width = 350;
-  var padding = { top: 20, right: 10, bottom: 30, left: 50 };
-  var chartWidth = width - padding.left - padding.right;
-  var chartHeight = height - padding.top - padding.bottom;
-
-  // ③ تحويل البيانات إلى إحداثيات SVG
-  function xScale(index) {
-    return padding.left + (index / (data.length - 1)) * chartWidth;
-  }
-  function yScale(value) {
-    return padding.top + ((maxDD - value) / range) * chartHeight;
-  }
-
-  // ④ بناء المسار (منحنى Drawdown)
-  var drawdownPath = data.map(function(d, i) {
-    return (i === 0 ? 'M' : 'L') + xScale(i) + ',' + yScale(d.drawdown);
-  }).join(' ');
-
-  // ⑤ منطقة الظل (تحت المنحنى)
-  var areaPath = drawdownPath + 
-    ' L' + xScale(data.length - 1) + ',' + yScale(0) +
-    ' L' + xScale(0) + ',' + yScale(0) + ' Z';
-
-  // ⑥ تسميات المحور Y
-  var yLabels = [];
-  for (var m = 0; m <= 4; m++) {
-    var val = minDD + (range * m / 4);
-    yLabels.push({
-      value: val,
-      y: yScale(val),
-      label: val.toFixed(1) + '%',
-    });
-  }
-
-  // ⑦ خطوط حرجة
-  var criticalLines = [
-    { value: -5, label: '-5%', color: C.amber },
-    { value: -10, label: '-10%', color: C.coral },
-    { value: -20, label: '-20%', color: C.coral },
-  ].filter(function(line) {
-    return line.value >= minDD && line.value <= maxDD;
-  });
-
-  // ⑧ تصنيف Max Drawdown
-  var severity, severityColor;
-  if (maxDrawdown > -5) {
-    severity = 'ممتاز';
-    severityColor = C.mint;
-  } else if (maxDrawdown > -10) {
-    severity = 'جيد';
-    severityColor = C.mint;
-  } else if (maxDrawdown > -20) {
-    severity = 'مقبول';
-    severityColor = C.amber;
-  } else if (maxDrawdown > -30) {
-    severity = 'صعب';
-    severityColor = C.coral;
-  } else {
-    severity = 'كارثي';
-    severityColor = C.coral;
-  }
+  // ═══════════════════════════════════════════════
+  // 🎨 Render
+  // ═══════════════════════════════════════════════
+  
+  const currentDrawdown = data[data.length - 1].drawdown;
+  const currentColor = currentDrawdown < -5 ? C.coral 
+                     : currentDrawdown < -2 ? C.amber 
+                     : C.mint;
 
   return (
     <div style={{
@@ -130,7 +165,7 @@ const DrawdownChart = React.memo(function DrawdownChart(props) {
       padding: "14px 12px",
       marginBottom: 12,
     }}>
-      {/* ── Header ── */}
+      {/* Header */}
       <div style={{
         display: "flex",
         justifyContent: "space-between",
@@ -161,87 +196,81 @@ const DrawdownChart = React.memo(function DrawdownChart(props) {
             fontFamily: "IBM Plex Mono,monospace",
             fontSize: 18,
             fontWeight: 900,
-            color: severityColor,
+            color: severityInfo.color,
             lineHeight: 1,
           }}>
             {maxDrawdown.toFixed(1)}%
           </div>
           <div style={{
             fontSize: 10,
-            color: severityColor,
+            color: severityInfo.color,
             marginTop: 2,
             fontWeight: 700,
           }}>
-            {severity}
+            {severityInfo.severity}
           </div>
         </div>
       </div>
 
-      {/* ── SVG Chart ── */}
+      {/* SVG Chart */}
       <svg width={width} height={height} style={{ width: '100%', maxWidth: width }}>
         {/* Grid Lines */}
-        {yLabels.map(function(label, i) {
-          return (
-            <line
-              key={'grid-' + i}
-              x1={padding.left}
-              y1={label.y}
-              x2={width - padding.right}
-              y2={label.y}
-              stroke={C.line}
-              strokeOpacity={0.15}
-              strokeDasharray="2,3"
-            />
-          );
-        })}
+        {yLabels.map((label, i) => (
+          <line
+            key={'grid-' + i}
+            x1={padding.left}
+            y1={label.y}
+            x2={width - padding.right}
+            y2={label.y}
+            stroke={C.line}
+            strokeOpacity={0.15}
+            strokeDasharray="2,3"
+          />
+        ))}
 
-        {/* خطوط حرجة */}
-        {criticalLines.map(function(line, i) {
-          return (
-            <g key={'critical-' + i}>
-              <line
-                x1={padding.left}
-                y1={yScale(line.value)}
-                x2={width - padding.right}
-                y2={yScale(line.value)}
-                stroke={line.color}
-                strokeOpacity={0.3}
-                strokeDasharray="3,4"
-                strokeWidth={1}
-              />
-              <text
-                x={width - padding.right - 2}
-                y={yScale(line.value) - 2}
-                textAnchor="end"
-                fontSize={8}
-                fill={line.color}
-                fontFamily="IBM Plex Mono,monospace"
-                opacity={0.6}
-              >
-                {line.label}
-              </text>
-            </g>
-          );
-        })}
+        {/* Critical Lines */}
+        {criticalLines.map((line, i) => (
+          <g key={'critical-' + i}>
+            <line
+              x1={padding.left}
+              y1={yScale(line.value)}
+              x2={width - padding.right}
+              y2={yScale(line.value)}
+              stroke={line.color}
+              strokeOpacity={0.3}
+              strokeDasharray="3,4"
+              strokeWidth={1}
+            />
+            <text
+              x={width - padding.right - 2}
+              y={yScale(line.value) - 2}
+              textAnchor="end"
+              fontSize={8}
+              fill={line.color}
+              fontFamily="IBM Plex Mono,monospace"
+              opacity={0.6}
+            >
+              {line.label}
+            </text>
+          </g>
+        ))}
 
         {/* Y-Axis Labels */}
-        {yLabels.map(function(label, i) {
-          return (
-            <text
-              key={'ylabel-' + i}
-              x={padding.left - 5}
-              y={label.y + 3}
-              textAnchor="end"
-              fontSize={9}
-              fill={C.smoke}
-              fontFamily="IBM Plex Mono,monospace"
-            >
-              {label.label}
-            </text>
-          );
-        })}
+        {yLabels.map((label, i) => (
+          <text
+            key={'ylabel-' + i}
+            x={padding.left - 5}
+            y={label.y + 3}
+            textAnchor="end"
+            fontSize={9}
+            fill={C.smoke}
+            fontFamily="IBM Plex Mono,monospace"
+          >
+            {label.label}
+          </text>
+        ))}
 
-        {/* خط الصفر (الخط الأساسي) */}
+        {/* Zero Line */}
         <line
           x1={padding.left}
           y1={yScale(0)}
@@ -252,14 +281,14 @@ const DrawdownChart = React.memo(function DrawdownChart(props) {
           opacity={0.4}
         />
 
-        {/* منطقة Drawdown (مظلّلة) */}
+        {/* Drawdown Area */}
         <path
           d={areaPath}
           fill={C.coral}
           fillOpacity={0.15}
         />
 
-        {/* خط Drawdown */}
+        {/* Drawdown Line */}
         <path
           d={drawdownPath}
           fill="none"
@@ -272,7 +301,7 @@ const DrawdownChart = React.memo(function DrawdownChart(props) {
           }}
         />
 
-        {/* نقطة Max Drawdown */}
+        {/* Max Drawdown Point */}
         {data[maxDrawdownIdx] && (
           <g>
             <circle
@@ -318,7 +347,7 @@ const DrawdownChart = React.memo(function DrawdownChart(props) {
         </text>
       </svg>
 
-      {/* ── Info Cards ── */}
+      {/* Info Cards */}
       <div style={{
         display: "flex",
         justifyContent: "space-around",
@@ -327,74 +356,46 @@ const DrawdownChart = React.memo(function DrawdownChart(props) {
         borderTop: "1px solid " + C.line + "33",
       }}>
         <div style={{ textAlign: 'center', flex: 1 }}>
-          <div style={{
-            fontSize: 9,
-            color: C.smoke,
-            marginBottom: 3,
-          }}>
-            أقصى تراجع
-          </div>
+          <div style={{ fontSize: 9, color: C.smoke, marginBottom: 3 }}>أقصى تراجع</div>
           <div style={{
             fontSize: 12,
             fontWeight: 800,
-            color: severityColor,
+            color: severityInfo.color,
             fontFamily: "IBM Plex Mono,monospace",
           }}>
             {maxDrawdown.toFixed(2)}%
           </div>
         </div>
 
-        <div style={{ 
-          width: 1, 
-          background: C.line + "33",
-          margin: "0 8px",
-        }} />
+        <div style={{ width: 1, background: C.line + "33", margin: "0 8px" }} />
 
         <div style={{ textAlign: 'center', flex: 1 }}>
-          <div style={{
-            fontSize: 9,
-            color: C.smoke,
-            marginBottom: 3,
-          }}>
-            الحالي
-          </div>
+          <div style={{ fontSize: 9, color: C.smoke, marginBottom: 3 }}>الحالي</div>
           <div style={{
             fontSize: 12,
             fontWeight: 800,
-            color: data[data.length - 1].drawdown < -5 ? C.coral 
-                 : data[data.length - 1].drawdown < -2 ? C.amber 
-                 : C.mint,
+            color: currentColor,
             fontFamily: "IBM Plex Mono,monospace",
           }}>
-            {data[data.length - 1].drawdown.toFixed(2)}%
+            {currentDrawdown.toFixed(2)}%
           </div>
         </div>
 
-        <div style={{ 
-          width: 1, 
-          background: C.line + "33",
-          margin: "0 8px",
-        }} />
+        <div style={{ width: 1, background: C.line + "33", margin: "0 8px" }} />
 
         <div style={{ textAlign: 'center', flex: 1 }}>
-          <div style={{
-            fontSize: 9,
-            color: C.smoke,
-            marginBottom: 3,
-          }}>
-            التصنيف
-          </div>
+          <div style={{ fontSize: 9, color: C.smoke, marginBottom: 3 }}>التصنيف</div>
           <div style={{
             fontSize: 11,
             fontWeight: 800,
-            color: severityColor,
+            color: severityInfo.color,
           }}>
-            {severity}
+            {severityInfo.severity}
           </div>
         </div>
       </div>
 
-      {/* ── تفسير نفسي ── */}
+      {/* Psychological Insight */}
       <div style={{
         marginTop: 10,
         padding: "8px 10px",
@@ -404,19 +405,29 @@ const DrawdownChart = React.memo(function DrawdownChart(props) {
         color: C.mist,
         lineHeight: 1.5,
       }}>
-        💡 {maxDrawdown > -5 
-          ? 'محفظتك مستقرة جداً -- يسهل الاحتفاظ بها نفسياً'
-          : maxDrawdown > -10
-          ? 'تراجعات طبيعية -- معظم المستثمرين يتحملون هذا المستوى'
-          : maxDrawdown > -20
-          ? 'يتطلب صبراً -- 80% من المستثمرين يتحملون هذا'
-          : maxDrawdown > -30
-          ? 'صعب نفسياً -- معظم المستثمرين يبيعون هنا'
-          : 'تراجع حاد -- يتطلب تحمّل استثنائي'
-        }
+        💡 {psychMessage}
       </div>
     </div>
-    );
+  );
+}, (prevProps, nextProps) => {
+  // ✨ Custom comparison for deep memo
+  if (prevProps.height !== nextProps.height) return false;
+  
+  const prev = prevProps.data;
+  const next = nextProps.data;
+  
+  if (!prev && !next) return true;
+  if (!prev || !next) return false;
+  
+  // Compare key fields
+  if (prev.maxDrawdown !== next.maxDrawdown) return false;
+  if (prev.maxDrawdownIdx !== next.maxDrawdownIdx) return false;
+  if (prev.data?.length !== next.data?.length) return false;
+  
+  // Quick reference check
+  return prev.data === next.data;
 });
+
+DrawdownChart.displayName = 'DrawdownChart';
 
 export default DrawdownChart;
