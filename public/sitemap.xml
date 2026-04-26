@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <!-- الصفحة الرئيسية -->
+  <url>
+    <loc>https://tadawul-plus.vercel.app/</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- التحليل -->
+  <url>
+    <loc>https://tadawul-plus.vercel.app/?tab=analysis</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- المحفظة -->
+  <url>
+    <loc>https://tadawul-plus.vercel.app/?tab=portfolio</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- الأسهم -->
+  <url>
+    <loc>https://tadawul-plus.vercel.app/?tab=stocks</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Backtest -->
+  <url>
+    <loc>https://tadawul-plus.vercel.app/?tab=backtest</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- التوازن -->
+  <url>
+    <loc>https://tadawul-plus.vercel.app/?tab=rebalancing</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- AI -->
+  <url>
+    <loc>https://tadawul-plus.vercel.app/?tab=ai</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- الأخبار -->
+  <url>
+    <loc>https://tadawul-plus.vercel.app/?tab=news</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- المزيد -->
+  <url>
+    <loc>https://tadawul-plus.vercel.app/?tab=more</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+</urlset>
