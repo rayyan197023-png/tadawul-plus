@@ -438,3 +438,420 @@ function runBehavioralLayer(positions, base, options) {
     riskFlags: biases.filter(b => b.severity === 'high' || b.severity === 'critical'),
   };
 }
+/* ═══════════════════════════════════════════════════════════
+   🎯 LAYER 4 - FACTOR (العوامل)
+   Based on Fama-French Three-Factor Model (1993)
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * Factor Layer - Decompose portfolio into style factors
+ * 
+ * Factors analyzed:
+ * - Size: Large-cap vs Small-cap
+ * - Value: Value vs Growth
+ * - Momentum: High momentum vs Low
+ * - Quality: High ROE vs Low
+ * - Volatility: High vol vs Low vol
+ */
+function runFactorLayer(positions, base) {
+  const factors = {
+    size: { score: 0, classification: 'mixed' },
+    value: { score: 0, classification: 'mixed' },
+    momentum: { score: 0, classification: 'mixed' },
+    quality: { score: 0, classification: 'mixed' },
+    volatility: { score: 0, classification: 'mixed' },
+  };
+
+  // Size Factor (using market cap or value)
+  let totalValue = 0;
+  let largeCapValue = 0;
+  
+  positions.forEach(p => {
+    totalValue += p.value || 0;
+    const mktCap = (p.stk && p.stk.mktCap) || p.value || 0;
+    if (mktCap > 50000000000) { // 50B+ = Large cap
+      largeCapValue += p.value || 0;
+    }
+  });
+  
+  const largeCapPct = totalValue > 0 ? largeCapValue / totalValue : 0;
+  factors.size.score = Math.round(largeCapPct * 100);
+  factors.size.classification = 
+    largeCapPct > 0.7 ? 'large_cap_tilted' :
+    largeCapPct > 0.4 ? 'mixed' :
+    'small_cap_tilted';
+
+  // Momentum Factor (using RSI)
+  let highMomentumValue = 0;
+  let validMomentum = 0;
+  
+  positions.forEach(p => {
+    if (p.rsi !== undefined && p.rsi !== null) {
+      validMomentum += p.value || 0;
+      if (p.rsi > 60) {
+        highMomentumValue += p.value || 0;
+      }
+    }
+  });
+  
+  const momentumPct = validMomentum > 0 ? highMomentumValue / validMomentum : 0.5;
+  factors.momentum.score = Math.round(momentumPct * 100);
+  factors.momentum.classification = 
+    momentumPct > 0.6 ? 'high_momentum' :
+    momentumPct < 0.4 ? 'low_momentum' :
+    'mixed';
+
+  // Volatility Factor
+  if (base.performance && base.performance.volatility) {
+    const vol = base.performance.volatility;
+    factors.volatility.score = Math.round((1 - Math.min(vol / 0.5, 1)) * 100);
+    factors.volatility.classification = 
+      vol < 0.15 ? 'low_volatility' :
+      vol < 0.25 ? 'moderate_volatility' :
+      'high_volatility';
+  }
+
+  // Quality Factor (placeholder - would need fundamentals)
+  factors.quality.score = 60; // Default
+  factors.quality.classification = 'unknown';
+
+  // Value Factor (placeholder)
+  factors.value.score = 50;
+  factors.value.classification = 'mixed';
+
+  // Style classification
+  const style = classifyPortfolioStyle(factors);
+
+  return {
+    factors: factors,
+    style: style,
+    styleLabel: getStyleLabel(style),
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   🌍 LAYER 5 - MACRO (الاقتصاد الكلي)
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * Macro Layer - Macroeconomic exposure analysis
+ * 
+ * Saudi-specific macro factors:
+ * - Oil price sensitivity
+ * - Interest rate sensitivity (SAIBOR)
+ * - Inflation hedge
+ * - USD/SAR (pegged but indirect)
+ * - Government spending sensitivity
+ */
+function runMacroLayer(positions, base) {
+  const exposures = {
+    oilPrice: 0,
+    interestRate: 0,
+    inflation: 0,
+    governmentSpending: 0,
+  };
+
+  let totalValue = 0;
+
+  positions.forEach(p => {
+    totalValue += p.value || 0;
+    const sector = (p.stk && p.stk.sec) || p.sec || 'unknown';
+    const weight = p.value || 0;
+
+    // Sector-based macro exposure (Saudi market)
+    if (sector === 'الطاقة' || sector === 'البتروكيماويات') {
+      exposures.oilPrice += weight * 0.9;
+    } else if (sector === 'البنوك' || sector === 'التأمين') {
+      exposures.interestRate += weight * 0.7;
+    } else if (sector === 'العقارات' || sector === 'البنية التحتية') {
+      exposures.governmentSpending += weight * 0.8;
+      exposures.interestRate += weight * 0.4;
+    } else if (sector === 'السلع الاستهلاكية' || sector === 'تجارة التجزئة') {
+      exposures.inflation += weight * 0.5;
+    } else if (sector === 'المرافق' || sector === 'الاتصالات') {
+      exposures.governmentSpending += weight * 0.4;
+    }
+  });
+
+  // Normalize to percentages
+  if (totalValue > 0) {
+    Object.keys(exposures).forEach(k => {
+      exposures[k] = +(exposures[k] / totalValue * 100).toFixed(1);
+    });
+  }
+
+  // Identify macro risks
+  const macroRisks = [];
+  
+  if (exposures.oilPrice > 40) {
+    macroRisks.push({
+      factor: 'oil_price',
+      severity: 'high',
+      exposure: exposures.oilPrice,
+      message: 'تعرض ' + exposures.oilPrice + '% لسعر النفط - حساسية عالية',
+    });
+  }
+  
+  if (exposures.interestRate > 35) {
+    macroRisks.push({
+      factor: 'interest_rate',
+      severity: 'medium',
+      exposure: exposures.interestRate,
+      message: 'تعرض ' + exposures.interestRate + '% لتغير الفائدة',
+    });
+  }
+
+  return {
+    exposures: exposures,
+    macroRisks: macroRisks,
+    diversification: calculateMacroDiversification(exposures),
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   🏭 LAYER 6 - SECTOR (القطاعات)
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * Sector Layer - Industry-level analysis
+ */
+function runSectorLayer(positions, base) {
+  const sectors = {};
+  let totalValue = 0;
+
+  // Calculate sector weights
+  positions.forEach(p => {
+    const sector = (p.stk && p.stk.sec) || p.sec || 'غير مصنف';
+    if (!sectors[sector]) {
+      sectors[sector] = {
+        name: sector,
+        value: 0,
+        weight: 0,
+        stockCount: 0,
+        stocks: [],
+      };
+    }
+    sectors[sector].value += p.value || 0;
+    sectors[sector].stockCount++;
+    sectors[sector].stocks.push(p.sym);
+    totalValue += p.value || 0;
+  });
+
+  // Calculate weights and identify issues
+  const sectorList = [];
+  const sectorIssues = [];
+  
+  Object.keys(sectors).forEach(name => {
+    const sec = sectors[name];
+    sec.weight = totalValue > 0 ? sec.value / totalValue : 0;
+    sectorList.push(sec);
+
+    // Flag over-concentration
+    if (sec.weight > 0.4) {
+      sectorIssues.push({
+        type: 'sector_concentration',
+        severity: 'high',
+        sector: name,
+        weight: +(sec.weight * 100).toFixed(1),
+        message: 'تركيز ' + (sec.weight * 100).toFixed(0) + '% في ' + name,
+      });
+    }
+  });
+
+  // Sort by weight
+  sectorList.sort((a, b) => b.weight - a.weight);
+
+  // Calculate sector HHI
+  let sectorHHI = 0;
+  sectorList.forEach(s => {
+    sectorHHI += s.weight * s.weight;
+  });
+  sectorHHI *= 10000;
+
+  // Effective number of sectors
+  const effectiveSectors = sectorHHI > 0 ? 10000 / sectorHHI : 0;
+
+  // Missing important sectors (Saudi market)
+  const importantSectors = ['البنوك', 'البتروكيماويات', 'الاتصالات', 'المرافق', 'العقارات'];
+  const missingSectors = importantSectors.filter(
+    s => !sectorList.find(sec => sec.name === s)
+  );
+
+  return {
+    sectors: sectorList,
+    sectorCount: sectorList.length,
+    sectorHHI: Math.round(sectorHHI),
+    effectiveSectors: +effectiveSectors.toFixed(1),
+    largestSector: sectorList[0] || null,
+    missingSectors: missingSectors,
+    sectorIssues: sectorIssues,
+    diversificationScore: calculateSectorDiversificationScore(sectorList, missingSectors),
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   📈 LAYER 7 - STOCK (الأسهم الفردية)
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * Stock Layer - Individual stock analysis
+ */
+function runStockLayer(positions, base) {
+  const stockAnalysis = positions.map(p => {
+    const analysis = {
+      sym: p.sym,
+      name: (p.stk && p.stk.name) || p.sym,
+      weight: 0,
+      value: p.value || 0,
+      qty: p.qty || 0,
+      avgCost: p.avgCost || 0,
+      flags: [],
+      score: 50,
+    };
+
+    // Calculate weight
+    const totalValue = base.totalValue || 1;
+    analysis.weight = totalValue > 0 ? p.value / totalValue : 0;
+
+    // Calculate P&L
+    if (p.qty && p.avgCost && p.value) {
+      const currentPrice = p.value / p.qty;
+      analysis.currentPrice = currentPrice;
+      analysis.pnl = (currentPrice - p.avgCost) * p.qty;
+      analysis.pnlPercent = ((currentPrice - p.avgCost) / p.avgCost) * 100;
+    }
+
+    // Flags
+    if (analysis.weight > 0.25) {
+      analysis.flags.push({
+        type: 'over_weighted',
+        severity: 'high',
+        message: 'وزن ' + (analysis.weight * 100).toFixed(1) + '% - تركيز عالٍ',
+      });
+    }
+
+    if (p.rsi && p.rsi > 75) {
+      analysis.flags.push({
+        type: 'overbought',
+        severity: 'medium',
+        message: 'RSI ' + p.rsi.toFixed(0) + ' - ذروة شراء',
+      });
+    }
+
+    if (p.rsi && p.rsi < 30) {
+      analysis.flags.push({
+        type: 'oversold',
+        severity: 'low',
+        message: 'RSI ' + p.rsi.toFixed(0) + ' - ذروة بيع (فرصة محتملة)',
+      });
+    }
+
+    if (analysis.pnlPercent && analysis.pnlPercent < -20) {
+      analysis.flags.push({
+        type: 'large_loss',
+        severity: 'high',
+        message: 'خسارة ' + analysis.pnlPercent.toFixed(1) + '%',
+      });
+    }
+
+    // Score
+    let score = 50;
+    if (analysis.weight < 0.20 && analysis.weight > 0.05) score += 15;
+    if (p.rsi && p.rsi > 40 && p.rsi < 60) score += 10;
+    if (analysis.pnlPercent && analysis.pnlPercent > 0) score += 15;
+    if (analysis.flags.length === 0) score += 10;
+    
+    analysis.score = Math.min(100, Math.max(0, score));
+
+    return analysis;
+  });
+
+  // Sort by weight
+  stockAnalysis.sort((a, b) => b.weight - a.weight);
+
+  // Identify winners and losers
+  const winners = stockAnalysis
+    .filter(s => s.pnlPercent && s.pnlPercent > 5)
+    .sort((a, b) => b.pnlPercent - a.pnlPercent)
+    .slice(0, 3);
+
+  const losers = stockAnalysis
+    .filter(s => s.pnlPercent && s.pnlPercent < -5)
+    .sort((a, b) => a.pnlPercent - b.pnlPercent)
+    .slice(0, 3);
+
+  return {
+    stocks: stockAnalysis,
+    topPositions: stockAnalysis.slice(0, 5),
+    winners: winners,
+    losers: losers,
+    flaggedStocks: stockAnalysis.filter(s => s.flags.length > 0),
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ⚡ LAYER 8 - ACTION (التوصيات التنفيذية)
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * Action Layer - Combine all insights into actionable recommendations
+ */
+function runActionLayer(positions, base, layers) {
+  const actions = [];
+
+  // From Diagnostic
+  layers.diagnostic.issues.forEach(issue => {
+    if (issue.severity === 'critical' || issue.severity === 'high') {
+      actions.push({
+        source: 'diagnostic',
+        type: issue.type,
+        severity: issue.severity,
+        message: issue.message,
+      });
+    }
+  });
+
+  // From Behavioral
+  layers.behavioral.biases.forEach(bias => {
+    if (bias.severity === 'high') {
+      actions.push({
+        source: 'behavioral',
+        type: bias.type,
+        severity: bias.severity,
+        message: bias.message,
+      });
+    }
+  });
+
+  // From Sector
+  layers.sector.sectorIssues.forEach(issue => {
+    actions.push({
+      source: 'sector',
+      type: issue.type,
+      severity: issue.severity,
+      message: issue.message,
+    });
+  });
+
+  // From Stock
+  layers.stock.flaggedStocks.forEach(stock => {
+    stock.flags.forEach(flag => {
+      if (flag.severity === 'high') {
+        actions.push({
+          source: 'stock',
+          type: flag.type,
+          stock: stock.sym,
+          severity: flag.severity,
+          message: stock.sym + ': ' + flag.message,
+        });
+      }
+    });
+  });
+
+  return {
+    totalActions: actions.length,
+    criticalCount: actions.filter(a => a.severity === 'critical').length,
+    highCount: actions.filter(a => a.severity === 'high').length,
+    actions: actions.sort((a, b) => severityScore(b.severity) - severityScore(a.severity)),
+  };
+}
