@@ -1521,6 +1521,31 @@ useEffect(() => {
                 Rebalance
               </div>
             </button>
+                        <button
+              onClick={function(){haptic.tap(); switchTab("iq");}}
+              style={{
+                flex:1,
+                padding:"14px 10px",
+                background:"linear-gradient(135deg,"+C.plasma+"18,"+C.plasma+"08)",
+                border:"1px solid "+C.plasma+"33",
+                borderRadius:14,
+                cursor:"pointer",
+                display:"flex",
+                flexDirection:"column",
+                alignItems:"center",
+                gap:6,
+                boxShadow:"0 4px 12px "+C.plasma+"15",
+                transition:"all 0.2s",
+              }}
+            >
+              <div style={{fontSize:22}}>🧠</div>
+              <div style={{fontSize:12,fontWeight:900,color:C.plasma,fontFamily:"Cairo,sans-serif"}}>
+                Portfolio IQ
+              </div>
+              <div style={{fontSize:9,color:C.smoke,fontWeight:600}}>
+                ذكاء متقدم
+              </div>
+            </button>
           </div>
         )}
                 <div style={{display:"flex",gap:0,marginTop:8}}>
