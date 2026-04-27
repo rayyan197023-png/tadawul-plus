@@ -997,7 +997,7 @@ function analyzePortfolioDNA(positions, base) {
     growthValue: { score: 50, label: 'متوازن' },
     momentumReversion: { score: 50, label: 'متوازن' },
     defensiveAggressive: { score: 50, label: 'متوازن' },
-    domesticDiversified: { score: 100, label: 'محلي 100%' },
+    capSize: { score: 50, label: 'متنوع' },
   };
 
   // 1. Growth vs Value (using price momentum + market cap)
