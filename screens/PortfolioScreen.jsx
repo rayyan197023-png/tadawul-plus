@@ -2671,6 +2671,225 @@ useEffect(() => {
     </div>
   );
 })()}
+{/* Crystal Ball™ Card */}
+{iq.crystalBall && iq.crystalBall.oneYear && (function(){
+  var cb = iq.crystalBall;
+  var oneYr = cb.oneYear;
+  var profitColor = oneYr.profitProbability >= 70 ? C.mint :
+                    oneYr.profitProbability >= 50 ? C.teal :
+                    oneYr.profitProbability >= 30 ? C.amber : C.coral;
+  return (
+    <div className="card-enter" style={{
+      background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
+      border:"1px solid "+C.teal+"33",
+      borderRadius:16,
+      padding:"16px",
+      marginBottom:14,
+      boxShadow:"0 8px 24px "+C.teal+"22, inset 0 1px 0 "+C.layer3,
+      position:"relative",
+      overflow:"hidden",
+    }}>
+      <div style={{
+        position:"absolute",
+        top:0,left:0,right:0,
+        height:3,
+        background:"linear-gradient(90deg,"+C.teal+"00,"+C.teal+"ff,"+C.teal+"00)",
+      }}/>
+      
+      {/* Header */}
+      <div style={{textAlign:"center",marginBottom:14}}>
+        <div style={{fontSize:9,color:C.teal,fontWeight:800,letterSpacing:"2px",marginBottom:4}}>
+          🔮 CRYSTAL BALL™
+        </div>
+        <div style={{fontSize:11,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>
+          تنبؤات Monte Carlo (1000 محاكاة)
+        </div>
+      </div>
+      
+      {/* Profit Probability */}
+      <div style={{
+        background:"linear-gradient(135deg,"+profitColor+"22,"+profitColor+"11)",
+        border:"1px solid "+profitColor+"55",
+        borderRadius:12,
+        padding:"12px 14px",
+        marginBottom:12,
+        textAlign:"center",
+        boxShadow:"0 4px 12px "+profitColor+"22",
+      }}>
+        <div style={{fontSize:9,color:profitColor,fontWeight:800,letterSpacing:"1.5px",marginBottom:5}}>
+          ✨ احتمال الربح خلال سنة
+        </div>
+        <div style={{
+          fontSize:36,
+          fontWeight:900,
+          color:profitColor,
+          fontFamily:"IBM Plex Mono,monospace",
+          lineHeight:1,
+          textShadow:"0 0 16px "+profitColor+"66",
+        }}>
+          {oneYr.profitProbability}%
+        </div>
+      </div>
+      
+      {/* Time Horizons */}
+      <div style={{
+        display:"grid",
+        gridTemplateColumns:"1fr 1fr 1fr",
+        gap:6,
+        marginBottom:12,
+      }}>
+        {[
+          {label:"6 أشهر", data:cb.sixMonths},
+          {label:"سنة", data:cb.oneYear, highlight:true},
+          {label:"3 سنوات", data:cb.threeYears},
+        ].filter(function(h){return h.data;}).map(function(h,i){
+          var ret = h.data.medianReturn;
+          var color = ret >= 0 ? C.mint : C.coral;
+          return (
+            <div key={i} style={{
+              background:h.highlight?C.teal+"15":"rgba(255,255,255,.03)",
+              border:"1px solid "+(h.highlight?C.teal+"33":C.line),
+              borderRadius:10,
+              padding:"8px 6px",
+              textAlign:"center",
+            }}>
+              <div style={{fontSize:9,color:C.smoke,marginBottom:4,fontFamily:"Cairo,sans-serif"}}>
+                {h.label}
+              </div>
+              <div style={{
+                fontSize:14,
+                fontWeight:900,
+                color:color,
+                fontFamily:"IBM Plex Mono,monospace",
+                marginBottom:2,
+              }}>
+                {ret >= 0 ? '+' : ''}{ret.toFixed(1)}%
+              </div>
+              <div style={{fontSize:8,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>
+                الأكثر احتمالاً
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      
+      {/* Scenarios Bar */}
+      <div style={{
+        background:"rgba(255,255,255,.03)",
+        border:"1px solid "+C.line,
+        borderRadius:10,
+        padding:"10px 12px",
+        marginBottom:10,
+      }}>
+        <div style={{fontSize:9,color:C.teal,fontWeight:800,letterSpacing:"1px",marginBottom:8}}>
+          📊 السيناريوهات (سنة)
+        </div>
+        
+        {/* Best */}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+          <div style={{display:"flex",alignItems:"center",gap:6}}>
+            <span style={{fontSize:10}}>🟢</span>
+            <span style={{fontSize:10,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>أفضل سيناريو</span>
+          </div>
+          <span style={{
+            fontSize:11,
+            color:C.mint,
+            fontWeight:800,
+            fontFamily:"IBM Plex Mono,monospace",
+          }}>
+            +{oneYr.bestCaseReturn.toFixed(1)}%
+          </span>
+        </div>
+        
+        {/* Optimistic */}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+          <div style={{display:"flex",alignItems:"center",gap:6}}>
+            <span style={{fontSize:10}}>🟢</span>
+            <span style={{fontSize:10,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>متفائل</span>
+          </div>
+          <span style={{
+            fontSize:11,
+            color:C.mint,
+            fontWeight:800,
+            fontFamily:"IBM Plex Mono,monospace",
+          }}>
+            +{oneYr.optimisticReturn.toFixed(1)}%
+          </span>
+        </div>
+        
+        {/* Median */}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6,padding:"4px 0",background:C.teal+"10",borderRadius:6}}>
+          <div style={{display:"flex",alignItems:"center",gap:6,paddingRight:6}}>
+            <span style={{fontSize:10}}>🟡</span>
+            <span style={{fontSize:10,color:C.teal,fontWeight:700,fontFamily:"Cairo,sans-serif"}}>الأكثر احتمالاً</span>
+          </div>
+          <span style={{
+            fontSize:12,
+            color:C.teal,
+            fontWeight:900,
+            fontFamily:"IBM Plex Mono,monospace",
+            paddingLeft:6,
+          }}>
+            {oneYr.medianReturn >= 0 ? '+' : ''}{oneYr.medianReturn.toFixed(1)}%
+          </span>
+        </div>
+        
+        {/* Pessimistic */}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+          <div style={{display:"flex",alignItems:"center",gap:6}}>
+            <span style={{fontSize:10}}>🟠</span>
+            <span style={{fontSize:10,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>متشائم</span>
+          </div>
+          <span style={{
+            fontSize:11,
+            color:C.amber,
+            fontWeight:800,
+            fontFamily:"IBM Plex Mono,monospace",
+          }}>
+            {oneYr.pessimisticReturn.toFixed(1)}%
+          </span>
+        </div>
+        
+        {/* Worst */}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div style={{display:"flex",alignItems:"center",gap:6}}>
+            <span style={{fontSize:10}}>🔴</span>
+            <span style={{fontSize:10,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>أسوأ سيناريو</span>
+          </div>
+          <span style={{
+            fontSize:11,
+            color:C.coral,
+            fontWeight:800,
+            fontFamily:"IBM Plex Mono,monospace",
+          }}>
+            {oneYr.worstCaseReturn.toFixed(1)}%
+          </span>
+        </div>
+      </div>
+      
+      {/* Methodology */}
+      <div style={{
+        background:"rgba(167,139,250,.06)",
+        border:"1px solid "+C.plasma+"33",
+        borderRadius:10,
+        padding:"8px 12px",
+      }}>
+        <div style={{fontSize:9,color:C.plasma,fontWeight:800,letterSpacing:"1px",marginBottom:3}}>
+          📚 المنهجية
+        </div>
+        <div style={{
+          fontSize:10,
+          color:C.mist,
+          fontStyle:"italic",
+          lineHeight:1.5,
+          fontFamily:"Cairo,sans-serif",
+        }}>
+          {cb.methodology || 'Geometric Brownian Motion + Bootstrap Sampling'}
+        </div>
+      </div>
+    </div>
+  );
+})()}
 
 {/* Coming Soon Card */}
 <div style={{
