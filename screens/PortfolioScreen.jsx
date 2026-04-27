@@ -1952,6 +1952,7 @@ useEffect(() => {
           position:"relative",
           zIndex:1,
         }}>
+                  {/* تحليل Portfolio IQ */}
           {positions.length===0?(
             <div style={{textAlign:"center",padding:"70px 20px"}}>
               <div style={{
