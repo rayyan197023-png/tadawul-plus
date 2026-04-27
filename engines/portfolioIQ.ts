@@ -85,11 +85,12 @@ export const PRIORITY = {
 } as const;
 
 export const CATEGORY = {
-  REBALANCE: 'rebalance',
-  RISK: 'risk',
+  REDUCE_CONCENTRATION: 'reduce_concentration',
+  ADD_DIVERSIFICATION: 'add_diversification',
+  REDUCE_CORRELATION: 'reduce_correlation',
+  RISK_MANAGEMENT: 'risk_management',
+  BEHAVIORAL: 'behavioral',
   OPPORTUNITY: 'opportunity',
-  WARNING: 'warning',
-  EDUCATION: 'education',
 } as const;
 
 export const HEALTH_GRADES = {
