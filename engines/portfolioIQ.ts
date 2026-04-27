@@ -169,15 +169,6 @@ const TASI_AVG_RETURN = 0.085;
  */
 const TRADING_DAYS = 252;
 
-/**
- * Recommendation Priority Levels
- */
-const PRIORITY = {
-  CRITICAL: 'critical',  // Action needed immediately
-  HIGH: 'high',          // Action this week
-  MEDIUM: 'medium',      // Action this month
-  LOW: 'low',            // Nice to have
-};
 
 /**
  * Recommendation Categories
