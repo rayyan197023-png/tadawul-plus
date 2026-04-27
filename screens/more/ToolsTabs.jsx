@@ -1102,7 +1102,8 @@ function CompareView(props) {
 
 function AlertsPanel(props) {
   var onClose=props.onClose;
-  var PRIORITY_ORDER={high:0,medium:1,low:2};
+  var PRIORITY_ORDER={critical:0,high:1,medium:2,low:3};
+  
   var typeOpts=[
     {k:"above",  l:"فوق السعر",      c:C.mint},
     {k:"below",  l:"تحت السعر",      c:C.coral},
@@ -1114,20 +1115,67 @@ function AlertsPanel(props) {
     {k:"medium", l:"متوسط",  c:C.amber},
     {k:"low",    l:"منخفض",  c:C.mint},
   ];
-    var sTab=useState("manual"); var activeTab=sTab[0]; var setActiveTab=sTab[1];
+  
+  // Filter options for smart alerts
+  var filterOpts=[
+    {k:"all",     l:"الكل",       c:C.smoke},
+    {k:"unread",  l:"غير مقروء",  c:C.electric},
+    {k:"critical",l:"حرج",        c:C.coral},
+    {k:"high",    l:"عاجل",       c:C.amber},
+  ];
+  
+  var sTab=useState("smart"); var activeTab=sTab[0]; var setActiveTab=sTab[1];
+  var sFilter=useState("all"); var activeFilter=sFilter[0]; var setActiveFilter=sFilter[1];
+  var sShowSettings=useState(false); var showSettings=sShowSettings[0]; var setShowSettings=sShowSettings[1];
+  var sShowForm=useState(false); var showForm=sShowForm[0]; var setShowForm=sShowForm[1];
 
   var sA=useState(function(){
     try{var r=window.localStorage.getItem("tadawul_alerts");return r?JSON.parse(r):[];}catch(e){return [];}
   }); var alerts=sA[0]; var setAlerts=sA[1];
+  
+  // Settings state
+  var sSettings=useState(function(){
+    try{
+      var r=window.localStorage.getItem("tadawul_alert_settings");
+      return r?JSON.parse(r):{browserNotifications:true,soundEnabled:true,vibration:true};
+    }catch(e){return {browserNotifications:true,soundEnabled:true,vibration:true};}
+  });
+  var settings=sSettings[0]; var setSettings=sSettings[1];
+  
+  function updateSetting(key, value) {
+    var newSettings=Object.assign({},settings);
+    newSettings[key]=value;
+    setSettings(newSettings);
+    try{window.localStorage.setItem("tadawul_alert_settings",JSON.stringify(newSettings));}catch(e){}
+  }
+  
   useEffect(function(){
     try{window.localStorage.setItem("tadawul_alerts",JSON.stringify(alerts));}catch(e){}
   },[alerts]);
+  
+  // Auto-refresh every 5 seconds
+  useEffect(function(){
+    var t=setInterval(function(){
+      try{
+        var r=window.localStorage.getItem("tadawul_alerts");
+        if(r){
+          var fresh=JSON.parse(r);
+          if(fresh.length!==alerts.length){
+            setAlerts(fresh);
+          }
+        }
+      }catch(e){}
+    },5000);
+    return function(){clearInterval(t);};
+  },[alerts]);
+  
   var sS=useState(STOCKS[0]); var sym=sS[0]; var setSym=sS[1];
   var sT=useState("above"); var type=sT[0]; var setType=sT[1];
   var sP2=useState(""); var price=sP2[0]; var setPrice=sP2[1];
   var sN=useState(""); var note=sN[0]; var setNote=sN[1];
   var sPr=useState("medium"); var priority=sPr[0]; var setPriority=sPr[1];
   var sEx=useState(""); var expiry=sEx[0]; var setExpiry=sEx[1];
+  
   function add() {
     if(!price&&type!=="news"&&type!=="volume") return;
     setAlerts(function(p){
@@ -1138,125 +1186,229 @@ function AlertsPanel(props) {
       }].concat(p);
     });
     setPrice(""); setNote(""); setExpiry("");
+    setShowForm(false);
   }
-    // فصل التنبيهات
+  
+  // Time formatter
+  function formatTime(timestamp){
+    if(!timestamp) return '';
+    var diff=Date.now()-timestamp;
+    var mins=Math.floor(diff/60000);
+    var hours=Math.floor(diff/3600000);
+    var days=Math.floor(diff/86400000);
+    if(mins<1) return 'الآن';
+    if(mins<60) return 'قبل '+mins+' د';
+    if(hours<24) return 'قبل '+hours+' س';
+    if(days<7) return 'قبل '+days+' يوم';
+    try{return new Date(timestamp).toLocaleDateString('ar-SA');}catch(e){return '';}
+  }
+  
+  // Mark as read
+  function markAsRead(id){
+    setAlerts(function(prev){
+      return prev.map(function(a){return a.id===id?Object.assign({},a,{read:true}):a;});
+    });
+  }
+  
+  // Mark all as read
+  function markAllAsRead(){
+    setAlerts(function(prev){
+      return prev.map(function(a){return Object.assign({},a,{read:true});});
+    });
+  }
+  
+  // Clear all
+  function clearAll(){
+    if(window.confirm('هل أنت متأكد من حذف كل التنبيهات؟')){
+      setAlerts([]);
+    }
+  }
+  
+  // Request notification permission
+  function requestPermission(){
+    if('Notification' in window){
+      Notification.requestPermission().then(function(result){
+        if(result==='granted'){
+          updateSetting('browserNotifications',true);
+        }
+      });
+    }
+  }
+  
+  // Filter alerts
   var smartAlerts=alerts.filter(function(a){return a.smart===true;}).sort(function(a,b){
     return (b.timestamp||0)-(a.timestamp||0);
   });
   var manualAlerts=alerts.filter(function(a){return !a.smart;}).sort(function(a,b){
     return (PRIORITY_ORDER[a.priority]||1)-(PRIORITY_ORDER[b.priority]||1);
   });
-  var sortedAlerts=activeTab==="smart"?smartAlerts:manualAlerts;
+  
+  // Apply filter to smart alerts
+  var filteredSmartAlerts=smartAlerts;
+  if(activeFilter==='unread'){
+    filteredSmartAlerts=smartAlerts.filter(function(a){return !a.read;});
+  } else if(activeFilter==='critical'||activeFilter==='high'){
+    filteredSmartAlerts=smartAlerts.filter(function(a){return a.priority===activeFilter;});
+  }
+  
+  var sortedAlerts=activeTab==="smart"?filteredSmartAlerts:manualAlerts;
+  
+  // Stats
+  var stats={
+    total:alerts.length,
+    unread:smartAlerts.filter(function(a){return !a.read;}).length,
+    critical:smartAlerts.filter(function(a){return a.priority==='critical';}).length,
+    high:smartAlerts.filter(function(a){return a.priority==='high';}).length,
+  };
 
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(6,8,15,.95)",zIndex:999,display:"flex",flexDirection:"column",justifyContent:"flex-end"}}>
-      <div style={{background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",borderRadius:"20px 20px 0 0",maxHeight:"92vh",overflowY:"auto",paddingBottom:"80px"
-,border:"1px solid "+C.line,boxShadow:"0 -24px 60px rgba(0,0,0,.6)"}}>
-        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px",borderBottom:"1px solid "+C.line}}>
+      <div style={{background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",borderRadius:"20px 20px 0 0",maxHeight:"92vh",overflowY:"auto",paddingBottom:"80px",border:"1px solid "+C.line,boxShadow:"0 -24px 60px rgba(0,0,0,.6)"}}>
+        
+        {/* Header */}
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px",borderBottom:"1px solid "+C.line,position:"sticky",top:0,background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",zIndex:10}}>
           <button onClick={function(){onClose();}} style={{background:C.layer3,border:"1px solid "+C.line,color:C.smoke,padding:"7px 14px",borderRadius:10,fontSize:12,cursor:"pointer"}}>
             <Ico k="back" color={C.smoke} size={14}/>
           </button>
           <div style={{textAlign:"center"}}>
-            <div style={{fontSize:9,color:C.electric,fontWeight:700,letterSpacing:"2px"}}>TADAWUL+</div>
-            <div style={{fontSize:15,fontWeight:800,color:C.snow}}>التنبيهات السعرية</div> 
+            <div style={{fontSize:9,color:C.gold,fontWeight:700,letterSpacing:"2px"}}>ALERT CENTER</div>
+            <div style={{fontSize:15,fontWeight:800,color:C.snow}}>التنبيهات الذكية 🔔</div>
           </div>
-          <div style={{background:C.electric+"18",borderRadius:10,padding:"4px 10px",border:"1px solid "+C.electric+"33"}}>
-            <span className="num" style={{fontSize:11,fontWeight:700,color:C.electric}}>{alerts.filter(function(a){return a.active;}).length}</span>
-            <span style={{fontSize:9,color:C.smoke}}> نشط</span>
+          <button onClick={function(){setShowSettings(!showSettings);}} style={{background:showSettings?C.gold+"25":C.layer3,border:"1px solid "+(showSettings?C.gold+"44":C.line),color:showSettings?C.gold:C.smoke,padding:"7px 12px",borderRadius:10,fontSize:14,cursor:"pointer"}}>
+            ⚙️
+          </button>
+        </div>
+
+        {/* Stats Dashboard - 4 cards */}
+        <div style={{display:"flex",gap:8,padding:"12px 14px"}}>
+          <div style={{flex:1,background:C.layer3,padding:"10px 8px",borderRadius:10,textAlign:"center",border:"1px solid "+C.line}}>
+            <div style={{fontSize:18,fontWeight:900,color:C.snow,fontFamily:"IBM Plex Mono,monospace"}}>{stats.total}</div>
+            <div style={{fontSize:9,color:C.smoke,marginTop:2}}>الإجمالي</div>
+          </div>
+          <div style={{flex:1,background:C.electric+"15",padding:"10px 8px",borderRadius:10,textAlign:"center",border:"1px solid "+C.electric+"33"}}>
+            <div style={{fontSize:18,fontWeight:900,color:C.electric,fontFamily:"IBM Plex Mono,monospace"}}>{stats.unread}</div>
+            <div style={{fontSize:9,color:C.smoke,marginTop:2}}>غير مقروء</div>
+          </div>
+          <div style={{flex:1,background:C.coral+"15",padding:"10px 8px",borderRadius:10,textAlign:"center",border:"1px solid "+C.coral+"33"}}>
+            <div style={{fontSize:18,fontWeight:900,color:C.coral,fontFamily:"IBM Plex Mono,monospace"}}>{stats.critical}</div>
+            <div style={{fontSize:9,color:C.smoke,marginTop:2}}>حرج</div>
+          </div>
+          <div style={{flex:1,background:C.amber+"15",padding:"10px 8px",borderRadius:10,textAlign:"center",border:"1px solid "+C.amber+"33"}}>
+            <div style={{fontSize:18,fontWeight:900,color:C.amber,fontFamily:"IBM Plex Mono,monospace"}}>{stats.high}</div>
+            <div style={{fontSize:9,color:C.smoke,marginTop:2}}>عاجل</div>
           </div>
         </div>
-        
-        {/* 📑 التبويبات -- يدوية / ذكية */}
-        <div style={{
-          display: "flex",
-          gap: 8,
-          padding: "12px 14px 0",
-          borderBottom: "1px solid " + C.line + "44",
-        }}>
-          <button
-            onClick={function() { setActiveTab("manual"); }}
-            style={{
-              flex: 1,
-              padding: "10px",
-              background: activeTab === "manual"
-                ? "linear-gradient(135deg," + C.electric + "22," + C.electric + "08)"
-                : "transparent",
-              border: "1px solid " + (activeTab === "manual" ? C.electric + "55" : C.line + "44"),
-              borderRadius: 10,
-              color: activeTab === "manual" ? C.electric : C.smoke,
-              fontSize: 12,
-              fontWeight: 800,
-              cursor: "pointer",
-              fontFamily: "Cairo,sans-serif",
-              position: "relative",
-              transition: "all 0.2s",
-            }}
-          >
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-              <Ico k="bell" color={activeTab === "manual" ? C.electric : C.smoke} size={13} />
-              يدوية
-            </span>
-            {manualAlerts.length > 0 && (
-              <span style={{
-                position: "absolute",
-                top: 6,
-                right: 8,
-                background: C.electric + "33",
-                color: C.electric,
-                fontSize: 9,
-                padding: "1px 6px",
-                borderRadius: 6,
-                fontWeight: 800,
-              }}>
-                {manualAlerts.length}
-              </span>
-            )}
-          </button>
 
-          <button
-            onClick={function() { setActiveTab("smart"); }}
-            style={{
-              flex: 1,
-              padding: "10px",
-              background: activeTab === "smart"
-                ? "linear-gradient(135deg," + C.gold + "22," + C.gold + "08)"
-                : "transparent",
-              border: "1px solid " + (activeTab === "smart" ? C.gold + "55" : C.line + "44"),
-              borderRadius: 10,
-              color: activeTab === "smart" ? C.gold : C.smoke,
-              fontSize: 12,
-              fontWeight: 800,
-              cursor: "pointer",
-              fontFamily: "Cairo,sans-serif",
-              position: "relative",
-              transition: "all 0.2s",
-            }}
-          >
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-              <span style={{ fontSize: 14 }}>✨</span>
+        {/* Settings Panel - collapsible */}
+        {showSettings&&(
+          <div style={{margin:"0 14px 12px",padding:14,background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",borderRadius:12,border:"1px solid "+C.gold+"33"}}>
+            <div style={{fontSize:11,fontWeight:800,color:C.gold,marginBottom:10,letterSpacing:"1px"}}>⚙️ الإعدادات</div>
+            
+            {/* Browser Notifications */}
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 10px",background:C.layer3,borderRadius:8,marginBottom:6}}>
+              <div>
+                <div style={{fontSize:11,fontWeight:700,color:C.snow,marginBottom:1}}>إشعارات المتصفح</div>
+                <div style={{fontSize:9,color:C.smoke}}>تنبيهات حتى لو التطبيق مغلق</div>
+              </div>
+              <button onClick={settings.browserNotifications?function(){updateSetting('browserNotifications',false);}:requestPermission}
+                style={{width:42,height:24,borderRadius:12,background:settings.browserNotifications?C.mint+"44":C.line,border:"1px solid "+(settings.browserNotifications?C.mint:C.smoke),cursor:"pointer",position:"relative"}}>
+                <div style={{width:18,height:18,borderRadius:"50%",background:settings.browserNotifications?C.mint:C.smoke,position:"absolute",top:2,right:settings.browserNotifications?2:20,transition:"all 0.2s"}}/>
+              </button>
+            </div>
+            
+            {/* Sound */}
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 10px",background:C.layer3,borderRadius:8,marginBottom:6}}>
+              <div>
+                <div style={{fontSize:11,fontWeight:700,color:C.snow,marginBottom:1}}>الصوت</div>
+                <div style={{fontSize:9,color:C.smoke}}>تشغيل صوت عند التنبيه</div>
+              </div>
+              <button onClick={function(){updateSetting('soundEnabled',!settings.soundEnabled);}}
+                style={{width:42,height:24,borderRadius:12,background:settings.soundEnabled?C.mint+"44":C.line,border:"1px solid "+(settings.soundEnabled?C.mint:C.smoke),cursor:"pointer",position:"relative"}}>
+                <div style={{width:18,height:18,borderRadius:"50%",background:settings.soundEnabled?C.mint:C.smoke,position:"absolute",top:2,right:settings.soundEnabled?2:20,transition:"all 0.2s"}}/>
+              </button>
+            </div>
+            
+            {/* Vibration */}
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 10px",background:C.layer3,borderRadius:8}}>
+              <div>
+                <div style={{fontSize:11,fontWeight:700,color:C.snow,marginBottom:1}}>الاهتزاز</div>
+                <div style={{fontSize:9,color:C.smoke}}>اهتزاز الهاتف عند التنبيه</div>
+              </div>
+              <button onClick={function(){updateSetting('vibration',!settings.vibration);}}
+                style={{width:42,height:24,borderRadius:12,background:settings.vibration?C.mint+"44":C.line,border:"1px solid "+(settings.vibration?C.mint:C.smoke),cursor:"pointer",position:"relative"}}>
+                <div style={{width:18,height:18,borderRadius:"50%",background:settings.vibration?C.mint:C.smoke,position:"absolute",top:2,right:settings.vibration?2:20,transition:"all 0.2s"}}/>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Tabs */}
+        <div style={{display:"flex",gap:8,padding:"0 14px 0",borderBottom:"1px solid "+C.line+"44"}}>
+          <button onClick={function(){setActiveTab("smart");setActiveFilter("all");}}
+            style={{flex:1,padding:"10px",background:activeTab==="smart"?"linear-gradient(135deg,"+C.gold+"22,"+C.gold+"08)":"transparent",border:"1px solid "+(activeTab==="smart"?C.gold+"55":C.line+"44"),borderRadius:10,color:activeTab==="smart"?C.gold:C.smoke,fontSize:12,fontWeight:800,cursor:"pointer",fontFamily:"Cairo,sans-serif",position:"relative",transition:"all 0.2s"}}>
+            <span style={{display:"inline-flex",alignItems:"center",gap:6}}>
+              <span style={{fontSize:14}}>✨</span>
               الذكية
             </span>
-                        {smartAlerts.length > 0 && (
-              <span style={{
-                position: "absolute",
-                top: 6,
-                right: 8,
-                background: C.gold + "33",
-                color: C.gold,
-                fontSize: 9,
-                padding: "1px 6px",
-                borderRadius: 6,
-                fontWeight: 800,
-              }}>
-                {smartAlerts.length}
-              </span>
+            {smartAlerts.length>0&&(
+              <span style={{position:"absolute",top:6,right:8,background:C.gold+"33",color:C.gold,fontSize:9,padding:"1px 6px",borderRadius:6,fontWeight:800}}>{smartAlerts.length}</span>
+            )}
+          </button>
+          
+          <button onClick={function(){setActiveTab("manual");setActiveFilter("all");}}
+            style={{flex:1,padding:"10px",background:activeTab==="manual"?"linear-gradient(135deg,"+C.electric+"22,"+C.electric+"08)":"transparent",border:"1px solid "+(activeTab==="manual"?C.electric+"55":C.line+"44"),borderRadius:10,color:activeTab==="manual"?C.electric:C.smoke,fontSize:12,fontWeight:800,cursor:"pointer",fontFamily:"Cairo,sans-serif",position:"relative",transition:"all 0.2s"}}>
+            <span style={{display:"inline-flex",alignItems:"center",gap:6}}>
+              <Ico k="bell" color={activeTab==="manual"?C.electric:C.smoke} size={13}/>
+              يدوية
+            </span>
+            {manualAlerts.length>0&&(
+              <span style={{position:"absolute",top:6,right:8,background:C.electric+"33",color:C.electric,fontSize:9,padding:"1px 6px",borderRadius:6,fontWeight:800}}>{manualAlerts.length}</span>
             )}
           </button>
         </div>
-                <div style={{padding:14,display:"flex",flexDirection:"column",gap:10}}>
-          
-          {activeTab==="manual"&&(
-          <div style={{background:C.layer3,borderRadius:14,padding:14,border:"1px solid "+C.line}}>
+
+        {/* Filters - only for smart tab */}
+        {activeTab==="smart"&&smartAlerts.length>0&&(
+          <div style={{display:"flex",gap:6,padding:"10px 14px",overflowX:"auto"}}>
+            {filterOpts.map(function(f){return(
+              <button key={f.k} onClick={function(){setActiveFilter(f.k);}}
+                style={{padding:"6px 12px",background:activeFilter===f.k?f.c+"25":"transparent",border:"1px solid "+(activeFilter===f.k?f.c+"55":C.line),borderRadius:8,cursor:"pointer",fontSize:10,fontWeight:700,color:activeFilter===f.k?f.c:C.smoke,fontFamily:"Cairo,sans-serif",whiteSpace:"nowrap",flexShrink:0}}>
+                {f.l}
+              </button>
+            );})}
+          </div>
+        )}
+
+        {/* Action bar - only for smart with alerts */}
+        {activeTab==="smart"&&smartAlerts.length>0&&(
+          <div style={{padding:"0 14px 10px",display:"flex",gap:8}}>
+            <button onClick={markAllAsRead}
+              style={{flex:1,padding:"7px",background:"rgba(255,255,255,.04)",border:"1px solid "+C.line,borderRadius:8,cursor:"pointer",fontSize:10,fontWeight:700,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>
+              ✓ علامة الكل كمقروء
+            </button>
+            <button onClick={clearAll}
+              style={{flex:1,padding:"7px",background:C.coral+"15",border:"1px solid "+C.coral+"33",borderRadius:8,cursor:"pointer",fontSize:10,fontWeight:700,color:C.coral,fontFamily:"Cairo,sans-serif"}}>
+              🗑️ مسح الكل
+            </button>
+          </div>
+        )}
+
+        {/* Add manual alert form - only for manual tab */}
+        {activeTab==="manual"&&(
+          <div style={{padding:"0 14px 12px"}}>
+            <button onClick={function(){setShowForm(!showForm);}}
+              style={{width:"100%",background:showForm?C.electric+"22":"linear-gradient(135deg,"+C.electric+","+C.electric+"cc)",color:showForm?C.electric:C.snow,border:showForm?"1px solid "+C.electric+"55":"none",padding:"12px",borderRadius:11,fontSize:13,cursor:"pointer",fontWeight:800,fontFamily:"Cairo,sans-serif"}}>
+              <span style={{display:"inline-flex",alignItems:"center",gap:6}}>
+                <Ico k="plus" color={showForm?C.electric:C.snow} size={14}/>
+                {showForm?"إخفاء النموذج":"إضافة تنبيه يدوي"}
+              </span>
+            </button>
+          </div>
+        )}
+
+        {/* Manual alert form */}
+        {activeTab==="manual"&&showForm&&(
+          <div style={{margin:"0 14px 12px",background:C.layer3,borderRadius:14,padding:14,border:"1px solid "+C.line}}>
             <div style={{fontSize:10,color:C.smoke,marginBottom:8,textAlign:"right",fontWeight:700}}>السهم</div>
             <select value={sym.sym} onChange={function(e){var f=STOCKS.filter(function(s){return s.sym===e.target.value;});if(f[0])setSym(f[0]);}}
               style={{width:"100%",background:C.layer2,border:"1px solid "+C.line,borderRadius:9,padding:"9px 12px",color:C.snow,fontSize:12,direction:"rtl",outline:"none",marginBottom:10,cursor:"pointer"}}>
@@ -1289,24 +1441,26 @@ function AlertsPanel(props) {
             </div>
             <input type="date" value={expiry} onChange={function(e){setExpiry(e.target.value);}}
               style={{width:"100%",background:C.layer2,border:"1px solid "+C.line,borderRadius:9,padding:"9px 12px",color:C.smoke,fontSize:11,outline:"none",boxSizing:"border-box",marginBottom:10}}/>
-                        <button onClick={function(){add();}}
-              style={{width:"100%",background:"linear-gradient(135deg,"+C.electric+","+C.electric+"cc)",color:C.snow,border:"none",padding:"12px",borderRadius:11,fontSize:13,cursor:"pointer",fontWeight:800}}>
+            <button onClick={function(){add();}}
+              style={{width:"100%",background:"linear-gradient(135deg,"+C.mint+","+C.mint+"cc)",color:C.snow,border:"none",padding:"12px",borderRadius:11,fontSize:13,cursor:"pointer",fontWeight:800,fontFamily:"Cairo,sans-serif"}}>
               <span style={{display:"inline-flex",alignItems:"center",gap:6}}>
-                <Ico k="plus" color={C.snow} size={14}/>
-                إضافة تنبيه
+                ✓ تأكيد الإضافة
               </span>
             </button>
           </div>
-          )}
-                    {sortedAlerts.length===0&&(
-            <div style={{textAlign:"center",padding:"32px 20px",color:C.smoke}}>
-              <div style={{marginBottom:8,display:"flex",justifyContent:"center"}}>
-                {activeTab==="smart"?<span style={{fontSize:44}}>✨</span>:<Ico k="bell" color={C.electric+"55"} size={44}/>}
+        )}
+
+        {/* Alerts list */}
+        <div style={{padding:"0 14px",display:"flex",flexDirection:"column",gap:10}}>
+          {sortedAlerts.length===0&&(
+            <div style={{textAlign:"center",padding:"40px 20px",color:C.smoke}}>
+              <div style={{marginBottom:12,display:"flex",justifyContent:"center"}}>
+                {activeTab==="smart"?<span style={{fontSize:50}}>✨</span>:<Ico k="bell" color={C.electric+"55"} size={50}/>}
               </div>
-              <div style={{fontSize:13,fontWeight:700,color:C.mist}}>
-                {activeTab==="smart"?"لا توجد تنبيهات ذكية بعد":"لا توجد تنبيهات"}
+              <div style={{fontSize:14,fontWeight:800,color:C.mist,marginBottom:6,fontFamily:"Cairo,sans-serif"}}>
+                {activeTab==="smart"?(activeFilter==="all"?"لا توجد تنبيهات ذكية":"لا توجد تنبيهات في هذا الفلتر"):"لا توجد تنبيهات"}
               </div>
-              {activeTab==="smart"&&(
+              {activeTab==="smart"&&activeFilter==="all"&&(
                 <div style={{fontSize:11,color:C.smoke,marginTop:8,lineHeight:1.6,fontFamily:"Cairo,sans-serif"}}>
                   المحرك يراقب الأسهم تلقائياً<br/>
                   سيخبرك عند أي فرصة أو مخاطرة
@@ -1314,117 +1468,67 @@ function AlertsPanel(props) {
               )}
             </div>
           )}
+          
           {sortedAlerts.map(function(al){
-            // التنبيهات الذكية تعرض بشكل مختلف
+            // Smart alerts
             if(al.smart){
               return(
-                <div key={al.id} style={{
-                  background:"linear-gradient(135deg,"+al.color+"18,"+al.color+"08)",
-                  borderRadius:14,
-                  padding:"14px 16px",
-                  border:"1px solid "+al.color+"44",
-                  position:"relative",
-                  boxShadow:"0 4px 16px "+al.color+"22",
-                }}>
-                  {/* Header: icon + title + delete */}
+                <div key={al.id} onClick={function(){if(!al.read)markAsRead(al.id);}}
+                  style={{
+                    background:al.read?"linear-gradient(135deg,"+C.layer1+","+C.layer2+")":"linear-gradient(135deg,"+al.color+"18,"+al.color+"08)",
+                    borderRadius:14,
+                    padding:"14px 16px",
+                    border:"1px solid "+(al.read?C.line:al.color+"44"),
+                    position:"relative",
+                    cursor:"pointer",
+                    boxShadow:al.read?"none":"0 4px 16px "+al.color+"22",
+                  }}>
+                  
+                  {/* Unread indicator */}
+                  {!al.read&&(
+                    <div style={{position:"absolute",top:12,left:12,width:8,height:8,borderRadius:"50%",background:al.color,boxShadow:"0 0 8px "+al.color}}/>
+                  )}
+                  
                   <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:10}}>
-                    <div style={{
-                      width:40,
-                      height:40,
-                      borderRadius:10,
-                      background:al.color+"22",
-                      border:"1px solid "+al.color+"55",
-                      display:"flex",
-                      alignItems:"center",
-                      justifyContent:"center",
-                      fontSize:22,
-                      flexShrink:0,
-                    }}>
+                    <div style={{width:40,height:40,borderRadius:10,background:al.color+"22",border:"1px solid "+al.color+"55",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>
                       {al.icon}
                     </div>
                     <div style={{flex:1,textAlign:"right"}}>
-                      <div style={{
-                        fontSize:13,
-                        fontWeight:900,
-                        color:al.color,
-                        fontFamily:"Cairo,sans-serif",
-                        marginBottom:3,
-                      }}>
+                      <div style={{fontSize:13,fontWeight:900,color:al.color,fontFamily:"Cairo,sans-serif",marginBottom:3}}>
                         {al.title}
                       </div>
-                      <div style={{
-                        fontSize:11,
-                        color:C.snow,
-                        fontWeight:700,
-                      }}>
+                      <div style={{fontSize:11,color:C.snow,fontWeight:700}}>
                         {al.name} <span style={{color:C.smoke,fontSize:9,marginRight:4}}>({al.sym})</span>
                       </div>
                     </div>
-                    <button onClick={function(){setAlerts(function(p){return p.filter(function(x){return x.id!==al.id;});});}}
-                      style={{
-                        background:"transparent",
-                        border:"none",
-                        color:C.smoke,
-                        cursor:"pointer",
-                        padding:4,
-                        fontSize:14,
-                      }}>
+                    <button onClick={function(e){e.stopPropagation();setAlerts(function(p){return p.filter(function(x){return x.id!==al.id;});});}}
+                      style={{background:"transparent",border:"none",color:C.smoke,cursor:"pointer",padding:4,fontSize:14}}>
                       ✕
                     </button>
                   </div>
                   
-                  {/* Body */}
-                  <div style={{
-                    background:C.layer2+"88",
-                    padding:"8px 10px",
-                    borderRadius:8,
-                    marginBottom:8,
-                  }}>
-                    <div style={{
-                      fontSize:12,
-                      color:C.mist,
-                      fontWeight:700,
-                      marginBottom:3,
-                      fontFamily:"Cairo,sans-serif",
-                    }}>
+                  <div style={{background:C.layer2+"88",padding:"8px 10px",borderRadius:8,marginBottom:8}}>
+                    <div style={{fontSize:12,color:C.mist,fontWeight:700,marginBottom:3,fontFamily:"Cairo,sans-serif"}}>
                       {al.message}
                     </div>
-                    <div style={{
-                      fontSize:10,
-                      color:C.smoke,
-                      lineHeight:1.5,
-                      fontFamily:"Cairo,sans-serif",
-                    }}>
+                    <div style={{fontSize:10,color:C.smoke,lineHeight:1.5,fontFamily:"Cairo,sans-serif"}}>
                       {al.detail}
                     </div>
                   </div>
                   
-                  {/* Footer: priority + time */}
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                    <div style={{
-                      display:"inline-flex",
-                      alignItems:"center",
-                      gap:4,
-                      fontSize:9,
-                      color:al.color,
-                      background:al.color+"15",
-                      padding:"3px 8px",
-                      borderRadius:6,
-                      fontWeight:700,
-                      border:"1px solid "+al.color+"33",
-                    }}>
+                    <div style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:9,color:al.color,background:al.color+"15",padding:"3px 8px",borderRadius:6,fontWeight:700,border:"1px solid "+al.color+"33"}}>
                       {al.label}
                     </div>
                     <div style={{fontSize:9,color:C.smoke}}>
-                      {al.timestamp?new Date(al.timestamp).toLocaleString('ar-SA',{hour:'2-digit',minute:'2-digit'}):''}
+                      {formatTime(al.timestamp)}
                     </div>
                   </div>
                 </div>
               );
             }
             
-            // التنبيهات اليدوية (الكود الأصلي)
-
+            // Manual alerts
             var tColor=al.type==="above"?C.mint:al.type==="below"?C.coral:al.type==="volume"?C.amber:C.electric;
             var prColor=al.priority==="high"?C.coral:al.priority==="medium"?C.amber:C.mint;
             return(
