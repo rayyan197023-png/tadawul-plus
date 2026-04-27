@@ -2890,6 +2890,343 @@ useEffect(() => {
     </div>
   );
 })()}
+{/* Smart Stop-Loss™ Card */}
+{iq.smartStops && iq.smartStops.stops && iq.smartStops.stops.length > 0 && (function(){
+  var ss = iq.smartStops;
+  var validStops = ss.stops.filter(function(s){return s.suggestedStop !== null;});
+  if (validStops.length === 0) return null;
+  return (
+    <div className="card-enter" style={{
+      background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
+      border:"1px solid "+C.coral+"33",
+      borderRadius:16,
+      padding:"16px",
+      marginBottom:14,
+      boxShadow:"0 8px 24px "+C.coral+"22, inset 0 1px 0 "+C.layer3,
+      position:"relative",
+      overflow:"hidden",
+    }}>
+      <div style={{
+        position:"absolute",
+        top:0,left:0,right:0,
+        height:3,
+        background:"linear-gradient(90deg,"+C.coral+"00,"+C.coral+"ff,"+C.coral+"00)",
+      }}/>
+      
+      {/* Header */}
+      <div style={{
+        display:"flex",
+        alignItems:"center",
+        justifyContent:"space-between",
+        marginBottom:12,
+      }}>
+        <div>
+          <div style={{fontSize:9,color:C.coral,fontWeight:800,letterSpacing:"2px",marginBottom:3}}>
+            🛡️ SMART STOP-LOSS™
+          </div>
+          <div style={{fontSize:10,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>
+            وقف خسارة ذكي لكل سهم
+          </div>
+        </div>
+        {ss.totalRiskSAR > 0 && (
+          <div style={{
+            background:C.coral+"15",
+            border:"1px solid "+C.coral+"33",
+            borderRadius:8,
+            padding:"6px 10px",
+            textAlign:"left",
+          }}>
+            <div style={{fontSize:9,color:C.smoke,marginBottom:2}}>إجمالي الخطر</div>
+            <div style={{
+              fontSize:13,
+              fontWeight:900,
+              color:C.coral,
+              fontFamily:"IBM Plex Mono,monospace",
+            }}>
+              {ss.totalRiskSAR.toLocaleString('en-US')} ر
+            </div>
+          </div>
+        )}
+      </div>
+      
+      {/* Stops List */}
+      <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:10}}>
+        {validStops.slice(0, 5).map(function(stop,i){
+          return (
+            <div key={i} style={{
+              background:"rgba(255,255,255,.03)",
+              border:"1px solid "+C.line,
+              borderRadius:10,
+              padding:"10px 12px",
+            }}>
+              {/* Symbol + Current Price */}
+              <div style={{
+                display:"flex",
+                justifyContent:"space-between",
+                alignItems:"center",
+                marginBottom:6,
+              }}>
+                <div style={{display:"flex",alignItems:"center",gap:6}}>
+                  <span style={{
+                    fontFamily:"IBM Plex Mono,monospace",
+                    fontSize:12,
+                    fontWeight:900,
+                    color:C.snow,
+                  }}>
+                    {stop.sym}
+                  </span>
+                  <span style={{fontSize:9,color:C.smoke}}>الحالي:</span>
+                  <span style={{
+                    fontFamily:"IBM Plex Mono,monospace",
+                    fontSize:11,
+                    fontWeight:700,
+                    color:C.mist,
+                  }}>
+                    {stop.currentPrice}
+                  </span>
+                </div>
+                <div style={{
+                  background:C.coral+"22",
+                  border:"1px solid "+C.coral+"55",
+                  borderRadius:6,
+                  padding:"3px 8px",
+                }}>
+                  <span style={{
+                    fontSize:11,
+                    fontWeight:800,
+                    color:C.coral,
+                    fontFamily:"IBM Plex Mono,monospace",
+                  }}>
+                    -{stop.stopPercent}%
+                  </span>
+                </div>
+              </div>
+              
+              {/* Stop Price + Risk */}
+              <div style={{
+                display:"flex",
+                justifyContent:"space-between",
+                alignItems:"center",
+              }}>
+                <div style={{display:"flex",alignItems:"center",gap:6}}>
+                  <span style={{fontSize:11}}>🛑</span>
+                  <span style={{fontSize:9,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>وقف عند:</span>
+                  <span style={{
+                    fontFamily:"IBM Plex Mono,monospace",
+                    fontSize:13,
+                    fontWeight:900,
+                    color:C.coral,
+                  }}>
+                    {stop.suggestedStop}
+                  </span>
+                </div>
+                {stop.totalRisk > 0 && (
+                  <div style={{
+                    fontSize:10,
+                    color:C.smoke,
+                    fontFamily:"IBM Plex Mono,monospace",
+                  }}>
+                    خطر: {stop.totalRisk.toLocaleString('en-US')} ر
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      
+      {/* Methodology */}
+      <div style={{
+        background:"rgba(167,139,250,.06)",
+        border:"1px solid "+C.plasma+"33",
+        borderRadius:10,
+        padding:"8px 12px",
+      }}>
+        <div style={{fontSize:9,color:C.plasma,fontWeight:800,letterSpacing:"1px",marginBottom:3}}>
+          📚 المنهجية
+        </div>
+        <div style={{
+          fontSize:10,
+          color:C.mist,
+          lineHeight:1.5,
+          fontFamily:"Cairo,sans-serif",
+        }}>
+          {ss.methodology || 'ATR (14) + Chandelier Exit + تعديل قطاعي'}
+        </div>
+      </div>
+    </div>
+  );
+})()}
+
+{/* Recovery Path™ Card */}
+{iq.recoveryPath && iq.recoveryPath.status !== 'stable' && (function(){
+  var rp = iq.recoveryPath;
+  var ddSeverity = rp.currentDrawdown < 10 ? C.amber :
+                   rp.currentDrawdown < 20 ? C.coral : '#dc2626';
+  return (
+    <div className="card-enter" style={{
+      background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
+      border:"1px solid "+ddSeverity+"33",
+      borderRadius:16,
+      padding:"16px",
+      marginBottom:14,
+      boxShadow:"0 8px 24px "+ddSeverity+"22, inset 0 1px 0 "+C.layer3,
+      position:"relative",
+      overflow:"hidden",
+    }}>
+      <div style={{
+        position:"absolute",
+        top:0,left:0,right:0,
+        height:3,
+        background:"linear-gradient(90deg,"+ddSeverity+"00,"+ddSeverity+"ff,"+ddSeverity+"00)",
+      }}/>
+      
+      {/* Header */}
+      <div style={{textAlign:"center",marginBottom:14}}>
+        <div style={{fontSize:9,color:ddSeverity,fontWeight:800,letterSpacing:"2px",marginBottom:4}}>
+          🔄 RECOVERY PATH™
+        </div>
+        <div style={{fontSize:11,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>
+          خطة استعادة من التراجع
+        </div>
+      </div>
+      
+      {/* Current Drawdown */}
+      <div style={{
+        background:"linear-gradient(135deg,"+ddSeverity+"22,"+ddSeverity+"11)",
+        border:"1px solid "+ddSeverity+"55",
+        borderRadius:12,
+        padding:"12px",
+        marginBottom:10,
+        textAlign:"center",
+      }}>
+        <div style={{fontSize:9,color:ddSeverity,fontWeight:800,letterSpacing:"1.5px",marginBottom:4}}>
+          📉 التراجع الحالي
+        </div>
+        <div style={{
+          fontSize:28,
+          fontWeight:900,
+          color:ddSeverity,
+          fontFamily:"IBM Plex Mono,monospace",
+          lineHeight:1,
+        }}>
+          -{rp.currentDrawdown}%
+        </div>
+      </div>
+      
+      {/* Recovery Needed */}
+      <div style={{
+        display:"grid",
+        gridTemplateColumns:"1fr 1fr",
+        gap:8,
+        marginBottom:10,
+      }}>
+        <div style={{
+          background:"rgba(255,255,255,.03)",
+          border:"1px solid "+C.line,
+          borderRadius:10,
+          padding:"10px",
+          textAlign:"center",
+        }}>
+          <div style={{fontSize:9,color:C.smoke,marginBottom:4,fontFamily:"Cairo,sans-serif"}}>
+            ⬆️ ربح مطلوب
+          </div>
+          <div style={{
+            fontSize:18,
+            fontWeight:900,
+            color:C.mint,
+            fontFamily:"IBM Plex Mono,monospace",
+          }}>
+            +{rp.recoveryNeeded}%
+          </div>
+        </div>
+        <div style={{
+          background:"rgba(255,255,255,.03)",
+          border:"1px solid "+C.line,
+          borderRadius:10,
+          padding:"10px",
+          textAlign:"center",
+        }}>
+          <div style={{fontSize:9,color:C.smoke,marginBottom:4,fontFamily:"Cairo,sans-serif"}}>
+            ⏱️ مدة متوقعة
+          </div>
+          <div style={{
+            fontSize:18,
+            fontWeight:900,
+            color:C.teal,
+            fontFamily:"IBM Plex Mono,monospace",
+          }}>
+            {rp.expectedRecoveryMonths} شهر
+          </div>
+        </div>
+      </div>
+      
+      {/* Strategy */}
+      {rp.actions && rp.actions.length > 0 && (
+        <div style={{
+          background:"rgba(30,230,138,.06)",
+          border:"1px solid "+C.mint+"33",
+          borderRadius:10,
+          padding:"10px 12px",
+        }}>
+          <div style={{fontSize:9,color:C.mint,fontWeight:800,letterSpacing:"1px",marginBottom:6}}>
+            💡 الخطة المقترحة
+          </div>
+          {rp.actions.map(function(action,i){
+            return (
+              <div key={i} style={{
+                fontSize:11,
+                color:C.mist,
+                lineHeight:1.6,
+                marginBottom:i<rp.actions.length-1?6:0,
+                fontFamily:"Cairo,sans-serif",
+                display:"flex",
+                alignItems:"flex-start",
+                gap:6,
+              }}>
+                <span style={{color:C.mint,fontWeight:700,marginTop:1}}>•</span>
+                <span>{action.message}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+})()}
+
+{/* Recovery - Stable Message */}
+{iq.recoveryPath && iq.recoveryPath.status === 'stable' && (
+  <div className="card-enter" style={{
+    background:"linear-gradient(135deg,"+C.mint+"11,"+C.mint+"05)",
+    border:"1px solid "+C.mint+"33",
+    borderRadius:16,
+    padding:"14px 16px",
+    marginBottom:14,
+    textAlign:"center",
+  }}>
+    <div style={{fontSize:24,marginBottom:6}}>✅</div>
+    <div style={{fontSize:11,color:C.mint,fontWeight:800,letterSpacing:"1.5px",marginBottom:4}}>
+      🔄 RECOVERY PATH™
+    </div>
+    <div style={{
+      fontSize:13,
+      color:C.snow,
+      fontWeight:800,
+      fontFamily:"Cairo,sans-serif",
+    }}>
+      محفظتك مستقرة
+    </div>
+    <div style={{
+      fontSize:10,
+      color:C.smoke,
+      marginTop:4,
+      fontFamily:"Cairo,sans-serif",
+    }}>
+      {iq.recoveryPath.message || 'لا حاجة لخطة استعادة'}
+    </div>
+  </div>
+)}
 
 {/* Coming Soon Card */}
 <div style={{
