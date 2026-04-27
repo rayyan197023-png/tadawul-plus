@@ -1104,8 +1104,6 @@ function runCrystalBall(positions, base, simulations = 1000) {
   const annualVol = (base.performance && base.performance.volatility) || 0.20; // Default 20%
 
   const initialValue = base.totalValue || 100000;
-  const annualReturn = base.performance.annualReturn;
-  const annualVol = base.performance.volatility || 0.20;
   
   // Daily parameters
   const dailyReturn = annualReturn / TRADING_DAYS;
