@@ -1941,6 +1941,89 @@ useEffect(() => {
           )}
         </div>
       )}
+      {activeTab==="iq"&&(
+        <div id="tab-iq" style={{
+          overflowY:"auto",
+          paddingTop:10,
+          paddingLeft:20,
+          paddingRight:20,
+          paddingBottom:"calc(90px + env(safe-area-inset-bottom, 0px))",
+          position:"relative",
+          zIndex:1,
+        }}>
+          {positions.length===0?(
+            <div style={{textAlign:"center",padding:"70px 20px"}}>
+              <div style={{
+                width:72,height:72,borderRadius:20,
+                margin:"0 auto 20px",
+                background:"linear-gradient(135deg,"+C.plasma+"22,"+C.plasma+"08)",
+                border:"1px solid "+C.plasma+"33",
+                display:"flex",alignItems:"center",justifyContent:"center",
+                boxShadow:"0 8px 24px "+C.plasma+"22",
+              }}>
+                <span style={{fontSize:36}}>🧠</span>
+              </div>
+              <div style={{fontSize:11,color:C.plasma,fontWeight:700,letterSpacing:"2px",marginBottom:6}}>
+                PORTFOLIO IQ
+              </div>
+              <div style={{fontSize:15,fontWeight:800,color:C.mist,marginBottom:8}}>
+                ذكاء متقدم لمحفظتك
+              </div>
+              <div style={{fontSize:12,color:C.smoke,marginBottom:28,lineHeight:1.7}}>
+                أضف أسهمك للحصول على<br/>
+                تحليل بمستوى Bloomberg
+              </div>
+            </div>
+          ):(
+            <div style={{textAlign:"center",padding:"40px 20px"}}>
+              <div style={{
+                width:80,height:80,borderRadius:24,
+                margin:"0 auto 20px",
+                background:"linear-gradient(135deg,"+C.plasma+"33,"+C.plasma+"11)",
+                border:"1px solid "+C.plasma+"55",
+                display:"flex",alignItems:"center",justifyContent:"center",
+                boxShadow:"0 12px 32px "+C.plasma+"33",
+              }}>
+                <span style={{fontSize:42}}>🧠</span>
+              </div>
+              <div style={{fontSize:9,color:C.plasma,fontWeight:800,letterSpacing:"3px",marginBottom:8}}>
+                PORTFOLIO IQ™
+              </div>
+              <div style={{fontSize:18,fontWeight:900,color:C.snow,marginBottom:10,fontFamily:"Cairo,sans-serif"}}>
+                قريباً جداً
+              </div>
+              <div style={{fontSize:12,color:C.mist,lineHeight:1.7,maxWidth:300,margin:"0 auto",fontFamily:"Cairo,sans-serif"}}>
+                نظام تحليل ذكي بمستوى<br/>
+                <span style={{color:C.plasma,fontWeight:800}}>Bloomberg + Bridgewater</span><br/><br/>
+                يحلل محفظتك على 8 طبقات<br/>
+                ويقدم توصيات تنفيذية
+              </div>
+              
+              <div style={{
+                marginTop:24,
+                padding:"12px 16px",
+                background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
+                border:"1px solid "+C.line,
+                borderRadius:12,
+                textAlign:"right",
+              }}>
+                <div style={{fontSize:10,color:C.plasma,fontWeight:800,marginBottom:8}}>
+                  ✨ الميزات القادمة:
+                </div>
+                <div style={{fontSize:11,color:C.mist,lineHeight:1.8}}>
+                  🎯 IQ Score (0-100)<br/>
+                  🧠 PsyRisk Score™<br/>
+                  🧬 Portfolio DNA™<br/>
+                  🔮 Crystal Ball™ (Monte Carlo)<br/>
+                  🛡️ Smart Stop-Loss™<br/>
+                  🔄 Recovery Path™<br/>
+                  ⚡ Smart Recommendations
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {sellSheet&&<SellSheet sellSheet={sellSheet} setSellSheet={setSellSheet} setTradeLog={setTradeLog} setPort={setPort} setPerfHistory={setPerfHistory} sl={sl}/>}
       {editPos&&<EditModal pos={editPos} onClose={function(){setEditPos(null);}} setPort={setPort} setTradeLog={setTradeLog}/>}
