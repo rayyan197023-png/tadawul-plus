@@ -684,7 +684,86 @@ function Card(props) {
               <span title="نسبة المكسب للمخاطرة - كل 1 ريال خطر تكسب X ريال" style={{fontSize:12,color:C.gold,background:C.gold+"12",borderRadius:8,padding:"3px 9px",border:"1px solid "+C.gold+"25",cursor:"help"}}>ربح/خطر {d.rr}:1</span>
             )}
           </div>
-
+          {/* ✨ Strategic Insight - Portfolio IQ Integration */}
+          {d.strategicInsight && d.strategicInsight.alerts.length > 0 && (
+            <div style={{
+              background: d.strategicInsight.severity === 'danger' 
+                ? "linear-gradient(135deg," + C.coral + "15," + C.coral + "08)"
+                : "linear-gradient(135deg," + C.amber + "15," + C.amber + "08)",
+              border: "1px solid " + (d.strategicInsight.severity === 'danger' ? C.coral + "44" : C.amber + "44"),
+              borderRadius: 12,
+              padding: "10px 12px",
+              marginBottom: 10,
+              position: "relative",
+            }}>
+              {/* Header */}
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 8,
+                paddingBottom: 6,
+                borderBottom: "1px solid " + (d.strategicInsight.severity === 'danger' ? C.coral + "33" : C.amber + "33"),
+              }}>
+                <div style={{display: "flex", alignItems: "center", gap: 6}}>
+                  <span style={{fontSize: 14}}>🧠</span>
+                  <span style={{
+                    fontSize: 11,
+                    fontWeight: 800,
+                    color: d.strategicInsight.severity === 'danger' ? C.coral : C.amber,
+                    fontFamily: "Cairo,sans-serif",
+                  }}>
+                    تنبيه استراتيجي
+                  </span>
+                </div>
+                <span style={{
+                  fontSize: 9,
+                  color: C.smoke,
+                  background: "rgba(255,255,255,.05)",
+                  padding: "2px 6px",
+                  borderRadius: 4,
+                  fontWeight: 700,
+                  fontFamily: "Cairo,sans-serif",
+                }}>
+                  Portfolio IQ
+                </span>
+              </div>
+              
+              {/* Alerts */}
+              {d.strategicInsight.alerts.map(function(alert, i) {
+                return (
+                  <div key={i} style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 8,
+                    marginBottom: i < d.strategicInsight.alerts.length - 1 ? 6 : 0,
+                  }}>
+                    <span style={{fontSize: 14, flexShrink: 0}}>{alert.icon}</span>
+                    <div style={{flex: 1}}>
+                      <div style={{
+                        fontSize: 11,
+                        color: C.snow,
+                        fontWeight: 700,
+                        marginBottom: 2,
+                        fontFamily: "Cairo,sans-serif",
+                      }}>
+                        {alert.message}
+                      </div>
+                      <div style={{
+                        fontSize: 10,
+                        color: C.smoke,
+                        lineHeight: 1.5,
+                        fontFamily: "Cairo,sans-serif",
+                      }}>
+                        💡 {alert.suggestion}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          
           {/* أزرار الإجراءات */}
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",paddingTop:6,borderTop:"1px solid "+C.line+"33"}}>
             <span style={{fontSize:11,color:C.smoke,background:"rgba(255,255,255,.04)",borderRadius:8,padding:"3px 9px",border:"1px solid "+C.line}}>{p.curWeightPct.toFixed(1)}% من المحفظة</span>
