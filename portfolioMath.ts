@@ -10,8 +10,29 @@
  * جميع الدوال خالصة (pure functions) -- بدون تأثيرات جانبية
  *
  * @author تداول+
- * @version 1.0
+ * @version 2.0 (TypeScript)
  */
+
+// ═══════════════════════════════════════════════════════
+// 📊 TYPES
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Bar (OHLC data point)
+ */
+export interface Bar {
+  t: number;  // Timestamp
+  o: number;  // Open
+  h: number;  // High
+  l: number;  // Low
+  c: number;  // Close
+  v: number;  // Volume
+}
+
+/**
+ * Numeric array (returns, prices, etc.)
+ */
+export type NumberArray = number[];
 
 /* ══════════════════════════════════════════════════════════
    ① الإحصاءات الوصفية الأساسية
@@ -21,10 +42,10 @@
  * المتوسط الحسابي
  * μ = Σx / n
  */
-export function mean(arr) {
+export function mean(arr: NumberArray): number {
   if (!arr || arr.length === 0) return 0;
-  var sum = 0;
-  for (var i = 0; i < arr.length; i++) sum += arr[i];
+  let sum = 0;
+  for (let i = 0; i < arr.length; i++) sum += arr[i];
   return sum / arr.length;
 }
 
@@ -33,12 +54,12 @@ export function mean(arr) {
  * σ² = Σ(x - μ)² / (n - 1)
  * نستخدم (n-1) وهو تصحيح Bessel للعينة
  */
-export function variance(arr) {
+export function variance(arr: NumberArray): number {
   if (!arr || arr.length < 2) return 0;
-  var m = mean(arr);
-  var sumSq = 0;
-  for (var i = 0; i < arr.length; i++) {
-    var diff = arr[i] - m;
+  const m = mean(arr);
+  let sumSq = 0;
+  for (let i = 0; i < arr.length; i++) {
+    const diff = arr[i] - m;
     sumSq += diff * diff;
   }
   return sumSq / (arr.length - 1);
@@ -48,7 +69,7 @@ export function variance(arr) {
  * الانحراف المعياري -- Standard Deviation
  * σ = √(variance)
  */
-export function std(arr) {
+export function std(arr: NumberArray): number {
   return Math.sqrt(variance(arr));
 }
 
@@ -56,14 +77,13 @@ export function std(arr) {
  * الانحراف السلبي (Downside Deviation)
  * يُستخدم في Sortino Ratio -- يأخذ العوائد تحت العتبة فقط
  */
-export function downsideDeviation(arr, threshold) {
+export function downsideDeviation(arr: NumberArray, threshold: number = 0): number {
   if (!arr || arr.length === 0) return 0;
-  threshold = threshold || 0;
-  var sumSq = 0;
-  var count = 0;
-  for (var i = 0; i < arr.length; i++) {
+  let sumSq = 0;
+  let count = 0;
+  for (let i = 0; i < arr.length; i++) {
     if (arr[i] < threshold) {
-      var diff = arr[i] - threshold;
+      const diff = arr[i] - threshold;
       sumSq += diff * diff;
       count++;
     }
@@ -80,12 +100,12 @@ export function downsideDeviation(arr, threshold) {
  * حساب سلسلة العوائد اليومية البسيطة
  * r_t = (P_t - P_{t-1}) / P_{t-1}
  */
-export function simpleReturns(bars) {
+export function simpleReturns(bars: Bar[]): NumberArray {
   if (!bars || bars.length < 2) return [];
-  var returns = [];
-  for (var i = 1; i < bars.length; i++) {
-    var prev = bars[i - 1].c;
-    var curr = bars[i].c;
+  const returns: NumberArray = [];
+  for (let i = 1; i < bars.length; i++) {
+    const prev = bars[i - 1].c;
+    const curr = bars[i].c;
     if (prev > 0) {
       returns.push((curr - prev) / prev);
     }
@@ -98,12 +118,12 @@ export function simpleReturns(bars) {
  * r_t = ln(P_t / P_{t-1})
  * أكثر دقة للحسابات الطويلة المدى
  */
-export function logReturns(bars) {
+export function logReturns(bars: Bar[]): NumberArray {
   if (!bars || bars.length < 2) return [];
-  var returns = [];
-  for (var i = 1; i < bars.length; i++) {
-    var prev = bars[i - 1].c;
-    var curr = bars[i].c;
+  const returns: NumberArray = [];
+  for (let i = 1; i < bars.length; i++) {
+    const prev = bars[i - 1].c;
+    const curr = bars[i].c;
     if (prev > 0 && curr > 0) {
       returns.push(Math.log(curr / prev));
     }
@@ -115,10 +135,10 @@ export function logReturns(bars) {
  * العائد التراكمي
  * (1 + r_1)(1 + r_2)...(1 + r_n) - 1
  */
-export function cumulativeReturn(returns) {
+export function cumulativeReturn(returns: NumberArray): number {
   if (!returns || returns.length === 0) return 0;
-  var cum = 1;
-  for (var i = 0; i < returns.length; i++) {
+  let cum = 1;
+  for (let i = 0; i < returns.length; i++) {
     cum *= (1 + returns[i]);
   }
   return cum - 1;
@@ -132,12 +152,12 @@ export function cumulativeReturn(returns) {
  * التباين المشترك (Covariance)
  * cov(X,Y) = Σ[(x - μ_x)(y - μ_y)] / (n - 1)
  */
-export function covariance(x, y) {
+export function covariance(x: NumberArray, y: NumberArray): number {
   if (!x || !y || x.length !== y.length || x.length < 2) return 0;
-  var mx = mean(x);
-  var my = mean(y);
-  var sum = 0;
-  for (var i = 0; i < x.length; i++) {
+  const mx = mean(x);
+  const my = mean(y);
+  let sum = 0;
+  for (let i = 0; i < x.length; i++) {
     sum += (x[i] - mx) * (y[i] - my);
   }
   return sum / (x.length - 1);
@@ -148,9 +168,9 @@ export function covariance(x, y) {
  * ρ(X,Y) = cov(X,Y) / (σ_x * σ_y)
  * القيمة بين -1 و +1
  */
-export function correlation(x, y) {
-  var sx = std(x);
-  var sy = std(y);
+export function correlation(x: NumberArray, y: NumberArray): number {
+  const sx = std(x);
+  const sy = std(y);
   if (sx === 0 || sy === 0) return 0;
   return covariance(x, y) / (sx * sy);
 }
@@ -161,8 +181,8 @@ export function correlation(x, y) {
  * β > 1: أكثر تذبذباً من السوق
  * β < 1: أقل تذبذباً من السوق
  */
-export function beta(assetReturns, marketReturns) {
-  var varMarket = variance(marketReturns);
+export function beta(assetReturns: NumberArray, marketReturns: NumberArray): number {
+  const varMarket = variance(marketReturns);
   if (varMarket === 0) return 1;
   return covariance(assetReturns, marketReturns) / varMarket;
 }
@@ -175,7 +195,7 @@ export function beta(assetReturns, marketReturns) {
  * تحويل العائد اليومي إلى سنوي
  * r_annual = (1 + r_daily)^252 - 1
  */
-export function annualizeReturn(dailyReturn) {
+export function annualizeReturn(dailyReturn: number): number {
   return Math.pow(1 + dailyReturn, 252) - 1;
 }
 
@@ -184,7 +204,7 @@ export function annualizeReturn(dailyReturn) {
  * σ_annual = σ_daily * √252
  * قاعدة جذر الزمن (Square-root-of-time rule)
  */
-export function annualizeStd(dailyStd) {
+export function annualizeStd(dailyStd: number): number {
   return dailyStd * Math.sqrt(252);
 }
 
@@ -196,16 +216,16 @@ export function annualizeStd(dailyStd) {
  * حساب المئين (Percentile) عبر Linear Interpolation
  * يُستخدم في VaR (Value at Risk)
  */
-export function percentile(arr, p) {
+export function percentile(arr: NumberArray, p: number): number {
   if (!arr || arr.length === 0) return 0;
-  var sorted = arr.slice().sort(function(a, b) { return a - b; });
+  const sorted = arr.slice().sort((a, b) => a - b);
   if (p <= 0) return sorted[0];
   if (p >= 100) return sorted[sorted.length - 1];
-  var idx = (p / 100) * (sorted.length - 1);
-  var lower = Math.floor(idx);
-  var upper = Math.ceil(idx);
+  const idx = (p / 100) * (sorted.length - 1);
+  const lower = Math.floor(idx);
+  const upper = Math.ceil(idx);
   if (lower === upper) return sorted[lower];
-  var weight = idx - lower;
+  const weight = idx - lower;
   return sorted[lower] * (1 - weight) + sorted[upper] * weight;
 }
 
@@ -216,16 +236,16 @@ export function percentile(arr, p) {
 /**
  * تقييد قيمة بين حدين (Clamp)
  */
-export function clamp(val, min, max) {
+export function clamp(val: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, val));
 }
 
 /**
  * التحقق من صحة العوائد (إزالة NaN و Infinity)
  */
-export function sanitize(arr) {
+export function sanitize(arr: NumberArray | undefined | null): NumberArray {
   if (!arr) return [];
-  return arr.filter(function(v) {
+  return arr.filter((v): v is number => {
     return typeof v === 'number' && isFinite(v) && !isNaN(v);
   });
 }
