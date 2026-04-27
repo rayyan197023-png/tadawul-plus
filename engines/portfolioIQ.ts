@@ -171,19 +171,6 @@ const TRADING_DAYS = 252;
 
 
 
-/**
- * Portfolio Health Grades (S&P-style)
- */
-const HEALTH_GRADES = {
-  90: { grade: 'AAA', label: 'استثنائي', color: '#1ee68a' },
-  85: { grade: 'AA',  label: 'ممتاز',    color: '#22d3ee' },
-  80: { grade: 'A',   label: 'جيد جداً',  color: '#22d3ee' },
-  75: { grade: 'BBB', label: 'جيد',       color: '#fbbf24' },
-  70: { grade: 'BB',  label: 'مقبول',     color: '#fbbf24' },
-  60: { grade: 'B',   label: 'متوسط',     color: '#f59e0b' },
-  50: { grade: 'CCC', label: 'ضعيف',      color: '#ff5f6a' },
-  0:  { grade: 'D',   label: 'حرج',       color: '#dc2626' },
-};
 
 /* ═══════════════════════════════════════════════════════════
    🎯 MAIN FUNCTION - الدالة الرئيسية
