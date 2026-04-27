@@ -1942,7 +1942,7 @@ useEffect(() => {
           )}
         </div>
       )}
-      {activeTab==="iq"&&(
+            {activeTab==="iq"&&(
         <div id="tab-iq" style={{
           overflowY:"auto",
           paddingTop:10,
@@ -1952,7 +1952,6 @@ useEffect(() => {
           position:"relative",
           zIndex:1,
         }}>
-                  {/* تحليل Portfolio IQ */}
           {positions.length===0?(
             <div style={{textAlign:"center",padding:"70px 20px"}}>
               <div style={{
@@ -1966,63 +1965,207 @@ useEffect(() => {
                 <span style={{fontSize:36}}>🧠</span>
               </div>
               <div style={{fontSize:11,color:C.plasma,fontWeight:700,letterSpacing:"2px",marginBottom:6}}>
-                PORTFOLIO IQ
+                PORTFOLIO IQ™
               </div>
               <div style={{fontSize:15,fontWeight:800,color:C.mist,marginBottom:8}}>
                 ذكاء متقدم لمحفظتك
               </div>
               <div style={{fontSize:12,color:C.smoke,marginBottom:28,lineHeight:1.7}}>
                 أضف أسهمك للحصول على<br/>
-                تحليل بمستوى Bloomberg
+                تحليل بمستوى Bloomberg + Bridgewater
               </div>
             </div>
           ):(
-            <div style={{textAlign:"center",padding:"40px 20px"}}>
-              <div style={{
-                width:80,height:80,borderRadius:24,
-                margin:"0 auto 20px",
-                background:"linear-gradient(135deg,"+C.plasma+"33,"+C.plasma+"11)",
-                border:"1px solid "+C.plasma+"55",
-                display:"flex",alignItems:"center",justifyContent:"center",
-                boxShadow:"0 12px 32px "+C.plasma+"33",
-              }}>
-                <span style={{fontSize:42}}>🧠</span>
-              </div>
-              <div style={{fontSize:9,color:C.plasma,fontWeight:800,letterSpacing:"3px",marginBottom:8}}>
-                PORTFOLIO IQ™
-              </div>
-              <div style={{fontSize:18,fontWeight:900,color:C.snow,marginBottom:10,fontFamily:"Cairo,sans-serif"}}>
-                قريباً جداً
-              </div>
-              <div style={{fontSize:12,color:C.mist,lineHeight:1.7,maxWidth:300,margin:"0 auto",fontFamily:"Cairo,sans-serif"}}>
-                نظام تحليل ذكي بمستوى<br/>
-                <span style={{color:C.plasma,fontWeight:800}}>Bloomberg + Bridgewater</span><br/><br/>
-                يحلل محفظتك على 8 طبقات<br/>
-                ويقدم توصيات تنفيذية
-              </div>
-              
-              <div style={{
-                marginTop:24,
-                padding:"12px 16px",
-                background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
-                border:"1px solid "+C.line,
-                borderRadius:12,
-                textAlign:"right",
-              }}>
-                <div style={{fontSize:10,color:C.plasma,fontWeight:800,marginBottom:8}}>
-                  ✨ الميزات القادمة:
+            (function(){
+              var iq = analyzePortfolioIQ(positions, [], {riskTolerance: 0.20});
+              var scoreColor = iq.iqScore >= 80 ? C.mint :
+                               iq.iqScore >= 65 ? C.teal :
+                               iq.iqScore >= 50 ? C.amber : C.coral;
+              return (
+                <div>
+                  <div className="card-enter" style={{
+                    background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
+                    border:"1px solid "+C.plasma+"33",
+                    borderRadius:20,
+                    padding:"20px 16px",
+                    marginBottom:14,
+                    boxShadow:"0 8px 32px "+C.plasma+"22, inset 0 1px 0 "+C.layer3,
+                    position:"relative",
+                    overflow:"hidden",
+                  }}>
+                    <div style={{
+                      position:"absolute",
+                      top:0,left:0,right:0,
+                      height:3,
+                      background:"linear-gradient(90deg,"+C.plasma+"00,"+C.plasma+"ff,"+C.plasma+"00)",
+                    }}/>
+                    <div style={{textAlign:"center",marginBottom:16}}>
+                      <div style={{fontSize:9,color:C.plasma,fontWeight:800,letterSpacing:"3px",marginBottom:4}}>
+                        🧠 PORTFOLIO IQ™
+                      </div>
+                      <div style={{fontSize:11,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>
+                        تحليل بمستوى Bloomberg + Bridgewater
+                      </div>
+                    </div>
+                    <div style={{display:"flex",justifyContent:"center",marginBottom:16}}>
+                      <div style={{position:"relative",width:140,height:140}}>
+                        <svg width="140" height="140" style={{transform:"rotate(-90deg)"}}>
+                          <circle cx="70" cy="70" r="62" fill="none" stroke={C.layer3} strokeWidth="6"/>
+                          <circle 
+                            cx="70" cy="70" r="62" 
+                            fill="none" 
+                            stroke={scoreColor} 
+                            strokeWidth="6" 
+                            strokeLinecap="round"
+                            strokeDasharray={2 * Math.PI * 62}
+                            strokeDashoffset={(2 * Math.PI * 62) * (1 - iq.iqScore/100)}
+                            style={{
+                              filter:"drop-shadow(0 0 10px "+scoreColor+"aa)",
+                              transition:"stroke-dashoffset 1.5s ease-out",
+                            }}
+                          />
+                        </svg>
+                        <div style={{
+                          position:"absolute",
+                          inset:0,
+                          display:"flex",
+                          flexDirection:"column",
+                          alignItems:"center",
+                          justifyContent:"center",
+                        }}>
+                          <div style={{
+                            fontSize:48,
+                            fontWeight:900,
+                            color:scoreColor,
+                            fontFamily:"IBM Plex Mono,monospace",
+                            lineHeight:1,
+                            textShadow:"0 0 20px "+scoreColor+"66",
+                          }}>
+                            {iq.iqScore}
+                          </div>
+                          <div style={{fontSize:10,color:C.smoke,marginTop:4,fontWeight:700,letterSpacing:"1px"}}>
+                            IQ SCORE
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{textAlign:"center",marginBottom:14}}>
+                      <div style={{
+                        display:"inline-block",
+                        padding:"6px 20px",
+                        background:scoreColor+"22",
+                        border:"1px solid "+scoreColor+"55",
+                        borderRadius:12,
+                        boxShadow:"0 4px 12px "+scoreColor+"33",
+                      }}>
+                        <span style={{fontSize:24,fontWeight:900,color:scoreColor,fontFamily:"IBM Plex Mono,monospace"}}>
+                          {iq.grade}
+                        </span>
+                        <span style={{fontSize:11,color:C.mist,fontWeight:700,marginRight:8,fontFamily:"Cairo,sans-serif"}}>
+                          {iq.gradeLabel}
+                        </span>
+                      </div>
+                    </div>
+                    {iq.summary && iq.summary.headline && (
+                      <div style={{
+                        textAlign:"center",
+                        fontSize:15,
+                        fontWeight:800,
+                        color:C.snow,
+                        marginBottom:14,
+                        lineHeight:1.4,
+                        fontFamily:"Cairo,sans-serif",
+                      }}>
+                        {iq.summary.headline}
+                      </div>
+                    )}
+                    {iq.summary && iq.summary.keyInsights && iq.summary.keyInsights.length > 0 && (
+                      <div style={{
+                        background:"rgba(255,255,255,.03)",
+                        border:"1px solid "+C.line,
+                        borderRadius:12,
+                        padding:"10px 12px",
+                      }}>
+                        <div style={{fontSize:9,color:C.plasma,fontWeight:800,letterSpacing:"1.5px",marginBottom:6}}>
+                          💡 ملاحظات رئيسية
+                        </div>
+                        {iq.summary.keyInsights.map(function(insight,i){
+                          return (
+                            <div key={i} style={{
+                              fontSize:11,
+                              color:C.mist,
+                              lineHeight:1.6,
+                              marginBottom:i<iq.summary.keyInsights.length-1?6:0,
+                              fontFamily:"Cairo,sans-serif",
+                              display:"flex",
+                              alignItems:"flex-start",
+                              gap:6,
+                            }}>
+                              <span style={{color:C.plasma,fontWeight:700,marginTop:1}}>•</span>
+                              <span>{insight}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                  <div style={{
+                    background:C.layer1,
+                    border:"1px solid "+C.line,
+                    borderRadius:12,
+                    padding:"10px 14px",
+                    marginBottom:14,
+                    display:"flex",
+                    alignItems:"center",
+                    justifyContent:"space-between",
+                  }}>
+                    <div style={{display:"flex",alignItems:"center",gap:8}}>
+                      <span style={{fontSize:14}}>📊</span>
+                      <div>
+                        <div style={{fontSize:11,color:C.mist,fontWeight:700}}>
+                          {positions.length} {positions.length === 1 ? "سهم" : "أسهم"}
+                        </div>
+                        <div style={{fontSize:9,color:C.smoke}}>
+                          محلّل بـ 8 طبقات ذكاء
+                        </div>
+                      </div>
+                    </div>
+                    {iq.summary && (
+                      <div style={{textAlign:"left"}}>
+                        <div style={{fontSize:11,color:C.plasma,fontWeight:800}}>
+                          {iq.summary.actionsCount} توصية
+                        </div>
+                        {iq.summary.criticalActions > 0 && (
+                          <div style={{fontSize:9,color:C.coral,fontWeight:700}}>
+                            {iq.summary.criticalActions} عاجل
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div style={{
+                    background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
+                    border:"1px solid "+C.line,
+                    borderRadius:12,
+                    padding:"14px 16px",
+                    textAlign:"center",
+                  }}>
+                    <div style={{fontSize:10,color:C.plasma,fontWeight:800,marginBottom:8,letterSpacing:"1px"}}>
+                      ✨ المزيد قادم قريباً
+                    </div>
+                    <div style={{fontSize:11,color:C.mist,lineHeight:1.8,textAlign:"right"}}>
+                      🎯 Top Recommendation<br/>
+                      🧠 PsyRisk Score™<br/>
+                      🧬 Portfolio DNA™<br/>
+                      🔮 Crystal Ball™ (Monte Carlo)<br/>
+                      🛡️ Smart Stop-Loss™<br/>
+                      🔄 Recovery Path™<br/>
+                      ⚡ All Recommendations
+                    </div>
+                  </div>
                 </div>
-                <div style={{fontSize:11,color:C.mist,lineHeight:1.8}}>
-                  🎯 IQ Score (0-100)<br/>
-                  🧠 PsyRisk Score™<br/>
-                  🧬 Portfolio DNA™<br/>
-                  🔮 Crystal Ball™ (Monte Carlo)<br/>
-                  🛡️ Smart Stop-Loss™<br/>
-                  🔄 Recovery Path™<br/>
-                  ⚡ Smart Recommendations
-                </div>
-              </div>
-            </div>
+              );
+            })()
           )}
         </div>
       )}
