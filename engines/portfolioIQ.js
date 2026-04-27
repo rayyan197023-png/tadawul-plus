@@ -1059,7 +1059,7 @@ function analyzePortfolioDNA(positions, base) {
 const mktCapB = (p.stk && p.stk.mktCap) || 0;
 const mktCap = mktCapB > 0 ? mktCapB * 1000000000 : (p.value || 0);
 if (mktCap > 50000000000) { // 50B+ = Large cap
-  largeCapValue += p.value || 0;
+  largeCapValueDna += p.value || 0;
 }
   });
   
