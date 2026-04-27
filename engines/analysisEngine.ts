@@ -2450,7 +2450,7 @@ function analyzeStockRadar(stk){
     ms,ob,ls,vi,mc,
     trend:{bull:trendBull,maCount,adxP:+adxP.toFixed(0),score:trScore},
     mom:{rsi,macd:(macd as any).bull,stoch,oversold,overbought,score:moScore},
-    liq:{obv:obv.signal,cmf:+cmf.toFixed(3),rvNorm:+rvNorm.toFixed(2),smDetected,score:lqScore},
+    liq:{obv:(obv as any).signal,cmf:+cmf.toFixed(3),rvNorm:+rvNorm.toFixed(2),smDetected,score:lqScore},
     val:{peR:+peR.toFixed(2),ey:+(ey*100).toFixed(1),vwapD:+vwapD2.toFixed(1),score:vaScore},
     pfl:+pfl.toFixed(0),
     factors:[
