@@ -3247,7 +3247,7 @@ useEffect(() => {
       icon: '⚠️',
       name: 'المخاطر',
       score: layers.risk && layers.risk.score,
-      detail: layers.risk && layers.risk.riskLevel ? 'مستوى: ' + getRiskLevelLabel(layers.risk.riskLevel) : '',
+      detail: layers.risk && layers.risk.riskLevel ? 'مستوى: ' + (layers.risk.riskLevel === 'low' ? 'منخفض' : layers.risk.riskLevel === 'moderate' ? 'متوسط' : layers.risk.riskLevel === 'high' ? 'عالٍ' : 'شديد') : '',
     },
     {
       icon: '🧠',
