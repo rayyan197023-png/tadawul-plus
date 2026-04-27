@@ -3242,8 +3242,6 @@ useEffect(() => {
   <div style={{fontSize:11,color:C.mist,lineHeight:1.8,textAlign:"right"}}>
     🧠 PsyRisk Score™<br/>
     🧬 Portfolio DNA™<br/>
-    🛡️ Smart Stop-Loss™<br/>
-    🔄 Recovery Path™<br/>
     📊 8 Layers Detail
   </div>
 </div>
