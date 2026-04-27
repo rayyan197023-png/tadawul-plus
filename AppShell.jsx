@@ -40,7 +40,6 @@ const SCREEN_MAP = {
   [TAB_IDS.MORE]:        MoreScreen,
   [TAB_IDS.BACKTEST]:    BacktestScreen,
   [TAB_IDS.REBALANCING]: RebalancingScreen,
-  [TAB_IDS.ALERTS]:      AlertsScreen,
 };
 
 // ═══════════════════════════════════════════════
