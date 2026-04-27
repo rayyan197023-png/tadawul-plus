@@ -74,12 +74,13 @@ function SvgIcon(props) {
 }
 
 function getDecision(p) {
-  // ✨ Strategic Insight (Portfolio IQ Integration)
+    // ✨ Strategic Insight (Portfolio IQ Integration)
   var strategicInsight = null;
   if (p.curWeightPct !== undefined && p.curWeightPct > 0) {
     var weight = p.curWeightPct;
     var alerts = [];
     var severity = 'info';
+    var recommendedAction = null;
     
     if (weight > 35) {
       alerts.push({
@@ -104,14 +105,80 @@ function getDecision(p) {
       severity = 'warning';
     }
     
+    // ✨ حساب الحل المقترح
+    if (alerts.length > 0 && p.value > 0 && p.qty > 0) {
+      // الوزن المستهدف بناءً على الشدة
+      var targetWeight = severity === 'danger' ? 25 : 20;
+      
+      // إذا الوزن > 35%, نخفّض إلى 20%
+      if (weight > 35) targetWeight = 20;
+      
+      // النسبة المئوية للبيع
+      var sellPercent = ((weight - targetWeight) / weight) * 100;
+      
+      // الكمية المقترحة للبيع
+      var sellQty = Math.round((p.qty * sellPercent) / 100);
+      
+      // القيمة المقترحة للبيع
+      var pricePerShare = p.value / p.qty;
+      var sellValue = Math.round(sellQty * pricePerShare);
+      
+      // تأثير على HHI (تقريبي)
+      // HHI الحالي = (weight)^2 + ...
+      // HHI الجديد = (targetWeight)^2 + ...
+      var hhiCurrent = weight * weight;  // مساهمة هذا السهم
+      var hhiAfter = targetWeight * targetWeight;
+      var hhiReduction = ((hhiCurrent - hhiAfter) / hhiCurrent) * 100;
+      
+      // تأثير على Volatility (تقريبي)
+      var volReduction = Math.min(15, weight - targetWeight) / 5;
+      
+      // تأثير على Sharpe (تقريبي)
+      var sharpeImprovement = (weight - targetWeight) / 100;
+      
+      // مستوى التنويع
+      var diversificationBefore = weight > 50 ? 'ضعيف جداً' : 
+                                   weight > 35 ? 'ضعيف' : 
+                                   'متوسط';
+      var diversificationAfter = targetWeight > 25 ? 'متوسط' : 'جيد';
+      
+      recommendedAction = {
+        targetWeight: targetWeight,
+        sellPercent: +sellPercent.toFixed(1),
+        sellQty: sellQty,
+        sellValue: sellValue,
+        impact: {
+          hhi: {
+            change: '-' + hhiReduction.toFixed(0) + '%',
+            description: 'انخفاض HHI',
+          },
+          volatility: {
+            change: '-' + volReduction.toFixed(1) + '%',
+            description: 'تقلبات أقل',
+          },
+          sharpe: {
+            change: '+' + sharpeImprovement.toFixed(2),
+            description: 'Sharpe أفضل',
+          },
+          diversification: {
+            before: diversificationBefore,
+            after: diversificationAfter,
+            description: 'تنويع المحفظة',
+          },
+        },
+      };
+    }
+    
     if (alerts.length > 0) {
       strategicInsight = {
         alerts: alerts,
         severity: severity,
         weight: weight,
+        recommendedAction: recommendedAction,
       };
     }
   }
+  
   
   // ✨ إذا smartAction متوفر، استخدمه (Bloomberg-level)
   if(p.smartAction) {
