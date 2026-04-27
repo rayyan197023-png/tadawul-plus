@@ -3027,7 +3027,7 @@ function calc9Layers(stk, bars){
     WC[k] = W[k] * (corrFactors[k]||1);
   });
   // إعادة تطبيع بعد Correlation Control
-  const wcTotal = Object.values(WC).reduce((s,v)=>s+v,0);
+  const wcTotal = (Object.values(WC) as number[]).reduce((s,v)=>s+v,0);
   ['L1','L2','L3','L4','L5','L6','L7','L8','L9'].forEach(k=>{
     WC[k] = +(WC[k]/wcTotal).toFixed(4);
   });
