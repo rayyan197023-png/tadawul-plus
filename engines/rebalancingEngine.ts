@@ -454,7 +454,7 @@ export function analyzePortfolio(positions, marketData) {
       var95: risk.var95Daily || 0,
       stockQuality: layersIntel.weightedScore || 0,
     },
-    sectors: Object.entries(sectorMap).map(([sec, val]) => ({
+        sectors: Object.entries(sectorMap).map(([sec, val]: [string, any]) => ({
       sector: sec,
       value: val,
       weight: val / totalValue,
