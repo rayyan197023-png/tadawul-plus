@@ -1353,4 +1353,514 @@ function generateRecoveryPath(positions, base) {
     actions: actions,
   };
 }
+/* ═══════════════════════════════════════════════════════════
+   ⚡ RECOMMENDATIONS ENGINE
+   The brain that converts analysis into actions
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * Generate prioritized, actionable recommendations
+ */
+function generateRecommendations(data) {
+  const { positions, baseAnalysis, diagnostic, risk, behavioral, sector, stock } = data;
+  const recommendations = [];
+
+  // === CRITICAL: Concentration Issues ===
+  if (baseAnalysis.diversification && baseAnalysis.diversification.largestPosition > 30) {
+    const stockData = stock.stocks[0];
+    if (stockData) {
+      const targetWeight = 20;
+      const currentWeight = stockData.weight * 100;
+      const reductionNeeded = currentWeight - targetWeight;
+      
+      recommendations.push({
+        id: 'reduce_concentration_' + stockData.sym,
+        priority: PRIORITY.CRITICAL,
+        category: CATEGORY.REDUCE_CONCENTRATION,
+        title: 'خفّض تركيزك في ' + stockData.sym,
+        action: 'reduce_position',
+        stock: stockData.sym,
+        currentValue: currentWeight,
+        targetValue: targetWeight,
+        reductionAmount: Math.round((reductionNeeded / 100) * baseAnalysis.totalValue),
+        reasoning: 'تركيز ' + currentWeight.toFixed(1) + 
+          '% في سهم واحد يعرّضك لمخاطرة غير ضرورية',
+        expectedImpact: {
+          hhi: '-' + Math.round(currentWeight * currentWeight - targetWeight * targetWeight),
+          volatility: '-' + ((currentWeight - targetWeight) * 0.001).toFixed(3),
+          sharpe: '+' + (0.05 + (currentWeight - targetWeight) * 0.005).toFixed(2),
+        },
+        academicBasis: 'Markowitz (1952) - Diversification reduces unsystematic risk',
+        urgency: 'Action recommended within 1 week',
+      });
+    }
+  }
+
+  // === HIGH: Sector Concentration ===
+  if (sector.largestSector && sector.largestSector.weight > 0.4) {
+    recommendations.push({
+      id: 'sector_diversification_' + sector.largestSector.name,
+      priority: PRIORITY.HIGH,
+      category: CATEGORY.ADD_DIVERSIFICATION,
+      title: 'نوّع خارج قطاع ' + sector.largestSector.name,
+      action: 'add_diversification',
+      currentSectorWeight: +(sector.largestSector.weight * 100).toFixed(1),
+      targetSectorWeight: 30,
+      suggestedSectors: sector.missingSectors.slice(0, 2),
+      reasoning: 'تركيز ' + (sector.largestSector.weight * 100).toFixed(0) + 
+        '% في قطاع واحد يعرّضك لمخاطر القطاع',
+      expectedImpact: {
+        diversificationScore: '+15',
+        sectorHHI: '-30%',
+        correlationReduction: 'محتمل',
+      },
+      academicBasis: 'Fama-French (1993) - Sector diversification reduces idiosyncratic risk',
+      urgency: 'Plan within this month',
+    });
+  }
+
+  // === HIGH: Correlation Issues ===
+  if (baseAnalysis.diversification && 
+      baseAnalysis.diversification.avgCorrelation > 0.6 &&
+      baseAnalysis.diversification.highCorrelations &&
+      baseAnalysis.diversification.highCorrelations.length > 0) {
+    
+    const highCorr = baseAnalysis.diversification.highCorrelations[0];
+    
+    recommendations.push({
+      id: 'reduce_correlation_' + highCorr.symA + '_' + highCorr.symB,
+      priority: PRIORITY.HIGH,
+      category: CATEGORY.REDUCE_CORRELATION,
+      title: 'تنويع وهمي: ' + highCorr.symA + ' و ' + highCorr.symB,
+      action: 'replace_correlated',
+      stocks: [highCorr.symA, highCorr.symB],
+      correlation: highCorr.correlation,
+      reasoning: 'هذان السهمان يتحركان معاً (' + (highCorr.correlation * 100).toFixed(0) + 
+        '%) - استبدل أحدهما بسهم من قطاع مختلف',
+      expectedImpact: {
+        avgCorrelation: '-15%',
+        diversificationScore: '+10',
+        portfolioVolatility: '-2%',
+      },
+      academicBasis: 'Bridgewater (Ray Dalio) - "15-20 uncorrelated bets = Holy Grail"',
+      urgency: 'Strategic adjustment',
+    });
+  }
+
+  // === HIGH: Risk Management ===
+  if (baseAnalysis.risk && Math.abs(baseAnalysis.risk.maxDrawdown) > 0.20) {
+    recommendations.push({
+      id: 'add_stop_losses',
+      priority: PRIORITY.HIGH,
+      category: CATEGORY.RISK_MANAGEMENT,
+      title: 'ضع Stop-Loss على المراكز الكبيرة',
+      action: 'set_stop_losses',
+      affectedStocks: stock.topPositions.slice(0, 5).map(s => s.sym),
+      reasoning: 'تراجع تاريخي ' + (Math.abs(baseAnalysis.risk.maxDrawdown) * 100).toFixed(1) + 
+        '% - حماية رأس المال أولوية',
+      expectedImpact: {
+        maxDrawdown: '-30% to -40%',
+        sleepQuality: '+50%',
+        emotionalStress: '-60%',
+      },
+      academicBasis: 'Wilder (1978) ATR + Le Beau Chandelier Exit',
+      urgency: 'Implement this week',
+    });
+  }
+
+  // === MEDIUM: Behavioral Issues ===
+  if (behavioral.biasCount > 0) {
+    behavioral.biases.forEach(bias => {
+      if (bias.severity === 'high') {
+        recommendations.push({
+          id: 'behavioral_' + bias.type + (bias.stock || ''),
+          priority: PRIORITY.MEDIUM,
+          category: CATEGORY.BEHAVIORAL,
+          title: 'تحيّز سلوكي: ' + getBiasLabel(bias.type),
+          action: 'review_decision',
+          stock: bias.stock || null,
+          reasoning: bias.message,
+          expectedImpact: {
+            decisionQuality: '+30%',
+            longTermReturns: '+1-3% annually',
+          },
+          academicBasis: 'Kahneman-Tversky (1979) Prospect Theory',
+          urgency: 'Review at next opportunity',
+        });
+      }
+    });
+  }
+
+  // === LOW: Optimization Opportunities ===
+  if (baseAnalysis.performance && baseAnalysis.performance.sharpe < 1.0 && 
+      baseAnalysis.performance.sharpe > 0) {
+    recommendations.push({
+      id: 'optimize_sharpe',
+      priority: PRIORITY.LOW,
+      category: CATEGORY.OPPORTUNITY,
+      title: 'حسّن نسبة Sharpe',
+      action: 'rebalance',
+      currentSharpe: baseAnalysis.performance.sharpe,
+      targetSharpe: 1.0,
+      reasoning: 'Sharpe ' + baseAnalysis.performance.sharpe.toFixed(2) + 
+        ' - يمكن تحسينه بإعادة التوازن',
+      expectedImpact: {
+        sharpe: '+0.2 to +0.4',
+        annualReturn: 'Same or better',
+        risk: '-10% to -15%',
+      },
+      academicBasis: 'Sharpe (1966) - Risk-adjusted optimization',
+      urgency: 'When time permits',
+    });
+  }
+
+  // Sort by priority
+  recommendations.sort((a, b) => priorityScore(b.priority) - priorityScore(a.priority));
+
+  return {
+    total: recommendations.length,
+    critical: recommendations.filter(r => r.priority === PRIORITY.CRITICAL).length,
+    high: recommendations.filter(r => r.priority === PRIORITY.HIGH).length,
+    medium: recommendations.filter(r => r.priority === PRIORITY.MEDIUM).length,
+    low: recommendations.filter(r => r.priority === PRIORITY.LOW).length,
+    items: recommendations,
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   📋 SMART SUMMARY
+   AI-generated executive summary
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * Generate intelligent summary in natural language
+ */
+function generateSmartSummary(data) {
+  const { iqScore, health, baseAnalysis, recommendations } = data;
+  
+  // Headline
+  let headline;
+  if (iqScore >= 80) {
+    headline = '🏆 محفظتك في حالة ممتازة';
+  } else if (iqScore >= 65) {
+    headline = '✅ محفظتك جيدة مع فرص للتحسين';
+  } else if (iqScore >= 50) {
+    headline = '⚠️ محفظتك تحتاج اهتمام';
+  } else {
+    headline = '🚨 محفظتك تحتاج إعادة هيكلة';
+  }
+
+  // Key insights
+  const insights = [];
+  
+  if (baseAnalysis.performance) {
+    const ret = baseAnalysis.performance.annualReturn || 0;
+    const vol = baseAnalysis.performance.volatility || 0;
+    insights.push(
+      'العائد السنوي ' + (ret * 100).toFixed(1) + '% ' +
+      'مع تذبذب ' + (vol * 100).toFixed(1) + '%'
+    );
+  }
+  
+  if (baseAnalysis.performance && baseAnalysis.performance.sharpe) {
+    insights.push(
+      'Sharpe ' + baseAnalysis.performance.sharpe.toFixed(2) + ' - ' + 
+      (baseAnalysis.performance.sharpe > 1 ? 'مكافأة جيدة للمخاطرة' : 'يحتاج تحسين')
+    );
+  }
+  
+  if (baseAnalysis.diversification) {
+    insights.push(
+      'التنويع: ' + baseAnalysis.diversification.scoreLabel + 
+      ' (' + baseAnalysis.diversification.score + '/100)'
+    );
+  }
+
+  // Top action
+  let topAction = null;
+  if (recommendations && recommendations.items && recommendations.items.length > 0) {
+    topAction = recommendations.items[0];
+  }
+
+  return {
+    headline: headline,
+    iqScore: iqScore,
+    grade: health.grade,
+    keyInsights: insights,
+    topAction: topAction ? {
+      title: topAction.title,
+      priority: topAction.priority,
+      reasoning: topAction.reasoning,
+    } : null,
+    actionsCount: recommendations ? recommendations.total : 0,
+    criticalActions: recommendations ? recommendations.critical : 0,
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   🛠️ HELPER FUNCTIONS
+═══════════════════════════════════════════════════════════ */
+
+function calculateIQScore(layers) {
+  // Weighted IQ score
+  const weights = {
+    diagnostic: 0.20,
+    risk: 0.25,
+    behavioral: 0.15,
+    factor: 0.10,
+    sector: 0.20,
+  };
+
+  let score = 0;
+  score += (layers.diagnostic.healthScore || 50) * weights.diagnostic;
+  score += (layers.risk.score || 50) * weights.risk;
+  score += (layers.behavioral.behavioralScore || 50) * weights.behavioral;
+  score += 60 * weights.factor; // Factor placeholder
+  score += (layers.sector.diversificationScore || 50) * weights.sector;
+
+  return Math.round(Math.max(0, Math.min(100, score)));
+}
+
+function getHealthGrade(score) {
+  const thresholds = [90, 85, 80, 75, 70, 60, 50, 0];
+  for (let i = 0; i < thresholds.length; i++) {
+    if (score >= thresholds[i]) {
+      return HEALTH_GRADES[thresholds[i]];
+    }
+  }
+  return HEALTH_GRADES[0];
+}
+
+function severityScore(severity) {
+  const scores = { critical: 4, high: 3, medium: 2, low: 1 };
+  return scores[severity] || 0;
+}
+
+function priorityScore(priority) {
+  const scores = {
+    [PRIORITY.CRITICAL]: 4,
+    [PRIORITY.HIGH]: 3,
+    [PRIORITY.MEDIUM]: 2,
+    [PRIORITY.LOW]: 1,
+  };
+  return scores[priority] || 0;
+}
+
+function calculateDiagnosticScore(issues, strengths) {
+  let score = 70;
+  issues.forEach(i => {
+    if (i.severity === 'critical') score -= 15;
+    else if (i.severity === 'high') score -= 10;
+    else if (i.severity === 'medium') score -= 5;
+    else score -= 2;
+  });
+  strengths.forEach(s => score += 5);
+  return Math.max(0, Math.min(100, score));
+}
+
+function scoreMarketRisk(beta) {
+  if (beta < 0.8) return 85;
+  if (beta < 1.0) return 75;
+  if (beta < 1.2) return 65;
+  if (beta < 1.5) return 50;
+  return 30;
+}
+
+function scoreVolatilityRisk(vol) {
+  if (vol < 0.10) return 90;
+  if (vol < 0.15) return 80;
+  if (vol < 0.20) return 70;
+  if (vol < 0.30) return 50;
+  return 30;
+}
+
+function scoreDrawdownRisk(maxDD) {
+  const dd = Math.abs(maxDD);
+  if (dd < 0.05) return 95;
+  if (dd < 0.10) return 85;
+  if (dd < 0.15) return 70;
+  if (dd < 0.25) return 50;
+  return 25;
+}
+
+function scoreTailRisk(cvar) {
+  if (!cvar) return 50;
+  if (cvar < 0.02) return 85;
+  if (cvar < 0.03) return 70;
+  if (cvar < 0.05) return 50;
+  return 30;
+}
+
+function scoreConcentrationRisk(hhi) {
+  if (hhi < 1500) return 90;
+  if (hhi < 2500) return 75;
+  if (hhi < 4000) return 55;
+  if (hhi < 6000) return 35;
+  return 15;
+}
+
+function scoreCorrelationRisk(avgCorr) {
+  if (avgCorr < 0.30) return 90;
+  if (avgCorr < 0.50) return 70;
+  if (avgCorr < 0.70) return 50;
+  return 30;
+}
+
+function classifyRiskLevel(score) {
+  if (score >= 80) return 'low';
+  if (score >= 60) return 'moderate';
+  if (score >= 40) return 'high';
+  return 'extreme';
+}
+
+function calculateSectorWeights(positions) {
+  const sectors = {};
+  let total = 0;
+  
+  positions.forEach(p => {
+    const sec = (p.stk && p.stk.sec) || p.sec || 'unknown';
+    sectors[sec] = (sectors[sec] || 0) + (p.value || 0);
+    total += p.value || 0;
+  });
+  
+  Object.keys(sectors).forEach(s => {
+    sectors[s] = total > 0 ? sectors[s] / total : 0;
+  });
+  
+  return sectors;
+}
+
+function calculateMacroDiversification(exposures) {
+  const values = Object.values(exposures);
+  const max = Math.max(...values);
+  return max < 30 ? 'good' : max < 50 ? 'moderate' : 'concentrated';
+}
+
+function calculateSectorDiversificationScore(sectors, missing) {
+  let score = 50;
+  if (sectors.length >= 5) score += 20;
+  else if (sectors.length >= 3) score += 10;
+  
+  if (missing.length === 0) score += 20;
+  else if (missing.length <= 2) score += 10;
+  
+  // Penalty for concentration
+  const maxWeight = sectors[0] ? sectors[0].weight : 0;
+  if (maxWeight > 0.5) score -= 20;
+  else if (maxWeight > 0.4) score -= 10;
+  
+  return Math.max(0, Math.min(100, score));
+}
+
+function classifyPortfolioStyle(factors) {
+  if (factors.size.score > 70 && factors.volatility.score > 70) {
+    return 'large_cap_defensive';
+  }
+  if (factors.momentum.score > 65) return 'momentum_growth';
+  if (factors.volatility.score > 70) return 'low_volatility';
+  if (factors.size.score < 40) return 'small_cap_aggressive';
+  return 'balanced';
+}
+
+function getStyleLabel(style) {
+  const labels = {
+    large_cap_defensive: 'كبيرة دفاعية',
+    momentum_growth: 'زخم ونمو',
+    low_volatility: 'منخفضة التذبذب',
+    small_cap_aggressive: 'صغيرة عدوانية',
+    balanced: 'متوازنة',
+  };
+  return labels[style] || 'متنوعة';
+}
+
+function determinePortfolioPersonality(dna) {
+  const gv = dna.growthValue.score;
+  const da = dna.defensiveAggressive.score;
+  const mr = dna.momentumReversion.score;
+
+  if (gv > 65 && da > 60) {
+    return {
+      type: 'aggressive_growth',
+      label: 'نمو عدواني',
+      description: 'تبحث عن نمو سريع وتقبل التذبذب',
+      strengths: ['عوائد محتملة عالية', 'اختيار ذكي للأسهم'],
+      weaknesses: ['تذبذب مرتفع', 'ضغط نفسي محتمل'],
+    };
+  }
+  
+  if (gv < 35 && da < 40) {
+    return {
+      type: 'conservative_value',
+      label: 'محافظ قيمي',
+      description: 'تفضّل الأمان والقيمة المستقرة',
+      strengths: ['استقرار', 'حماية رأس المال', 'هدوء نفسي'],
+      weaknesses: ['عوائد قد تكون أقل', 'فرص ضائعة في الأسواق الصاعدة'],
+    };
+  }
+  
+  if (mr > 65) {
+    return {
+      type: 'momentum_chaser',
+      label: 'متتبع للزخم',
+      description: 'تشتري ما يصعد وتبيع ما يهبط',
+      strengths: ['عوائد قوية في الترندات'],
+      weaknesses: ['خسائر في تحوّلات السوق', 'متابعة مكثفة'],
+    };
+  }
+
+  return {
+    type: 'balanced_investor',
+    label: 'مستثمر متوازن',
+    description: 'تجمع بين النمو والأمان',
+    strengths: ['توازن صحي', 'مرونة'],
+    weaknesses: ['لا تتفوق ولا تتخلف بشكل كبير'],
+  };
+}
+
+function estimateSellPanicProbability(psyScore, currentDD) {
+  // Higher drawdown + lower psy score = higher panic probability
+  const ddImpact = Math.min(50, Math.abs(currentDD) * 200);
+  const psyImpact = Math.max(0, 50 - psyScore / 2);
+  return Math.min(95, Math.round(ddImpact + psyImpact));
+}
+
+function getBiasLabel(type) {
+  const labels = {
+    recency_bias: 'تحيّز الحداثة',
+    loss_aversion: 'كره الخسارة',
+    overconfidence: 'الثقة المفرطة',
+    home_bias: 'تحيّز محلي',
+    confirmation_bias: 'تحيّز التأكيد',
+    anchoring: 'التثبيت',
+  };
+  return labels[type] || type;
+}
+
+function emptyAnalysis() {
+  return {
+    iqScore: 0,
+    grade: 'N/A',
+    gradeLabel: 'محفظة فارغة',
+    layers: {},
+    psyRisk: { score: 0 },
+    dna: { personality: 'unknown' },
+    crystalBall: null,
+    smartStops: { stops: [] },
+    recoveryPath: null,
+    recommendations: { total: 0, items: [] },
+    summary: { headline: 'محفظة فارغة - أضف أسهماً للبدء', keyInsights: [] },
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   📤 EXPORTS
+═══════════════════════════════════════════════════════════ */
+
+export {
+  PRIORITY,
+  CATEGORY,
+  HEALTH_GRADES,
+  RISK_FREE_RATE,
+  TRADING_DAYS,
+};
     
