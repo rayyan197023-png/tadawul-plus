@@ -58,19 +58,323 @@ export interface IQOptions {
   [key: string]: any;
 }
 
+// ═══════════════════════════════════════════════════════
+// 📊 LAYER INTERFACES
+// ═══════════════════════════════════════════════════════
+
+export interface LayerIssue {
+  type: string;
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  metric?: number;
+  message: string;
+}
+
+export interface LayerStrength {
+  type: string;
+  message: string;
+}
+
+export interface DiagnosticLayer {
+  issuesCount: number;
+  strengthsCount: number;
+  issues: LayerIssue[];
+  strengths: LayerStrength[];
+  healthScore: number;
+}
+
+export interface RiskLayer {
+  score: number;
+  dimensions: {
+    marketRisk: number;
+    volatilityRisk: number;
+    drawdownRisk: number;
+    tailRisk: number;
+    concentrationRisk: number;
+    correlationRisk: number;
+  };
+  warnings: Array<{
+    dimension: string;
+    score: number;
+    severity: string;
+  }>;
+  riskLevel: string;
+}
+
+export interface BehavioralBias {
+  type: string;
+  stock?: string;
+  sector?: string;
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  message: string;
+}
+
+export interface BehavioralLayer {
+  biasCount: number;
+  biases: BehavioralBias[];
+  behavioralScore: number;
+  riskFlags: BehavioralBias[];
+}
+
+export interface FactorScore {
+  score: number;
+  classification: string;
+}
+
+export interface FactorLayer {
+  factors: {
+    size: FactorScore;
+    value: FactorScore;
+    momentum: FactorScore;
+    quality: FactorScore;
+    volatility: FactorScore;
+  };
+  style: string;
+  styleLabel: string;
+}
+
+export interface MacroLayer {
+  exposures: {
+    oilPrice: number;
+    interestRate: number;
+    inflation: number;
+    governmentSpending: number;
+  };
+  macroRisks: Array<{
+    factor: string;
+    severity: string;
+    exposure: number;
+    message: string;
+  }>;
+  diversification: string;
+}
+
+export interface SectorInfo {
+  name: string;
+  value: number;
+  weight: number;
+  stockCount: number;
+  stocks: string[];
+}
+
+export interface SectorLayer {
+  sectors: SectorInfo[];
+  sectorCount: number;
+  sectorHHI: number;
+  effectiveSectors: number;
+  largestSector: SectorInfo | null;
+  missingSectors: string[];
+  sectorIssues: Array<{
+    type: string;
+    severity: string;
+    sector: string;
+    weight: number;
+    message: string;
+  }>;
+  diversificationScore: number;
+}
+
+export interface StockFlag {
+  type: string;
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  message: string;
+}
+
+export interface StockAnalysis {
+  sym: string;
+  name: string;
+  weight: number;
+  value: number;
+  qty: number;
+  avgCost: number;
+  currentPrice?: number;
+  pnl?: number;
+  pnlPercent?: number;
+  flags: StockFlag[];
+  score: number;
+}
+
+export interface StockLayer {
+  stocks: StockAnalysis[];
+  topPositions: StockAnalysis[];
+  winners: StockAnalysis[];
+  losers: StockAnalysis[];
+  flaggedStocks: StockAnalysis[];
+}
+
+export interface ActionItem {
+  source: string;
+  type: string;
+  stock?: string;
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  message: string;
+}
+
+export interface ActionLayer {
+  totalActions: number;
+  criticalCount: number;
+  highCount: number;
+  actions: ActionItem[];
+}
+
+// ═══════════════════════════════════════════════════════
+// 🌟 INNOVATIONS INTERFACES
+// ═══════════════════════════════════════════════════════
+
+export interface PsyRiskFactor {
+  factor: string;
+  impact: number;
+  message: string;
+}
+
+export interface PsyRiskAnalysis {
+  score: number;
+  level: string;
+  label: string;
+  recommendation: string;
+  factors: PsyRiskFactor[];
+  sellPanicProbability: number;
+}
+
+export interface DNADimension {
+  score: number;
+  label: string;
+}
+
+export interface PortfolioDNA {
+  dimensions: {
+    growthValue: DNADimension;
+    momentumReversion: DNADimension;
+    defensiveAggressive: DNADimension;
+    capSize: DNADimension;
+  };
+  personality: string;
+  personalityLabel: string;
+  personalityDescription: string;
+  strengths: string[];
+  weaknesses: string[];
+}
+
+export interface CrystalBallHorizon {
+  bestCase: number;
+  bestCaseReturn: number;
+  optimistic: number;
+  optimisticReturn: number;
+  median: number;
+  medianReturn: number;
+  pessimistic: number;
+  pessimisticReturn: number;
+  worstCase: number;
+  worstCaseReturn: number;
+  profitProbability: number;
+}
+
+export interface CrystalBallAnalysis {
+  initialValue: number;
+  sixMonths: CrystalBallHorizon;
+  oneYear: CrystalBallHorizon;
+  threeYears: CrystalBallHorizon;
+  methodology: string;
+}
+
+export interface SmartStop {
+  sym: string;
+  currentPrice: number;
+  suggestedStop: number | null;
+  stopPercent?: number;
+  atr?: number;
+  method: string;
+  multiplier?: number;
+  riskPerShare?: number;
+  totalRisk?: number;
+  message?: string;
+}
+
+export interface SmartStopsAnalysis {
+  stops: SmartStop[];
+  totalRiskSAR: number;
+  methodology: string;
+}
+
+export interface RecoveryAction {
+  type: string;
+  amount?: number;
+  stocks?: string[];
+  message: string;
+}
+
+export interface RecoveryPathAnalysis {
+  currentDrawdown: number;
+  recoveryNeeded?: number;
+  status?: string;
+  strategy?: string;
+  expectedRecoveryMonths?: number;
+  monthlyAddition?: number;
+  actions?: RecoveryAction[];
+  message?: string;
+}
+
+export interface Recommendation {
+  id: string;
+  priority: string;
+  category: string;
+  title: string;
+  action: string;
+  stock?: string;
+  reasoning: string;
+  expectedImpact: any;
+  academicBasis: string;
+  urgency: string;
+  [key: string]: any;
+}
+
+export interface RecommendationsAnalysis {
+  total: number;
+  critical: number;
+  high: number;
+  medium: number;
+  low: number;
+  items: Recommendation[];
+}
+
+export interface IQSummary {
+  headline: string;
+  iqScore: number;
+  grade: string;
+  keyInsights: string[];
+  topAction: {
+    title: string;
+    priority: string;
+    reasoning: string;
+  } | null;
+  actionsCount: number;
+  criticalActions: number;
+}
+
 export interface IQAnalysis {
   iqScore: number;
   grade: string;
   gradeLabel: string;
   gradeColor: string;
-  layers: any;
-  psyRisk: any;
-  dna: any;
-  crystalBall: any;
-  smartStops: any;
-  recoveryPath: any;
-  recommendations: any;
-  summary: any;
+  layers: {
+    diagnostic: DiagnosticLayer;
+    risk: RiskLayer;
+    behavioral: BehavioralLayer;
+    factor: FactorLayer;
+    macro: MacroLayer;
+    sector: SectorLayer;
+    stock: StockLayer;
+    action: ActionLayer;
+  };
+  psyRisk: PsyRiskAnalysis;
+  dna: PortfolioDNA;
+  crystalBall: CrystalBallAnalysis | null;
+  smartStops: SmartStopsAnalysis;
+  recoveryPath: RecoveryPathAnalysis | null;
+  recommendations: RecommendationsAnalysis;
+  summary: IQSummary;
+  timestamp?: number;
+  version?: string;
+  enginesUsed?: number;
 }
 
 // ═══════════════════════════════════════════════════════
