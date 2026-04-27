@@ -3022,7 +3022,7 @@ function calc9Layers(stk, bars){
   // ════════════════════════════════════════
   const corrFactors = reduceCorrelation({L1,L2,L4,L5,L9});
   // تطبيق عامل الارتباط على الأوزان
-  const WC: any = {}
+  const WC: any = {};
   ['L1','L2','L3','L4','L5','L6','L7','L8','L9'].forEach(k=>{
     WC[k] = W[k] * (corrFactors[k]||1);
   });
