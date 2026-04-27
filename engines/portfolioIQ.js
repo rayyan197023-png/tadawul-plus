@@ -1848,7 +1848,15 @@ function getBiasLabel(type) {
   };
   return labels[type] || type;
 }
-
+function getRiskLevelLabel(level) {
+  const labels = {
+    low: 'منخفض',
+    moderate: 'متوسط',
+    high: 'عالٍ',
+    extreme: 'شديد',
+  };
+  return labels[level] || level;
+}
 function emptyAnalysis() {
   return {
     iqScore: 0,
