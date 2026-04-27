@@ -1047,9 +1047,24 @@ function analyzePortfolioDNA(positions, base) {
       'متوازنة';
   }
 
-  // 4. Domestic vs Diversified (Saudi only for now)
-  dna.domesticDiversified.score = 100;
-  dna.domesticDiversified.label = 'محلي 100% (تاسي)';
+    // 4. Cap Size (Large vs Small)
+  let largeCapValueDna = 0;
+  let totalDnaValue = 0;
+  
+  positions.forEach(p => {
+    totalDnaValue += p.value || 0;
+    const mktCap = (p.stk && p.stk.mktCap) || p.value || 0;
+    if (mktCap > 50000000000) { // 50B+ = Large
+      largeCapValueDna += p.value || 0;
+    }
+  });
+  
+  const largeCapPctDna = totalDnaValue > 0 ? largeCapValueDna / totalDnaValue : 0.5;
+  dna.capSize.score = Math.round(largeCapPctDna * 100);
+  dna.capSize.label = 
+    largeCapPctDna > 0.7 ? 'كبيرة (Large-cap)' :
+    largeCapPctDna > 0.4 ? 'متنوعة' :
+    'صغيرة (Small-cap)';
 
   // Overall personality
   const personality = determinePortfolioPersonality(dna);
