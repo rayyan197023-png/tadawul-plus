@@ -74,6 +74,45 @@ function SvgIcon(props) {
 }
 
 function getDecision(p) {
+  // ✨ Strategic Insight (Portfolio IQ Integration)
+  var strategicInsight = null;
+  if (p.curWeightPct !== undefined && p.curWeightPct > 0) {
+    var weight = p.curWeightPct;
+    var alerts = [];
+    var severity = 'info';
+    
+    if (weight > 35) {
+      alerts.push({
+        message: 'مركز كبير جداً (' + weight.toFixed(1) + '%)',
+        suggestion: 'خطر تركيز عالٍ',
+        icon: '🔴',
+      });
+      severity = 'danger';
+    } else if (weight > 30) {
+      alerts.push({
+        message: 'وزن مرتفع جداً (' + weight.toFixed(1) + '%)',
+        suggestion: 'الموصى: 20% أو أقل',
+        icon: '🚨',
+      });
+      severity = 'danger';
+    } else if (weight > 25) {
+      alerts.push({
+        message: 'وزن مرتفع (' + weight.toFixed(1) + '%)',
+        suggestion: 'فكّر في التخفيف',
+        icon: '⚠️',
+      });
+      severity = 'warning';
+    }
+    
+    if (alerts.length > 0) {
+      strategicInsight = {
+        alerts: alerts,
+        severity: severity,
+        weight: weight,
+      };
+    }
+  }
+  
   // ✨ إذا smartAction متوفر، استخدمه (Bloomberg-level)
   if(p.smartAction) {
     var sa = p.smartAction;
