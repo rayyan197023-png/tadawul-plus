@@ -1818,8 +1818,8 @@ function calculateSectorWeights(positions) {
   return sectors;
 }
 
-function calculateMacroDiversification(exposures) {
-  const values = Object.values(exposures);
+function calculateMacroDiversification(exposures: any) {
+  const values = Object.values(exposures) as number[];
   const max = Math.max(...values);
   return max < 30 ? 'good' : max < 50 ? 'moderate' : 'concentrated';
 }
