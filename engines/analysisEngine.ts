@@ -2575,7 +2575,7 @@ function calc9Layers(stk, bars){
     // ── محركات الرادار المدمجة (✨ من technicalEngine - الصحيحة رياضياً) ──
   const atr  = calcATR(rBars, 14) || stk.p * 0.015;
   const rsiV = calcRSI(rBars, 14);
-  const cmf  = calcCMF(rBars);              // period ديناميكي من volatility
+  const cmf  = calcCMF(rBars, 20);              // period ديناميكي من volatility
   const obv  = calcOBV(rBars);
   const ms   = calcMarketStructure(rBars);
     const ob   = calcOrderBlocksFull(rBars, atr);  // الآن تعمل بسبب dual format
