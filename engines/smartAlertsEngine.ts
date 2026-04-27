@@ -775,7 +775,7 @@ export function playAlertSound(presetId, volume = 0.3) {
   const preset = SOUND_PRESETS[finalPresetId] || SOUND_PRESETS.classic;
   
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
     
     preset.notes.forEach(note => {
       const osc = ctx.createOscillator();
