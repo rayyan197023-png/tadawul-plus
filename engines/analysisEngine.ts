@@ -2399,7 +2399,8 @@ function analyzeStockRadar(stk){
      عامل 7: السيولة الذكية /10
      OBV(Granville+OLS) + CMF(Chaikin) + Volume ratio
   ═════════════════════════════════ */
-  const obvS=obv.signal==="تأكيد صعود"?4:obv.signal==="تباعد إيجابي"?3:obv.signal==="محايد"?1:0;
+  const obvS=(obv as any).signal===
+"تأكيد صعود"?4:obv.signal==="تباعد إيجابي"?3:obv.signal==="محايد"?1:0;
   const cmfS=cmf>0.15?3:cmf>0.05?2:cmf>0?1:0;
   const volS=rvNorm>2&&stk.pct>0?3:rvNorm>1.5&&stk.pct>0?2:rvNorm>1.2?1:0;
   const lqScore=Math.min(10,obvS+cmfS+volS);
