@@ -2437,7 +2437,7 @@ function analyzeStockRadar(stk){
   if(smDetected)       cats.push({l:"سيولة مؤسسية",c:PU});
   if(oversold)         cats.push({l:"تشبع بيع",     c:GOLD});
   if(ms.choch&&ms.bosBull) cats.push({l:"CHOCH↑",  c:ORANGE});
-  if(macd.bull&&!overbought)cats.push({l:"MACD↑",   c:G});
+  if((macd as any).bull&&!overbought)cats.push({l:"MACD↑",   c:G});
   if(!cats.length)     cats.push({l:"مراقبة",       c:T2});
 
   /* ─── الهدف والإيقاف بـ ATR ─── */
