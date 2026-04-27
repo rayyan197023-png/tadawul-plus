@@ -108,12 +108,4 @@ export const SCREENS_MAP = {
     glowBg:  'rgba(240,192,80,0.07)',
     hidden:  true,
   },
-  [TAB_IDS.ALERTS]: {
-    id:      TAB_IDS.ALERTS,
-    label:   'التنبيهات',
-    accent:  '#fbbf24',
-    glow:    'rgba(251,191,36,0.4)',
-    glowBg:  'rgba(251,191,36,0.07)',
-    hidden:  true,
-  },
 };
