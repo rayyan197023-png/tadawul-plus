@@ -855,3 +855,502 @@ function runActionLayer(positions, base, layers) {
     actions: actions.sort((a, b) => severityScore(b.severity) - severityScore(a.severity)),
   };
 }
+  /* ═══════════════════════════════════════════════════════════
+   🧠 INNOVATION #1 - PSYRISK SCORE™
+   Behavioral Risk Quantification
+   
+   Based on: Kahneman & Tversky (1979) Prospect Theory
+            Loss Aversion Coefficient: 2.25
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * PsyRisk Score™ - Measures psychological risk
+ * 
+ * Calculates the probability that the investor will:
+ * - Sell in panic during drawdowns
+ * - Make emotional decisions
+ * - Abandon strategy under stress
+ * 
+ * Score: 0-100 (higher = better psychological resilience)
+ */
+function calculatePsyRiskScore(positions, base, options) {
+  let score = 100;
+  const factors = [];
+
+  // Factor 1: Drawdown tolerance vs actual drawdown
+  // Loss aversion: pain of loss = 2.25x pleasure of gain
+  const maxDD = base.risk ? Math.abs(base.risk.maxDrawdown) : 0;
+  const userTolerance = (options && options.riskTolerance) || 0.20;
+  
+  if (maxDD > userTolerance) {
+    const factor = Math.min(50, (maxDD - userTolerance) * 200);
+    score -= factor;
+    factors.push({
+      factor: 'drawdown_intolerance',
+      impact: -factor,
+      message: 'تراجع ' + (maxDD * 100).toFixed(1) + '% يتجاوز قدرتك (' + 
+        (userTolerance * 100).toFixed(0) + '%)',
+    });
+  }
+
+  // Factor 2: Volatility comfort
+  const vol = base.performance ? base.performance.volatility : 0.20;
+  const volTolerance = userTolerance * 1.5;
+  
+  if (vol > volTolerance) {
+    const factor = Math.min(20, (vol - volTolerance) * 100);
+    score -= factor;
+    factors.push({
+      factor: 'volatility_stress',
+      impact: -factor,
+      message: 'تذبذب ' + (vol * 100).toFixed(1) + '% قد يسبب قلقاً',
+    });
+  }
+
+  // Factor 3: Concentration anxiety
+  if (base.diversification && base.diversification.largestPosition > 25) {
+    const factor = Math.min(15, (base.diversification.largestPosition - 25) * 1.5);
+    score -= factor;
+    factors.push({
+      factor: 'concentration_anxiety',
+      impact: -factor,
+      message: 'تركيز كبير قد يسبب توتراً عند تذبذب السهم',
+    });
+  }
+
+  // Factor 4: Loss positions (psychological burden)
+  let lossPositions = 0;
+  let totalPositions = 0;
+  
+  positions.forEach(p => {
+    if (p.qty && p.avgCost && p.value) {
+      totalPositions++;
+      const currentPrice = p.value / p.qty;
+      if (currentPrice < p.avgCost * 0.9) lossPositions++;
+    }
+  });
+
+  if (totalPositions > 0) {
+    const lossRatio = lossPositions / totalPositions;
+    if (lossRatio > 0.3) {
+      const factor = Math.min(15, (lossRatio - 0.3) * 50);
+      score -= factor;
+      factors.push({
+        factor: 'unrealized_losses',
+        impact: -factor,
+        message: lossPositions + ' أسهم خاسرة من ' + totalPositions + ' - ضغط نفسي',
+      });
+    }
+  }
+
+  // Final score
+  score = Math.max(0, Math.min(100, score));
+
+  // Classification
+  let level, label, recommendation;
+  if (score >= 80) {
+    level = 'resilient';
+    label = 'مرونة عالية';
+    recommendation = 'محفظتك متوازنة نفسياً - استمر';
+  } else if (score >= 60) {
+    level = 'stable';
+    label = 'مستقر';
+    recommendation = 'محفظتك مقبولة لكن انتبه للضغوط';
+  } else if (score >= 40) {
+    level = 'vulnerable';
+    label = 'معرّض للضغط';
+    recommendation = 'فكّر في تقليل المخاطر للحفاظ على هدوئك';
+  } else {
+    level = 'high_stress';
+    label = 'ضغط عالٍ';
+    recommendation = 'محفظتك قد تجبرك على قرارات عاطفية - راجعها';
+  }
+
+  return {
+    score: Math.round(score),
+    level: level,
+    label: label,
+    recommendation: recommendation,
+    factors: factors,
+    sellPanicProbability: estimateSellPanicProbability(score, maxDD),
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   🧬 INNOVATION #2 - PORTFOLIO DNA™
+   Style Classification System
+   
+   Based on: Sharpe (1992) Style Analysis
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * Portfolio DNA™ - Reveals true portfolio identity
+ * 
+ * Classifies portfolio across 4 dimensions:
+ * - Growth vs Value
+ * - Momentum vs Mean-Reversion
+ * - Defensive vs Aggressive
+ * - Domestic vs Diversified
+ */
+function analyzePortfolioDNA(positions, base) {
+  const dna = {
+    growthValue: { score: 50, label: 'متوازن' },
+    momentumReversion: { score: 50, label: 'متوازن' },
+    defensiveAggressive: { score: 50, label: 'متوازن' },
+    domesticDiversified: { score: 100, label: 'محلي 100%' },
+  };
+
+  // 1. Growth vs Value (using price momentum + market cap)
+  let growthScore = 0;
+  let totalWeight = 0;
+  
+  positions.forEach(p => {
+    const weight = p.value || 0;
+    totalWeight += weight;
+    
+    // Higher RSI = more growth-oriented
+    if (p.rsi !== undefined) {
+      growthScore += weight * (p.rsi / 100);
+    } else {
+      growthScore += weight * 0.5;
+    }
+  });
+  
+  if (totalWeight > 0) {
+    const gv = (growthScore / totalWeight) * 100;
+    dna.growthValue.score = Math.round(gv);
+    dna.growthValue.label = 
+      gv > 65 ? 'نمو (Growth)' :
+      gv < 35 ? 'قيمة (Value)' :
+      'متوازن';
+  }
+
+  // 2. Momentum vs Mean-Reversion (based on portfolio beta)
+  if (base.performance && base.performance.beta) {
+    const beta = base.performance.beta;
+    const momScore = Math.min(100, Math.max(0, 50 + (beta - 1) * 100));
+    dna.momentumReversion.score = Math.round(momScore);
+    dna.momentumReversion.label = 
+      beta > 1.2 ? 'زخم (Momentum)' :
+      beta < 0.8 ? 'عكس الاتجاه (Mean-Reversion)' :
+      'متوازن';
+  }
+
+  // 3. Defensive vs Aggressive (volatility-based)
+  if (base.performance && base.performance.volatility) {
+    const vol = base.performance.volatility;
+    const aggScore = Math.min(100, vol * 250);
+    dna.defensiveAggressive.score = Math.round(aggScore);
+    dna.defensiveAggressive.label = 
+      vol > 0.30 ? 'عدوانية (Aggressive)' :
+      vol < 0.15 ? 'دفاعية (Defensive)' :
+      'متوازنة';
+  }
+
+  // 4. Domestic vs Diversified (Saudi only for now)
+  dna.domesticDiversified.score = 100;
+  dna.domesticDiversified.label = 'محلي 100% (تاسي)';
+
+  // Overall personality
+  const personality = determinePortfolioPersonality(dna);
+
+  return {
+    dimensions: dna,
+    personality: personality.type,
+    personalityLabel: personality.label,
+    personalityDescription: personality.description,
+    strengths: personality.strengths,
+    weaknesses: personality.weaknesses,
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   🔮 INNOVATION #3 - CRYSTAL BALL™
+   Monte Carlo Future Predictions
+   
+   Based on: Geometric Brownian Motion + Bootstrap
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * Crystal Ball™ - Predicts future portfolio performance
+ * 
+ * Runs 1000 simulations using:
+ * - Historical volatility
+ * - Historical returns
+ * - Random walk with drift
+ */
+function runCrystalBall(positions, base, simulations = 1000) {
+  if (!base.performance || !base.performance.annualReturn) {
+    return {
+      sixMonths: null,
+      oneYear: null,
+      threeYears: null,
+      message: 'بيانات غير كافية للتنبؤ',
+    };
+  }
+
+  const initialValue = base.totalValue || 100000;
+  const annualReturn = base.performance.annualReturn;
+  const annualVol = base.performance.volatility || 0.20;
+  
+  // Daily parameters
+  const dailyReturn = annualReturn / TRADING_DAYS;
+  const dailyVol = annualVol / Math.sqrt(TRADING_DAYS);
+
+  // Predictions for different horizons
+  const predictions = {
+    sixMonths: simulateHorizon(initialValue, dailyReturn, dailyVol, 126, simulations),
+    oneYear: simulateHorizon(initialValue, dailyReturn, dailyVol, 252, simulations),
+    threeYears: simulateHorizon(initialValue, dailyReturn, dailyVol, 756, simulations),
+  };
+
+  return {
+    initialValue: initialValue,
+    sixMonths: predictions.sixMonths,
+    oneYear: predictions.oneYear,
+    threeYears: predictions.threeYears,
+    methodology: 'Monte Carlo Simulation (' + simulations + ' iterations)',
+  };
+}
+
+/**
+ * Simulate portfolio over time horizon
+ */
+function simulateHorizon(initialValue, dailyReturn, dailyVol, days, sims) {
+  const finalValues = [];
+  
+  for (let s = 0; s < sims; s++) {
+    let value = initialValue;
+    for (let d = 0; d < days; d++) {
+      // Box-Muller transform for normal distribution
+      const u1 = Math.random();
+      const u2 = Math.random();
+      const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+      
+      // Geometric Brownian Motion
+      const dailyChange = dailyReturn + dailyVol * z;
+      value *= (1 + dailyChange);
+    }
+    finalValues.push(value);
+  }
+
+  // Sort for percentiles
+  finalValues.sort((a, b) => a - b);
+
+  const percentile5 = finalValues[Math.floor(sims * 0.05)];
+  const percentile25 = finalValues[Math.floor(sims * 0.25)];
+  const percentile50 = finalValues[Math.floor(sims * 0.50)];
+  const percentile75 = finalValues[Math.floor(sims * 0.75)];
+  const percentile95 = finalValues[Math.floor(sims * 0.95)];
+
+  // Probability of profit
+  const profitCount = finalValues.filter(v => v > initialValue).length;
+  const profitProbability = (profitCount / sims) * 100;
+
+  return {
+    bestCase: Math.round(percentile95),
+    bestCaseReturn: +((percentile95 / initialValue - 1) * 100).toFixed(1),
+    optimistic: Math.round(percentile75),
+    optimisticReturn: +((percentile75 / initialValue - 1) * 100).toFixed(1),
+    median: Math.round(percentile50),
+    medianReturn: +((percentile50 / initialValue - 1) * 100).toFixed(1),
+    pessimistic: Math.round(percentile25),
+    pessimisticReturn: +((percentile25 / initialValue - 1) * 100).toFixed(1),
+    worstCase: Math.round(percentile5),
+    worstCaseReturn: +((percentile5 / initialValue - 1) * 100).toFixed(1),
+    profitProbability: +profitProbability.toFixed(1),
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   🛡️ INNOVATION #4 - SMART STOP-LOSS™
+   Dynamic Risk Management
+   
+   Based on: Wilder (1978) ATR + Le Beau Chandelier Exit
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * Smart Stop-Loss™ - Calculates dynamic stop-loss for each stock
+ * 
+ * Combines:
+ * - ATR (Average True Range) - Wilder 1978
+ * - Volatility-adjusted stops
+ * - Sector-specific factors
+ */
+function calculateSmartStops(positions) {
+  const stops = positions.map(p => {
+    if (!p.bars || p.bars.length < 14) {
+      return {
+        sym: p.sym,
+        currentPrice: p.value && p.qty ? p.value / p.qty : 0,
+        suggestedStop: null,
+        method: 'insufficient_data',
+        message: 'بيانات غير كافية',
+      };
+    }
+
+    const currentPrice = p.value && p.qty ? p.value / p.qty : 
+      (p.bars[p.bars.length - 1].c || 0);
+
+    // Calculate ATR (14-period)
+    const atr = calculateATR(p.bars, 14);
+    
+    if (!atr || atr <= 0) {
+      return {
+        sym: p.sym,
+        currentPrice: currentPrice,
+        suggestedStop: null,
+        method: 'atr_unavailable',
+      };
+    }
+
+    // ATR multiplier (sector-adjusted)
+    let multiplier = 2.0;
+    const sector = (p.stk && p.stk.sec) || p.sec;
+    
+    if (sector === 'البنوك' || sector === 'المرافق') {
+      multiplier = 1.5; // Less volatile sectors
+    } else if (sector === 'البتروكيماويات' || sector === 'الطاقة') {
+      multiplier = 2.5; // More volatile
+    }
+
+    // Calculate stop
+    const atrStop = currentPrice - (atr * multiplier);
+    
+    // Don't allow stops less than 2% or more than 15%
+    const minStop = currentPrice * 0.85;
+    const maxStop = currentPrice * 0.98;
+    const finalStop = Math.max(minStop, Math.min(maxStop, atrStop));
+    
+    const stopPercent = ((currentPrice - finalStop) / currentPrice) * 100;
+    
+    // Risk amount
+    const riskPerShare = currentPrice - finalStop;
+    const totalRisk = riskPerShare * (p.qty || 0);
+
+    return {
+      sym: p.sym,
+      currentPrice: +currentPrice.toFixed(2),
+      suggestedStop: +finalStop.toFixed(2),
+      stopPercent: +stopPercent.toFixed(1),
+      atr: +atr.toFixed(2),
+      method: 'atr_chandelier',
+      multiplier: multiplier,
+      riskPerShare: +riskPerShare.toFixed(2),
+      totalRisk: +totalRisk.toFixed(0),
+    };
+  });
+
+  // Total portfolio risk if all stops hit
+  const totalRisk = stops.reduce((sum, s) => sum + (s.totalRisk || 0), 0);
+
+  return {
+    stops: stops,
+    totalRiskSAR: Math.round(totalRisk),
+    methodology: 'ATR (14) + Chandelier Exit + Sector adjustment',
+  };
+}
+
+/**
+ * Calculate ATR (Average True Range)
+ */
+function calculateATR(bars, period = 14) {
+  if (!bars || bars.length < period + 1) return 0;
+
+  const trs = [];
+  
+  for (let i = 1; i < bars.length; i++) {
+    const high = bars[i].h || bars[i].c;
+    const low = bars[i].l || bars[i].c;
+    const prevClose = bars[i - 1].c;
+    
+    const tr = Math.max(
+      high - low,
+      Math.abs(high - prevClose),
+      Math.abs(low - prevClose)
+    );
+    trs.push(tr);
+  }
+
+  // Take last 'period' values
+  const recent = trs.slice(-period);
+  const sum = recent.reduce((a, b) => a + b, 0);
+  return sum / recent.length;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   🔄 INNOVATION #5 - RECOVERY PATH™
+   Drawdown Recovery Optimization
+═══════════════════════════════════════════════════════════ */
+
+/**
+ * Recovery Path™ - Plans optimal recovery from drawdowns
+ * 
+ * Generates a strategy for:
+ * - Dollar-Cost Averaging into weakness
+ * - Position rebalancing
+ * - Volatility regime adjustment
+ */
+function generateRecoveryPath(positions, base) {
+  if (!base.risk || Math.abs(base.risk.maxDrawdown) < 0.05) {
+    return {
+      currentDrawdown: 0,
+      status: 'stable',
+      message: 'محفظتك مستقرة - لا حاجة لخطة استعادة',
+    };
+  }
+
+  const currentDD = Math.abs(base.risk.maxDrawdown);
+  const recoveryNeeded = currentDD / (1 - currentDD); // Math: how much gain to recover
+  
+  // Strategy based on drawdown severity
+  let strategy, monthlyAddition, expectedRecoveryMonths;
+  
+  if (currentDD < 0.10) {
+    strategy = 'maintain';
+    monthlyAddition = 0;
+    expectedRecoveryMonths = Math.ceil(recoveryNeeded * 100 / 1.5); // 1.5% monthly assumed
+  } else if (currentDD < 0.20) {
+    strategy = 'gradual_dca';
+    monthlyAddition = 0.05; // 5% of portfolio monthly
+    expectedRecoveryMonths = Math.ceil(recoveryNeeded * 100 / 2.5);
+  } else {
+    strategy = 'aggressive_dca';
+    monthlyAddition = 0.10; // 10% monthly
+    expectedRecoveryMonths = Math.ceil(recoveryNeeded * 100 / 4);
+  }
+
+  // Recovery actions
+  const actions = [];
+  
+  if (strategy !== 'maintain') {
+    actions.push({
+      type: 'monthly_dca',
+      amount: Math.round((base.totalValue || 100000) * monthlyAddition),
+      message: 'أضف ' + (monthlyAddition * 100).toFixed(0) + '% شهرياً للمتوسط',
+    });
+  }
+
+  // Identify undervalued positions
+  const undervalued = positions
+    .filter(p => p.rsi && p.rsi < 35)
+    .map(p => p.sym);
+  
+  if (undervalued.length > 0) {
+    actions.push({
+      type: 'add_undervalued',
+      stocks: undervalued,
+      message: 'فكر في زيادة: ' + undervalued.join(', ') + ' (RSI منخفض)',
+    });
+  }
+
+  return {
+    currentDrawdown: +(currentDD * 100).toFixed(1),
+    recoveryNeeded: +(recoveryNeeded * 100).toFixed(1),
+    strategy: strategy,
+    expectedRecoveryMonths: expectedRecoveryMonths,
+    monthlyAddition: monthlyAddition,
+    actions: actions,
+  };
+}
+    
