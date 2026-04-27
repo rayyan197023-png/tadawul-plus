@@ -2143,26 +2143,213 @@ useEffect(() => {
                       </div>
                     )}
                   </div>
-                  <div style={{
-                    background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
-                    border:"1px solid "+C.line,
-                    borderRadius:12,
-                    padding:"14px 16px",
-                    textAlign:"center",
-                  }}>
-                    <div style={{fontSize:10,color:C.plasma,fontWeight:800,marginBottom:8,letterSpacing:"1px"}}>
-                      ✨ المزيد قادم قريباً
-                    </div>
-                    <div style={{fontSize:11,color:C.mist,lineHeight:1.8,textAlign:"right"}}>
-                      🎯 Top Recommendation<br/>
-                      🧠 PsyRisk Score™<br/>
-                      🧬 Portfolio DNA™<br/>
-                      🔮 Crystal Ball™ (Monte Carlo)<br/>
-                      🛡️ Smart Stop-Loss™<br/>
-                      🔄 Recovery Path™<br/>
-                      ⚡ All Recommendations
-                    </div>
-                  </div>
+                  {/* Top Recommendation Card */}
+{iq.recommendations && iq.recommendations.items && iq.recommendations.items.length > 0 && (function(){
+  var topRec = iq.recommendations.items[0];
+  var priorityColor = topRec.priority === 'critical' ? C.coral :
+                      topRec.priority === 'high' ? C.amber :
+                      topRec.priority === 'medium' ? C.teal : C.smoke;
+  var priorityLabel = topRec.priority === 'critical' ? 'عاجل جداً' :
+                      topRec.priority === 'high' ? 'مهم' :
+                      topRec.priority === 'medium' ? 'متوسط' : 'منخفض';
+  var priorityIcon = topRec.priority === 'critical' ? '🚨' :
+                     topRec.priority === 'high' ? '⚡' :
+                     topRec.priority === 'medium' ? '💡' : '📌';
+  return (
+    <div className="card-enter" style={{
+      background:"linear-gradient(135deg,"+priorityColor+"15,"+priorityColor+"08)",
+      border:"1px solid "+priorityColor+"44",
+      borderRadius:16,
+      padding:"16px",
+      marginBottom:14,
+      boxShadow:"0 8px 24px "+priorityColor+"22, inset 0 1px 0 "+C.layer3,
+      position:"relative",
+      overflow:"hidden",
+    }}>
+      {/* شريط علوي ملون */}
+      <div style={{
+        position:"absolute",
+        top:0,left:0,right:0,
+        height:3,
+        background:"linear-gradient(90deg,"+priorityColor+"00,"+priorityColor+"ff,"+priorityColor+"00)",
+      }}/>
+      
+      {/* Header */}
+      <div style={{
+        display:"flex",
+        alignItems:"center",
+        justifyContent:"space-between",
+        marginBottom:12,
+      }}>
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <span style={{fontSize:18}}>{priorityIcon}</span>
+          <div>
+            <div style={{fontSize:9,color:priorityColor,fontWeight:800,letterSpacing:"1.5px"}}>
+              توصية #1
+            </div>
+            <div style={{
+              fontSize:10,
+              color:priorityColor,
+              fontWeight:700,
+              background:priorityColor+"22",
+              padding:"2px 8px",
+              borderRadius:6,
+              display:"inline-block",
+              marginTop:3,
+            }}>
+              {priorityLabel}
+            </div>
+          </div>
+        </div>
+        <div style={{
+          fontSize:9,
+          color:C.smoke,
+          fontWeight:600,
+          textAlign:"left",
+        }}>
+          {topRec.urgency || ''}
+        </div>
+      </div>
+      
+      {/* العنوان الرئيسي */}
+      <div style={{
+        fontSize:16,
+        fontWeight:900,
+        color:C.snow,
+        marginBottom:10,
+        lineHeight:1.4,
+        fontFamily:"Cairo,sans-serif",
+      }}>
+        {topRec.title}
+      </div>
+      
+      {/* السبب */}
+      <div style={{
+        background:"rgba(255,255,255,.04)",
+        border:"1px solid "+C.line,
+        borderRadius:10,
+        padding:"10px 12px",
+        marginBottom:10,
+      }}>
+        <div style={{fontSize:9,color:priorityColor,fontWeight:800,letterSpacing:"1px",marginBottom:5}}>
+          📊 السبب
+        </div>
+        <div style={{fontSize:11,color:C.mist,lineHeight:1.6,fontFamily:"Cairo,sans-serif"}}>
+          {topRec.reasoning}
+        </div>
+      </div>
+      
+      {/* التأثير المتوقع */}
+      {topRec.expectedImpact && (
+        <div style={{
+          background:"rgba(30,230,138,.06)",
+          border:"1px solid "+C.mint+"33",
+          borderRadius:10,
+          padding:"10px 12px",
+          marginBottom:10,
+        }}>
+          <div style={{fontSize:9,color:C.mint,fontWeight:800,letterSpacing:"1px",marginBottom:6}}>
+            💰 التأثير المتوقع
+          </div>
+          {Object.keys(topRec.expectedImpact).map(function(key,i){
+            return (
+              <div key={i} style={{
+                display:"flex",
+                justifyContent:"space-between",
+                alignItems:"center",
+                padding:"3px 0",
+                fontSize:10,
+                fontFamily:"Cairo,sans-serif",
+              }}>
+                <span style={{color:C.smoke,fontWeight:600}}>{key}</span>
+                <span style={{color:C.mint,fontWeight:800,fontFamily:"IBM Plex Mono,monospace"}}>
+                  {topRec.expectedImpact[key]}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      
+      {/* المرجع الأكاديمي */}
+      {topRec.academicBasis && (
+        <div style={{
+          background:"rgba(167,139,250,.06)",
+          border:"1px solid "+C.plasma+"33",
+          borderRadius:10,
+          padding:"8px 12px",
+        }}>
+          <div style={{fontSize:9,color:C.plasma,fontWeight:800,letterSpacing:"1px",marginBottom:3}}>
+            📚 المرجع الأكاديمي
+          </div>
+          <div style={{
+            fontSize:10,
+            color:C.mist,
+            fontStyle:"italic",
+            lineHeight:1.5,
+            fontFamily:"Cairo,sans-serif",
+          }}>
+            {topRec.academicBasis}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+})()}
+
+{/* عداد التوصيات */}
+{iq.recommendations && iq.recommendations.total > 1 && (
+  <div style={{
+    background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
+    border:"1px solid "+C.line,
+    borderRadius:12,
+    padding:"12px 14px",
+    marginBottom:14,
+    textAlign:"center",
+  }}>
+    <div style={{fontSize:10,color:C.plasma,fontWeight:800,letterSpacing:"1px",marginBottom:6}}>
+      📋 المزيد من التوصيات
+    </div>
+    <div style={{display:"flex",justifyContent:"center",gap:10,fontSize:11,color:C.mist,fontWeight:700}}>
+      {iq.recommendations.critical > 0 && (
+        <span style={{color:C.coral}}>🚨 {iq.recommendations.critical} عاجل</span>
+      )}
+      {iq.recommendations.high > 0 && (
+        <span style={{color:C.amber}}>⚡ {iq.recommendations.high} مهم</span>
+      )}
+      {iq.recommendations.medium > 0 && (
+        <span style={{color:C.teal}}>💡 {iq.recommendations.medium} متوسط</span>
+      )}
+      {iq.recommendations.low > 0 && (
+        <span style={{color:C.smoke}}>📌 {iq.recommendations.low} منخفض</span>
+      )}
+    </div>
+    <div style={{fontSize:9,color:C.smoke,marginTop:6,fontFamily:"Cairo,sans-serif"}}>
+      جميع التوصيات قادمة في تحديث قادم
+    </div>
+  </div>
+)}
+
+{/* Coming Soon Card */}
+<div style={{
+  background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
+  border:"1px solid "+C.line,
+  borderRadius:12,
+  padding:"14px 16px",
+  textAlign:"center",
+}}>
+  <div style={{fontSize:10,color:C.plasma,fontWeight:800,marginBottom:8,letterSpacing:"1px"}}>
+    ✨ المزيد قادم قريباً
+  </div>
+  <div style={{fontSize:11,color:C.mist,lineHeight:1.8,textAlign:"right"}}>
+    🧠 PsyRisk Score™<br/>
+    🧬 Portfolio DNA™<br/>
+    🔮 Crystal Ball™ (Monte Carlo)<br/>
+    🛡️ Smart Stop-Loss™<br/>
+    🔄 Recovery Path™<br/>
+    📊 8 Layers Detail
+  </div>
+</div>
                 </div>
               );
             })()
