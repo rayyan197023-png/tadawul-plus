@@ -3227,6 +3227,233 @@ useEffect(() => {
     </div>
   </div>
 )}
+{/* 8 Layers Detail Card */}
+{iq.layers && (function(){
+  var layers = iq.layers;
+  
+  // إعداد البيانات للعرض
+  var layerData = [
+    {
+      icon: '🔍',
+      name: 'التشخيص',
+      score: layers.diagnostic && layers.diagnostic.healthScore,
+      issues: layers.diagnostic && layers.diagnostic.issuesCount,
+      strengths: layers.diagnostic && layers.diagnostic.strengthsCount,
+      detail: layers.diagnostic && layers.diagnostic.issues && layers.diagnostic.issues.length > 0 
+        ? layers.diagnostic.issues[0].message 
+        : 'لا توجد مشاكل',
+    },
+    {
+      icon: '⚠️',
+      name: 'المخاطر',
+      score: layers.risk && layers.risk.score,
+      detail: layers.risk && layers.risk.riskLevel ? 'مستوى: ' + getRiskLevelLabel(layers.risk.riskLevel) : '',
+    },
+    {
+      icon: '🧠',
+      name: 'السلوك',
+      score: layers.behavioral && layers.behavioral.behavioralScore,
+      issues: layers.behavioral && layers.behavioral.biasCount,
+      detail: layers.behavioral && layers.behavioral.biases && layers.behavioral.biases.length > 0
+        ? layers.behavioral.biases[0].message
+        : 'لا توجد تحيزات',
+    },
+    {
+      icon: '🎯',
+      name: 'العوامل',
+      score: layers.factor && layers.factor.factors && layers.factor.factors.size 
+        ? layers.factor.factors.size.score 
+        : null,
+      detail: layers.factor && layers.factor.styleLabel ? 'النمط: ' + layers.factor.styleLabel : '',
+    },
+    {
+      icon: '🌍',
+      name: 'الاقتصاد',
+      score: null,
+      detail: layers.macro && layers.macro.exposures && layers.macro.exposures.oilPrice 
+        ? 'تعرض النفط: ' + layers.macro.exposures.oilPrice + '%'
+        : 'متوازن',
+    },
+    {
+      icon: '🏭',
+      name: 'القطاعات',
+      score: layers.sector && layers.sector.diversificationScore,
+      detail: layers.sector && layers.sector.largestSector
+        ? 'الأكبر: ' + layers.sector.largestSector.name + ' (' + (layers.sector.largestSector.weight * 100).toFixed(0) + '%)'
+        : '',
+    },
+    {
+      icon: '📈',
+      name: 'الأسهم',
+      score: null,
+      detail: layers.stock && layers.stock.flaggedStocks 
+        ? layers.stock.flaggedStocks.length + ' سهم يحتاج اهتمام'
+        : 'كل الأسهم سليمة',
+    },
+    {
+      icon: '⚡',
+      name: 'الإجراءات',
+      score: null,
+      issues: layers.action && layers.action.totalActions,
+      detail: layers.action && layers.action.criticalCount > 0
+        ? layers.action.criticalCount + ' إجراء عاجل'
+        : 'لا إجراءات عاجلة',
+    },
+  ];
+  
+  return (
+    <div className="card-enter" style={{
+      background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
+      border:"1px solid "+C.gold+"33",
+      borderRadius:16,
+      padding:"16px",
+      marginBottom:14,
+      boxShadow:"0 8px 24px "+C.gold+"22, inset 0 1px 0 "+C.layer3,
+      position:"relative",
+      overflow:"hidden",
+    }}>
+      <div style={{
+        position:"absolute",
+        top:0,left:0,right:0,
+        height:3,
+        background:"linear-gradient(90deg,"+C.gold+"00,"+C.gold+"ff,"+C.gold+"00)",
+      }}/>
+      
+      {/* Header */}
+      <div style={{textAlign:"center",marginBottom:14}}>
+        <div style={{fontSize:9,color:C.gold,fontWeight:800,letterSpacing:"2px",marginBottom:4}}>
+          📊 8 LAYERS DETAIL
+        </div>
+        <div style={{fontSize:11,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>
+          تفاصيل التحليل الشامل
+        </div>
+      </div>
+      
+      {/* Layers Grid */}
+      <div style={{
+        display:"grid",
+        gridTemplateColumns:"1fr 1fr",
+        gap:8,
+      }}>
+        {layerData.map(function(layer,i){
+          var scoreColor = layer.score === null ? C.smoke :
+                           layer.score >= 75 ? C.mint :
+                           layer.score >= 60 ? C.teal :
+                           layer.score >= 45 ? C.amber : C.coral;
+          return (
+            <div key={i} style={{
+              background:"rgba(255,255,255,.03)",
+              border:"1px solid "+C.line,
+              borderRadius:10,
+              padding:"10px 8px",
+              position:"relative",
+            }}>
+              {/* Top: Icon + Name + Score */}
+              <div style={{
+                display:"flex",
+                alignItems:"center",
+                justifyContent:"space-between",
+                marginBottom:4,
+              }}>
+                <div style={{display:"flex",alignItems:"center",gap:5}}>
+                  <span style={{fontSize:14}}>{layer.icon}</span>
+                  <span style={{
+                    fontSize:11,
+                    fontWeight:800,
+                    color:C.snow,
+                    fontFamily:"Cairo,sans-serif",
+                  }}>
+                    {layer.name}
+                  </span>
+                </div>
+                {layer.score !== null && (
+                  <span style={{
+                    fontSize:13,
+                    fontWeight:900,
+                    color:scoreColor,
+                    fontFamily:"IBM Plex Mono,monospace",
+                  }}>
+                    {layer.score}
+                  </span>
+                )}
+              </div>
+              
+              {/* Progress Bar (if has score) */}
+              {layer.score !== null && (
+                <div style={{
+                  height:3,
+                  background:C.layer3,
+                  borderRadius:2,
+                  marginBottom:6,
+                  overflow:"hidden",
+                }}>
+                  <div style={{
+                    height:"100%",
+                    width:layer.score+"%",
+                    background:scoreColor,
+                    borderRadius:2,
+                    transition:"width 1.5s ease-out",
+                  }}/>
+                </div>
+              )}
+              
+              {/* Detail */}
+              {layer.detail && (
+                <div style={{
+                  fontSize:9,
+                  color:C.smoke,
+                  lineHeight:1.4,
+                  fontFamily:"Cairo,sans-serif",
+                  marginTop: layer.score === null ? 4 : 0,
+                }}>
+                  {layer.detail}
+                </div>
+              )}
+              
+              {/* Issues count */}
+              {layer.issues > 0 && (
+                <div style={{
+                  position:"absolute",
+                  top:4,
+                  left:4,
+                  background:C.coral+"22",
+                  color:C.coral,
+                  fontSize:8,
+                  fontWeight:800,
+                  padding:"1px 5px",
+                  borderRadius:4,
+                  fontFamily:"IBM Plex Mono,monospace",
+                }}>
+                  {layer.issues}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      
+      {/* Footer */}
+      <div style={{
+        marginTop:12,
+        padding:"8px 12px",
+        background:"rgba(167,139,250,.06)",
+        border:"1px solid "+C.plasma+"33",
+        borderRadius:10,
+        textAlign:"center",
+      }}>
+        <div style={{
+          fontSize:10,
+          color:C.plasma,
+          fontWeight:700,
+          fontFamily:"Cairo,sans-serif",
+        }}>
+          🧠 محلّل بـ 8 طبقات ذكاء متقدمة
+        </div>
+      </div>
+    </div>
+  );
+})()}
+
 
 {/* Coming Soon Card */}
 <div style={{
