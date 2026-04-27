@@ -1,4 +1,110 @@
 'use client';
+/**
+ * 🧠 PORTFOLIO IQ™ - World-Class Portfolio Intelligence
+ * 
+ * 8 Intelligence Layers:
+ * 1. Diagnostic - Health & Issues
+ * 2. Risk - Multi-dimensional
+ * 3. Behavioral - Bias detection
+ * 4. Factor - Style analysis
+ * 5. Macro - Saudi-specific
+ * 6. Sector - Industry analysis
+ * 7. Stock - Individual analysis
+ * 8. Action - Recommendations
+ * 
+ * 5 Innovations:
+ * - PsyRisk Score™
+ * - Portfolio DNA™
+ * - Crystal Ball™ (Monte Carlo)
+ * - Smart Stop-Loss™
+ * - Recovery Path™
+ * 
+ * Academic Foundations:
+ * - Markowitz MPT (1952)
+ * - Sharpe CAPM (1966)
+ * - Kahneman Prospect Theory (2002)
+ * - Bridgewater Risk Parity
+ * - Fama-French 3-Factor (1993)
+ * - Black-Litterman (1990)
+ * 
+ * @version 2.0 (TypeScript)
+ */
+
+// ═══════════════════════════════════════════════════════
+// 📊 CORE TYPES
+// ═══════════════════════════════════════════════════════
+
+export interface IQPosition {
+  sym: string;
+  qty: number;
+  cost?: number;
+  value?: number;
+  rsi?: number;
+  bars?: any[];
+  stk?: {
+    name?: string;
+    sec?: string;
+    sectorId?: string;
+    p?: number;
+    mktCap?: number;
+    [key: string]: any;
+  };
+  [key: string]: any;
+}
+
+export interface IQOptions {
+  riskTolerance?: number;
+  benchmark?: string;
+  [key: string]: any;
+}
+
+export interface IQAnalysis {
+  iqScore: number;
+  grade: string;
+  gradeLabel: string;
+  gradeColor: string;
+  layers: any;
+  psyRisk: any;
+  dna: any;
+  crystalBall: any;
+  smartStops: any;
+  recoveryPath: any;
+  recommendations: any;
+  summary: any;
+}
+
+// ═══════════════════════════════════════════════════════
+// 🎯 ENUMS
+// ═══════════════════════════════════════════════════════
+
+export const PRIORITY = {
+  CRITICAL: 'critical',
+  HIGH: 'high',
+  MEDIUM: 'medium',
+  LOW: 'low',
+} as const;
+
+export const CATEGORY = {
+  REBALANCE: 'rebalance',
+  RISK: 'risk',
+  OPPORTUNITY: 'opportunity',
+  WARNING: 'warning',
+  EDUCATION: 'education',
+} as const;
+
+export const HEALTH_GRADES = {
+  AAA: { min: 90, label: 'استثنائي', color: '#1ee68a' },
+  AA: { min: 85, label: 'ممتاز', color: '#1ee68a' },
+  A: { min: 80, label: 'جيد جداً', color: '#34d399' },
+  BBB: { min: 75, label: 'جيد', color: '#22d3ee' },
+  BB: { min: 70, label: 'مقبول', color: '#a78bfa' },
+  B: { min: 60, label: 'متوسط', color: '#fbbf24' },
+  CCC: { min: 50, label: 'ضعيف', color: '#f97316' },
+  D: { min: 0, label: 'حرج', color: '#ff5f6a' },
+} as const;
+
+export type Priority = typeof PRIORITY[keyof typeof PRIORITY];
+export type Category = typeof CATEGORY[keyof typeof CATEGORY];
 
 /**
  * ═══════════════════════════════════════════════════════════════════
