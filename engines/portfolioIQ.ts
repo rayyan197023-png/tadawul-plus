@@ -170,19 +170,6 @@ const TASI_AVG_RETURN = 0.085;
 const TRADING_DAYS = 252;
 
 
-/**
- * Recommendation Categories
- */
-const CATEGORY = {
-  REDUCE_CONCENTRATION: 'reduce_concentration',
-  ADD_DIVERSIFICATION: 'add_diversification',
-  REDUCE_CORRELATION: 'reduce_correlation',
-  RISK_MANAGEMENT: 'risk_management',
-  REBALANCE: 'rebalance',
-  TAX_OPTIMIZATION: 'tax_optimization',
-  BEHAVIORAL: 'behavioral',
-  OPPORTUNITY: 'opportunity',
-};
 
 /**
  * Portfolio Health Grades (S&P-style)
