@@ -2432,7 +2432,8 @@ function analyzeStockRadar(stk){
   if(ms.bosBull)       cats.push({l:"BOS صاعد",    c:G});
   if(ob.inBullOB)      cats.push({l:"Order Block",  c:CYAN});
   if(ls.recoveredSSL)  cats.push({l:"SSL انتعاش",   c:LIME});
-  if(vi.belowBand1&&vi.aboveAVWAP) cats.push({l:"VWAP فرصة", c:BLUE});
+  if(vi.belowB1&&vi.aboveAVWAP)
+ cats.push({l:"VWAP فرصة", c:BLUE});
   if(smDetected)       cats.push({l:"سيولة مؤسسية",c:PU});
   if(oversold)         cats.push({l:"تشبع بيع",     c:GOLD});
   if(ms.choch&&ms.bosBull) cats.push({l:"CHOCH↑",  c:ORANGE});
