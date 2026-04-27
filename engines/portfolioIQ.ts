@@ -1949,10 +1949,8 @@ function emptyAnalysis() {
 ═══════════════════════════════════════════════════════════ */
 
 export {
-  PRIORITY,
-  CATEGORY,
-  HEALTH_GRADES,
   RISK_FREE_RATE,
   TRADING_DAYS,
 };
+
     
