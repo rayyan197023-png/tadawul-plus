@@ -27,7 +27,6 @@ const AIScreen          = lazy(() => import('./screens/AIScreen'));
 const MoreScreen        = lazy(() => import('./screens/MoreScreen'));
 const BacktestScreen    = lazy(() => import('./screens/BacktestScreen'));
 const RebalancingScreen = lazy(() => import('./screens/RebalancingScreen'));
-const AlertsScreen      = lazy(() => import('./screens/AlertsScreen'));
 const StockDetail       = lazy(() => import('./features/stock/StockDetail'));
 const ChartScreen       = lazy(() => import('./features/chart/ChartScreen'));
 
