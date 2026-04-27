@@ -3623,7 +3623,7 @@ function stockHealth(stk, bars){
   // ════════════════════════════════════════════════
   //  STEP 9: Metadata
   // ════════════════════════════════════════════════
-  merged.conviction = {
+  (merged as any).conviction = {
     LA, LB, LC, wA, wB, wC,
     riskMult: +riskMult.toFixed(2),
     finalMult: +finalMult.toFixed(3),
