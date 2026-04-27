@@ -10,10 +10,153 @@
  * - Time-based decay
  * 
  * Used by: PortfolioScreen, AnalysisScreen
+ * @version 2.0 (TypeScript)
  * ═══════════════════════════════════════════════════════════════
  */
 
 import { stockHealth } from './analysisEngine';
+
+// ═══════════════════════════════════════════════════════
+// 📊 TYPES
+// ═══════════════════════════════════════════════════════
+
+export interface Bar {
+  t?: number;
+  o?: number;
+  h?: number;
+  l?: number;
+  lo?: number;
+  low?: number;
+  c: number;
+  v?: number;
+  vol?: number;
+}
+
+export interface Health {
+  score?: number;
+  grade?: string;
+  sig?: string;
+  regime?: string;
+  layers?: { [key: string]: number };
+  extras?: {
+    atrPct?: number;
+    vr?: number;
+    [key: string]: any;
+  };
+}
+
+export interface Position {
+  sym: string;
+  qty: number;
+  avgCost?: number;
+  curPrice?: number;
+  value?: number;
+  entryDate?: string;
+  stk?: {
+    name?: string;
+    sec?: string;
+    [key: string]: any;
+  };
+  [key: string]: any;
+}
+
+export interface StopLossResult {
+  stopPrice: number;
+  stopPct: number;
+  method: string;
+  distance: number;
+  reason: string;
+}
+
+export interface TakeProfitTarget {
+  price: number;
+  pct: number;
+  rr: number;
+  sell: number;
+}
+
+export interface TakeProfitResult {
+  t1: TakeProfitTarget;
+  t2: TakeProfitTarget;
+  t3: TakeProfitTarget;
+  expectedRR: string;
+}
+
+export interface TrailingStopResult {
+  price: number;
+  pct: number;
+  distance: number;
+  locked: string;
+  isLocked: boolean;
+}
+
+export interface PositionHealthComponents {
+  signal: number;
+  pnl: number;
+  stop: number;
+  time: number;
+  volume: number;
+  trend: number;
+  regime: number;
+}
+
+export interface PositionHealthResult {
+  composite: number;
+  components: PositionHealthComponents;
+  daysHeld: number;
+  pnlPct: number;
+  distanceToStop: number;
+  grade: string;
+  label: string;
+}
+
+export type Urgency = 'low' | 'medium' | 'high' | 'critical';
+
+export interface SmartActionResult {
+  action: string;
+  percent: number;
+  color: string;
+  urgency: Urgency;
+  confidence: number;
+  reason: string;
+  positionHealth: PositionHealthResult;
+  stopData: StopLossResult;
+  targets: TakeProfitResult | null;
+  metadata: {
+    pnlPct: number;
+    daysHeld: number;
+    grade: string;
+    signal: string;
+    score: number;
+  };
+}
+
+export interface BalanceIssue {
+  severity: 'low' | 'medium' | 'high';
+  type: string;
+  sym?: string;
+  message: string;
+}
+
+export interface BalanceRecommendation {
+  sym?: string;
+  action: string;
+  message: string;
+}
+
+export interface PortfolioBalanceResult {
+  score: number;
+  grade: string;
+  label: string;
+  issues: BalanceIssue[];
+  recommendations: BalanceRecommendation[];
+  sectorBreakdown: { [sector: string]: number };
+  positionCount: number;
+}
+
+// ═══════════════════════════════════════════════════════
+// 🛑 SMART STOP LOSS
+// ═══════════════════════════════════════════════════════
 
 /**
  * ✨ Smart Stop Loss Calculator
@@ -25,10 +168,15 @@ import { stockHealth } from './analysisEngine';
  * 
  * Returns the most conservative (highest) stop
  */
-export function calcSmartStopLoss(entryPrice, currentPrice, health, bars){
-  if(!entryPrice || !currentPrice || !bars || bars.length < 14){
+export function calcSmartStopLoss(
+  entryPrice: number,
+  currentPrice: number,
+  health: Health | null,
+  bars: Bar[] | null
+): StopLossResult {
+  if (!entryPrice || !currentPrice || !bars || bars.length < 14) {
     return {
-      stopPrice: entryPrice * 0.93, // -7% default
+      stopPrice: entryPrice * 0.93,
       stopPct: -7,
       method: 'default',
       distance: 7,
@@ -36,13 +184,12 @@ export function calcSmartStopLoss(entryPrice, currentPrice, health, bars){
     };
   }
   
-  const atr = health?.extras?.atrPct ? (health.extras.atrPct/100) * currentPrice : currentPrice * 0.015;
+  const atr = health?.extras?.atrPct 
+    ? (health.extras.atrPct / 100) * currentPrice 
+    : currentPrice * 0.015;
   const regime = health?.regime || 'chop';
   
   // ① ATR-based stop (Bloomberg standard)
-  // Volatile market: 3x ATR
-  // Normal: 2.5x ATR
-  // Calm: 2x ATR
   const atrMultiplier = regime === 'volatile' ? 3.0 
                       : regime === 'news-driven' ? 2.8
                       : regime === 'bear' ? 2.5
@@ -54,24 +201,21 @@ export function calcSmartStopLoss(entryPrice, currentPrice, health, bars){
   // ② Support-based stop (recent low - 1%)
   const last20Bars = bars.slice(-20);
   const recentLow = Math.min(...last20Bars.map(b => b.lo || b.low || entryPrice));
-  const supportStop = recentLow * 0.99; // 1% buffer
+  const supportStop = recentLow * 0.99;
   const supportStopPct = ((supportStop - entryPrice) / entryPrice) * 100;
   
-  // ③ Percentage-based stop (Half-Kelly aware)
-  // Strong signal: -8%, Moderate: -6%, Weak: -4%
+  // ③ Percentage-based stop
   const score = health?.score || 50;
   const pctStopValue = score >= 75 ? -8 : score >= 60 ? -6 : -4;
-  const pctStop = entryPrice * (1 + pctStopValue/100);
+  const pctStop = entryPrice * (1 + pctStopValue / 100);
   
-  // ④ Pick the smartest (closest to entry, but not too tight)
-  // Avoid stops that are too tight (< -2%) or too loose (> -12%)
+  // ④ Pick the smartest
   const candidates = [
     { stop: atrStop, pct: atrStopPct, method: 'ATR' },
     { stop: supportStop, pct: supportStopPct, method: 'Support' },
     { stop: pctStop, pct: pctStopValue, method: 'Percentage' },
   ].filter(c => c.pct >= -12 && c.pct <= -2);
   
-  // Use the highest stop (least loss) that's still reasonable
   const best = candidates.length > 0 
     ? candidates.reduce((a, b) => a.stop > b.stop ? a : b)
     : { stop: entryPrice * 0.94, pct: -6, method: 'Default' };
@@ -85,6 +229,10 @@ export function calcSmartStopLoss(entryPrice, currentPrice, health, bars){
   };
 }
 
+// ═══════════════════════════════════════════════════════
+// 🎯 SMART TAKE PROFIT
+// ═══════════════════════════════════════════════════════
+
 /**
  * ✨ Smart Take Profit Calculator
  * 
@@ -92,20 +240,20 @@ export function calcSmartStopLoss(entryPrice, currentPrice, health, bars){
  * - T1: 1.5R (33% profit taking)
  * - T2: 2.5R (33% profit taking)
  * - T3: 4.0R (final 34%)
- * 
- * R = Risk = Distance to Stop Loss
  */
-export function calcSmartTakeProfit(entryPrice, stopPrice, health){
-  if(!entryPrice || !stopPrice){
+export function calcSmartTakeProfit(
+  entryPrice: number,
+  stopPrice: number,
+  health: Health | null
+): TakeProfitResult | null {
+  if (!entryPrice || !stopPrice) {
     return null;
   }
   
-  const risk = entryPrice - stopPrice; // R value
+  const risk = entryPrice - stopPrice;
   const score = health?.score || 50;
   const grade = health?.grade || 'C';
   
-  // Adjust R:R based on signal strength
-  // Stronger signal = higher targets
   const rr1 = grade === 'S' || grade === 'A' ? 2.0 : 1.5;
   const rr2 = grade === 'S' || grade === 'A' ? 3.0 : 2.5;
   const rr3 = grade === 'S' ? 5.0 : grade === 'A' ? 4.5 : 4.0;
@@ -115,12 +263,31 @@ export function calcSmartTakeProfit(entryPrice, stopPrice, health){
   const t3 = entryPrice + (risk * rr3);
   
   return {
-    t1: { price: +t1.toFixed(2), pct: +((t1-entryPrice)/entryPrice*100).toFixed(1), rr: rr1, sell: 33 },
-    t2: { price: +t2.toFixed(2), pct: +((t2-entryPrice)/entryPrice*100).toFixed(1), rr: rr2, sell: 33 },
-    t3: { price: +t3.toFixed(2), pct: +((t3-entryPrice)/entryPrice*100).toFixed(1), rr: rr3, sell: 34 },
-    expectedRR: ((rr1*0.33 + rr2*0.33 + rr3*0.34)).toFixed(1),
+    t1: { 
+      price: +t1.toFixed(2), 
+      pct: +((t1 - entryPrice) / entryPrice * 100).toFixed(1), 
+      rr: rr1, 
+      sell: 33 
+    },
+    t2: { 
+      price: +t2.toFixed(2), 
+      pct: +((t2 - entryPrice) / entryPrice * 100).toFixed(1), 
+      rr: rr2, 
+      sell: 33 
+    },
+    t3: { 
+      price: +t3.toFixed(2), 
+      pct: +((t3 - entryPrice) / entryPrice * 100).toFixed(1), 
+      rr: rr3, 
+      sell: 34 
+    },
+    expectedRR: ((rr1 * 0.33 + rr2 * 0.33 + rr3 * 0.34)).toFixed(1),
   };
 }
+
+// ═══════════════════════════════════════════════════════
+// 📈 TRAILING STOP
+// ═══════════════════════════════════════════════════════
 
 /**
  * ✨ Trailing Stop Dynamic
@@ -128,30 +295,33 @@ export function calcSmartTakeProfit(entryPrice, stopPrice, health){
  * يتحرك مع السعر صعوداً، لا يتحرك هبوطاً
  * يحمي الأرباح المُحققة
  */
-export function calcTrailingStop(entryPrice, currentPrice, highestSinceEntry, health){
-  if(!entryPrice || !currentPrice){
+export function calcTrailingStop(
+  entryPrice: number,
+  currentPrice: number,
+  highestSinceEntry: number | null,
+  health: Health | null
+): TrailingStopResult | null {
+  if (!entryPrice || !currentPrice) {
     return null;
   }
   
-  const atr = health?.extras?.atrPct ? (health.extras.atrPct/100) * currentPrice : currentPrice * 0.015;
+  const atr = health?.extras?.atrPct 
+    ? (health.extras.atrPct / 100) * currentPrice 
+    : currentPrice * 0.015;
   const profit = ((currentPrice - entryPrice) / entryPrice) * 100;
   
-  // Don't activate trailing until in profit
-  if(profit < 2) return null;
+  if (profit < 2) return null;
   
-  // Trailing distance based on profit level
-  // More profit = tighter trailing (protect gains)
-  let trailMultiplier;
-  if(profit >= 15) trailMultiplier = 1.5;       // Tight (1.5 ATR)
-  else if(profit >= 10) trailMultiplier = 2.0;  // Medium
-  else if(profit >= 5) trailMultiplier = 2.5;   // Wider
-  else trailMultiplier = 3.0;                    // Wide
+  let trailMultiplier: number;
+  if (profit >= 15) trailMultiplier = 1.5;
+  else if (profit >= 10) trailMultiplier = 2.0;
+  else if (profit >= 5) trailMultiplier = 2.5;
+  else trailMultiplier = 3.0;
   
   const high = highestSinceEntry || currentPrice;
   const trailStop = high - (atr * trailMultiplier);
   const trailPct = ((trailStop - entryPrice) / entryPrice) * 100;
   
-  // Trailing stop is always above original stop
   return {
     price: +trailStop.toFixed(2),
     pct: +trailPct.toFixed(1),
@@ -160,6 +330,10 @@ export function calcTrailingStop(entryPrice, currentPrice, highestSinceEntry, he
     isLocked: trailStop > entryPrice,
   };
 }
+
+// ═══════════════════════════════════════════════════════
+// 💚 POSITION HEALTH
+// ═══════════════════════════════════════════════════════
 
 /**
  * ✨ Position Health Score (0-100)
@@ -173,21 +347,28 @@ export function calcTrailingStop(entryPrice, currentPrice, highestSinceEntry, he
  * 6. Trend alignment (10%)
  * 7. Market regime (10%)
  */
-export function calcPositionHealth(position, health, bars){
-  if(!position || !health) return null;
+export function calcPositionHealth(
+  position: Position | null,
+  health: Health | null,
+  bars: Bar[] | null
+): PositionHealthResult | null {
+  if (!position || !health) return null;
   
   const entryPrice = position.avgCost || 0;
   const currentPrice = position.curPrice || entryPrice;
-  const pnlPct = entryPrice > 0 ? ((currentPrice - entryPrice) / entryPrice) * 100 : 0;
+  const pnlPct = entryPrice > 0 
+    ? ((currentPrice - entryPrice) / entryPrice) * 100 
+    : 0;
   const score = health.score || 50;
   const sig = health.sig || 'محايد';
   const regime = health.regime || 'chop';
   const layers = health.layers || {};
   
-  // Days in position
   const entryDate = position.entryDate ? new Date(position.entryDate) : new Date();
   const today = new Date();
-  const daysHeld = Math.max(0, Math.floor((today - entryDate) / (1000 * 60 * 60 * 24)));
+  const daysHeld = Math.max(0, Math.floor(
+    (today.getTime() - entryDate.getTime()) / (1000 * 60 * 60 * 24)
+  ));
   
   // ① Signal strength (25%)
   const signalScore = sig === 'شراء قوي' ? 100
@@ -197,16 +378,15 @@ export function calcPositionHealth(position, health, bars){
                     : 10;
   
   // ② Profit/Loss status (20%)
-  let pnlScore;
-  if(pnlPct >= 15) pnlScore = 100;
-  else if(pnlPct >= 5) pnlScore = 80;
-  else if(pnlPct >= 0) pnlScore = 60;
-  else if(pnlPct >= -3) pnlScore = 40;
-  else if(pnlPct >= -7) pnlScore = 20;
+  let pnlScore: number;
+  if (pnlPct >= 15) pnlScore = 100;
+  else if (pnlPct >= 5) pnlScore = 80;
+  else if (pnlPct >= 0) pnlScore = 60;
+  else if (pnlPct >= -3) pnlScore = 40;
+  else if (pnlPct >= -7) pnlScore = 20;
   else pnlScore = 5;
   
   // ③ Stop loss proximity (15%)
-  // إذا قريب من Stop = خطر
   const stopData = calcSmartStopLoss(entryPrice, currentPrice, health, bars);
   const distanceToStop = ((currentPrice - stopData.stopPrice) / currentPrice) * 100;
   const stopScore = distanceToStop > 5 ? 100
@@ -215,7 +395,6 @@ export function calcPositionHealth(position, health, bars){
                   : 10;
   
   // ④ Time in position (10%)
-  // المراكز القديمة المفلسة = خطر
   const timeScore = pnlPct > 0 
     ? (daysHeld < 5 ? 70 : daysHeld < 20 ? 90 : daysHeld < 60 ? 80 : 60)
     : (daysHeld < 5 ? 80 : daysHeld < 20 ? 50 : daysHeld < 60 ? 30 : 10);
@@ -236,7 +415,6 @@ export function calcPositionHealth(position, health, bars){
                     : regime === 'volatile' ? 25
                     : 50;
   
-  // Composite
   const composite = Math.round(
     signalScore * 0.25 +
     pnlScore * 0.20 +
@@ -274,6 +452,10 @@ export function calcPositionHealth(position, health, bars){
   };
 }
 
+// ═══════════════════════════════════════════════════════
+// 🎯 SMART ACTION
+// ═══════════════════════════════════════════════════════
+
 /**
  * ✨ Smart Action Recommendation
  * 
@@ -284,9 +466,14 @@ export function calcPositionHealth(position, health, bars){
  * - بيع كامل
  * - وقف خسارة فوري
  */
-export function calcSmartAction(position, health, bars, riskGate){
+export function calcSmartAction(
+  position: Position,
+  health: Health | null,
+  bars: Bar[] | null,
+  riskGate: string | null
+): SmartActionResult | null {
   const positionHealth = calcPositionHealth(position, health, bars);
-  if(!positionHealth) return null;
+  if (!positionHealth) return null;
   
   const entryPrice = position.avgCost || 0;
   const currentPrice = position.curPrice || entryPrice;
@@ -295,14 +482,17 @@ export function calcSmartAction(position, health, bars, riskGate){
   const score = health?.score || 50;
   const composite = positionHealth.composite;
   
-  // Calculate stop and targets
   const stopData = calcSmartStopLoss(entryPrice, currentPrice, health, bars);
   const targets = calcSmartTakeProfit(entryPrice, stopData.stopPrice, health);
   
-  let action, percent, color, urgency, reason, confidence;
+  let action: string;
+  let percent: number;
+  let color: string;
+  let urgency: Urgency;
+  let reason: string;
+  let confidence: number;
   
-  // ① DANGER: Risk gate triggered
-  if(riskGate === 'DANGER'){
+  if (riskGate === 'DANGER') {
     action = 'بيع كامل';
     percent = 100;
     color = '#ff5f6a';
@@ -310,8 +500,7 @@ export function calcSmartAction(position, health, bars, riskGate){
     confidence = 95;
     reason = '🚨 السوق في خطر نظامي - أغلق فوراً';
   }
-  // ② STOP LOSS HIT
-  else if(currentPrice <= stopData.stopPrice){
+  else if (currentPrice <= stopData.stopPrice) {
     action = 'وقف خسارة';
     percent = 100;
     color = '#ff5f6a';
@@ -319,8 +508,7 @@ export function calcSmartAction(position, health, bars, riskGate){
     confidence = 100;
     reason = `🛑 السعر اخترق Stop Loss (${stopData.stopPct.toFixed(1)}%) - أغلق المركز`;
   }
-  // ③ TAKE PROFIT 3 (Final target)
-  else if(targets && currentPrice >= targets.t3.price){
+  else if (targets && currentPrice >= targets.t3.price) {
     action = 'بيع كامل';
     percent = 100;
     color = '#1ee68a';
@@ -328,8 +516,7 @@ export function calcSmartAction(position, health, bars, riskGate){
     confidence = 90;
     reason = `🎯 وصل T3 (+${targets.t3.pct}%) - احجز الأرباح كاملة`;
   }
-  // ④ TAKE PROFIT 2
-  else if(targets && currentPrice >= targets.t2.price){
+  else if (targets && currentPrice >= targets.t2.price) {
     action = 'بيع 50%';
     percent = 50;
     color = '#10c97e';
@@ -337,8 +524,7 @@ export function calcSmartAction(position, health, bars, riskGate){
     confidence = 85;
     reason = `🎯 وصل T2 (+${targets.t2.pct}%) - احجز نصف الأرباح`;
   }
-  // ⑤ TAKE PROFIT 1
-  else if(targets && currentPrice >= targets.t1.price){
+  else if (targets && currentPrice >= targets.t1.price) {
     action = 'بيع 33%';
     percent = 33;
     color = '#22d3ee';
@@ -346,8 +532,7 @@ export function calcSmartAction(position, health, bars, riskGate){
     confidence = 80;
     reason = `🎯 وصل T1 (+${targets.t1.pct}%) - احجز ثلث الأرباح`;
   }
-  // ⑥ STRONG BUY signal + Excellent health
-  else if(sig === 'شراء قوي' && score >= 80 && composite >= 75 && pnlPct < 5){
+  else if (sig === 'شراء قوي' && score >= 80 && composite >= 75 && pnlPct < 5) {
     action = 'زد المركز';
     percent = 25;
     color = '#1ee68a';
@@ -355,8 +540,7 @@ export function calcSmartAction(position, health, bars, riskGate){
     confidence = 85;
     reason = `🚀 إشارة قوية + مركز ممتاز - زد ${25}% للحجم المثالي`;
   }
-  // ⑦ Position deteriorating - Time to reduce
-  else if(composite < 40 && pnlPct < -3){
+  else if (composite < 40 && pnlPct < -3) {
     action = 'بيع 50%';
     percent = 50;
     color = '#fbbf24';
@@ -364,8 +548,7 @@ export function calcSmartAction(position, health, bars, riskGate){
     confidence = 75;
     reason = `⚠️ المركز يتدهور (${positionHealth.label}) - قلّل المخاطرة`;
   }
-  // ⑧ Signal weakened + good profit
-  else if(sig === 'تخفيف' && pnlPct > 5){
+  else if (sig === 'تخفيف' && pnlPct > 5) {
     action = 'بيع 50%';
     percent = 50;
     color = '#fbbf24';
@@ -373,8 +556,7 @@ export function calcSmartAction(position, health, bars, riskGate){
     confidence = 75;
     reason = `📉 الإشارة ضعفت + ربح ${pnlPct.toFixed(1)}% - احجز جزءاً`;
   }
-  // ⑨ Time decay - Old losing position
-  else if(positionHealth.daysHeld > 30 && pnlPct < -2 && composite < 50){
+  else if (positionHealth.daysHeld > 30 && pnlPct < -2 && composite < 50) {
     action = 'بيع كامل';
     percent = 100;
     color = '#ff5f6a';
@@ -382,7 +564,6 @@ export function calcSmartAction(position, health, bars, riskGate){
     confidence = 70;
     reason = `⏰ مركز قديم (${positionHealth.daysHeld} يوم) + خاسر - استبدله`;
   }
-  // ⑩ Default: Hold
   else {
     action = 'احتفظ';
     percent = 0;
@@ -414,26 +595,26 @@ export function calcSmartAction(position, health, bars, riskGate){
   };
 }
 
+// ═══════════════════════════════════════════════════════
+// ⚖️ PORTFOLIO BALANCE
+// ═══════════════════════════════════════════════════════
+
 /**
  * ✨ Portfolio Balance Analyzer
- * 
- * Detects:
- * - Concentration risk (>30% in one stock)
- * - Sector concentration (>50% in one sector)
- * - Correlation risk
- * - Cash buffer adequacy
- * - Position size optimization
  */
-export function calcPortfolioBalance(positions, totalValue){
-  if(!positions || positions.length === 0 || !totalValue) return null;
+export function calcPortfolioBalance(
+  positions: Position[] | null,
+  totalValue: number
+): PortfolioBalanceResult | null {
+  if (!positions || positions.length === 0 || !totalValue) return null;
   
-  const issues = [];
-  const recommendations = [];
+  const issues: BalanceIssue[] = [];
+  const recommendations: BalanceRecommendation[] = [];
   
   // ① Concentration check
   positions.forEach(p => {
-    const weight = (p.value / totalValue) * 100;
-    if(weight > 30){
+    const weight = ((p.value || 0) / totalValue) * 100;
+    if (weight > 30) {
       issues.push({
         severity: 'high',
         type: 'concentration',
@@ -445,7 +626,7 @@ export function calcPortfolioBalance(positions, totalValue){
         action: 'reduce',
         message: `قلّل ${p.stk?.name || p.sym} إلى أقل من 25%`,
       });
-    } else if(weight > 25){
+    } else if (weight > 25) {
       issues.push({
         severity: 'medium',
         type: 'concentration',
@@ -456,14 +637,14 @@ export function calcPortfolioBalance(positions, totalValue){
   });
   
   // ② Sector concentration
-  const sectorMap = {};
+  const sectorMap: { [key: string]: number } = {};
   positions.forEach(p => {
     const sec = p.stk?.sec || 'غير محدد';
-    sectorMap[sec] = (sectorMap[sec] || 0) + p.value;
+    sectorMap[sec] = (sectorMap[sec] || 0) + (p.value || 0);
   });
   Object.entries(sectorMap).forEach(([sec, value]) => {
     const weight = (value / totalValue) * 100;
-    if(weight > 50){
+    if (weight > 50) {
       issues.push({
         severity: 'high',
         type: 'sector',
@@ -473,7 +654,7 @@ export function calcPortfolioBalance(positions, totalValue){
         action: 'diversify',
         message: `نوّع خارج قطاع ${sec}`,
       });
-    } else if(weight > 35){
+    } else if (weight > 35) {
       issues.push({
         severity: 'medium',
         type: 'sector',
@@ -483,7 +664,7 @@ export function calcPortfolioBalance(positions, totalValue){
   });
   
   // ③ Number of positions
-  if(positions.length < 4){
+  if (positions.length < 4) {
     issues.push({
       severity: 'medium',
       type: 'diversification',
@@ -493,7 +674,7 @@ export function calcPortfolioBalance(positions, totalValue){
       action: 'add',
       message: 'أضف 2-4 أسهم لتنويع أفضل',
     });
-  } else if(positions.length > 12){
+  } else if (positions.length > 12) {
     issues.push({
       severity: 'low',
       type: 'over-diversification',
@@ -505,7 +686,6 @@ export function calcPortfolioBalance(positions, totalValue){
     });
   }
   
-  // Calculate balance score
   const highIssues = issues.filter(i => i.severity === 'high').length;
   const mediumIssues = issues.filter(i => i.severity === 'medium').length;
   const balanceScore = Math.max(0, 100 - (highIssues * 20) - (mediumIssues * 8));
