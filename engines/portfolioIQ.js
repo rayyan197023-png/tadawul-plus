@@ -1191,45 +1191,44 @@ function simulateHorizon(initialValue, dailyReturn, dailyVol, days, sims) {
  */
 function calculateSmartStops(positions) {
   const stops = positions.map(p => {
-    if (!p.bars || p.bars.length < 14) {
+    const currentPrice = p.value && p.qty ? p.value / p.qty : 
+      (p.stk && p.stk.p) || 0;
+    
+    if (currentPrice <= 0) {
       return {
         sym: p.sym,
-        currentPrice: p.value && p.qty ? p.value / p.qty : 0,
+        currentPrice: 0,
         suggestedStop: null,
-        method: 'insufficient_data',
-        message: 'بيانات غير كافية',
+        method: 'no_price',
+        message: 'لا يوجد سعر',
       };
     }
 
-    const currentPrice = p.value && p.qty ? p.value / p.qty : 
-      (p.bars[p.bars.length - 1].c || 0);
-
-    // Calculate ATR (14-period)
-    const atr = calculateATR(p.bars, 14);
+    // Try to calculate ATR if bars available
+    let atr = 0;
+    if (p.bars && p.bars.length >= 14) {
+      atr = calculateATR(p.bars, 14);
+    }
     
+    // If no ATR, use volatility-based default (2.5% of price)
     if (!atr || atr <= 0) {
-      return {
-        sym: p.sym,
-        currentPrice: currentPrice,
-        suggestedStop: null,
-        method: 'atr_unavailable',
-      };
+      atr = currentPrice * 0.025;
     }
 
     // ATR multiplier (sector-adjusted)
     let multiplier = 2.0;
     const sector = (p.stk && p.stk.sec) || p.sec;
     
-    if (sector === 'البنوك' || sector === 'المرافق') {
-      multiplier = 1.5; // Less volatile sectors
-    } else if (sector === 'البتروكيماويات' || sector === 'الطاقة') {
-      multiplier = 2.5; // More volatile
+    if (sector === 'البنوك' || sector === 'المرافق' || sector === 'بنوك') {
+      multiplier = 1.5;
+    } else if (sector === 'البتروكيماويات' || sector === 'الطاقة' || sector === 'طاقة') {
+      multiplier = 2.5;
     }
 
     // Calculate stop
     const atrStop = currentPrice - (atr * multiplier);
     
-    // Don't allow stops less than 2% or more than 15%
+    // Constraints
     const minStop = currentPrice * 0.85;
     const maxStop = currentPrice * 0.98;
     const finalStop = Math.max(minStop, Math.min(maxStop, atrStop));
@@ -1246,20 +1245,22 @@ function calculateSmartStops(positions) {
       suggestedStop: +finalStop.toFixed(2),
       stopPercent: +stopPercent.toFixed(1),
       atr: +atr.toFixed(2),
-      method: 'atr_chandelier',
+      method: p.bars && p.bars.length >= 14 ? 'atr_chandelier' : 'volatility_default',
       multiplier: multiplier,
       riskPerShare: +riskPerShare.toFixed(2),
       totalRisk: +totalRisk.toFixed(0),
     };
   });
 
-  // Total portfolio risk if all stops hit
-  const totalRisk = stops.reduce((sum, s) => sum + (s.totalRisk || 0), 0);
+  // Total portfolio risk
+  const totalRisk = stops
+    .filter(s => s.suggestedStop !== null)
+    .reduce((sum, s) => sum + (s.totalRisk || 0), 0);
 
   return {
     stops: stops,
     totalRiskSAR: Math.round(totalRisk),
-    methodology: 'ATR (14) + Chandelier Exit + Sector adjustment',
+    methodology: 'ATR (14) + Chandelier Exit + تعديل قطاعي',
   };
 }
 
