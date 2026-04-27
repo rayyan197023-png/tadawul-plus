@@ -828,7 +828,169 @@ function Card(props) {
                     </div>
                   </div>
                 );
-              })}
+                            })}
+              
+              {/* ✨ الحل المقترح + التأثير المتوقع */}
+              {d.strategicInsight.recommendedAction && (
+                <div style={{
+                  marginTop: 10,
+                  paddingTop: 10,
+                  borderTop: "1px dashed " + (d.strategicInsight.severity === 'danger' ? C.coral + "33" : C.amber + "33"),
+                }}>
+                  {/* عنوان الحل */}
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    marginBottom: 8,
+                  }}>
+                    <span style={{fontSize: 14}}>🎯</span>
+                    <span style={{
+                      fontSize: 11,
+                      fontWeight: 800,
+                      color: C.mint,
+                      fontFamily: "Cairo,sans-serif",
+                    }}>
+                      الحل المقترح
+                    </span>
+                  </div>
+                  
+                  {/* تفاصيل البيع */}
+                  <div style={{
+                    background: "rgba(30,230,138,.06)",
+                    border: "1px solid " + C.mint + "33",
+                    borderRadius: 8,
+                    padding: "8px 10px",
+                    marginBottom: 8,
+                  }}>
+                    <div style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: 4,
+                    }}>
+                      <span style={{
+                        fontSize: 11,
+                        fontWeight: 700,
+                        color: C.snow,
+                        fontFamily: "Cairo,sans-serif",
+                      }}>
+                        بِع {d.strategicInsight.recommendedAction.sellQty} سهم
+                      </span>
+                      <span style={{
+                        fontSize: 11,
+                        fontWeight: 800,
+                        color: C.mint,
+                        fontFamily: "IBM Plex Mono,monospace",
+                      }}>
+                        {d.strategicInsight.recommendedAction.sellValue.toLocaleString('en-US')} ر
+                      </span>
+                    </div>
+                    <div style={{
+                      fontSize: 10,
+                      color: C.smoke,
+                      fontFamily: "Cairo,sans-serif",
+                    }}>
+                      للوصول إلى {d.strategicInsight.recommendedAction.targetWeight}% (تخفيف {d.strategicInsight.recommendedAction.sellPercent}%)
+                    </div>
+                  </div>
+                  
+                  {/* التأثير المتوقع */}
+                  <div style={{
+                    background: "rgba(255,255,255,.03)",
+                    border: "1px solid " + C.line,
+                    borderRadius: 8,
+                    padding: "8px 10px",
+                  }}>
+                    <div style={{
+                      fontSize: 10,
+                      color: C.plasma,
+                      fontWeight: 800,
+                      letterSpacing: "1px",
+                      marginBottom: 6,
+                    }}>
+                      📊 التأثير المتوقع
+                    </div>
+                    
+                    {/* HHI */}
+                    <div style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "3px 0",
+                      fontSize: 10,
+                      fontFamily: "Cairo,sans-serif",
+                    }}>
+                      <span style={{color: C.smoke}}>التركيز (HHI):</span>
+                      <span style={{
+                        color: C.mint,
+                        fontWeight: 800,
+                        fontFamily: "IBM Plex Mono,monospace",
+                      }}>
+                        {d.strategicInsight.recommendedAction.impact.hhi.change}
+                      </span>
+                    </div>
+                    
+                    {/* Volatility */}
+                    <div style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "3px 0",
+                      fontSize: 10,
+                      fontFamily: "Cairo,sans-serif",
+                    }}>
+                      <span style={{color: C.smoke}}>التقلبات:</span>
+                      <span style={{
+                        color: C.mint,
+                        fontWeight: 800,
+                        fontFamily: "IBM Plex Mono,monospace",
+                      }}>
+                        {d.strategicInsight.recommendedAction.impact.volatility.change}
+                      </span>
+                    </div>
+                    
+                    {/* Sharpe */}
+                    <div style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "3px 0",
+                      fontSize: 10,
+                      fontFamily: "Cairo,sans-serif",
+                    }}>
+                      <span style={{color: C.smoke}}>Sharpe Ratio:</span>
+                      <span style={{
+                        color: C.mint,
+                        fontWeight: 800,
+                        fontFamily: "IBM Plex Mono,monospace",
+                      }}>
+                        {d.strategicInsight.recommendedAction.impact.sharpe.change}
+                      </span>
+                    </div>
+                    
+                    {/* Diversification */}
+                    <div style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "3px 0 0",
+                      borderTop: "1px solid " + C.line,
+                      marginTop: 4,
+                      fontSize: 10,
+                      fontFamily: "Cairo,sans-serif",
+                    }}>
+                      <span style={{color: C.smoke}}>التنويع:</span>
+                      <span style={{
+                        color: C.mint,
+                        fontWeight: 800,
+                      }}>
+                        {d.strategicInsight.recommendedAction.impact.diversification.before} → {d.strategicInsight.recommendedAction.impact.diversification.after}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
           
