@@ -3530,13 +3530,14 @@ export function generateMonthlyReturnsHeatmap(positions, days) {
   });
 
   // ⑥ حساب الإحصاءات
-  var stats = {
+    var stats: any = {
     totalMonths: monthlyArray.length,
     positiveMonths: 0,
     negativeMonths: 0,
     bestMonth: null,
     worstMonth: null,
     avgReturn: 0,
+    winRate: 0,
   };
 
   var sum = 0;
