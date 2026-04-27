@@ -2391,7 +2391,7 @@ function analyzeStockRadar(stk){
   const rsiMomScore=rsi<30?13:rsi<45?11:rsi<60?9:rsi<75?5:2;
   const moScore=Math.min(15,
     rsiMomScore+
-    (macd.bull&&macd.hist>0?4:macd.bull?2:0)+
+    ((macd as any).bull&&(macd as any).hist>0?4:(macd as any).bull?2:0)+
     (stoch<20?3:stoch<40?1:stoch>80?0:0));
   const oversold=rsi<35,overbought=rsi>70;
 
