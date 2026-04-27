@@ -1549,7 +1549,7 @@ useEffect(() => {
           </div>
         )}
                 <div style={{display:"flex",gap:0,marginTop:8}}>
-          {[{id:"decisions",l:"القرارات"},{id:"log",l:"السجل"},{id:"compare",l:"المقارنة"},{id:"iq",l:"🧠 IQ"}
+          {[{id:"decisions",l:"القرارات"},{id:"log",l:"السجل"},{id:"compare",l:"المقارنة"}
 ].map(function(t){return(
             <button key={t.id} onClick={function(){switchTab(t.id);}} style={{flex:1,padding:"9px 0",background:"transparent",border:"none",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"Cairo,sans-serif",color:activeTab===t.id?C.snow:C.smoke,borderBottom:"2px solid "+(activeTab===t.id?C.gold:"transparent"),transition:"all .2s"}}>
               {t.l}
