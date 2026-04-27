@@ -84,14 +84,6 @@ export const TABS = [
     glowBg:   'rgba(77,159,255,0.07)',
     hidden:   true,
   },
-  {
-    id:       TAB_IDS.ALERTS,
-    label:    'التنبيهات',
-    accent:   '#fbbf24',
-    glow:     'rgba(251,191,36,0.4)',
-    glowBg:   'rgba(251,191,36,0.07)',
-    hidden:   true,  // 🔒 يُفتح من More أو Badge
-  },
 ];
 
 // ① TABS_MAP للتبويبات المرئية في الشريط السفلي
