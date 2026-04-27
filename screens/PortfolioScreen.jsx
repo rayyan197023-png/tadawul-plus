@@ -3239,11 +3239,6 @@ useEffect(() => {
   <div style={{fontSize:10,color:C.plasma,fontWeight:800,marginBottom:8,letterSpacing:"1px"}}> 
     ✨ المزيد قادم قريباً
   </div>
-  <div style={{fontSize:11,color:C.mist,lineHeight:1.8,textAlign:"right"}}>
-    🧠 PsyRisk Score™<br/>
-    🧬 Portfolio DNA™<br/>
-    📊 8 Layers Detail
-  </div>
 </div>
                 </div>
               );
