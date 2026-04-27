@@ -3615,10 +3615,10 @@ function stockHealth(stk, bars){
   //  STEP 8: Portfolio Engine
   // ════════════════════════════════════════════════
   var riskGateLevel = calcRiskGateLevel();
-  merged.positionSize = calcPositionSize(merged, riskGateLevel);
-  merged.correlationGuard = checkCorrelationGuard(stk.sym, []);
-  merged.riskGate = riskGateLevel;
-  merged.confidence = ct ? ct.confidence : 50;
+    (merged as any).positionSize = calcPositionSize(merged, riskGateLevel);
+  (merged as any).correlationGuard = checkCorrelationGuard(stk.sym, []);
+  (merged as any).riskGate = riskGateLevel;
+  (merged as any).confidence = ct ? ct.confidence : 50;
 
   // ════════════════════════════════════════════════
   //  STEP 9: Metadata
