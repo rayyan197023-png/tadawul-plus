@@ -1054,10 +1054,11 @@ function analyzePortfolioDNA(positions, base) {
   
   positions.forEach(p => {
     totalDnaValue += p.value || 0;
-    const mktCap = (p.stk && p.stk.mktCap) || p.value || 0;
-    if (mktCap > 50000000000) { // 50B+ = Large
-      largeCapValueDna += p.value || 0;
-    }
+    // mktCap stored in billions, convert to actual value
+const mktCap = (p.stk && p.stk.mktCap ? p.stk.mktCap * 1000000000 : 0) || p.value || 0;
+if (mktCap > 50000000000) { // 50B+ = Large cap
+  largeCapValue += p.value || 0;
+}
   });
   
   const largeCapPctDna = totalDnaValue > 0 ? largeCapValueDna / totalDnaValue : 0.5;
