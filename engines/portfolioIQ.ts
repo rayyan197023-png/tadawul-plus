@@ -1076,19 +1076,19 @@ function runSectorLayer(positions, base) {
  */
 function runStockLayer(positions, base) {
   const stockAnalysis = positions.map(p => {
-        const analysis: any = {
-      sym: p.sym,
-      name: (p.stk && p.stk.name) || p.sym,
-      weight: 0,
-      value: p.value || 0,
-      qty: p.qty || 0,
-      avgCost: p.avgCost || 0,
-      currentPrice: 0,
-      pnl: 0,
-      pnlPercent: 0,
-      flags: [],
-      score: 50,
-    };
+        const analysis: StockAnalysis = {
+  sym: p.sym,
+  name: (p.stk && p.stk.name) || p.sym,
+  weight: 0,
+  value: p.value || 0,
+  qty: p.qty || 0,
+  avgCost: p.avgCost || 0,
+  currentPrice: 0,
+  pnl: 0,
+  pnlPercent: 0,
+  flags: [],
+  score: 50,
+};
 
     // Calculate weight
     const totalValue = base.totalValue || 1;
