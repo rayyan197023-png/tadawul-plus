@@ -2562,7 +2562,7 @@ useEffect(() => {
           {key:"growthValue", icon:"📈", label:"النمو/القيمة"},
           {key:"momentumReversion", icon:"⚡", label:"الزخم"},
           {key:"defensiveAggressive", icon:"🛡️", label:"دفاعي/عدواني"},
-          {key:"domesticDiversified", icon:"🌍", label:"محلي/دولي"},
+          {key:"capSize", icon:"🏢", label:"حجم الشركات"},
         ].map(function(dim,i){
           var d = dna.dimensions[dim.key];
           if (!d) return null;
