@@ -149,8 +149,9 @@ function getDecision(p) {
         stopPct: sa.stopData ? sa.stopData.stopPct : null,
         targets: sa.targets,
         positionHealth: sa.positionHealth,
-        confidence: sa.confidence,
+                confidence: sa.confidence,
       },
+      strategicInsight: strategicInsight,
     };
   }
   
