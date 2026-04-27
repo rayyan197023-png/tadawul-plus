@@ -2329,6 +2329,348 @@ useEffect(() => {
     </div>
   </div>
 )}
+{/* PsyRisk Score™ Card */}
+{iq.psyRisk && (function(){
+  var psy = iq.psyRisk;
+  var psyColor = psy.score >= 80 ? C.mint :
+                 psy.score >= 60 ? C.teal :
+                 psy.score >= 40 ? C.amber : C.coral;
+  return (
+    <div className="card-enter" style={{
+      background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
+      border:"1px solid "+psyColor+"33",
+      borderRadius:16,
+      padding:"16px",
+      marginBottom:14,
+      boxShadow:"0 8px 24px "+psyColor+"22, inset 0 1px 0 "+C.layer3,
+      position:"relative",
+      overflow:"hidden",
+    }}>
+      <div style={{
+        position:"absolute",
+        top:0,left:0,right:0,
+        height:3,
+        background:"linear-gradient(90deg,"+psyColor+"00,"+psyColor+"ff,"+psyColor+"00)",
+      }}/>
+      
+      {/* Header */}
+      <div style={{
+        display:"flex",
+        alignItems:"center",
+        justifyContent:"space-between",
+        marginBottom:14,
+      }}>
+        <div>
+          <div style={{fontSize:9,color:psyColor,fontWeight:800,letterSpacing:"2px",marginBottom:3}}>
+            🧠 PSYRISK SCORE™
+          </div>
+          <div style={{fontSize:10,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>
+            مقياس المخاطر النفسية
+          </div>
+        </div>
+        <div style={{textAlign:"left"}}>
+          <div style={{
+            fontSize:32,
+            fontWeight:900,
+            color:psyColor,
+            fontFamily:"IBM Plex Mono,monospace",
+            lineHeight:1,
+            textShadow:"0 0 12px "+psyColor+"66",
+          }}>
+            {psy.score}
+          </div>
+          <div style={{
+            fontSize:10,
+            color:psyColor,
+            fontWeight:700,
+            marginTop:3,
+            fontFamily:"Cairo,sans-serif",
+          }}>
+            {psy.label}
+          </div>
+        </div>
+      </div>
+      
+      {/* Progress Bar */}
+      <div style={{
+        height:8,
+        background:C.layer3,
+        borderRadius:4,
+        marginBottom:12,
+        overflow:"hidden",
+      }}>
+        <div style={{
+          height:"100%",
+          width:psy.score+"%",
+          background:"linear-gradient(90deg,"+psyColor+","+psyColor+"88)",
+          borderRadius:4,
+          transition:"width 1.5s ease-out",
+          boxShadow:"0 0 8px "+psyColor+"66",
+        }}/>
+      </div>
+      
+      {/* Recommendation */}
+      <div style={{
+        background:"rgba(255,255,255,.04)",
+        border:"1px solid "+C.line,
+        borderRadius:10,
+        padding:"10px 12px",
+        marginBottom:psy.sellPanicProbability !== undefined ? 10 : 0,
+      }}>
+        <div style={{fontSize:9,color:psyColor,fontWeight:800,letterSpacing:"1px",marginBottom:5}}>
+          💡 توصية نفسية
+        </div>
+        <div style={{fontSize:11,color:C.mist,lineHeight:1.6,fontFamily:"Cairo,sans-serif"}}>
+          {psy.recommendation}
+        </div>
+      </div>
+      
+      {/* Sell Panic Probability */}
+      {psy.sellPanicProbability !== undefined && psy.sellPanicProbability > 0 && (
+        <div style={{
+          background:psy.sellPanicProbability > 50 ? C.coral+"15" : C.amber+"15",
+          border:"1px solid "+(psy.sellPanicProbability > 50 ? C.coral+"33" : C.amber+"33"),
+          borderRadius:10,
+          padding:"10px 12px",
+          display:"flex",
+          alignItems:"center",
+          justifyContent:"space-between",
+        }}>
+          <div>
+            <div style={{fontSize:10,color:C.smoke,fontWeight:700,marginBottom:2}}>
+              ⚠️ احتمال البيع في الذعر
+            </div>
+            <div style={{fontSize:9,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>
+              عند الانخفاضات الحادة
+            </div>
+          </div>
+          <div style={{
+            fontSize:24,
+            fontWeight:900,
+            color:psy.sellPanicProbability > 50 ? C.coral : C.amber,
+            fontFamily:"IBM Plex Mono,monospace",
+          }}>
+            {psy.sellPanicProbability}%
+          </div>
+        </div>
+      )}
+      
+      {/* Factors (if any) */}
+      {psy.factors && psy.factors.length > 0 && (
+        <div style={{marginTop:10}}>
+          <div style={{fontSize:9,color:C.smoke,fontWeight:700,marginBottom:6}}>
+            عوامل الخطر النفسي:
+          </div>
+          {psy.factors.slice(0,2).map(function(f,i){
+            return (
+              <div key={i} style={{
+                fontSize:10,
+                color:C.smoke,
+                lineHeight:1.5,
+                marginBottom:3,
+                fontFamily:"Cairo,sans-serif",
+                display:"flex",
+                alignItems:"flex-start",
+                gap:5,
+              }}>
+                <span style={{color:C.coral,fontWeight:700}}>•</span>
+                <span>{f.message}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+})()}
+
+{/* Portfolio DNA™ Card */}
+{iq.dna && iq.dna.dimensions && (function(){
+  var dna = iq.dna;
+  return (
+    <div className="card-enter" style={{
+      background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
+      border:"1px solid "+C.plasma+"33",
+      borderRadius:16,
+      padding:"16px",
+      marginBottom:14,
+      boxShadow:"0 8px 24px "+C.plasma+"22, inset 0 1px 0 "+C.layer3,
+      position:"relative",
+      overflow:"hidden",
+    }}>
+      <div style={{
+        position:"absolute",
+        top:0,left:0,right:0,
+        height:3,
+        background:"linear-gradient(90deg,"+C.plasma+"00,"+C.plasma+"ff,"+C.plasma+"00)",
+      }}/>
+      
+      {/* Header */}
+      <div style={{textAlign:"center",marginBottom:14}}>
+        <div style={{fontSize:9,color:C.plasma,fontWeight:800,letterSpacing:"2px",marginBottom:4}}>
+          🧬 PORTFOLIO DNA™
+        </div>
+        <div style={{fontSize:11,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>
+          هوية محفظتك الحقيقية
+        </div>
+      </div>
+      
+      {/* Personality */}
+      {dna.personalityLabel && (
+        <div style={{
+          background:"linear-gradient(135deg,"+C.plasma+"22,"+C.plasma+"11)",
+          border:"1px solid "+C.plasma+"55",
+          borderRadius:12,
+          padding:"12px 14px",
+          marginBottom:14,
+          textAlign:"center",
+          boxShadow:"0 4px 12px "+C.plasma+"22",
+        }}>
+          <div style={{fontSize:9,color:C.plasma,fontWeight:800,letterSpacing:"1.5px",marginBottom:4}}>
+            ✨ شخصية المحفظة
+          </div>
+          <div style={{
+            fontSize:18,
+            fontWeight:900,
+            color:C.snow,
+            marginBottom:6,
+            fontFamily:"Cairo,sans-serif",
+          }}>
+            {dna.personalityLabel}
+          </div>
+          {dna.personalityDescription && (
+            <div style={{
+              fontSize:11,
+              color:C.mist,
+              lineHeight:1.5,
+              fontFamily:"Cairo,sans-serif",
+            }}>
+              {dna.personalityDescription}
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* 4 Dimensions */}
+      <div style={{
+        display:"grid",
+        gridTemplateColumns:"1fr 1fr",
+        gap:8,
+        marginBottom:14,
+      }}>
+        {[
+          {key:"growthValue", icon:"📈", label:"النمو/القيمة"},
+          {key:"momentumReversion", icon:"⚡", label:"الزخم"},
+          {key:"defensiveAggressive", icon:"🛡️", label:"دفاعي/عدواني"},
+          {key:"domesticDiversified", icon:"🌍", label:"محلي/دولي"},
+        ].map(function(dim,i){
+          var d = dna.dimensions[dim.key];
+          if (!d) return null;
+          return (
+            <div key={i} style={{
+              background:"rgba(255,255,255,.03)",
+              border:"1px solid "+C.line,
+              borderRadius:10,
+              padding:"10px 8px",
+              textAlign:"center",
+            }}>
+              <div style={{fontSize:14,marginBottom:3}}>{dim.icon}</div>
+              <div style={{fontSize:9,color:C.smoke,marginBottom:5,fontFamily:"Cairo,sans-serif"}}>
+                {dim.label}
+              </div>
+              {/* Mini bar */}
+              <div style={{
+                height:4,
+                background:C.layer3,
+                borderRadius:2,
+                marginBottom:5,
+                overflow:"hidden",
+              }}>
+                <div style={{
+                  height:"100%",
+                  width:d.score+"%",
+                  background:C.plasma,
+                  borderRadius:2,
+                  transition:"width 1.5s ease-out",
+                }}/>
+              </div>
+              <div style={{
+                fontSize:10,
+                color:C.plasma,
+                fontWeight:800,
+                fontFamily:"Cairo,sans-serif",
+                lineHeight:1.3,
+              }}>
+                {d.label}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      
+      {/* Strengths & Weaknesses */}
+      {(dna.strengths && dna.strengths.length > 0) || (dna.weaknesses && dna.weaknesses.length > 0) ? (
+        <div style={{display:"flex",gap:8}}>
+          {/* Strengths */}
+          {dna.strengths && dna.strengths.length > 0 && (
+            <div style={{
+              flex:1,
+              background:C.mint+"10",
+              border:"1px solid "+C.mint+"33",
+              borderRadius:10,
+              padding:"8px 10px",
+            }}>
+              <div style={{fontSize:9,color:C.mint,fontWeight:800,marginBottom:4}}>
+                ✅ نقاط القوة
+              </div>
+              {dna.strengths.slice(0,3).map(function(s,i){
+                return (
+                  <div key={i} style={{
+                    fontSize:10,
+                    color:C.mist,
+                    lineHeight:1.4,
+                    marginBottom:2,
+                    fontFamily:"Cairo,sans-serif",
+                  }}>
+                    • {s}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          
+          {/* Weaknesses */}
+          {dna.weaknesses && dna.weaknesses.length > 0 && (
+            <div style={{
+              flex:1,
+              background:C.coral+"10",
+              border:"1px solid "+C.coral+"33",
+              borderRadius:10,
+              padding:"8px 10px",
+            }}>
+              <div style={{fontSize:9,color:C.coral,fontWeight:800,marginBottom:4}}>
+                ⚠️ نقاط الضعف
+              </div>
+              {dna.weaknesses.slice(0,3).map(function(w,i){
+                return (
+                  <div key={i} style={{
+                    fontSize:10,
+                    color:C.mist,
+                    lineHeight:1.4,
+                    marginBottom:2,
+                    fontFamily:"Cairo,sans-serif",
+                  }}>
+                    • {w}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      ) : null}
+    </div>
+  );
+})()}
 
 {/* Coming Soon Card */}
 <div style={{
@@ -2338,7 +2680,7 @@ useEffect(() => {
   padding:"14px 16px",
   textAlign:"center",
 }}>
-  <div style={{fontSize:10,color:C.plasma,fontWeight:800,marginBottom:8,letterSpacing:"1px"}}>
+  <div style={{fontSize:10,color:C.plasma,fontWeight:800,marginBottom:8,letterSpacing:"1px"}}> 
     ✨ المزيد قادم قريباً
   </div>
   <div style={{fontSize:11,color:C.mist,lineHeight:1.8,textAlign:"right"}}>
