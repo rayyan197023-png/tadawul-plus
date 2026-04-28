@@ -20,6 +20,51 @@
  * @author تداول+
  * @version 1.0
  */
+/* ═══════════════════════════════════════════
+   📊 TYPES & INTERFACES
+═══════════════════════════════════════════ */
+
+export interface Bar {
+  c: number;       // close
+  hi?: number;
+  lo?: number;
+  vol?: number;
+  o?: number;
+  h?: number;
+  l?: number;
+  close?: number;
+  [key: string]: any;
+}
+
+export interface Position {
+  sym: string;
+  qty: number;
+  value?: number;
+  avgCost?: number;
+  bars?: Bar[];
+  stk?: any;
+  sec?: string;
+  rsi?: number;
+  [key: string]: any;
+}
+
+export interface Weights {
+  [sym: string]: number;
+}
+
+export interface PortfolioAnalysis {
+  totalValue: number;
+  stockCount: number;
+  weights: Weights;
+  performance: any;
+  risk: any;
+  diversification: any;
+  positionSizing: any;
+  stressTests: any[];
+  layersIntelligence: any;
+  finalRecommendation: any;
+  [key: string]: any;
+}
 
 import {
   mean,
