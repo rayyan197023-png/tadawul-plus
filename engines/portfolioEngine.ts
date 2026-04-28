@@ -1678,7 +1678,16 @@ export function calcCalmarRatio(annualReturn: number, maxDrawdown: number): {
  * @param {number} mar - العتبة (Minimum Acceptable Return) - افتراضي 0
  * @returns {Object} {daily, annual, classification, label, interpretation}
  */
-export function calcDownsideDeviation(returns, mar) {
+export function calcDownsideDeviation(returns: number[], mar?: number): {
+  daily: number;
+  annual: number;
+  negativeDaysCount: number;
+  totalDays: number;
+  negativeDaysPct?: number;
+  classification: string;
+  label: string;
+  interpretation: string;
+} {
   // القيمة الافتراضية: العتبة = 0 (أي عائد سالب يُعتبر خسارة)
   if (mar === undefined) mar = 0;
 
