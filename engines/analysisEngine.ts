@@ -984,7 +984,7 @@ function calcATRFull(bars: any[], period?: number): any {
            typeof bar.high === 'number' ? bar.high : null;
   };
   
-  const getLow = (bar) => {
+  const getLow = (bar: any) => {
     if (!bar) return null;
     return typeof bar.lo === 'number' ? bar.lo : 
            typeof bar.low === 'number' ? bar.low : null;
