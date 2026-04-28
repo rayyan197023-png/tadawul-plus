@@ -3238,7 +3238,7 @@ function calc9Layers(stk: any, bars: any[]): any {
 ══════════════════════════════════════════════════════════════ */
 
 /* ① حساب حجم المركز الأمثل */
-function calcPositionSize(health, riskGateLevel){
+function calcPositionSize(health: any, riskGateLevel: any): any {
   var score  = health.score  || 50;
   var grade  = health.grade  || "D";
   var conf   = health.confidence || 50;
