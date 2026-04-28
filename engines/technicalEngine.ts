@@ -393,7 +393,7 @@ export function calcBollingerBands(bars: any[], period: number = 20, stdDev: num
  * @param {OHLCBar[]} bars
  * @returns {{ trend, bos, choch, bosBull, bosBear, score, label }}
  */
-export function calcMarketStructure(bars) {
+export function calcMarketStructure(bars: any[]): any {
   if (bars.length < 10) {
     return { trend: 'محايد', bos: false, choch: false, score: 5, label: 'هيكل محايد' };
   }
