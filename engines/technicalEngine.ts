@@ -176,7 +176,11 @@ export function calcCMF(bars: any[], period?: number): number {
  * @param {OHLCBar[]} bars
  * @returns {{ slope, rising, obvZ }}
  */
-export function calcOBV(bars) {
+export function calcOBV(bars: any[]): {
+  slope: number;
+  rising: boolean;
+  obvZ: number;
+} {
   let obv = 0;
   const arr = [0];
   for (let i = 1; i < bars.length; i++) {
