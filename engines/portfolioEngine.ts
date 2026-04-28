@@ -2429,7 +2429,16 @@ export function calcDiversificationScore(hhi: number, avgCorrelation: number, st
  * @param {Object} options - خيارات إضافية
  * @returns {Object} {fullKelly, safeKelly, edge, recommendation, ...}
  */
-export function calcKellyCriterion(winProbability, winLossRatio, options) {
+export function calcKellyCriterion(
+  winProbability: number,
+  winLossRatio: number,
+  options?: {
+    maxPositionSize?: number;
+    kellyFraction?: number;
+    portfolioValue?: number;
+  }
+): any {
+
   options = options || {};
   var maxPositionSize = options.maxPositionSize || 0.25; // حد أقصى 25%
   var kellyFraction = options.kellyFraction || 0.25;     // Quarter Kelly
