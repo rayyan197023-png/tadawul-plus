@@ -1803,7 +1803,7 @@ function calcRiskAttribution(stk: any, bars: any[]): any {
 }
 
 /* ══ Intermarket ══ */
-function calcIntermarket(stk){
+function calcIntermarket(stk: any): any {
   var m=MACRO;
   var oS=OIL_SENS[stk.sec]||0.8,rS=RATE_SENS[stk.sec]||0.3;
   var oilDelta=(m.oilPrice-m.oilTarget)/m.oilTarget;
