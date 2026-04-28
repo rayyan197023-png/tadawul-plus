@@ -1450,7 +1450,20 @@ export function calcVaR(returns: number[], confidence?: number, portfolioValue?:
  * @param {number} portfolioValue - قيمة المحفظة
  * @returns {Object} {daily, weekly, monthly, dailySAR, ...}
  */
-export function calcCVaR(returns, confidence, portfolioValue) {
+export function calcCVaR(returns: number[], confidence?: number, portfolioValue?: number): {
+  daily: number;
+  weekly: number;
+  monthly: number;
+  dailySAR: number;
+  weeklySAR: number;
+  monthlySAR: number;
+  worstDays?: number[];
+  worstDaysCount?: number;
+  confidence: number;
+  classification: string;
+  label: string;
+  interpretation: string;
+} {
   if (confidence === undefined) confidence = 95;
   if (portfolioValue === undefined) portfolioValue = 0;
 
