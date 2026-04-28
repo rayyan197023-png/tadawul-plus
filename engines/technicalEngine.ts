@@ -15,7 +15,7 @@
 // ── EMA (Exponential Moving Average)
 // Uses SMA of first `period` values as seed — academically correct (Bloomberg standard).
 // Falls back to first-value seed if data < period.
-export function calcEMA(values, period) {
+export function calcEMA(values: number[], period: number): number {
   if (!values.length) return 0;
   if (values.length < period) {
     const k = 2 / (period + 1);
