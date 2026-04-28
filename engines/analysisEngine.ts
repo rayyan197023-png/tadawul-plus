@@ -714,7 +714,7 @@ function genBars(stk: any, n: number = 60): any[] {
   n = n||100;
   const hist = (HISTORICAL as any)[stk.sym];
   if(hist && hist.length>=n){
-    return hist.slice(-n).map(function(b,i,arr){
+    return hist.slice(-n).map(function(b: any, i: number, arr: any[]){
       const prev = i>0?arr[i-1].c:b.o;
       const pct  = prev>0?(b.c-prev)/prev*100:0;
       return{o:b.o,hi:b.hi,lo:b.lo,c:b.c,vol:b.vol,pct:+pct.toFixed(3)};
