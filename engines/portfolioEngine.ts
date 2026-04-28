@@ -3005,7 +3005,7 @@ export function calcATRStopLoss(
  * @param {number} multiplier
  * @returns {Object}
  */
-export function calcTrailingStop(bars, multiplier) {
+export function calcTrailingStop(bars: Bar[], multiplier?: number): any {
   if (multiplier === undefined) multiplier = 3.0;
 
   if (!bars || bars.length < 15) {
