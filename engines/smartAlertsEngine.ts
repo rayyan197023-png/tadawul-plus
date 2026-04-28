@@ -710,7 +710,7 @@ export function saveSmartAlerts(newAlerts: any[]): boolean | undefined {
   }
 }
 
-export function sendBrowserNotification(alert) {
+export function sendBrowserNotification(alert: any): void {
   if (typeof window === 'undefined') return;
   if (!('Notification' in window)) return;
   if (Notification.permission !== 'granted') return;
