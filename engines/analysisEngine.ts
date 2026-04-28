@@ -3384,7 +3384,7 @@ function calcPortfolioSharpe(allHealthData){
   };
 }
 
-function stockHealth(stk, bars){
+function stockHealth(stk: any, bars: any[]): any {
   // ✨ Validation - حماية من Edge Cases
   if (!stk || typeof stk !== 'object') {
     return _emptyHealthResult();
