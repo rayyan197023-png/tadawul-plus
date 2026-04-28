@@ -2048,7 +2048,7 @@ function buildDynamicWeights(regime: any, sector: string): any {
  * L1↔L5: 0.55 (structure+indicators)
  * L7↔L9: 0.45 (Bayesian uses L9)
  */
-function reduceCorrelation(layers){
+function reduceCorrelation(layers: any): any {
   // ✅ Fix: Include L7 in destructuring
   const {L1, L2, L4, L5, L7, L9} = layers;
   
