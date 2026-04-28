@@ -1621,7 +1621,7 @@ function calcDCF(stk: any): any {
 }
 
 /* ══ Earnings Quality — Accruals Ratio من البيانات الفعلية ══ */
-function calcEarningsQuality(stk){
+function calcEarningsQuality(stk: any): any {
   var eps=stk.eps||stk.p/(stk.pe||15);
   var roe=stk.roe||10, debt=stk.debt||0.3;
   var epsGrw=stk.epsGrw||0, revGrw=stk.revGrw||0;
