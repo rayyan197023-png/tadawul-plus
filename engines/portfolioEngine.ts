@@ -1332,7 +1332,18 @@ export function calcMaxDrawdown(returns: number[]): {
  * @param {number} portfolioValue - قيمة المحفظة (لحساب الخسارة بالريال)
  * @returns {Object} {daily, weekly, monthly, dailySAR, ...}
  */
-export function calcVaR(returns, confidence, portfolioValue) {
+export function calcVaR(returns: number[], confidence?: number, portfolioValue?: number): {
+  daily: number;
+  weekly: number;
+  monthly: number;
+  dailySAR: number;
+  weeklySAR: number;
+  monthlySAR: number;
+  confidence: number;
+  classification: string;
+  label: string;
+  interpretation: string;
+} {
   // القيم الافتراضية
   if (confidence === undefined) confidence = 95;
   if (portfolioValue === undefined) portfolioValue = 0;
