@@ -979,7 +979,12 @@ export function buildTasiSyntheticReturns(stocksWithBars: Position[]): number[] 
  * @param {number[]} marketReturns
  * @returns {Object} {value, classification, label, interpretation}
  */
-export function calcPortfolioBeta(portfolioReturns, marketReturns) {
+export function calcPortfolioBeta(portfolioReturns: number[], marketReturns: number[]): {
+  value: number;
+  classification: string;
+  label: string;
+  interpretation: string;
+} {
   // فحص المدخلات
   if (!portfolioReturns || !marketReturns ||
       portfolioReturns.length < 2 || marketReturns.length < 2) {
