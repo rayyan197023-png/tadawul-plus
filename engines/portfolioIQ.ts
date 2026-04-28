@@ -1010,7 +1010,7 @@ function runMacroLayer(positions: IQPosition[], base: any): MacroLayer {
 /**
  * Sector Layer - Industry-level analysis
  */
-function runSectorLayer(positions, base) {
+function runSectorLayer(positions: IQPosition[], base: any): SectorLayer {
   const sectors = {};
   let totalValue = 0;
 
