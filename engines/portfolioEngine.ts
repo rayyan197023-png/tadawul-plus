@@ -3462,7 +3462,11 @@ export function calcFinalRecommendation(analysis: any): any {
  * @param {Function} stockHealthFunc - دالة stockHealth من analysisEngine
  * @returns {Object} analysis بعد إضافة طبقة الذكاء
  */
-export function addIntelligenceLayer(analysis, positionsWithBars, stockHealthFunc) {
+export function addIntelligenceLayer(
+  analysis: PortfolioAnalysis,
+  positionsWithBars: Position[],
+  stockHealthFunc?: any
+): PortfolioAnalysis {
   if (!analysis) return analysis;
 
   if (!stockHealthFunc) {
