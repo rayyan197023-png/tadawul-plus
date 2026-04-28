@@ -2754,7 +2754,7 @@ export function calcTwoPercentRule(
  * @param {Object} twoPercentResult - من calcTwoPercentRule
  * @returns {Object} {finalShares, finalValue, finalPercent, limitingFactor}
  */
-export function combineKellyAndRisk(kellyResult, twoPercentResult) {
+export function combineKellyAndRisk(kellyResult: any, twoPercentResult: any): any {
   if (!kellyResult || !twoPercentResult) {
     return {
       finalShares: 0,
