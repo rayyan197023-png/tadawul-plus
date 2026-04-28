@@ -1271,7 +1271,7 @@ function runActionLayer(positions: IQPosition[], base: any, layers: any): Action
  * 
  * Score: 0-100 (higher = better psychological resilience)
  */
-function calculatePsyRiskScore(positions, base, options) {
+function calculatePsyRiskScore(positions: IQPosition[], base: any, options: IQOptions): PsyRiskAnalysis {
   let score = 100;
   const factors = [];
 
