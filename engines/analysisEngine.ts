@@ -1823,7 +1823,7 @@ function calcIntermarket(stk: any): any {
 }
 
 /* ══ Microstructure ══ */
-function calcMicrostructure(stk,bars){
+function calcMicrostructure(stk: any, bars: any[]): any {
   if(!bars||bars.length<10)return null;
   var ofi=0,totalVol=0;
   for(var i=1;i<bars.length;i++){
