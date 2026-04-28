@@ -2242,19 +2242,28 @@ function getRiskLevelLabel(level) {
   };
   return labels[level] || level;
 }
-function emptyAnalysis() {
+function emptyAnalysis(): IQAnalysis {
   return {
     iqScore: 0,
     grade: 'N/A',
     gradeLabel: 'محفظة فارغة',
-    layers: {},
-    psyRisk: { score: 0 },
-    dna: { personality: 'unknown' },
+    gradeColor: '#888',
+    layers: {} as any,
+    psyRisk: { score: 0 } as any,
+    dna: { personality: 'unknown' } as any,
     crystalBall: null,
-    smartStops: { stops: [] },
+    smartStops: { stops: [], totalRiskSAR: 0, methodology: '' },
     recoveryPath: null,
-    recommendations: { total: 0, items: [] },
-    summary: { headline: 'محفظة فارغة - أضف أسهماً للبدء', keyInsights: [] },
+    recommendations: { total: 0, critical: 0, high: 0, medium: 0, low: 0, items: [] },
+    summary: { 
+      headline: 'محفظة فارغة - أضف أسهماً للبدء', 
+      iqScore: 0,
+      grade: 'N/A',
+      keyInsights: [], 
+      topAction: null,
+      actionsCount: 0,
+      criticalActions: 0,
+    },
   };
 }
 
