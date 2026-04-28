@@ -1315,7 +1315,7 @@ function calcOrderBlocksFull(bars: any[], atr: number): any {
   return{inBullOB,inRef,hasFVG,bullCount:bulls.length,score:Math.min(20,score),
     label:inRef?"منطقة شراء قوية ✓":inBullOB&&hasFVG?"منطقة شراء مع فجوة":inBullOB?"داخل منطقة شراء":bulls.length>0?"منطقة شراء متاحة":"لا منطقة شراء"};
 }
-function calcLiqSweepFull(bars,atr){
+function calcLiqSweepFull(bars: any[], atr: number): any {
   const cur=bars[bars.length-1].close;
   const avgVol=bars.reduce((s,b)=>s+b.vol,0)/bars.length;
   const sweeps=[];
