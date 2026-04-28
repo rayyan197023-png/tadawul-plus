@@ -3654,7 +3654,7 @@ function stockHealth(stk: any, bars: any[]): any {
    كل نموذج يُصدر: "شراء" / "محايد" / "بيع"
    الثقة = قوة الاتفاق بين النماذج
 ══════════════════════════════════════════════════════════════ */
-function ensembleVote(LA, LB, LC, regime, gates, layers){
+function ensembleVote(LA: number, LB: number, LC: number, regime: any, gates: any, layers: any): any {
   // layers اختياري — يُستخدم للتأكيد المتقدم
   const L7 = layers ? (layers.L7||50) : 50;
   const L1 = layers ? (layers.L1||50) : 50;
