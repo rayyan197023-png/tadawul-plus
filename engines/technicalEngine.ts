@@ -157,7 +157,7 @@ export function calcVWAP(bars: any[]): number {
  * @param {number} period
  * @returns {number} -1 to 1
  */
-export function calcCMF(bars, period) {
+export function calcCMF(bars: any[], period?: number): number {
   const n  = bars.length;
   period   = period ?? Math.min(20, Math.max(10, Math.round(n * 0.20)));
   const sl = bars.slice(-period);
