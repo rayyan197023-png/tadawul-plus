@@ -1390,7 +1390,7 @@ function calculatePsyRiskScore(positions: IQPosition[], base: any, options: IQOp
  * - Defensive vs Aggressive
  * - Domestic vs Diversified
  */
-function analyzePortfolioDNA(positions, base) {
+function analyzePortfolioDNA(positions: IQPosition[], base: any): PortfolioDNA {
   const dna = {
     growthValue: { score: 50, label: 'متوازن' },
     momentumReversion: { score: 50, label: 'متوازن' },
