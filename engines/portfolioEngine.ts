@@ -4011,7 +4011,7 @@ export function generateCorrelationHeatmap(positions: Position[]): any {
  * @param {Array} positions - مع bars لكل سهم
  * @returns {Object} {bins, varLine, cvarLine, stats}
  */
-export function generateVaRDistribution(positions) {
+export function generateVaRDistribution(positions: Position[]): any {
   if (!positions || positions.length === 0) {
     return { bins: [], stats: {} };
   }
