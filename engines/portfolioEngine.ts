@@ -522,7 +522,13 @@ export function calcPortfolioReturns(positions: Position[], weights: Weights): n
  * var perf = calcReturnsMetrics(returns);
  * console.log(perf.annual); // 0.12 يعني 12% سنوياً
  */
-export function calcReturnsMetrics(portfolioReturns) {
+export function calcReturnsMetrics(portfolioReturns: number[]): {
+  daily: number;
+  cumulative: number;
+  annual: number;
+  annualFromDaily?: number;
+  periodDays: number;
+} {
   // فحص المدخلات
   if (!portfolioReturns || portfolioReturns.length === 0) {
     return {
