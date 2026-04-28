@@ -1585,7 +1585,7 @@ function simulateHorizon(initialValue, dailyReturn, dailyVol, days, sims) {
  * - Volatility-adjusted stops
  * - Sector-specific factors
  */
-function calculateSmartStops(positions) {
+function calculateSmartStops(positions: IQPosition[]): SmartStopsAnalysis {
   const stops = positions.map(p => {
     const currentPrice = p.value && p.qty ? p.value / p.qty : 
       (p.stk && p.stk.p) || 0;
