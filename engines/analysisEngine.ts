@@ -1862,8 +1862,8 @@ function calcMicrostructure(stk: any, bars: any[]): any {
 ══════════════════════════════════════════════════════════════ */
 
 /* ── مساعد: clamp + sigmoid + softmax ── */
-function _clamp(v,lo,hi){return Math.min(hi,Math.max(lo,v));}
-function _sig(x){return 1/(1+Math.exp(-x));}
+function _clamp(v: number, lo: number, hi: number): number { return Math.min(hi,Math.max(lo,v)); }
+function _sig(x: number): number { return 1/(1+Math.exp(-x)); }
 /**
  * ✨ Softmax 3-way - Mathematical Probability Distribution
  * 
