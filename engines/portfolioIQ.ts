@@ -1494,7 +1494,7 @@ if (mktCap > 50000000000) { // 50B+ = Large cap
  * - Historical returns
  * - Random walk with drift
  */
-function runCrystalBall(positions, base, simulations = 1000) {
+function runCrystalBall(positions: IQPosition[], base: any, simulations: number = 1000): CrystalBallAnalysis {
   // Use defaults if data unavailable (allows testing without historical bars)
   const annualReturn = (base.performance && base.performance.annualReturn) || 0.085; // TASI avg
   const annualVol = (base.performance && base.performance.volatility) || 0.20; // Default 20%
