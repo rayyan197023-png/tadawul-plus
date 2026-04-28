@@ -1666,10 +1666,10 @@ function calcEarningsQuality(stk: any): any {
 }
 
 /* ══ Options Flow — نموذج احتمالي من سلوك السهم التاريخي ══ */
-function calcOptionsFlow(stk,bars){
+function calcOptionsFlow(stk: any, bars: any[]): any {
   var n=bars.length;
   if(!n)return{putCallRatio:1.0,iv:20,sentiment:"محايد",signal:"محايد",unusualActivity:false,score:50};
-
+  
   // مؤشرات من السلوك الفعلي للسهم
   var momentum5  = bars.slice(-5).reduce(function(s,b){return s+b.pct;},0)/5;
   var momentum20 = bars.slice(-20).reduce(function(s,b){return s+b.pct;},0)/20;
