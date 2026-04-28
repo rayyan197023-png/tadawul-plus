@@ -3594,7 +3594,7 @@ export function generatePortfolioValueChart(
  * 
  * يُظهر "أسوأ رحلة نفسية" للمستثمر
  */
-export function generateDrawdownChart(positions, days) {
+export function generateDrawdownChart(positions: Position[], days?: number): any {
   if (!positions || positions.length === 0) {
     return { data: [], maxDrawdown: 0, maxDrawdownIdx: 0 };
   }
