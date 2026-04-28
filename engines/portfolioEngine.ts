@@ -2820,7 +2820,12 @@ export function combineKellyAndRisk(kellyResult: any, twoPercentResult: any): an
  * @param {number} period - عدد الأيام (افتراضي 14)
  * @returns {Object} {atr, atrPercent, currentPrice}
  */
-export function calcATR(bars, period) {
+export function calcATR(bars: Bar[], period?: number): {
+  atr: number;
+  atrPercent: number;
+  currentPrice: number;
+  sampleSize: number;
+} {
   if (period === undefined) period = 14;
 
   if (!bars || bars.length < period + 1) {
