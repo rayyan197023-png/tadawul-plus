@@ -3853,7 +3853,7 @@ const FEEDBACK_STORE_KEY = 'tdw_feedback_state';
  * ✨ Persistent Storage - يبقى التعلم بين الجلسات
  * يستخدم localStorage بدلاً من sessionStorage
  */
-function loadFeedbackState(){
+function loadFeedbackState(): any {
   try{
     if(typeof localStorage === 'undefined') return null;
     const raw = localStorage.getItem(FEEDBACK_STORE_KEY);
