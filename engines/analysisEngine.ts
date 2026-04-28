@@ -1168,8 +1168,8 @@ function calcOBVFull(bars: any[]): any {
   }
   
   // Helper functions
-  const getC = (b) => typeof b.c === 'number' ? b.c : (typeof b.close === 'number' ? b.close : null);
-  const getV = (b) => typeof b.vol === 'number' && b.vol > 0 ? b.vol : 0;
+  const getC = (b: any) => typeof b.c === 'number' ? b.c : (typeof b.close === 'number' ? b.close : null);
+const getV = (b: any) => typeof b.vol === 'number' && b.vol > 0 ? b.vol : 0;
   
   // ① Calculate OBV series
   let obv = 0;
