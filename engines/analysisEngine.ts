@@ -1271,7 +1271,7 @@ if(bars.length<10)return{trend:"محايد",bos:false,choch:false,score:5,label:
           choch?"تغيّر طابع CHOCH":trend==="صاعد"?"هيكل HH/HL صاعد":
           trend==="هابط"?"هيكل LH/LL هابط":"هيكل محايد"};
 }
-function calcOrderBlocksFull(bars,atr){
+function calcOrderBlocksFull(bars: any[], atr: number): any {
   const obs=[];const cur=bars[bars.length-1].close;const n=bars.length;
   const recentVolatility=bars.length>=20?bars.slice(-20).reduce((s,b)=>s+Math.abs(b.pct),0)/20:1.5;
   const atrMult=Math.max(1.2,Math.min(2.0,1.5*recentVolatility/1.5));
