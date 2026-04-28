@@ -1581,7 +1581,12 @@ export function calcCVaR(returns: number[], confidence?: number, portfolioValue?
  * @param {number} maxDrawdown - Max Drawdown (قيمة سالبة)
  * @returns {Object} {value, classification, label, interpretation}
  */
-export function calcCalmarRatio(annualReturn, maxDrawdown) {
+export function calcCalmarRatio(annualReturn: number, maxDrawdown: number): {
+  value: number;
+  classification: string;
+  label: string;
+  interpretation: string;
+} {
   // فحص المدخلات
   if (annualReturn === undefined || annualReturn === null ||
       maxDrawdown === undefined || maxDrawdown === null) {
