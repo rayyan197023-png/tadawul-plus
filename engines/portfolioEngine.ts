@@ -3798,7 +3798,7 @@ export function generateMonthlyReturnsHeatmap(positions: Position[], days?: numb
  * @param {Object} analysisData - نتيجة analyzePortfolio
  * @returns {Object} {stocks, portfolio, benchmark, quadrants}
  */
-export function generateRiskReturnScatter(positions, analysisData) {
+export function generateRiskReturnScatter(positions: Position[], analysisData: any): any {
   if (!positions || positions.length === 0) {
     return { stocks: [], portfolio: null, benchmark: null };
   }
