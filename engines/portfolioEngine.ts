@@ -3301,7 +3301,7 @@ export function calcPortfolioLayersScore(
  * @param {Object} analysis - نتيجة analyzePortfolio الكاملة
  * @returns {Object} {signal, label, color, reasons, actions}
  */
-export function calcFinalRecommendation(analysis) {
+export function calcFinalRecommendation(analysis: any): any {
   if (!analysis) {
     return {
       signal: 'unknown',
