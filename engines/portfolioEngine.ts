@@ -2888,7 +2888,14 @@ export function calcATR(bars: Bar[], period?: number): {
  * @param {Object} options - {maxStopPct, minStopPct}
  * @returns {Object} {stopLossPrice, stopLossDistance, stopLossPercent, ...}
  */
-export function calcATRStopLoss(bars, multiplier, options) {
+export function calcATRStopLoss(
+  bars: Bar[],
+  multiplier?: number,
+  options?: {
+    maxStopPct?: number;
+    minStopPct?: number;
+  }
+): any {
   options = options || {};
   if (multiplier === undefined) multiplier = 2.0;
 
