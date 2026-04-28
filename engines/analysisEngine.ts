@@ -1099,7 +1099,7 @@ function calcVWAPFull(bars: any[]): number {
  * - < -0.05: Selling pressure (distribution)
  * - Otherwise: Neutral
  */
-function calcCMFFull(bars, period) {
+function calcCMFFull(bars: any[], period?: number): any {
   if (!bars || bars.length === 0) return 0;
   
   // Helper functions
