@@ -2648,7 +2648,13 @@ export function estimateKellyInputs(returns: number[]): {
  * @param {number} riskPercent - نسبة المخاطرة (افتراضي 2%)
  * @returns {Object} {maxShares, positionValueSAR, riskSAR, ...}
  */
-export function calcTwoPercentRule(portfolioValue, stockPrice, stopLossPrice, riskPercent) {
+export function calcTwoPercentRule(
+  portfolioValue: number,
+  stockPrice: number,
+  stopLossPrice?: number,
+  riskPercent?: number
+): any {
+
   // القيمة الافتراضية
   if (riskPercent === undefined) riskPercent = 0.02;
 
