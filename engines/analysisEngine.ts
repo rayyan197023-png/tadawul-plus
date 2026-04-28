@@ -864,7 +864,7 @@ function genBars(stk: any, n: number = 60): any[] {
 
 
 /* ══ المؤشرات التقنية ══ */
-function calcEMA(vs,p){
+function calcEMA(vs: number[], p: number): number {
   if(!vs.length)return 0;
   const k=2/(p+1);let e=vs[0];
   for(let i=1;i<vs.length;i++)e=vs[i]*k+e*(1-k);
