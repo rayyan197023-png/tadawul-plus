@@ -2099,7 +2099,7 @@ function applyMacroGate(rawScore: number, macroScore100: number): any {
 }
 
 /* ── 5) Progressive Conflict Penalty ── */
-function calcConflictPenalty(layers, regime){
+function calcConflictPenalty(layers: any, regime: any): any {
   const {L1,L4,L5,L7,L9} = layers;
 
   // تعريف التعارضات مع شدة كل منها
