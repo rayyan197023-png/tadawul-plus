@@ -938,7 +938,7 @@ if (mktCap > 50000000000) { // 50B+ = Large cap
  * - USD/SAR (pegged but indirect)
  * - Government spending sensitivity
  */
-function runMacroLayer(positions, base) {
+function runMacroLayer(positions: IQPosition[], base: any): MacroLayer {
   const exposures = {
     oilPrice: 0,
     interestRate: 0,
