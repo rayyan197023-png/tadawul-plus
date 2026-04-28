@@ -818,7 +818,7 @@ export function getAlertsStats(): any {
   };
 }
 
-export function requestNotificationPermission() {
+export function requestNotificationPermission(): Promise<string> {
   if (typeof window === 'undefined') return Promise.resolve('unsupported');
   if (!('Notification' in window)) return Promise.resolve('unsupported');
   if (Notification.permission === 'granted') return Promise.resolve('granted');
