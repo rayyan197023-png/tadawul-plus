@@ -116,7 +116,7 @@ var VAR_CONFIDENCE = 95;
  * @param {Array} tasiBars - البيانات التاريخية لتاسي (للمقارنة)
  * @returns {Object} تحليل شامل للمحفظة
  */
-export function analyzePortfolio(positions, tasiBars) {
+export function analyzePortfolio(positions: Position[], tasiBars: Bar[]): PortfolioAnalysis {
   // فحص المدخلات
   if (!positions || positions.length === 0) {
     return emptyPortfolioAnalysis();
