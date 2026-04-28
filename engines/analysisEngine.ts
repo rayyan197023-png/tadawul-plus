@@ -1464,7 +1464,7 @@ function calcTasiContext(stk: any, bars: any[], allStocks?: any[]): any {
 
 function calcMacroFull(stk: any): any {
   const m=MACRO;
-  const oS=(OIL_SENS as any)[stk.sec]||0.8, rS=RATE_SENS[stk.sec]||0.3;
+  const oS=(OIL_SENS as any)[stk.sec]||0.8, rS=(RATE_SENS as any)[stk.sec]||0.3;
   const oilDelta=(m.oilPrice-m.oilTarget)/m.oilTarget;
   const oilScore=Math.round(Math.min(20,Math.max(0,10+10*Math.tanh(oilDelta*oS*2))));
   const rr=m.saudiRepoRate-m.cpi;
