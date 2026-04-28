@@ -1579,7 +1579,7 @@ function calcEarningsModel(stk: any): any {
 }
 
 /* ══ DCF ══ */
-function calcDCF(stk){
+function calcDCF(stk: any): any {
   // ✨ Validation
   if (!stk) return {intrinsic: 0, upside: 0, wacc: 8, dcfScore: 50, signal: "بيانات غير كافية", rating: "احتفاظ"};
   
