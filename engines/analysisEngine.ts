@@ -1348,7 +1348,7 @@ function calcLiqSweepFull(bars: any[], atr: number): any {
   return{recoveredSSL:recSSL,sslCount:ssls.length,bslCount:bsls.length,sslQuality:q,score:Math.min(20,score),
     label:recSSL&&q===3?"اصطياد مثالي ✓✓✓":recSSL&&q===2?"اصطياد قوي ✓✓":recSSL?"تعافٍ من الاصطياد":ssls.length>0?"اصطياد حديث":"لا اصطياد"};
 }
-function calcIVWAP(bars, stk?) {
+function calcIVWAP(bars: any[], stk?: any): any {
   const cur=bars[bars.length-1].close;
   const vwW=calcVWAPFull(bars.slice(-5));
   const vwM=calcVWAPFull(bars.slice(-20));
