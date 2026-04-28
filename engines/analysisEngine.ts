@@ -2534,7 +2534,7 @@ function _emptyHealthResult(){
   };
 }
 
-function calc9Layers(stk, bars){
+function calc9Layers(stk: any, bars: any[]): any {
   // ✨ Validation - حماية من Edge Cases
   if (!stk || typeof stk !== 'object') {
     return _emptyHealthResult();
