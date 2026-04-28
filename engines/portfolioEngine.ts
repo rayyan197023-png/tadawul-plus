@@ -3019,10 +3019,10 @@ export function calcTrailingStop(bars: Bar[], multiplier?: number): any {
   // أعلى قمة في آخر 22 يوم
   var lookback = Math.min(22, bars.length);
   var recentBars = bars.slice(-lookback);
-  var highestHigh = recentBars[0].hi;
-  for (var i = 1; i < recentBars.length; i++) {
-    if (recentBars[i].hi > highestHigh) highestHigh = recentBars[i].hi;
-  }
+  var highestHigh = (recentBars[0] as any).hi;
+for (var i = 1; i < recentBars.length; i++) {
+  if ((recentBars[i] as any).hi > highestHigh) highestHigh = (recentBars[i] as any).hi;
+}
 
   // ATR
   var atrResult = calcATR(bars, 14);
