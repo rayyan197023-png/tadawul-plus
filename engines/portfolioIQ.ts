@@ -489,7 +489,11 @@ const TRADING_DAYS = 252;
  * @param {Object} options - {userProfile, riskTolerance, investmentHorizon}
  * @returns {Object} Complete intelligent analysis
  */
-export function analyzePortfolioIQ(positions, tasiBars, options = {}) {
+export function analyzePortfolioIQ(
+  positions: IQPosition[],
+  tasiBars: any[],
+  options: IQOptions = {}
+): IQAnalysis {
   if (!positions || positions.length === 0) {
     return emptyAnalysis();
   }
