@@ -771,6 +771,7 @@ function genBars(stk: any, n: number = 60): any[] {
   const dynamicOilCorr = baseOilCorr * (1 + oilStress); // يزيد في الأزمات
   const oilReturn = (MACRO.oilPrice - MACRO.oilTarget) / MACRO.oilTarget * 0.004;
   
+  
   // ⑥ Asymmetric Volatility (Leverage Effect)
   // الأخبار السلبية تُحدث تقلب أكبر من الإيجابية
   const leverageEffect = 1.3; // negative shocks have 30% more impact
