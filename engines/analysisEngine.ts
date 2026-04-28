@@ -3969,7 +3969,7 @@ function applyFeedbackToWeights(WC, sym){
 /* ══════════════════════════════════════════════════════════════
    stockHealthV3 — يدمج الـ 3 أنظمة الجديدة
 ══════════════════════════════════════════════════════════════ */
-function scoreWord(score){
+function scoreWord(score: number): string {
   return score>=80?"ممتاز":score>=70?"قوي":score>=60?"جيد":score>=50?"متوسط":score>=40?"ضعيف":"ضعيف جداً";
 }
 
