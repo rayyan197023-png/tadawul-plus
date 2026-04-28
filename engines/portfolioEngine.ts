@@ -24,17 +24,9 @@
    📊 TYPES & INTERFACES
 ═══════════════════════════════════════════ */
 
-export interface Bar {
-  c: number;       // close
-  hi?: number;
-  lo?: number;
-  vol?: number;
-  o?: number;
-  h?: number;
-  l?: number;
-  close?: number;
-  [key: string]: any;
-}
+// Use Bar type from portfolioMath
+import type { Bar } from '../utils/portfolioMath';
+export type { Bar };
 
 export interface Position {
   sym: string;
