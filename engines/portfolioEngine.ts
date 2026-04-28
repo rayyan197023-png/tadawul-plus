@@ -3908,7 +3908,7 @@ export function generateRiskReturnScatter(positions: Position[], analysisData: a
  * @param {Array} positions - مع bars لكل سهم
  * @returns {Object} {matrix, symbols, highCorrelations, avgCorrelation}
  */
-export function generateCorrelationHeatmap(positions) {
+export function generateCorrelationHeatmap(positions: Position[]): any {
   if (!positions || positions.length < 2) {
     return { matrix: [], symbols: [], avgCorrelation: 0 };
   }
