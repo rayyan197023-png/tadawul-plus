@@ -765,8 +765,8 @@ function runRiskLayer(positions: IQPosition[], base: any): RiskLayer {
  * Behavioral Layer - Detect biases and risks
  * Based on Kahneman-Tversky Prospect Theory
  */
-function runBehavioralLayer(positions, base, options) {
-  const biases = [];
+function runBehavioralLayer(positions: IQPosition[], base: any, options: IQOptions): BehavioralLayer {
+  const biases: BehavioralBias[] = [];
 
   // 1. Recency Bias (recent buys at peak)
   // Check if recent purchases are at high RSI
