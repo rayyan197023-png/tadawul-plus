@@ -467,7 +467,7 @@ export function calcWeights(positions: Position[], totalValue: number): Weights 
  * @param {Object} weights - {sym: weight}
  * @returns {number[]} سلسلة العوائد اليومية للمحفظة
  */
-export function calcPortfolioReturns(positions, weights) {
+export function calcPortfolioReturns(positions: Position[], weights: Weights): number[] {
   if (!positions || positions.length === 0) return [];
 
   // حساب عوائد كل سهم
