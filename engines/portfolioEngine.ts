@@ -1791,7 +1791,16 @@ export function calcDownsideDeviation(returns: number[], mar?: number): {
  * @param {Object} weights - أوزان الأسهم {sym: weight}
  * @returns {Object} {value, effectiveStocks, classification, ...}
  */
-export function calcHHI(weights) {
+export function calcHHI(weights: Weights): {
+  value: number;
+  effectiveStocks: number;
+  largestPosition: number;
+  stockCount?: number;
+  classification: string;
+  label: string;
+  interpretation: string;
+  concentrationWarning: string | null;
+} {
   // فحص المدخلات
   if (!weights || typeof weights !== 'object') {
     return {
