@@ -729,7 +729,11 @@ export function sendBrowserNotification(alert: any): void {
   } catch (e) {}
 }
 
-export function runSmartAlertsEngine(currentStocks, positions = [], options = {}) {
+export function runSmartAlertsEngine(
+  currentStocks: any[],
+  positions: any[] = [],
+  options: any = {}
+): { count: number; alerts: any[]; summary?: any } {
   const settings = loadAlertSettings();
   const newAlerts = generateSmartAlerts(currentStocks, positions);
   
