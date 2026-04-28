@@ -369,7 +369,12 @@ export function calcMACD(
  * @param {number} stdDev
  * @returns {{ upper, middle, lower, bandwidth }}
  */
-export function calcBollingerBands(bars, period = 20, stdDev = 2) {
+export function calcBollingerBands(bars: any[], period: number = 20, stdDev: number = 2): {
+  upper: number;
+  middle: number;
+  lower: number;
+  bandwidth: number;
+} {
   if (bars.length < period) return { upper: 0, middle: 0, lower: 0, bandwidth: 0 };
   const closes = bars.slice(-period).map(b => b.c);
   const middle = closes.reduce((s, v) => s + v, 0) / period;
