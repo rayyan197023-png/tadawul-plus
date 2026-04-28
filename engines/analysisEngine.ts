@@ -3339,7 +3339,7 @@ function checkCorrelationGuard(sym, activePositions){
 }
 
 /* ③ Dynamic Risk Gate */
-function calcRiskGateLevel(){
+function calcRiskGateLevel(): any {
   var vix     = MACRO.vix || 20;
   var regime  = MACRO.oilTasiRegime || "RALLY";
   var breadth = STOCKS.filter(function(x){return x.ch>0;}).length / STOCKS.length;
