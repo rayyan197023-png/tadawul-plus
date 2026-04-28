@@ -964,7 +964,7 @@ function calcRSIFull(bars: any[], period?: number): any {
  * - Position sizing (Kelly)
  * - Stop loss calculation
  */
-function calcATRFull(bars, period) {
+function calcATRFull(bars: any[], period?: number): any {
   // ① Validation
   period = period || 14;
   if (period < 1) period = 14;
