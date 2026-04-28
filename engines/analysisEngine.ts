@@ -3755,7 +3755,7 @@ function ensembleVote(LA: number, LB: number, LC: number, regime: any, gates: an
    يحسب درجة اليقين — إذا كانت منخفضة → يُصدر "انتظر"
    المعايير: تعارض الطبقات + قوة الأوزان + اتساق الإشارات
 ══════════════════════════════════════════════════════════════ */
-function calcConfidenceThreshold(score, layers, ensemble, conflictCount, gates, regime){
+function calcConfidenceThreshold(score: number, layers: any, ensemble: any, conflictCount: number, gates: any, regime: any): any {
   const {L1, L4, L5, L7, L9} = layers;
 
   // ① اتساق 4 طبقات أساسية (L1+L4+L5+L9)
