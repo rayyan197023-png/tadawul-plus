@@ -228,7 +228,11 @@ export function calcOBV(bars: any[]): {
  * @param {{ fast?, slow?, signal? }} options
  * @returns {{ macd, signal, histogram, trend, histMomentum, crossover }}
  */
-export function calcMACD(bars, { fast = 12, slow = 26, signal = 9 } = {}) {
+export function calcMACD(
+  bars: any[],
+  options: { fast?: number; slow?: number; signal?: number } = {}
+): any {
+  const { fast = 12, slow = 26, signal = 9 } = options;
   const minBars = slow + signal;
   if (bars.length < minBars) {
     return { 
