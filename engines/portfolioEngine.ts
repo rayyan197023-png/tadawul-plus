@@ -2844,9 +2844,9 @@ export function calcATR(bars: Bar[], period?: number): {
     var bar = bars[i];
     var prevClose = bars[i - 1].c;
 
-    var hl = bar.hi - bar.lo;
-    var hc = Math.abs(bar.hi - prevClose);
-    var lc = Math.abs(bar.lo - prevClose);
+    var hl = (bar as any).hi - (bar as any).lo;
+var hc = Math.abs((bar as any).hi - prevClose);
+var lc = Math.abs((bar as any).lo - prevClose);
 
     var tr = Math.max(hl, hc, lc);
     trueRanges.push(tr);
