@@ -1975,7 +1975,7 @@ function detectMarketRegime(bars: any[], adxV: number, mktWtd: any, mktBreadth: 
 }
 
 /* ── 2) Dynamic Weights حسب الـ Regime + القطاع ── */
-function buildDynamicWeights(regime, sector){
+function buildDynamicWeights(regime: any, sector: string): any {
   /* الأوزان الأساسية (تعكس المجموعات الجديدة):
      Momentum(L5):20% Trend(L1):20% Liquidity(L9):20%
      Structure(L4):15% Macro(L8):15% Extras(L6,L7,L2,L3):10%  → Σ=1 */
