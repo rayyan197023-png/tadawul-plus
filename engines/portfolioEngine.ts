@@ -1822,9 +1822,11 @@ export function calcHHI(weights: Weights): {
       value: 0,
       effectiveStocks: 0,
       largestPosition: 0,
+      stockCount: 0,
       classification: 'unknown',
       label: 'محفظة فارغة',
       interpretation: 'لا توجد أسهم في المحفظة',
+      concentrationWarning: null,
     };
   }
 
