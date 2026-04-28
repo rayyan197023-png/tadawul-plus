@@ -2554,7 +2554,16 @@ export function calcKellyCriterion(
  * @param {number[]} returns - سلسلة العوائد اليومية
  * @returns {Object} {winProbability, winLossRatio, avgWin, avgLoss}
  */
-export function estimateKellyInputs(returns) {
+export function estimateKellyInputs(returns: number[]): {
+  winProbability: number;
+  winLossRatio: number;
+  avgWin: number;
+  avgLoss: number;
+  sampleSize: number;
+  winCount?: number;
+  lossCount?: number;
+} {
+
   if (!returns || returns.length < 10) {
     return {
       winProbability: 0,
