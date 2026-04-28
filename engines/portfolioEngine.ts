@@ -2229,7 +2229,18 @@ export function calcAvgCorrelation(correlationMatrixResult: any): {
  * @param {number} stockCount - عدد الأسهم
  * @returns {Object} {score, components, classification, label, interpretation}
  */
-export function calcDiversificationScore(hhi, avgCorrelation, stockCount) {
+export function calcDiversificationScore(hhi: number, avgCorrelation: number, stockCount: number): {
+  score: number;
+  components: {
+    hhi: number;
+    correlation: number;
+    stockCount: number;
+  };
+  classification: string;
+  label: string;
+  interpretation: string;
+  recommendations: any[];
+} {
   // فحص المدخلات
   if (hhi === undefined || avgCorrelation === undefined || stockCount === undefined) {
     return {
