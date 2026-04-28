@@ -583,9 +583,9 @@ export function analyzePortfolioIQ(
  * Diagnostic Layer - Comprehensive portfolio diagnosis
  * Identifies structural issues and characteristics
  */
-function runDiagnosticLayer(positions, base) {
-  const issues = [];
-  const strengths = [];
+function runDiagnosticLayer(positions: IQPosition[], base: any): DiagnosticLayer {
+  const issues: LayerIssue[] = [];
+  const strengths: LayerStrength[] = [];
 
   // Check 1: Concentration
   if (base.diversification && base.diversification.hhi > 4000) {
