@@ -3186,7 +3186,7 @@ export function runStressTests(portfolioValue: number, portfolioBeta?: number): 
 /**
  * الحصول على السيناريوهات المتاحة
  */
-export function getStressScenarios() {
+export function getStressScenarios(): any[] {
   return STRESS_SCENARIOS;
 }
 /* ══════════════════════════════════════════════════════════
