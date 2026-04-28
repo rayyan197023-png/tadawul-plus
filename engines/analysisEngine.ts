@@ -1479,7 +1479,7 @@ function calcMacroFull(stk){
     oilScore:+oilScore.toFixed(1),realRate:+rr.toFixed(2)};
 }
 /* ══ VPVR ══ */
-function calcVPVR(bars,levels){
+function calcVPVR(bars: any[], levels?: number): any {
   levels=levels||20;
   if(!bars||bars.length<5)return null;
   var minP=bars.reduce(function(m,b){return Math.min(m,b.lo);},Infinity);
