@@ -690,7 +690,13 @@ export function calcVolatility(portfolioReturns: number[]): {
  * console.log(sharpe.value);  // 0.33
  * console.log(sharpe.label);  // "ضعيف"
  */
-export function calcSharpeRatio(annualReturn, annualVolatility, riskFreeRate) {
+export function calcSharpeRatio(annualReturn: number, annualVolatility: number, riskFreeRate?: number): {
+  value: number;
+  excessReturn?: number;
+  classification: string;
+  label: string;
+  interpretation: string;
+} {
   // القيمة الافتراضية للسايبور السعودي
   if (riskFreeRate === undefined) riskFreeRate = 0.06;
 
