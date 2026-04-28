@@ -3865,7 +3865,7 @@ function loadFeedbackState(): any {
   }
 }
 
-function saveFeedbackState(state){
+function saveFeedbackState(state: any): void {
   try{
     if(typeof localStorage === 'undefined') return;
     if(!state || typeof state !== 'object') return;
