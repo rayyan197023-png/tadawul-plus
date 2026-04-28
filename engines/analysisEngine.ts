@@ -2088,7 +2088,7 @@ function reduceCorrelation(layers){
 }
 
 /* ── 4) Macro Impact Gate ── */
-function applyMacroGate(rawScore, macroScore100){
+function applyMacroGate(rawScore: number, macroScore100: number): any {
   // macroScore100 هو mc.score * 5 (تحويل من [0,20] → [0,100])
   let multiplier = 1.0;
   if      (macroScore100 < 25) multiplier = 0.82; // بيئة حرجة جداً → خفض 18%
