@@ -1770,7 +1770,7 @@ function generateRecoveryPath(positions: IQPosition[], base: any): RecoveryPathA
 /**
  * Generate prioritized, actionable recommendations
  */
-function generateRecommendations(data) {
+function generateRecommendations(data: any): RecommendationsAnalysis {
   const { positions, baseAnalysis, diagnostic, risk, behavioral, sector, stock } = data;
   const recommendations = [];
 
