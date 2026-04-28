@@ -972,7 +972,7 @@ function calcATRFull(bars: any[], period?: number): any {
   if (!bars || bars.length < period + 1) return 0;
   
   // ② Helper functions
-  const getClose = (bar) => {
+  const getClose = (bar: any) => {
     if (!bar) return null;
     return typeof bar.c === 'number' ? bar.c : 
            typeof bar.close === 'number' ? bar.close : null;
