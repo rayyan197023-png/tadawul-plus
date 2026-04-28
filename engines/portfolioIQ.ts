@@ -1091,7 +1091,7 @@ function runSectorLayer(positions: IQPosition[], base: any): SectorLayer {
 /**
  * Stock Layer - Individual stock analysis
  */
-function runStockLayer(positions, base) {
+function runStockLayer(positions: IQPosition[], base: any): StockLayer {
   const stockAnalysis = positions.map(p => {
         const analysis: StockAnalysis = {
   sym: p.sym,
