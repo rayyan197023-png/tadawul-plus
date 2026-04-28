@@ -3950,7 +3950,7 @@ function recordFeedback(sym, signal, layers, actualOutcome){
 
 
 /* ══ applyFeedbackToWeights: تطبيق الضبط التكيّفي على الأوزان ══ */
-function applyFeedbackToWeights(WC, sym){
+function applyFeedbackToWeights(WC: any, sym: string): any {
   const adj = getAdaptiveWeightAdjustment(sym);
   if(!adj) return WC; // لا تاريخ كافٍ → الأوزان كما هي
 
