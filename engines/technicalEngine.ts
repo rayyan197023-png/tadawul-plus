@@ -141,7 +141,7 @@ export function calcATR(bars: any[], period: number = 14): number {
  * @param {OHLCBar[]} bars
  * @returns {number}
  */
-export function calcVWAP(bars) {
+export function calcVWAP(bars: any[]): number {
   let sv = 0, svol = 0;
   for (const b of bars) {
     const tp = (b.hi + b.lo + b.c) / 3;
