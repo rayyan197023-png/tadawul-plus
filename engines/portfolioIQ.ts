@@ -1944,7 +1944,7 @@ function generateRecommendations(data: any): RecommendationsAnalysis {
 /**
  * Generate intelligent summary in natural language
  */
-function generateSmartSummary(data) {
+function generateSmartSummary(data: any): IQSummary {
   const { iqScore, health, baseAnalysis, recommendations } = data;
   
   // Headline
