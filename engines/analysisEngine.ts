@@ -1462,7 +1462,7 @@ function calcTasiContext(stk: any, bars: any[], allStocks?: any[]): any {
   };
 }
 
-function calcMacroFull(stk){
+function calcMacroFull(stk: any): any {
   const m=MACRO;
   const oS=OIL_SENS[stk.sec]||0.8, rS=RATE_SENS[stk.sec]||0.3;
   const oilDelta=(m.oilPrice-m.oilTarget)/m.oilTarget;
