@@ -1232,8 +1232,9 @@ function calcOBVFull(bars: any[]): any {
   };
 }
 
-function calcMarketStructureFull(bars){
-  if(bars.length<10)return{trend:"محايد",bos:false,choch:false,score:5,label:"هيكل محايد"};
+function calcMarketStructureFull(bars: any[]): any {
+
+if(bars.length<10)return{trend:"محايد",bos:false,choch:false,score:5,label:"هيكل محايد"};
 
   // window ديناميكي من ATR السهم:
   // تقلب عالٍ → نافذة أضيق (2) للاستجابة السريعة
