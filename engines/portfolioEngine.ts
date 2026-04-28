@@ -2014,7 +2014,7 @@ export function calcCorrelationMatrix(positionsWithBars: Position[]): {
  * @param {Object} correlationMatrixResult
  * @returns {number[]} مصفوفة قيم الارتباط (بدون تكرار)
  */
-export function extractCorrelationValues(correlationMatrixResult) {
+export function extractCorrelationValues(correlationMatrixResult: any): number[] {
   if (!correlationMatrixResult || !correlationMatrixResult.matrix) return [];
 
   var matrix = correlationMatrixResult.matrix;
