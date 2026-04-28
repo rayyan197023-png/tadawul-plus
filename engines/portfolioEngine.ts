@@ -3520,7 +3520,11 @@ export function addIntelligenceLayer(
  * @param {number} days - عدد الأيام (افتراضي 60)
  * @returns {Array} [{date, portfolio, benchmark, alpha}]
  */
-export function generatePortfolioValueChart(positions, currentValue, days) {
+export function generatePortfolioValueChart(
+  positions: Position[],
+  currentValue: number,
+  days?: number
+): any[] {
   if (!positions || positions.length === 0 || !currentValue) {
     return [];
   }
