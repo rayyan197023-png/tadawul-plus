@@ -427,7 +427,7 @@ export function analyzePortfolio(positions: Position[], tasiBars: Bar[]): Portfo
  * @param {Array} positions
  * @returns {number}
  */
-export function calcTotalValue(positions) {
+export function calcTotalValue(positions: Position[]): number {
   if (!positions || positions.length === 0) return 0;
   var total = 0;
   for (var i = 0; i < positions.length; i++) {
