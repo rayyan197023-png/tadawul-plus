@@ -3315,7 +3315,7 @@ function calcPositionSize(health: any, riskGateLevel: any): any {
 }
 
 /* ② فحص الارتباط — Markowitz */
-function checkCorrelationGuard(sym, activePositions){
+function checkCorrelationGuard(sym: string, activePositions: any[]): any {
   // أيّ مجموعة ينتمي لها السهم؟
   var myGroup = null;
   Object.entries(TASI_CORR_GROUPS).forEach(function([g,syms]){
