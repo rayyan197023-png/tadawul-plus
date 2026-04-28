@@ -2174,7 +2174,7 @@ const RADAR_RATE_SENSITIVITY={
 };
 
 
-function generateBarsRadar(stk,days=60){
+function generateBarsRadar(stk: any, days: number = 60): any[] {
   const rng=seedRng(parseInt(stk.sym,10)*997+13);
   const bars=[];
   let p=stk.p*(1-stk.pct/100*(days/20));
