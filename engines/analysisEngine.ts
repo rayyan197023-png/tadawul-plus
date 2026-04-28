@@ -1161,7 +1161,7 @@ function calcCMFFull(bars: any[], period?: number): any {
  * - rising: boolean (slope > 0)
  * - obvZ: z-score (normalized OBV)
  */
-function calcOBVFull(bars) {
+function calcOBVFull(bars: any[]): any {
   if (!bars || bars.length < 2) {
     return { slope: 0, rising: false, obvZ: 0 };
   }
