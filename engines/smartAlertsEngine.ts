@@ -771,7 +771,7 @@ export function runSmartAlertsEngine(
   };
 }
 
-export function playAlertSound(presetId, volume = 0.3) {
+export function playAlertSound(presetId?: string, volume: number = 0.3): void {
   if (typeof window === 'undefined') return;
   const settings = loadAlertSettings();
   const finalPresetId = presetId || settings.soundPreset || 'classic';
