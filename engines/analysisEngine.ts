@@ -1713,7 +1713,7 @@ function calcOptionsFlow(stk: any, bars: any[]): any {
 }
 
 /* ══ Insider Transactions ══ */
-function calcInsiderTransactions(stk,bars){
+function calcInsiderTransactions(stk: any, bars: any[]): any {
   var n=bars?bars.length:0;
   var avgVol60=n>0?bars.reduce(function(s,b){return s+b.vol;},0)/n:stk.avgV||1800000;
   var recentVol=n>=5?bars.slice(-5).reduce(function(s,b){return s+b.vol;},0)/5:avgVol60;
