@@ -33,7 +33,7 @@ const HIGH_VAR_THRESHOLD = 0.025;
 /**
  * ✨ الدالة الرئيسية - تحليل وتوصيات
  */
-export function analyzePortfolio(positions, marketData) {
+export function analyzePortfolio(positions: any[], marketData?: any): any {
   // فحص فارغ
   if (!positions || positions.length === 0) {
     return getEmptyAnalysis();
