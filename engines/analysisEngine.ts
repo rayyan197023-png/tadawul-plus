@@ -712,7 +712,7 @@ function seedRng(s: number): () => number { let x=s; return()=>{ x=(x*1664525+10
 
 function genBars(stk: any, n: number = 60): any[] {
   n = n||100;
-  const hist = HISTORICAL[stk.sym];
+  const hist = (HISTORICAL as any)[stk.sym];
   if(hist && hist.length>=n){
     return hist.slice(-n).map(function(b,i,arr){
       const prev = i>0?arr[i-1].c:b.o;
