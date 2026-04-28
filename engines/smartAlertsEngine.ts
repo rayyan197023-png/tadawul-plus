@@ -338,7 +338,7 @@ export function loadAlertSettings(): any {
   }
 }
 
-export function saveAlertSettings(settings) {
+export function saveAlertSettings(settings: any): void {
   if (typeof window === 'undefined') return;
   try {
     window.localStorage.setItem('tadawul_alert_settings', JSON.stringify(settings));
