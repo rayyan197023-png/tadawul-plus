@@ -1943,7 +1943,7 @@ export function extractCorrelationValues(correlationMatrixResult) {
  * إرجاع تحليل فارغ للمحافظ غير الجاهزة
  * يتجنب الأخطاء في الواجهة عندما لا توجد بيانات
  */
-function emptyPortfolioAnalysis() {
+function emptyPortfolioAnalysis(): PortfolioAnalysis {
   return {
     totalValue: 0,
     stockCount: 0,
@@ -1971,6 +1971,10 @@ function emptyPortfolioAnalysis() {
       score: 0,
       effectiveStocks: 0,
     },
+    positionSizing: null,
+    stressTests: [],
+    layersIntelligence: null,
+    finalRecommendation: null,
     healthScore: 0,
     healthGrade: 'N/A',
     recommendations: [],
