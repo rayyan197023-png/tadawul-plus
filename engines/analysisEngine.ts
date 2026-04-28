@@ -1746,7 +1746,7 @@ function calcInsiderTransactions(stk: any, bars: any[]): any {
 }
 
 /* ══ Alternative Data ══ */
-function calcAlternativeData(stk,bars){
+function calcAlternativeData(stk: any, bars: any[]): any {
   var sectorStocks=STOCKS.filter(function(x){return x.sec===stk.sec;});
   var sectorAvgCh=sectorStocks.reduce(function(s,x){return s+x.ch;},0)/sectorStocks.length;
   var sectorMom=Math.round(50+35*Math.tanh(sectorAvgCh*0.8));
