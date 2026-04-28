@@ -3372,7 +3372,7 @@ function calcAdaptiveThreshold(allHealthData){
 }
 
 /* ⑤ Sharpe Ratio Tracker */
-function calcPortfolioSharpe(allHealthData){
+function calcPortfolioSharpe(allHealthData: any[]): any {
   if(!allHealthData||allHealthData.length<2) return null;
   var scores = allHealthData.map(function(h){return h.score||50;});
   var avg    = scores.reduce(function(s,v){return s+v;},0)/scores.length;
