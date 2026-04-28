@@ -327,7 +327,7 @@ function isStrongSignal(stock, type) {
 // ✨ SETTINGS MANAGEMENT
 // ═══════════════════════════════════════════════
 
-export function loadAlertSettings() {
+export function loadAlertSettings(): any {
   if (typeof window === 'undefined') return getDefaultSettings();
   try {
     const raw = window.localStorage.getItem('tadawul_alert_settings');
