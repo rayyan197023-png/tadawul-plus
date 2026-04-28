@@ -446,7 +446,7 @@ export function calcTotalValue(positions: Position[]): number {
  * @param {number} totalValue
  * @returns {Object} {sym: weight}
  */
-export function calcWeights(positions, totalValue) {
+export function calcWeights(positions: Position[], totalValue: number): Weights {
   var weights = {};
   if (!positions || totalValue <= 0) return weights;
 
