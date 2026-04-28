@@ -685,9 +685,21 @@ function runDiagnosticLayer(positions, base) {
 /**
  * Risk Layer - Multi-dimensional risk analysis
  */
-function runRiskLayer(positions, base) {
+function runRiskLayer(positions: IQPosition[], base: any): RiskLayer {
   if (!base.risk) {
-    return { score: 0, dimensions: {}, warnings: [] };
+    return { 
+      score: 0, 
+      dimensions: {
+        marketRisk: 0,
+        volatilityRisk: 0,
+        drawdownRisk: 0,
+        tailRisk: 0,
+        concentrationRisk: 0,
+        correlationRisk: 0,
+      }, 
+      warnings: [],
+      riskLevel: 'unknown',
+    };
   }
 
   const dimensions = {
@@ -725,13 +737,14 @@ function runRiskLayer(positions, base) {
   );
 
   // Risk warnings
-  const warnings = [];
+  const warnings: Array<{dimension: string; score: number; severity: string}> = [];
   Object.keys(dimensions).forEach(key => {
-    if (dimensions[key] < 40) {
+    const dimKey = key as keyof typeof dimensions;
+    if (dimensions[dimKey] < 40) {
       warnings.push({
         dimension: key,
-        score: dimensions[key],
-        severity: dimensions[key] < 25 ? 'critical' : 'high',
+        score: dimensions[dimKey],
+        severity: dimensions[dimKey] < 25 ? 'critical' : 'high',
       });
     }
   });
