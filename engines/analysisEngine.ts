@@ -3352,7 +3352,7 @@ function calcRiskGateLevel(): any {
 }
 
 /* ④ Adaptive Signal Threshold */
-function calcAdaptiveThreshold(allHealthData){
+function calcAdaptiveThreshold(allHealthData: any[]): any {
   if(!allHealthData||!allHealthData.length) return 45;
 
   var avgADX = allHealthData.reduce(function(s,h){
