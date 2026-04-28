@@ -32,7 +32,7 @@ import { calcOrderBlocks, calcLiqSweep } from './radarEngine';
  * - GDP Growth
  * - PE Ratio
  */
-function calcMacroScore(stk) {
+function calcMacroScore(stk: any): any {
   // ① PE component (40%)
   const pe = stk.pe || 20;
   const peScore = Math.max(0, Math.min(100, 100 - (pe - 15) * 2));
