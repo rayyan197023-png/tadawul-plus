@@ -896,7 +896,7 @@ function calcRSIFull(bars: any[], period?: number): any {
   if (!bars || bars.length < period + 1) return 50;
   
   // ② Helper to get close price (handles both .c and .close)
-  const getClose = (bar) => {
+  const getClose = (bar: any) => {
     if (!bar) return null;
     return typeof bar.c === 'number' ? bar.c : 
            typeof bar.close === 'number' ? bar.close : null;
