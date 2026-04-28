@@ -1700,7 +1700,7 @@ function calculateATR(bars, period = 14) {
  * - Position rebalancing
  * - Volatility regime adjustment
  */
-function generateRecoveryPath(positions, base) {
+function generateRecoveryPath(positions: IQPosition[], base: any): RecoveryPathAnalysis {
   if (!base.risk || Math.abs(base.risk.maxDrawdown) < 0.05) {
     return {
       currentDrawdown: 0,
