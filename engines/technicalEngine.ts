@@ -448,7 +448,7 @@ export function calcMarketStructure(bars: any[]): any {
  * @param {OHLCBar[]} bars
  * @returns {{ vwW, vwM, vwQ, avwap, aboveAVWAP, score, label }}
  */
-export function calcIVWAP(bars, stk) {
+export function calcIVWAP(bars: any[], stk?: any): any {
   const vwW    = calcVWAP(bars.slice(-5));
   const vwM    = calcVWAP(bars.slice(-20));
   const vwQ    = calcVWAP(bars);
