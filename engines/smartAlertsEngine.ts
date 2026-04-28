@@ -799,7 +799,7 @@ export function playAlertSound(presetId?: string, volume: number = 0.3): void {
   } catch (e) {}
 }
 
-export function getAlertsStats() {
+export function getAlertsStats(): any {
   const alerts = loadExistingAlerts();
   const today = new Date().setHours(0, 0, 0, 0);
   
