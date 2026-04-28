@@ -1593,7 +1593,7 @@ function calcDCF(stk: any): any {
   bvps=Math.max(bvps,eps);
   var g1=Math.min((stk.epsGrw||5)/100,0.12);
   var gdpGrowthRate=(MACRO.gdpGrowth||4.0)/100;
-  var sectorGrowthAdj={"طاقة":0.01,"بنوك":0.005,"تقنية":0.02,"تعدين":0.005,"غذاء":0.005}[stk.sec]||0;
+  var sectorGrowthAdj=({"طاقة":0.01,"بنوك":0.005,"تقنية":0.02,"تعدين":0.005,"غذاء":0.005} as any)[stk.sec]||0;
   var gStable=Math.min(g1,gdpGrowthRate+sectorGrowthAdj);
   var graham=eps>0&&bvps>0?Math.sqrt(22.5*eps*bvps):stk.p;
   var dcfVal=gStable<ke&&eps>0?eps*(1+g1)/(ke-gStable):stk.p;
