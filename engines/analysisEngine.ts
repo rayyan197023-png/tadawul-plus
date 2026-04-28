@@ -3899,7 +3899,7 @@ function getAdaptiveWeightAdjustment(sym: string): any {
   return Object.keys(adj).length > 0 ? adj : null;
 }
 
-function recordFeedback(sym, signal, layers, actualOutcome){
+function recordFeedback(sym: string, signal: any, layers: any, actualOutcome: any): any {
   /* ✨ Smart Weighted Learning System
      actualOutcome: قيمة بين -2.0 إلى +2.0 (مرجّحة حسب قوة النتيجة)
      - 2.0 = إشارة ممتازة (ربح +10%)
