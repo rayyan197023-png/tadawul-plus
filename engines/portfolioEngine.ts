@@ -777,7 +777,13 @@ export function calcSharpeRatio(annualReturn: number, annualVolatility: number, 
  * @param {number} riskFreeRate - معدل خالي من المخاطر سنوي
  * @returns {Object} {value, classification, label, downsideDeviationAnnual}
  */
-export function calcSortinoRatio(portfolioReturns, annualReturn, riskFreeRate) {
+export function calcSortinoRatio(portfolioReturns: number[], annualReturn: number, riskFreeRate?: number): {
+  value: number;
+  downsideDeviationAnnual: number;
+  classification: string;
+  label: string;
+  interpretation: string;
+} {
   // القيمة الافتراضية للسايبور السعودي
   if (riskFreeRate === undefined) riskFreeRate = 0.06;
 
