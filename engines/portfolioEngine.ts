@@ -1182,7 +1182,18 @@ export function calcJensensAlpha(
  * @param {number[]} returns - سلسلة العوائد اليومية
  * @returns {Object} {maxDrawdown, duration, recoveryDays, peakValue, troughValue, ...}
  */
-export function calcMaxDrawdown(returns) {
+export function calcMaxDrawdown(returns: number[]): {
+  maxDrawdown: number;
+  duration: number;
+  recoveryDays: number | null;
+  peakIndex?: number;
+  troughIndex?: number;
+  peakValue?: number;
+  troughValue?: number;
+  classification: string;
+  label: string;
+  interpretation: string;
+} {
   // فحص المدخلات
   if (!returns || returns.length < 2) {
     return {
