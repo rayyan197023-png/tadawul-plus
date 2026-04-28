@@ -2315,7 +2315,7 @@ function calcSMA(bars: any[], period: number): number {
    BOS = Break of Structure  → كسر الهيكل
    CHOCH = Change of Character → تغيّر طابع السوق
 ══════════════════════════════════════════════════════════════ */
-function analyzeStockRadar(stk){
+function analyzeStockRadar(stk: any): any {
   /* ─── توليد البيانات: 60 يوم لـ warm-up كافٍ لجميع المحركات ─── */
   const bars=generateBarsRadar(stk,60);
   const p=stk.p,hi52=stk.hi||p*1.2,lo52=stk.lo||p*0.8;
