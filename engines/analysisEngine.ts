@@ -991,7 +991,7 @@ function calcATRFull(bars: any[], period?: number): any {
   };
   
   // ③ Calculate True Range for a single bar
-  const calcTR = (curr, prev) => {
+  const calcTR = (curr: any, prev: any) => {
     const hi = getHigh(curr);
     const lo = getLow(curr);
     const prevClose = getClose(prev);
