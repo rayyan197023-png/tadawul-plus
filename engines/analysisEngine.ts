@@ -43,7 +43,7 @@ function calcMacroScore(stk: any): any {
   const oilScore = Math.max(0, Math.min(100, 50 + oilSens * oilDelta * 80));
   
   // ③ Rate component (15%) - للبنوك والقطاعات
-  const rateSens = RATE_SENS[stk.sec] || 0.3;
+  const rateSens = (RATE_SENS as any)[stk.sec] || 0.3;
   const realRate = MACRO.saudiRepoRate - MACRO.cpi;
   const rateScore = Math.max(0, Math.min(100, 50 + rateSens * (realRate - 1.5) * 15));
   
