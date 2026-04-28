@@ -3673,7 +3673,7 @@ export function generateDrawdownChart(positions: Position[], days?: number): any
  * @param {number} days - عدد الأيام (افتراضي 365)
  * @returns {Object} {months, stats}
  */
-export function generateMonthlyReturnsHeatmap(positions, days) {
+export function generateMonthlyReturnsHeatmap(positions: Position[], days?: number): any {
   if (!positions || positions.length === 0) {
     return { months: [], stats: {} };
   }
