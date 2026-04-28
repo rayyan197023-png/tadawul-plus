@@ -1773,7 +1773,7 @@ function calcAlternativeData(stk: any, bars: any[]): any {
 }
 
 /* ══ Risk Attribution ══ */
-function calcRiskAttribution(stk,bars){
+function calcRiskAttribution(stk: any, bars: any[]): any {
   var volBars=bars.slice(-Math.min(bars.length,100));
   var n=volBars.length||1;
   var avgRet=volBars.reduce(function(s,b){return s+b.pct/100;},0)/n;
