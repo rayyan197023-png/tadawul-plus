@@ -763,7 +763,7 @@ function genBars(stk: any, n: number = 60): any[] {
     'تجزئة': 0.14, 'صحة': 0.13,
     'عقار': 0.11, 'مرافق': 0.16,
   };
-  const meanRevStrength = sectorMR[stk.sec] || 0.12;
+  const meanRevStrength = (sectorMR as any)[stk.sec] || 0.12;
   
   // ⑤ Oil Correlation (Dynamic)
   const baseOilCorr = stk.oilCorr || 0.15;
