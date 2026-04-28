@@ -367,7 +367,7 @@ function getDefaultSettings() {
  * @param {Array} positions - المراكز
  * @returns {Array} التنبيهات الجديدة
  */
-export function generateSmartAlerts(currentStocks, positions = []) {
+export function generateSmartAlerts(currentStocks: any[], positions: any[] = []): any[] {
   if (!currentStocks || currentStocks.length === 0) return [];
   
   const newAlerts = [];
