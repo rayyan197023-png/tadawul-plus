@@ -896,7 +896,7 @@ export function calcSortinoRatio(portfolioReturns: number[], annualReturn: numbe
  * var tasiReturns = buildTasiSyntheticReturns(allStocksWithBars);
  * // [0.008, -0.003, 0.005, ...]
  */
-export function buildTasiSyntheticReturns(stocksWithBars) {
+export function buildTasiSyntheticReturns(stocksWithBars: Position[]): number[] {
   if (!stocksWithBars || stocksWithBars.length === 0) return [];
 
   // ① اختيار أكبر 10 أسهم بالقيمة السوقية
