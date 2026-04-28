@@ -1194,7 +1194,7 @@ function runStockLayer(positions: IQPosition[], base: any): StockLayer {
 /**
  * Action Layer - Combine all insights into actionable recommendations
  */
-function runActionLayer(positions, base, layers) {
+function runActionLayer(positions: IQPosition[], base: any, layers: any): ActionLayer {
   const actions = [];
 
   // From Diagnostic
