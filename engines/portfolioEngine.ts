@@ -599,7 +599,12 @@ export function calcReturnsMetrics(portfolioReturns: number[]): {
  * console.log(vol.annual); // 0.18 يعني 18% سنوياً
  * console.log(vol.label);  // "متوسط"
  */
-export function calcVolatility(portfolioReturns) {
+export function calcVolatility(portfolioReturns: number[]): {
+  daily: number;
+  annual: number;
+  classification: string;
+  label: string;
+} {
   // فحص المدخلات
   if (!portfolioReturns || portfolioReturns.length < 2) {
     return {
