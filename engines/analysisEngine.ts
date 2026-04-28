@@ -1927,7 +1927,7 @@ function _softmax3(a, b, c){
 }
 
 /* ── 1) detectMarketRegime الموسّع ── */
-function detectMarketRegime(bars, adxV, mktWtd, mktBreadth, atr, stk){
+function detectMarketRegime(bars: any[], adxV: number, mktWtd: any, mktBreadth: any, atr: number, stk: any): any {
   const n = bars.length||1;
 
   // تقلبية: نسبة ATR إلى السعر
