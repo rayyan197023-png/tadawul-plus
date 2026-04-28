@@ -1505,7 +1505,7 @@ function calcVPVR(bars: any[], levels?: number): any {
 }
 
 /* ══ Factor Model ══ */
-function calcFactorModel(stk,bars){
+function calcFactorModel(stk: any, bars: any[]): any {
   // ✨ Validation
   if (!stk) return {composite: 50, factors: {}, alpha: 0, beta: 1, grade: "D", signal: "بيانات غير كافية"};
   bars = Array.isArray(bars) ? bars : [];
