@@ -888,7 +888,7 @@ function calcEMA(vs: number[], p: number): number {
  * - Invalid period → 14 (Wilder's default)
  * - Bar without 'c' property → uses 'close' as fallback
  */
-function calcRSIFull(bars, period) {
+function calcRSIFull(bars: any[], period?: number): any {
   // ① Validation
   period = period || 14;
   if (period < 2) period = 14;
