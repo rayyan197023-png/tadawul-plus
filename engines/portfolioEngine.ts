@@ -3110,7 +3110,7 @@ var STRESS_SCENARIOS = [
  * @param {number} portfolioBeta - Beta المحفظة vs تاسي
  * @returns {Array} نتائج جميع السيناريوهات
  */
-export function runStressTests(portfolioValue, portfolioBeta) {
+export function runStressTests(portfolioValue: number, portfolioBeta?: number): any[] {
   if (!portfolioValue || portfolioValue <= 0) {
     return [];
   }
