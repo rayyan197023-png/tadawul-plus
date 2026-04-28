@@ -114,7 +114,7 @@ export function calcRSIFull(bars: any[], period: number = 14): {
  * @param {number} period
  * @returns {number}
  */
-export function calcATR(bars, period = 14) {
+export function calcATR(bars: any[], period: number = 14): number {
   if (bars.length < period + 1) return 0;
   let atr = 0;
   for (let i = 1; i <= period; i++) {
