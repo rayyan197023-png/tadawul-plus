@@ -606,6 +606,6 @@ function getEmptyAnalysis() {
 }
 
 // ─── دالة مساعدة لتنسيق الأرقام ───────────────
-export function formatCurrency(amount) {
+export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(amount);
 }
