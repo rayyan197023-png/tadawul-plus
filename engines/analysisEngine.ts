@@ -709,7 +709,7 @@ const RISK_GATE = {
 ══════════════════════════════════════════════════ */
 
 /* ══ مولّد الشموع (GBM) ══ */
-function seedRng(s){ let x=s; return()=>{ x=(x*1664525+1013904223)&0xffffffff; return(x>>>0)/0xffffffff; }; }
+function seedRng(s: number): () => number { let x=s; return()=>{ x=(x*1664525+1013904223)&0xffffffff; return(x>>>0)/0xffffffff; }; }
 
 function genBars(stk: any, n: number = 60): any[] {
   n = n||100;
