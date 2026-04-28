@@ -2103,7 +2103,16 @@ function emptyPortfolioAnalysis(): PortfolioAnalysis {
  * @param {Object} correlationMatrixResult - من calcCorrelationMatrix
  * @returns {Object} {average, max, min, classification, label, interpretation}
  */
-export function calcAvgCorrelation(correlationMatrixResult) {
+export function calcAvgCorrelation(correlationMatrixResult: any): {
+  average: number;
+  max: number;
+  min: number;
+  count: number;
+  classification: string;
+  label: string;
+  interpretation: string;
+  warning?: string | null;
+} {
   // فحص المدخلات
   if (!correlationMatrixResult || !correlationMatrixResult.matrix) {
     return {
