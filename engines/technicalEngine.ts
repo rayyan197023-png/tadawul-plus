@@ -36,7 +36,7 @@ export function calcEMA(values: number[], period: number): number {
  * @param {number} period
  * @returns {number} 0–100
  */
-export function calcRSI(bars, period = 14) {
+export function calcRSI(bars: any[], period: number = 14): number {
   if (bars.length < period + 1) return 50;
   const closes = bars.map(b => b.c);
   let ag = 0, al = 0;
