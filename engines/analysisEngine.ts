@@ -1049,10 +1049,10 @@ function calcVWAPFull(bars: any[]): number {
   if (!bars || bars.length === 0) return 0;
   
   // Helper to extract values
-  const getC = (b) => typeof b.c === 'number' ? b.c : (typeof b.close === 'number' ? b.close : null);
-  const getH = (b) => typeof b.hi === 'number' ? b.hi : (typeof b.high === 'number' ? b.high : null);
-  const getL = (b) => typeof b.lo === 'number' ? b.lo : (typeof b.low === 'number' ? b.low : null);
-  const getV = (b) => typeof b.vol === 'number' && b.vol > 0 ? b.vol : 0;
+  const getC = (b: any) => typeof b.c === 'number' ? b.c : (typeof b.close === 'number' ? b.close : 0);
+const getH = (b: any) => typeof b.hi === 'number' ? b.hi : (typeof b.high === 'number' ? b.high : 0);
+const getL = (b: any) => typeof b.lo === 'number' ? b.lo : (typeof b.low === 'number' ? b.low : 0);
+const getV = (b: any) => typeof b.vol === 'number' && b.vol > 0 ? b.vol : 0;
   
   let sumPV = 0;  // Σ(price × volume)
   let sumV = 0;   // Σ(volume)
