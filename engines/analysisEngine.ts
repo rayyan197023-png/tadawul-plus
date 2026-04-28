@@ -3875,7 +3875,7 @@ function saveFeedbackState(state: any): void {
   }
 }
 
-function getAdaptiveWeightAdjustment(sym){
+function getAdaptiveWeightAdjustment(sym: string): any {
   /* يُرجع delta للأوزان بناءً على سجل أداء هذا السهم:
      إذا كانت إشارات L9 صحيحة باستمرار → رفع وزنها
      إذا كانت L5 تُخطئ كثيراً → خفض وزنها        */
