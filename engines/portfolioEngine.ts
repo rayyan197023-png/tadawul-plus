@@ -1078,7 +1078,19 @@ export function calcPortfolioBeta(portfolioReturns: number[], marketReturns: num
  * @param {number} riskFreeRate - معدل خالي من المخاطر
  * @returns {Object} {value, expected, classification, label, interpretation}
  */
-export function calcJensensAlpha(portfolioAnnualReturn, marketAnnualReturn, beta, riskFreeRate) {
+export function calcJensensAlpha(
+  portfolioAnnualReturn: number,
+  marketAnnualReturn: number,
+  beta: number,
+  riskFreeRate?: number
+): {
+  value: number;
+  expected: number;
+  marketRiskPremium?: number;
+  classification: string;
+  label: string;
+  interpretation: string;
+} {
   // القيم الافتراضية
   if (riskFreeRate === undefined) riskFreeRate = 0.06;
   if (beta === undefined || beta === null) beta = 1.0;
