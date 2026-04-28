@@ -1876,7 +1876,7 @@ function _sig(x: number): number { return 1/(1+Math.exp(-x)); }
  * 
  * Returns probabilities that sum to exactly 100%
  */
-function _softmax3(a, b, c){
+function _softmax3(a: number, b: number, c: number): any {
   // ① Validation
   a = typeof a === 'number' && !isNaN(a) ? a : 0;
   b = typeof b === 'number' && !isNaN(b) ? b : 0;
