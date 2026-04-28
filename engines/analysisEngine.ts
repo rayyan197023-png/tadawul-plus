@@ -2268,7 +2268,7 @@ function calcStoch(bars: any[], kP: number = 14): any {
  * - Support/Resistance levels
  * - Crossover signals (50/200 SMA Golden/Death Cross)
  */
-function calcSMA(bars, period) {
+function calcSMA(bars: any[], period: number): number {
   // ① Validation
   if (!bars || !Array.isArray(bars) || bars.length === 0) return 0;
   if (!period || period < 1) period = 20;
