@@ -64,7 +64,13 @@ export function calcRSI(bars: any[], period: number = 14): number {
  * @param {number} period
  * @returns {{ value, trend, rising, divergence }}
  */
-export function calcRSIFull(bars, period = 14) {
+export function calcRSIFull(bars: any[], period: number = 14): {
+  value: number;
+  trend: string;
+  rising: boolean;
+  divergence: string | null;
+  slope?: number;
+} {
   if (bars.length < period + 6) return { value: 50, trend: 'neutral', rising: false, divergence: null };
 
   const closes = bars.map(b => b.c);
