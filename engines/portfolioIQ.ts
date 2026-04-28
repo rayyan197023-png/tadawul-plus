@@ -846,7 +846,7 @@ function runBehavioralLayer(positions: IQPosition[], base: any, options: IQOptio
  * - Quality: High ROE vs Low
  * - Volatility: High vol vs Low vol
  */
-function runFactorLayer(positions, base) {
+function runFactorLayer(positions: IQPosition[], base: any): FactorLayer {
   const factors = {
     size: { score: 0, classification: 'mixed' },
     value: { score: 0, classification: 'mixed' },
