@@ -1539,7 +1539,7 @@ function calcFactorModel(stk: any, bars: any[]): any {
 }
 
 /* ══ Earnings Model (2-Stage DDM) ══ */
-function calcEarningsModel(stk){
+function calcEarningsModel(stk: any): any {
   // ✨ Validation
   if (!stk) return {eps: 0, ddmValue: 0, peValue: 0, targetPrice: 0, upside: 0, signal: "بيانات غير كافية"};
   
