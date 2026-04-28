@@ -1044,7 +1044,7 @@ function calcATRFull(bars: any[], period?: number): any {
  * - Support/Resistance levels
  * - Mean reversion target
  */
-function calcVWAPFull(bars) {
+function calcVWAPFull(bars: any[]): number {
   if (!bars || bars.length === 0) return 0;
   
   // Helper to extract values
