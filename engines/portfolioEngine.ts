@@ -1910,7 +1910,14 @@ export function calcHHI(weights: Weights): {
  * @param {Array} positionsWithBars - [{sym, bars}]
  * @returns {Object} {matrix, symbols, pairCount, highCorrelations}
  */
-export function calcCorrelationMatrix(positionsWithBars) {
+export function calcCorrelationMatrix(positionsWithBars: Position[]): {
+  matrix: { [sym: string]: { [sym: string]: number } };
+  symbols: string[];
+  pairCount: number;
+  highCorrelations: any[];
+  highCorrelationCount?: number;
+  message?: string;
+} {
   if (!positionsWithBars || positionsWithBars.length < 2) {
     return {
       matrix: {},
