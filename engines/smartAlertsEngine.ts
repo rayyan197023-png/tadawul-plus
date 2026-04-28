@@ -697,7 +697,7 @@ function loadExistingAlerts() {
   }
 }
 
-export function saveSmartAlerts(newAlerts) {
+export function saveSmartAlerts(newAlerts: any[]): boolean | undefined {
   if (!newAlerts || newAlerts.length === 0) return;
   try {
     const existing = loadExistingAlerts();
