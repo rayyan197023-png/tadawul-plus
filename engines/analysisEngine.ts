@@ -2203,7 +2203,7 @@ function generateBarsRadar(stk,days=60){
  * - < 20: Oversold
  * - 50: Neutral
  */
-function calcStoch(bars, kP = 14) {
+function calcStoch(bars: any[], kP: number = 14): any {
   // ① Validation
   if (!bars || !Array.isArray(bars) || bars.length === 0) return 50;
   if (kP < 1) kP = 14;
