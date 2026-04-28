@@ -3204,7 +3204,11 @@ export function getStressScenarios(): any[] {
  * @param {Object} weights - أوزان الأسهم
  * @returns {Object} {avgScore, stocksAnalyzed, qualityBreakdown}
  */
-export function calcPortfolioLayersScore(positionsWithBars, weights, stockHealthFunc) {
+export function calcPortfolioLayersScore(
+  positionsWithBars: Position[],
+  weights: Weights,
+  stockHealthFunc?: any
+): any {
   if (!positionsWithBars || positionsWithBars.length === 0 || !stockHealthFunc) {
     return {
       avgScore: 0,
