@@ -597,10 +597,10 @@ function getEmptyAnalysis(): any {
       var95: 0,
       stockQuality: 0,
     },
-    sectors: [],
-    weightedPositions: [],
-    impactSummary: null,
-    fullAnalysis: null,
+    sectors: [] as any[],
+    weightedPositions: [] as any[],
+    impactSummary: null as any,
+    fullAnalysis: null as any,
     isEmpty: true,
   };
 }
