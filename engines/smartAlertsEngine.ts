@@ -742,7 +742,7 @@ export function runSmartAlertsEngine(
   saveSmartAlerts(newAlerts);
   
   if (settings.browserNotifications) {
-    newAlerts.forEach(alert => {
+    newAlerts.forEach((alert: any) => {
       if (alert.priority === PRIORITY.CRITICAL || alert.priority === PRIORITY.HIGH) {
         sendBrowserNotification(alert);
       }
