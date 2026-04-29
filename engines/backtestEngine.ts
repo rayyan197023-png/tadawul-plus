@@ -805,8 +805,8 @@ export function generateDataFromPortfolio(positions: any[], genBarsFn: any, days
   days = days || 252;
 
   // توليد bars لكل سهم في المحفظة
-  var stocksBars = {};
-  positions.forEach(function(p) {
+  var stocksBars: any = {};
+  positions.forEach(function(p: any) {
     var seed = p.sym || (p.stk ? p.stk.seed : p.sym);
     stocksBars[p.sym] = genBarsFn(seed, days);
   });
