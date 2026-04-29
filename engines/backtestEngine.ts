@@ -957,10 +957,10 @@ export function generateDataFromMarket(allStocks: any[], genBarsFn: any, days?: 
     var date = new Date(today);
     date.setDate(date.getDate() - (days - i - 1));
     
-    var prices = {};
-    var stocksData = [];
+    var prices: any = {};
+    var stocksData: any[] = [];
     
-    selectedStocks.forEach(function(stk) {
+    selectedStocks.forEach(function(stk: any) {
       var bars = stocksBars[stk.sym];
       if (bars && bars[i]) {
         prices[stk.sym] = bars[i].c;
