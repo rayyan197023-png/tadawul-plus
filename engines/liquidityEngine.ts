@@ -81,7 +81,7 @@ export function calcVPVR(bars: any[], levels: number = 30): any[] {
     buckets[idx] += b.vol;
   }
 
-  const totalVol = buckets.reduce((s, v) => s + v, 0);
+  const totalVol = buckets.reduce((s: number, v: number) => s + v, 0);
   const maxVol   = Math.max(...buckets);
   const pocIdx   = buckets.indexOf(maxVol);
 
