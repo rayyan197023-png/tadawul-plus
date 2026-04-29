@@ -350,7 +350,7 @@ function calcPerformanceMetrics(equityCurve: any[], dailyReturns: number[], trad
   var peak = equityCurve[0].value;
   var maxDD = 0;
   var maxDDDate = null;
-  equityCurve.forEach(function(e) {
+  equityCurve.forEach(function(e: any) {
     if (e.value > peak) peak = e.value;
     var dd = (e.value - peak) / peak;
     if (dd < maxDD) {
