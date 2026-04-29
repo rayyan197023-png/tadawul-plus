@@ -1928,7 +1928,7 @@ function generateRecommendations(data: any): RecommendationsAnalysis {
   }
 
   // Sort by priority
-  recommendations.sort((a, b) => priorityScore(b.priority) - priorityScore(a.priority));
+  recommendations.sort((a: any, b: any) => priorityScore(b.priority) - priorityScore(a.priority));
 
   return {
     total: recommendations.length,
