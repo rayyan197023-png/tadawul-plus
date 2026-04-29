@@ -2020,8 +2020,8 @@ const sd = (SECTOR_D as any)[sector] || {};
 
   // تطبيق الدلتا بوزن: Regime 70% + Sector 30% (معايرة من الصور)
   ['L1','L2','L3','L4','L5','L6','L7','L8','L9'].forEach(k=>{
-    W[k] = (BASE[k]||0) + (rd[k]||0)*0.70 + (sd[k]||0)*0.30;
-    W[k] = Math.max(0.01, W[k]); // لا وزن سالب
+    (W as any)[k] = ((BASE as any)[k]||0) + ((rd as any)[k]||0)*0.70 + ((sd as any)[k]||0)*0.30;
+    (W as any)[k] = Math.max(0.01, (W as any)[k]); // لا وزن سالب
   });
 
   // إعادة التطبيع → Σ = 1
