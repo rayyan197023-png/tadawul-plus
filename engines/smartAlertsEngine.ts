@@ -641,7 +641,7 @@ export function generateSmartAlerts(currentStocks: any[], positions: any[] = [])
 /**
  * بناء snapshot للحالة الحالية
  */
-function buildStateSnapshot(stock) {
+function buildStateSnapshot(stock: any): any {
   return {
     health: stock.health,
     rsi: stock.rsi,
