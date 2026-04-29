@@ -2188,7 +2188,7 @@ function getStyleLabel(style: string): string {
   return labels[style] || 'متنوعة';
 }
 
-function determinePortfolioPersonality(dna) {
+function determinePortfolioPersonality(dna: any): any {
   const gv = dna.growthValue.score;
   const da = dna.defensiveAggressive.score;
   const mr = dna.momentumReversion.score;
