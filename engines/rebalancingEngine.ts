@@ -401,9 +401,9 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
 
   // ⑬ فحص Stress Tests
   const stressTests = analysis.stressTests || [];
-  const catastrophicScenarios = stressTests.filter(s => s.severity === 'كارثي');
+  const catastrophicScenarios = stressTests.filter((s: any) => s.severity === 'كارثي');
   if (catastrophicScenarios.length > 0) {
-    const worstScenario = catastrophicScenarios.reduce((worst, s) => 
+    const worstScenario = catastrophicScenarios.reduce((worst: any, s: any) => 
       s.expectedLossPct < worst.expectedLossPct ? s : worst
     );
     
