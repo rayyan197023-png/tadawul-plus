@@ -214,7 +214,7 @@ function saveSentAlertToday(sym: string, type: string): void {
 /**
  * هل تم إرسال هذا التنبيه اليوم؟
  */
-function wasAlertSentToday(sym, type) {
+function wasAlertSentToday(sym: string, type: string): boolean {
   const sent = loadSentAlertsToday();
   const key = `${sym}_${type}`;
   return (sent[key] || 0) > 0;
