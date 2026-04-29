@@ -4084,7 +4084,7 @@ export function generateVaRDistribution(positions: Position[]): any {
   var numBins = Math.max(10, Math.min(30, Math.ceil(1 + Math.log2(n))));
   var binWidth = range / numBins;
 
-  var bins = [];
+  var bins: any[] = [];
   for (var b = 0; b < numBins; b++) {
     var binStart = minReturn + b * binWidth;
     var binEnd = binStart + binWidth;
