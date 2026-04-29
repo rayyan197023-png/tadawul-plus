@@ -944,8 +944,8 @@ export function generateDataFromMarket(allStocks: any[], genBarsFn: any, days?: 
   }
 
   // توليد bars
-  var stocksBars = {};
-  selectedStocks.forEach(function(stk) {
+  var stocksBars: any = {};
+  selectedStocks.forEach(function(stk: any) {
     var seed = stk.seed || stk.sym;
     stocksBars[stk.sym] = genBarsFn(seed, days);
   });
