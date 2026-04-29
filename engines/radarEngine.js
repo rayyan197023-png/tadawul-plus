@@ -108,10 +108,10 @@ export function calcOrderBlocks(bars: any[], atr: number): any {
  * SSL: Sell-Side Liquidity (under support)
  * BSL: Buy-Side Liquidity (above resistance)
  */
-export function calcLiqSweep(bars, atr) {
+export function calcLiqSweep(bars: any[], atr: number): any {
   const cur    = bars[bars.length - 1].c;
-  const avgVol = bars.reduce((s, b) => s + b.vol, 0) / bars.length;
-  const sweeps = [];
+  const avgVol = bars.reduce((s: number, b: any) => s + b.vol, 0) / bars.length;
+  const sweeps: any[] = [];
   const lb     = Math.min(20, Math.max(10, Math.round(bars.length * 0.20)));
 
   for (let i = lb; i < bars.length - 1; i++) {
