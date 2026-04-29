@@ -2185,7 +2185,7 @@ function getStyleLabel(style: string): string {
     small_cap_aggressive: 'صغيرة عدوانية',
     balanced: 'متوازنة',
   };
-  return labels[style] || 'متنوعة';
+  return (labels as any)[style] || 'متنوعة';
 }
 
 function determinePortfolioPersonality(dna: any): any {
