@@ -813,7 +813,7 @@ function runBehavioralLayer(positions: IQPosition[], base: any, options: IQOptio
   // 4. Home Bias (over-concentration in one sector)
   const sectorWeights = calculateSectorWeights(positions);
   Object.keys(sectorWeights).forEach(sector => {
-    if (sectorWeights[sector] > 0.5) {
+    if ((sectorWeights as any)[sector] > 0.5) {
       biases.push({
         type: 'home_bias',
         sector: sector,
