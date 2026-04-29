@@ -450,12 +450,12 @@ function calcPerformanceMetrics(equityCurve: any[], dailyReturns: number[], trad
 /**
  * توليد ملخص نصي
  */
-function generateSummary(perf, trades, config) {
-  var summary = {
+function generateSummary(perf: any, trades: any[], config: any): any {
+  var summary: any = {
     rating: 'neutral',
     label: 'أداء متوسط',
     color: 'amber',
-    keyPoints: [],
+    keyPoints: [] as string[],
   };
 
   // تقييم الأداء
