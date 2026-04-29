@@ -1222,7 +1222,7 @@ function runActionLayer(positions: IQPosition[], base: any, layers: any): Action
   });
 
   // From Sector
-  layers.sector.sectorIssues.forEach(issue => {
+layers.sector.sectorIssues.forEach((issue: any) => {
     actions.push({
       source: 'sector',
       type: issue.type,
