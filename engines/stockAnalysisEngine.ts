@@ -220,7 +220,7 @@ export function calcEarningsQuality(stk: any): any {
  * @param {Stock} stk
  * @returns {{ oilImpact, rateImpact, tasiCorr, overallImpact, label }}
  */
-export function calcMacroImpact(stk) {
+export function calcMacroImpact(stk: any): any {
   const oilDev    = (MACRO.oilPrice - MACRO.oilTarget) / MACRO.oilTarget;
   const oilImpact = (stk.oilCorr ?? 0) * oilDev * 100;
 
