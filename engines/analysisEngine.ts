@@ -2412,7 +2412,7 @@ function analyzeStockRadar(stk: any): any {
      عامل 8: التقييم الأساسي /5
      P/E قطاعي + EY vs WACC
   ═════════════════════════════════ */
-  const secPE=RADAR_SECTOR_PE[stk.sec]||15.5,peR=stk.pe/secPE;
+  const secPE=(RADAR_SECTOR_PE as any)[stk.sec]||15.5,peR=stk.pe/secPE;
   const ey=stk.pb>0?stk.roe/stk.pb:stk.roe;
   const vwapD2=vwap>0?(p-vwap)/vwap*100:0;
   const vaScore=Math.min(5,
