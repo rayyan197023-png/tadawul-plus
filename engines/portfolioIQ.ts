@@ -2087,7 +2087,7 @@ function scoreVolatilityRisk(vol: number): number {
   return 30;
 }
 
-function scoreDrawdownRisk(maxDD) {
+function scoreDrawdownRisk(maxDD: number): number {
   const dd = Math.abs(maxDD);
   if (dd < 0.05) return 95;
   if (dd < 0.10) return 85;
