@@ -3531,7 +3531,7 @@ export function generatePortfolioValueChart(
   days = days || 60;
 
   // ① حساب الأوزان
-  var weights = {};
+  var weights: any = {};
   var totalVal = 0;
   positions.forEach(function(p) { totalVal += p.value || 0; });
   positions.forEach(function(p) {
