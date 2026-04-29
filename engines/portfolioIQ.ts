@@ -2231,7 +2231,6 @@ function determinePortfolioPersonality(dna: any): any {
     weaknesses: ['لا تتفوق ولا تتخلف بشكل كبير'],
   };
 }
-
 function estimateSellPanicProbability(psyScore: number, currentDD: number): number {
   // Higher drawdown + lower psy score = higher panic probability
   const ddImpact = Math.min(50, Math.abs(currentDD) * 200);
