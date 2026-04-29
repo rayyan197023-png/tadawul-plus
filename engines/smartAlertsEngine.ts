@@ -776,7 +776,7 @@ export function playAlertSound(presetId?: string, volume: number = 0.3): void {
   const settings = loadAlertSettings();
   const finalPresetId = presetId || settings.soundPreset || 'classic';
   const finalVolume = volume !== undefined ? volume : settings.volume || 0.3;
-  const preset = SOUND_PRESETS[finalPresetId] || SOUND_PRESETS.classic;
+  const preset = (SOUND_PRESETS as any)[finalPresetId] || SOUND_PRESETS.classic;
   
   try {
     const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
