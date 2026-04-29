@@ -131,7 +131,7 @@ export function calcLiqSweep(bars: any[], atr: number): any {
     // ✨ BSL Detection (above resistance)
     if (b.hi > pH && b.c < pH && (b.hi - pH) >= atr * 0.5) {
       const conf = nx && nx.c < nx.o;
-      const eq = win.filter(x => Math.abs(x.hi - pH) / pH < 0.0015).length >= 2;
+      const eq = win.filter((x: any) => Math.abs(x.hi - pH) / pH < 0.0015).length >= 2;
       sweeps.push({ type: 'BSL', q: (volOk ? 1 : 0) + (eq ? 1 : 0) + (conf ? 1 : 0) });
     }
   }
