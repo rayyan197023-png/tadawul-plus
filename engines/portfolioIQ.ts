@@ -1932,10 +1932,10 @@ function generateRecommendations(data: any): RecommendationsAnalysis {
 
   return {
     total: recommendations.length,
-    critical: recommendations.filter(r => r.priority === PRIORITY.CRITICAL).length,
-    high: recommendations.filter(r => r.priority === PRIORITY.HIGH).length,
-    medium: recommendations.filter(r => r.priority === PRIORITY.MEDIUM).length,
-    low: recommendations.filter(r => r.priority === PRIORITY.LOW).length,
+    critical: recommendations.filter((r: any) => r.priority === PRIORITY.CRITICAL).length,
+    high: recommendations.filter((r: any) => r.priority === PRIORITY.HIGH).length,
+    medium: recommendations.filter((r: any) => r.priority === PRIORITY.MEDIUM).length,
+    low: recommendations.filter((r: any) => r.priority === PRIORITY.LOW).length,
     items: recommendations,
   };
 }
