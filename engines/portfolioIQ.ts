@@ -2059,7 +2059,7 @@ function priorityScore(priority: any): number {
   return scores[priority] || 0;
 }
 
-function calculateDiagnosticScore(issues, strengths) {
+function calculateDiagnosticScore(issues: any[], strengths: any[]): number {
   let score = 70;
   issues.forEach(i => {
     if (i.severity === 'critical') score -= 15;
