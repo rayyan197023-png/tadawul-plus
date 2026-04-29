@@ -33,7 +33,7 @@ export var BACKTEST_DEFAULTS = {
 /**
  * حساب تكلفة الصفقة
  */
-function calcTradeCost(tradeValue, config) {
+function calcTradeCost(tradeValue: number, config: any): number {
   var commission = Math.max(
     tradeValue * config.commissionRate,
     config.minCommission
