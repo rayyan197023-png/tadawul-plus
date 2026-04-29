@@ -3707,7 +3707,7 @@ export function generateMonthlyReturnsHeatmap(positions: Position[], days?: numb
   }
 
   // ④ تجميع العوائد شهرياً
-  var monthlyMap = {}; // "2026-03" → [returns array]
+var monthlyMap: any = {};   // "2026-03" → [returns array]
   
   dailyData.forEach(function(d) {
     var year = d.date.getFullYear();
