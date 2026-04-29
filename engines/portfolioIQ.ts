@@ -971,7 +971,7 @@ function runMacroLayer(positions: IQPosition[], base: any): MacroLayer {
   // Normalize to percentages
   if (totalValue > 0) {
     Object.keys(exposures).forEach(k => {
-      exposures[k] = +(exposures[k] / totalValue * 100).toFixed(1);
+      (exposures as any)[k] = +((exposures as any)[k] / totalValue * 100).toFixed(1);
     });
   }
 
