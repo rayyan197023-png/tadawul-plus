@@ -2167,7 +2167,7 @@ function calculateSectorDiversificationScore(sectors: any[], missing: any[]): nu
   return Math.max(0, Math.min(100, score));
 }
 
-function classifyPortfolioStyle(factors) {
+function classifyPortfolioStyle(factors: any): string {
   if (factors.size.score > 70 && factors.volatility.score > 70) {
     return 'large_cap_defensive';
   }
