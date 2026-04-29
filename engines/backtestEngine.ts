@@ -54,7 +54,7 @@ function calcTradeCost(tradeValue: number, config: any): number {
  * @param {Object} options - إعدادات اختيارية
  * @returns {Object} نتائج Backtest كاملة
  */
-export function backtest(strategy, historicalData, options) {
+export function backtest(strategy: any, historicalData: any[], options?: any): any {
   var config = Object.assign({}, BACKTEST_DEFAULTS, options || {});
   
   if (!historicalData || historicalData.length < 30) {
