@@ -3725,8 +3725,8 @@ var monthlyMap: any = {};   // "2026-03" → [returns array]
   });
 
   // ⑤ حساب عائد مركب لكل شهر
-  var monthlyArray = [];
-  Object.keys(monthlyMap).forEach(function(key) {
+  var monthlyArray: any[] = [];
+  Object.keys(monthlyMap).forEach(function(key: string) {
     var m = monthlyMap[key];
     // Compound Return = Π(1 + r_i) - 1
     var compound = 1;
