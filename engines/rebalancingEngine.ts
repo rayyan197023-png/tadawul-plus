@@ -564,7 +564,7 @@ function getSectorSuggestions(existingSectors: any[]): any[] {
     'اتصالات': { stocks: ['STC', 'موبايلي', 'زين'], reason: 'دفاعي + توزيعات' },
   };
 
-  const suggestions = [];
+  const suggestions: any[] = [];
   Object.keys(allSectors).forEach(sector => {
     if (!existingSectors.includes(sector)) {
       suggestions.push({
