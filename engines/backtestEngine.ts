@@ -743,8 +743,8 @@ var mean = allResults.reduce(function(s: number, r: number) { return s + r; }, 0
 /**
  * توليد تفسير ذكي للنتائج
  */
-function generateInterpretation(mean, median, probProfit, worst5, best95) {
-  var points = [];
+function generateInterpretation(mean: number, median: number, probProfit: number, worst5: number, best95: number): string[] {
+  var points: string[] = [];
 
   // ① الاحتمالية العامة
   if (probProfit > 85) {
