@@ -292,7 +292,7 @@ function calcWyckoff(bars: any[], atr: number): any {
  * @param {OHLCBar[]} bars
  * @returns {{ totalScore, layers, regime, signals, stopLoss, targets }}
  */
-export function calcRadarScore(stk, bars) {
+export function calcRadarScore(stk: any, bars: any[]): any {
   if (!bars || bars.length < 15) {
     return { totalScore: 0, layers: [], regime: 'insufficient_data' };
   }
