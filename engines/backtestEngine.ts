@@ -83,7 +83,7 @@ export function backtest(strategy: any, historicalData: any[], options?: any): a
     var prices = day.prices;
 
     // ٢.١ توليد الإشارات
-    var signals = [];
+    var signals: any[] = [];
     if (strategy && typeof strategy.generateSignals === 'function') {
       try {
         signals = strategy.generateSignals(day, state, historicalData, i) || [];
@@ -94,12 +94,12 @@ export function backtest(strategy: any, historicalData: any[], options?: any): a
     }
 
     // ٢.٢ تنفيذ إشارات البيع أولاً (لتحرير رأس المال)
-    signals.filter(function(s) { return s.action === 'sell'; }).forEach(function(signal) {
+    signals.filter(function(s: any) { return s.action === 'sell'; }).forEach(function(signal: any) {
       executeSell(signal, state, prices, trades, date, config);
     });
 
     // ٢.٣ ثم تنفيذ إشارات الشراء
-    signals.filter(function(s) { return s.action === 'buy'; }).forEach(function(signal) {
+    signals.filter(function(s: any) { return s.action === 'buy'; }).forEach(function(signal: any) {
       executeBuy(signal, state, prices, trades, date, config);
     });
 
