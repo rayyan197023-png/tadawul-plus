@@ -1011,7 +1011,7 @@ function runMacroLayer(positions: IQPosition[], base: any): MacroLayer {
  * Sector Layer - Industry-level analysis
  */
 function runSectorLayer(positions: IQPosition[], base: any): SectorLayer {
-  const sectors = {};
+  const sectors: any = {};
   let totalValue = 0;
 
   // Calculate sector weights
