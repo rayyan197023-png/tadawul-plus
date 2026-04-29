@@ -857,7 +857,7 @@ export function generateDataFromPortfolio(positions: any[], genBarsFn: any, days
  * @param {number} maxStocks - أقصى عدد أسهم (افتراضي 15)
  * @returns {Array} historical data
  */
-export function generateDataFromStockList(stocksList, genBarsFn, days, maxStocks) {
+export function generateDataFromStockList(stocksList: any[], genBarsFn: any, days?: number, maxStocks?: number): any[] {
   if (!stocksList || stocksList.length === 0) {
     return [];
   }
