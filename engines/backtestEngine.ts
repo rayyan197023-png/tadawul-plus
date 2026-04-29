@@ -531,7 +531,7 @@ export function compareWithBenchmark(backtestResult: any, benchmarkResult: any):
  * @param {number} iterations - عدد المحاكيات (10,000 افتراضي)
  * @returns {Object} نتائج Monte Carlo
  */
-export function monteCarloSimulation(backtestResult, iterations) {
+export function monteCarloSimulation(backtestResult: any, iterations?: number): any {
   iterations = iterations || 10000;
   
   if (!backtestResult || !backtestResult.success) {
