@@ -3347,6 +3347,7 @@ function checkCorrelationGuard(sym: string, activePositions: any[]): any {
   return {safe:true, reason:"", group:myGroup};
 }
 
+
 /* ③ Dynamic Risk Gate */
 function calcRiskGateLevel(): any {
   var vix     = MACRO.vix || 20;
