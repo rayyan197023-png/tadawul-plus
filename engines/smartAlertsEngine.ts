@@ -687,7 +687,7 @@ function generateAlertId(sym: string, type: string): string {
 // ✨ Storage & Notifications
 // ═══════════════════════════════════════════════
 
-function loadExistingAlerts() {
+function loadExistingAlerts(): any[] {
   try {
     const raw = typeof window !== 'undefined' && window.localStorage.getItem('tadawul_alerts');
     if (!raw) return [];
