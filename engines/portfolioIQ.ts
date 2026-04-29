@@ -2112,7 +2112,7 @@ function scoreConcentrationRisk(hhi: number): number {
   return 15;
 }
 
-function scoreCorrelationRisk(avgCorr) {
+function scoreCorrelationRisk(avgCorr: number): number {
   if (avgCorr < 0.30) return 90;
   if (avgCorr < 0.50) return 70;
   if (avgCorr < 0.70) return 50;
