@@ -932,8 +932,8 @@ export function generateDataFromMarket(allStocks: any[], genBarsFn: any, days?: 
   });
 
   // اختيار 3-5 أسهم من كل قطاع
-  var selectedStocks = [];
-  Object.keys(sectorMap).forEach(function(sector) {
+  var selectedStocks: any[] = [];
+  Object.keys(sectorMap).forEach(function(sector: string) {
     var sectorStocks = sectorMap[sector].slice(0, 5);
     selectedStocks = selectedStocks.concat(sectorStocks);
   });
