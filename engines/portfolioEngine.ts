@@ -3730,7 +3730,7 @@ var monthlyMap: any = {};   // "2026-03" → [returns array]
     var m = monthlyMap[key];
     // Compound Return = Π(1 + r_i) - 1
     var compound = 1;
-    m.returns.forEach(function(r) {
+    m.returns.forEach(function(r: number) {
       compound *= (1 + r);
     });
     var monthReturn = compound - 1;
