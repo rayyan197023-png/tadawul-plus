@@ -673,9 +673,9 @@ function createAlert({ type, priority, sym, name, title, message, detail, action
     read: false,
     dismissed: false,
     smart: true,
-    color: ALERT_COLORS[type]?.bg || '#90a4c8',
-    icon: ALERT_COLORS[type]?.icon || '🔔',
-    label: ALERT_COLORS[type]?.label || 'تنبيه',
+    color: (ALERT_COLORS as any)[type]?.bg || '#90a4c8',
+    icon: (ALERT_COLORS as any)[type]?.icon || '🔔',
+    label: (ALERT_COLORS as any)[type]?.label || 'تنبيه',
   };
 }
 
