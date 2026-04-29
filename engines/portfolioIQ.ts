@@ -2250,7 +2250,7 @@ function getBiasLabel(type: string): string {
   };
   return labels[type] || type;
 }
-function getRiskLevelLabel(level) {
+function getRiskLevelLabel(level: string): string {
   const labels = {
     low: 'منخفض',
     moderate: 'متوسط',
