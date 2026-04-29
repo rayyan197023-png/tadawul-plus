@@ -3807,7 +3807,7 @@ export function generateRiskReturnScatter(positions: Position[], analysisData: a
 
 
   // ① حساب Risk-Return لكل سهم
-  positions.forEach(function(p) {
+  positions.forEach(function(p: any) {
     if (!p.bars || p.bars.length < 10) return;
 
     // حساب العوائد اليومية للسهم
