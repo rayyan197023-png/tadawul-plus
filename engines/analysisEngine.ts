@@ -2802,7 +2802,7 @@ function calc9Layers(stk: any, bars: any[]): any {
   var oilWarBonus=0;
   if(MACRO.oilWarPremium){
     // oilCorr الفعلي من STOCKS يُحسّن دقة تأثير النفط على كل سهم تحديداً
-    const oilImpact = stk.oilCorr||OIL_SENS[stk.sec]||0.5;
+    const oilImpact = stk.oilCorr||(OIL_SENS as any)[stk.sec]||0.5;
     const oilDeltaL4 = (MACRO.oilPrice-MACRO.oilTarget)/MACRO.oilTarget;
     oilWarBonus = Math.round(oilImpact * oilDeltaL4 * 18); // أقصى ±18 نقطة
     oilWarBonus = Math.max(-10, Math.min(18, oilWarBonus));
