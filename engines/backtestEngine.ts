@@ -494,7 +494,7 @@ function generateSummary(perf: any, trades: any[], config: any): any {
 /**
  * مقارنة مع TASI Benchmark
  */
-export function compareWithBenchmark(backtestResult, benchmarkResult) {
+export function compareWithBenchmark(backtestResult: any, benchmarkResult: any): any {
   if (!backtestResult.success || !benchmarkResult.success) {
     return null;
   }
