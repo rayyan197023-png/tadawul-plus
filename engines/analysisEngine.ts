@@ -3331,6 +3331,7 @@ function checkCorrelationGuard(sym: string, activePositions: any[]): any {
   });
   if(!myGroup) return {safe:true, reason:""};
 
+
   // كم سهماً من نفس المجموعة في المحفظة؟
   var groupCount = (activePositions||[]).filter(function(p){
     return TASI_CORR_GROUPS[myGroup] && TASI_CORR_GROUPS[myGroup].indexOf(p.sym)!==-1;
