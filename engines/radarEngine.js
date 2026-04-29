@@ -197,9 +197,8 @@ function calcWyckoff(bars: any[], atr: number): any {
   const BLUE = '#4d9fff', T2 = '#8a90a8', GOLD = '#f0c050', RED = '#ff5f6a';
 
   // ✨ Dynamic confidence calculation
-  function calcConf(baseConf, signals) {
-    // signals: [strength values 0-1]
-    const avgStrength = signals.reduce((s, v) => s + v, 0) / signals.length;
+  function calcConf(baseConf: number, signals: number[]): number {
+    const avgStrength = signals.reduce((s: number, v: number) => s + v, 0) / signals.length;
     return Math.round(baseConf + avgStrength * 25); // 25 points max bonus
   }
 
