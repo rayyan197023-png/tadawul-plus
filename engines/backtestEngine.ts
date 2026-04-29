@@ -163,7 +163,7 @@ export function backtest(strategy: any, historicalData: any[], options?: any): a
 /**
  * تنفيذ صفقة شراء
  */
-function executeBuy(signal, state, prices, trades, date, config) {
+function executeBuy(signal: any, state: any, prices: any, trades: any[], date: string, config: any): void {
   var price = prices[signal.sym];
   if (!price || price <= 0) return;
 
