@@ -2034,7 +2034,7 @@ function calculateIQScore(layers: any): number {
   return Math.round(Math.max(0, Math.min(100, score)));
 }
 
-function getHealthGrade(score) {
+function getHealthGrade(score: number): any {
   const thresholds = [90, 85, 80, 75, 70, 60, 50, 0];
   for (let i = 0; i < thresholds.length; i++) {
     if (score >= thresholds[i]) {
