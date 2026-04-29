@@ -2232,7 +2232,7 @@ function determinePortfolioPersonality(dna: any): any {
   };
 }
 
-function estimateSellPanicProbability(psyScore, currentDD) {
+function estimateSellPanicProbability(psyScore: number, currentDD: number): number {
   // Higher drawdown + lower psy score = higher panic probability
   const ddImpact = Math.min(50, Math.abs(currentDD) * 200);
   const psyImpact = Math.max(0, 50 - psyScore / 2);
