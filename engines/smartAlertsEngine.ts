@@ -544,7 +544,7 @@ export function generateSmartAlerts(currentStocks: any[], positions: any[] = [])
     }
     
     // ═══ 7. ✨ Smart Targets/Stop Loss (positionEngine) ═══
-    const myPosition = positions.find(p => p.sym === stock.sym);
+    const myPosition = positions.find((p: any) => p.sym === stock.sym);
     if (myPosition && stock.p && bars.length >= 14) {
       try {
         // Smart Stop Loss
