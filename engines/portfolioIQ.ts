@@ -1546,6 +1546,7 @@ function simulateHorizon(initialValue: number, dailyReturn: number, dailyVol: nu
     finalValues.push(value);
   }
 
+
   // Sort for percentiles
   finalValues.sort((a, b) => a - b);
 
