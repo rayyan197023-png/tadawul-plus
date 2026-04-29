@@ -65,9 +65,9 @@ export function backtest(strategy: any, historicalData: any[], options?: any): a
   }
 
   // ① حالة المحفظة
-  var state = {
+  var state: any = {
     cash: config.initialCapital,
-    positions: {}, // { sym: { shares, avgCost, entryDate } }
+    positions: {} as any,
     initialCapital: config.initialCapital,
   };
 
