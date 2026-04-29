@@ -2504,7 +2504,7 @@ function _emptyHealthResult(){
     layers: {L1:50,L2:50,L3:50,L4:50,L5:50,L6:50,L7:50,L8:50,L9:50},
     extras: {
       conflictCount: 0,
-      conflictDetails: [],
+      conflictDetails: [] as any[],
       bayesMult: 1.0,
       vr: 1.0,
       kelly: 0,
