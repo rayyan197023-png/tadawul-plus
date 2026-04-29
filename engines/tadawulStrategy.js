@@ -101,7 +101,7 @@ export function createTadawulStrategy(healthFn: any, options?: any): any {
         if (!currentPrice) return;
 
         var currentScore = null;
-        var stockData = stockScores.find(function(s) { return s.sym === sym; });
+        var stockData = stockScores.find(function(s: any) { return s.sym === sym; });
         if (stockData) currentScore = stockData.score;
 
         var sellReason = shouldSell(pos, currentPrice, currentScore, day.date, dayIndex, config);
