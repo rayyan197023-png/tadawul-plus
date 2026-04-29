@@ -1256,6 +1256,7 @@ layers.sector.sectorIssues.forEach((issue: any) => {
     actions: actions.sort((a, b) => severityScore(b.severity) - severityScore(a.severity)),
   };
 }
+
   /* ═══════════════════════════════════════════════════════════
    🧠 INNOVATION #1 - PSYRISK SCORE™
    Behavioral Risk Quantification
