@@ -562,7 +562,7 @@ function getSectorSuggestions(existingSectors: any[]): any[] {
   };
 
   const suggestions: any[] = [];
-  Object.keys(allSectors).forEach(sector => {
+  Object.keys(allSectors).forEach((sector: string) => {
     if (!existingSectors.includes(sector)) {
       suggestions.push({
         sector,
