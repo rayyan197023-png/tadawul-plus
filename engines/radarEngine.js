@@ -76,7 +76,7 @@ export function calcOrderBlocks(bars: any[], atr: number): any {
   const bullStrength = bestBull ? bestBull.strength : 0;
   
   // ✨ Bear analysis
-  const bears = obs.filter(o => o.type === 'bear' && o.fresh).sort((a, b) => b.strength - a.strength);
+  const bears = obs.filter((o: any) => o.type === 'bear' && o.fresh).sort((a: any, b: any) => b.strength - a.strength);
   const bestBear = bears[0] ?? null;
   const inBearOB = !!(bestBear && bestBear.inOB);
   
