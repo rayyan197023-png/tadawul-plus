@@ -569,8 +569,8 @@ function getSectorSuggestions(existingSectors: any[]): any[] {
     if (!existingSectors.includes(sector)) {
       suggestions.push({
         sector,
-        examples: allSectors[sector].stocks.slice(0, 2),
-        reason: allSectors[sector].reason,
+        examples: (allSectors as any)[sector].stocks.slice(0, 2),
+        reason: (allSectors as any)[sector].reason,
       });
     }
   });
