@@ -370,7 +370,7 @@ function getDefaultSettings(): any {
 export function generateSmartAlerts(currentStocks: any[], positions: any[] = []): any[] {
   if (!currentStocks || currentStocks.length === 0) return [];
   
-  const newAlerts = [];
+  const newAlerts: any[] = [];
   const previousState = loadAlertState();
   const updatedState = { ...previousState };
   
