@@ -1525,6 +1525,7 @@ function runCrystalBall(positions: IQPosition[], base: any, simulations: number 
   };
 }
 
+
 /**
  * Simulate portfolio over time horizon
  */
