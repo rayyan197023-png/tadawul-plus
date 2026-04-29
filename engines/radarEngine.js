@@ -116,8 +116,8 @@ export function calcLiqSweep(bars: any[], atr: number): any {
 
   for (let i = lb; i < bars.length - 1; i++) {
     const b = bars[i], win = bars.slice(i - lb, i);
-    const pH = Math.max(...win.map(x => x.hi));
-    const pL = Math.min(...win.map(x => x.lo));
+    const pH = Math.max(...win.map((x: any) => x.hi));
+    const pL = Math.min(...win.map((x: any) => x.lo));
     const volOk = b.vol > avgVol * 1.5;
     const nx    = bars[i + 1];
     
