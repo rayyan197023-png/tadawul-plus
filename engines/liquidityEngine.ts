@@ -64,11 +64,11 @@ export function classifyLiquidity(bars: any[], stk: any): any {
  * 30 buckets (was 20) for better price resolution.
  * Includes POC, VAH, VAL (70% value area — institutional standard).
  */
-export function calcVPVR(bars, levels = 30) {
+export function calcVPVR(bars: any[], levels: number = 30): any[] {
   if (!bars.length) return [];
 
-  const hi  = Math.max(...bars.map(b => b.hi));
-  const lo  = Math.min(...bars.map(b => b.lo));
+  const hi  = Math.max(...bars.map((b: any) => b.hi));
+  const lo  = Math.min(...bars.map((b: any) => b.lo));
   const rng = hi - lo;
   if (rng === 0) return [];
 
