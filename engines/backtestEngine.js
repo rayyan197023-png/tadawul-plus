@@ -45,6 +45,7 @@ function calcTradeCost(tradeValue, config) {
   return commission + vat + regFees + slippageCost;
 }
 
+
 /**
  * المحرك الرئيسي: backtest
  * 
