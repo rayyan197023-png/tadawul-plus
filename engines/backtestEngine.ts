@@ -222,7 +222,7 @@ function executeBuy(signal: any, state: any, prices: any, trades: any[], date: s
 /**
  * تنفيذ صفقة بيع
  */
-function executeSell(signal, state, prices, trades, date, config) {
+function executeSell(signal: any, state: any, prices: any, trades: any[], date: string, config: any): void {
   var position = state.positions[signal.sym];
   if (!position || position.shares <= 0) return;
 
