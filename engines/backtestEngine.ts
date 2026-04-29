@@ -301,9 +301,9 @@ function executeSell(signal: any, state: any, prices: any, trades: any[], date: 
 /**
  * حساب القيمة المستثمرة حالياً
  */
-function calcInvestedValue(state, prices) {
+function calcInvestedValue(state: any, prices: any): number {
   var total = 0;
-  Object.keys(state.positions).forEach(function(sym) {
+  Object.keys(state.positions).forEach(function(sym: string) {
     var pos = state.positions[sym];
     var price = prices[sym];
     if (price && pos.shares > 0) {
