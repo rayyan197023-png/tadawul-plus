@@ -403,8 +403,8 @@ function calcPerformanceMetrics(equityCurve: any[], dailyReturns: number[], trad
   var bestDay = Math.max.apply(null, dailyReturns) * 100;
   var worstDay = Math.min.apply(null, dailyReturns) * 100;
   
-  var positiveDays = dailyReturns.filter(function(r) { return r > 0; }).length;
-  var negativeDays = dailyReturns.filter(function(r) { return r < 0; }).length;
+  var positiveDays = dailyReturns.filter(function(r: number) { return r > 0; }).length;
+  var negativeDays = dailyReturns.filter(function(r: number) { return r < 0; }).length;
   var positiveDaysPct = (positiveDays / dailyReturns.length) * 100;
 
   return {
