@@ -2809,6 +2809,7 @@ function calc9Layers(stk: any, bars: any[]): any {
   }
   const sectorScore = Math.round(Math.min(100,Math.max(0,50+sectorRel*8+oilWarBonus)));
 
+
   // L4 المحسّن: RSC 50% + VWAP 30% + Sector 20% + PIF Bonus
   const pifL4Bonus = tc_tasi.pifBoost; // إعلانات صندوق الثروة السيادية
   const _L4raw = Math.round(_clamp(rscScore*0.50 + vwapScore*0.30 + sectorScore*0.20 + pifL4Bonus, 0, 100));
