@@ -261,7 +261,7 @@ export function calcMacroImpact(stk: any): any {
  * Comprehensive stock score (0-100)
  * Combines: radar + fundamentals + macro
  */
-export function calcComprehensiveScore(stk, bars) {
+export function calcComprehensiveScore(stk: any, bars: any[]): any {
   const dcf     = calcDCF(stk);
   const factor  = calcFactorModel(stk, bars);
   const earnings= calcEarningsQuality(stk);
