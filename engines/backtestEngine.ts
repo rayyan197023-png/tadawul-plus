@@ -882,7 +882,7 @@ export function generateDataFromStockList(stocksList: any[], genBarsFn: any, day
     date.setDate(date.getDate() - (days - i - 1));
     
     var prices: any = {};
-    var stocksData: any[] = 
+    var stocksData: any[] = [];
     
     selectedStocks.forEach(function(stk: any) {
       var bars = stocksBars[stk.sym];
