@@ -281,7 +281,7 @@ export function calcMACD(
   }
 
   // ✨ Build full Signal series (للحصول على prevSignal دقيق)
-  const signalSeries = [];
+  const signalSeries: number[] = [];
   let sigVal = macdSeries.slice(0, signal).reduce((a, b) => a + b, 0) / signal;
   signalSeries.push(sigVal);
   
