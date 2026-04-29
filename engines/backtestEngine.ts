@@ -950,7 +950,7 @@ export function generateDataFromMarket(allStocks, genBarsFn, days) {
     stocksBars[stk.sym] = genBarsFn(seed, days);
   });
 
-  var data = [];
+  var data: any[] = [];
   var today = new Date();
 
   for (var i = 0; i < days; i++) {
