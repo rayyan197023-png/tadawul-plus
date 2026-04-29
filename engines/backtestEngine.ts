@@ -924,8 +924,8 @@ export function generateDataFromMarket(allStocks: any[], genBarsFn: any, days?: 
   days = days || 252;
 
   // أخذ 30 سهم من قطاعات متنوعة
-  var sectorMap = {};
-  allStocks.forEach(function(stk) {
+  var sectorMap: any = {};
+  allStocks.forEach(function(stk: any) {
     var sector = stk.sector || 'other';
     if (!sectorMap[sector]) sectorMap[sector] = [];
     sectorMap[sector].push(stk);
