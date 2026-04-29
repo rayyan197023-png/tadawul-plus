@@ -3803,7 +3803,8 @@ export function generateRiskReturnScatter(positions: Position[], analysisData: a
     return { stocks: [], portfolio: null, benchmark: null };
   }
 
-  var scatterData = [];
+  var scatterData: any[] = [];
+
 
   // ① حساب Risk-Return لكل سهم
   positions.forEach(function(p) {
