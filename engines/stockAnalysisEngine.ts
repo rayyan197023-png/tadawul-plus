@@ -183,7 +183,7 @@ export function calcFactorModel(stk: any, bars: any[]): any {
  * @param {Stock} stk
  * @returns {{ score, accrualRatio, consistency, label }}
  */
-export function calcEarningsQuality(stk) {
+export function calcEarningsQuality(stk: any): any {
   if (!stk.eps_q1 && !stk.eps_q2) {
     return { score: 50, accrualRatio: null, consistency: null, label: 'بيانات محدودة' };
   }
