@@ -3429,7 +3429,7 @@ export function calcFinalRecommendation(analysis: any): any {
   }
 
   // فحص Stress Tests
-  var catastrophicScenarios = stress.filter(function(s) {
+  var catastrophicScenarios = stress.filter(function(s: any) {
     return s.severity === 'كارثي';
   });
   if (catastrophicScenarios.length > 0) {
