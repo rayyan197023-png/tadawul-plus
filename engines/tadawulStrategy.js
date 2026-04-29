@@ -73,8 +73,8 @@ export function createTadawulStrategy(healthFn: any, options?: any): any {
       }
 
       // ③ تقييم كل سهم متاح
-      var stockScores = [];
-      day.stocksData.forEach(function(stk) {
+      var stockScores: any[] = [];
+      day.stocksData.forEach(function(stk: any) {
         if (!stk.bars || stk.bars.length < 30) return;
         
         try {
