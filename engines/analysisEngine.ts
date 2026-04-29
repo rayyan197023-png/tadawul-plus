@@ -2213,7 +2213,7 @@ function calcStoch(bars: any[], kP: number = 14): any {
   if (bars.length < kP) return 50;
   
   // ② Helper functions
-  const getC = (b) => {
+  const getC = (b: any) => {
     if (!b) return null;
     return typeof b.c === 'number' ? b.c : 
            typeof b.close === 'number' ? b.close : null;
