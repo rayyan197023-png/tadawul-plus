@@ -350,7 +350,7 @@ export function calcRadarScore(stk: any, bars: any[]): any {
   }
 
   // ✨ 9 Weighted Layers
-  const layers = [
+  const layers: any[] = [
     { id: 'structure', label: 'هيكل السوق',     score: ms.score,      label2: ms.label,   weight: 1.5 },
     { id: 'ob',        label: 'مناطق الشراء',   score: ob.score,      label2: ob.label,   weight: 1.4 },
     { id: 'sweep',     label: 'اصطياد السيولة', score: liq.score,     label2: liq.label,  weight: 1.3 },
