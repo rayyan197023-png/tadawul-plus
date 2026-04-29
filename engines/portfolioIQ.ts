@@ -1198,7 +1198,7 @@ function runActionLayer(positions: IQPosition[], base: any, layers: any): Action
   const actions: any[] = [];
 
   // From Diagnostic
-  layers.diagnostic.issues.forEach(issue => {
+  layers.diagnostic.issues.forEach((issue: any) => {
     if (issue.severity === 'critical' || issue.severity === 'high') {
       actions.push({
         source: 'diagnostic',
