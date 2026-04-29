@@ -1776,7 +1776,7 @@ function generateRecoveryPath(positions: IQPosition[], base: any): RecoveryPathA
  */
 function generateRecommendations(data: any): RecommendationsAnalysis {
   const { positions, baseAnalysis, diagnostic, risk, behavioral, sector, stock } = data;
-  const recommendations = [];
+  const recommendations: any[] = [];
 
   // === CRITICAL: Concentration Issues ===
   if (baseAnalysis.diversification && baseAnalysis.diversification.largestPosition > 30) {
