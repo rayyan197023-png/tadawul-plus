@@ -261,7 +261,7 @@ export function calcMACD(
   }
 
   // ✨ Build full MACD series O(n) -- single pass from slow onwards
-  const macdSeries = [];
+  const macdSeries: number[] = [];
   for (let i = slow; i < closes.length; i++) {
     emaFast = closes[i] * kFast + emaFast * (1 - kFast);
     emaSlow = closes[i] * kSlow + emaSlow * (1 - kSlow);
