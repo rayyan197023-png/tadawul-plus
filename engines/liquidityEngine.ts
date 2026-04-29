@@ -183,11 +183,11 @@ export function calcLiquidityScore(bars: any[]): any {
  * @param {number} period
  * @returns {{ rvol, label }}
  */
-export function calcRelativeVolume(bars, period = 20) {
+export function calcRelativeVolume(bars: any[], period: number = 20): any {
   if (bars.length < period + 1) return { rvol: 1, label: 'طبيعي' };
 
   const today  = bars[bars.length - 1].vol;
-  const avgVol = bars.slice(-period - 1, -1).reduce((s, b) => s + b.vol, 0) / period;
+  const avgVol = bars.slice(-period - 1, -1).reduce((s: number, b: any) => s + b.vol, 0) / period;
   const rvol   = +(today / (avgVol || 1)).toFixed(2);
 
   return {
