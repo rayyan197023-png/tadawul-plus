@@ -183,8 +183,8 @@ function calcWyckoff(bars: any[], atr: number): any {
 
   // Price trend
   const half = Math.floor(rng.length / 2);
-  const avgFirst  = rng.slice(0, half).reduce((s, b) => s + b.c, 0) / half;
-  const avgSecond = rng.slice(half).reduce((s, b) => s + b.c, 0) / (rng.length - half);
+  const avgFirst  = rng.slice(0, half).reduce((s: number, b: any) => s + b.c, 0) / half;
+  const avgSecond = rng.slice(half).reduce((s: number, b: any) => s + b.c, 0) / (rng.length - half);
   const trend = (avgSecond - avgFirst) / (avgFirst || 1) * 100;
 
   // Volume ratio
