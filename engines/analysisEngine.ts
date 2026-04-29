@@ -2218,12 +2218,12 @@ function calcStoch(bars: any[], kP: number = 14): any {
     return typeof b.c === 'number' ? b.c : 
            typeof b.close === 'number' ? b.close : null;
   };
-  const getH = (b) => {
+  const getH = (b: any) => {
     if (!b) return null;
     return typeof b.hi === 'number' ? b.hi : 
            typeof b.high === 'number' ? b.high : null;
   };
-  const getL = (b) => {
+  const getL = (b: any) => {
     if (!b) return null;
     return typeof b.lo === 'number' ? b.lo : 
            typeof b.low === 'number' ? b.low : null;
