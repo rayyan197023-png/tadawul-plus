@@ -597,10 +597,10 @@ export function monteCarloSimulation(backtestResult: any, iterations?: number): 
   }
 
   // ② ترتيب النتائج
-  allResults.sort(function(a, b) { return a - b; });
-  allMaxDrawdowns.sort(function(a, b) { return a - b; });
-  allSharpes.sort(function(a, b) { return a - b; });
-  allFinalValues.sort(function(a, b) { return a - b; });
+  allResults.sort(function(a: number, b: number) { return a - b; });
+  allMaxDrawdowns.sort(function(a: number, b: number) { return a - b; });
+  allSharpes.sort(function(a: number, b: number) { return a - b; });
+  allFinalValues.sort(function(a: number, b: number) { return a - b; });
 
   // ③ حساب الإحصاءات
   var median = allResults[Math.floor(iterations / 2)];
