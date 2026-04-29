@@ -71,7 +71,7 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
   const layersIntel = analysis.layersIntelligence || {};
 
   // ─── اكتشاف المشاكل (بناءً على بيانات حقيقية) ───
-  const issues = [];
+  const issues: any[] = [];
 
   // ① فحص التركيز (من portfolioEngine)
   if (diversification.largestPosition > MAX_SINGLE_POSITION * 100) {
