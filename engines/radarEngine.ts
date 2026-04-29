@@ -246,7 +246,7 @@ function calcWyckoff(bars: any[], atr: number): any {
       col: RED, 
       conf: calcConf(40, distStrength),
       pfl: +pfl.toFixed(0),
-      strength: +(distStrength.reduce((s,v)=>s+v,0)/3).toFixed(2)
+      strength: +(distStrength.reduce((s: number,v: number)=>s+v,0)/3).toFixed(2)
     };
   }
 
