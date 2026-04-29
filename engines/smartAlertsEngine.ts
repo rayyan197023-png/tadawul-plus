@@ -345,7 +345,7 @@ export function saveAlertSettings(settings: any): void {
   } catch (e) {}
 }
 
-function getDefaultSettings() {
+function getDefaultSettings(): any {
   return {
     soundEnabled: true,
     soundMode: 'critical',
