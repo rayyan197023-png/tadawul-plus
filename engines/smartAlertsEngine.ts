@@ -656,7 +656,7 @@ function buildStateSnapshot(stock: any): any {
 // ✨ Helper Functions
 // ═══════════════════════════════════════════════
 
-function createAlert({ type, priority, sym, name, title, message, detail, action, data }) {
+function createAlert({ type, priority, sym, name, title, message, detail, action, data }: any): any {
   return {
     id: generateAlertId(sym, type),
     type,
