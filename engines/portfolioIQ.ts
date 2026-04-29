@@ -2239,7 +2239,7 @@ function estimateSellPanicProbability(psyScore: number, currentDD: number): numb
   return Math.min(95, Math.round(ddImpact + psyImpact));
 }
 
-function getBiasLabel(type) {
+function getBiasLabel(type: string): string {
   const labels = {
     recency_bias: 'تحيّز الحداثة',
     loss_aversion: 'كره الخسارة',
