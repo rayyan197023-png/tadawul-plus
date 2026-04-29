@@ -113,7 +113,7 @@ export function calcDCF(stk: any): any {
  * @param {OHLCBar[]} bars
  * @returns {{ quality, value, momentum, growth, composite, label }}
  */
-export function calcFactorModel(stk, bars) {
+export function calcFactorModel(stk: any, bars: any[]): any {
   // Quality factor — four sub-dimensions
   // 1. Profitability (ROE): primary quality signal (0-45 pts)
   const roePts = Math.min(45, Math.round((stk.roe ?? 0) * 1.5));
