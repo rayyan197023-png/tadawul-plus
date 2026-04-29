@@ -291,7 +291,7 @@ export function calcMACD(
   }
 
   // ✨ Build full Histogram series
-  const histSeries = [];
+  const histSeries: number[] = [];
   for (let i = 0; i < signalSeries.length; i++) {
     const macdIdx = signal - 1 + i; // align indices
     if (macdIdx < macdSeries.length) {
