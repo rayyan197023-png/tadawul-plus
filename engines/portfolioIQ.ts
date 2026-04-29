@@ -1529,7 +1529,7 @@ function runCrystalBall(positions: IQPosition[], base: any, simulations: number 
  * Simulate portfolio over time horizon
  */
 function simulateHorizon(initialValue: number, dailyReturn: number, dailyVol: number, days: number, sims: number): any {
-  const finalValues: any[] = []; 
+  const finalValues: any[] = 
   
   for (let s = 0; s < sims; s++) {
     let value = initialValue;
