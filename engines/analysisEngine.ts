@@ -2861,6 +2861,7 @@ function calc9Layers(stk: any, bars: any[]): any {
   const stochBonus = stochV < 20 ? 5 : stochV < 35 ? 3 : stochV > 80 ? -5 : stochV > 65 ? -2 : 0;
   const L5 = Math.min(100, Math.max(0, _L5raw + Math.round((radarTR/15*100 - 50) * 0.2) + smaBonus + stochBonus));
 
+
   // ════════════════════════════════════════
   //  الطبقة ٦ — Kelly + Macro
   // ════════════════════════════════════════
