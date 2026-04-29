@@ -372,15 +372,15 @@ function calcPerformanceMetrics(equityCurve: any[], dailyReturns: number[], trad
     : 0;
 
   var avgWin = winningTrades.length > 0 
-    ? mean(winningTrades.map(function(t) { return t.pnl; })) 
+    ? mean(winningTrades.map(function(t: any) { return t.pnl; })) 
     : 0;
   var avgLoss = losingTrades.length > 0 
-    ? Math.abs(mean(losingTrades.map(function(t) { return t.pnl; })))
+    ? Math.abs(mean(losingTrades.map(function(t: any) { return t.pnl; })))
     : 0;
 
   // ⑧ Profit Factor
-  var grossProfit = winningTrades.reduce(function(s, t) { return s + t.pnl; }, 0);
-  var grossLoss = Math.abs(losingTrades.reduce(function(s, t) { return s + t.pnl; }, 0));
+  var grossProfit = winningTrades.reduce(function(s: number, t: any) { return s + t.pnl; }, 0);
+  var grossLoss = Math.abs(losingTrades.reduce(function(s: number, t: any) { return s + t.pnl; }, 0));
   var profitFactor = grossLoss > 0 ? grossProfit / grossLoss : (grossProfit > 0 ? 999 : 0);
 
   // ⑨ Expected Return per trade
