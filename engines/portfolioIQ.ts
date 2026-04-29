@@ -2079,7 +2079,7 @@ function scoreMarketRisk(beta: number): number {
   return 30;
 }
 
-function scoreVolatilityRisk(vol) {
+function scoreVolatilityRisk(vol: number): number {
   if (vol < 0.10) return 90;
   if (vol < 0.15) return 80;
   if (vol < 0.20) return 70;
