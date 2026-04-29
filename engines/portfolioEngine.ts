@@ -3680,7 +3680,7 @@ export function generateMonthlyReturnsHeatmap(positions: Position[], days?: numb
   days = days || 365;
 
   // ① حساب الأوزان
-  var weights = {};
+  var weights: any = {};
   var totalVal = 0;
   positions.forEach(function(p) { totalVal += p.value || 0; });
   positions.forEach(function(p) {
