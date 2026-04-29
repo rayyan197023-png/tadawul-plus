@@ -3674,7 +3674,7 @@ function ensembleVote(LA: number, LB: number, LC: number, regime: any, gates: an
 
   // ── عتبات مُعايَرة بدقة ──
   // التقني أكثر استجابةً (±10)، الأساسي أكثر تحفظاً (±13)
-  function modelVote(score, threshold_buy, threshold_sell){
+  function modelVote(score: number, threshold_buy: number, threshold_sell: number): any {
     if(score >= threshold_buy)  return {dir:1,  strength:(score-threshold_buy)/(100-threshold_buy)};
     if(score <= threshold_sell) return {dir:-1, strength:(threshold_sell-score)/threshold_sell};
     return {dir:0, strength:0};
