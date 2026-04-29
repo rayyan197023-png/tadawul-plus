@@ -240,7 +240,7 @@ export function calcMacroImpact(stk) {
     construction: -0.25,   // project financing
     industrial:   -0.15,
   };
-  const rateSens = rateSensMap[stk.sectorId]
+  const rateSens = (rateSensMap as any)[stk.sectorId]
     ?? (stk.debt > 0.5 ? -0.20 : 0.00);
   const rateImpact = rateSens * (MACRO.saudiRate - 4) * 10;
 
