@@ -1934,7 +1934,7 @@ export function calcCorrelationMatrix(positionsWithBars: Position[]): {
   }
 
   // ① حساب عوائد كل سهم
-  var stockReturns = {};
+  var stockReturns: any = {};
   var symbols = [];
 
   for (var i = 0; i < positionsWithBars.length; i++) {
