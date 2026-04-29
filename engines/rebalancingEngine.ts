@@ -468,7 +468,7 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
 }
 
 // ─── Helper: العثور على أكبر مركز ──────────────
-function findLargestPosition(positions, totalValue) {
+function findLargestPosition(positions: any[], totalValue: number): any {
   let largest = positions[0];
   let largestWeight = 0;
   
