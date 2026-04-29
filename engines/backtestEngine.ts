@@ -868,8 +868,8 @@ export function generateDataFromStockList(stocksList: any[], genBarsFn: any, day
   var selectedStocks = stocksList.slice(0, maxStocks);
 
   // توليد bars لكل سهم
-  var stocksBars = {};
-  selectedStocks.forEach(function(stk) {
+  var stocksBars: any = {};
+  selectedStocks.forEach(function(stk: any) {
     var seed = stk.seed || stk.sym;
     stocksBars[stk.sym] = genBarsFn(seed, days);
   });
