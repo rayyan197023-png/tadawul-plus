@@ -68,7 +68,7 @@ export function calcOrderBlocks(bars: any[], atr: number): any {
   }
 
   // Bull analysis
-  const bulls    = obs.filter(o => o.type === 'bull' && o.fresh).sort((a, b) => (b.strength + (b.fvg ? 2 : 0)) - (a.strength + (a.fvg ? 2 : 0)));
+  const bulls    = obs.filter((o: any) => o.type === 'bull' && o.fresh).sort((a: any, b: any) => (b.strength + (b.fvg ? 2 : 0)) - (a.strength + (a.fvg ? 2 : 0)));
   const bestBull = bulls[0] ?? null;
   const inBullOB = !!(bestBull && bestBull.inOB);
   const inRef    = !!(bestBull && bestBull.inRef);
