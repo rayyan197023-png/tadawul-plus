@@ -15,12 +15,12 @@ import { calcCMF, calcVWAP, calcOBV, calcATR } from './technicalEngine';
  * @param {Stock} stk
  * @returns {{ type, label, color, cmf, obvRising, volumeRatio }}
  */
-export function classifyLiquidity(bars, stk) {
+export function classifyLiquidity(bars: any[], stk: any): any {
   const cmf    = calcCMF(bars);
   const obv    = calcOBV(bars);
-  const avgVol = bars.slice(-20).reduce((s, b) => s + b.vol, 0) / 20;
+  const avgVol = bars.slice(-20).reduce((s: number, b: any) => s + b.vol, 0) / 20;
   // Use 3-bar average to reduce single-bar noise (institutional activity spans multiple bars)
-  const recentVol   = bars.slice(-3).reduce((s, b) => s + b.vol, 0) / 3;
+  const recentVol   = bars.slice(-3).reduce((s: number, b: any) => s + b.vol, 0) / 3;
   const volumeRatio = recentVol / (avgVol || 1);
   const cur         = bars[bars.length - 1];
 
