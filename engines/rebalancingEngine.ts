@@ -490,7 +490,7 @@ function findLargestPosition(positions: any[], totalValue: number): any {
 }
 
 // ─── Helper: حساب Health Score ─────────────────
-function calculateHealthScore({ diversificationScore, sharpe, maxDrawdown, stockQuality }: any): number {
+function calculateHealthScore({ diversificationScore, sharpe, maxDrawdown, stockQuality }: any): number { 
   // 4 components × 25 points each = 100 max
   let score = 0;
   
