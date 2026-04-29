@@ -2126,7 +2126,7 @@ function classifyRiskLevel(score) {
   return 'extreme';
 }
 
-function calculateSectorWeights(positions) {
+function calculateSectorWeights(positions: any[]): any {
   const sectors: any = {};
   let total = 0;
   
