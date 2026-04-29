@@ -2104,7 +2104,7 @@ function scoreTailRisk(cvar: number): number {
   return 30;
 }
 
-function scoreConcentrationRisk(hhi) {
+function scoreConcentrationRisk(hhi: number): number {
   if (hhi < 1500) return 90;
   if (hhi < 2500) return 75;
   if (hhi < 4000) return 55;
