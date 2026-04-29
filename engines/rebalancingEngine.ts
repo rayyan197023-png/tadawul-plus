@@ -439,8 +439,8 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
 
   return {
     healthScore,
-    issues: issues.filter(i => i.severity !== 'good'),
-    positiveNotes: issues.filter(i => i.severity === 'good'),
+    issues: issues.filter((i: any) => i.severity !== 'good'),
+    positiveNotes: issues.filter((i: any) => i.severity === 'good'),
     summary: {
       totalValue: Math.round(totalValue),
       numPositions: positions.length,
