@@ -316,7 +316,7 @@ function calcInvestedValue(state: any, prices: any): number {
 /**
  * حساب مقاييس الأداء (18 مقياساً)
  */
-function calcPerformanceMetrics(equityCurve, dailyReturns, trades, config, benchmarkCurve) {
+function calcPerformanceMetrics(equityCurve: any[], dailyReturns: number[], trades: any[], config: any, benchmarkCurve: any[]): any {
   if (equityCurve.length < 2) return {};
 
   var initial = config.initialCapital;
