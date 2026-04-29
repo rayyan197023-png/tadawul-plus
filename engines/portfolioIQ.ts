@@ -2044,7 +2044,7 @@ function getHealthGrade(score: number): any {
   return HEALTH_GRADES[0];
 }
 
-function severityScore(severity) {
+function severityScore(severity: string): number {
   const scores = { critical: 4, high: 3, medium: 2, low: 1 };
   return scores[severity] || 0;
 }
