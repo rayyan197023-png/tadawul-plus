@@ -345,9 +345,9 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
       currentValue: layersIntel.weightedScore.toFixed(0),
       idealValue: '70+',
       weakStocks: (layersIntel.perStock || [])
-        .filter(s => s.score < 50)
+        .filter((s: any) => s.score < 50)
         .slice(0, 3)
-        .map(s => s.sym),
+        .map((s: any) => s.sym),
       impact: {
         quality: '+30%',
         returns: '+20%',
