@@ -142,7 +142,7 @@ export function detectVolumeSpikes(bars: any[]): any[] {
  * Combines: CMF, OBV Z-score, volume ratio, spike detection
  * Used by: AnalysisScreen ranking, radarEngine layer
  */
-export function calcLiquidityScore(bars) {
+export function calcLiquidityScore(bars: any[]): any {
   if (bars.length < 20) return { score: 50, label: 'غير كافٍ', components: {} };
 
   const cmf  = calcCMF(bars);
