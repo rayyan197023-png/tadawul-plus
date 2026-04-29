@@ -92,7 +92,7 @@ export function createTadawulStrategy(healthFn: any, options?: any): any {
       });
 
       // ترتيب تنازلي حسب Score
-      stockScores.sort(function(a, b) { return b.score - a.score; });
+      stockScores.sort(function(a: any, b: any) { return b.score - a.score; });
 
       // ④ إشارات البيع (قبل الشراء)
       Object.keys(state.positions).forEach(function(sym) {
