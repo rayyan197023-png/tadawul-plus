@@ -416,7 +416,7 @@ export function calcRadarScore(stk: any, bars: any[]): any {
   ];
 
   // Compile signals
-  const signals = [];
+  const signals: any[] = [];
   if (rsiFull.divergence === 'bullish') signals.push({ type: 'bullish', msg: 'RSI: تباعد إيجابي (Bullish Divergence)' });
   if (rsiFull.divergence === 'bearish') signals.push({ type: 'bearish', msg: 'RSI: تباعد سلبي (Bearish Divergence)' });
   if (macd?.crossover === 'bullish_cross') signals.push({ type: 'bullish', msg: 'MACD: تقاطع صاعد (Golden Cross)' });
