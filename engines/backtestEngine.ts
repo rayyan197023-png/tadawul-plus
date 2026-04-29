@@ -818,10 +818,10 @@ export function generateDataFromPortfolio(positions: any[], genBarsFn: any, days
     var date = new Date(today);
     date.setDate(date.getDate() - (days - i - 1));
     
-    var prices = {};
-    var stocksData = [];
+    var prices: any = {};
+    var stocksData: any[] = [];
     
-    positions.forEach(function(p) {
+    positions.forEach(function(p: any) {
       var bars = stocksBars[p.sym];
       if (bars && bars[i]) {
         prices[p.sym] = bars[i].c;
