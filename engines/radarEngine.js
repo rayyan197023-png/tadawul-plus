@@ -173,8 +173,8 @@ function calcWyckoff(bars: any[], atr: number): any {
   const cur = bars[n - 1].c;
   const rng = bars.slice(-20);
 
-  const hi   = Math.max(...rng.map(b => b.hi));
-  const lo   = Math.min(...rng.map(b => b.lo));
+  const hi   = Math.max(...rng.map((b: any) => b.hi));
+  const lo   = Math.min(...rng.map((b: any) => b.lo));
   const rngW = hi - lo || 1;
   const avg  = rng.reduce((s, b) => s + b.c, 0) / rng.length;
 
