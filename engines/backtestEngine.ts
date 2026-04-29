@@ -990,18 +990,18 @@ export function generateDataFromMarket(allStocks: any[], genBarsFn: any, days?: 
  * استراتيجية Buy & Hold محسّنة للمحفظة الحالية
  * تشتري الأسهم بأوزانها الحالية ثم تحتفظ
  */
-export function createPortfolioBuyAndHoldStrategy(positions) {
+export function createPortfolioBuyAndHoldStrategy(positions: any[]): any {
   var hasBought = false;
 
   return {
     name: 'محفظتي الحالية (Buy & Hold)',
     
-    generateSignals: function(day, state, historicalData, dayIndex) {
-      var signals = [];
+    generateSignals: function(day: any, state: any, historicalData: any[], dayIndex: number): any[] {
+      var signals: any[] = [];
       
       // في اليوم الأول فقط
       if (!hasBought && day.stocksData) {
-        day.stocksData.forEach(function(stk) {
+        day.stocksData.forEach(function(stk: any) {
           var weight = stk.targetWeight || (1 / day.stocksData.length);
           var valueForStock = state.cash * weight * 0.95;
           
