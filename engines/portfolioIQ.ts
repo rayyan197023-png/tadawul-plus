@@ -1210,7 +1210,7 @@ function runActionLayer(positions: IQPosition[], base: any, layers: any): Action
   });
 
   // From Behavioral
-  layers.behavioral.biases.forEach((bias: any) => { 
+  layers.behavioral.biases.forEach((bias: any) => {  
     if (bias.severity === 'high') {
       actions.push({
         source: 'behavioral',
