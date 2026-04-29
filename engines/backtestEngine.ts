@@ -385,11 +385,11 @@ function calcPerformanceMetrics(equityCurve: any[], dailyReturns: number[], trad
 
   // ⑨ Expected Return per trade
   var expectedReturn = closedTrades.length > 0
-    ? mean(closedTrades.map(function(t) { return t.pnlPct; }))
+    ? mean(closedTrades.map(function(t: any) { return t.pnlPct; }))
     : 0;
 
   // ⑩ VaR & CVaR
-  var sortedReturns = dailyReturns.slice().sort(function(a, b) { return a - b; });
+  var sortedReturns = dailyReturns.slice().sort(function(a: number, b: number) { return a - b; });
   var varIdx = Math.floor(0.05 * sortedReturns.length);
   var var95 = sortedReturns.length > 0 ? -sortedReturns[varIdx] * 100 : 0;
   
