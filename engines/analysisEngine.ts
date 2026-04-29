@@ -78,6 +78,7 @@ function calcMacroScore(stk: any): any {
 
 
 
+
 // ── Color tokens used in analysis output (signals, labels)
 const G      = "#1ee68a";
 const R      = "#ff5f6a";
