@@ -2038,10 +2038,10 @@ function getHealthGrade(score: number): any {
   const thresholds = [90, 85, 80, 75, 70, 60, 50, 0];
   for (let i = 0; i < thresholds.length; i++) {
     if (score >= thresholds[i]) {
-      return HEALTH_GRADES[thresholds[i]];
+      return (HEALTH_GRADES as any)[thresholds[i]];
     }
   }
-  return HEALTH_GRADES[0];
+  return (HEALTH_GRADES as any)[0];
 }
 
 function severityScore(severity: string): number {
