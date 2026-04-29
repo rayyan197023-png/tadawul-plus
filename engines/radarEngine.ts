@@ -262,7 +262,7 @@ function calcWyckoff(bars: any[], atr: number): any {
       col: GOLD, 
       conf: calcConf(35, markdownStrength),
       pfl: +pfl.toFixed(0),
-      strength: +(markdownStrength.reduce((s,v)=>s+v,0)/3).toFixed(2)
+      strength: +(markdownStrength.reduce((s: number,v: number)=>s+v,0)/3).toFixed(2)
     };
   }
 
