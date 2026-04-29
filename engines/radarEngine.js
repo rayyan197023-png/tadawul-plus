@@ -176,7 +176,7 @@ function calcWyckoff(bars: any[], atr: number): any {
   const hi   = Math.max(...rng.map((b: any) => b.hi));
   const lo   = Math.min(...rng.map((b: any) => b.lo));
   const rngW = hi - lo || 1;
-  const avg  = rng.reduce((s, b) => s + b.c, 0) / rng.length;
+  const avg  = rng.reduce((s: number, b: any) => s + b.c, 0) / rng.length;
 
   // Position in range (0% = at low, 100% = at high)
   const pfl  = (cur - lo) / rngW * 100;
