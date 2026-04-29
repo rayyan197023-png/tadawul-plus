@@ -400,7 +400,7 @@ export function calcMarketStructure(bars: any[]): any {
   const recentRng = bars.slice(-10).reduce((s, b) => s + Math.abs(b.pct ?? 0), 0) / 10;
   const swWin     = recentRng > 2.5 ? 2 : recentRng > 1.0 ? 3 : 4;
 
-  const swings = [];
+  const swings: any[] = [];
   for (let i = swWin; i < bars.length - swWin; i++) {
     const isHigh = bars.slice(i - swWin, i).every(b => b.hi <= bars[i].hi)
                 && bars.slice(i + 1, i + 1 + swWin).every(b => b.hi <= bars[i].hi);
