@@ -462,9 +462,9 @@ export function calcRadarScore(stk: any, bars: any[]): any {
 /**
  * Score multiple stocks and rank them
  */
-export function rankStocksByRadar(stocks, barsMap) {
+export function rankStocksByRadar(stocks: any[], barsMap: any): any[] {
   return stocks
-    .map(s => ({ stock: s, radarScore: calcRadarScore(s, barsMap[s.sym] ?? []) }))
-    .sort((a, b) => b.radarScore.totalScore - a.radarScore.totalScore)
-    .map((item, i) => ({ ...item, rank: i + 1 }));
+    .map((s: any) => ({ stock: s, radarScore: calcRadarScore(s, (barsMap as any)[s.sym] ?? []) }))
+    .sort((a: any, b: any) => b.radarScore.totalScore - a.radarScore.totalScore)
+    .map((item: any, i: number) => ({ ...item, rank: i + 1 }));
 }
