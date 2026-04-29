@@ -254,7 +254,7 @@ function calcAdaptiveThresholds(stock: any, bars: any[]): any {
   try {
     // حساب التذبذبية النسبية
     const recent20 = bars.slice(-20);
-    const avgVolatility = recent20.reduce((s, b) => s + Math.abs(b.pct || 0), 0) / 20;
+    const avgVolatility = recent20.reduce((s: number, b: any) => s + Math.abs(b.pct || 0), 0) / 20;
     
     // Volatility multiplier
     let volMult;
