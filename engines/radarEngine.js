@@ -214,7 +214,7 @@ function calcWyckoff(bars: any[], atr: number): any {
       col: BLUE, 
       conf: calcConf(50, springStrength),
       pfl: +pfl.toFixed(0),
-      strength: +(springStrength.reduce((s,v)=>s+v,0)/3).toFixed(2)
+      strength: +(springStrength.reduce((s: number,v: number)=>s+v,0)/3).toFixed(2)
     };
   }
 
