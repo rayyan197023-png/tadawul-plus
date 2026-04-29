@@ -713,10 +713,10 @@ var mean = allResults.reduce(function(s: number, r: number) { return s + r; }, 0
     probabilities: {
       profit: +probabilityOfProfit.toFixed(1),
       loss: +(100 - probabilityOfProfit).toFixed(1),
-      doubleMoney: +((allFinalValues.filter(function(v) { 
+      doubleMoney: +((allFinalValues.filter(function(v: number) { 
         return v >= initialCapital * 2; 
       }).length / iterations) * 100).toFixed(1),
-      halfMoney: +((allFinalValues.filter(function(v) { 
+      halfMoney: +((allFinalValues.filter(function(v: number) { 
         return v <= initialCapital * 0.5; 
       }).length / iterations) * 100).toFixed(1),
     },
