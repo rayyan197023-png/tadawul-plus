@@ -917,7 +917,7 @@ export function generateDataFromStockList(stocksList: any[], genBarsFn: any, day
  * @param {number} days
  * @returns {Array} historical data with sector info
  */
-export function generateDataFromMarket(allStocks, genBarsFn, days) {
+export function generateDataFromMarket(allStocks: any[], genBarsFn: any, days?: number): any[] {
   if (!allStocks || allStocks.length === 0) {
     return [];
   }
