@@ -2932,6 +2932,7 @@ function calc9Layers(stk: any, bars: any[]): any {
     obvFactor*0.22 + priceMomFactor*0.12
   ));
 
+
   // Posterior بايزي حقيقي
   const post      = (prior*likel) / (prior*likel + (1-prior)*(1-likel));
 
