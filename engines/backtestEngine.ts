@@ -649,12 +649,12 @@ var mean = allResults.reduce(function(s: number, r: number) { return s + r; }, 0
   var numBins = 20;
   var binWidth = (maxResult - minResult) / numBins;
   
-  var distribution = [];
+  var distribution: any[] = [];
   for (var b = 0; b < numBins; b++) {
     var binStart = minResult + b * binWidth;
     var binEnd = binStart + binWidth;
     var count = 0;
-    allResults.forEach(function(r) {
+    allResults.forEach(function(r: number) {
       if (r >= binStart && r < binEnd) count++;
       else if (b === numBins - 1 && r === binEnd) count++;
     });
