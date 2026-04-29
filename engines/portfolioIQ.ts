@@ -1033,8 +1033,8 @@ function runSectorLayer(positions: IQPosition[], base: any): SectorLayer {
   });
 
   // Calculate weights and identify issues
-  const sectorList = [];
-  const sectorIssues = [];
+  const sectorList: any[] = [];
+  const sectorIssues: any[] = [];
   
   Object.keys(sectors).forEach(name => {
     const sec = sectors[name];
