@@ -2015,8 +2015,8 @@ function buildDynamicWeights(regime: any, sector: string): any {
   };
 
   const W = {...BASE};
-  const rd = DELTA[regime] || DELTA.chop;
-  const sd = SECTOR_D[sector] || {};
+  const rd = (DELTA as any)[regime] || DELTA.chop;
+const sd = (SECTOR_D as any)[sector] || {};
 
   // تطبيق الدلتا بوزن: Regime 70% + Sector 30% (معايرة من الصور)
   ['L1','L2','L3','L4','L5','L6','L7','L8','L9'].forEach(k=>{
