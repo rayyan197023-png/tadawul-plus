@@ -281,7 +281,7 @@ function calcAdaptiveThresholds(stock: any, bars: any[]): any {
 /**
  * هل الإشارة قوية فعلاً؟ (multi-condition)
  */
-function isStrongSignal(stock, type) {
+function isStrongSignal(stock: any, type: string): boolean {
   const vr = stock.vr || 1;
   const trend = stock.trend || 'neutral';
   const volume = vr > 1.2;
