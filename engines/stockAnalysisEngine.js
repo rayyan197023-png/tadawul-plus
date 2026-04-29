@@ -144,10 +144,10 @@ export function calcFactorModel(stk, bars) {
     : 50;
 
   // P/B: scored relative to sector norms (banks ~1.5x, tech ~4x)
-  const sectorPBNorm = {
+  const sectorPBNorm = ({
     banks: 1.8, energy: 4.0, petro: 1.5, telecom: 2.5,
     food: 3.5, mining: 2.0, realestate: 1.2, insurance: 2.0,
-  }[stk.sectorId] ?? 2.5;
+  } as any)[stk.sectorId] ?? 2.5;
   const pbScore = stk.pb
     ? Math.max(0, Math.min(100, Math.round(100 - (stk.pb / sectorPBNorm - 1) * 40)))
     : 50;
