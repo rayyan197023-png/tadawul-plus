@@ -2532,7 +2532,7 @@ function _emptyHealthResult(){
       pricePos: 50,
       valScore: 50,
     },
-    tasiCtx: null,
+    tasiCtx: null as any,
   };
 }
 
