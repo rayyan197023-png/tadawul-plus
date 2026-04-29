@@ -3894,7 +3894,7 @@ function getAdaptiveWeightAdjustment(sym: string): any {
   const perf = state[sym];
   if(perf.total < 3) return null; // نحتاج 3 إشارات مُتحقَّق منها على الأقل
 
-  const adj = {};
+  const adj: any = {};
   // لكل طبقة: إذا كانت دقتها > 70% رفع وزنها، < 40% خفضه
   Object.keys(perf.layers||{}).forEach(k=>{
     const lp = perf.layers[k];
