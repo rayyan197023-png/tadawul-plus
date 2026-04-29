@@ -547,10 +547,10 @@ export function monteCarloSimulation(backtestResult: any, iterations?: number): 
   var totalDays = dailyReturns.length;
 
   // ① تشغيل المحاكاة
-  var allResults = [];
-  var allMaxDrawdowns = [];
-  var allSharpes = [];
-  var allFinalValues = [];
+  var allResults: number[] = [];
+  var allMaxDrawdowns: number[] = [];
+  var allSharpes: number[] = [];
+  var allFinalValues: number[] = [];
 
   for (var sim = 0; sim < iterations; sim++) {
     // خلط العوائد (Bootstrap with replacement)
