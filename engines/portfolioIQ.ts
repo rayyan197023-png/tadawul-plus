@@ -1880,7 +1880,7 @@ function generateRecommendations(data: any): RecommendationsAnalysis {
 
   // === MEDIUM: Behavioral Issues ===
   if (behavioral.biasCount > 0) {
-    behavioral.biases.forEach(bias => {
+    behavioral.biases.forEach((bias: any) => {
       if (bias.severity === 'high') {
         recommendations.push({
           id: 'behavioral_' + bias.type + (bias.stock || ''),
