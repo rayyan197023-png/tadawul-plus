@@ -339,7 +339,7 @@ function calcPerformanceMetrics(equityCurve: any[], dailyReturns: number[], trad
     : 0;
 
   // ④ Sortino Ratio (downside deviation)
-  var downReturns = dailyReturns.filter(function(r) { return r < 0; });
+  var downReturns = dailyReturns.filter(function(r: number) { return r < 0; });
   var downStd = downReturns.length > 0 ? std(downReturns) : 0;
   var downsideVol = downStd * Math.sqrt(252);
   var sortino = downsideVol > 0 
