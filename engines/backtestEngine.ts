@@ -363,9 +363,9 @@ function calcPerformanceMetrics(equityCurve: any[], dailyReturns: number[], trad
   var calmar = maxDD < 0 ? annualReturn / Math.abs(maxDD) : 0;
 
   // ⑦ إحصاءات الصفقات
-  var closedTrades = trades.filter(function(t) { return t.action === 'sell' && t.pnl !== undefined; });
-  var winningTrades = closedTrades.filter(function(t) { return t.pnl > 0; });
-  var losingTrades = closedTrades.filter(function(t) { return t.pnl < 0; });
+  var closedTrades = trades.filter(function(t: any) { return t.action === 'sell' && t.pnl !== undefined; });
+  var winningTrades = closedTrades.filter(function(t: any) { return t.pnl > 0; });
+  var losingTrades = closedTrades.filter(function(t: any) { return t.pnl < 0; });
 
   var winRate = closedTrades.length > 0 
     ? (winningTrades.length / closedTrades.length) * 100 
