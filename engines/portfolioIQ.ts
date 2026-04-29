@@ -1668,10 +1668,9 @@ function calculateSmartStops(positions: IQPosition[]): SmartStopsAnalysis {
 /**
  * Calculate ATR (Average True Range)
  */
-function calculateATR(bars, period = 14) {
+function calculateATR(bars: any[], period: number = 14): number {
   if (!bars || bars.length < period + 1) return 0;
-
-  const trs = [];
+  const trs: any[] = [];
   
   for (let i = 1; i < bars.length; i++) {
     const high = bars[i].h || bars[i].c;
