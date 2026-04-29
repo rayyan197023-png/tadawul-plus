@@ -2071,7 +2071,7 @@ function calculateDiagnosticScore(issues: any[], strengths: any[]): number {
   return Math.max(0, Math.min(100, score));
 }
 
-function scoreMarketRisk(beta) {
+function scoreMarketRisk(beta: number): number {
   if (beta < 0.8) return 85;
   if (beta < 1.0) return 75;
   if (beta < 1.2) return 65;
