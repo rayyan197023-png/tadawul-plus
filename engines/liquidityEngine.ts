@@ -30,7 +30,7 @@ export function classifyLiquidity(bars: any[], stk: any): any {
   const GOLD  = '#f0c050';
   const GRAY  = '#8a90a8';
 
-  let type, label, color;
+  let type: string, label: string, color: string;
 
   // ── Composite pressure scores (continuous, not step-function)
   // Higher CMF weight means money flow is primary signal
