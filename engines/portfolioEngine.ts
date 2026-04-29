@@ -1957,7 +1957,7 @@ export function calcCorrelationMatrix(positionsWithBars: Position[]): {
   }
 
   // ② بناء المصفوفة
-  var matrix = {};
+  var matrix: any = {};
   var highCorrelations = []; // أزواج الارتباط العالي (> 0.7)
 
   for (var j = 0; j < symbols.length; j++) {
