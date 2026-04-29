@@ -2894,6 +2894,7 @@ function calc9Layers(stk: any, bars: any[]): any {
   const _L6raw = Math.min(100,Math.round(kellyScore*0.92+macroBonus));
   // + radarVA (القيمة الأساسية /5) → وزن 25%
   const L6 = Math.min(100, Math.max(0, _L6raw + Math.round((radarVA/5*100 - 50) * 0.25)));
+  
   // ════════════════════════════════════════
   //  الطبقة ٧ — البايزي الحقيقي
   //  Prior = احتمال مبدئي من L1-L6
