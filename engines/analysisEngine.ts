@@ -2026,9 +2026,9 @@ const sd = (SECTOR_D as any)[sector] || {};
   });
 
   // إعادة التطبيع → Σ = 1
-  const total = Object.values(W).reduce((s,v)=>s+v,0);
-  ['L1','L2','L3','L4','L5','L6','L7','L8','L9'].forEach(k=>{
-    W[k] = +(W[k]/total).toFixed(4);
+  const total = (Object.values(W) as number[]).reduce((s,v)=>s+v,0);
+['L1','L2','L3','L4','L5','L6','L7','L8','L9'].forEach(k=>{
+    (W as any)[k] = +((W as any)[k]/total).toFixed(4);
   });
 
   return W;
