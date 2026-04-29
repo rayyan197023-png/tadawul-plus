@@ -818,7 +818,7 @@ function runBehavioralLayer(positions: IQPosition[], base: any, options: IQOptio
         type: 'home_bias',
         sector: sector,
         severity: 'high',
-        message: 'تركيز ' + (sectorWeights[sector] * 100).toFixed(0) + 
+        message: 'تركيز ' + ((sectorWeights as any)[sector] * 100).toFixed(0) + 
           '% في قطاع ' + sector,
       });
     }
