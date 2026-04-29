@@ -112,14 +112,14 @@ export function calcVPVR(bars: any[], levels: number = 30): any[] {
  * @param {OHLCBar[]} bars
  * @returns {Array<{ date, ratio, type }>}
  */
-export function detectVolumeSpikes(bars) {
+export function detectVolumeSpikes(bars: any[]): any[] {
   if (bars.length < 20) return [];
 
-  const spikes = [];
+  const spikes: any[] = [];
 
   for (let i = 20; i < bars.length; i++) {
-    // Rolling 20-bar average (excludes current bar) — more accurate baseline
-    const rollingAvg = bars.slice(i - 20, i).reduce((s, b) => s + b.vol, 0) / 20;
+    // Rolling 20-bar average (excludes current bar) -- more accurate baseline
+    const rollingAvg = bars.slice(i - 20, i).reduce((s: number, b: any) => s + b.vol, 0) / 20;
     const ratio = bars[i].vol / (rollingAvg || 1);
     if (ratio >= 2.5) {  // lowered from 3x to 2.5x for better sensitivity
       spikes.push({
