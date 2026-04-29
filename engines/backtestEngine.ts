@@ -71,10 +71,10 @@ export function backtest(strategy: any, historicalData: any[], options?: any): a
     initialCapital: config.initialCapital,
   };
 
-  var trades = [];        // سجل كل الصفقات
-  var equityCurve = [];   // قيمة المحفظة يومياً
-  var dailyReturns = [];  // العوائد اليومية
-  var benchmarkCurve = []; // TASI للمقارنة
+  var trades: any[] = [];
+  var equityCurve: any[] = [];
+  var dailyReturns: number[] = [];
+  var benchmarkCurve: any[] = [];
 
   // ② تشغيل المحاكاة يوماً بيوم
   for (var i = 0; i < historicalData.length; i++) {
