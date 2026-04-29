@@ -1964,7 +1964,7 @@ function generateSmartSummary(data: any): IQSummary {
   }
 
   // Key insights
-  const insights = [];
+  const insights: any[] = [];
   
   if (baseAnalysis.performance) {
     const ret = baseAnalysis.performance.annualReturn || 0;
