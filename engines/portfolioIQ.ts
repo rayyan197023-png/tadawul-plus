@@ -1599,7 +1599,7 @@ function calculateSmartStops(positions: IQPosition[]): SmartStopsAnalysis {
       return {
         sym: p.sym,
         currentPrice: 0,
-        suggestedStop: null,
+        suggestedStop: null as any,
         method: 'no_price',
         message: 'لا يوجد سعر',
       };
