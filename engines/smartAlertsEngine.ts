@@ -374,7 +374,7 @@ export function generateSmartAlerts(currentStocks: any[], positions: any[] = [])
   const previousState = loadAlertState();
   const updatedState = { ...previousState };
   
-  currentStocks.forEach(stock => {
+  currentStocks.forEach((stock: any) => {
     if (!stock.sym) return;
     
     const prev = previousState[stock.sym] || {};
