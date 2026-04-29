@@ -2151,7 +2151,7 @@ function calculateMacroDiversification(
   return max < 30 ? 'good' : max < 50 ? 'moderate' : 'concentrated';
 }
 
-function calculateSectorDiversificationScore(sectors, missing) {
+function calculateSectorDiversificationScore(sectors: any[], missing: any[]): number {
   let score = 50;
   if (sectors.length >= 5) score += 20;
   else if (sectors.length >= 3) score += 10;
