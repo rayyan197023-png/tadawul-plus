@@ -805,15 +805,15 @@ export function getAlertsStats(): any {
   
   return {
     total: alerts.length,
-    today: alerts.filter(a => a.timestamp && a.timestamp >= today).length,
-    unread: alerts.filter(a => !a.read && !a.dismissed).length,
-    smart: alerts.filter(a => a.smart).length,
-    manual: alerts.filter(a => !a.smart).length,
+    today: alerts.filter((a: any) => a.timestamp && a.timestamp >= today).length,
+    unread: alerts.filter((a: any) => !a.read && !a.dismissed).length,
+    smart: alerts.filter((a: any) => a.smart).length,
+    manual: alerts.filter((a: any) => !a.smart).length,
     byPriority: {
-      critical: alerts.filter(a => a.priority === PRIORITY.CRITICAL).length,
-      high: alerts.filter(a => a.priority === PRIORITY.HIGH).length,
-      medium: alerts.filter(a => a.priority === PRIORITY.MEDIUM).length,
-      low: alerts.filter(a => a.priority === PRIORITY.LOW).length,
+      critical: alerts.filter((a: any) => a.priority === PRIORITY.CRITICAL).length,
+      high: alerts.filter((a: any) => a.priority === PRIORITY.HIGH).length,
+      medium: alerts.filter((a: any) => a.priority === PRIORITY.MEDIUM).length,
+      low: alerts.filter((a: any) => a.priority === PRIORITY.LOW).length,
     },
   };
 }
