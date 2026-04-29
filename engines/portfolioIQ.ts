@@ -2014,7 +2014,7 @@ function generateSmartSummary(data: any): IQSummary {
    🛠️ HELPER FUNCTIONS
 ═══════════════════════════════════════════════════════════ */
 
-function calculateIQScore(layers) {
+function calculateIQScore(layers: any): number {
   // Weighted IQ score
   const weights = {
     diagnostic: 0.20,
