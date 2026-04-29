@@ -471,7 +471,7 @@ export function calcPortfolioReturns(positions: Position[], weights: Weights): n
   if (!positions || positions.length === 0) return [];
 
   // حساب عوائد كل سهم
-  var stockReturns = {};
+  var stockReturns: any = {};
   var minLength = Infinity;
 
   for (var i = 0; i < positions.length; i++) {
