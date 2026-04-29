@@ -2593,15 +2593,15 @@ function calc9Layers(stk: any, bars: any[]): any {
   // نتائجه تُدمج كـ sub-scores في الطبقات 1-9
   const radar = analyzeStockRadar(stk);
   // sub-scores: 0-100 normalized من RadarTab
-  const radarMS  = radar.factors.find(f=>f.k==="ms")?.s  || 0;  // /15
-  const radarOB  = radar.factors.find(f=>f.k==="ob")?.s  || 0;  // /15
-  const radarLS  = radar.factors.find(f=>f.k==="ls")?.s  || 0;  // /10
-  const radarVI  = radar.factors.find(f=>f.k==="vi")?.s  || 0;  // /10
-  const radarTR  = radar.factors.find(f=>f.k==="tr")?.s  || 0;  // /15
-  const radarMO  = radar.factors.find(f=>f.k==="mo")?.s  || 0;  // /15
-  const radarLQ  = radar.factors.find(f=>f.k==="lq")?.s  || 0;  // /10
-  const radarVA  = radar.factors.find(f=>f.k==="va")?.s  || 0;  // /5
-  const radarMC  = radar.factors.find(f=>f.k==="mc")?.s  || 0;  // /5
+  const radarMS  = radar.factors.find((f: any)=>f.k==="ms")?.s  || 0;  // /15
+  const radarOB  = radar.factors.find((f: any)=>f.k==="ob")?.s  || 0;  // /15
+  const radarLS  = radar.factors.find((f: any)=>f.k==="ls")?.s  || 0;  // /10
+  const radarVI  = radar.factors.find((f: any)=>f.k==="vi")?.s  || 0;  // /10
+  const radarTR  = radar.factors.find((f: any)=>f.k==="tr")?.s  || 0;  // /15
+  const radarMO  = radar.factors.find((f: any)=>f.k==="mo")?.s  || 0;  // /15
+  const radarLQ  = radar.factors.find((f: any)=>f.k==="lq")?.s  || 0;  // /10
+  const radarVA  = radar.factors.find((f: any)=>f.k==="va")?.s  || 0;  // /5
+  const radarMC  = radar.factors.find((f: any)=>f.k==="mc")?.s  || 0;  // /5
   // تطبيع: نحوّل كل factor لنسبة 0-1 ثم نضربها في وزن ثابت
   const radarNorm= radar.total / 100;  // 0-1 — الدرجة الكلية
   // ──────────────────────────────────────────────────────────────
