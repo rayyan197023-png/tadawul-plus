@@ -59,8 +59,8 @@ export function createTadawulStrategy(healthFn: any, options?: any): any {
     /**
      * توليد الإشارات ليوم معين
      */
-    generateSignals: function(day, state, historicalData, dayIndex) {
-      var signals = [];
+    generateSignals: function(day: any, state: any, historicalData: any[], dayIndex: number): any[] {
+      var signals: any[] = [];
       
       // ① تحديد Market Regime
       if (config.useRegimeFilter && dayIndex > 20) {
