@@ -105,7 +105,7 @@ export function backtest(strategy: any, historicalData: any[], options?: any): a
 
     // ٢.٤ حساب قيمة المحفظة اليوم
     var totalValue = state.cash;
-    Object.keys(state.positions).forEach(function(sym) {
+    Object.keys(state.positions).forEach(function(sym: string) {
       var pos = state.positions[sym];
       var price = prices[sym];
       if (price && pos.shares > 0) {
