@@ -240,7 +240,7 @@ function getAlertCountToday(sym: string): number {
  * حساب Adaptive Thresholds للسهم
  * بناءً على تذبذبه الفعلي
  */
-function calcAdaptiveThresholds(stock, bars) {
+function calcAdaptiveThresholds(stock: any, bars: any[]): any {
   // Default
   const defaults = {
     healthJump: HEALTH_JUMP_THRESHOLD,
