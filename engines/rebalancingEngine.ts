@@ -518,9 +518,9 @@ function calculateHealthScore({ diversificationScore, sharpe, maxDrawdown, stock
 }
 
 // ─── Helper: التأثير المتوقع ──────────────────
-function calculateExpectedImpact(issues, currentHealth, performance, risk) {
-  const criticalIssues = issues.filter(i => i.severity === 'high').length;
-  const mediumIssues = issues.filter(i => i.severity === 'medium').length;
+function calculateExpectedImpact(issues: any[], currentHealth: number, performance: any, risk: any): any {
+  const criticalIssues = issues.filter((i: any) => i.severity === 'high').length;
+  const mediumIssues = issues.filter((i: any) => i.severity === 'medium').length;
   const totalIssues = criticalIssues + mediumIssues * 0.5;
   
   // تحسن متوقع (محسوب علمياً)
