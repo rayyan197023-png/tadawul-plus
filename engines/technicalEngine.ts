@@ -81,7 +81,7 @@ export function calcRSIFull(bars: any[], period: number = 14): {
   }
   ag /= period; al /= period;
 
-  const rsiSeries = [];
+  const rsiSeries: number[] = [];
   for (let i = period + 1; i < closes.length; i++) {
     const d = closes[i] - closes[i - 1];
     ag = (ag * (period - 1) + (d > 0 ? d : 0)) / period;
