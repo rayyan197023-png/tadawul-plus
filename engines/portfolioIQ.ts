@@ -2177,7 +2177,7 @@ function classifyPortfolioStyle(factors: any): string {
   return 'balanced';
 }
 
-function getStyleLabel(style) {
+function getStyleLabel(style: string): string {
   const labels = {
     large_cap_defensive: 'كبيرة دفاعية',
     momentum_growth: 'زخم ونمو',
