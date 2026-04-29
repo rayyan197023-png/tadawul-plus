@@ -1256,6 +1256,7 @@ layers.sector.sectorIssues.forEach((issue: any) => {
   };
 }
 
+
   /* ═══════════════════════════════════════════════════════════
    🧠 INNOVATION #1 - PSYRISK SCORE™
    Behavioral Risk Quantification
