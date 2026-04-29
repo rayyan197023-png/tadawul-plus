@@ -191,8 +191,8 @@ export function calcEarningsQuality(stk) {
   const quarters = [stk.eps_q1, stk.eps_q2, stk.eps_q3, stk.eps_q4].filter(Boolean);
 
   // Consistency: standard deviation of quarterly EPS
-  const avg = quarters.reduce((s, v) => s + v, 0) / quarters.length;
-  const std = Math.sqrt(quarters.reduce((s, v) => s + (v - avg) ** 2, 0) / quarters.length);
+  const avg = quarters.reduce((s: number, v: number) => s + v, 0) / quarters.length;
+  const std = Math.sqrt(quarters.reduce((s: number, v: number) => s + (v - avg) ** 2, 0) / quarters.length);
   const cv  = avg > 0 ? std / avg : 1;  // coefficient of variation
 
   // FCF vs earnings alignment
