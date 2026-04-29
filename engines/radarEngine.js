@@ -124,7 +124,7 @@ export function calcLiqSweep(bars: any[], atr: number): any {
     // SSL Detection
     if (b.lo < pL && b.c > pL && (pL - b.lo) >= atr * 0.5) {
       const conf = nx && nx.c > nx.o;
-      const eq   = win.filter(x => Math.abs(x.lo - pL) / pL < 0.0015).length >= 2;
+      const eq   = win.filter((x: any) => Math.abs(x.lo - pL) / pL < 0.0015).length >= 2;
       sweeps.push({ type: 'SSL', q: (volOk ? 1 : 0) + (eq ? 1 : 0) + (conf ? 1 : 0) });
     }
     
