@@ -579,11 +579,11 @@ function getSectorSuggestions(existingSectors: any[]): any[] {
 }
 
 // ─── Helper: تحليل فارغ ───────────────────────
-function getEmptyAnalysis() {
+function getEmptyAnalysis(): any {
   return {
     healthScore: 0,
-    issues: [],
-    positiveNotes: [],
+    issues: [] as any[],
+    positiveNotes: [] as any[],
     summary: {
       totalValue: 0,
       numPositions: 0,
