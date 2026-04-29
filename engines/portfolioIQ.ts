@@ -1730,7 +1730,7 @@ function generateRecoveryPath(positions: IQPosition[], base: any): RecoveryPathA
   }
 
   // Recovery actions
-  const actions = [];
+  const actions: any[] = [];
   
   if (strategy !== 'maintain') {
     actions.push({
