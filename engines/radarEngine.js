@@ -136,8 +136,8 @@ export function calcLiqSweep(bars: any[], atr: number): any {
     }
   }
 
-  const ssls   = sweeps.filter(s => s.type === 'SSL');
-  const bsls   = sweeps.filter(s => s.type === 'BSL');
+  const ssls   = sweeps.filter((s: any) => s.type === 'SSL');
+  const bsls   = sweeps.filter((s: any) => s.type === 'BSL');
   const recSSL = ssls.length > 0;
   const recBSL = bsls.length > 0;
   const q      = recSSL ? (ssls[ssls.length - 1].q ?? 0) : 0;
