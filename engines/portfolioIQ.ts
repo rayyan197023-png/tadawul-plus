@@ -1234,7 +1234,7 @@ layers.sector.sectorIssues.forEach((issue: any) => {
 
   // From Stock
   layers.stock.flaggedStocks.forEach((stock: any) => {
-    stock.flags.forEach((flag: any) => {
+    stock.flags.forEach((flag: any) => { 
     stock.flags.forEach(flag => {
       if (flag.severity === 'high') {
         actions.push({
