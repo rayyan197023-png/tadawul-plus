@@ -55,7 +55,7 @@ export function calcDCF(stk) {
     construction: 0.12,
     industrial:   0.11,
   };
-  const wacc = waccBySector[stk.sectorId] ?? 0.10;
+  const wacc = (waccBySector as any)[stk.sectorId] ?? 0.10;
 
   // If FCF is negative, use EPS*0.6 as fallback
   const rawFCF = (stk.freeCashFlow != null && stk.freeCashFlow !== 0)
