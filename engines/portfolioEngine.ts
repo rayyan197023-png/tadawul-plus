@@ -3887,9 +3887,9 @@ export function generateRiskReturnScatter(positions: Position[], analysisData: a
     defensive: 0,
     avoid: 0,
   };
-  scatterData.forEach(function(d) {
-    quadrantCounts[d.quadrant]++;
-  });
+scatterData.forEach(function(d: any) {
+    (quadrantCounts as any)[d.quadrant]++;
+  });  
 
   return {
     stocks: scatterData,
