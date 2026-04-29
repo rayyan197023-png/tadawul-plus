@@ -223,11 +223,11 @@ function wasAlertSentToday(sym: string, type: string): boolean {
 /**
  * عدد التنبيهات للسهم اليوم
  */
-function getAlertCountToday(sym) {
+function getAlertCountToday(sym: string): number {
   const sent = loadSentAlertsToday();
   let count = 0;
-  Object.keys(sent).forEach(key => {
-    if (key.startsWith(`${sym}_`)) count += sent[key];
+  Object.keys(sent).forEach((key: string) => {
+    if (key.startsWith(`${sym}_`)) count += (sent as any)[key];
   });
   return count;
 }
