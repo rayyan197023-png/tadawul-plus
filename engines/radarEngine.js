@@ -188,8 +188,8 @@ function calcWyckoff(bars: any[], atr: number): any {
   const trend = (avgSecond - avgFirst) / (avgFirst || 1) * 100;
 
   // Volume ratio
-  const avgVol = bars.reduce((s, b) => s + b.vol, 0) / bars.length || 1;
-  const rv     = bars.slice(-5).reduce((s, b) => s + b.vol, 0) / 5 / avgVol;
+  const avgVol = bars.reduce((s: number, b: any) => s + b.vol, 0) / bars.length || 1;
+  const rv     = bars.slice(-5).reduce((s: number, b: any) => s + b.vol, 0) / 5 / avgVol;
 
   // Volatility contraction
   const rangeWidth = rngW / (avg || 1) * 100;
