@@ -679,7 +679,7 @@ function createAlert({ type, priority, sym, name, title, message, detail, action
   };
 }
 
-function generateAlertId(sym, type) {
+function generateAlertId(sym: string, type: string): string {
   return `smart_${sym}_${type}_${Date.now()}`;
 }
 
