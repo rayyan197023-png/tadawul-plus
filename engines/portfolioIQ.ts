@@ -2123,7 +2123,7 @@ function classifyRiskLevel(score) {
 }
 
 function calculateSectorWeights(positions) {
-  const sectors = {};
+  const sectors: any = {};
   let total = 0;
   
   positions.forEach(p => {
