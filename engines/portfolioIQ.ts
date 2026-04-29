@@ -2119,7 +2119,7 @@ function scoreCorrelationRisk(avgCorr: number): number {
   return 30;
 }
 
-function classifyRiskLevel(score) {
+function classifyRiskLevel(score: number): string {
   if (score >= 80) return 'low';
   if (score >= 60) return 'moderate';
   if (score >= 40) return 'high';
