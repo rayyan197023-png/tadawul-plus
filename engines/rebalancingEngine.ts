@@ -127,9 +127,9 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
 
   // ③ فحص التنويع القطاعي
   const sectorMap: any = {};
-  positionsWithBars.forEach(p => {
+  positionsWithBars.forEach((p: any) => {
     const sec = p.stk?.sec || 'غير محدد';
-    sectorMap[sec] = (sectorMap[sec] || 0) + p.value;
+    (sectorMap as any)[sec] = ((sectorMap as any)[sec] || 0) + p.value;
   });
   const numSectors = Object.keys(sectorMap).length;
   
