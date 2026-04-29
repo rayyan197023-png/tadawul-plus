@@ -40,7 +40,7 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
   }
 
   // ✨ بناء positionsWithBars للتحليل الكامل
-  const positionsWithBars = positions.map(p => {
+  const positionsWithBars = positions.map((p: any) => {
     const bars = p.bars || (p.stk ? genBars(p.stk, 60) : []);
     return {
       sym: p.sym,
