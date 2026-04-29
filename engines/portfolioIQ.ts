@@ -2049,7 +2049,7 @@ function severityScore(severity: string): number {
   return scores[severity] || 0;
 }
 
-function priorityScore(priority) {
+function priorityScore(priority: any): number {
   const scores = {
     [PRIORITY.CRITICAL]: 4,
     [PRIORITY.HIGH]: 3,
