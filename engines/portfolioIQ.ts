@@ -1868,7 +1868,7 @@ function generateRecommendations(data: any): RecommendationsAnalysis {
       category: CATEGORY.RISK_MANAGEMENT,
       title: 'ضع Stop-Loss على المراكز الكبيرة',
       action: 'set_stop_losses',
-      affectedStocks: stock.topPositions.slice(0, 5).map(s => s.sym),
+      affectedStocks: stock.topPositions.slice(0, 5).map((s: any) => s.sym),
       reasoning: 'تراجع تاريخي ' + (Math.abs(baseAnalysis.risk.maxDrawdown) * 100).toFixed(1) + 
         '% - حماية رأس المال أولوية',
       expectedImpact: {
