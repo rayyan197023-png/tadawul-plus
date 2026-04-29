@@ -2256,7 +2256,7 @@ function getRiskLevelLabel(level: string): string {
     high: 'عالٍ',
     extreme: 'شديد',
   };
-  return labels[level] || level;
+  return (labels as any)[level] || level;
 }
 function emptyAnalysis(): IQAnalysis {
   return {
