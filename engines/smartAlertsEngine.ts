@@ -158,7 +158,7 @@ function loadAlertState() {
 /**
  * Save state إلى localStorage
  */
-function saveAlertState(state) {
+function saveAlertState(state: any): void {
   if (typeof window === 'undefined') return;
   try {
     window.localStorage.setItem(STATE_PERSIST_KEY, JSON.stringify(state));
