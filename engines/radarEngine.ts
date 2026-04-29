@@ -29,7 +29,7 @@ import {
  * Bull OB: institutional buy zone
  * Bear OB: institutional sell zone
  */
-export function calcOrderBlocks(bars, atr) {
+function calcOrderBlocks(bars: any[], atr: number): any {
   const obs = [], cur = bars[bars.length - 1].c, n = bars.length;
   const recentVol = bars.length >= 20 ? bars.slice(-20).reduce((s, b) => s + Math.abs(b.pct ?? 0), 0) / 20 : 1.5;
   const atrMult   = Math.max(1.2, Math.min(2.0, 1.5 * recentVol / 1.5));
