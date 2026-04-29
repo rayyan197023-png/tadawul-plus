@@ -610,7 +610,7 @@ var mean = allResults.reduce(function(s: number, r: number) { return s + r; }, 0
   var probabilityOfProfit = (positiveCount / iterations) * 100;
 
   // ④ Percentiles
-  function getPercentile(sortedArr, p) {
+  function getPercentile(sortedArr: number[], p: number): number {
     var idx = Math.floor((p / 100) * sortedArr.length);
     if (idx >= sortedArr.length) idx = sortedArr.length - 1;
     return sortedArr[idx];
