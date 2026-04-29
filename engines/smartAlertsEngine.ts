@@ -752,7 +752,7 @@ export function runSmartAlertsEngine(
   if (settings.soundEnabled && settings.soundMode !== 'off') {
     const shouldPlay = settings.soundMode === 'all' 
       ? newAlerts.length > 0 
-      : newAlerts.some(a => a.priority === PRIORITY.CRITICAL);
+      : newAlerts.some((a: any) => a.priority === PRIORITY.CRITICAL);
     
     if (shouldPlay) {
       playAlertSound(settings.soundPreset, settings.volume);
