@@ -798,7 +798,7 @@ function generateInterpretation(mean: number, median: number, probProfit: number
  * @param {number} days - عدد الأيام
  * @returns {Array} historical data
  */
-export function generateDataFromPortfolio(positions, genBarsFn, days) {
+export function generateDataFromPortfolio(positions: any[], genBarsFn: any, days?: number): any[] {
   if (!positions || positions.length === 0) {
     return [];
   }
