@@ -362,8 +362,8 @@ export function calcRadarScore(stk: any, bars: any[]): any {
     { id: 'macd',      label: 'MACD',           score: macdScore,     label2: macd ? (macd.crossover || macd.trend) : 'بيانات غير كافية', weight: 1.0 },
   ];
 
-  const totalWeight = layers.reduce((s, l) => s + l.weight, 0);
-  const rawWeighted = layers.reduce((s, l) => s + l.score * l.weight, 0) / totalWeight;
+  const totalWeight = layers.reduce((s: number, l: any) => s + l.weight, 0);
+  const rawWeighted = layers.reduce((s: number, l: any) => s + l.score * l.weight, 0) / totalWeight;
   const totalScore  = Math.round((rawWeighted / 20) * 100);
   const atrPct      = atr / cur;
 
