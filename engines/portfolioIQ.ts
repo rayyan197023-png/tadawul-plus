@@ -2056,7 +2056,7 @@ function priorityScore(priority: any): number {
     [PRIORITY.MEDIUM]: 2,
     [PRIORITY.LOW]: 1,
   };
-  return scores[priority] || 0;
+  return (scores as any)[priority] || 0;
 }
 
 function calculateDiagnosticScore(issues: any[], strengths: any[]): number {
