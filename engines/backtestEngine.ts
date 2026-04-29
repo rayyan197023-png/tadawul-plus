@@ -811,7 +811,7 @@ export function generateDataFromPortfolio(positions: any[], genBarsFn: any, days
     stocksBars[p.sym] = genBarsFn(seed, days);
   });
 
-  var data = [];
+  var data: any[] = [];
   var today = new Date();
 
   for (var i = 0; i < days; i++) {
