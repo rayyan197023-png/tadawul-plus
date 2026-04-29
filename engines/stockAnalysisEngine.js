@@ -135,10 +135,10 @@ export function calcFactorModel(stk, bars) {
 
   // Value factor — sector-aware scoring
   // P/E: scored relative to sector norms (banks ~10x, growth ~30x)
-  const sectorPENorm = {
+  const sectorPENorm = ({
     banks: 12, energy: 16, petro: 20, telecom: 14,
     food: 22, mining: 18, realestate: 14, insurance: 12,
-  }[stk.sectorId] ?? 18;
+  } as any)[stk.sectorId] ?? 18;
   const peScore = stk.pe
     ? Math.max(0, Math.min(100, Math.round(100 - (stk.pe / sectorPENorm - 1) * 50)))
     : 50;
