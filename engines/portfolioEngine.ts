@@ -3483,7 +3483,7 @@ export function addIntelligenceLayer(
   }
 
   // ① حساب الطبقات التسع
-  var weights = {};
+  var weights: any = {};
   for (var i = 0; i < positionsWithBars.length; i++) {
     var p = positionsWithBars[i];
     weights[p.sym] = p.value / analysis.totalValue;
