@@ -25,7 +25,7 @@ const MACRO = {
  * @param {Stock} stk
  * @returns {{ intrinsicValue, upside, margin, rating, label }}
  */
-export function calcDCF(stk) {
+export function calcDCF(stk: any): any {
   if (stk.eps == null || stk.roe == null) {
     return { intrinsicValue: null, upside: null, margin: null, rating: 'غير متاح', label: 'بيانات غير كافية' };
   }
