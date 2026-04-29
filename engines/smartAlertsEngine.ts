@@ -192,7 +192,7 @@ function loadSentAlertsToday() {
 /**
  * Save sent alerts
  */
-function saveSentAlertToday(sym, type) {
+function saveSentAlertToday(sym: string, type: string): void {
   if (typeof window === 'undefined') return;
   try {
     const today = new Date().toDateString();
