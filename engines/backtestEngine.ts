@@ -554,7 +554,7 @@ export function monteCarloSimulation(backtestResult: any, iterations?: number): 
 
   for (var sim = 0; sim < iterations; sim++) {
     // خلط العوائد (Bootstrap with replacement)
-    var shuffledReturns = [];
+    var shuffledReturns: number[] = [];
     for (var d = 0; d < totalDays; d++) {
       var randIdx = Math.floor(Math.random() * totalDays);
       shuffledReturns.push(dailyReturns[randIdx]);
