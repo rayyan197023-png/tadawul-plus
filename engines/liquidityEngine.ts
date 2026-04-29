@@ -160,7 +160,7 @@ export function calcLiquidityScore(bars: any[]): any {
   const volScore = Math.round(Math.min(20, Math.max(0, (rvol.rvol - 0.5) / 2.5 * 20)));
 
   // Spike component (0-10): confirmed buy spikes
-  const confirmedBuySPikes = spikes.filter(s => s.type === 'buy_spike' && s.confirmed).length;
+  const confirmedBuySPikes = spikes.filter((s: any) => s.type === 'buy_spike' && s.confirmed).length;
   const spikeScore = Math.min(10, confirmedBuySPikes * 3);
 
   const raw   = cmfScore + obvScore + volScore + spikeScore;
