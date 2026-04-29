@@ -2247,7 +2247,7 @@ function getBiasLabel(type: string): string {
     confirmation_bias: 'تحيّز التأكيد',
     anchoring: 'التثبيت',
   };
-  return labels[type] || type;
+  return (labels as any)[type] || type;
 }
 function getRiskLevelLabel(level: string): string {
   const labels = {
