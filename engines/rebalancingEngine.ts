@@ -552,7 +552,7 @@ function calculateExpectedImpact(issues: any[], currentHealth: number, performan
 }
 
 // ─── Helper: اقتراحات القطاعات ────────────────
-function getSectorSuggestions(existingSectors) {
+function getSectorSuggestions(existingSectors: any[]): any[] {
   const allSectors = {
     'تقنية': { stocks: ['STC', 'Elm', 'سوليوشنز'], reason: 'نمو مرتفع' },
     'صحة': { stocks: ['Bupa', 'موندير', 'الدكتور سليمان'], reason: 'دفاعي مستقر' },
