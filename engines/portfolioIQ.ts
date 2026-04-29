@@ -2096,7 +2096,7 @@ function scoreDrawdownRisk(maxDD: number): number {
   return 25;
 }
 
-function scoreTailRisk(cvar) {
+function scoreTailRisk(cvar: number): number {
   if (!cvar) return 50;
   if (cvar < 0.02) return 85;
   if (cvar < 0.03) return 70;
