@@ -763,10 +763,10 @@ export function runSmartAlertsEngine(
     count: newAlerts.length,
     alerts: newAlerts,
     summary: {
-      critical: newAlerts.filter(a => a.priority === PRIORITY.CRITICAL).length,
-      high: newAlerts.filter(a => a.priority === PRIORITY.HIGH).length,
-      medium: newAlerts.filter(a => a.priority === PRIORITY.MEDIUM).length,
-      low: newAlerts.filter(a => a.priority === PRIORITY.LOW).length,
+      critical: newAlerts.filter((a: any) => a.priority === PRIORITY.CRITICAL).length,
+      high: newAlerts.filter((a: any) => a.priority === PRIORITY.HIGH).length,
+      medium: newAlerts.filter((a: any) => a.priority === PRIORITY.MEDIUM).length,
+      low: newAlerts.filter((a: any) => a.priority === PRIORITY.LOW).length,
     },
   };
 }
