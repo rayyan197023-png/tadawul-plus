@@ -761,7 +761,7 @@ animation:'shimmer 1.4s ease infinite',
             دقة المحرك التحليلي
           </div>
           <div style={{fontSize:10,color:C.smoke,marginTop:2}}>
-            مبني على {decisions.filter(function(d){return d.verified;}).length} قرار متحقق
+مبني على {(decisions || []).filter(function(d){return d.verified;}).length} قرار متحقق
           </div>
         </div>
       </div>
