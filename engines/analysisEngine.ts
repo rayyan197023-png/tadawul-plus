@@ -1254,8 +1254,8 @@ if(bars.length<10)return{trend:"محايد",bos:false,choch:false,score:5,label:
     if(bars.slice(i-swWin,i).every((b: any)=>b.lo>=bars[i].lo)&&bars.slice(i+1,i+1+swWin).every((b: any)=>b.lo>=bars[i].lo))
       swings.push({i,type:"L",val:bars[i].lo});
   }
-  const highs=swings.filter(s=>s.type==="H").slice(-4);
-  const lows =swings.filter(s=>s.type==="L").slice(-4);
+  const highs=swings.filter((s: any)=>s.type==="H").slice(-4);
+const lows =swings.filter((s: any)=>s.type==="L").slice(-4);
   let hhC=0,hlC=0,lhC=0,llC=0;
   for(let i=1;i<highs.length;i++)highs[i].val>highs[i-1].val?hhC++:lhC++;
   for(let i=1;i<lows.length;i++) lows[i].val>lows[i-1].val?hlC++:llC++;
