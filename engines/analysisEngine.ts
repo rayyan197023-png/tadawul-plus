@@ -1736,7 +1736,7 @@ var highPrice=n>=60?bars[n-1].c>=Math.max(...bars.slice(-60).map((b: any)=>b.hi)
   var netBuy=(netScore-50)*stk.mktCap*1e6*0.0001;
   var signal=netScore>=75?"تراكم داخلي قوي":netScore>=60?"شراء داخلي معتدل":netScore<=25?"تصريف داخلي":netScore<=40?"بيع داخلي معتدل":"محايد";
   var names=["المدير التنفيذي","رئيس مجلس الإدارة","المدير المالي","عضو مجلس إدارة","كبير المساهمين"];
-  var transactions=[];
+  var transactions: any[] = [];
   var txCount=netScore>=70||netScore<=30?4:2;
   for(var i=0;i<txCount;i++){
     var isBuy=i===0?isBuyDom:(netScore>50?i%3!==0:i%3===0);
