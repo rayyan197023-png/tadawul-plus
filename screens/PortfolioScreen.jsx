@@ -3866,7 +3866,7 @@ var portfolioIQ = useMemo(function(){
                 </div>
               );
             })()
-          )}
+          ) : null}
         </div>
       )}
 
