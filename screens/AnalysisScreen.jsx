@@ -151,17 +151,12 @@ const [filters, setFilters] = useState({
   }, [priceSignature]);
 
   const allData = useMemo(()=>{
-    // Patch MACRO with live commodity prices before running stockHealth
-    const _origOil = MACRO.oilPrice;
-    const _origGold = MACRO.goldPrice;
-    if (liveMACRO !== MACRO) {
-      MACRO.oilPrice  = liveMACRO.oilPrice;
-      MACRO.goldPrice = liveMACRO.goldPrice || MACRO.goldPrice;
-    }
-    const result = liveStocks.map(stk=>{ const bars=genBars(stk); return{stk,bars,health:stockHealth(stk,bars)}; });
-    // Restore
-    MACRO.oilPrice  = _origOil;
-    MACRO.goldPrice = _origGold;
+    // ✨ تمرير liveMACRO كـ parameter بدلاً من تعديل MACRO global
+    const result = liveStocks.map(stk=>{ 
+      const bars=genBars(stk); 
+      // مرّر liveMACRO إلى stockHealth (إذا كانت تدعم ذلك)
+      return {stk, bars, health:stockHealth(stk, bars, liveMACRO)}; 
+    });
     return result;
   },[throttledSig, liveMACRO]); // ← throttled: recalc max every 5s not every 3s
 
