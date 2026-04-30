@@ -2371,9 +2371,9 @@ var portfolioIQ = useMemo(function(){
                 تحليل بمستوى Bloomberg + Bridgewater
               </div>
             </div>
-          ):(
+          ): portfolioIQ ? (
             (function(){
-              var iq = analyzePortfolioIQ(positions, [], {riskTolerance: 0.20});
+              var iq = portfolioIQ;
               var scoreColor = iq.iqScore >= 80 ? C.mint :
                                iq.iqScore >= 65 ? C.teal :
                                iq.iqScore >= 50 ? C.amber : C.coral;
