@@ -1314,10 +1314,13 @@ useEffect(() => {
       });
       setLastUpdate(new Date());
     }
+    
+    // ✨ Fetch أول مرة فوراً عند التحميل
+    fetchPrices();
+    
     var interval=setInterval(fetchPrices, 30000); // كل 30 ثانية
     return function(){ clearInterval(interval); };
   },[]);
-
   // دمج الأسعار الحية مع STOCKS
   var sl=useMemo(function(){
     var base=stocks.length?stocks:STOCKS;
