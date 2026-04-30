@@ -1387,7 +1387,7 @@ function calcIVWAP(bars: any[], stk?: any): any {
 }
 
 /* ══ المحركات الرئيسية ══ */
-function calcTasiContext(stk: any, bars: any[], allStocks?: any[]): any {
+function calcTasiContext(stk: any, bars: any[], allStocks: any[] = []): any {
   // ① TASI Dominance Score
   // أكبر 10 أسهم بالقيمة السوقية = قادة المؤشر (60-70% من السوق)
   // ديناميكي — يتكيف تلقائياً مع أي عدد أسهم
