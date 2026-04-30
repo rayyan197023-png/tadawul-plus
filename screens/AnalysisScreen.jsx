@@ -171,6 +171,21 @@ const [showCalibrationModal, setShowCalibrationModal] = useState(false);
     ).length;
     return Math.round(correct/verified.length*100);
   }, [decisions]);
+// ✨ Multiplier للثقة بناءً على دقة المحرك التاريخية
+const accuracyMultiplier = useMemo(() => {
+    if (decisionAccuracy === null) return 1.0; // افتراضي
+    
+    // المعادلة: 50% = 1.0 (محايد)
+    //          85% = 1.10 (تعزيز 10%)
+    //          30% = 0.85 (تخفيف 15%)
+    if (decisionAccuracy >= 85) return 1.10;
+    if (decisionAccuracy >= 75) return 1.05;
+    if (decisionAccuracy >= 65) return 1.02;
+    if (decisionAccuracy >= 55) return 1.00;
+    if (decisionAccuracy >= 45) return 0.95;
+    if (decisionAccuracy >= 35) return 0.90;
+    return 0.85;
+  }, [decisionAccuracy]);
 
   // ── Throttled price snapshot — only recalculate when price changes >0.3%
   const priceSignature = useMemo(() =>
