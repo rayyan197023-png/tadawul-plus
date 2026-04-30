@@ -361,13 +361,9 @@ function PerfChart(props) {
 
 function SummaryCard(props) {
   var positions=props.positions, tv=props.tv, tp=props.tp, tpP=props.tpP, dp=props.dp, capital=props.capital, tradeLog=props.tradeLog;
-
-  // حالة جلسة تداول السعودية - تتحدث كل دقيقة
-  var nowT_s=useState(new Date()); var nowT=nowT_s[0], setNowT=nowT_s[1];
-  useEffect(function(){
-    var t=setInterval(function(){setNowT(new Date());},60000);
-    return function(){clearInterval(t);};
-  },[]);
+  
+  // ✨ استقبل nowT من الأب بدلاً من إنشاء setInterval جديد
+  var nowT = props.nowT || new Date();
   var hour=nowT.getHours(), min=nowT.getMinutes();
   var timeVal=hour*60+min;
   var isSession=(timeVal>=10*60&&timeVal<15*60);
