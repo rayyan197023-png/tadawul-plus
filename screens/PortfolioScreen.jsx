@@ -1534,7 +1534,17 @@ useEffect(() => {
 
     return analysis;
   }, [positions]);
-    
+ // ✨ تحليل Portfolio IQ - مع تخزين في useMemo (CRITICAL Performance Fix!)
+var portfolioIQ = useMemo(function(){
+    if (!positions || positions.length === 0) return null;
+    try {
+      return analyzePortfolioIQ(positions, [], {riskTolerance: 0.20});
+    } catch(e) {
+      console.error('[Portfolio IQ Error]', e);
+      return null;
+    }
+  }, [positions]);
+   
 // ══════════════════════════════════════════════
   // 🏆 Position Sizing Analysis (Dev only)
   // ══════════════════════════════════════════════
