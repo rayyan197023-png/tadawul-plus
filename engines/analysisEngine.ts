@@ -1336,7 +1336,7 @@ const pL=Math.min(...win.map((x: any)=>x.lo));
     }
     if(b.lo<pL&&b.close>pL&&(pL-b.lo)>=atr*0.5){
       const conf=nx&&nx.close>nx.open;
-      const eq=win.filter(x=>Math.abs(x.lo-pL)/pL<0.0015).length>=2;
+      const eq=win.filter((x: any)=>Math.abs(x.lo-pL)/pL<0.0015).length>=2;
       sweeps.push({type:"SSL",q:(volOk?1:0)+(eq?1:0)+(conf?1:0)});
     }
   }
