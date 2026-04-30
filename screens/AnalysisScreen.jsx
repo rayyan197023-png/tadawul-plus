@@ -878,7 +878,7 @@ animation:'shimmer 1.4s ease infinite',
             </div>
           ) : (
             <div style={{display:"flex",flexDirection:"column",gap:8}}>
-              {decisions.filter(function(d){return d.verified;}).slice(-10).reverse().map(function(d,i){
+              {(decisions || []).filter(function(d){return d.verified;}).slice(-10).reverse().map(function(d,i){
                 var isCorrect = (d.signal==="شراء قوي" && d.result>0) ||
                                 (d.signal==="تخفيف" && d.result<0) ||
                                 (d.signal==="مراقبة" && d.result>-2);
