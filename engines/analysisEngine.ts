@@ -1519,8 +1519,8 @@ function calcFactorModel(stk: any, bars: any[]): any {
   var sectorStocksForPE=STOCKS.filter(function(x: any){return x.sec===stk.sec&&x.pe>0&&x.pe<60;});
   var benchPE=sectorStocksForPE.length>=2?  sectorStocksForPE.reduce(function(s: number, x: any){return s+x.pe;},0)/sectorStocksForPE.length:((sectorPE_static as any)[stk.sec]||18);
   var valueScore=stk.pe>0?Math.round(Math.min(95,Math.max(5,50-45*Math.tanh((stk.pe/benchPE-1)*1.5)))):50;
-  var ret1M_comp=bars.slice(-20).reduce(function(prod,b){return prod*(1+b.pct/100);},1)-1;
-  var ret3M_comp=bars.slice(-60).reduce(function(prod,b){return prod*(1+b.pct/100);},1)-1;
+  var ret1M_comp=bars.slice(-20).reduce(function(prod: number, b: any){return prod*(1+b.pct/100);},1)-1;
+var ret3M_comp=bars.slice(-60).reduce(function(prod: number, b: any){return prod*(1+b.pct/100);},1)-1;
   var momScore=Math.round(Math.min(100,Math.max(0,50+ret1M_comp*100*1.5+ret3M_comp*100*0.4)));
   // P/B ratio من bookValue الفعلي يُحسّن qualScore
   var pbPenalty = 0;
