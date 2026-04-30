@@ -1649,8 +1649,8 @@ function calcEarningsQuality(stk: any): any {
   var consistency;
   if(stk.eps_q1 && stk.eps_q2 && stk.eps_q3){
     var qVals = [stk.eps_q1, stk.eps_q2, stk.eps_q3];
-    var qMean = qVals.reduce(function(s,v){return s+v;},0)/3;
-    var qStd  = Math.sqrt(qVals.reduce(function(s,v){return s+Math.pow(v-qMean,2);},0)/3);
+    var qMean = qVals.reduce(function(s: number, v: number){return s+v;},0)/3;
+var qStd  = Math.sqrt(qVals.reduce(function(s: number, v: number){return s+Math.pow(v-qMean,2);},0)/3);
     var qCv   = qMean>0 ? qStd/qMean : 1; // معامل التباين — صغير = ثبات
     consistency = Math.round(Math.max(20, Math.min(95, 90 - qCv*120)));
   } else if(epsGrw>0&&revGrw>0){
