@@ -1991,7 +1991,18 @@ useEffect(() => {
                   <DonutChart positions={positions} tv={tv}/>
                 </div>
                 <div style={{padding:"0 14px 12px",borderTop:"1px solid "+C.line+"33",marginTop:8}}>
-                  <SummaryCard positions={positions} tv={tv} tp={tp} tpP={tpP} dp={dp} capital={capital} tradeLog={tradeLog}/>
+                  <SummaryCard 
+  positions={positions} 
+  tv={tv} 
+  tp={tp} 
+  tpP={tpP} 
+  dp={dp} 
+  capital={capital} 
+  tradeLog={tradeLog}
+  alpha={alpha}
+  benchmarkReturn={benchmarkReturn}
+  nowT={nowT}
+/>
 
                 {/* ══ زكاة المحفظة ══ */}
                 {tv >= zakatCalc.nisab && (
