@@ -1406,7 +1406,7 @@ var domBearCount = dominants.filter(function(x: any){ return x.ch<-0.3; }).lengt
   // ② Oil-TASI Regime
   // تحديد الـ Regime بناءً على العلاقة النفط/تاسي
   var oilAboveTarget = MACRO.oilPrice > MACRO.oilTarget;
-  var tasiAvgCh = allStocks.reduce(function(s,x){ return s+x.ch; },0)/allStocks.length;
+  var tasiAvgCh = allStocks.reduce(function(s: number, x: any){ return s+x.ch; },0)/allStocks.length;
   var tasiBull = tasiAvgCh > 0.2;
   var tasiRegime;
   if(oilAboveTarget && tasiBull)        tasiRegime = "RALLY";    // تأكيد مزدوج ← أفضل بيئة
