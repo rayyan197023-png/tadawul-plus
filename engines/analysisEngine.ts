@@ -1331,7 +1331,7 @@ const pL=Math.min(...win.map((x: any)=>x.lo));
     const nx=bars[i+1];
     if(b.hi>pH&&b.close<pH&&(b.hi-pH)>=atr*0.5){
       const conf=nx&&nx.close<nx.open;
-      const eq=win.filter(x=>Math.abs(x.hi-pH)/pH<0.0015).length>=2;
+      const eq=win.filter((x: any)=>Math.abs(x.hi-pH)/pH<0.0015).length>=2;
       sweeps.push({type:"BSL",q:(volOk?1:0)+(eq?1:0)+(conf?1:0)});
     }
     if(b.lo<pL&&b.close>pL&&(pL-b.lo)>=atr*0.5){
