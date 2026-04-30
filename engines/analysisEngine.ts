@@ -1534,7 +1534,7 @@ var ret3M_comp=bars.slice(-60).reduce(function(prod: number, b: any){return prod
   var divScore=Math.round(Math.min(90,Math.max(0,(stk.divY||0)*14)));
   var growScore=Math.round(Math.min(100,Math.max(0,50+(stk.revGrw||3)*2.5)));
   var composite=Math.round(valueScore*0.20+momScore*0.25+qualScore*0.25+sizeScore*0.10+divScore*0.10+growScore*0.10);
-  var mktAvgCh=STOCKS.reduce(function(s,x){return s+x.ch;},0)/STOCKS.length;
+  var mktAvgCh=STOCKS.reduce(function(s: number, x: any){return s+x.ch;},0)/STOCKS.length;
   var alpha=+(stk.ch-mktAvgCh).toFixed(2);
   return{composite,factors:{value:Math.round(valueScore),momentum:Math.round(momScore),quality:Math.round(qualScore),size:Math.round(sizeScore),dividend:Math.round(divScore),growth:Math.round(growScore)},
     alpha,beta:+(stk.sector_beta||1).toFixed(2),
