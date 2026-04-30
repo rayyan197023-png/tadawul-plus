@@ -1418,10 +1418,10 @@ var domBearCount = dominants.filter(function(x: any){ return x.ch<-0.3; }).lengt
 
   // ③ Retail Sentiment Proxy
   // 85% من التداول أفراد → الأسهم الصغيرة تتقدم الكبيرة عند euphoria
-  var smallCaps = allStocks.filter(function(x){ return (x.mktCap||100)<100; });
-  var largeCaps = allStocks.filter(function(x){ return (x.mktCap||100)>300; });
-  var smallAvgCh = smallCaps.length ? smallCaps.reduce(function(s,x){ return s+x.ch; },0)/smallCaps.length : tasiAvgCh;
-  var largeAvgCh = largeCaps.length ? largeCaps.reduce(function(s,x){ return s+x.ch; },0)/largeCaps.length : tasiAvgCh;
+  var smallCaps = allStocks.filter(function(x: any){ return (x.mktCap||100)<100; });
+var largeCaps = allStocks.filter(function(x: any){ return (x.mktCap||100)>300; });
+var smallAvgCh = smallCaps.length ? smallCaps.reduce(function(s: number, x: any){ return s+x.ch; },0)/smallCaps.length : tasiAvgCh;
+var largeAvgCh = largeCaps.length ? largeCaps.reduce(function(s: number, x: any){ return s+x.ch; },0)/largeCaps.length : tasiAvgCh;
   var retailSpread = smallAvgCh - largeAvgCh;  // إيجابي = retail يقود = momentum قوي لكن هش
   var retailSentiment = _clamp(Math.round(50 + retailSpread*12), 0, 100);
   var retailEuphoria = retailSpread > 1.5;     // الأفراد يبالغون في التفاؤل → خطر انعكاس
