@@ -657,7 +657,7 @@ animation:'shimmer 1.4s ease infinite',
           دقة المحرك
         </div>
         <div style={{fontSize:8,color:C.smoke,marginTop:1}}>
-          آخر {decisions.filter(function(d){return d.verified;}).length} قرار · اضغط للتفاصيل
+          آخر {(decisions || []).filter(function(d){return d.verified;}).length} قرار · اضغط للتفاصيل
         </div>
       </div>
     </div>
