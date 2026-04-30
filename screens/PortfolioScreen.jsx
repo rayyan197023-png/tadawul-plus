@@ -1336,7 +1336,8 @@ useEffect(() => {
   var cs=useState(function(){ return loadLS("tp_capital", 100000); }); var capital=cs[0], setCapital=cs[1];
   useEffect(function(){ saveLS("tp_capital", capital); },[capital]);
   var ts=useState("decisions"); var activeTab=ts[0], setActiveTab=ts[1];
-  var scrolls=useState({"decisions":0,"log":0,"compare":0}); var scrollPos=scrolls[0], setScrollPos=scrolls[1];
+  var scrolls=useState({"decisions":0,"log":0,"compare":0,"iq":0});
+ var scrollPos=scrolls[0], setScrollPos=scrolls[1];
   var hm=useState(false); var headerMin=hm[0], setHeaderMin=hm[1];
   function switchTab(id) {
     // احفظ الـ scroll الحالي قبل التبديل
