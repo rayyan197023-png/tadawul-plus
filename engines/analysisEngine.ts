@@ -1367,7 +1367,7 @@ function calcIVWAP(bars: any[], stk?: any): any {
   const aboveAVWAP=cur>avwap;
   const belowB1=cur<b1Lo,belowB2=cur<b2Lo;
   const pctM=(cur-vwM)/vwM*100;
-  const above3=[vwW,vwM,vwQ].filter(v=>cur>v).length;
+  const above3=[vwW,vwM,vwQ].filter((v: number)=>cur>v).length;
   const vwapDev=std>0?(cur-vwQ)/std:0;
   let score=4;
   if(belowB2&&aboveAVWAP)      score=20;
