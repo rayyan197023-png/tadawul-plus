@@ -1305,7 +1305,7 @@ function calcOrderBlocksFull(bars: any[], atr: number): any {
       }
     }
   }
-  const bulls=obs.filter(o=>o.type==="bull"&&o.fresh).sort((a,b)=>(b.strength+(b.fvg?2:0))-(a.strength+(a.fvg?2:0)));
+  const bulls=obs.filter((o: any)=>o.type==="bull"&&o.fresh).sort((a: any, b: any)=>(b.strength+(b.fvg?2:0))-(a.strength+(a.fvg?2:0)));
   const best=bulls[0]||null;
   const inBullOB=!!(best&&best.inOB),inRef=!!(best&&best.inRef),hasFVG=!!(best&&best.fvg);
   const strength=best?best.strength:0;
