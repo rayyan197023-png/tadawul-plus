@@ -1725,9 +1725,8 @@ var recentVol=n>=5?bars.slice(-5).reduce(function(s: number, b: any){return s+b.
   var valueDip=stk.pe>0&&stk.pe<15?1:0;
   var quietAccum=volRatio<0.9&&priceMove<0;
   var fundStrong=stk.roe>15&&stk.debt<0.35;
-  var nearLow=n>=60?bars[n-1].c<=Math.min(...bars.slice(-60).map(b=>b.lo))*1.05:false;
-  var highValuation=stk.pe>25;
-  var highPrice=n>=60?bars[n-1].c>=Math.max(...bars.slice(-60).map(b=>b.hi))*0.95:false;
+  var nearLow=n>=60?bars[n-1].c<=Math.min(...bars.slice(-60).map((b: any)=>b.lo))*1.05:false;
+var highPrice=n>=60?bars[n-1].c>=Math.max(...bars.slice(-60).map((b: any)=>b.hi))*0.95:false;
   var peaking=volRatio>1.4&&priceMove>5;
   var buySignals=(valueDip?15:0)+(quietAccum?20:0)+(fundStrong?10:0)+(nearLow?25:0);
   var sellSignals=(highValuation?15:0)+(highPrice?20:0)+(peaking?15:0);
