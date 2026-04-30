@@ -1394,7 +1394,7 @@ function calcTasiContext(stk: any, bars: any[], allStocks: any[] = []): any {
   var topN = Math.min(10, Math.max(3, Math.round(allStocks.length * 0.10)));
   var dominants = allStocks
     .slice()
-    .sort(function(a,b){ return (b.mktCap||0)-(a.mktCap||0); })
+    .sort(function(a: any, b: any){ return (b.mktCap||0)-(a.mktCap||0); })
     .slice(0, topN);
   var domBullCount = dominants.filter(function(x){ return x.ch>0.3; }).length;
   var domBearCount = dominants.filter(function(x){ return x.ch<-0.3; }).length;
