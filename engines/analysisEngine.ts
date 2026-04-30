@@ -1492,7 +1492,7 @@ var maxP=bars.reduce(function(m: number, b: any){return Math.max(m,b.hi);},-Infi
   var profile: any[] = [];
   for(var i=0;i<levels;i++){
     var lo=minP+i*step,hi=lo+step,mid=+((lo+hi)/2).toFixed(2),vol=0;
-    bars.forEach(function(b){var r=b.hi-b.lo||0.001,ov=Math.max(0,Math.min(b.hi,hi)-Math.max(b.lo,lo));vol+=b.vol*(ov/r);});
+    bars.forEach(function(b: any){var r=b.hi-b.lo||0.001,ov=Math.max(0,Math.min(b.hi,hi)-Math.max(b.lo,lo));vol+=b.vol*(ov/r);});
     profile.push({lo:+lo.toFixed(2),hi:+hi.toFixed(2),mid:mid,vol:Math.round(vol)});
   }
   var maxVol=profile.reduce(function(m,p){return Math.max(m,p.vol);},0);
