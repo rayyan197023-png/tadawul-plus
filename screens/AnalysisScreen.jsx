@@ -113,6 +113,7 @@ const [filters, setFilters] = useState({
       return saved ? JSON.parse(saved) : [];
     } catch(e) { return []; }
   });
+  
 const [showCalibrationModal, setShowCalibrationModal] = useState(false);
   const trackDecision = useCallback(function(sym, signal, conviction, price) {
     if (!sym || !signal || !price) return;
@@ -666,6 +667,278 @@ animation:'shimmer 1.4s ease infinite',
     </div>
   </button>
 )}
+{/* ══ Calibration Modal -- تفاصيل الدقة ══ */}
+{showCalibrationModal && (
+  <div 
+    onClick={function(){ setShowCalibrationModal(false); }}
+    style={{
+      position:"fixed",
+      inset:0,
+      zIndex:200,
+      background:"rgba(6,8,15,.88)",
+      backdropFilter:"blur(14px)",
+      display:"flex",
+      alignItems:"flex-end",
+      justifyContent:"center",
+      animation:"fadeIn .25s ease both",
+    }}
+  >
+    <div 
+      onClick={function(e){ e.stopPropagation(); }}
+      style={{
+        width:"100%",
+        maxWidth:430,
+        background:"linear-gradient(180deg," + C.layer2 + " 0%," + C.deep + " 100%)",
+        borderRadius:"24px 24px 0 0",
+        border:"1px solid " + C.line,
+        borderBottom:"none",
+        maxHeight:"82vh",
+        display:"flex",
+        flexDirection:"column",
+        boxShadow:"0 -24px 64px rgba(0,0,0,.8), inset 0 1px 0 " + C.layer3,
+        animation:"slideUp .38s cubic-bezier(.16,1,.3,1) both",
+      }}
+    >
+      {/* Header */}
+      <div style={{
+        display:"flex",
+        alignItems:"center",
+        justifyContent:"space-between",
+        padding:"10px 16px 0",
+      }}>
+        <button 
+          onClick={function(){ setShowCalibrationModal(false); }}
+          style={{
+            width:44,
+            height:44,
+            borderRadius:12,
+            border:"1px solid " + C.line,
+            background:C.layer3,
+            color:C.mist,
+            fontSize:18,
+            cursor:"pointer",
+            display:"flex",
+            alignItems:"center",
+            justifyContent:"center",
+          }}>
+          ✕
+        </button>
+        <div style={{
+          width:40,
+          height:4,
+          borderRadius:2,
+          background:C.ash,
+        }}/>
+        <div style={{width:44, height:44}}/>
+      </div>
+
+      {/* Title */}
+      <div style={{
+        padding:"12px 20px 14px",
+        borderBottom:"1px solid " + C.line,
+        display:"flex",
+        alignItems:"center",
+        gap:8,
+      }}>
+        <span style={{fontSize:20}}>🎯</span>
+        <div>
+          <div style={{fontSize:14,fontWeight:800,color:C.snow,fontFamily:"Cairo,sans-serif"}}>
+            دقة المحرك التحليلي
+          </div>
+          <div style={{fontSize:10,color:C.smoke,marginTop:2}}>
+            مبني على {decisions.filter(function(d){return d.verified;}).length} قرار متحقق
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div style={{
+        overflowY:"auto",
+        padding:"16px 20px 100px",
+        flex:1,
+      }}>
+        {/* Big Accuracy Display */}
+        <div style={{
+          background:"linear-gradient(135deg," + (decisionAccuracy >= 70 ? C.mint : decisionAccuracy >= 50 ? C.amber : C.coral) + "22," + (decisionAccuracy >= 70 ? C.mint : decisionAccuracy >= 50 ? C.amber : C.coral) + "08)",
+          border:"1px solid " + (decisionAccuracy >= 70 ? C.mint : decisionAccuracy >= 50 ? C.amber : C.coral) + "55",
+          borderRadius:16,
+          padding:"20px 16px",
+          marginBottom:16,
+          textAlign:"center",
+          boxShadow:"0 4px 20px " + (decisionAccuracy >= 70 ? C.mint : decisionAccuracy >= 50 ? C.amber : C.coral) + "22",
+        }}>
+          <div style={{fontSize:10,color:C.smoke,fontWeight:700,letterSpacing:"2px",marginBottom:8}}>
+            ACCURACY SCORE
+          </div>
+          <div style={{
+            fontSize:56,
+            fontWeight:900,
+            color:decisionAccuracy >= 70 ? C.mint : decisionAccuracy >= 50 ? C.amber : C.coral,
+            fontFamily:"IBM Plex Mono,monospace",
+            lineHeight:1,
+            textShadow:"0 0 20px " + (decisionAccuracy >= 70 ? C.mint : decisionAccuracy >= 50 ? C.amber : C.coral) + "66",
+          }}>
+            {decisionAccuracy}%
+          </div>
+          <div style={{
+            fontSize:13,
+            fontWeight:800,
+            color:decisionAccuracy >= 70 ? C.mint : decisionAccuracy >= 50 ? C.amber : C.coral,
+            marginTop:8,
+            fontFamily:"Cairo,sans-serif",
+          }}>
+            {decisionAccuracy >= 80 ? "ممتاز" : decisionAccuracy >= 70 ? "جيد جداً" : decisionAccuracy >= 60 ? "جيد" : decisionAccuracy >= 50 ? "متوسط" : "ضعيف"}
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div style={{
+          display:"grid",
+          gridTemplateColumns:"1fr 1fr 1fr",
+          gap:8,
+          marginBottom:16,
+        }}>
+          {(function(){
+            var verified = decisions.filter(function(d){return d.verified;});
+            var correct = verified.filter(function(d){
+              return (d.signal==="شراء قوي" && d.result>0) ||
+                     (d.signal==="تخفيف" && d.result<0) ||
+                     (d.signal==="مراقبة" && d.result>-2);
+            }).length;
+            var wrong = verified.length - correct;
+            return [
+              {l:"إجمالي",v:verified.length,c:C.electric},
+              {l:"صحيحة",v:correct,c:C.mint},
+              {l:"خاطئة",v:wrong,c:C.coral},
+            ].map(function(s,i){
+              return (
+                <div key={i} style={{
+                  background:s.c+"12",
+                  border:"1px solid "+s.c+"33",
+                  borderRadius:10,
+                  padding:"10px 8px",
+                  textAlign:"center",
+                }}>
+                  <div style={{fontSize:9,color:C.smoke,fontWeight:700,marginBottom:4}}>{s.l}</div>
+                  <div style={{
+                    fontSize:18,
+                    fontWeight:900,
+                    color:s.c,
+                    fontFamily:"IBM Plex Mono,monospace",
+                  }}>
+                    {s.v}
+                  </div>
+                </div>
+              );
+            });
+          })()}
+        </div>
+
+        {/* Recent Decisions List */}
+        <div style={{marginBottom:16}}>
+          <div style={{
+            fontSize:11,
+            color:C.gold,
+            fontWeight:700,
+            letterSpacing:"1.5px",
+            marginBottom:10,
+          }}>
+            آخر القرارات المتحققة
+          </div>
+          
+          {decisions.filter(function(d){return d.verified;}).length === 0 ? (
+            <div style={{
+              padding:"24px 16px",
+              textAlign:"center",
+              background:C.layer3,
+              borderRadius:12,
+              border:"1px dashed "+C.line,
+            }}>
+              <div style={{fontSize:12,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>
+                لا توجد قرارات متحققة بعد
+              </div>
+              <div style={{fontSize:10,color:C.ash,marginTop:4}}>
+                التحقق يحدث بعد 24 ساعة من القرار
+              </div>
+            </div>
+          ) : (
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {decisions.filter(function(d){return d.verified;}).slice(-10).reverse().map(function(d,i){
+                var isCorrect = (d.signal==="شراء قوي" && d.result>0) ||
+                                (d.signal==="تخفيف" && d.result<0) ||
+                                (d.signal==="مراقبة" && d.result>-2);
+                var color = isCorrect ? C.mint : C.coral;
+                return (
+                  <div key={d.id} style={{
+                    background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
+                    border:"1px solid "+color+"33",
+                    borderRadius:10,
+                    padding:"10px 12px",
+                    display:"flex",
+                    alignItems:"center",
+                    justifyContent:"space-between",
+                  }}>
+                    <div style={{display:"flex",alignItems:"center",gap:8,flex:1}}>
+                      <span style={{fontSize:14}}>{isCorrect?"✅":"❌"}</span>
+                      <div>
+                        <div style={{
+                          fontSize:11,
+                          fontWeight:800,
+                          color:C.snow,
+                          fontFamily:"IBM Plex Mono,monospace",
+                        }}>
+                          {d.sym}
+                        </div>
+                        <div style={{fontSize:9,color:C.smoke,marginTop:1}}>
+                          {d.signal} · {d.date}
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{textAlign:"left"}}>
+                      <div style={{
+                        fontSize:13,
+                        fontWeight:900,
+                        color:d.result>=0?C.mint:C.coral,
+                        fontFamily:"IBM Plex Mono,monospace",
+                      }}>
+                        {d.result>=0?"+":""}{d.result.toFixed(1)}%
+                      </div>
+                      <div style={{fontSize:8,color:C.smoke,marginTop:1}}>
+                        ثقة {d.conviction}%
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Info */}
+        <div style={{
+          background:"rgba(167,139,250,.06)",
+          border:"1px solid "+C.plasma+"33",
+          borderRadius:10,
+          padding:"10px 12px",
+        }}>
+          <div style={{fontSize:9,color:C.plasma,fontWeight:800,letterSpacing:"1px",marginBottom:5}}>
+            📚 كيف نقيس الدقة؟
+          </div>
+          <div style={{
+            fontSize:10,
+            color:C.mist,
+            lineHeight:1.6,
+            fontFamily:"Cairo,sans-serif",
+          }}>
+            بعد 24 ساعة من كل قرار، نقارن السعر الحالي مع السعر وقت القرار. 
+            "شراء قوي" صحيح إذا ارتفع السهم، "تخفيف" صحيح إذا انخفض.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
           {/* ─── المحتوى الرئيسي — يظهر بعد التحليل ─── */}
           {!loading&&(
           <div>
