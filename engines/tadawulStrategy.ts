@@ -215,7 +215,7 @@ function shouldSell(position: any, currentPrice: number, currentScore: number, c
 /**
  * كشف حالة السوق (Bull/Bear/Neutral)
  */
-function detectMarketRegime(historicalData, dayIndex) {
+function detectMarketRegime(historicalData: any[], dayIndex: number): any {
   var lookback = Math.min(20, dayIndex);
   var recentDays = historicalData.slice(dayIndex - lookback, dayIndex);
   
