@@ -1833,10 +1833,13 @@ var remaining = totalSecs - elapsed;
                       })()}
 
                       {/* ══ KPI Panel: Probability + PositionSize + Confidence ══ */}
-                      {(function(){
+   {(function(){
                         var prob  = health.probability  || {};
                         var ps    = health.positionSize  || {};
-                        var conf  = health.confidence    || 50;
+                        // ✨ تطبيق accuracyMultiplier على confidence
+                        var rawConf = health.confidence || 50;
+                        var conf = Math.round(Math.max(0, Math.min(100, rawConf * accuracyMultiplier)));
+
    // ✨ توحيد القيم: إذا كانت ≤ 1 → نسبة (اضرب بـ 100)، وإلا مئوية بالفعل
 var normalizeProb = function(v) {
   if (v == null) return null;
