@@ -1486,8 +1486,8 @@ function calcMacroFull(stk: any): any {
 function calcVPVR(bars: any[], levels?: number): any {
   levels=levels||20;
   if(!bars||bars.length<5)return null;
-  var minP=bars.reduce(function(m,b){return Math.min(m,b.lo);},Infinity);
-  var maxP=bars.reduce(function(m,b){return Math.max(m,b.hi);},-Infinity);
+  var minP=bars.reduce(function(m: number, b: any){return Math.min(m,b.lo);},Infinity);
+var maxP=bars.reduce(function(m: number, b: any){return Math.max(m,b.hi);},-Infinity);
   var step=(maxP-minP)/levels;
   var profile: any[] = [];
   for(var i=0;i<levels;i++){
