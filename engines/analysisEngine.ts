@@ -1275,8 +1275,8 @@ const lows =swings.filter((s: any)=>s.type==="L").slice(-4);
           trend==="هابط"?"هيكل LH/LL هابط":"هيكل محايد"};
 }
 function calcOrderBlocksFull(bars: any[], atr: number): any {
-  const obs=[];const cur=bars[bars.length-1].close;const n=bars.length;
-  const recentVolatility=bars.length>=20?bars.slice(-20).reduce((s,b)=>s+Math.abs(b.pct),0)/20:1.5;
+  const obs: any[] = [];const cur=bars[bars.length-1].close;const n=bars.length;
+  const recentVolatility=bars.length>=20?bars.slice(-20).reduce((s: number, b: any)=>s+Math.abs(b.pct),0)/20:1.5;
   const atrMult=Math.max(1.2,Math.min(2.0,1.5*recentVolatility/1.5));
   for(let i=1;i<n-2;i++){
     const b=bars[i];
