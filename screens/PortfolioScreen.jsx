@@ -1054,32 +1054,35 @@ function SellSheet(props) {
     function doSell() {
     if(!canSell) return;
     
-        // ✨ AI Smart Weighted Learning - مبني على أبحاث Quant Finance
+    // ✨ Validation محسّنة
+    if (price > 100000) {
+      alert('السعر مرتفع جداً');
+      return;
+    }
+    if (!Number.isFinite(qty) || !Number.isFinite(price)) {
+      alert('قيم غير صالحة');
+      return;
+    }
+    
+    // ✨ AI Smart Weighted Learning
     try {
-      var pnlPct = sellSheet.avgCost > 0 ? ((price - sellSheet.avgCost) / sellSheet.avgCost) * 100 : 0;
+      var pnlPctLearning = sellSheet.avgCost > 0 ? ((price - sellSheet.avgCost) / sellSheet.avgCost) * 100 : 0;
       
-      // 🎯 القاعدة 1: Dead Zone - تجاهل الضوضاء (±0.5%)
-      // 🎯 القاعدة 2: Anomaly Filter - تجاهل الحركات الاستثنائية (±20%)
-      if (Math.abs(pnlPct) >= 0.5 && Math.abs(pnlPct) <= 20) {
-        // 🎯 القاعدة 3: Weighted Learning - كل صفقة بقوتها
+      if (Math.abs(pnlPctLearning) >= 0.5 && Math.abs(pnlPctLearning) <= 20) {
         var actualOutcome = 0;
         
-        // النتائج الإيجابية
-        if (pnlPct >= 10)      actualOutcome = 2.0;   // ممتاز
-        else if (pnlPct >= 5)  actualOutcome = 1.5;   // قوي
-        else if (pnlPct >= 3)  actualOutcome = 1.0;   // واضح
-        else if (pnlPct >= 1)  actualOutcome = 0.5;   // ضعيف
-        else if (pnlPct > 0)   actualOutcome = 0.2;   // طفيف
-        // النتائج السلبية
-        else if (pnlPct >= -1)  actualOutcome = -0.2;
-        else if (pnlPct >= -3)  actualOutcome = -0.5;
-        else if (pnlPct >= -5)  actualOutcome = -1.0;
-        else if (pnlPct >= -10) actualOutcome = -1.5;
-        else                    actualOutcome = -2.0;
+        if (pnlPctLearning >= 10)      actualOutcome = 2.0;
+        else if (pnlPctLearning >= 5)  actualOutcome = 1.5;
+        else if (pnlPctLearning >= 3)  actualOutcome = 1.0;
+        else if (pnlPctLearning >= 1)  actualOutcome = 0.5;
+        else if (pnlPctLearning > 0)   actualOutcome = 0.2;
+        else if (pnlPctLearning >= -1)  actualOutcome = -0.2;
+        else if (pnlPctLearning >= -3)  actualOutcome = -0.5;
+        else if (pnlPctLearning >= -5)  actualOutcome = -1.0;
+        else if (pnlPctLearning >= -10) actualOutcome = -1.5;
+        else                            actualOutcome = -2.0;
         
-        var signalTaken = pnlPct >= 0 ? 'شراء قوي' : 'تخفيف';
-        
-        // Layers محفوظة من وقت الشراء
+        var signalTaken = pnlPctLearning >= 0 ? 'شراء قوي' : 'تخفيف';
         var layersUsed = sellSheet.layersAtEntry || {
           L1: 60, L2: 60, L3: 60, L4: 60, L5: 60,
           L6: 60, L7: 60, L8: 60, L9: 60
@@ -1088,24 +1091,53 @@ function SellSheet(props) {
         recordFeedback(sellSheet.sym, signalTaken, layersUsed, actualOutcome);
       }
     } catch (e) {
-      // فشل صامت
+      console.error('[Learning Error]', e);
     }
     
-    setTradeLog(function(prev){return [{id:Date.now(),sym:sellSheet.sym,name:sellSheet.name,action:"بيع",qty:qty,price:price,date:new Date().toISOString().slice(0,10),signal:"-",score:0,note:"تسجيل بيع"}].concat(prev);});
-    setPort(function(prev){return prev.map(function(pp){if(pp.sym!==sellSheet.sym)return pp;var rem=pp.qty-qty;if(rem<=0)return null;return Object.assign({},pp,{qty:rem});}).filter(Boolean);});
-    // تحديث perfHistory
+    setTradeLog(function(prev){
+      return [{
+        id:Date.now(),
+        sym:sellSheet.sym,
+        name:sellSheet.name,
+        action:"بيع",
+        qty:qty,
+        price:price,
+        date:new Date().toISOString().slice(0,10),
+        signal:"-",
+        score:0,
+        note:"تسجيل بيع"
+      }].concat(prev);
+    });
+    
+    // ✨ احسب الأداء قبل setPort
+    var soldValue = qty * price;
+    var soldCost = qty * sellSheet.avgCost;
+    
+    setPort(function(prev){
+      return prev.map(function(pp){
+        if(pp.sym!==sellSheet.sym)return pp;
+        var rem=pp.qty-qty;
+        if(rem<=0)return null;
+        return Object.assign({},pp,{qty:rem});
+      }).filter(Boolean);
+    });
+    
+    // ✨ تحديث perfHistory مع حساب صحيح
     if(setPerfHistory) {
       var today=new Date().toISOString().slice(0,10);
       setPerfHistory(function(prev){
         var lastV=prev.length?prev[prev.length-1].v:0;
-        var newV=Math.max(0,lastV-(sellSheet.avgCost*qty)+(qty*price));
+        // الفرق = ربح/خسارة من البيع
+        var pnlFromSale = soldValue - soldCost;
+        var newV=Math.max(0, lastV + pnlFromSale - soldValue);
         return prev.concat([{date:today,v:Math.round(newV)}]);
       });
     }
+    
     if(navigator.vibrate) navigator.vibrate(50);
     setSellSheet(null);
-  }
-  return (
+}
+  return (fix
     <div style={{position:"fixed",inset:0,zIndex:200,background:"rgba(6,8,15,.88)",backdropFilter:"blur(14px)",display:"flex",alignItems:"flex-end",justifyContent:"center",animation:"fadeIn .25s ease both"}} onClick={function(){setSellSheet(null);}}>
       <div onClick={function(e){e.stopPropagation();}} style={{width:"100%",maxWidth:430,background:"linear-gradient(180deg,"+C.layer2+" 0%,"+C.deep+" 100%)",borderRadius:"24px 24px 0 0",border:"1px solid "+C.line,borderBottom:"none",maxHeight:"78vh",display:"flex",flexDirection:"column",boxShadow:"0 -24px 64px rgba(0,0,0,.8), inset 0 1px 0 "+C.layer3,animation:"slideUp .38s cubic-bezier(.16,1,.3,1) both"}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 16px 0"}}>
