@@ -736,7 +736,7 @@ function genBars(stk: any, n: number = 60): any[] {
   ════════════════════════════════════════════════════════════════ */
   
   const rng = seedRng(parseInt(stk.sym)*997+7);
-  const bars = [];
+  const bars: any[] = [];
   let p = stk.p*(1-stk.ch/100);
   
   // ① معاملات أساسية
