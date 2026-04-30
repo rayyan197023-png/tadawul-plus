@@ -1320,7 +1320,7 @@ function calcOrderBlocksFull(bars: any[], atr: number): any {
 }
 function calcLiqSweepFull(bars: any[], atr: number): any {
   const cur=bars[bars.length-1].close;
-  const avgVol=bars.reduce((s,b)=>s+b.vol,0)/bars.length;
+  const avgVol=bars.reduce((s: number, b: any)=>s+b.vol,0)/bars.length;
   const sweeps: any[] = [];
   const lb=Math.min(20,Math.max(10,Math.round(bars.length*0.20)));
   for(let i=lb;i<bars.length-1;i++){
