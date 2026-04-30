@@ -434,8 +434,35 @@ function EditModal(props) {
   var totalCost=newQty*newCost, origTotal=pos.qty*pos.avgCost;
   var diffPct=origTotal>0?(totalCost-origTotal)/origTotal*100:0;
   function doSave(){
-    if(!canSave)return;
-    setPort(function(prev){return prev.map(function(p){return p.sym!==pos.sym?p:Object.assign({},p,{qty:newQty,avgCost:newCost});});});
+    if(!canSave) return;
+    
+    // ✨ Validation شامل
+    if (newQty <= 0) {
+      alert('الكمية يجب أن تكون أكبر من صفر');
+      return;
+    }
+    if (newCost <= 0) {
+      alert('السعر يجب أن يكون أكبر من صفر');
+      return;
+    }
+    if (newQty > 1000000) {
+      alert('الكمية كبيرة جداً (الحد الأقصى: 1,000,000)');
+      return;
+    }
+    if (newCost > 100000) {
+      alert('السعر مرتفع جداً (الحد الأقصى: 100,000 ر.س)');
+      return;
+    }
+    if (!Number.isFinite(newQty) || !Number.isFinite(newCost)) {
+      alert('قيم غير صالحة');
+      return;
+    }
+    
+    setPort(function(prev){
+      return prev.map(function(p){
+        return p.sym !== pos.sym ? p : Object.assign({}, p, {qty: newQty, avgCost: newCost});
+      });
+    });
     onClose();
   }
   function doDelete(){
