@@ -617,25 +617,31 @@ animation:'shimmer 1.4s ease infinite',
           </div>
           )}
 {/* ══ Calibration Card -- دقة المحرك ══ */}
+
 {!loading && decisionAccuracy !== null && (
-  <div style={{
-    margin:"4px 16px 10px",
-    background:"linear-gradient(135deg," + (decisionAccuracy >= 70 ? C.mint : decisionAccuracy >= 50 ? C.amber : C.coral) + "12,rgba(255,255,255,.02))",
-    border:"1px solid " + (decisionAccuracy >= 70 ? C.mint : decisionAccuracy >= 50 ? C.amber : C.coral) + "33",
-    borderRadius:14,
-    padding:"10px 14px",
-    display:"flex",
-    alignItems:"center",
-    justifyContent:"space-between",
-  }}>
+  <button 
+    onClick={function(){ haptic.tap(); setShowCalibrationModal(true); }}
+    style={{
+      width:"calc(100% - 32px)",
+      margin:"4px 16px 10px",
+      background:"linear-gradient(135deg," + (decisionAccuracy >= 70 ? C.mint : decisionAccuracy >= 50 ? C.amber : C.coral) + "12,rgba(255,255,255,.02))",
+      border:"1px solid " + (decisionAccuracy >= 70 ? C.mint : decisionAccuracy >= 50 ? C.amber : C.coral) + "33",
+      borderRadius:14,
+      padding:"10px 14px",
+      display:"flex",
+      alignItems:"center",
+      justifyContent:"space-between",
+      cursor:"pointer",
+      fontFamily:"Cairo,sans-serif",
+    }}>
     <div style={{display:"flex",alignItems:"center",gap:8}}>
       <span style={{fontSize:18}}>🎯</span>
-      <div>
+      <div style={{textAlign:"right"}}>
         <div style={{fontSize:9,color:C.smoke,fontWeight:700,letterSpacing:".5px"}}>
           دقة المحرك
         </div>
         <div style={{fontSize:8,color:C.smoke,marginTop:1}}>
-          آخر {decisions.filter(function(d){return d.verified;}).length} قرار متحقق
+          آخر {decisions.filter(function(d){return d.verified;}).length} قرار · اضغط للتفاصيل
         </div>
       </div>
     </div>
@@ -658,7 +664,7 @@ animation:'shimmer 1.4s ease infinite',
         {decisionAccuracy >= 80 ? "ممتاز" : decisionAccuracy >= 70 ? "جيد جداً" : decisionAccuracy >= 60 ? "جيد" : decisionAccuracy >= 50 ? "متوسط" : "ضعيف"}
       </div>
     </div>
-  </div>
+  </button>
 )}
           {/* ─── المحتوى الرئيسي — يظهر بعد التحليل ─── */}
           {!loading&&(
