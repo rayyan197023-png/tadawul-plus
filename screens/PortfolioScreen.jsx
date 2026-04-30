@@ -236,9 +236,11 @@ function getDecision(p) {
   var vrText=vr>=1.5?"الحجم "+Math.round(vr*100-100)+"% فوق المعدل":"الحجم طبيعي";
 
   var atrStop = risk.stopLoss ? risk.stopLoss : null;
-  var trailStop = risk.trailingStop ? risk.trailingStop : null;
-  var stopPct = atrStop && p.curPrice > 0 ? (atrStop / p.curPrice * 100) : 7;
-  stopPct = Math.min(stopPct, 10);
+var trailStop = risk.trailingStop ? risk.trailingStop : null;
+var stopPct = atrStop && p.curPrice > 0 
+  ? ((p.curPrice - atrStop) / p.curPrice * 100) 
+  : 7;
+stopPct = Math.min(Math.abs(stopPct), 10);
 
   if(gate==="DANGER") return {act:"بيع كامل",pct:100,color:C.coral,icon:"danger",reason:"السوق في خطر نظامي - اغلق جميع المراكز فوراً",detail:"ضغط بيعي استثنائي على مستوى السوق كله",urgent:true,upside:null,rr:null};
 
