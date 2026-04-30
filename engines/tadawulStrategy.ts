@@ -222,8 +222,8 @@ function detectMarketRegime(historicalData: any[], dayIndex: number): any {
   if (recentDays.length < 5) return 'neutral';
 
   // حساب اتجاه السوق بناءً على متوسط الأسعار
-  var startPrices = [];
-  var endPrices = [];
+  var startPrices: number[] = [];
+var endPrices: number[] = [];
   
   if (recentDays[0].prices && recentDays[recentDays.length - 1].prices) {
     Object.keys(recentDays[0].prices).forEach(function(sym) {
