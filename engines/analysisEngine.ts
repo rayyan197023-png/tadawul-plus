@@ -1749,8 +1749,8 @@ var highPrice=n>=60?bars[n-1].c>=Math.max(...bars.slice(-60).map((b: any)=>b.hi)
 
 /* ══ Alternative Data ══ */
 function calcAlternativeData(stk: any, bars: any[]): any {
-  var sectorStocks=STOCKS.filter(function(x){return x.sec===stk.sec;});
-  var sectorAvgCh=sectorStocks.reduce(function(s,x){return s+x.ch;},0)/sectorStocks.length;
+  var sectorStocks=STOCKS.filter(function(x: any){return x.sec===stk.sec;});
+var sectorAvgCh=sectorStocks.reduce(function(s: number, x: any){return s+x.ch;},0)/sectorStocks.length;
   var sectorMom=Math.round(50+35*Math.tanh(sectorAvgCh*0.8));
   var commodityScore=50;
   if(stk.sec==="طاقة"||stk.sec==="بترو"){commodityScore=Math.round(50+30*Math.tanh((MACRO.oilPrice-80)/20));}
