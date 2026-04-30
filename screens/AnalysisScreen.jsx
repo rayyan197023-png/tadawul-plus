@@ -113,19 +113,50 @@ const [filters, setFilters] = useState({
     } catch(e) { return []; }
   });
 
-  const trackDecision = function(sym, signal, conviction, price) {
+  const trackDecision = useCallback(function(sym, signal, conviction, price) {
+    if (!sym || !signal || !price) return;
+    
     const newDecision = {
       id: Date.now(),
       sym, signal, conviction, price,
       date: new Date().toISOString().split('T')[0],
-      verified: false, result: null,
+      timestamp: Date.now(),
+      verified: false,
+      result: null,
     };
+    
     setDecisions(function(prev) {
-      const updated = [...prev.slice(-49), newDecision]; // آخر 50 قرار فقط
-      try { if (typeof window !== 'undefined') sessionStorage.setItem('tdw_decisions', JSON.stringify(updated)); } catch(e){}
+      // ✨ تحقق من القرارات القديمة (بعد 24 ساعة)
+      const now = Date.now();
+      const ONE_DAY = 24 * 60 * 60 * 1000;
+      
+      const verifiedDecisions = prev.map(function(d) {
+        if (d.verified || !d.timestamp) return d;
+        if (now - d.timestamp < ONE_DAY) return d;
+        
+        // ابحث عن السعر الحالي
+        const currentStk = liveStocks.find(function(s){return s.sym === d.sym;});
+        if (!currentStk) return d;
+        
+        const priceChange = ((currentStk.p - d.price) / d.price) * 100;
+        return Object.assign({}, d, {
+          verified: true,
+          result: +priceChange.toFixed(2),
+          verifiedAt: now,
+        });
+      });
+      
+      const updated = [...verifiedDecisions.slice(-49), newDecision];
+      
+      try { 
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('tdw_decisions', JSON.stringify(updated)); 
+        }
+      } catch(e){}
+      
       return updated;
     });
-  };
+  }, [liveStocks]);
 
   // حساب دقة القرارات المحفوظة (تحقق مبسّط من نفس الجلسة)
   const decisionAccuracy = useMemo(() => {
