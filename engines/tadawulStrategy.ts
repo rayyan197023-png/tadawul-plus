@@ -248,9 +248,9 @@ function detectMarketRegime(historicalData: any[], dayIndex: number): any {
 /**
  * حساب قيمة الاستثمارات الحالية
  */
-function calcPortfolioInvested(state, prices) {
+function calcPortfolioInvested(state: any, prices: any): number {
   var total = 0;
-  Object.keys(state.positions).forEach(function(sym) {
+  Object.keys(state.positions).forEach(function(sym: string) {
     var pos = state.positions[sym];
     var price = prices[sym];
     if (price && pos.shares > 0) {
@@ -263,25 +263,25 @@ function calcPortfolioInvested(state, prices) {
 /**
  * استراتيجية Buy & Hold (للمقارنة كـ Benchmark)
  */
-export function createBuyAndHoldStrategy(stockSymbols) {
+export function createBuyAndHoldStrategy(stockSymbols: string[]): any {
   var hasBought = false;
   
   return {
     name: 'Buy & Hold (Benchmark)',
     
-    generateSignals: function(day, state, historicalData, dayIndex) {
-      var signals = [];
+    generateSignals: function(day: any, state: any, historicalData: any[], dayIndex: number): any[] {
+      var signals: any[] = [];
       
       // في اليوم الأول فقط: اشترِ الأسهم بالتساوي
       if (!hasBought && stockSymbols && stockSymbols.length > 0) {
-        var availableStocks = stockSymbols.filter(function(sym) {
+        var availableStocks = stockSymbols.filter(function(sym: string) {
           return day.prices[sym] && day.prices[sym] > 0;
         });
         
         if (availableStocks.length > 0) {
           var valuePerStock = (state.cash * 0.95) / availableStocks.length;
           
-          availableStocks.forEach(function(sym) {
+          availableStocks.forEach(function(sym: string) {
             signals.push({
               action: 'buy',
               sym: sym,
