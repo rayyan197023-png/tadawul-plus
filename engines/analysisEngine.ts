@@ -1675,12 +1675,11 @@ function calcOptionsFlow(stk: any, bars: any[]): any {
   if(!n)return{putCallRatio:1.0,iv:20,sentiment:"محايد",signal:"محايد",unusualActivity:false,score:50};
   
   // مؤشرات من السلوك الفعلي للسهم
-  var momentum5  = bars.slice(-5).reduce(function(s,b){return s+b.pct;},0)/5;
-  var momentum20 = bars.slice(-20).reduce(function(s,b){return s+b.pct;},0)/20;
-  var avgVol20 = bars.slice(-20).reduce(function(s,b){return s+b.vol;},0)/20||1;
-  var recentVol= bars.slice(-5).reduce(function(s,b){return s+b.vol;},0)/5;
-  var volRatio = recentVol/avgVol20;
-  var vol30pct = bars.slice(-30).reduce(function(s,b){return s+Math.abs(b.pct);},0)/30;
+  var momentum5  = bars.slice(-5).reduce(function(s: number, b: any){return s+b.pct;},0)/5;
+var momentum20 = bars.slice(-20).reduce(function(s: number, b: any){return s+b.pct;},0)/20;
+var avgVol20 = bars.slice(-20).reduce(function(s: number, b: any){return s+b.vol;},0)/20||1;
+var recentVol= bars.slice(-5).reduce(function(s: number, b: any){return s+b.vol;},0)/5;
+var vol30pct = bars.slice(-30).reduce(function(s: number, b: any){return s+Math.abs(b.pct);},0)/30;
   var iv = +(vol30pct*14+8).toFixed(1);
 
   // inferredPCR — مُستنتَج من سلوك السهم التاريخي (بدل عشوائي)
