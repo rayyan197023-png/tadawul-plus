@@ -1278,8 +1278,7 @@ animation:'shimmer 1.4s ease infinite',
               const priceColor=up?C.mint:C.coral;
               const selected=sel===stk.sym;
               const globalRank = rankMap[stk.sym] || 1;
-              const prevRank=globalRank+(stk.ch>=0?-1:1);
-              const rankUp=stk.ch>0;
+const rankUp=stk.ch>0;
               const isBuy=health.score>=75;
               const isDanger=health.score<45;
               const isRare=health.score>=85;
