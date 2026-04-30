@@ -1718,8 +1718,8 @@ var vol30pct = bars.slice(-30).reduce(function(s: number, b: any){return s+Math.
 /* ══ Insider Transactions ══ */
 function calcInsiderTransactions(stk: any, bars: any[]): any {
   var n=bars?bars.length:0;
-  var avgVol60=n>0?bars.reduce(function(s,b){return s+b.vol;},0)/n:stk.avgV||1800000;
-  var recentVol=n>=5?bars.slice(-5).reduce(function(s,b){return s+b.vol;},0)/5:avgVol60;
+  var avgVol60=n>0?bars.reduce(function(s: number, b: any){return s+b.vol;},0)/n:stk.avgV||1800000;
+var recentVol=n>=5?bars.slice(-5).reduce(function(s: number, b: any){return s+b.vol;},0)/5:avgVol60;
   var volRatio=recentVol/avgVol60;
   var priceMove=n>=10?(bars[n-1].c-bars[n-10].c)/bars[n-10].c*100:stk.ch;
   var valueDip=stk.pe>0&&stk.pe<15?1:0;
