@@ -1761,9 +1761,9 @@ var sectorAvgCh=sectorStocks.reduce(function(s: number, x: any){return s+x.ch;},
   var n=bars?bars.length:0;
   var volStab=50;
   if(n>=20){
-    var vols=bars.slice(-20).map(function(b){return b.vol;});
-    var avgV=vols.reduce(function(s,v){return s+v;},0)/20;
-    var varV=vols.reduce(function(s,v){return s+Math.pow(v-avgV,2);},0)/20;
+    var vols=bars.slice(-20).map(function(b: any){return b.vol;});
+var avgV=vols.reduce(function(s: number, v: number){return s+v;},0)/20;
+var varV=vols.reduce(function(s: number, v: number){return s+Math.pow(v-avgV,2);},0)/20;
     var cvV=avgV>0?Math.sqrt(varV)/avgV:1;
     volStab=cvV<0.3?75:cvV<0.5?60:cvV<0.8?45:30;
   }
