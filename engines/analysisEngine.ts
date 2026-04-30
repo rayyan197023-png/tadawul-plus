@@ -1325,8 +1325,8 @@ function calcLiqSweepFull(bars: any[], atr: number): any {
   const lb=Math.min(20,Math.max(10,Math.round(bars.length*0.20)));
   for(let i=lb;i<bars.length-1;i++){
     const b=bars[i],win=bars.slice(i-lb,i);
-    const pH=Math.max(...win.map(x=>x.hi));
-    const pL=Math.min(...win.map(x=>x.lo));
+    const pH=Math.max(...win.map((x: any)=>x.hi));
+const pL=Math.min(...win.map((x: any)=>x.lo));
     const volOk=b.vol>avgVol*1.5;
     const nx=bars[i+1];
     if(b.hi>pH&&b.close<pH&&(b.hi-pH)>=atr*0.5){
