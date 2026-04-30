@@ -968,20 +968,24 @@ animation:'shimmer 1.4s ease infinite',
                                 <div key={stk.sym}
                   className="card-enter"
                   style={{animationDelay:`${idx*.07}s`}}
-                  onClick={function(){
-                    haptic.tap();
-                    // Micro-feedback -- وميض لحظي
-                    setFlashCard(stk.sym);
-                    setTimeout(function(){ setFlashCard(null); }, 350);
-                    // Progressive Disclosure — تقدّم في المستويات
-                    if(selected){
-                      setSel(null);
-                      setRareAlert(null);
-                    } else {
-                      setSel(stk.sym);
-                      if(isRare) setRareAlert(stk.sym);
-                    }
-                  }}
+   onClick={function(){
+    haptic.tap();
+    setFlashCard(stk.sym);
+    setTimeout(function(){ setFlashCard(null); }, 350);
+    if(selected){
+      setSel(null);
+      setRareAlert(null);
+    } else {
+      setSel(stk.sym);
+      if(isRare) setRareAlert(stk.sym);
+      // ✨ تتبع القرار للمعايرة
+      try {
+        trackDecision(stk.sym, health.sig, health.score, stk.p);
+      } catch(e) {
+        console.error('[trackDecision Error]', e);
+      }
+    }
+  }}
                 >
                   {/* ─ البطاقة الرئيسية ─ */}
                   <div
