@@ -1621,12 +1621,32 @@ useEffect(() => {
   var canAdd=!!(found&&parseFloat(addQty)>0&&parseFloat(addCost)>0);
   function doAdd(){
     if(!canAdd) return;
-    haptic.success(); // نجاح إضافة مركز
-        var qty=parseFloat(addQty), cost=parseFloat(addCost);
-    var h=allData.find(function(d){return d.stk&&d.stk.sym===addSym;}); h=h?h.health:null;
+    haptic.success();
+    var qty=parseFloat(addQty), cost=parseFloat(addCost);
     
-    // ✨ AI Learning - حفظ layers عند الشراء لاستخدامها عند البيع
+    // ✨ Validation
+    if (qty <= 0 || cost <= 0) {
+      alert('الكمية والسعر يجب أن يكونا أكبر من صفر');
+      return;
+    }
+    if (qty > 1000000) {
+      alert('الكمية كبيرة جداً');
+      return;
+    }
+    if (cost > 100000) {
+      alert('السعر مرتفع جداً');
+      return;
+    }
+    if (!Number.isFinite(qty) || !Number.isFinite(cost)) {
+      alert('قيم غير صالحة');
+      return;
+    }
+    
+    var h=allData.find(function(d){return d.stk&&d.stk.sym===addSym;}); h=h?h.health:null;
     var layersAtEntry = h ? h.layers || null : null;
+    
+    // ✨ احسب القيمة الجديدة قبل setPort
+    var addedValue = qty * cost;
     
     setPort(function(prev){
       var ex=prev.find(function(x){return x.sym===addSym;});
@@ -1636,11 +1656,13 @@ useEffect(() => {
 
     setTradeLog(function(prev){return [{id:Date.now(),sym:addSym,name:found?found.name:addSym,action:"شراء",qty:qty,price:cost,date:new Date().toISOString().slice(0,10),signal:h?h.sig||"-":"-",score:h?h.score||0:0}].concat(prev);});
     setSheet(false); setAddSym(""); setAddQty(""); setAddCost("");
-    // سجّل نقطة أداء
+    
+    // ✨ سجّل نقطة أداء - استخدم القيمة الحديثة
     var today=new Date().toISOString().slice(0,10);
     setPerfHistory(function(prev){
-      var newVal=port.reduce(function(s,pp){var stk2=sl.find(function(x){return x.sym===pp.sym;});return s+(stk2?stk2.p:pp.avgCost)*pp.qty;},0)+(parseFloat(addCost||0)*parseFloat(addQty||0));
-      return prev.concat([{date:today,v:Math.round(newVal)}]);
+      var lastV = prev.length ? prev[prev.length - 1].v : 0;
+      var newV = lastV + addedValue;
+      return prev.concat([{date:today,v:Math.round(newV)}]);
     });
   }
 
