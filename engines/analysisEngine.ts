@@ -1340,8 +1340,8 @@ const pL=Math.min(...win.map((x: any)=>x.lo));
       sweeps.push({type:"SSL",q:(volOk?1:0)+(eq?1:0)+(conf?1:0)});
     }
   }
-  const ssls=sweeps.filter(s=>s.type==="SSL");
-  const bsls=sweeps.filter(s=>s.type==="BSL");
+  const ssls=sweeps.filter((s: any)=>s.type==="SSL");
+const bsls=sweeps.filter((s: any)=>s.type==="BSL");
   const bestSSL=ssls[ssls.length-1];
   const recSSL=ssls.length>0;
   const q=bestSSL?(bestSSL.q||0):0;
