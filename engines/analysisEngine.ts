@@ -1497,9 +1497,10 @@ var maxP=bars.reduce(function(m: number, b: any){return Math.max(m,b.hi);},-Infi
   }
   var maxVol=profile.reduce(function(m: number, p: any){return Math.max(m,p.vol);},0);
 var poc=profile.reduce(function(a: any, b: any){return b.vol>a.vol?b:a;});
-var totalVol=profile.reduce(function(s: number, p: any){return s+p.vol;},0);
+var totalVol=profile.reduce(function(s: number, p:any){return s+p.vol;},0);
   var vaVol=0,vaLow=poc.lo,vaHigh=poc.hi;
-  var sorted=profile.slice().sort(function(a,b){return b.vol-a.vol;});
+  var sorted=profile.slice().sort(function(a: any, b: any){return b.vol-a.vol;});
+
   for(var j=0;j<sorted.length;j++){vaVol+=sorted[j].vol;vaLow=Math.min(vaLow,sorted[j].lo);vaHigh=Math.max(vaHigh,sorted[j].hi);if(vaVol>=totalVol*0.70)break;}
   var cur=bars[bars.length-1].c||bars[bars.length-1].close;
   return{profile,poc,maxVol,vaLow:+vaLow.toFixed(2),vaHigh:+vaHigh.toFixed(2),curPrice:cur,
