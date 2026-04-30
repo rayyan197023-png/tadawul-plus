@@ -472,14 +472,14 @@ const [filters, setFilters] = useState({
                   })}
                   <span style={{fontSize:8,fontWeight:700,color:C.mint,marginRight:2}}>مباشر</span>
                   <span style={{fontSize:8,color:C.smoke}}>
-                    {(function(){
-                      var d = new Date();
-                      var hh = String(d.getHours()).padStart(2,"0");
-                      var mm = String(d.getMinutes()).padStart(2,"0");
-                      var ss = String(d.getSeconds()).padStart(2,"0");
-                      return hh + ":" + mm + ":" + ss;
-                    })()}
-                  </span>
+  {(function(){
+    var d = liveTime || new Date();
+    var hh = String(d.getHours()).padStart(2,"0");
+    var mm = String(d.getMinutes()).padStart(2,"0");
+    var ss = String(d.getSeconds()).padStart(2,"0");
+    return hh + ":" + mm + ":" + ss;
+  })()}
+</span>
                 </div>
               </div>
               <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:6}}>
