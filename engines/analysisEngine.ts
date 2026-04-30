@@ -1249,7 +1249,7 @@ if(bars.length<10)return{trend:"محايد",bos:false,choch:false,score:5,label:
 
   const swings: any[] = [];
   for(let i=swWin;i<bars.length-swWin;i++){
-    if(bars.slice(i-swWin,i).every(b=>b.hi<=bars[i].hi)&&bars.slice(i+1,i+1+swWin).every(b=>b.hi<=bars[i].hi))
+    if(bars.slice(i-swWin,i).every((b: any)=>b.hi<=bars[i].hi)&&bars.slice(i+1,i+1+swWin).every((b: any)=>b.hi<=bars[i].hi))
       swings.push({i,type:"H",val:bars[i].hi});
     if(bars.slice(i-swWin,i).every(b=>b.lo>=bars[i].lo)&&bars.slice(i+1,i+1+swWin).every(b=>b.lo>=bars[i].lo))
       swings.push({i,type:"L",val:bars[i].lo});
