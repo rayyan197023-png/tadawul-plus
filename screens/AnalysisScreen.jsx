@@ -113,7 +113,7 @@ const [filters, setFilters] = useState({
       return saved ? JSON.parse(saved) : [];
     } catch(e) { return []; }
   });
-
+const [showCalibrationModal, setShowCalibrationModal] = useState(false);
   const trackDecision = useCallback(function(sym, signal, conviction, price) {
     if (!sym || !signal || !price) return;
     
