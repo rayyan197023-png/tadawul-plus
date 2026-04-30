@@ -1396,8 +1396,8 @@ function calcTasiContext(stk: any, bars: any[], allStocks: any[] = []): any {
     .slice()
     .sort(function(a: any, b: any){ return (b.mktCap||0)-(a.mktCap||0); })
     .slice(0, topN);
-  var domBullCount = dominants.filter(function(x){ return x.ch>0.3; }).length;
-  var domBearCount = dominants.filter(function(x){ return x.ch<-0.3; }).length;
+  var domBullCount = dominants.filter(function(x: any){ return x.ch>0.3; }).length;
+var domBearCount = dominants.filter(function(x: any){ return x.ch<-0.3; }).length;
   var domRatio = domBullCount / topN; // نسبة الصاعدين
   // منطق الأغلبية بدل "الكل أو لا شيء"
   var domDir = domRatio>=0.70?1 : domRatio>=0.55?0.5 : (1-domRatio)>=0.70?-1 : (1-domRatio)>=0.55?-0.5 : 0;
