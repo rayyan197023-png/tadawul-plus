@@ -1489,7 +1489,7 @@ function calcVPVR(bars: any[], levels?: number): any {
   var minP=bars.reduce(function(m,b){return Math.min(m,b.lo);},Infinity);
   var maxP=bars.reduce(function(m,b){return Math.max(m,b.hi);},-Infinity);
   var step=(maxP-minP)/levels;
-  var profile=[];
+  var profile: any[] = [];
   for(var i=0;i<levels;i++){
     var lo=minP+i*step,hi=lo+step,mid=+((lo+hi)/2).toFixed(2),vol=0;
     bars.forEach(function(b){var r=b.hi-b.lo||0.001,ov=Math.max(0,Math.min(b.hi,hi)-Math.max(b.lo,lo));vol+=b.vol*(ov/r);});
