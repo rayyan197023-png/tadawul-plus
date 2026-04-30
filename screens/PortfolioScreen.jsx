@@ -506,7 +506,9 @@ function Card(props) {
   var onEdit=props.onEdit;
   var d=useMemo(function(){return getDecision(p);},[p]);
 
-  var score=p.health?p.health.score||0:Math.min(95,Math.max(20,Math.round(50+(p.pnlPct||0)*0.8+(p.stk.ch||0)*3)));
+  var score = p.health && p.health.score !== undefined && p.health.score !== null
+  ? p.health.score
+  : Math.min(95, Math.max(20, Math.round(50 + (p.pnlPct || 0) * 0.8 + (p.stk.ch || 0) * 3)));
   var grade=p.health?p.health.grade||"ض":score>=85?"م":score>=75?"ج":score>=65?"ب":score>=55?"م-":score>=45?"ض+":"ض";
   var gradeColor=score>=75?C.mint:score>=55?C.amber:C.coral;
   var circ=2*Math.PI*22;
