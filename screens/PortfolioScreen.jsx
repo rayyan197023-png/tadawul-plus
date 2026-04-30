@@ -1441,39 +1441,6 @@ useEffect(() => {
     }
   }
 
-                 // ══════════════════════════════════════════════
-  // 🏆 Position Sizing Analysis (Dev only)
-  // ══════════════════════════════════════════════
-  useEffect(function(){
-    if (!positions || positions.length === 0) return;
-    if (process.env.NODE_ENV !== 'development') return;
-
-    try {
-      var positionsWithBars = positions.map(function(p) {
-        var bars = genBars(p.stk, 60);
-        return {
-          sym: p.sym,
-          qty: p.qty,
-          value: p.value,
-          bars: bars,
-          stk: p.stk,
-        };
-      });
-
-      var analysis = analyzePortfolio(positionsWithBars, []);
-      var ps = analysis.positionSizing;
-
-      console.log('🏆 Position Sizing:', {
-        totalValue: analysis.totalValue,
-        kelly: (ps.safeKelly * 100).toFixed(2) + '%',
-        twoPercent: ps.twoPercent.riskSAR,
-        atr: ps.atr.avgATRPercent + '%',
-        stocksAnalyzed: ps.atr.stocksAnalyzed,
-      });
-    } catch (e) {
-      console.error('[Position Sizing Error]', e);
-    }
-  }, [positions]);
     var positions=useMemo(function(){
     var tv=port.reduce(function(s,pp){var stk=sl.find(function(x){return x.sym===pp.sym;});return s+(stk?stk.p:pp.avgCost)*pp.qty;},0)||1;
         return port.map(function(pp){
@@ -1568,7 +1535,39 @@ useEffect(() => {
     return analysis;
   }, [positions]);
     
+// ══════════════════════════════════════════════
+  // 🏆 Position Sizing Analysis (Dev only)
+  // ══════════════════════════════════════════════
+  useEffect(function(){
+    if (!positions || positions.length === 0) return;
+    if (process.env.NODE_ENV !== 'development') return;
 
+    try {
+      var positionsWithBars = positions.map(function(p) {
+        var bars = genBars(p.stk, 60);
+        return {
+          sym: p.sym,
+          qty: p.qty,
+          value: p.value,
+          bars: bars,
+          stk: p.stk,
+        };
+      });
+
+      var analysis = analyzePortfolio(positionsWithBars, []);
+      var ps = analysis.positionSizing;
+
+      console.log('🏆 Position Sizing:', {
+        totalValue: analysis.totalValue,
+        kelly: (ps.safeKelly * 100).toFixed(2) + '%',
+        twoPercent: ps.twoPercent.riskSAR,
+        atr: ps.atr.avgATRPercent + '%',
+        stocksAnalyzed: ps.atr.stocksAnalyzed,
+      });
+    } catch (e) {
+      console.error('[Position Sizing Error]', e);
+    }
+  }, [positions]);
   // ======= كشف تغيير القرار وإطلاق التنبيه =======
   useEffect(function(){
     var newAlerts=[];
