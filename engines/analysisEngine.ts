@@ -1247,7 +1247,7 @@ if(bars.length<10)return{trend:"محايد",bos:false,choch:false,score:5,label:
     : 1.5;
   const swWin = recentRng > 2.5 ? 2 : recentRng > 1.0 ? 3 : 4;
 
-  const swings=[];
+  const swings: any[] = [];
   for(let i=swWin;i<bars.length-swWin;i++){
     if(bars.slice(i-swWin,i).every(b=>b.hi<=bars[i].hi)&&bars.slice(i+1,i+1+swWin).every(b=>b.hi<=bars[i].hi))
       swings.push({i,type:"H",val:bars[i].hi});
