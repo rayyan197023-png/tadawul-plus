@@ -475,6 +475,9 @@ function findLargestPosition(positions: any[], totalValue: number): any {
   positions.forEach((p: any) => {
     const weight = p.value / totalValue;
     if (weight > largestWeight) {
+      largest = p;
+      largestWeight = weight;
+    }
   });
   
   return {
