@@ -1431,6 +1431,10 @@ useEffect(() => {
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.5);
       osc.start(ctx.currentTime);
       osc.stop(ctx.currentTime+0.5);
+      // ✨ تنظيف: إغلاق AudioContext بعد الانتهاء
+      setTimeout(function(){ 
+        try { ctx.close(); } catch(e){} 
+      }, 600);
     } catch(e){}
     // ٣. اهتزاز الجهاز
     if(navigator.vibrate){
