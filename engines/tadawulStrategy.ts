@@ -184,7 +184,7 @@ export function createTadawulStrategy(healthFn: any, options?: any): any {
  */
 function shouldSell(position: any, currentPrice: number, currentScore: number, currentDate: any, dayIndex: number, config: any): any {
   var costBasis = position.avgCost;
-  var returnPct = (currentPrice - costBasis) / costBasis;
+  var returnPct = (currentPrice - costBasis) / costBasis; 
 
   // ① Stop Loss
   if (returnPct <= config.stopLossPct) {
