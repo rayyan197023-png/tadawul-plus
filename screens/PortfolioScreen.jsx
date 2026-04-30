@@ -1443,65 +1443,37 @@ useEffect(() => {
   }
 
                  // ══════════════════════════════════════════════
-  // 🏆 الخطوة 22 -- المرحلة 5 مكتملة (Position Sizing الشامل)
+  // 🏆 Position Sizing Analysis (Dev only)
   // ══════════════════════════════════════════════
   useEffect(function(){
     if (!positions || positions.length === 0) return;
+    if (process.env.NODE_ENV !== 'development') return;
 
-    console.log('🏆 ═══════ Position Sizing الشامل (المرحلة 5) ═══════');
-
-    var positionsWithBars = positions.map(function(p) {
-      var bars = genBars(p.stk, 60);
-      return {
-        sym: p.sym,
-        qty: p.qty,
-        value: p.value,
-        bars: bars,
-        stk: p.stk,
-      };
-    });
-
-    var analysis = analyzePortfolio(positionsWithBars, []);
-    var ps = analysis.positionSizing;
-
-    console.log('💰 القيمة الإجمالية:', analysis.totalValue.toLocaleString(), 'ر.س');
-    console.log('');
-    console.log('🎯 الطرق الثلاث لحجم المركز:');
-    console.log('');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('1️⃣ Kelly Criterion (الرياضيات):');
-    console.log('   • النسبة:', (ps.safeKelly * 100).toFixed(2) + '%');
-    console.log('   • المبلغ:', ps.amountSAR.toLocaleString() + ' ر.س');
-    console.log('   • الفلسفة: تعظيم العائد حسب الاحتمالات');
-    console.log('');
-    console.log('2️⃣ 2% Rule (الحماية):');
-    console.log('   • الخسارة القصوى:', ps.twoPercent.riskSAR.toLocaleString() + ' ر.س');
-    console.log('   • الأسهم:', ps.twoPercent.maxShares.toLocaleString());
-    console.log('   • الفلسفة: لا إفلاس حتى بـ 10 خسائر');
-    console.log('');
-    console.log('3️⃣ ATR Stop Loss (الذكاء):');
-    console.log('   • ATR للمحفظة:', ps.atr.avgATRPercent + '%');
-    console.log('   • وقف متوسط:', ps.atr.avgStopPercent + '%');
-    console.log('   • عدد الأسهم المحللة:', ps.atr.stocksAnalyzed);
-    console.log('   • الفلسفة: كل سهم له وقفه الخاص');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('');
-    if (ps.atr.perStock.length > 0) {
-      console.log('📊 ATR Stop Loss لكل سهم:');
-      ps.atr.perStock.forEach(function(stock) {
-        console.log('   • ' + stock.sym + ': وقف ' + stock.stopLossPercent + '% | ATR ' + stock.atrPercent + '% | ' + stock.label);
+    try {
+      var positionsWithBars = positions.map(function(p) {
+        var bars = genBars(p.stk, 60);
+        return {
+          sym: p.sym,
+          qty: p.qty,
+          value: p.value,
+          bars: bars,
+          stk: p.stk,
+        };
       });
+
+      var analysis = analyzePortfolio(positionsWithBars, []);
+      var ps = analysis.positionSizing;
+
+      console.log('🏆 Position Sizing:', {
+        totalValue: analysis.totalValue,
+        kelly: (ps.safeKelly * 100).toFixed(2) + '%',
+        twoPercent: ps.twoPercent.riskSAR,
+        atr: ps.atr.avgATRPercent + '%',
+        stocksAnalyzed: ps.atr.stocksAnalyzed,
+      });
+    } catch (e) {
+      console.error('[Position Sizing Error]', e);
     }
-    console.log('');
-    console.log('💎 الاستراتيجية المثلى:');
-    console.log('   1. احسب Kelly (كم من المحفظة؟)');
-    console.log('   2. احسب ATR Stop (وقف ذكي لكل سهم)');
-    console.log('   3. طبق 2% Rule (لا تتجاوز 2% خسارة)');
-    console.log('   4. النتيجة النهائية = الأكثر تحفظاً');
-    console.log('');
-    console.log('═══════════════════════════════════════');
-    console.log('🏆 المرحلة 5 مكتملة -- 3 أنظمة للـ Position Sizing');
-    console.log('═══════════════════════════════════════');
   }, [positions]);
     var positions=useMemo(function(){
     var tv=port.reduce(function(s,pp){var stk=sl.find(function(x){return x.sym===pp.sym;});return s+(stk?stk.p:pp.avgCost)*pp.qty;},0)||1;
