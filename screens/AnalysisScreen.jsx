@@ -1582,8 +1582,9 @@ animation:'shimmer 1.4s ease infinite',
 
                           // العداد يعتمد على حجم النافذة
                           var totalSecs = windowMins * 60;
-                          var elapsed   = tick % totalSecs;
-                          var remaining = totalSecs - elapsed;
+// ✨ استخدم Date.now() للدقة
+var elapsed   = Math.floor((Date.now() / 1000) % totalSecs);
+var remaining = totalSecs - elapsed;
                           var remMins   = Math.floor(remaining / 60);
                           var remSecs   = remaining % 60;
 
