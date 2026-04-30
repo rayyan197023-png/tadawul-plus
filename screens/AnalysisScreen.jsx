@@ -105,6 +105,7 @@ const [filters, setFilters] = useState({
   // ══ نظام تتبع القرارات — Calibration System ══
   // يحفظ القرارات ويقيس دقتها لاحقاً لمعايرة الأوزان
   const [decisions, setDecisions] = useState(() => {
+    const [showCalibrationModal, setShowCalibrationModal] = useState(false);
     try {
       // نستخدم sessionStorage (مؤقت للجلسة) بدل localStorage
       if (typeof window === 'undefined') return [];
