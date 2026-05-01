@@ -1496,9 +1496,14 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                         var prob  = health.probability  || {};
                         var ps    = health.positionSize  || {};
                         var conf  = health.confidence    || 50;
-                        var bull = prob.bull != null ? Math.round(prob.bull > 1 ? prob.bull : prob.bull*100) : null;
-var bear = prob.bear != null ? Math.round(prob.bear > 1 ? prob.bear : prob.bear*100) : null;
-var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : prob.neutral*100) : null;
+   // ✨ توحيد القيم: ≤ 1 = نسبة (× 100)، > 1 = مئوية بالفعل
+var normalizeProb = function(v) {
+  if (v == null) return null;
+  return Math.round(v <= 1 ? v * 100 : v);
+};
+var bull = normalizeProb(prob.bull);
+var bear = normalizeProb(prob.bear);
+var neut = normalizeProb(prob.neutral);
                                                 var pct   = ps.pct     != null ? ps.pct.toFixed(1)          : null;
                         var kelly = ps.kelly   != null ? ps.kelly.toFixed(1)        : null;
                         var recK  = ps.recommended;
