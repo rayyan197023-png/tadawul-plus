@@ -228,12 +228,19 @@ const accuracyMultiplier = useMemo(() => {
   },[throttledSig, liveMACRO]); // ← throttled: recalc max every 5s not every 3s
 
   const filtered = useMemo(()=>{
+    // ✨ Safety check
+    if (!allData || !Array.isArray(allData) || allData.length === 0) return [];
+    
     var arr;
-    if(tab==="buy")    arr = allData.filter(d=>d.health.score>=75);
-    else if(tab==="watch")  arr = allData.filter(d=>d.health.score>=60&&d.health.score<75);
-    else if(tab==="reduce") arr = allData.filter(d=>d.health.score<45);
+    if(tab==="buy")    arr = allData.filter(d=>d && d.health && d.health.score>=75);
+    else if(tab==="watch")  arr = allData.filter(d=>d && d.health && d.health.score>=60&&d.health.score<75);
+    else if(tab==="reduce") arr = allData.filter(d=>d && d.health && d.health.score<45);
     else arr = [...allData];
-    return arr.sort(function(a,b){ return b.health.score - a.health.score; });
+    return arr.sort(function(a,b){ 
+      var sa = (a && a.health && a.health.score) || 0;
+      var sb = (b && b.health && b.health.score) || 0;
+      return sb - sa; 
+    });
   },[allData,tab]);
 
   const rankMap = useMemo(() => {
