@@ -3626,3 +3626,11 @@ var neut = normalizeProb(prob.neutral);
     </div>
   );
 }
+
+export default function AnalysisScreen(props) {
+  return (
+    <AnalysisErrorBoundary>
+      <AnalysisScreenInner {...props} />
+    </AnalysisErrorBoundary>
+  );
+}
