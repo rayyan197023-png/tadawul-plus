@@ -199,6 +199,11 @@ const accuracyMultiplier = useMemo(() => {
   }, [priceSignature]);
 
   const allData = useMemo(()=>{
+    // ✨ Safety check للـ liveStocks
+    if (!liveStocks || !Array.isArray(liveStocks) || liveStocks.length === 0) {
+      return [];
+    }
+    
     // ✨ Patch MACRO آمن مع try/finally
     const _origOil = MACRO.oilPrice;
     const _origGold = MACRO.goldPrice;
@@ -213,8 +218,10 @@ const accuracyMultiplier = useMemo(() => {
         return{stk,bars,health:stockHealth(stk,bars)}; 
       });
       return result;
+    } catch(e) {
+      console.error('[allData Error]', e);
+      return [];
     } finally {
-      // ✨ تأكد من Restore حتى عند حدوث error
       MACRO.oilPrice  = _origOil;
       MACRO.goldPrice = _origGold;
     }
