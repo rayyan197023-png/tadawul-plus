@@ -1823,8 +1823,7 @@ var remaining = totalSecs - elapsed;
                         var prob  = health.probability  || {};
                         var ps    = health.positionSize  || {};
                         // ✨ تطبيق accuracyMultiplier على confidence
-                        var rawConf = health.confidence || 50;
-                        var conf = Math.round(Math.max(0, Math.min(100, rawConf * accuracyMultiplier)));
+                        var conf = health.confidence || 50;
 
    // ✨ توحيد القيم: إذا كانت ≤ 1 → نسبة (اضرب بـ 100)، وإلا مئوية بالفعل
 var normalizeProb = function(v) {
