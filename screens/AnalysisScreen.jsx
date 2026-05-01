@@ -1926,21 +1926,11 @@ var neut = normalizeProb(prob.neutral);
                                   }}>{conf}%</div>
                                   
                                   {/* ✨ مؤشر تعديل المحرك (الشفافية) */}
-                                  {accuracyMultiplier !== 1.0 && (
-                                    <div style={{
-                                      fontSize:7,
-                                      color: accuracyMultiplier > 1 ? C.mint : C.coral,
-                                      fontWeight:700,
-                                      marginTop:2,
-                                      display:"flex",
-                                      alignItems:"center",
-                                      gap:2,
-                                    }}>
-                                      <span>{accuracyMultiplier > 1 ? "↑" : "↓"}</span>
-                                      <span>{accuracyMultiplier > 1 ? "+" : ""}{Math.round((accuracyMultiplier - 1) * 100)}%</span>
-                                      <span style={{color:C.smoke,fontSize:6,marginRight:2}}>معايرة</span>
-                                    </div>
-                                  )}
+                                  {false && accuracyMultiplier !== 1.0 && (
+  <div style={{...}}>
+    {/* محتوى */}
+  </div>
+)}
 
                                 </div>
                               </div>
