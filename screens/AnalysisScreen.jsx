@@ -1314,10 +1314,15 @@ animation:'shimmer 1.4s ease infinite',
                           ? health.layers.L6 / 200
                           : 0.05;
                         var pct  = Math.max(3, Math.min(20, Math.round(kelAdj * 100)));
-                        var stop = (stk.p * 0.96).toFixed(2);
-                        var tgt  = (stk.p * 1.08).toFixed(2);
-                        var alert= (stk.p * 1.015).toFixed(2);
+                        // ✨ حساب ديناميكي بناءً على ATR (تقلّب السهم)
+var atrPct = (health.extras && health.extras.atrPct) || 2.5;
+var stopPct = Math.max(3, Math.min(8, atrPct * 1.5));
+var tgtPct = Math.max(5, Math.min(15, atrPct * 3));
+var alertPct = Math.max(0.5, Math.min(3, atrPct * 0.5));
 
+var stop = (stk.p * (1 - stopPct/100)).toFixed(2);
+var tgt  = (stk.p * (1 + tgtPct/100)).toFixed(2);
+var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                         var icon, line1, line2, bg, border;
                         if(health.score >= 75){
                           icon  = "✅";
