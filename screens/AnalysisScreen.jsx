@@ -669,7 +669,7 @@ animation:'shimmer 1.4s ease infinite',
   </button>
 )}
 {/* ══ Calibration Modal -- تفاصيل الدقة ══ */}
-{showCalibrationModal && (
+{false && showCalibrationModal && (
   <div 
     onClick={function(){ setShowCalibrationModal(false); }}
     style={{
