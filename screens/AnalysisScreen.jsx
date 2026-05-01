@@ -451,8 +451,8 @@ const avgChange = (liveStocks && liveStocks.length > 0)
         })}
       </div>
 
-      {/* ══ خلفية الجسيمات — Canvas مستقل ══ */}
-      <ParticleCanvas/>
+      {/* ══ خلفية الجسيمات -- Canvas مستقل ══ */}
+      {/* <ParticleCanvas/> */}
 
       {/* ══════════════════════════════════
            الصفحة الرئيسية
