@@ -3113,3 +3113,12 @@ var neut = prob.neutral != null ? Math.round(prob.neutral > 1 ? prob.neutral : p
     </div>
   );
 }
+
+// ══ Default Export with Error Boundary ══
+export default function AnalysisScreen(props) {
+  return (
+    <AnalysisErrorBoundary>
+      <AnalysisScreenInner {...props} />
+    </AnalysisErrorBoundary>
+  );
+}
