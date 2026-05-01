@@ -148,7 +148,10 @@ class AnalysisErrorBoundary extends React.Component {
 
 function AnalysisScreenInner({ commData: extCommData } = {}) {
   const liveStocksRaw = useSharedPrices();
-const liveStocks = Array.isArray(liveStocksRaw) ? liveStocksRaw : [];
+const liveStocks = Array.isArray(liveStocksRaw) ? liveStocksRaw : (STOCKS || []);
+console.log('🔍 liveStocks:', liveStocks);
+console.log('🔍 type:', typeof liveStocks);
+console.log('🔍 isArray:', Array.isArray(liveStocks));
  // أسعار مشتركة محدَّثة
   const haptic = useHaptic();
   
