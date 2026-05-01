@@ -35,6 +35,117 @@ import {
 import Tooltip from '../components/Tooltip';
 import { useHaptic } from '../hooks/useHaptic';
 
+
+// ══ Error Boundary لـ AnalysisScreen ══
+class AnalysisErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null, errorInfo: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('🚨 AnalysisScreen Error:', error);
+    console.error('🚨 Stack:', errorInfo.componentStack);
+    this.setState({ error: error, errorInfo: errorInfo });
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{
+          padding: 20,
+          background: '#0f1628',
+          minHeight: '100vh',
+          color: '#f0f6ff',
+          direction: 'rtl',
+          fontFamily: 'Cairo, sans-serif',
+          maxWidth: 430,
+          margin: '0 auto',
+        }}>
+          <h2 style={{color: '#ff5f6a', marginBottom: 16, fontSize: 18}}>
+            🚨 خطأ في الشاشة
+          </h2>
+          <div style={{
+            background: 'rgba(255,95,106,0.1)',
+            border: '1px solid rgba(255,95,106,0.3)',
+            borderRadius: 12,
+            padding: 16,
+            marginBottom: 16,
+          }}>
+            <div style={{fontSize: 13, fontWeight: 700, marginBottom: 8}}>
+              رسالة الخطأ:
+            </div>
+            <div style={{
+              fontSize: 11,
+              fontFamily: 'monospace',
+              direction: 'ltr',
+              textAlign: 'left',
+              padding: 8,
+              background: 'rgba(0,0,0,0.3)',
+              borderRadius: 6,
+              wordBreak: 'break-all',
+              color: '#ff9999',
+            }}>
+              {this.state.error && this.state.error.toString()}
+            </div>
+          </div>
+          
+          {this.state.errorInfo && (
+            <div style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 12,
+              padding: 16,
+              marginBottom: 16,
+            }}>
+              <div style={{fontSize: 13, fontWeight: 700, marginBottom: 8}}>
+                Component Stack:
+              </div>
+              <pre style={{
+                fontSize: 9,
+                fontFamily: 'monospace',
+                direction: 'ltr',
+                textAlign: 'left',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-all',
+                color: '#90a4c8',
+                margin: 0,
+              }}>
+                {this.state.errorInfo.componentStack}
+              </pre>
+            </div>
+          )}
+          
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '12px 24px',
+              background: '#1a6fd4',
+              border: 'none',
+              borderRadius: 12,
+              color: '#fff',
+              fontSize: 14,
+              fontWeight: 700,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              width: '100%',
+            }}>
+            إعادة التحميل
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+// ══ نهاية Error Boundary ══
+
+
 export default function AnalysisScreen({ commData: extCommData } = {}) {
   const liveStocksRaw = useSharedPrices();
 const liveStocks = Array.isArray(liveStocksRaw) ? liveStocksRaw : [];
