@@ -146,7 +146,7 @@ class AnalysisErrorBoundary extends React.Component {
 // ══ نهاية Error Boundary ══
 
 
-export default function AnalysisScreen({ commData: extCommData } = {}) {
+function AnalysisScreenInner({ commData: extCommData } = {}) {
   const liveStocksRaw = useSharedPrices();
 const liveStocks = Array.isArray(liveStocksRaw) ? liveStocksRaw : [];
  // أسعار مشتركة محدَّثة
