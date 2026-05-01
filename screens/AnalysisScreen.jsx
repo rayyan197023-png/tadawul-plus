@@ -573,16 +573,17 @@ animation:'shimmer 1.4s ease infinite',
 
           {/* ══ Glanceable Dashboard — نظرة واحدة تكفي ══ */}
           {!loading&&(
-          <div style={{
-            margin:"10px 16px 4px",
-            background:'linear-gradient(90deg,#111827 25%,#1a2332 50%,#111827 75%)',
-backgroundSize:'200% 100%',
-animation:'shimmer 1.4s ease infinite',
-            borderRadius:14,padding:"10px 14px",
-            border:"1px solid " + tempColor + "22",
-            display:"flex",alignItems:"center",
-            boxShadow:"0 4px 20px rgba(0,0,0,.3), inset 0 1px 0 " + C.layer3,
-          }}>
+<div style={{
+    margin:"10px 16px 4px",
+    background:'linear-gradient(90deg,#111827 25%,#1a2332 50%,#111827 75%)',
+    backgroundSize:'200% 100%',
+    animation:'shimmer 1.4s ease infinite',
+    borderRadius:14,padding:"10px 14px",
+    border:"1px solid " + tempColor + "22",
+    display:"flex",alignItems:"center",
+    boxShadow:"0 4px 20px rgba(0,0,0,.3), inset 0 1px 0 " + C.layer3,
+}}>
+
             {/* السؤال ١: كيف السوق؟ */}
             <div style={{flex:1,textAlign:"center"}}>
               <div style={{fontSize:8,color:C.smoke,marginBottom:3}}>حال السوق</div>
