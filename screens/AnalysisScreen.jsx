@@ -261,7 +261,7 @@ const accuracyMultiplier = useMemo(() => {
     return map;
   }, [allData]);
 
-  const selData = allData.find(d=>d.stk.sym===sel);
+  const selData = (allData || []).find(d=>d && d.stk && d.stk.sym===sel);
   const upCount = liveStocks.filter(s=>s.ch>0).length;
   const avgChange = (liveStocks.reduce((s,x)=>s+x.ch,0)/liveStocks.length).toFixed(2);
   const tasiVal = 11842;
