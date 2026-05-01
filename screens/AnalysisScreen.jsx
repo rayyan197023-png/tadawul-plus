@@ -814,7 +814,7 @@ animation:'shimmer 1.4s ease infinite',
           marginBottom:16,
         }}>
           {(function(){
-            var verified = decisions.filter(function(d){return d.verified;});
+            var verified = (decisions || []).filter(function(d){return d.verified;});
             var correct = verified.filter(function(d){
               return (d.signal==="شراء قوي" && d.result>0) ||
                      (d.signal==="تخفيف" && d.result<0) ||
