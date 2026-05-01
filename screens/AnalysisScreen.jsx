@@ -10,7 +10,7 @@
  *
  * المحركات الحسابية → src/engines/analysisEngine.js
  * مكونات UI المساعدة → src/components/analysis/AnalysisHelpers.jsx
- */
+ */ 
 
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { STOCKS } from '../constants/stocksData';
