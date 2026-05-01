@@ -861,7 +861,7 @@ animation:'shimmer 1.4s ease infinite',
             آخر القرارات المتحققة
           </div>
           
-          {(!decisions || decisions.filter(function(d){return d.verified;}).length === 0) ? (
+          {(decisions || []).filter(function(d){return d.verified;}).length === 0 ? (
             <div style={{
               padding:"24px 16px",
               textAlign:"center",
