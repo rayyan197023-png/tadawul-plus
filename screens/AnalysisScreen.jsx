@@ -36,7 +36,9 @@ import Tooltip from '../components/Tooltip';
 import { useHaptic } from '../hooks/useHaptic';
 
 export default function AnalysisScreen({ commData: extCommData } = {}) {
-  const liveStocks = useSharedPrices(); // أسعار مشتركة محدَّثة
+  const liveStocksRaw = useSharedPrices();
+const liveStocks = Array.isArray(liveStocksRaw) ? liveStocksRaw : [];
+ // أسعار مشتركة محدَّثة
   const haptic = useHaptic();
   
   // ── تحديث MACRO من الأسعار الحية (commData من AppShell) ──────────
