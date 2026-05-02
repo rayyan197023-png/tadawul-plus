@@ -151,42 +151,6 @@ const [filters, setFilters] = useState({
 
   // حجم الخط — Accessibility
   
-  // ══ نظام تتبع القرارات — Calibration System ══
-  // يحفظ القرارات ويقيس دقتها لاحقاً لمعايرة الأوزان
-  const [decisions, setDecisions] = useState(() => {
-    try {
-      // نستخدم sessionStorage (مؤقت للجلسة) بدل localStorage
-      if (typeof window === 'undefined') return [];
-      const saved = sessionStorage.getItem('tdw_decisions');
-      return saved ? JSON.parse(saved) : [];
-    } catch(e) { return []; }
-  });
-
-  const trackDecision = function(sym, signal, conviction, price) {
-    const newDecision = {
-      id: Date.now(),
-      sym, signal, conviction, price,
-      date: new Date().toISOString().split('T')[0],
-      verified: false, result: null,
-    };
-    setDecisions(function(prev) {
-      const updated = [...prev.slice(-49), newDecision]; // آخر 50 قرار فقط
-      try { if (typeof window !== 'undefined') sessionStorage.setItem('tdw_decisions', JSON.stringify(updated)); } catch(e){}
-      return updated;
-    });
-  };
-
-  // حساب دقة القرارات المحفوظة (تحقق مبسّط من نفس الجلسة)
-  const decisionAccuracy = useMemo(() => {
-    const verified = decisions.filter(d => d.verified && d.result !== null);
-    if(verified.length < 3) return null;
-    const correct = verified.filter(d =>
-      (d.signal==="شراء قوي" && d.result>0) ||
-      (d.signal==="تخفيف" && d.result<0) ||
-      (d.signal==="مراقبة" && d.result>-2)
-    ).length;
-    return Math.round(correct/verified.length*100);
-  }, [decisions]);
 
   // ── Throttled price snapshot — only recalculate when price changes >0.3%
   const priceSignature = useMemo(() =>
