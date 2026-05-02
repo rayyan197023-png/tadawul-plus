@@ -213,6 +213,32 @@ const [filters, setFilters] = useState({
     return map;
   }, [allData]);
 
+  // ✨ Performance: حساب الأعداد مرة واحدة بدل تكرار filters
+  const signalCounts = useMemo(() => {
+    if (!allData || !Array.isArray(allData) || allData.length === 0) {
+      return { buy: 0, watch: 0, neutral: 0, reduce: 0, total: 0 };
+    }
+    
+    let buy = 0, watch = 0, neutral = 0, reduce = 0;
+    
+    allData.forEach(d => {
+      if (!d || !d.health) return;
+      const score = d.health.score;
+      if (score >= 75) buy++;
+      else if (score >= 60) watch++;
+      else if (score >= 45) neutral++;
+      else reduce++;
+    });
+    
+    return { 
+      buy, 
+      watch, 
+      neutral, 
+      reduce, 
+      total: allData.length 
+    };
+  }, [allData]);
+
   // ✨ Safety: حماية من undefined و empty arrays
 const selData = (allData || []).find(d => d && d.stk && d.stk.sym === sel);
 
