@@ -1009,8 +1009,13 @@ const rankUp=stk.ch>0;
       try {
         trackDecision(stk.sym, health.sig, health.score, stk.p);
       } catch(e) {
-        console.error('[trackDecision Error]', e);
-      }
+    // ✨ Console errors only in development
+    if (typeof window !== 'undefined' && 
+        (window.location.hostname === 'localhost' || 
+         window.location.hostname.includes('vercel.app'))) {
+      console.error('[trackDecision Error]', e);
+    }
+}
     }
   }}
                 >
