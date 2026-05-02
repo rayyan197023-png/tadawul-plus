@@ -2185,20 +2185,6 @@ var neut = normalizeProb(prob.neutral);
 
           {/* ══ فلاتر الفرز المتقدمة — Stock Screener ══ */}
           {(function(){
-            var sectorList = ['all',...new Set(allData.map(function(d){return d.stk.sec;}))];
-            function applyFilter(d){
-              var h=d.health||{}, s=d.stk;
-              if(h.score<filters.minScore||h.score>filters.maxScore) return false;
-              if(filters.sig!=='all'&&h.sig!==filters.sig) return false;
-              if(filters.sector!=='all'&&s.sec!==filters.sector) return false;
-              if(s.pe&&(s.pe<filters.minPE||s.pe>filters.maxPE)) return false;
-              if(s.divY&&s.divY<filters.minDivY) return false;
-              if(s.roe&&s.roe<filters.minROE) return false;
-              if(filters.gatesAll&&!(h.gates&&h.gates.all)) return false;
-              if(filters.regime!=='all'&&h.regime!==filters.regime) return false;
-              return true;
-            }
-            var filtered2 = allData.filter(applyFilter);
             return(
               <div style={{marginBottom:16}}>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
