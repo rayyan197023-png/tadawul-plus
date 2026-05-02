@@ -2282,7 +2282,7 @@ var neut = normalizeProb(prob.neutral);
           })()}
 
           {/* بطاقات الإشارات */}
-          {[...allData].sort((a,b)=>b.health.score-a.health.score).map(({stk,bars,health},i)=>(
+          {[...filtered2].sort((a,b)=>b.health.score-a.health.score).map(({stk,bars,health},i)=>(
             <div key={stk.sym} className="card-enter" style={{animationDelay:`${i*.06}s`,marginBottom:10}}>
               <div style={{
                 background:`linear-gradient(135deg,${C.layer1},${C.layer2})`,
