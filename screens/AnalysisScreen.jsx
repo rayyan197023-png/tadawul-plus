@@ -2885,6 +2885,25 @@ var neut = normalizeProb(prob.neutral);
           ? "الأوزان مُحسَّنة للسيولة الدفاعية (Amihud 2002)"
           : "الأوزان مُحسَّنة للفلاتر والبيئة الغامضة (Lo 2004)";
 
+// ✨ Tooltip Helper - Performance Fix (one map, not 9 conditions)
+const TOOLTIP_KEYS = {
+  'سيولة': 'السيولة',
+  'هيكل': 'الهيكل',
+  'احتمالية': 'Softmax',
+  'جدوى': 'Half-Kelly',
+  'مؤشرات': 'RSI',
+  'الفرصة': 'Wyckoff',
+  'الحجم': 'OBV',
+  'انتظام': 'ATR',
+};
+
+function getTooltipKey(title) {
+  for (var key in TOOLTIP_KEYS) {
+    if (title.indexOf(key) !== -1) return TOOLTIP_KEYS[key];
+  }
+  return 'BOS';
+}
+
         const layers = [
           {n:"٩", title:"قوة السيولة",       score:L9, color:liqColor, weight:Math.round(W.L9*100), desc:liqDesc,   icon:"💧", id:"L9", simple:"هل المال يدخل أم يخرج؟"},
           {n:"١", title:"هيكل الحركة",       score:L1, color:lc(L1),  weight:Math.round(W.L1*100), desc:wyDesc,    icon:"🏗", id:"L1", simple:"هل النمط يشبه الصعود؟"},
@@ -3035,24 +3054,6 @@ var neut = normalizeProb(prob.neutral);
                     <div style={{fontSize:7,color:C.smoke}}>اتساع</div>
                   </div>
                 </div>
-// ✨ Tooltip Helper - Performance Fix (one map, not 9 conditions)
-const TOOLTIP_KEYS = {
-  'سيولة': 'السيولة',
-  'هيكل': 'الهيكل',
-  'احتمالية': 'Softmax',
-  'جدوى': 'Half-Kelly',
-  'مؤشرات': 'RSI',
-  'الفرصة': 'Wyckoff',
-  'الحجم': 'OBV',
-  'انتظام': 'ATR',
-};
-
-function getTooltipKey(title) {
-  for (var key in TOOLTIP_KEYS) {
-    if (title.indexOf(key) !== -1) return TOOLTIP_KEYS[key];
-  }
-  return 'BOS';
-}
 
                 {/* الطبقات التسع — مرتّبة حسب الأهمية */}
                 {layers.map((ly,i)=>(
