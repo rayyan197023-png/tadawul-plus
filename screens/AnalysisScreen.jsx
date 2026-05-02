@@ -190,9 +190,20 @@ const [filters, setFilters] = useState({
   },[allData,tab]); 
 
   const rankMap = useMemo(() => {
-    const sorted = [...allData].sort((a,b) => b.health.score - a.health.score);
+    // ✨ Safety check
+    if (!allData || !Array.isArray(allData) || allData.length === 0) return {};
+    
+    const sorted = [...allData].sort((a,b) => {
+      var sa = (a && a.health && a.health.score) || 0;
+      var sb = (b && b.health && b.health.score) || 0;
+      return sb - sa;
+    });
     const map = {};
-    sorted.forEach((d, i) => { map[d.stk.sym] = i + 1; });
+    sorted.forEach((d, i) => { 
+      if (d && d.stk && d.stk.sym) {
+        map[d.stk.sym] = i + 1; 
+      }
+    });
     return map;
   }, [allData]);
 
