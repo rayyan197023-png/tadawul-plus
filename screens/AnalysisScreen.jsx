@@ -189,11 +189,16 @@ const [filters, setFilters] = useState({
     return map;
   }, [allData]);
 
-  const selData = allData.find(d=>d.stk.sym===sel);
-  const upCount = liveStocks.filter(s=>s.ch>0).length;
-  const avgChange = (liveStocks.reduce((s,x)=>s+x.ch,0)/liveStocks.length).toFixed(2);
-  const tasiVal = 11842;
+  // ✨ Safety: حماية من undefined و empty arrays
+const selData = (allData || []).find(d => d && d.stk && d.stk.sym === sel);
 
+const upCount = (liveStocks || []).filter(s => s && s.ch > 0).length;
+
+const avgChange = (liveStocks && liveStocks.length > 0)
+  ? (liveStocks.reduce((sum, x) => sum + (x ? x.ch : 0), 0) / liveStocks.length).toFixed(2)
+  : "0.00";
+
+const tasiVal = 11842
   const navItems = [
     { id:"home",      icon:"⌂",  label:"الرئيسية" },
     { id:"portfolio", icon:"◎",  label:"محفظتي"   },
