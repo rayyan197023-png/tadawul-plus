@@ -617,8 +617,24 @@ function LayerIcon({id, color, size}){
 
 
 
+// ✨ Performance: React.memo للمكونات الثقيلة
+const MemoArcRing = React.memo(ArcRing);
+const MemoKPIChip = React.memo(KPIChip);
+const MemoMiniChart = React.memo(MiniChart);
+const MemoStoryChart = React.memo(StoryChart);
+const MemoIcon = React.memo(Icon);
+const MemoLayerIcon = React.memo(LayerIcon);
+
 export {
-  ParticleCanvas, ArcRing, KPIChip, MiniChart, StoryChart,
-  Icon, SignalsPanel, BreadthTooltip, CorrelationMatrix, LayerIcon,
+  ParticleCanvas,
+  MemoArcRing as ArcRing,
+  MemoKPIChip as KPIChip,
+  MemoMiniChart as MiniChart,
+  MemoStoryChart as StoryChart,
+  MemoIcon as Icon,
+  SignalsPanel,
+  BreadthTooltip,
+  CorrelationMatrix,
+  MemoLayerIcon as LayerIcon,
   C,
 };
