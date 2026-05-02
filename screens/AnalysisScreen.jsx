@@ -313,6 +313,34 @@ const [filters, setFilters] = useState({
     });
     return map;
   }, [allData]);
+  // ✨ Stock Screener - filtered2 useMemo (Performance Fix)
+  const filtered2 = useMemo(function() {
+    if (!allData || !Array.isArray(allData) || allData.length === 0) return [];
+    
+    function applyFilter(d) {
+      if (!d || !d.health || !d.stk) return false;
+      var h = d.health, s = d.stk;
+      if (h.score < filters.minScore || h.score > filters.maxScore) return false;
+      if (filters.sig !== 'all' && h.sig !== filters.sig) return false;
+      if (filters.sector !== 'all' && s.sec !== filters.sector) return false;
+      if (s.pe && (s.pe < filters.minPE || s.pe > filters.maxPE)) return false;
+      if (s.divY && s.divY < filters.minDivY) return false;
+      if (s.roe && s.roe < filters.minROE) return false;
+      if (filters.gatesAll && !(h.gates && h.gates.all)) return false;
+      if (filters.regime !== 'all' && h.regime !== filters.regime) return false;
+      return true;
+    }
+    
+    return allData.filter(applyFilter);
+  }, [allData, filters]);
+
+  const sectorList = useMemo(function() {
+    if (!allData || !Array.isArray(allData) || allData.length === 0) return ['all'];
+    return ['all', ...new Set(allData.map(function(d) {
+      return d && d.stk && d.stk.sec;
+    }).filter(Boolean))];
+  }, [allData]);
+
 
   // ✨ Performance: حساب الأعداد مرة واحدة بدل تكرار filters
   const signalCounts = useMemo(() => {
