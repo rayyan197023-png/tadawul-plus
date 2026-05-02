@@ -2741,7 +2741,14 @@ var neut = normalizeProb(prob.neutral);
         background:`linear-gradient(180deg,${C.void} 60%,transparent 100%)`,
         zIndex:40,pointerEvents:"none",
       }}>
-        <div style={{fontSize:9,fontWeight:600,color:C.smoke}}>9:41</div>
+        <div style={{fontSize:9,fontWeight:600,color:C.smoke}}>
+  {(function(){
+    var d = liveTime || new Date();
+    var hh = String(d.getHours()).padStart(2,"0");
+    var mm = String(d.getMinutes()).padStart(2,"0");
+    return hh + ":" + mm;
+  })()}
+</div>
         <div style={{display:"flex",gap:6,alignItems:"center"}}>
           <div style={{display:"flex",alignItems:"center",gap:4,
             background:`${C.mint}18`,borderRadius:20,padding:"2px 8px",
