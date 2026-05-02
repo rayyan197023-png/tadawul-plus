@@ -482,13 +482,12 @@ const tasiVal = 11842
               </div>
               <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:6}}>
                 {/* مؤشر تاسي */}
-                <div style={{
-                  background:'linear-gradient(90deg,#111827 25%,#1a2332 50%,#111827 75%)',
-backgroundSize:'200% 100%',
-animation:'shimmer 1.4s ease infinite',
-                  borderRadius:14,padding:"8px 14px",textAlign:"center",
-                  border:"1px solid " + C.line,
-                }}>
+<div style={{
+    background:"linear-gradient(135deg," + C.layer1 + "," + C.layer2 + ")",
+    borderRadius:14,padding:"8px 14px",textAlign:"center",
+    border:"1px solid " + C.line,
+}}>
+
                   <div style={{fontSize:8,color:C.smoke,letterSpacing:"1px",marginBottom:2}}>تاسي</div>
                   <div className="num-lg" style={{fontSize:18,fontWeight:900,color:C.goldL,lineHeight:1,direction:"ltr"}}>{tasiVal.toLocaleString()}</div>
                   <div style={{fontSize:10,fontWeight:700,color:avgChange>=0?C.mint:C.coral,marginTop:2,direction:"ltr"}}>
