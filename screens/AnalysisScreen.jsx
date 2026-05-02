@@ -970,8 +970,8 @@ animation:'shimmer 1.4s ease infinite',
               }}>
                 <div>{l}</div>
                 <div style={{fontSize:8,marginTop:1,opacity:.8}}>
-                  {k==="all"?allData.length:k==="buy"?allData.filter(d=>d.health.score>=75).length:k==="watch"?allData.filter(d=>d.health.score>=60&&d.health.score<75).length:allData.filter(d=>d.health.score<45).length}
-                </div>
+  {k==="all"?signalCounts.total:k==="buy"?signalCounts.buy:k==="watch"?signalCounts.watch:signalCounts.reduce}
+</div>
               </button>
             ))}
           </div>
