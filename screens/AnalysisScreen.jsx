@@ -136,8 +136,16 @@ const [filters, setFilters] = useState({
 
   // عداد ثانية للساعة الحية فقط
   useEffect(()=>{
-       const t = setInterval(function(){ setLiveTime(new Date()); setTick(function(n){ return n+1; }); }, 30000);
-
+    // ✨ تحديث كل ثانية للعداد، لكن liveTime كل 30 ثانية
+    var counter = 0;
+    const t = setInterval(function(){ 
+      counter++;
+      setTick(function(n){ return n+1; });
+      // حدّث liveTime فقط كل 30 ثانية
+      if (counter % 30 === 0) {
+        setLiveTime(new Date());
+      }
+    }, 1000);
     return function(){ clearInterval(t); };
   },[]);
 
