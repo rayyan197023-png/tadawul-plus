@@ -932,11 +932,11 @@ animation:'shimmer 1.4s ease infinite',
               </div>
               <div style={{display:"flex",justifyContent:"space-between",gap:6}}>
                 {[
-                  {label:"شراء قوي", count:allData.filter(d=>d.health.score>=75).length,                                    color:C.mint},
-                  {label:"مراقبة",   count:allData.filter(d=>d.health.score>=60&&d.health.score<75).length,                  color:C.amber||"#f59e0b"},
-                  {label:"محايد",    count:allData.filter(d=>d.health.score>=45&&d.health.score<60).length,                  color:C.teal},
-                  {label:"تخفيف",    count:allData.filter(d=>d.health.score<45).length,                                      color:C.coral},
-                ].map(item=>(
+    {label:"شراء قوي", count:signalCounts.buy, color:C.mint},
+    {label:"مراقبة",   count:signalCounts.watch, color:C.amber||"#f59e0b"},
+    {label:"محايد",    count:signalCounts.neutral, color:C.teal},
+    {label:"تخفيف",    count:signalCounts.reduce, color:C.coral},
+].map(item=>(
                   <div key={item.label} style={{
                     flex:1, background:item.color+"18",
                     border:"1px solid "+item.color+"33",
