@@ -976,19 +976,25 @@ const rankUp=stk.ch>0;
                   className="card-enter"
                   style={{animationDelay:`${idx*.07}s`}}
                   onClick={function(){
-                    haptic.tap();
-                    // Micro-feedback -- وميض لحظي
-                    setFlashCard(stk.sym);
-                    setTimeout(function(){ setFlashCard(null); }, 350);
-                    // Progressive Disclosure — تقدّم في المستويات
-                    if(selected){
-                      setSel(null);
-                      setRareAlert(null);
-                    } else {
-                      setSel(stk.sym);
-                      if(isRare) setRareAlert(stk.sym);
-                    }
-                  }}
+    haptic.tap();
+    // Micro-feedback -- وميض لحظي
+    setFlashCard(stk.sym);
+    setTimeout(function(){ setFlashCard(null); }, 350);
+    // Progressive Disclosure -- تقدّم في المستويات
+    if(selected){
+      setSel(null);
+      setRareAlert(null);
+    } else {
+      setSel(stk.sym);
+      if(isRare) setRareAlert(stk.sym);
+      // ✨ Calibration: تتبع القرار
+      try {
+        trackDecision(stk.sym, health.sig, health.score, stk.p);
+      } catch(e) {
+        console.error('[trackDecision Error]', e);
+      }
+    }
+  }}
                 >
                   {/* ─ البطاقة الرئيسية ─ */}
                   <div
