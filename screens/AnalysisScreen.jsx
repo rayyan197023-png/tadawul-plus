@@ -104,16 +104,6 @@ function AnalysisScreenInner({ commData: extCommData } = {}) {
   const [cardExpanded,setCardExpanded]= useState(false);
   const [rareAlert,   setRareAlert]   = useState(null);
   const [liveTime,    setLiveTime]    = useState(new Date());
-  
-// ✨ Calibration System: تتبع دقة المحرك
-const [decisions, setDecisions] = useState(() => {
-    try {
-      if (typeof window === 'undefined') return [];
-      const saved = sessionStorage.getItem('tdw_decisions');
-      return saved ? JSON.parse(saved) : [];
-    } catch(e) { return []; }
-  });
-
   const [tick,        setTick]        = useState(0);
   const [discovered,  setDiscovered]  = useState([]);
   const [cardLevel,   setCardLevel]   = useState({});
