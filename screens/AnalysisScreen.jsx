@@ -3104,7 +3104,7 @@ function getTooltipKey(title) {
                             }}>طبقة {ly.n}</span>
                                                         <span style={{fontSize:12,fontWeight:800,color:C.snow,display:"inline-flex",alignItems:"center",gap:3}}>
                               {ly.title}
-                              <Tooltip termKey={ly.title.includes("سيولة")?"السيولة":ly.title.includes("هيكل")?"الهيكل":ly.title.includes("احتمالية")?"Softmax":ly.title.includes("جدوى")?"Half-Kelly":ly.title.includes("مؤشرات")?"RSI":ly.title.includes("الفرصة")?"Wyckoff":ly.title.includes("الحجم")?"OBV":ly.title.includes("انتظام")?"ATR":"BOS"} size="small"/>
+   <Tooltip termKey={getTooltipKey(ly.title)} size="small"/>
                             </span>
                             <span style={{
                               fontSize:8,fontWeight:700,
