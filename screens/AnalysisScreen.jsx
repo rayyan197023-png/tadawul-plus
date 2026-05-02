@@ -2577,100 +2577,13 @@ var neut = normalizeProb(prob.neutral);
   <div style={{fontSize:14,fontWeight:800,color:C.snow,marginBottom:16,textAlign:"right"}}>
     إضافة سهم للمحفظة
   </div>
-                  {(function(){
-                    const [addSym,setAddSym]= useState("");
-                    const [addQty,setAddQty]= useState("");
-                    const [addCost,setAddCost]= useState("");
-                    const found = STOCKS.find(function(s){ return s.sym===addSym||s.name===addSym; });
-                    const canAdd = found&&parseFloat(addQty)>0&&parseFloat(addCost)>0;
-                    return(
-                      <div style={{display:"flex",flexDirection:"column",gap:10}}>
-                        {/* اختيار السهم */}
-                        <div style={{display:"flex",flexDirection:"column",gap:6}}>
-                          <span style={{fontSize:10,color:C.smoke,fontWeight:700}}>السهم</span>
-                          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-                            {STOCKS.map(function(s){
-                              return(
-                                                                <button key={s.sym}
-                                  onClick={function(){ haptic.tap(); setAddSym(s.sym); setAddCost(s.p.toFixed(2)); }}
-                                  style={{
-                                    background:addSym===s.sym?s.sec==="طاقة"?C.gold+"22":C.electric+"22":"transparent",
-                                    border:"1px solid "+(addSym===s.sym?C.electric+"66":C.line),
-                                    borderRadius:8,padding:"5px 10px",cursor:"pointer",
-                                    fontSize:10,fontWeight:700,color:addSym===s.sym?C.snow:C.smoke,
-                                    fontFamily:"Cairo,sans-serif",
-                                  }}>
-                                  {s.sym}
-                                </button>
-                              );
-                            })}
-                          </div>
-                          {found&&<div style={{fontSize:10,color:C.mist,marginTop:2}}>{found.name} · {found.p.toFixed(2)} ر</div>}
-                        </div>
-                        {/* الكمية والتكلفة */}
-                        <div style={{display:"flex",gap:8}}>
-                          <div style={{flex:1}}>
-                            <div style={{fontSize:10,color:C.smoke,marginBottom:4}}>الكمية</div>
-                            <input
-                              type="number" value={addQty}
-                              onChange={function(e){ setAddQty(e.target.value); }}
-                              placeholder="100"
-                              style={{
-                                width:"100%",background:C.layer2,border:"1px solid "+C.line,
-                                borderRadius:8,padding:"8px 10px",fontSize:13,color:C.snow,
-                                fontFamily:"Cairo,sans-serif",outline:"none",textAlign:"center",
-                                boxSizing:"border-box",
-                              }}
-                            />
-                          </div>
-                          <div style={{flex:1}}>
-                            <div style={{fontSize:10,color:C.smoke,marginBottom:4}}>متوسط التكلفة</div>
-                            <input
-                              type="number" value={addCost}
-                              onChange={function(e){ setAddCost(e.target.value); }}
-                              placeholder="0.00"
-                              style={{
-                                width:"100%",background:C.layer2,border:"1px solid "+C.line,
-                                borderRadius:8,padding:"8px 10px",fontSize:13,color:C.snow,
-                                fontFamily:"Cairo,sans-serif",outline:"none",textAlign:"center",
-                                boxSizing:"border-box",
-                              }}
-                            />
-                          </div>
-                        </div>
-                                                <button
-                          onClick={function(){
-                            if(!canAdd) return;
-                            haptic.success();
-                            setPort(function(prev){
-                              const existing = prev.find(function(x){ return x.sym===addSym; });
-                              if(existing){
-                                return prev.map(function(x){
-                                  if(x.sym!==addSym) return x;
-                                  const newQty = x.qty+parseFloat(addQty);
-                                  const newCost= (x.avgCost*x.qty+parseFloat(addCost)*parseFloat(addQty))/newQty;
-                                  return{...x,qty:newQty,avgCost:newCost};
-                                });
-                              }
-                              return [...prev,{sym:addSym,qty:parseFloat(addQty),avgCost:parseFloat(addCost)}];
-                            });
-                            setPortSheet(null);
-                          }}
-                          style={{
-                            width:"100%",padding:"12px",
-                            background:canAdd?"linear-gradient(135deg,"+C.mint+"33,"+C.mint+"18)":"rgba(255,255,255,.05)",
-                            border:"1px solid "+(canAdd?C.mint+"55":C.line),
-                            borderRadius:12,cursor:canAdd?"pointer":"default",
-                            fontSize:13,fontWeight:800,
-                            color:canAdd?C.mint:C.smoke,
-                            fontFamily:"Cairo,sans-serif",
-                            transition:"all .2s ease",
-                          }}>
-                          {canAdd?"✓ إضافة للمحفظة":"اختر سهماً وأدخل الكمية والتكلفة"}
-                        </button>
-                      </div>
-                    );
-                  })()}
+                  <AddStockForm 
+  STOCKS={STOCKS}
+  setPort={setPort}
+  setPortSheet={setPortSheet}
+  haptic={haptic}
+  C={C}
+/>
                 </div>
               </div>
             )}
