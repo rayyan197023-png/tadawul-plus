@@ -156,8 +156,6 @@ const [filters, setFilters] = useState({
     }, 1000);
     return function(){ clearInterval(t); };
   },[]);
-
-  // حجم الخط — Accessibility
   
 
   // ── Throttled price snapshot — only recalculate when price changes >0.3%
