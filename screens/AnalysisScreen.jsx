@@ -3035,6 +3035,24 @@ var neut = normalizeProb(prob.neutral);
                     <div style={{fontSize:7,color:C.smoke}}>اتساع</div>
                   </div>
                 </div>
+// ✨ Tooltip Helper - Performance Fix (one map, not 9 conditions)
+const TOOLTIP_KEYS = {
+  'سيولة': 'السيولة',
+  'هيكل': 'الهيكل',
+  'احتمالية': 'Softmax',
+  'جدوى': 'Half-Kelly',
+  'مؤشرات': 'RSI',
+  'الفرصة': 'Wyckoff',
+  'الحجم': 'OBV',
+  'انتظام': 'ATR',
+};
+
+function getTooltipKey(title) {
+  for (var key in TOOLTIP_KEYS) {
+    if (title.indexOf(key) !== -1) return TOOLTIP_KEYS[key];
+  }
+  return 'BOS';
+}
 
                 {/* الطبقات التسع — مرتّبة حسب الأهمية */}
                 {layers.map((ly,i)=>(
