@@ -45,8 +45,13 @@ class AnalysisErrorBoundary extends React.Component {
     return { hasError: true, error };
   }
   componentDidCatch(error, errorInfo) {
-    console.error('🚨 ERROR:', error);
-    console.error('🚨 STACK:', errorInfo.componentStack);
+    // ✨ Console errors only in development
+    if (typeof window !== 'undefined' && 
+        (window.location.hostname === 'localhost' || 
+         window.location.hostname.includes('vercel.app'))) {
+      console.error('🚨 ERROR:', error);
+      console.error('🚨 STACK:', errorInfo.componentStack);
+    }
     this.setState({ errorInfo });
   }
   render() {
