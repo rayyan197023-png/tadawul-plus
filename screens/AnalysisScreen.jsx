@@ -313,6 +313,7 @@ const [filters, setFilters] = useState({
     });
     return map;
   }, [allData]);
+  
   // ✨ Stock Screener - filtered2 useMemo (Performance Fix)
   const filtered2 = useMemo(function() {
     if (!allData || !Array.isArray(allData) || allData.length === 0) return [];
