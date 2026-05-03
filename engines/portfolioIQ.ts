@@ -2035,13 +2035,14 @@ function calculateIQScore(layers: any): number {
 }
 
 function getHealthGrade(score: number): any {
-  const thresholds = [90, 85, 80, 75, 70, 60, 50, 0];
-  for (let i = 0; i < thresholds.length; i++) {
-    if (score >= thresholds[i]) {
-      return (HEALTH_GRADES as any)[thresholds[i]];
-    }
-  }
-  return (HEALTH_GRADES as any)[0];
+  if (score >= 90) return { grade: 'AAA', label: 'استثنائي', color: '#1ee68a' };
+  if (score >= 85) return { grade: 'AA', label: 'ممتاز', color: '#1ee68a' };
+  if (score >= 80) return { grade: 'A', label: 'جيد جداً', color: '#34d399' };
+  if (score >= 75) return { grade: 'BBB', label: 'جيد', color: '#22d3ee' };
+  if (score >= 70) return { grade: 'BB', label: 'مقبول', color: '#a78bfa' };
+  if (score >= 60) return { grade: 'B', label: 'متوسط', color: '#fbbf24' };
+  if (score >= 50) return { grade: 'CCC', label: 'ضعيف', color: '#f97316' };
+  return { grade: 'D', label: 'حرج', color: '#ff5f6a' };
 }
 
 function severityScore(severity: string): number {
