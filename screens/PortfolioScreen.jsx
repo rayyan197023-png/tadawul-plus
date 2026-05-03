@@ -1571,7 +1571,20 @@ useEffect(() => {
 var portfolioIQ = useMemo(function(){
     if (!positions || positions.length === 0) return null;
     try {
-      var result = analyzePortfolioIQ(positions, [], {riskTolerance: 0.20});
+    var positionsWithDecision = positions.map(function(p){
+        return Object.assign({}, p, {
+          entryDecision: p.health ? {
+            grade: p.health.grade || 'C',
+            score: p.health.score || 50,
+            sig: p.health.sig || 'محايد',
+          } : {
+            grade: 'C',
+            score: 50,
+            sig: 'محايد',
+          }
+        });
+      });
+      var result = analyzePortfolioIQ(positionsWithDecision, [], {riskTolerance: 0.20});
 
 // ✨ Debug: نُضيف معلومات للفحص
 result._debug = {
