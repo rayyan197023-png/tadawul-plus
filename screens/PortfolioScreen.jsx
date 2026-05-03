@@ -3943,19 +3943,6 @@ return result;
   );
 })()}
 
-
-{/* Coming Soon Card */}
-<div style={{
-  background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
-  border:"1px solid "+C.line,
-  borderRadius:12,
-  padding:"14px 16px",
-  textAlign:"center",
-}}>
-  <div style={{fontSize:10,color:C.plasma,fontWeight:800,marginBottom:8,letterSpacing:"1px"}}> 
-    ✨ المزيد قادم قريباً
-  </div>
-</div>
                 </div>
               );
             })()
