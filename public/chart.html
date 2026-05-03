@@ -9852,12 +9852,12 @@ function showAI(){
       window._lastRSI = _rsiArr.length ? Math.round(_rsiArr[_rsiArr.length-1]) : null;
       window._lastMACDSig = mc && mc.hist && mc.hist.length ? (mc.hist[mc.hist.length-1] >= 0 ? 'صعودي' : 'هبوطي') : null;
     } catch(ex) {}
-    const cur_ema9=ema9[n-1],cur_rsi=rsi[n-1],cur_atr=atr[n-1];
+    const cur_ema9=ema9[n-1],cur_rsi=rsi14[n-1],cur_atr=_atrAI[n-1];
 
     const cur_macd=mc.hist[n-1];
 
     // BB
-    const bb_mid=cur_ma20;
+    const bb_mid=cur_. 
     const stdArr=closes.slice(n-20).map(v=>(v-bb_mid)**2);
         const std=Math.sqrt(stdArr.reduce((a,b)=>a+b,0)/20);
     const bb_up=bb_mid+2*std,bb_dn=bb_mid-2*std;
