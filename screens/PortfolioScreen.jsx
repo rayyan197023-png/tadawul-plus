@@ -1574,8 +1574,6 @@ var portfolioIQ = useMemo(function(){
       return analyzePortfolioIQ(positions, [], {riskTolerance: 0.20});
     } catch(e) {
       console.error('[Portfolio IQ Error]', e);
-console.log('positions:', positions);
-console.log('error stack:', e.stack);
       return null;
     }
   }, [positions]);
