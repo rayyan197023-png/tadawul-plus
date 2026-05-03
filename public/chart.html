@@ -9837,7 +9837,8 @@ function showAI(){
       window._lastRSI = _rsiArr.length ? Math.round(_rsiArr[_rsiArr.length-1]) : null;
       window._lastMACDSig = mc && mc.hist && mc.hist.length ? (mc.hist[mc.hist.length-1] >= 0 ? 'صعودي' : 'هبوطي') : null;
     } catch(ex) {}
-    const cur_ema9=ema9[n-1],cur_rsi=rsi14[n-1],cur_atr=_atrAI[n-1];
+    const cur_ema9=ema9[n-1],cur_rsi=rsi[n-1],cur_atr=atr[n-1]
+
     const cur_macd=mc.hist[n-1];
 
     // BB
