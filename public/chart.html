@@ -9845,7 +9845,7 @@ function showAI(){
     const stdArr=closes.slice(n-20).map(v=>(v-bb_mid)**2);
     const std=Math.sqrt(stdArr.reduce((a,b)=>a+b,0)/20);
     const bb_up=bb_mid+2*std,bb_dn=bb_mid-2*std;
-    const bb_pct=bb_mid?(price-bb_dn)/(bb_up-bb_dn)*100:   The 
+    const bb_pct=bb_mid?(price-bb_dn)/(bb_up-bb_dn)*100:
 
     // Trend
     const above20=cur_ma20&&price>cur_ma20;
