@@ -1585,6 +1585,27 @@ var portfolioIQ = useMemo(function(){
         });
       });
       var result = analyzePortfolioIQ(positionsWithDecision, [], {riskTolerance: 0.20});
+// ✨ Safety: إصلاح getHealthGrade undefined bug
+if (result && typeof result === 'object' && !result.grade) {
+  var iqs = result.iqScore || 0;
+  if (iqs >= 90) {
+    result.grade = 'AAA'; result.gradeLabel = 'استثنائي'; result.gradeColor = '#1ee68a';
+  } else if (iqs >= 85) {
+    result.grade = 'AA'; result.gradeLabel = 'ممتاز'; result.gradeColor = '#1ee68a';
+  } else if (iqs >= 80) {
+    result.grade = 'A'; result.gradeLabel = 'جيد جداً'; result.gradeColor = '#34d399';
+  } else if (iqs >= 75) {
+    result.grade = 'BBB'; result.gradeLabel = 'جيد'; result.gradeColor = '#22d3ee';
+  } else if (iqs >= 70) {
+    result.grade = 'BB'; result.gradeLabel = 'مقبول'; result.gradeColor = '#a78bfa';
+  } else if (iqs >= 60) {
+    result.grade = 'B'; result.gradeLabel = 'متوسط'; result.gradeColor = '#fbbf24';
+  } else if (iqs >= 50) {
+    result.grade = 'CCC'; result.gradeLabel = 'ضعيف'; result.gradeColor = '#f97316';
+  } else {
+    result.grade = 'D'; result.gradeLabel = 'حرج'; result.gradeColor = '#ff5f6a';
+  }
+}
 
 // ✨ Debug: نُضيف معلومات للفحص
 result._debug = {
