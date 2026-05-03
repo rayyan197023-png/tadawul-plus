@@ -522,6 +522,15 @@ if(!CanvasRenderingContext2D.prototype.roundRect){
 }
 </script>
 <script>
+// ── Visual Error Handler (Debug Only) ─────────────────────────
+window.addEventListener('error', function(e) {
+  alert('🚨 JS Error:\n' + e.message + '\n\nFile: ' + (e.filename||'').split('/').pop() + '\nLine: ' + e.lineno + '\nCol: ' + e.colno);
+});
+window.addEventListener('unhandledrejection', function(e) {
+  alert('🚨 Promise Error:\n' + (e.reason && e.reason.message || e.reason));
+});
+</script>
+<script>
 // DATA
 // 
 const STOCKS=[
