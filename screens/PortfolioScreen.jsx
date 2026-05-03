@@ -2472,8 +2472,6 @@ return result;
                                iq.iqScore >= 50 ? C.amber : C.coral;
               return (
                 <div>
-                {/* ✨ DEBUG PANEL */}
-    
                   <div className="card-enter" style={{
                     background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
                     border:"1px solid "+C.plasma+"33",
