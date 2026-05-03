@@ -3332,13 +3332,14 @@ function _isCacheValid(){
         _indCache.results !== null;
 }
 function render(){
+ try {
  const W=cv.offsetWidth||window.innerWidth;
  const H=cv.offsetHeight||400;
  if(!W||!H||H<50)return;
  _offValid=false; // will be set true after chart is drawn
  _checkIndAlerts();
  requestAnimationFrame(_updateZoomCtrlPos);
-
+ 
  const all=state.allCandles;
  if(!all.length)return;
  const YW=38, CW=W-YW;
