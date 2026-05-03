@@ -2438,6 +2438,40 @@ return result;
                                iq.iqScore >= 50 ? C.amber : C.coral;
               return (
                 <div>
+                {/* ✨ DEBUG PANEL */}
+{iq._debug && (
+  <div style={{
+    background: "#1a0f0f",
+    border: "2px solid #fbbf24",
+    borderRadius: 14,
+    padding: "16px",
+    marginBottom: 14,
+  }}>
+    <div style={{fontSize: 13, fontWeight: 900, color: "#fbbf24", marginBottom: 12}}>
+      🐛 DEBUG INFO
+    </div>
+    <div style={{fontSize: 11, color: "#fbbf24", marginBottom: 4}}>Positions Count:</div>
+    <div style={{fontSize: 12, color: "#f0f6ff", background: "#000", padding: "6px 10px", borderRadius: 6, marginBottom: 10, fontFamily: "monospace"}}>
+      {iq._debug.positionsCount}
+    </div>
+    <div style={{fontSize: 11, color: "#fbbf24", marginBottom: 4}}>First Position:</div>
+    <div style={{fontSize: 11, color: "#90a4c8", background: "#000", padding: "8px 10px", borderRadius: 6, marginBottom: 10, fontFamily: "monospace", whiteSpace: "pre-wrap"}}>
+      {JSON.stringify(iq._debug.firstPos, null, 2)}
+    </div>
+    <div style={{fontSize: 11, color: "#fbbf24", marginBottom: 4}}>IQ Score:</div>
+    <div style={{fontSize: 12, color: "#f0f6ff", background: "#000", padding: "6px 10px", borderRadius: 6, marginBottom: 10, fontFamily: "monospace"}}>
+      {iq.iqScore || 'undefined'}
+    </div>
+    <div style={{fontSize: 11, color: "#fbbf24", marginBottom: 4}}>Has Layers:</div>
+    <div style={{fontSize: 12, color: "#f0f6ff", background: "#000", padding: "6px 10px", borderRadius: 6, marginBottom: 10, fontFamily: "monospace"}}>
+      {iq.layers ? 'Yes - ' + Object.keys(iq.layers).length + ' layers' : 'No'}
+    </div>
+    <div style={{fontSize: 11, color: "#fbbf24", marginBottom: 4}}>Total Value:</div>
+    <div style={{fontSize: 12, color: "#f0f6ff", background: "#000", padding: "6px 10px", borderRadius: 6, fontFamily: "monospace"}}>
+      {iq.totalValue || 'undefined'}
+    </div>
+  </div>
+)}
                   <div className="card-enter" style={{
                     background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
                     border:"1px solid "+C.plasma+"33",
