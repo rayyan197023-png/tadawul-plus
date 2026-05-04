@@ -122,3 +122,75 @@ const DRAW_ICON_MAP = {
  'text': '<svg viewBox="0 0 20 20" fill="none" width="16" height="16"><line x1="4" y1="5" x2="16" y2="5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="10" y1="5" x2="10" y2="16" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
  'callout': '<svg viewBox="0 0 20 20" fill="none" width="16" height="16"><rect x="2" y="3" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.4" fill="none"/><polyline points="5,13 5,17 9,13" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="5" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.5"/><line x1="5" y1="10" x2="10" y2="10" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.5"/></svg>',
 };
+
+const DRAW_CATS=[
+ {
+ id:'lines', title:'خطوط الاتجاه',
+ tools:[
+ {id:'trend', l:'خط اتجاه', icon:'↗'},
+ {id:'hline', l:'خط أفقي', icon:'--'},
+ {id:'vline', l:'خط عمودي', icon:'|'},
+ {id:'extended', l:'خط ممتد', icon:''},
+  {id:'ray', l:'خط مفتوح الطرف', icon:''},
+ {id:'extline', l:'خط مفتوح الطرفين', icon:'↔'},
+ ]
+ },
+ {
+ id:'shapes', title:'أشكال',
+ tools:[
+ {id:'rect', l:'مستطيل', icon:''},
+ {id:'triangle',l:'مثلث', icon:''},
+ {id:'ellipse', l:'بيضاوي', icon:''},
+ ]
+ },
+ {
+ id:'fibs', title:'ارتدادات',
+ tools:[
+ {id:'fib', l:'فيبوناتشي ارتداد', icon:''},
+ {id:'fibext', l:'امتداد فيبوناتشي', icon:''},
+ {id:'fibcircle', l:'فيبوناتشي دائري', icon:'⊙'},
+ ]
+ },
+ {
+ id:'channels', title:'قنوات',
+ tools:[
+ {id:'eqchan', l:'قناة متوازية', icon:''},
+ {id:'regchan', l:'قناة انحدار', icon:''},
+ {id:'stddev', l:'قناة انحراف', icon:'⊠'},
+ ]
+ },
+ {
+ id:'measures', title:'فترات',
+ tools:[
+ {id:'measure', l:'قياس السعر', icon:''},
+ {id:'timemeas', l:'قياس الوقت', icon:'⏱'},
+ {id:'daterange', l:'نطاق تاريخ', icon:''},
+ ]
+ },
+ {
+ id:'fans', title:'مراوح',
+ tools:[
+ {id:'fibfan', l:'مروحة فيبوناتشي', icon:''},
+ {id:'ganfan', l:'مروحة غان', icon:''},
+ {id:'angfan', l:'مروحة زاوية', icon:''},
+ ]
+ },
+ {
+ id:'patterns', title:'الأنماط',
+ tools:[
+ {id:'xabcd', l:'نمط XABCD', icon:'X'},
+ {id:'abcd', l:'نمط ABCD', icon:'A'},
+ {id:'hs', l:'رأس وكتفين', icon:'⊓'},
+ {id:'elliott', l:'موجة إليوت', icon:''},
+ {id:'cypher', l:'نمط Cypher', icon:''},
+ ]
+ },
+
+ {id:'notes', title:'ملاحظات',
+ tools:[
+ {id:'text', l:'نص', icon:'T'},
+ {id:'callout', l:'مستطيل نص', icon:''},
+ ]
+ },
+];
+const DRAW_TOOLS_LIST = DRAW_CATS.flatMap(c => c.tools);
