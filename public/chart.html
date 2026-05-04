@@ -1777,6 +1777,9 @@ function _evalCustomInd(formula, allC, allH, allL, allV){
   const vals = Object.keys(_sandbox).map(k=>_sandbox[k]);
   const fn = new Function(...keys, `"use strict"; return (${formula});`);
   const result = fn(...vals);
+  const vals = Object.keys(_sandbox).map(k=>_sandbox[k]);
+  const fn = new Function(...keys, `"use strict"; return (${formula});`);
+  const result = fn(...vals);
 
   // Result must be an array
   if(!Array.isArray(result)) return null;
