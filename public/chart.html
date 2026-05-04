@@ -530,8 +530,7 @@ if(!CanvasRenderingContext2D.prototype.roundRect){
 let indSettings = {};
 function getIS(id){ return {...(IND_DEFAULTS[id]||{}), ...(indSettings[id]||{})}; }
 function setIS(id, key, val){ if(!indSettings[id])indSettings[id]={}; indSettings[id][key]=val; saveSettings(); }
-const TF_MINS={'1m':1,'5m':5,'15m':15,'30m':30,'1H':60,'4H':240,'1D':1440,'1W':10080,'1M':43200};
-const PER_COUNT={'1m':200,'5m':180,'15m':160,'30m':150,'1H':140,'4H':130,'1D':130,'1W':104,'1M':96};
+
 // Drawing tool SVG icon map
 const DRAW_ICON_MAP = {
  'trend': '<svg viewBox="0 0 20 20" fill="none" width="16" height="16"><line x1="3" y1="16" x2="17" y2="4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><polyline points="12,4 17,4 17,9" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
