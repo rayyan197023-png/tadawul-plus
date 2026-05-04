@@ -4734,7 +4734,8 @@ function render(){
       state._alertFired=true;
       // Play sound
       try{
-        const ac=new(window.AudioContext||window.webkitAudioContext)();
+        const ac=getAudioContext();if(!ac)return;
+
         const osc=ac.createOscillator();const gain=ac.createGain();
         osc.connect(gain);gain.connect(ac.destination);
         osc.frequency.setValueAtTime(alertType==='above'?880:440,ac.currentTime);
