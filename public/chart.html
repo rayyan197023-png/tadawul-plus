@@ -530,78 +530,7 @@ if(!CanvasRenderingContext2D.prototype.roundRect){
 let indSettings = {};
 function getIS(id){ return {...(IND_DEFAULTS[id]||{}), ...(indSettings[id]||{})}; }
 function setIS(id, key, val){ if(!indSettings[id])indSettings[id]={}; indSettings[id][key]=val; saveSettings(); }
-
-const DRAW_CATS=[
- {
- id:'lines', title:'خطوط الاتجاه',
- tools:[
- {id:'trend', l:'خط اتجاه', icon:'↗'},
- {id:'hline', l:'خط أفقي', icon:'—'},
- {id:'vline', l:'خط عمودي', icon:'|'},
- {id:'extended', l:'خط ممتد', icon:''},
-  {id:'ray', l:'خط مفتوح الطرف', icon:''},
- {id:'extline', l:'خط مفتوح الطرفين', icon:'↔'},
- ]
- },
- {
- id:'shapes', title:'أشكال',
- tools:[
- {id:'rect', l:'مستطيل', icon:''},
- {id:'triangle',l:'مثلث', icon:''},
- {id:'ellipse', l:'بيضاوي', icon:''},
- ]
- },
- {
- id:'fibs', title:'ارتدادات',
- tools:[
- {id:'fib', l:'فيبوناتشي ارتداد', icon:''},
- {id:'fibext', l:'امتداد فيبوناتشي', icon:''},
- {id:'fibcircle', l:'فيبوناتشي دائري', icon:'⊙'},
- ]
- },
- {
- id:'channels', title:'قنوات',
- tools:[
- {id:'eqchan', l:'قناة متوازية', icon:''},
- {id:'regchan', l:'قناة انحدار', icon:''},
- {id:'stddev', l:'قناة انحراف', icon:'⊠'},
- ]
- },
- {
- id:'measures', title:'فترات',
- tools:[
- {id:'measure', l:'قياس السعر', icon:''},
- {id:'timemeas', l:'قياس الوقت', icon:'⏱'},
- {id:'daterange', l:'نطاق تاريخ', icon:''},
- ]
- },
- {
- id:'fans', title:'مراوح',
- tools:[
- {id:'fibfan', l:'مروحة فيبوناتشي', icon:''},
- {id:'ganfan', l:'مروحة غان', icon:''},
- {id:'angfan', l:'مروحة زاوية', icon:''},
- ]
- },
- {
- id:'patterns', title:'الأنماط',
- tools:[
- {id:'xabcd', l:'نمط XABCD', icon:'X'},
- {id:'abcd', l:'نمط ABCD', icon:'A'},
- {id:'hs', l:'رأس وكتفين', icon:'⊓'},
- {id:'elliott', l:'موجة إليوت', icon:''},
- {id:'cypher', l:'نمط Cypher', icon:''},
- ]
- },
-
- {id:'notes', title:'ملاحظات',
- tools:[
- {id:'text', l:'نص', icon:'T'},
- {id:'callout', l:'مستطيل نص', icon:''},
- ]
- },
-];
-const DRAW_TOOLS_LIST = DRAW_CATS.flatMap(c => c.tools);
+I 
 // Strategies 
 
 // Strategy SVG icon map
