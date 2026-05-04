@@ -527,37 +527,6 @@ if(!CanvasRenderingContext2D.prototype.roundRect){
 // DATA
 // 
 
-// ── Indicator Settings (user-editable params) ──────────
-const IND_DEFAULTS = {
- RSI:  {period:14, color:'#22c55e'},
- MACD: {fast:12, slow:26, signal:9, color:'#38bdf8'},
- BB:   {period:20, stddev:2, color:'#818cf8'},
- MA5:  {period:5,  color:'#fcd34d'},
- MA10: {period:10, color:'#fbbf24'},
- MA20: {period:20, color:'#f59e0b'},
- MA50: {period:50, color:'#3b9eff'},
- MA100:{period:100, color:'#60a5fa'},
- MA200:{period:200, color:'#a78bfa'},
- EMA9: {period:9,  color:'#fb923c'},
- EMA20:{period:20, color:'#f97316'},
- EMA50:{period:50, color:'#ea580c'},
- EMA200:{period:200, color:'#c2410c'},
- ATR:  {period:14, color:'#facc15'},
- ADX:  {period:14, color:'#e879f9'},
- STOCH:{period:14, color:'#f472b6'},
- STOCHRSI:{period:14, color:'#ec4899'},
- MFI:  {period:14, color:'#38bdf8'},
- OBV:   {period:0,  color:'#67e8f9'},
- STD:   {period:20, color:'#fde68a'},
- VWAP:  {period:0,  color:'#fdba74'},
- VWAP_D:{period:0,  color:'#fb923c'},
- VOL_MA:{period:20, color:'#94a3b8'},
- KC:    {period:20, color:'#22d3ee'},
- DC:    {period:20, color:'#818cf8'},
- PSAR:  {period:0,  color:'#f0abfc'},
- SUPERTREND:{period:10, color:'#4ade80'},
- EMA_RIBBON:{period:0, color:'#6366f1'},
-};
 let indSettings = {};
 function getIS(id){ return {...(IND_DEFAULTS[id]||{}), ...(indSettings[id]||{})}; }
 function setIS(id, key, val){ if(!indSettings[id])indSettings[id]={}; indSettings[id][key]=val; saveSettings(); }
