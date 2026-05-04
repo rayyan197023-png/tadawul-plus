@@ -11439,7 +11439,7 @@ function _checkMultiAlerts(sub,ind){
    a.fired=true;a.active=false;
    // Sound + notification
    try{
-    const ac=new(window.AudioContext||window.webkitAudioContext)();
+    const ac=getAudioContext();if(!ac)return;
     const osc=ac.createOscillator();const g=ac.createGain();
     osc.connect(g);g.connect(ac.destination);
     osc.type='sine';osc.frequency.setValueAtTime(880,ac.currentTime);
