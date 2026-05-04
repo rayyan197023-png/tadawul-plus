@@ -83,3 +83,6 @@ const IND_DEFAULTS = {
  SUPERTREND:{period:10, color:'#4ade80'},
  EMA_RIBBON:{period:0, color:'#6366f1'},
 };
+
+ const TF_MINS={'1m':1,'5m':5,'15m':15,'30m':30,'1H':60,'4H':240,'1D':1440,'1W':10080,'1M':43200};
+const PER_COUNT={'1m':200,'5m':180,'15m':160,'30m':150,'1H':140,'4H':130,'1D':130,'1W':104,'1M':96};
