@@ -1773,10 +1773,13 @@ function _evalCustomInd(formula, allC, allH, allL, allV){
   };
 
   // Build function from formula
+  // ── Security: blacklist dangerous patterns ──
+  const dangerousPatterns = /\b(fetch|XMLHttpRequest|import|eval|Function|require|process|window|document|globalThis|self|parent|top|location|navigator|localStorage|sessionStorage|indexedDB|cookie|alert|prompt|confirm|setTimeout|setInterval|Worker|postMessage|FileReader|Blob)\b/i;
+  if(dangerousPatterns.test(formula)) return null;
+  // Limit formula length
+  if(formula.length > 500) return null;
+  
   const keys = Object.keys(_sandbox);
-  const vals = Object.keys(_sandbox).map(k=>_sandbox[k]);
-  const fn = new Function(...keys, `"use strict"; return (${formula});`);
-  const result = fn(...vals);
   const vals = Object.keys(_sandbox).map(k=>_sandbox[k]);
   const fn = new Function(...keys, `"use strict"; return (${formula});`);
   const result = fn(...vals);
