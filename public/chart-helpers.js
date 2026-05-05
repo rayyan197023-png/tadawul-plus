@@ -152,5 +152,91 @@ function _calcDivergences(prices, indArr, label, color){
  return final.sort((a,b)=>a.i2-b.i2);
 }
 
-  
+const API_CONFIG = {
+  // تداول+ -- API Configuration Layer
+  // To activate: set enabled=true and fill your endpoint URLs
+  // All functions gracefully fall back to mock data when disabled
+
+  enabled: false,
+
+  // ── Endpoint Configuration ────────────────────────────────────
+  // Fill these with your actual API base URLs
+  endpoints: {
+    // Candle/OHLCV data -- required for core functionality
+    candles:   null, // 'https://your-api.com/candles'
+
+    // Real-time price ticker (WebSocket or polling)
+    ticker:    null, // 'wss://your-api.com/ticker' OR 'https://...'
+    tickerMode:'poll', // 'ws' for WebSocket, 'poll' for HTTP polling
+
+    // Stock list with prices
+    stocks:    null, // 'https://your-api.com/stocks'
+
+    // Order flow / tape data
+    orderflow: null, // 'https://your-api.com/orderflow'
+
+    // Economic calendar
+    calendar:  null, // 'https://your-api.com/calendar'
+
+    // News feed
+    news:      null, // 'https://your-api.com/news'
+
+    // Company info / fundamentals
+    info:      null, // 'https://your-api.com/info'
+  },
+
+  // ── Auth ──────────────────────────────────────────────────────
+  headers: {
+    // 'Authorization': 'Bearer YOUR_TOKEN',
+    // 'X-API-Key': 'YOUR_KEY',
+  },
+
+  // ── Timeframe mapping ─────────────────────────────────────────
+  // Map app timeframes to your API's interval names
+  tfMap: {
+    '1m':'1',  '5m':'5',  '15m':'15', '30m':'30',
+    '1H':'60', '4H':'240','1D':'D',   '1W':'W',   '1M':'M'
+  },
+
+  // ── HTTP Fetch ────────────────────────────────────────────────
+  async fetch(type, params={}) {
+    const url = this.endpoints[type];
+    if(!url || !this.enabled) return null;
+    try {
+      const qs = new URLSearchParams(params).toString();
+      const r = await fetch(url + (qs?'?'+qs:''), {
+        headers: this.headers,
+        signal: AbortSignal.timeout(8000)
+      });
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return await r.json();
+    } catch(e) {
+      console.warn('[API]', type, e.message);
+      return null;
+    }
+  },
+
+  // ── WebSocket for live prices ─────────────────────────────────
+  _ws: null,
+  _wsCb: null,
+  wsConnect(onTick) {
+    const url = this.endpoints.ticker;
+    if(!url||!this.enabled||this.tickerMode!=='ws') return;
+    if(this._ws) this._ws.close();
+    this._ws = new WebSocket(url);
+    this._wsCb = onTick;
+    this._ws.onmessage = e => {
+      try { const d=JSON.parse(e.data); onTick(d); } catch(_){}
+    };
+    this._ws.onclose = () => {
+      // Auto-reconnect after 3s
+      if(this.enabled) setTimeout(()=>this.wsConnect(onTick), 3000);
+    };
+  },
+  wsDisconnect() {
+    if(this._ws) { this._ws.close(); this._ws=null; }
+  }
+}
+
+
   
