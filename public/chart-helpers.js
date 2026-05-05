@@ -69,6 +69,24 @@ function normalizeCandles(rawData){
   }).filter(d=>d.c>0); // remove invalid candles
 }
 
+// ── Divergence Detection ────────────────────────────────
+function _findPivots(arr, lookback=5){
+ // Find local highs and lows in array
+ const highs=[], lows=[];
+ for(let i=lookback; i<arr.length-lookback; i++){
+  if(arr[i]==null) continue;
+  let isHigh=true, isLow=true;
+  for(let j=i-lookback; j<=i+lookback; j++){
+   if(j===i||arr[j]==null) continue;
+   if(arr[j]>=arr[i]) isHigh=false;
+   if(arr[j]<=arr[i]) isLow=false;
+  }
+  if(isHigh) highs.push({i, v:arr[i]});
+  if(isLow)  lows.push({i, v:arr[i]});
+ }
+ return {highs, lows};
+}
+
 
 
   
