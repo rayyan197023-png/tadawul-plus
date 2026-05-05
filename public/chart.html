@@ -1036,24 +1036,6 @@ function invalidateChart(){
  _indCache.key = null; // also invalidate indicator cache
 }
 
-// ── Divergence Detection ────────────────────────────────
-function _findPivots(arr, lookback=5){
- // Find local highs and lows in array
- const highs=[], lows=[];
- for(let i=lookback; i<arr.length-lookback; i++){
-  if(arr[i]==null) continue;
-  let isHigh=true, isLow=true;
-  for(let j=i-lookback; j<=i+lookback; j++){
-   if(j===i||arr[j]==null) continue;
-   if(arr[j]>=arr[i]) isHigh=false;
-   if(arr[j]<=arr[i]) isLow=false;
-  }
-  if(isHigh) highs.push({i, v:arr[i]});
-  if(isLow)  lows.push({i, v:arr[i]});
- }
- return {highs, lows};
-}
-
 // ── Auto Divergence Helper for Sub-Panels ─────────────────────
 function _renderDivOnPanel(ctx,indArr,priceArr,indColor,tyS,tx,top,ph,start,end,mn2,mx2){
   if(!indArr||!priceArr||indArr.length<20)return;
