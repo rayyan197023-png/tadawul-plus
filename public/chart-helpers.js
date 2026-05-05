@@ -87,7 +87,70 @@ function _findPivots(arr, lookback=5){
  return {highs, lows};
 }
 
+function _calcDivergences(prices, indArr, label, color){
+ if(!prices||!indArr||prices.length<20) return [];
+ const LB=5;
+ const MATCH_WIN=LB+3;
+ const MIN_GAP=8; // minimum candles between divergences
+ const pPivots=_findPivots(prices, LB);
+ const iPivots=_findPivots(indArr, LB);
 
+ const nearest=(arr,idx,win)=>{
+  let best=null,bestD=win+1;
+  arr.forEach(p=>{const d=Math.abs(p.i-idx);if(d<=win&&d<bestD){bestD=d;best=p;}});
+  return best;
+ };
+
+ // Score divergence strength (bigger gap = stronger signal)
+ const score=(v1,v2,type)=>type==='bearish'?(v1-v2)/Math.abs(v1||1):(v2-v1)/Math.abs(v1||1);
+
+ const rawDivs=[];
+
+ // Bearish
+ for(let a=0;a<pPivots.highs.length-1;a++){
+  const pH1=pPivots.highs[a],pH2=pPivots.highs[a+1];
+  if(pH2.i-pH1.i<6||pH2.i-pH1.i>100) continue;
+  if(pH2.v<=pH1.v*0.998) continue;
+  const iH2=nearest(iPivots.highs,pH2.i,MATCH_WIN);
+  const iH1=nearest(iPivots.highs,pH1.i,MATCH_WIN);
+  if(!iH2||!iH1||iH2===iH1) continue;
+  if(iH2.v>=iH1.v*0.998) continue;
+  rawDivs.push({type:'bearish',i1:pH1.i,i2:pH2.i,
+   ii1:iH1.v,ii2:iH2.v,
+   score:score(iH1.v,iH2.v,'bearish'),
+   label:'هبوط '+label,color:'#ef4444'});
+ }
+
+ // Bullish
+ for(let a=0;a<pPivots.lows.length-1;a++){
+  const pL1=pPivots.lows[a],pL2=pPivots.lows[a+1];
+  if(pL2.i-pL1.i<6||pL2.i-pL1.i>100) continue;
+  if(pL2.v>=pL1.v*1.002) continue;
+  const iL2=nearest(iPivots.lows,pL2.i,MATCH_WIN);
+  const iL1=nearest(iPivots.lows,pL1.i,MATCH_WIN);
+  if(!iL2||!iL1||iL2===iL1) continue;
+  if(iL2.v<=iL1.v*1.002) continue;
+  rawDivs.push({type:'bullish',i1:pL1.i,i2:pL2.i,
+   ii1:iL1.v,ii2:iL2.v,
+   score:score(iL1.v,iL2.v,'bullish'),
+   label:'صعود '+label,color:'#22c55e'});
+ }
+
+ // Sort by score descending, then deduplicate by proximity
+ rawDivs.sort((a,b)=>b.score-a.score);
+ const final=[];
+ rawDivs.forEach(dv=>{
+  // Skip if another stronger divergence already covers this range
+  const overlap=final.find(f=>
+   f.type===dv.type &&
+   !(dv.i2+MIN_GAP<f.i1 || dv.i1>f.i2+MIN_GAP)
+  );
+  if(!overlap) final.push(dv);
+ });
+
+ // Return sorted by position (earliest first)
+ return final.sort((a,b)=>a.i2-b.i2);
+}
 
   
   
