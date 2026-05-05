@@ -283,3 +283,18 @@ const PATTERN_LBL={
  cypher:['X','A','B','C','D']
 };
 const COLORS=['#3b9eff','#f59e0b','#22c55e','#ef4444','#a78bfa','#fff','#fb923c','#f472b6','#34d399','#67e8f9'];
+
+// Built-in formula presets
+const CUSTOM_PRESETS = [
+ {name:'RSI Smoothed', desc:'RSI مُنعّم بـ EMA-3 لتقليل الضوضاء', shape:'oscillator', formula:'EMA(RSI(close,14),3)', type:'subpanel', color:'#a78bfa'},
+ {name:'Price vs MA50', desc:'فرق السعر عن المتوسط 50 -- يقيس الانحراف', shape:'histogram', formula:'SUB(close, SMA(close,50))', type:'subpanel', color:'#38bdf8'},
+ {name:'Volume MA Ratio', desc:'نسبة الحجم للمتوسط -- يكشف الأحجام غير العادية', shape:'histogram', formula:'DIV(volume, SMA(volume,20))', type:'subpanel', color:'#fbbf24'},
+ {name:'Hull MA 20', desc:'متوسط Hull -- أسرع وأقل تأخراً من EMA', shape:'line', formula:'EMA(SUB(MUL(2,EMA(close,10)), EMA(close,20)), Math.round(Math.sqrt(20)))', type:'overlay', color:'#4ade80'},
+ {name:'EMA Diff (9-21)', desc:'تقاطع EMA-9 و EMA-21 كهيستوغرام', shape:'histogram', formula:'SUB(EMA(close,9), EMA(close,21))', type:'subpanel', color:'#f97316'},
+ {name:'Volatility Index', desc:'مؤشر التقلب: الانحراف المعياري نسبة للسعر', shape:'area', formula:'DIV(STDEV(close,20), SMA(close,20))', type:'subpanel', color:'#ef4444'},
+ {name:'DEMA 20', desc:'متوسط DEMA أسرع من EMA التقليدي', shape:'line', formula:'DEMA(close,20)', type:'overlay', color:'#67e8f9'},
+ {name:'MOM Oscillator', desc:'زخم السعر كمؤشر بانل', shape:'histogram', formula:'MOM(close,10)', type:'subpanel', color:'#f472b6'},
+ {name:'CCI 20', desc:'Commodity Channel Index -- يكشف الذروات', shape:'oscillator', formula:'CCI(20)', type:'subpanel', color:'#22d3ee'},
+ {name:'CMF 20', desc:'Chaikin Money Flow -- تدفق الأموال الذكية', shape:'histogram', formula:'CMF(20)', type:'subpanel', color:'#86efac'},
+];
+
