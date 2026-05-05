@@ -301,5 +301,47 @@ function _drawSubYAxis(ctx, top, ph, mn2, mx2, CW, YW, color, darkTheme, panKey)
  ctx.restore();
 }
 
+// ── Auto Divergence Helper for Sub-Panels ─────────────────────
+function _renderDivOnPanel(ctx,indArr,priceArr,indColor,tyS,tx,top,ph,start,end,mn2,mx2){
+  if(!indArr||!priceArr||indArr.length<20)return;
+  const fullPrices=priceArr;
+  const divs=_calcDivergences(fullPrices,indArr,'',indColor);
+  if(!divs.length)return;
+  const vis=divs.filter(dv=>dv.i1>=start&&dv.i2<end)
+    .map(dv=>({...dv,i1:dv.i1-start,i2:dv.i2-start}));
+  if(!vis.length)return;
+  vis.slice(-3).forEach(dv=>{
+    const x1=tx(dv.i1),x2=tx(dv.i2);
+    const iy1=tyS(dv.ii1,mn2,mx2), iy2=tyS(dv.ii2,mn2,mx2);
+    const py1=tyS(dv.pi1,mn2,mx2), py2=tyS(dv.pi2,mn2,mx2);
+    const clr=dv.color;
+    // Shaded area on indicator
+    ctx.fillStyle=clr+'18';
+    ctx.beginPath();ctx.moveTo(x1,iy1);ctx.lineTo(x2,iy2);
+    ctx.lineTo(x2,top+ph);ctx.lineTo(x1,top+ph);ctx.closePath();ctx.fill();
+    // Dashed divergence line on indicator
+    ctx.strokeStyle=clr+'cc';ctx.lineWidth=1.4;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(x1,iy1);ctx.lineTo(x2,iy2);ctx.stroke();
+    ctx.setLineDash([]);
+    // Dots at pivots
+    [[[x1,iy1],[x2,iy2]]].forEach(([[ax,ay],[bx,by]])=>{
+      [ax,bx].forEach((px,pi)=>{
+        const py=pi===0?ay:by;
+        ctx.beginPath();ctx.arc(px,py,3.5,0,Math.PI*2);
+        ctx.fillStyle=clr;ctx.fill();
+      });
+    });
+    // Label
+    const mx=(x1+x2)/2, labelY=Math.min(iy1,iy2)-10;
+    const lbl=dv.type==='bull'?'↑ تباعد إيجابي':'↓ تباعد سلبي';
+    ctx.font='bold 7px Cairo,sans-serif';
+    const tw=ctx.measureText(lbl).width+10;
+    ctx.fillStyle=clr+'30';ctx.strokeStyle=clr+'70';ctx.lineWidth=0.7;
+    ctx.beginPath();ctx.roundRect(mx-tw/2,labelY-7,tw,13,3);ctx.fill();ctx.stroke();
+    ctx.fillStyle=clr;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(lbl,mx,labelY);ctx.textBaseline='alphabetic';
+  });
+}
+
 
   
