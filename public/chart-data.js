@@ -271,3 +271,15 @@ const STRATEGIES=[
  howRead:'▲ أخضر = ADX قوي + ترند صاعد · ▼ أحمر = ADX قوي + ترند هابط · ADX < 20 = تجنب',
  tags:['ADX','DMI','ترند قوي']}
 ];
+
+const PATTERN_PTS={xabcd:5,abcd:4,hs:7,elliott:5,cypher:5,text:1,callout:1,pitchfork:3,schiff:3};
+const PATTERN_LBL={
+ xabcd:['X','A','B','C','D'],
+ pitchfork:['A','B','C'],
+ schiff:['A','B','C'],
+ abcd:['A','B','C','D'],
+ hs:['بداية الكتف الأيسر','قمة الكتف الأيسر','خط العنق الأيسر','الرأس','خط العنق الأيمن','قمة الكتف الأيمن','نهاية الكتف الأيمن'],
+ elliott:['1','2','3','4','5'],
+ cypher:['X','A','B','C','D']
+};
+const COLORS=['#3b9eff','#f59e0b','#22c55e','#ef4444','#a78bfa','#fff','#fb923c','#f472b6','#34d399','#67e8f9'];
