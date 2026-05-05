@@ -238,5 +238,68 @@ const API_CONFIG = {
   }
 }
 
+// ── Zoom Controls ────────────────────────────────────
+function cyclePivotType(){
+  const types=['traditional','fibonacci','camarilla'];
+  const cur=types.indexOf(state.pivotType||'traditional');
+  state.pivotType=types[(cur+1)%types.length];
+  const lbl={'traditional':'تقليدي','fibonacci':'فيبوناتشي','camarilla':'كامارا'};
+  const t=document.getElementById('toast');
+  if(t){t.textContent='Pivot Points: '+lbl[state.pivotType];t.style.display='block';t.style.opacity='1';setTimeout(()=>t.style.opacity='0',2000);}
+  invalidateChart();render();
+}
+function _zoomIn(){
+ state.visible=Math.max(8,Math.floor(state.visible*0.75));
+ if(navigator.vibrate)navigator.vibrate(15);
+ invalidateChart();render();
+}
+function _zoomOut(){
+ state.visible=Math.min(state.allCandles.length,Math.ceil(state.visible*1.35));
+ if(navigator.vibrate)navigator.vibrate(15);
+ invalidateChart();render();
+}
+function _zoomReset(){
+ const dv={'1m':80,'5m':70,'15m':65,'30m':60,'1H':55,'4H':50,'1D':55,'1W':40,'1M':45};
+ state.visible=dv[state.per]||48;
+ state.offset=0;
+ yScale=1.0;
+ if(navigator.vibrate)navigator.vibrate(20);
+ invalidateChart();render();
+}
+
+
+// ── Sub-Panel Y-Axis Helper ───────────────────────────
+function _drawSubYAxis(ctx, top, ph, mn2, mx2, CW, YW, color, darkTheme, panKey){
+ // Apply same zoom as tyS so labels match drawing positions
+ const _pz = panKey ? (panelYZoom[panKey]||1) : 1;
+ const _mid = (mn2+mx2)/2;
+ const _half = (mx2-mn2)/2/_pz;
+ const zmn = _mid - _half; // zoomed min
+ const zmx = _mid + _half; // zoomed max
+ const rng = zmx - zmn || 1;
+ const steps = ph < 60 ? 2 : ph < 100 ? 3 : 4;
+ ctx.save();
+ // Separator line
+ ctx.strokeStyle='#141e2e';ctx.lineWidth=0.6;
+ ctx.beginPath();ctx.moveTo(CW,top);ctx.lineTo(CW,top+ph);ctx.stroke();
+ for(let i=0;i<=steps;i++){
+  const frac = i/steps;
+  const v = zmn + rng*frac; // value in zoomed range
+  const y = top + ph - frac*ph;
+  if(y < top+4 || y > top+ph-2) continue;
+  // Tick mark
+  ctx.strokeStyle='#1e2c3e';ctx.lineWidth=0.6;
+  ctx.beginPath();ctx.moveTo(CW,y);ctx.lineTo(CW+3,y);ctx.stroke();
+  // Label
+  ctx.fillStyle=darkTheme?'#4a6080':'#64748b';
+  ctx.font='6.5px monospace';ctx.textAlign='right';ctx.textBaseline='middle';
+  const absV=Math.abs(v);
+  const lbl=absV>=1000000?((v/1000000).toFixed(1)+'M'):absV>=1000?((v/1000).toFixed(0)+'K'):absV<0.01?v.toExponential(1):v.toFixed(absV<1?2:absV<10?1:0);
+  ctx.fillText(lbl,CW+YW-2,y);
+  ctx.textBaseline='alphabetic';
+ }
+ ctx.restore();
+}
+
 
   
