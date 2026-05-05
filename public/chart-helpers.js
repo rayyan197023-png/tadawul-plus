@@ -68,41 +68,8 @@ function normalizeCandles(rawData){
     return{o,hi,lo,c,v,t};
   }).filter(d=>d.c>0); // remove invalid candles
 }
-// ── Candle Normalizer for API integration ────────────────────────
-// Call this when loading candles from any external API
-// Handles: Tadawul API, Alpha Vantage, Binance, Yahoo Finance formats
 
-const API_CONFIG = {
-  // تداول+ -- API Configuration Layer
-  // To activate: set enabled=true and fill your endpoint URLs
-  // All functions gracefully fall back to mock data when disabled
 
-  enabled: false,
 
-  // ── Endpoint Configuration ────────────────────────────────────
-  // Fill these with your actual API base URLs
-  endpoints: {
-    // Candle/OHLCV data -- required for core functionality
-    candles:   null, // 'https://your-api.com/candles'
-
-    // Real-time price ticker (WebSocket or polling)
-    ticker:    null, // 'wss://your-api.com/ticker' OR 'https://...'
-    tickerMode:'poll', // 'ws' for WebSocket, 'poll' for HTTP polling
-
-    // Stock list with prices
-    stocks:    null, // 'https://your-api.com/stocks'
-
-    // Order flow / tape data
-    orderflow: null, // 'https://your-api.com/orderflow'
-
-    // Economic calendar
-    calendar:  null, // 'https://your-api.com/calendar'
-
-    // News feed
-    news:      null, // 'https://your-api.com/news'
-
-    // Company info / fundamentals
-    info:      null, // 'https://your-api.com/info'
-  },
   
   
