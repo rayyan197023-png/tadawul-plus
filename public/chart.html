@@ -533,68 +533,6 @@ function setIS(id, key, val){ if(!indSettings[id])indSettings[id]={}; indSetting
 I 
 // Strategies 
 
-const STRATEGIES=[
-{id:'TURTLE',l:'Turtle Trading',icon:'🐢',power:88,risk:'متوسط',market:'اتجاهي',color:'#22c55e',accuracy:88,
- desc:'نظام الاختراق الكلاسيكي — دخول عند تجاوز 20 شمعة مع ATR للوقف',
- howWorks:'يشتري عند تجاوز أعلى 20 شمعة ويبيع عند كسر أدنى 10 شمعات',
- howRead:'▲ أخضر = دخول شراء · ▼ أحمر = إغلاق · الخطوط = نطاق الاختراق',
- tags:['اختراق','ATR','قناة دونشيان']},
-{id:'ICHIMOKU_STR',l:'إيشيموكو الكامل',icon:'☁',power:91,risk:'منخفض',market:'اتجاهي وجانبي',color:'#3b9eff',accuracy:91,
- desc:'نظام إيشيموكو الشامل — 5 شروط متزامنة للدخول بدقة عالية',
- howWorks:'السعر فوق السحابة + تقاطع تنكان/كيجون + RSI > 50 + حجم مرتفع',
- howRead:'☁ أخضر = سحابة صاعدة · ☁ أحمر = سحابة هابطة · ▲/▼ = إشارات دخول',
- tags:['إيشيموكو','MACD','RSI','حجم']},
-{id:'WYCKOFF_ACC',l:'تراكم وايكوف',icon:'🏛',power:90,risk:'منخفض',market:'تراكمي',color:'#a78bfa',accuracy:90,
- desc:'اكتشاف مراحل التراكم والتوزيع بناءً على الحجم والسعر',
- howWorks:'يحدد مراحل: SC → AR → Spring → SOS بناءً على حجم/تحرك سعري',
- howRead:'SC=بيع ذعر · AR=ارتداد · Spring=فرصة شراء · SOS=قوة',
- tags:['وايكوف','حجم','مؤسسي','Smart Money']},
-{id:'SUPPLY_DEMAND',l:'العرض والطلب',icon:'⚡',power:92,risk:'منخفض جداً',market:'كل الأسواق',color:'#f59e0b',accuracy:92,
- desc:'مناطق العرض والطلب القوية بناءً على الانفجارات السعرية والحجم',
- howWorks:'يكتشف مناطق حيث تحرك السعر بسرعة كبيرة مع حجم استثنائي — دليل مؤسسي',
- howRead:'🟡 منطقة طلب = دعم · 🔴 منطقة عرض = مقاومة · السعر يرتد منها',
- tags:['عرض','طلب','مؤسسي','نطاقات']},
-{id:'MOMENTUM_PRO',l:'الزخم المتكامل',icon:'🚀',power:89,risk:'متوسط',market:'اتجاهي قوي',color:'#22d3ee',accuracy:89,
- desc:'نظام زخم متعدد العوامل: RSI + MACD + حجم + EMA9/21',
- howWorks:'RSI بين 55-75 + MACD hist متصاعد + حجم فوق المتوسط + سعر فوق EMA9/21',
- howRead:'🚀 = إشارة قوية 4 شروط معاً · اللون يعبر عن الزخم',
- tags:['RSI','MACD','EMA','حجم']},
-{id:'SUPERTREND',l:'Supertrend',icon:'🌊',power:87,risk:'منخفض',market:'اتجاهي',color:'#22c55e',accuracy:87,
- desc:'مؤشر Supertrend المبني على ATR — يرسم خطاً يتبع الترند ويتغير لونه عند الانعكاس',
- howWorks:'يحسب ATR × المضاعف، يرسم خطاً فوق/تحت السعر، يتقاطع مع السعر = إشارة',
- howRead:'▲ أخضر = اتجاه صاعد · ▼ أحمر = اتجاه هابط · الخط = وقف الخسارة المتحرك',
- tags:['ATR','ترند','وقف متحرك']},
-{id:'MACD_STR',l:'استراتيجية MACD',icon:'📊',power:82,risk:'متوسط',market:'اتجاهي متوسط',color:'#38bdf8',accuracy:82,
- desc:'تقاطع MACD الكلاسيكي 12/26/9 — من أكثر الاستراتيجيات موثوقية تاريخياً',
- howWorks:'MACD يتقاطع مع خط الإشارة صعوداً = شراء · هبوطاً = بيع · الهيستوغرام يؤكد الزخم',
- howRead:'▲ أخضر = MACD يتجاوز خط الإشارة · ▼ أحمر = يكسره · قضبان الهيستوغرام = الزخم',
- tags:['MACD','EMA','زخم']},
-{id:'MA_CROSS',l:'تقاطع المتوسطات',icon:'✂️',power:80,risk:'منخفض',market:'اتجاهي',color:'#f59e0b',accuracy:80,
- desc:'تقاطع المتوسط السريع والبطيء — الاستراتيجية الأساسية الأكثر استخداماً في العالم',
- howWorks:'MA20 يتقاطع فوق MA50 = ذهبي (شراء) · يتقاطع تحته = ميت (بيع)',
- howRead:'▲ = Golden Cross (تقاطع ذهبي) · ▼ = Death Cross (تقاطع ميت)',
- tags:['MA20','MA50','تقاطع']},
-{id:'PSAR_STR',l:'Parabolic SAR',icon:'🌀',power:81,risk:'متوسط',market:'اتجاهي واضح',color:'#e879f9',accuracy:81,
- desc:'نقاط Parabolic SAR تتبع الترند — عندما تنعكس = تغيير الاتجاه. تفشل في السوق الجانبي.',
- howWorks:'نقاط تحت السعر = صاعد · فوق السعر = هابط · الانعكاس = إشارة دخول/خروج',
- howRead:'🟢 نقطة تحت = شراء · 🔴 نقطة فوق = بيع · احذر الإشارات الكثيرة في التوطيد',
- tags:['SAR','وقف متحرك','انعكاس']},
-{id:'PRICE_CHANNEL',l:'قناة الأسعار',icon:'📐',power:83,risk:'منخفض',market:'اتجاهي',color:'#818cf8',accuracy:83,
- desc:'قناة دونشيان — اختراق أعلى 20 شمعة = دخول شراء · كسر أدنى 20 شمعة = بيع',
- howWorks:'يرسم أعلى وأدنى 20 شمعة · الاختراق فوق = قوة · الاختراق تحت = ضعف',
- howRead:'▲ عند اختراق القناة العلوية · ▼ عند كسر القناة السفلية · المنتصف = الهدف',
- tags:['دونشيان','قناة','اختراق']},
-{id:'PIVOT_REV',l:'الانعكاس المحوري',icon:'🔄',power:84,risk:'متوسط',market:'كل الأسواق',color:'#fb923c',accuracy:84,
- desc:'يكتشف نقاط التحول في الترند باستخدام Pivot Points — دخول عند الارتداد من المستويات',
- howWorks:'يحدد PP/R1/R2/S1/S2 · عند ارتداد السعر من المستوى مع شمعة انعكاسية = إشارة',
- howRead:'▲ عند الارتداد من S1/S2 · ▼ عند الرفض من R1/R2 · P = مستوى التعادل',
- tags:['Pivot','انعكاس','دعم مقاومة']},
-{id:'ROB_ADX',l:'اختراق ADX (Rob Booker)',icon:'⚡',power:86,risk:'منخفض',market:'اتجاهي قوي',color:'#ef4444',accuracy:86,
- desc:'استراتيجية Rob Booker — تجمع ADX مع الزخم لتأكيد الترند القوي قبل الدخول',
- howWorks:'ADX > 25 = ترند قوي · +DI فوق -DI = صاعد · الدخول عند تأكيد الزخم',
- howRead:'▲ أخضر = ADX قوي + ترند صاعد · ▼ أحمر = ADX قوي + ترند هابط · ADX < 20 = تجنب',
- tags:['ADX','DMI','ترند قوي']}
-];
 const PATTERN_PTS={xabcd:5,abcd:4,hs:7,elliott:5,cypher:5,text:1,callout:1,pitchfork:3,schiff:3};
 const PATTERN_LBL={
  xabcd:['X','A','B','C','D'],
@@ -606,7 +544,6 @@ const PATTERN_LBL={
  cypher:['X','A','B','C','D']
 };
 const COLORS=['#3b9eff','#f59e0b','#22c55e','#ef4444','#a78bfa','#fff','#fb923c','#f472b6','#34d399','#67e8f9'];
-
 
 // STATE (all vars declared here — NEVER redeclared below)
 // 
