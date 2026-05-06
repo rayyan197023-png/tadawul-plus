@@ -2669,7 +2669,7 @@ function render(){
 // ── VWAP + Bands ─────────────────────────────
 [{d:ind.vwap,c:'#fdba74',lbl:'VWAP'},{d:ind.vwap_d,c:'#fb923c',lbl:'VWAP D'}].forEach(({d,c,lbl})=>{
  if(!d||!d.length)return;
- if(d&&d.length){alert('VWAP '+lbl+': total='+d.length+' | first idx='+JSON.stringify(d[0])+' | last='+JSON.stringify(d[d.length-1]));}
+
  // Fill between bands
  ctx.fillStyle=c+'10';ctx.beginPath();
  let f=true;
