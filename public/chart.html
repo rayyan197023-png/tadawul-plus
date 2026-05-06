@@ -2293,9 +2293,9 @@ function render(){
  tema: _fi(hasInd('TEMA') ?tema(allC,20):null),
  hma: _fi(hasInd('HMA') ?hma(allC,20) :null),
  vwap: _fi(hasInd('VWAP') ?vwap(allH,allL,allC,allV,all):null),
- vwap_d: _fi(hasInd('VWAP_D')?vwap(allH,allL,allC,allV,all):null),
+ vwap_d: _fi(hasInd('VWAP_D')?vwap_d(allH,allL,allC,allV,all):null),
  zlema: _fi(hasInd('ZLEMA')?(()=>{const e1=_ema2(allC,20);const e2=_ema2(e1.map(v=>v||0),20);return e1.map((v,i)=>v!=null&&e2[i]!=null?2*v-e2[i]:null);})():null),
- vwma: _fi(hasInd('VWMA')?allC.map((_,i)=>{if(i<19)return null;const sc=allC.slice(i-19,i+1),sv=allV.slice(i-19,i+1);const tv=sv.reduce((a,b)=>a+b,0);return tv?sc.reduce((a,b,j)=>a+b*sv[j],0)/tv:null;}):null),
+ vwma: _fi(hasInd('VWMA')?allC.map((_,i)=>{if(i<19)return null;const sc=allC.slice(i-19,i+1),sv=allV.slice( i-19,i+1);const tv=sv.reduce((a,b)=>a+b,0);return tv?sc.reduce((a,b,j)=>a+b*sv[j],0)/tv:null;}):null),
  // EMA Ribbon (8,13,21,34,55,89) — needs ≥89 candles
  // Only render if we have enough candle history
  ema_r8: _fi(hasInd('EMA_RIBBON')?ema(allC,8):null),
