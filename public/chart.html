@@ -506,6 +506,14 @@ button{font-family:'Cairo',sans-serif;cursor:pointer;outline:none}
 
 
 <script>
+window.onerror = function(msg, url, line, col, err) {
+  alert('🚨 خطأ JavaScript:\n\n' + msg + '\n\nالسطر: ' + line + '\nالعمود: ' + col + '\n\nالملف: ' + (url||'').split('/').pop());
+  return false;
+};
+window.addEventListener('unhandledrejection', function(e) {
+  alert('🚨 Promise Error:\n\n' + (e.reason && e.reason.message ? e.reason.message : e.reason));
+});
+   
 // ── roundRect polyfill for Safari/iOS ─────────────────────────
 if(!CanvasRenderingContext2D.prototype.roundRect){
  CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
