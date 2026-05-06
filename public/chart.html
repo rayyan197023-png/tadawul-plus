@@ -8769,7 +8769,7 @@ function showAI(){
     const cur_macd=mc.hist[n-1];
 
     // BB
-    const bb_mid=cur_. 
+    const bb_mid=cur_ma20||closes.slice(n-20).reduce((a,b)=>a+b,0)/20; 
     const stdArr=closes.slice(n-20).map(v=>(v-bb_mid)**2);
         const std=Math.sqrt(stdArr.reduce((a,b)=>a+b,0)/20);
     const bb_up=bb_mid+2*std,bb_dn=bb_mid-2*std;
