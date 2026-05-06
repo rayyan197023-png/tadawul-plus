@@ -2670,7 +2670,7 @@ function render(){
 [{d:ind.vwap,c:'#fdba74',lbl:'VWAP'},{d:ind.vwap_d,c:'#fb923c',lbl:'VWAP D'}].forEach(({d,c,lbl})=>{
  if(!d||!d.length)return;
  // Fill between bands
- ctx.fillStyle='#ff0000';ctx.beginPath();
+ ctx.fillStyle=c+'10';ctx.beginPath();
  let f=true;
  d.forEach((o,i)=>{if(!o||o.u2==null)return;f?(ctx.moveTo(tx(i),ty(o.u2)),f=false):ctx.lineTo(tx(i),ty(o.u2));});
  for(let i=d.length-1;i>=0;i--){const o=d[i];if(o&&o.d2!=null)ctx.lineTo(tx(i),ty(o.d2));}
