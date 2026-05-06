@@ -4608,7 +4608,7 @@ function render(){
   {k:'ema50',ids:['EMA50'], l:'EMA50', fmt:v=>v.toFixed(1), c:'#ea580c'},
   {k:'ema200',ids:['EMA200'],l:'EMA200',fmt:v=>v.toFixed(1),c:'#c2410c'},
   {k:'bb',   ids:['BB'],    l:'BB',    fmt:v=>v&&v.mid!=null?v.mid.toFixed(1):(Array.isArray(v)?v[1]?.toFixed(1):null), c:'#818cf8'},
-  {k:'vwap', ids:['VWAP','VWAP_D'],l:'VWAP',fmt:v=>v.toFixed(2),c:'#fdba74'},
+  {k:'vwap', ids:['VWAP','VWAP_D'],l:'VWAP',fmt:v=>v&&v.v!=null?v.v.toFixed(2):(typeof v==='number'?v.toFixed(2):null),c:'#fdba74'},
   {k:'rsi',  ids:['RSI'],   l:'RSI',   fmt:v=>v.toFixed(0), c:'#22c55e'},
   {k:'adx',  ids:['ADX'],   l:'ADX',   fmt:v=>v&&v.adx!=null?v.adx.toFixed(0):null, c:'#e879f9'},
   {k:'atr',  ids:['ATR'],   l:'ATR',   fmt:v=>v.toFixed(2), c:'#facc15'},
