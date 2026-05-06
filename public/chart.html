@@ -2675,7 +2675,7 @@ function render(){
  });
 // ── VWAP + Bands ─────────────────────────────
 [{d:ind.vwap,c:'#fdba74',lbl:'VWAP'},{d:ind.vwap_d,c:'#fb923c',lbl:'VWAP D'}].forEach(({d,c,lbl})=>{
- alert('VWAP code reached! d=' + (d ? d.length : 'null'));
+ alert('VWAP debug: d=' + d + ' | ind.vwap=' + ind.vwap);
  if(!d||!d.length)return;
  console.log('VWAP debug:',d.length,d[0],d[d.length-1]);
  // Fill between bands
