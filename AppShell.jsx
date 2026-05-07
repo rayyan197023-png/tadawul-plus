@@ -281,13 +281,18 @@ import('./lib/registerSW').then(({ unregisterServiceWorker }) => {
       }
       if (!d || d.type !== 'TADAWUL_SNAPSHOT') return;
       setSnapshots(prev => [{
-        id: Date.now(), 
-        sym: d.sym || '', 
-        name: d.name || '',
-        date: new Date().toISOString().slice(0, 16).replace('T', ' '),
-        color: '#f0c050', 
-        tag: 'تحليل فني',
-      }, ...prev.slice(0, 19)]);
+  id: Date.now(), 
+  sym: d.sym || '', 
+  name: d.name || '',
+  date: new Date().toISOString().slice(0, 16).replace('T', ' '),
+  color: '#f0c050', 
+  tag: 'تحليل فني',
+  chartImage: d.chartImage || null,
+  price: d.price || null,
+  rsi: d.rsi || null,
+  macd: d.macd || null,
+  per: d.per || '',
+}, ...prev.slice(0, 19)]);
     }
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
