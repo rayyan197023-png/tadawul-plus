@@ -110,6 +110,7 @@ const { setTab } = useNav();
     });
   }, [extSnaps]);
   const [editSnap, setEditSnap] = useState(null);
+  const [fullSnap, setFullSnap] = useState(null);
   const [snapTag, setSnapTag] = useState("الكل");
   const [fontSize, setFontSize] = useState("medium");
   var fontScale={small:0.9,medium:1,large:1.12};
