@@ -9735,27 +9735,28 @@ function doSnap(){
   // إرسال بيانات اللقطة لقسم المزيد عبر postMessage
   try {
   let chartImage = null;
-try {
-  const canvas = document.getElementById('cv');
-  if (canvas) chartImage = canvas.toDataURL('image/png');
-} catch(e) {}
-    const snapData = {
-      type: 'TADAWUL_SNAPSHOT',
-      sym: state.stk?.sym || '',
-      name: state.stk?.name || '',
-      price: state.stk?.p || 0,
-      per: state.per || '',
-      date: new Date().toISOString().slice(0,16).replace('T',' '),
-      pct: state.stk?.pct || 0,
-      rsi: window._lastRSI || null,
-      macd: window._lastMACDSig || null,
-      vol: state.stk?.vol || null,
-      note: (state.stk?.name || '') + ' — ' + (state.per || '')
-    };
-    window.parent.postMessage(snapData, '*');
-    window.dispatchEvent(new CustomEvent('tadawulSnapshot', { detail: snapData }));
-  } catch(ex) {}
- }catch(e){
+  try {
+    const canvas = document.getElementById('cv');
+    if (canvas) chartImage = canvas.toDataURL('image/png');
+  } catch(e) {}
+
+  const snapData = {
+    type: 'TADAWUL_SNAPSHOT',
+    sym: state.stk?.sym || '',
+    name: state.stk?.name || '',
+    price: state.stk?.p || 0,
+    per: state.per || '',
+    date: new Date().toISOString().slice(0,16).replace('T',' '),
+    pct: state.stk?.pct || 0,
+    rsi: window._lastRSI || null,
+    macd: window._lastMACDSig || null,
+    vol: state.stk?.vol || null,
+    note: (state.stk?.name || '') + ' — ' + (state.per || ''),
+    chartImage,
+  };
+  window.parent.postMessage(snapData, '*');
+  window.dispatchEvent(new CustomEvent('tadawulSnapshot', { detail: snapData }));
+} catch(ex) {}
   const t=document.getElementById('toast');
   t.textContent='خطأ في الحفظ';
   t.style.display='block';
