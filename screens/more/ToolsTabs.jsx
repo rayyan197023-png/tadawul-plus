@@ -37,6 +37,8 @@ function SnapshotsTab(props) {
   var snaps=tp.snaps;
   var setSnaps=tp.setSnaps;
   var editSnap=tp.editSnap;
+  var fullSnap=tp.fullSnap;
+var setFullSnap=tp.setFullSnap;
   var sn2=useState(""); var snapSearch=sn2[0]; var setSnapSearch=sn2[1];
   var sn3=useState("newest"); var snapSort=sn3[0]; var setSnapSort=sn3[1];
   var sn4=useState(null); var viewSnap=sn4[0]; var setViewSnap=sn4[1];
