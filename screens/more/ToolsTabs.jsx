@@ -170,6 +170,10 @@ function SnapshotsTab(props) {
                         }} autoFocus style={{flex:1,background:C.layer3,border:"1px solid "+C.teal+"55",borderRadius:10,padding:"6px 12px",color:C.snow,fontSize:11,outline:"none",direction:"rtl"}}/>
                       </div>
                     ):(
+                    <div>
+    {snap.chartImage && (
+      <img src={snap.chartImage} style={{ width: '100%', borderRadius: 8, marginBottom: 8 }} />
+    )}
                       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                         <div style={{display:"flex",gap:6}}>
                           <button onClick={function(){setEditSnap(snap.id);}} style={{background:C.electric+"15",border:"1px solid "+C.electric+"30",color:C.electric,padding:"6px 10px",borderRadius:10,cursor:"pointer",fontSize:10,fontWeight:600}}>تعديل</button>
