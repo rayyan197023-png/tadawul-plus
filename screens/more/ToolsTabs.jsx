@@ -214,6 +214,9 @@ var setFullSnap=tp.setFullSnap;
               display:"flex",flexDirection:"column",
             }}>
               <div style={{flex:1,position:"relative",overflow:"hidden"}}>
+              {viewSnap.chartImage&&(
+  <img src={viewSnap.chartImage} style={{width:"100%",height:"100%",objectFit:"contain",position:"absolute",inset:0,zIndex:1}}/>
+)}
                 {(function(){
                   var sd=viewSnap.spark;
                   var pts="", dotEls=[], gridEls=[];
