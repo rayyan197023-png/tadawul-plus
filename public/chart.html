@@ -9731,21 +9731,10 @@ function doSnap(){
    t.style.display='block';
    t.classList.add('show');
    setTimeout(()=>{t.classList.remove('show');t.style.display='none';},2500);
-  },'image/png');
+   },'image/png');
   // إرسال بيانات اللقطة لقسم المزيد عبر postMessage
   try {
-  let chartImage = null;
-  try {
-      const canvas = document.getElementById('cv');
-  if (canvas) {
-    const tmp = document.createElement('canvas');
-    tmp.width = canvas.width;
-    tmp.height = canvas.height;
-    const ctx = tmp.getContext('2d');
-    ctx.drawImage(canvas, 0, 0);
-    chartImage = tmp.toDataURL('image/png');
-  }
-  } catch(e) {}
+  const chartImage = tmp.toDataURL('image/png');
 
   const snapData = {
     type: 'TADAWUL_SNAPSHOT',
