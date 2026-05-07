@@ -189,6 +189,7 @@ function SnapshotsTab(props) {
                           <div style={{fontSize:8,color:C.smoke,marginTop:2}}>{snap.date}</div>
                         </div>
                       </div>
+                    </div>
                     )}
                   </div>
                 </div>
