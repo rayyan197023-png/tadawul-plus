@@ -9695,7 +9695,6 @@ function doSnap(){
   const dpr=window.devicePixelRatio||1;
   tc.scale(dpr,dpr);
   const W=cv.width/dpr,H=cv.height/dpr;
-  // Watermark: SVG-style chart icon + symbol info
   const sym=state.stk?.sym||'';
   const per=state.per||'';
   const now=new Date();
@@ -9707,13 +9706,10 @@ function doSnap(){
   tc.lineWidth=1.4*dpr;
   tc.lineCap='round';tc.lineJoin='round';
   tc.shadowColor='rgba(0,0,0,0.9)';tc.shadowBlur=6*dpr;
-  // Mini line chart icon
   const _pts=[[2,14],[6,8],[10,11],[14,4],[18,6]].map(([x,y])=>[_ix+x/20*_isize, _iy+y/16*_isize]);
   tc.beginPath();_pts.forEach(([x,y],i)=>i?tc.lineTo(x,y):tc.moveTo(x,y));tc.stroke();
-  // Arrow
   tc.beginPath();tc.moveTo(_ix+16/20*_isize,_iy+4/16*_isize);tc.lineTo(_ix+_isize,_iy+4/16*_isize);tc.lineTo(_ix+_isize,_iy+8/16*_isize);tc.stroke();
   tc.restore();
-  // Text info: sym · per · date
   tc.font=`600 ${11*dpr}px Cairo,monospace`;
   tc.textAlign='right';tc.textBaseline='bottom';
   tc.shadowColor='rgba(0,0,0,0.9)';tc.shadowBlur=8*dpr;
@@ -9731,28 +9727,27 @@ function doSnap(){
    t.style.display='block';
    t.classList.add('show');
    setTimeout(()=>{t.classList.remove('show');t.style.display='none';},2500);
-   },'image/png');
-  // إرسال بيانات اللقطة لقسم المزيد عبر postMessage
-  try {
-  const chartImage = tmp.toDataURL('image/png');
-
-  const snapData = {
-    type: 'TADAWUL_SNAPSHOT',
-    sym: state.stk?.sym || '',
-    name: state.stk?.name || '',
-    price: state.stk?.p || 0,
-    per: state.per || '',
-    date: new Date().toISOString().slice(0,16).replace('T',' '),
-    pct: state.stk?.pct || 0,
-    rsi: window._lastRSI || null,
-    macd: window._lastMACDSig || null,
-    vol: state.stk?.vol || null,
-    note: (state.stk?.name || '') + ' — ' + (state.per || ''),
-    chartImage,
-  };
-  window.parent.postMessage(snapData, '*');
-  window.dispatchEvent(new CustomEvent('tadawulSnapshot', { detail: snapData }));
-} catch(ex) {}
+   try{
+    const chartImage=tmp.toDataURL('image/png');
+    const snapData={
+     type:'TADAWUL_SNAPSHOT',
+     sym:state.stk?.sym||'',
+     name:state.stk?.name||'',
+     price:state.stk?.p||0,
+     per:state.per||'',
+     date:new Date().toISOString().slice(0,16).replace('T',' '),
+     pct:state.stk?.pct||0,
+     rsi:window._lastRSI||null,
+     macd:window._lastMACDSig||null,
+     vol:state.stk?.vol||null,
+     note:(state.stk?.name||'')+' — '+(state.per||''),
+     chartImage,
+    };
+    window.parent.postMessage(snapData,'*');
+    window.dispatchEvent(new CustomEvent('tadawulSnapshot',{detail:snapData}));
+   }catch(ex){}
+  },'image/png');
+ }catch(e){
   const t=document.getElementById('toast');
   t.textContent='خطأ في الحفظ';
   t.style.display='block';
