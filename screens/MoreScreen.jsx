@@ -375,6 +375,7 @@ const { setTab } = useNav();
     divShares:divShares, setDivShares:setDivShares,
     divCost:divCost, setDivCost:setDivCost,
     snaps:snaps, setSnaps:setSnaps,
+    fullSnap:fullSnap, setFullSnap:setFullSnap,
     editSnap:editSnap, setEditSnap:setEditSnap,
     snapTag:snapTag, setSnapTag:setSnapTag,
     fontSize:fontSize, setFontSize:setFontSize,
