@@ -391,6 +391,19 @@ const { setTab } = useNav();
   };
   return(
     <div className="root-wrap">
+    {fullSnap && (
+  <div onClick={function(){setFullSnap(null);}} style={{
+    position:'fixed',inset:0,zIndex:9999,
+    background:'rgba(0,0,0,0.95)',
+    display:'flex',alignItems:'center',justifyContent:'center',
+    padding:16,
+  }}>
+    <img 
+      src={fullSnap.chartImage} 
+      style={{width:'100%',maxHeight:'80vh',objectFit:'contain',borderRadius:12}} 
+    />
+  </div>
+)}
       
       <div className="hdr">
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
