@@ -172,7 +172,11 @@ function SnapshotsTab(props) {
                     ):(
                     <div>
     {snap.chartImage && (
-      <img src={snap.chartImage} style={{ width: '100%', borderRadius: 8, marginBottom: 8 }} />
+      <img 
+        src={snap.chartImage} 
+        onClick={function(){setFullSnap(snap);}}
+        style={{ width: '100%', borderRadius: 8, marginBottom: 8, cursor: 'pointer' }} 
+      />
     )}
                       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                         <div style={{display:"flex",gap:6}}>
