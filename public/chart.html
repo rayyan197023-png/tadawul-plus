@@ -9736,8 +9736,15 @@ function doSnap(){
   try {
   let chartImage = null;
   try {
-    const canvas = document.getElementById('cv');
-    if (canvas) chartImage = canvas.toDataURL('image/png');
+      const canvas = document.getElementById('cv');
+  if (canvas) {
+    const tmp = document.createElement('canvas');
+    tmp.width = canvas.width;
+    tmp.height = canvas.height;
+    const ctx = tmp.getContext('2d');
+    ctx.drawImage(canvas, 0, 0);
+    chartImage = tmp.toDataURL('image/png');
+  }
   } catch(e) {}
 
   const snapData = {
