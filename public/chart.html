@@ -9734,6 +9734,11 @@ function doSnap(){
   },'image/png');
   // إرسال بيانات اللقطة لقسم المزيد عبر postMessage
   try {
+  let chartImage = null;
+try {
+  const canvas = document.getElementById('cv');
+  if (canvas) chartImage = canvas.toDataURL('image/png');
+} catch(e) {}
     const snapData = {
       type: 'TADAWUL_SNAPSHOT',
       sym: state.stk?.sym || '',
