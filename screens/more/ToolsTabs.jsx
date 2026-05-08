@@ -34,8 +34,8 @@ function SnapshotsTab(props) {
   var setDivShares=tp.setDivShares;
   var divCost=tp.divCost;
   var setDivCost=tp.setDivCost;
-  var snaps=tp.snaps;
-  var setSnaps=tp.setSnaps;
+  var snaps=tp.snapshots||tp.snaps||[];
+var setSnaps=tp.setSnapshots||tp.setSnaps;
   var editSnap=tp.editSnap;
   var fullSnap=tp.fullSnap;
 var setFullSnap=tp.setFullSnap;
