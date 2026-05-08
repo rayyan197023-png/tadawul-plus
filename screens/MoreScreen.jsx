@@ -95,9 +95,6 @@ const { setTab } = useNav();
   const [calF, setCalF] = useState("all");
   const [homeConf, setHomeConf] = useState({showOpportunity:true,showTopMovers:true,showSectorChart:true,showAdvanced:false});
   const [snaps, setSnaps] = useState([
-    {id:1,sym:"2222",name:"أرامكو",  date:"2026-03-20 14:32",note:"اختراق مقاومة 28.5",color:C.mint, tag:"تحليل فني",snapPrice:27.80,rsi:42,macd:"هبوطي",vol:"12.4M",spark:[26.2,26.8,27.1,27.4,27.8,28.1,27.9,28.3,27.8,27.5,27.2,27.8]},
-    {id:2,sym:"1120",name:"الراجحي",date:"2026-03-18 09:15",note:"نمط رأس وكتفين",    color:C.coral,tag:"نمط",      snapPrice:93.10,rsi:38,macd:"هبوطي",vol:"4.1M",spark:[95.2,96.1,97.3,96.8,95.4,94.1,93.8,94.5,93.2,92.8,93.1,93.1]},
-    {id:3,sym:"2010",name:"سابك",    date:"2026-03-15 11:48",note:"تقاطع المتوسطات",   color:C.amber,tag:"مؤشر",     snapPrice:67.50,rsi:55,macd:"صعودي",vol:"1.8M",spark:[64.2,64.8,65.3,65.9,66.4,66.8,67.1,67.5,68.0,68.3,67.8,67.5]},
   ]);
   // ── ربط اللقطات القادمة من AppShell (iframe postMessage) ──
   useEffect(function() {
