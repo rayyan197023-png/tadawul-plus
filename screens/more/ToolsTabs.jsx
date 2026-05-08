@@ -180,7 +180,6 @@ var setFullSnap=tp.setFullSnap;
     {snap.chartImage && (
       <img 
         src={snap.chartImage} 
-        onClick={function(){setFullSnap(snap);}}
         style={{ width: '100%', borderRadius: 8, marginBottom: 8, cursor: 'pointer' }} 
       />
     )}
