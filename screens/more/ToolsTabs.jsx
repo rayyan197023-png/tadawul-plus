@@ -256,7 +256,7 @@ style={{background:C.coral+"15",border:"1px solid "+C.coral+"30",color:C.coral,p
     <div style={{fontSize:10,color:'#4a6585'}}>{viewSnap.per} · {viewSnap.date}</div>
   </div>
 </div>
-              <div style={{flex:1,position:"relative",overflow:"hidden"}}>
+              <div style={{flex:1,position:"relative",overflow:"hidden",paddingBottom:'100px'}}>
                 {(function(){
                   var sd=viewSnap.spark;
                   var pts="", dotEls=[], gridEls=[];
