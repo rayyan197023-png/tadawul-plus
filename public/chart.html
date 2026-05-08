@@ -9739,6 +9739,8 @@ function doSnap(){
      chartImage,
     };
     window.parent.postMessage(snapData,'*');
+window.top.postMessage(snapData,'*');
+
     window.dispatchEvent(new CustomEvent('tadawulSnapshot',{detail:snapData}));
    }catch(ex){}
   },'image/png');
