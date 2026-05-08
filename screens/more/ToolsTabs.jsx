@@ -224,7 +224,10 @@ var setFullSnap=tp.setFullSnap;
               );
             })}
             {snaps.length>0&&(
-              <button onClick={function(){setSnaps([]);}} style={{width:"100%",background:C.coral+"10",border:"1px solid "+C.coral+"25",color:C.coral,padding:"12px",borderRadius:14,fontSize:11,cursor:"pointer",fontWeight:700}}>
+              <button onClick={function(){
+  setSnaps([]);
+  try{localStorage.removeItem('tadawul_snapshots');}catch(e){}
+}} style={{width:"100%",background:C.coral+"10",border:"1px solid "+C.coral+"25",color:C.coral,padding:"12px",borderRadius:14,fontSize:11,cursor:"pointer",fontWeight:700}}>
                 حذف جميع اللقطات
               </button>
             )}
