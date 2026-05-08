@@ -365,7 +365,7 @@ import('./lib/registerSW').then(({ unregisterServiceWorker }) => {
         transform: 'translateX(-50%)',
         width: '100%',
         maxWidth: 480,
-        zIndex: 100,
+        zIndex: 50,
       }}>
         <TadawulNav />
       </div>
