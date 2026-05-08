@@ -22,8 +22,6 @@ export default function ChartScreen({ stk, onClose }) {
 
   // When stock changes after load → send postMessage
   useEffect(() => {
-  const handler = (e) => {
-    if (e.data === 'closeChart') onClose && onClose();
     if (e.data && e.data.type === 'TADAWUL_SNAPSHOT') {
   window.postMessage(e.data, '*');
 }
