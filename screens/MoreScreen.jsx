@@ -94,8 +94,12 @@ const { setTab } = useNav();
   const [ipoF, setIpoF] = useState("all");
   const [calF, setCalF] = useState("all");
   const [homeConf, setHomeConf] = useState({showOpportunity:true,showTopMovers:true,showSectorChart:true,showAdvanced:false});
-  const [snaps, setSnaps] = useState([
-  ]);
+  const [snaps, setSnaps] = useState(function(){
+  try{
+    var r=localStorage.getItem('tadawul_snapshots');
+    return r?JSON.parse(r):[];
+  }catch(e){return [];}
+});
   // ── ربط اللقطات القادمة من AppShell (iframe postMessage) ──
   useEffect(function() {
     if (!extSnaps || extSnaps.length === 0) return;
