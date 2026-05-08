@@ -366,6 +366,7 @@ import('./lib/registerSW').then(({ unregisterServiceWorker }) => {
         width: '100%',
         maxWidth: 480,
         zIndex: 50,
+        display: snapOpen ? 'none' : 'block',
       }}>
         <TadawulNav />
       </div>
