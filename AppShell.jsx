@@ -129,7 +129,7 @@ function Shell() {
   
   const wlSyms = React.useMemo(() => watchlist.map(w => w.sym), [watchlist]);
 
-  const [snapshots, setSnapshots] = React.useState([]);
+  const [snapOpen, setSnapOpen] = React.useState(false);
   const [aiAnalysis, setAiAnalysis] = React.useState(null);
 
   const COMM_DEFAULT = [
