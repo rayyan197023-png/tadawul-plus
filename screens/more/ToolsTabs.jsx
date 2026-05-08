@@ -279,10 +279,10 @@ style={{background:C.coral+"15",border:"1px solid "+C.coral+"30",color:C.coral,p
                     }
                   }
                   return(
-                    {viewSnap.chartImage&&(
-  <img src={viewSnap.chartImage} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"contain",zIndex:2}}/>
-)}
-<div style={{position:"absolute",inset:0}}>
+                    <div style={{position:"absolute",inset:0}}>
+  {viewSnap.chartImage&&(
+    <img src={viewSnap.chartImage} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"contain",zIndex:2}}/>
+  )}
   <svg width="100%" height="100%" viewBox="0 0 400 300" preserveAspectRatio="none" style={{display:"block",direction:"ltr"}}>
                         <defs>
                           <linearGradient id="fsg" x1="0" y1="0" x2="0" y2="1">
