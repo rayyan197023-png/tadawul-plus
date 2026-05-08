@@ -9749,17 +9749,15 @@ function doSnap(){
   var existing=JSON.parse(localStorage.getItem('tadawul_snapshots')||'[]');
   existing.unshift(snapData);
   localStorage.setItem('tadawul_snapshots', JSON.stringify(existing.slice(0,20)));
-  const t=document.getElementById('toast');
-  t.textContent='✅ حُفظت في localStorage';
-  t.style.display='block';
-  t.classList.add('show');
-  setTimeout(()=>{t.classList.remove('show');t.style.display='none';},3000);
+  const t2=document.getElementById('toast');
+  t2.textContent='✅ حُفظت';
+  t2.style.display='block';t2.classList.add('show');
+  setTimeout(()=>{t2.classList.remove('show');t2.style.display='none';},3000);
 }catch(ex){
-  const t=document.getElementById('toast');
-  t.textContent='❌ خطأ: '+ex.message;
-  t.style.display='block';
-  t.classList.add('show');
-  setTimeout(()=>{t.classList.remove('show');t.style.display='none';},3000);
+  const t2=document.getElementById('toast');
+  t2.textContent='❌ '+ex.message;
+  t2.style.display='block';t2.classList.add('show');
+  setTimeout(()=>{t2.classList.remove('show');t2.style.display='none';},3000);
 }
 
     window.postMessage(snapData,'*');
