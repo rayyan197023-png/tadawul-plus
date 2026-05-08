@@ -24,6 +24,9 @@ export default function ChartScreen({ stk, onClose }) {
   useEffect(() => {
   const handler = (e) => {
     if (e.data === 'closeChart') onClose && onClose();
+    if (e.data && e.data.type === 'TADAWUL_SNAPSHOT') {
+      window.parent.postMessage(e.data, '*');
+    }
   };
   window.addEventListener('message', handler);
   return () => window.removeEventListener('message', handler);
