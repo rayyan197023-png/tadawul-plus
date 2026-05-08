@@ -9723,7 +9723,7 @@ function doSnap(){
    t.classList.add('show');
    setTimeout(()=>{t.classList.remove('show');t.style.display='none';},2500);
    try{
-    const chartImage=tmp.toDataURL('image/png');
+    const chartImage=tmp.toDataURL('image/jpeg', 0.5);
     const snapData={
      type:'TADAWUL_SNAPSHOT',
      sym:state.stk?.sym||'',
