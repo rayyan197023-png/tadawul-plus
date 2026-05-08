@@ -180,6 +180,28 @@ var setFullSnap=tp.setFullSnap;
         style={{ width: '100%', borderRadius: 8, marginBottom: 8, cursor: 'pointer' }} 
       />
     )}
+    <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:8}}>
+  {snap.price&&<div style={{background:C.layer3,borderRadius:8,padding:'4px 10px',border:'1px solid '+C.line}}>
+    <span style={{fontSize:9,color:C.smoke}}>السعر </span>
+    <span style={{fontSize:11,fontWeight:800,color:C.snow,fontFamily:'monospace'}}>{snap.price}</span>
+  </div>}
+  {snap.per&&<div style={{background:C.layer3,borderRadius:8,padding:'4px 10px',border:'1px solid '+C.line}}>
+    <span style={{fontSize:9,color:C.smoke}}>الفريم </span>
+    <span style={{fontSize:11,fontWeight:800,color:C.electric,fontFamily:'monospace'}}>{snap.per}</span>
+  </div>}
+  {snap.rsi&&<div style={{background:C.layer3,borderRadius:8,padding:'4px 10px',border:'1px solid '+C.line}}>
+    <span style={{fontSize:9,color:C.smoke}}>RSI </span>
+    <span style={{fontSize:11,fontWeight:800,color:C.amber,fontFamily:'monospace'}}>{snap.rsi}</span>
+  </div>}
+  {snap.macd&&<div style={{background:C.layer3,borderRadius:8,padding:'4px 10px',border:'1px solid '+C.line}}>
+    <span style={{fontSize:9,color:C.smoke}}>MACD </span>
+    <span style={{fontSize:11,fontWeight:800,color:snap.macd>0?C.mint:C.coral,fontFamily:'monospace'}}>{snap.macd}</span>
+  </div>}
+  {snap.indicators&&snap.indicators.length>0&&<div style={{background:C.layer3,borderRadius:8,padding:'4px 10px',border:'1px solid '+C.line}}>
+    <span style={{fontSize:9,color:C.smoke}}>مؤشرات </span>
+    <span style={{fontSize:11,fontWeight:800,color:C.teal}}>{snap.indicators.join(' · ')}</span>
+  </div>}
+</div>
                       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                         <div style={{display:"flex",gap:6}}>
                           <button onClick={function(){setEditSnap(snap.id);}} style={{background:C.electric+"15",border:"1px solid "+C.electric+"30",color:C.electric,padding:"6px 10px",borderRadius:10,cursor:"pointer",fontSize:10,fontWeight:600}}>تعديل</button>
