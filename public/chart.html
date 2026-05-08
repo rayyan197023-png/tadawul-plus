@@ -9717,11 +9717,6 @@ function doSnap(){
   tc.fillText(`${sym} · ${per} · ${dateStr}`,(W-34)*dpr,(H-8)*dpr);
   tc.shadowBlur=0;
   tmp.toBlob(blob=>{
-   const url=URL.createObjectURL(blob);
-   const a=document.createElement('a');
-   a.href=url;
-   a.download='تداول_'+sym+'_'+per+'_'+now.toISOString().slice(0,10)+'.png';
-   a.click();URL.revokeObjectURL(url);
    const t=document.getElementById('toast');
    t.textContent='📸 تم حفظ الصورة';
    t.style.display='block';
