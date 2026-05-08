@@ -9741,6 +9741,7 @@ function doSnap(){
      pct:state.stk?.pct||0,
      rsi:window._lastRSI||null,
      macd:window._lastMACDSig||null,
+     indicators: state.inds||[],
      vol:state.stk?.vol||null,
      note:(state.stk?.name||'')+' — '+(state.per||''),
      chartImage,
