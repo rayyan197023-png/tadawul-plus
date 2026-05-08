@@ -167,7 +167,11 @@ var setFullSnap=tp.setFullSnap;
                         <button onClick={function(){setEditSnap(null);}} style={{background:C.layer3,border:"1px solid "+C.line,color:C.smoke,padding:"6px 12px",borderRadius:10,cursor:"pointer",fontSize:10}}>إلغاء</button>
                         <input defaultValue={snap.note} onBlur={function(e){
                           var val=e.target.value;
-                          setSnaps(function(p){return p.map(function(s){if(s.id===snap.id){var ns=Object.assign({},s);ns.note=val;return ns;}return s;});});
+                          setSnaps(function(p){
+  var updated=p.map(function(s){if(s.id===snap.id){var ns=Object.assign({},s);ns.note=val;return ns;}return s;});
+  try{localStorage.setItem('tadawul_snapshots',JSON.stringify(updated));}catch(e){}
+  return updated;
+});
                           setEditSnap(null);
                         }} autoFocus style={{flex:1,background:C.layer3,border:"1px solid "+C.teal+"55",borderRadius:10,padding:"6px 12px",color:C.snow,fontSize:11,outline:"none",direction:"rtl"}}/>
                       </div>
