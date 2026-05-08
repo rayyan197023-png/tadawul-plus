@@ -140,6 +140,17 @@ const { setTab } = useNav();
       setSub("snapshots");
     }
   }, [extSnaps]);
+useEffect(function(){
+    if(sub==="snapshots"){
+      try{
+        var r=localStorage.getItem('tadawul_snapshots');
+        if(r){
+          var fresh=JSON.parse(r);
+          setSnaps(fresh);
+        }
+      }catch(e){}
+    }
+  },[sub]);
 
   useEffect(function(){
     var t=setInterval(function(){setLiveTime(new Date());},1000);
