@@ -389,6 +389,7 @@ useEffect(function(){
     divCost:divCost, setDivCost:setDivCost,
     snaps: extSnaps && extSnaps.length > 0 ? extSnaps : snaps,
 setSnaps:setSnaps,
+snapOpen:snapOpen, setSnapOpen:setSnapOpen,
     fullSnap:fullSnap, setFullSnap:setFullSnap,
     editSnap:editSnap, setEditSnap:setEditSnap,
     snapTag:snapTag, setSnapTag:setSnapTag,
