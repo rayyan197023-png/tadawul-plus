@@ -210,7 +210,12 @@ var setFullSnap=tp.setFullSnap;
                             if(navigator.share){navigator.share({title:"لقطة تداول+",text:text});}
                             else if(navigator.clipboard){navigator.clipboard.writeText(text);}
                           }} style={{background:C.teal+"15",border:"1px solid "+C.teal+"30",color:C.teal,padding:"6px 10px",borderRadius:10,cursor:"pointer",fontSize:10,fontWeight:600}}>مشاركة</button>
-                          <button onClick={function(){setSnaps(function(p){return p.filter(function(s){return s.id!==snap.id;});});}} style={{background:C.coral+"15",border:"1px solid "+C.coral+"30",color:C.coral,padding:"6px 10px",borderRadius:10,cursor:"pointer",fontSize:10,fontWeight:600}}>حذف</button>
+                          <button onClick={function(){
+  var updated=snaps.filter(function(s){return s.id!==snap.id;});
+  setSnaps(updated);
+  try{localStorage.setItem('tadawul_snapshots',JSON.stringify(updated));}catch(e){}
+}}
+style={{background:C.coral+"15",border:"1px solid "+C.coral+"30",color:C.coral,padding:"6px 10px",borderRadius:10,cursor:"pointer",fontSize:10,fontWeight:600}}>حذف</button>
                         </div>
                         <div style={{textAlign:"right",minWidth:0}}>
                           <div style={{fontSize:12,fontWeight:600,color:C.snow,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:150}}>{snap.note}</div>
