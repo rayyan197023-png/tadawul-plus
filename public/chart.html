@@ -9738,8 +9738,7 @@ function doSnap(){
      note:(state.stk?.name||'')+' — '+(state.per||''),
      chartImage,
     };
-    window.parent.postMessage(snapData,'*');
-window.top.postMessage(snapData,'*');
+    window.postMessage(snapData,'*');
 
     window.dispatchEvent(new CustomEvent('tadawulSnapshot',{detail:snapData}));
    }catch(ex){}
