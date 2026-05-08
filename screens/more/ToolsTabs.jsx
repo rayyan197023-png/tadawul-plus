@@ -235,6 +235,15 @@ var setFullSnap=tp.setFullSnap;
               background:"#06080f",
               display:"flex",flexDirection:"column",
             }}>
+            <div style={{padding:'12px 16px',display:'flex',alignItems:'center',gap:12,background:'#06080f',borderBottom:'1px solid #1a2235'}}>
+  <button onClick={function(){setViewSnap(null);}} style={{width:40,height:40,borderRadius:12,background:'#131720',border:'1px solid #1a2235',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}>
+    <Ico k="back" color="#94a3b8" size={18}/>
+  </button>
+  <div>
+    <div style={{fontSize:14,fontWeight:900,color:'#f0f6ff'}}>{viewSnap.name} · {viewSnap.sym}</div>
+    <div style={{fontSize:10,color:'#4a6585'}}>{viewSnap.per} · {viewSnap.date}</div>
+  </div>
+</div>
               <div style={{flex:1,position:"relative",overflow:"hidden"}}>
                 {(function(){
                   var sd=viewSnap.spark;
