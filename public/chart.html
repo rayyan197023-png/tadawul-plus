@@ -9723,7 +9723,14 @@ function doSnap(){
    t.classList.add('show');
    setTimeout(()=>{t.classList.remove('show');t.style.display='none';},2500);
    try{
-    const chartImage=tmp.toDataURL('image/jpeg', 0.5);
+    let chartImage='';
+    try{ chartImage=tmp.toDataURL('image/jpeg',0.5); }catch(imgErr){
+      const t=document.getElementById('toast');
+      t.textContent='❌ toDataURL: '+imgErr.message;
+      t.style.display='block';t.classList.add('show');
+      setTimeout(()=>{t.classList.remove('show');t.style.display='none';},4000);
+      return;
+    }
     const snapData={
      type:'TADAWUL_SNAPSHOT',
      sym:state.stk?.sym||'',
