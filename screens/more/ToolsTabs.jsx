@@ -108,7 +108,7 @@ var setSnapOpen=tp.setSnapOpen;
                 sparkPts=sparkData.map(function(v,idx){return((idx/(sparkData.length-1))*300)+","+(90-((v-smn)/srng)*80);}).join(" ");
               }
               return(
-                <div key={snap.id} className="card-enter" onClick={function(){setViewSnap(snap);}} style={{
+                <div key={snap.id} className="card-enter" onClick={function(){setViewSnap(snap);setSnapOpen&&setSnapOpen(true);}} style={{
                   animationDelay:(i*0.06)+"s",
                   background:BOX,
                   border:"1px solid "+C.line,
