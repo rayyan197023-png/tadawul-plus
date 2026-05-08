@@ -245,7 +245,8 @@ style={{background:C.coral+"15",border:"1px solid "+C.coral+"30",color:C.coral,p
     position:"fixed",inset:0,zIndex:1000,
     background:"#06080f",
     display:"flex",flexDirection:"column",
-    }}>
+    paddingBottom:'env(safe-area-inset-bottom)',
+  }}>
             <div style={{padding:'12px 16px',display:'flex',alignItems:'center',gap:12,background:'#06080f',borderBottom:'1px solid #1a2235',zIndex:10,position:'relative'}}>
   <button onClick={function(){setViewSnap(null);}} style={{width:40,height:40,borderRadius:12,background:'#131720',border:'1px solid #1a2235',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}>
     <Ico k="back" color="#94a3b8" size={18}/>
