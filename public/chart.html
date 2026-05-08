@@ -9739,7 +9739,7 @@ function doSnap(){
      chartImage,
     };
     window.postMessage(snapData,'*');
-
+  
     window.dispatchEvent(new CustomEvent('tadawulSnapshot',{detail:snapData}));
    }catch(ex){}
   },'image/png');
