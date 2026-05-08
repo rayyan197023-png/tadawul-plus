@@ -9900,6 +9900,14 @@ function shareChart(){
 
 // Load shared chart from URL on startup
 function loadShareFromURL(){
+ try{
+  const params=new URLSearchParams(window.location.search);
+  const symParam=params.get('sym');
+  if(symParam){
+   const stk=STOCKS.find(s=>s.sym===symParam);
+   if(stk){state.stk=stk;}
+  }
+ }catch(e){}
  const hash=window.location.hash;
  if(!hash.startsWith('#share='))return;
  try{
