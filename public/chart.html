@@ -9738,6 +9738,12 @@ function doSnap(){
      note:(state.stk?.name||'')+' — '+(state.per||''),
      chartImage,
     };
+    try{
+  var existing=JSON.parse(localStorage.getItem('tadawul_snapshots')||'[]');
+  existing.unshift(snapData);
+  localStorage.setItem('tadawul_snapshots', JSON.stringify(existing.slice(0,20)));
+}catch(ex){}
+
     window.postMessage(snapData,'*');
   
     window.dispatchEvent(new CustomEvent('tadawulSnapshot',{detail:snapData}));
