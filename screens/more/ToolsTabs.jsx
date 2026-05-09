@@ -298,10 +298,6 @@ style={{background:C.coral+"15",border:"1px solid "+C.coral+"30",color:C.coral,p
         </div>
   );
 }
-          <div style={{height:20}}/>
-        </div>
-  );
-}
 
 function SettingsTab(props) {
   var tp=props.p?props.p:props;
