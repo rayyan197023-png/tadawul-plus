@@ -266,72 +266,38 @@ style={{background:C.coral+"15",border:"1px solid "+C.coral+"30",color:C.coral,p
       </div>
     </div>
               <div style={{flex:1,position:"relative",overflow:"hidden"}}>
-                {(function(){
-                  var sd=viewSnap.spark;
-                  var pts="", dotEls=[], gridEls=[];
-                  if(sd&&sd.length>=2){
-                    var smn=Math.min.apply(null,sd), smx=Math.max.apply(null,sd), sr=smx-smn||1;
-                    var pad=sr*0.1;
-                    var smn2=smn-pad, smx2=smx+pad, sr2=smx2-smn2;
-                    pts=sd.map(function(v,i){
-                      return (30+(i/(sd.length-1))*340)+","+(270-((v-smn2)/sr2)*240+15);
-                    }).join(" ");
-                    for(var di=0;di<sd.length;di++){
-                      var dcx=30+(di/(sd.length-1))*340;
-                      var dcy=270-((sd[di]-smn2)/sr2)*240+15;
-                      var isLast=di===sd.length-1;
-                      dotEls.push(<circle key={di} cx={dcx} cy={dcy} r={isLast?7:2} fill={isLast?viewSnap.color:viewSnap.color+"66"} stroke={isLast?"#06080f":"none"} strokeWidth={isLast?2:0} vectorEffect="non-scaling-stroke"/>);
-                    }
-                    for(var gi=0;gi<=4;gi++){
-                      var gy=15+((4-gi)/4)*255;
-                      gridEls.push(<line key={gi} x1="0" y1={gy} x2="400" y2={gy} stroke="rgba(255,255,255,0.05)" strokeWidth="1" vectorEffect="non-scaling-stroke"/>);
-                    }
-                  }
-                  return(
-                    <div style={{position:"absolute",inset:0}}>
   {viewSnap.chartImage&&(
-    <img src={viewSnap.chartImage} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"contain",zIndex:2}}/>
+    <img src={viewSnap.chartImage} style={{width:"100%",height:"100%",objectFit:"contain"}}/>
   )}
-                      <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"0 20px 36px",zIndex:3}}>
-                        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:12}}>
-                          <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
-                            {viewSnap.rsi&&<div style={{background:"rgba(6,8,15,0.88)",borderRadius:9,padding:"6px 12px",border:"1px solid rgba(255,255,255,0.1)"}}><span style={{fontSize:8,color:C.smoke}}>RSI </span><span className="num" style={{fontSize:14,fontWeight:900,color:viewSnap.rsi<30?C.mint:viewSnap.rsi>70?C.coral:C.amber}}>{viewSnap.rsi}</span></div>}
-                            {viewSnap.macd&&<div style={{background:"rgba(6,8,15,0.88)",borderRadius:9,padding:"6px 12px",border:"1px solid rgba(255,255,255,0.1)"}}><span style={{fontSize:10,fontWeight:700,color:viewSnap.macd==="صعودي"?C.mint:C.coral}}>MACD {viewSnap.macd}</span></div>}
-                            {viewSnap.vol&&<div style={{background:"rgba(6,8,15,0.88)",borderRadius:9,padding:"6px 12px",border:"1px solid rgba(255,255,255,0.1)"}}><span className="num" style={{fontSize:10,color:C.smoke}}>{viewSnap.vol}</span></div>}
-                          </div>
-                          <div style={{textAlign:"right"}}>
-                            <div className="num" style={{fontSize:28,fontWeight:900,color:C.snow,lineHeight:1}}>{viewSnap.snapPrice}</div>
-                            <div style={{fontSize:9,color:C.smoke,marginTop:2}}>سعر اللقطة · ر.س</div>
-                          </div>
-                        </div>
-                        {viewSnap.note&&(
-                          <div style={{background:"rgba(6,8,15,0.88)",border:"1px solid "+viewSnap.color+"33",borderRadius:14,padding:"10px 14px",marginBottom:12}}>
-                            <div style={{fontSize:8,color:viewSnap.color,fontWeight:700,marginBottom:3}}>الملاحظة</div>
-                            <div style={{fontSize:12,color:C.snow,lineHeight:1.6}}>{viewSnap.note}</div>
-                            <div style={{fontSize:8,color:C.smoke,marginTop:4}}>{viewSnap.date}</div>
-                          </div>
-                        )}
-                        <div style={{display:"flex",gap:8}}>
-                          <button onClick={function(){
-                            var text="[لقطة] "+viewSnap.name+" ("+viewSnap.sym+")\nالسعر: "+viewSnap.snapPrice+" ر.س\n"+viewSnap.note;
-                            if(navigator.share){navigator.share({title:"لقطة تداول+",text:text});}
-                            else if(navigator.clipboard){navigator.clipboard.writeText(text);}
-                          }} style={{flex:1,padding:"13px",borderRadius:14,background:"linear-gradient(135deg,"+viewSnap.color+"33,"+viewSnap.color+"18)",border:"1px solid "+viewSnap.color+"55",color:viewSnap.color,fontSize:13,cursor:"pointer",fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
-                            <Ico k="share" color={viewSnap.color} size={16}/>
-                            مشاركة اللقطة
-                          </button>
-                          <button onClick={function(){setEditSnap(viewSnap.id);setViewSnap(null);}} style={{padding:"13px 18px",borderRadius:14,background:"rgba(6,8,15,0.88)",border:"1px solid rgba(255,255,255,0.1)",color:C.smoke,fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",gap:5}}>
-                            <Ico k="edit" color={C.smoke} size={15}/>
-                            تعديل
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }())}
-              </div>
-            </div>
+  <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"0 20px 16px",zIndex:3}}>
+    {viewSnap.note&&(
+      <div style={{background:"rgba(6,8,15,0.88)",border:"1px solid "+viewSnap.color+"33",borderRadius:14,padding:"10px 14px",marginBottom:8}}>
+        <div style={{fontSize:8,color:viewSnap.color,fontWeight:700,marginBottom:3}}>الملاحظة</div>
+        <div style={{fontSize:12,color:"#f0f6ff",lineHeight:1.6}}>{viewSnap.note}</div>
+        <div style={{fontSize:8,color:"#4a6585",marginTop:4}}>{viewSnap.date}</div>
+      </div>
+    )}
+    <div style={{display:"flex",gap:8}}>
+      <button onClick={function(){
+        var text="[لقطة] "+viewSnap.name+" ("+viewSnap.sym+")\nالسعر: "+viewSnap.snapPrice+" ر.س\n"+viewSnap.note;
+        if(navigator.share){navigator.share({title:"لقطة تداول+",text:text});}
+        else if(navigator.clipboard){navigator.clipboard.writeText(text);}
+      }} style={{flex:1,padding:"13px",borderRadius:14,background:"linear-gradient(135deg,"+viewSnap.color+"33,"+viewSnap.color+"18)",border:"1px solid "+viewSnap.color+"55",color:viewSnap.color,fontSize:13,cursor:"pointer",fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
+        <Ico k="share" color={viewSnap.color} size={16}/>
+        مشاركة اللقطة
+      </button>
+      <button onClick={function(){setEditSnap(viewSnap.id);setViewSnap(null);}} style={{padding:"13px 18px",borderRadius:14,background:"rgba(6,8,15,0.88)",border:"1px solid rgba(255,255,255,0.1)",color:"#94a3b8",fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",gap:5}}>
+        <Ico k="edit" color="#94a3b8" size={15}/>
+        تعديل
+      </button>
+    </div>
+  </div>
+</div>
           )}
+          <div style={{height:20}}/>
+        </div>
+  );
+}
           <div style={{height:20}}/>
         </div>
   );
