@@ -76,7 +76,7 @@ var setSnapOpen=tp.setSnapOpen;
   });
   if(snapSort==="oldest") filteredSnaps=filteredSnaps.slice().reverse();
   return(
-        <div style={{position:"relative",zIndex:1}}>
+        <div style={{position:"relative",zIndex:1,overflow:viewSnap?'hidden':'visible'}}>
           <div style={{padding:"10px 16px 6px",borderBottom:"1px solid "+C.line,display:"flex",gap:8,alignItems:"center"}}>
             <input value={snapSearch} onChange={function(e){setSnapSearch(e.target.value);}} onKeyDown={function(e){if(e.key==="Enter"){e.target.blur();}}}
               placeholder="بحث في اللقطات..."
