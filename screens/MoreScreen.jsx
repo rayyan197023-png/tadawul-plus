@@ -387,6 +387,7 @@ useEffect(function(){
     divShares:divShares, setDivShares:setDivShares,
     divCost:divCost, setDivCost:setDivCost,
     snaps: extSnaps && extSnaps.length > 0 ? extSnaps : snaps,
+    snapOpen:snapOpen, setSnapOpen:setSnapOpen,
 setSnaps:setSnaps,
     fullSnap:fullSnap, setFullSnap:setFullSnap,
     editSnap:editSnap, setEditSnap:setEditSnap,
