@@ -61,6 +61,7 @@ const { setTab } = useNav();
 
   // ── states ──
   const [sub, setSub] = useState("");
+  const [snapOpen, setSnapOpen] = useState(false);
   var sFL=useState(null); var flashCard=sFL[0]; var setFlashCard=sFL[1];
   var sWL=useState(function(){
     try{var r=window.localStorage.getItem("tadawul_watchlist");return r?JSON.parse(r):WATCHLIST_DEFAULT;}catch(e){return WATCHLIST_DEFAULT;}
