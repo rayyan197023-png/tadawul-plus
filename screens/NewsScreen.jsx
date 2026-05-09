@@ -503,7 +503,7 @@ export default function NewsScreen() {
   }, [handleClose]);
 
   const filtered = useMemo(
-    () => activeTab === "كل الأخبار" ? NEWS : NEWS.filter(n => n.cat === activeTab),
+    () => activeTab === "كل الأخبار" ? MOCK_NEWS : MOCK_NEWS.filter(n => n.cat === activeTab),
     [activeTab]
   );
 
