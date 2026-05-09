@@ -338,6 +338,8 @@ import('./lib/registerSW').then(({ unregisterServiceWorker }) => {
               ? <ActiveScreen
                   snapshots={snapshots}
                   setSnapshots={setSnapshots}
+                  snapOpen={snapOpen}
+                  setSnapOpen={setSnapOpen}
                   watchlist={watchlist}
                   setWatchlist={setWatchlist}
                   commData={commData}
