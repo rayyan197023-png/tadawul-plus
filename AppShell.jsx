@@ -129,8 +129,9 @@ function Shell() {
   
   const wlSyms = React.useMemo(() => watchlist.map(w => w.sym), [watchlist]);
 
-  const [snapOpen, setSnapOpen] = React.useState(false);
-  const [aiAnalysis, setAiAnalysis] = React.useState(null);
+  const [snapshots, setSnapshots] = React.useState([]);
+const [snapOpen, setSnapOpen] = React.useState(false);
+const [aiAnalysis, setAiAnalysis] = React.useState(null);
 
   const COMM_DEFAULT = [
     { sym: 'خام برنت', cat: 'نفط',    price: 68.93, ch: -6.35, pct: -8.39, color: '#f59e0b' },
