@@ -307,13 +307,7 @@ style={{width:40,height:40,borderRadius:12,background:'#131720',border:'1px soli
                       </svg>
                       <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom,rgba(6,8,15,0.72) 0%,transparent 35%,transparent 55%,rgba(6,8,15,0.9) 100%)"}}/>
                       <div style={{position:"absolute",top:0,left:0,right:0,padding:"52px 20px 0",display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-                        <button onClick={function(){
-  setViewSnap(null);
-  try{var n=document.getElementById('tadawul-nav');if(n)n.style.display='block';}catch(e){}
-}}
-style={{width:42,height:42,borderRadius:12,background:"rgba(6,8,15,0.8)",border:"1px solid rgba(255,255,255,0.12)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
-                          <Ico k="back" color={C.snow} size={18}/>
-                        </button>
+                        
                         <div style={{textAlign:"right"}}>
                           <div style={{display:"inline-block",background:viewSnap.color+"33",border:"1px solid "+viewSnap.color+"66",borderRadius:8,padding:"3px 10px",marginBottom:6}}>
                             <span style={{fontSize:9,color:viewSnap.color,fontWeight:800}}>{viewSnap.tag||"لقطة"}</span>
