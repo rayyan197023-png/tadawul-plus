@@ -361,7 +361,7 @@ import('./lib/registerSW').then(({ unregisterServiceWorker }) => {
       </div>
 
       {/* Bottom Navigation */}
-      <div style={{
+      <div id="tadawul-nav" style={{
         position: 'fixed',
         bottom: 0,
         left: '50%',
