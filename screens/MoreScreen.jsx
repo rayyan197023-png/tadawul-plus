@@ -31,7 +31,6 @@ import { SnapshotsTab, SettingsTab, ProfitCalc, CompareView, AlertsPanel, Watchl
 
 export default function MoreScreen({
   snapshots: extSnaps, setSnapshots: setExtSnaps,
-  snapOpen: extSnapOpen, setSnapOpen: setExtSnapOpen,
   watchlist: extWatchlist, setWatchlist: setExtWatchlist,
   commData: extCommData, setCommData: setExtCommData,
 } = {}) {
