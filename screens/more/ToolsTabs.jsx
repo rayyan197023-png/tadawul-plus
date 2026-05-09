@@ -304,7 +304,7 @@ style={{background:C.coral+"15",border:"1px solid "+C.coral+"30",color:C.coral,p
                         {pts&&<polyline points={pts} fill="none" stroke={viewSnap.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke"/>}
                         {dotEls}
                       </svg>
-                      <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"0 20px 36px"}}>
+                      <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"0 20px 36px",zIndex:3}}>
                         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:12}}>
                           <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
                             {viewSnap.rsi&&<div style={{background:"rgba(6,8,15,0.88)",borderRadius:9,padding:"6px 12px",border:"1px solid rgba(255,255,255,0.1)"}}><span style={{fontSize:8,color:C.smoke}}>RSI </span><span className="num" style={{fontSize:14,fontWeight:900,color:viewSnap.rsi<30?C.mint:viewSnap.rsi>70?C.coral:C.amber}}>{viewSnap.rsi}</span></div>}
