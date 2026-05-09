@@ -252,6 +252,8 @@ style={{background:C.coral+"15",border:"1px solid "+C.coral+"30",color:C.coral,p
     background:"#06080f",
     display:"flex",flexDirection:"column",
     paddingBottom:'env(safe-area-inset-bottom)',
+    touchAction:'none',
+    overscrollBehavior:'none',
     }}>
     <div style={{padding:'12px 16px',display:'flex',alignItems:'center',gap:12,background:'#06080f',borderBottom:'1px solid #1a2235',zIndex:10,position:'relative'}}>
       <button onClick={function(){
