@@ -292,18 +292,6 @@ style={{background:C.coral+"15",border:"1px solid "+C.coral+"30",color:C.coral,p
   {viewSnap.chartImage&&(
     <img src={viewSnap.chartImage} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"contain",zIndex:2}}/>
   )}
-  <svg width="100%" height="100%" viewBox="0 0 400 300" preserveAspectRatio="none" style={{display:"block",direction:"ltr"}}>
-                        <defs>
-                          <linearGradient id="fsg" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor={viewSnap.color} stopOpacity="0.35"/>
-                            <stop offset="100%" stopColor={viewSnap.color} stopOpacity="0"/>
-                          </linearGradient>
-                        </defs>
-                        {gridEls}
-                        {pts&&<polygon points={"0,300 "+pts+" 400,300"} fill="url(#fsg)" stroke="none"/>}
-                        {pts&&<polyline points={pts} fill="none" stroke={viewSnap.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke"/>}
-                        {dotEls}
-                      </svg>
                       <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"0 20px 36px",zIndex:3}}>
                         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:12}}>
                           <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
