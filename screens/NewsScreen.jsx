@@ -386,6 +386,7 @@ export default function NewsScreen() {
   const [stockPopup,   setStockPopup]   = useState(null);
   const [sortBy,       setSortBy]       = useState("newest");
   const [liveText,     setLiveText]     = useState("");
+  const [NEWS, setNEWS] = useState(MOCK_NEWS);
 
   const { news: selectedNews, feedbackKey, closing } = article;
 
