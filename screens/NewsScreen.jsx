@@ -393,6 +393,13 @@ export default function NewsScreen() {
   const tabsRef           = useRef(null);
   const articleRef        = useRef(null);
   const tabTimerRef       = useRef(null);
+  const fetchNews = useCallback(async () => {
+  // عند ربط API أضف هنا:
+  // const data = await newsApi.getLatest();
+  // setNEWS(data);
+}, []);
+
+useEffect(() => { fetchNews(); }, [fetchNews]);
   const tabScrollTimerRef = useRef(null);
   const copyTimerRef      = useRef(null);
   const liveTimerRef      = useRef(null);
