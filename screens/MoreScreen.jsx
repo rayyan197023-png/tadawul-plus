@@ -58,7 +58,7 @@ const { setTab } = useNav();
     scrollRef.current?.scrollTo({ top:0, behavior:'smooth' });
     haptic.tap();
   }, [haptic]);
-
+ 
   // ── states ──
   const [sub, setSub] = useState("");
   const [snapOpen, setSnapOpen] = useState(false);
