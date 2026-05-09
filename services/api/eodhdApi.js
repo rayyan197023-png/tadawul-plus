@@ -8,7 +8,7 @@
  * التوثيق: https://eodhd.com/financial-apis/
  */
 
-import config from '../../config';
+const API_KEY = process.env.NEXT_PUBLIC_EODHD_KEY ?? '';
 
 const BASE_URL = 'https://eodhd.com/api';
 const API_KEY  = config.eodhdApiKey;
