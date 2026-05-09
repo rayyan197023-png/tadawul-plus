@@ -11,7 +11,6 @@
 const API_KEY = process.env.NEXT_PUBLIC_EODHD_KEY ?? '';
 
 const BASE_URL = 'https://eodhd.com/api';
-const API_KEY  = config.eodhdApiKey;
 const EXCHANGE = 'SR';
 
 const hasKey = () => !!(API_KEY && API_KEY.length > 10);
