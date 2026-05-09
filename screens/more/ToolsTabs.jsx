@@ -305,16 +305,6 @@ style={{background:C.coral+"15",border:"1px solid "+C.coral+"30",color:C.coral,p
                         {dotEls}
                       </svg>
                       <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom,rgba(6,8,15,0.72) 0%,transparent 35%,transparent 55%,rgba(6,8,15,0.9) 100%)"}}/>
-                      <div style={{position:"absolute",top:0,left:0,right:0,padding:"52px 20px 0",display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-                        
-                        <div style={{textAlign:"right"}}>
-                          <div style={{display:"inline-block",background:viewSnap.color+"33",border:"1px solid "+viewSnap.color+"66",borderRadius:8,padding:"3px 10px",marginBottom:6}}>
-                            <span style={{fontSize:9,color:viewSnap.color,fontWeight:800}}>{viewSnap.tag||"لقطة"}</span>
-                          </div>
-                          <div className="num-lg" style={{fontSize:42,fontWeight:900,color:viewSnap.color,lineHeight:1,display:"block"}}>{viewSnap.sym}</div>
-                          <div style={{fontSize:13,color:C.mist,marginTop:3}}>{viewSnap.name}</div>
-                        </div>
-                      </div>
                       <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"0 20px 36px"}}>
                         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:12}}>
                           <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
