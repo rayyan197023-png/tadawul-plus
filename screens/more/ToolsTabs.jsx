@@ -252,17 +252,19 @@ style={{background:C.coral+"15",border:"1px solid "+C.coral+"30",color:C.coral,p
     background:"#06080f",
     display:"flex",flexDirection:"column",
     paddingBottom:'env(safe-area-inset-bottom)',
-  }}>
-  try{var n=document.getElementById('tadawul-nav');if(n)n.style.display='block';}catch(e){}
-}}
-style={{width:40,height:40,borderRadius:12,background:'#131720',border:'1px solid #1a2235',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}>
-    <Ico k="back" color="#94a3b8" size={18}/>
-  </button>
-  <div>
-    <div style={{fontSize:14,fontWeight:900,color:'#f0f6ff'}}>{viewSnap.name} · {viewSnap.sym}</div>
-    <div style={{fontSize:10,color:'#4a6585'}}>{viewSnap.per} · {viewSnap.date}</div>
-  </div>
-</div>
+    }}>
+    <div style={{padding:'12px 16px',display:'flex',alignItems:'center',gap:12,background:'#06080f',borderBottom:'1px solid #1a2235',zIndex:10,position:'relative'}}>
+      <button onClick={function(){
+        setViewSnap(null);
+        try{var n=document.getElementById('tadawul-nav');if(n)n.style.display='block';}catch(e){}
+      }} style={{width:40,height:40,borderRadius:12,background:'#131720',border:'1px solid #1a2235',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}>
+        <Ico k="back" color="#94a3b8" size={18}/>
+      </button>
+      <div>
+        <div style={{fontSize:14,fontWeight:900,color:'#f0f6ff'}}>{viewSnap.name} · {viewSnap.sym}</div>
+        <div style={{fontSize:10,color:'#4a6585'}}>{viewSnap.per} · {viewSnap.date}</div>
+      </div>
+    </div>
               <div style={{flex:1,position:"relative",overflow:"hidden"}}>
                 {(function(){
                   var sd=viewSnap.spark;
