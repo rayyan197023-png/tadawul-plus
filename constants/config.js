@@ -45,7 +45,7 @@ const config = {
 
   // ── EODHD Market Data (production)
   // Get key: https://eodhd.com → free tier: 20 requests/day
-  eodhdApiKey: process.env.NEXT_PUBLIC_EODHD_KEY ?? '69bf5e872dcbf8.52356857',
+  eodhdApiKey: process.env.NEXT_PUBLIC_EODHD_KEY ?? '',
   eodhdBaseUrl: 'https://eodhd.com/api',
 
   // ── Legacy / alternative data source
