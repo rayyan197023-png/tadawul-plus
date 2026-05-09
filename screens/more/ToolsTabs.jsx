@@ -304,7 +304,6 @@ style={{background:C.coral+"15",border:"1px solid "+C.coral+"30",color:C.coral,p
                         {pts&&<polyline points={pts} fill="none" stroke={viewSnap.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke"/>}
                         {dotEls}
                       </svg>
-                      <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom,rgba(6,8,15,0.72) 0%,transparent 35%,transparent 55%,rgba(6,8,15,0.9) 100%)"}}/>
                       <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"0 20px 36px"}}>
                         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:12}}>
                           <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
