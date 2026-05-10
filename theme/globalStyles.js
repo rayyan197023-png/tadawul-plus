@@ -166,6 +166,17 @@ export function getGlobalStyles() {
       display:flex; align-items:center; justify-content:center;
       z-index:50; backdrop-filter:blur(8px);
     }
+/* ── Light Theme ────────────────────────────────── */
+[data-theme="light"] {
+  background: #f0f2f5;
+  color: #0d1117;
+}
+
+[data-theme="light"] body,
+[data-theme="light"] #root {
+  background: #f0f2f5;
+  color: #0d1117;
+}
 
 `;
 }
