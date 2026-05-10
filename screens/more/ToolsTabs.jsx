@@ -385,7 +385,13 @@ function SettingsTab(props) {
               </div>
               <div style={{display:"flex",gap:10}}>
                 {fontSizeOpts.map(function(f){return(
-                  <button key={f.k} onClick={function(){setFontSize(f.k);}} style={{
+                  <button key={f.k} onClick={function(){
+  setFontSize(f.k);
+  var scales={small:'0.9',medium:'1',large:'1.12'};
+  document.documentElement.style.setProperty('--font-scale', scales[f.k]);
+  try{localStorage.setItem('tadawul_font_size', f.k);}catch(e){}
+}}
+ style={{
                     flex:1,padding:"12px 6px",borderRadius:14,
                     border:"2px solid "+(fontSize===f.k?C.electric+"66":C.line),
                     background:fontSize===f.k?"linear-gradient(135deg,"+C.electric+"22,"+C.electric+"11)":C.layer3,
