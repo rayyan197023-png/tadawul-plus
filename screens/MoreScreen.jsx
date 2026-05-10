@@ -114,7 +114,9 @@ const { setTab } = useNav();
   const [editSnap, setEditSnap] = useState(null);
   const [fullSnap, setFullSnap] = useState(null);
   const [snapTag, setSnapTag] = useState("الكل");
-  const [fontSize, setFontSize] = useState("medium");
+  const [fontSize, setFontSize] = useState(function(){
+  try{return localStorage.getItem('tadawul_font_size')||'medium';}catch(e){return 'medium';}
+});
   var fontScale={small:0.9,medium:1,large:1.12};
   const [_localCommData, _setLocalCommData] = useState(COMM);
   // ── استخدام commData من AppShell إذا متاحة (أسعار حية) ──
