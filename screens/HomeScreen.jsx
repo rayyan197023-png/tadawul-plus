@@ -2117,6 +2117,7 @@ function calcSectorFlows(liveStocks=[]) {
     // أكاديمياً أدق من الوزن بعدد الأسهم
     const totalValue  = secStocks.reduce((s, st) => s + normVol(st) * st.p, 0) || 1;
     const weightedPct = secStocks.reduce((s, st) => s + st.pct * normVol(st) * st.p, 0) / totalValue;
+const safeWeightedPct = isNaN(weightedPct) ? sec.pct : weightedPct;
 
     // ── Dominance: نسبة DPI الداخل من التدفق الفعّال ──
     const dominance = (dpiIn / activeFlow) * 100;
