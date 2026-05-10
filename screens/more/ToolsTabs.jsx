@@ -357,7 +357,11 @@ function SettingsTab(props) {
   var fontSizeOpts=[{k:"small",l:"صغير",s:11},{k:"medium",l:"متوسط",s:14},{k:"large",l:"كبير",s:17}];
   var sThm=useState("dark"); var theme=sThm[0]; var setTheme=sThm[1];
   var isLight=theme==="light";
-  var changeTheme=function(t){setTheme(t);try{window.storage&&window.storage.set("user_theme",t);}catch(e){}};
+  var changeTheme=function(t){
+  setTheme(t);
+  try{localStorage.setItem('tadawul_theme', t);}catch(e){}
+  document.documentElement.setAttribute('data-theme', t);
+};
   var sNP=useState(false); var showNotifPanel=sNP[0]; var setShowNotifPanel=sNP[1];
   var sRP=useState(false); var showRatingPanel=sRP[0]; var setShowRatingPanel=sRP[1];
   var sRated=useState(0); var ratingVal=sRated[0]; var setRatingVal=sRated[1];
