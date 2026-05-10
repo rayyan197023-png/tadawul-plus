@@ -433,6 +433,9 @@ export default function AppShell() {
     if (document.getElementById(id)) return;
     const el = document.createElement('style');
     el.id = id;
+    const savedFont = localStorage.getItem('tadawul_font_size') || 'medium';
+const fontScale = { small: '0.9', medium: '1', large: '1.12' };
+document.documentElement.style.setProperty('--font-scale', fontScale[savedFont] || '1');
     el.textContent = getGlobalStyles();
     document.head.appendChild(el);
     return () => el.remove();
