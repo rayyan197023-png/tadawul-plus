@@ -2137,7 +2137,7 @@ const safeWeightedPct = isNaN(weightedPct) ? sec.pct : weightedPct;
       flowRatio:  +frActive.toFixed(2),       // للتوافق مع الـ UI
       dominance:  +dominance.toFixed(1),
       const safeWeightedPct = isNaN(weightedPct) ? sec.pct : weightedPct;
-      weightedPct: +weightedPct.toFixed(2),
+      weightedPct: +safeWeightedPct.toFixed(2),
       flowDir:  netDPI >= 0 ? "دخول" : "خروج",
       flowCol:  netDPI >= 0 ? G : R,
       volume:   secStocks.reduce((s, st) => s + st.v, 0),
