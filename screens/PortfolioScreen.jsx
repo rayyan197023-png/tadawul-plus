@@ -4010,7 +4010,7 @@ return result;
                 <span style={{fontSize:11,fontWeight:700,color:C.electric}}>راس المال: {(capital/1000).toFixed(0)}K ر</span>
               </div>
             </div>
-            <div style={{overflowY:"auto",padding:"14px 20px 100px",flex:1}}>
+            <div style={{overflowY:"auto",padding:"14px 20px 200px",flex:1}}>
               <div style={{marginBottom:14}}>
                 <div style={{fontSize:11,color:C.smoke,fontWeight:700,letterSpacing:.5,marginBottom:8}}>اختر السهم</div>
                 <div style={{display:"flex",alignItems:"center",gap:6,background:C.layer3,border:"1px solid "+C.line,borderRadius:10,padding:"8px 10px",marginBottom:8}}>
