@@ -3984,7 +3984,7 @@ return result;
 
       {sheet&&(
         <div style={{position:"fixed",inset:0,zIndex:200,background:"rgba(6,8,15,.88)",backdropFilter:"blur(14px)",display:"flex",alignItems:"flex-end",justifyContent:"center",animation:"fadeIn .25s ease both"}} onClick={function(){setSheet(false);}}>
-          <div onClick={function(e){e.stopPropagation();}} style={{width:"100%",maxWidth:430,background:"linear-gradient(180deg,"+C.layer2+" 0%,"+C.deep+" 100%)",borderRadius:"24px 24px 0 0",border:"1px solid "+C.line,borderBottom:"none",maxHeight:"92vh",height:"92vh",height:"100vh",height:"82vh",display:"flex",flexDirection:"column",boxShadow:"0 -24px 64px rgba(0,0,0,.8), inset 0 1px 0 "+C.layer3,animation:"slideUp .38s cubic-bezier(.16,1,.3,1) both"}}>
+          <div onClick={function(e){e.stopPropagation();}} style={{width:"100%",maxWidth:430,background:"linear-gradient(180deg,"+C.layer2+" 0%,"+C.deep+" 100%)",borderRadius:"24px 24px 0 0",marginTop:"auto",border:"1px solid "+C.line,borderBottom:"none",maxHeight:"92vh",height:"92vh",height:"100vh",height:"82vh",display:"flex",flexDirection:"column",boxShadow:"0 -24px 64px rgba(0,0,0,.8), inset 0 1px 0 "+C.layer3,animation:"slideUp .38s cubic-bezier(.16,1,.3,1) both"}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 16px 0"}}>
               <button onClick={function(){setSheet(false);}} style={{width:44,height:44,borderRadius:12,border:"1px solid "+C.line,background:C.layer3,color:C.mist,fontSize:18,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><SvgIcon name="stop" size={16} color={C.smoke}/></button>
               <div style={{width:40,height:4,borderRadius:2,background:C.ash}}/>
