@@ -168,8 +168,14 @@ export function getGlobalStyles() {
     }
 /* ── Light Theme ────────────────────────────────── */
 [data-theme="light"] {
-  background: #f0f2f5;
-  color: #0d1117;
+  filter: invert(1) hue-rotate(180deg);
+}
+
+[data-theme="light"] img,
+[data-theme="light"] video,
+[data-theme="light"] canvas,
+[data-theme="light"] svg {
+  filter: invert(1) hue-rotate(180deg);
 }
 
 [data-theme="light"] body,
