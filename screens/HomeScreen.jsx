@@ -2136,7 +2136,6 @@ const safeWeightedPct = isNaN(weightedPct) ? sec.pct : weightedPct;
       frTurnover: +frTurnover.toFixed(3),     // نسبة مخففة
       flowRatio:  +frActive.toFixed(2),       // للتوافق مع الـ UI
       dominance:  +dominance.toFixed(1),
-      const safeWeightedPct = isNaN(weightedPct) ? sec.pct : weightedPct;
       weightedPct: +safeWeightedPct.toFixed(2),
       flowDir:  netDPI >= 0 ? "دخول" : "خروج",
       flowCol:  netDPI >= 0 ? G : R,
