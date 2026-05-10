@@ -331,7 +331,8 @@ import('./lib/registerSW').then(({ unregisterServiceWorker }) => {
         overflowY: 'scroll',
         overflowX: 'hidden',
         WebkitOverflowScrolling: 'touch',
-        paddingBottom: 100,
+        paddingBottom: 'calc(100px + env(safe-area-inset-bottom, 0px))',
+paddingTop: 'env(safe-area-inset-top, 0px)',
       }}>
         <ErrorBoundary label="الشاشة الرئيسية">
           <Suspense key={activeTab} fallback={<Loader />}>
