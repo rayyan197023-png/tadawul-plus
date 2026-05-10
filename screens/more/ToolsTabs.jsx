@@ -355,7 +355,9 @@ function SettingsTab(props) {
   var liveTime=tp.liveTime; var commLastUpdate=tp.commLastUpdate;
   var rankTick=tp.rankTick;
   var fontSizeOpts=[{k:"small",l:"صغير",s:11},{k:"medium",l:"متوسط",s:14},{k:"large",l:"كبير",s:17}];
-  var sThm=useState("dark"); var theme=sThm[0]; var setTheme=sThm[1];
+  var sThm=useState(function(){
+  try{return localStorage.getItem('tadawul_theme')||'dark';}catch(e){return 'dark';}
+}); var theme=sThm[0]; var setTheme=sThm[1];
   var isLight=theme==="light";
   var changeTheme=function(t){
   setTheme(t);
