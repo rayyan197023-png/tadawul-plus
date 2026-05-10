@@ -20,7 +20,7 @@ export function getGlobalStyles() {
       background: ${colors.bg};
       color: ${colors.textPrimary};
       font-family: ${typography.fontFamily};
-      font-size: ${typography.base}px;
+      font-size: calc(${typography.base}px * var(--font-scale, 1));
       direction: rtl;
       overflow: hidden;
     }
