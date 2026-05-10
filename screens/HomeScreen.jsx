@@ -2077,12 +2077,12 @@ function calcSectorFlows(liveStocks=[]) {
 
   // حساب الانحراف المعياري لـ FR_active لتصنيف ديناميكي
   // نحسبه في مرحلة ثانية بعد تجميع كل القطاعات
-  const rawResults = SECTORS_DATA.map(sec => {
+ const rawResults = SECTORS_DATA.map(sec => {
     const secStocks = STOCKS.filter(s => s.sec === sec.name);
-    if (secStocks.length === 0) return {
+    if (secStocks.length === 0 || secStocks.every(s => s.pct === 0 || s.pct == null)) return {
       ...sec, secStocks:[], dpiIn:0, dpiOut:0, netDPI:0,
       turnover:0, activeFlow:0, frActive:0, frTurnover:0,
-      weightedPct:0, dominance:50, marketShare:0, volume:0,
+      weightedPct: sec.pct, dominance:50, marketShare:0, volume:0,
       flowDir:"محايد", flowCol:T2, flowLabel:"لا بيانات",
     };
 
