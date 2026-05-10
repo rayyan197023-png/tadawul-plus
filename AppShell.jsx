@@ -434,6 +434,12 @@ export default function AppShell() {
     const el = document.createElement('style');
     el.id = id;
     const savedFont = localStorage.getItem('tadawul_font_size') || 'medium';
+    const savedTheme = localStorage.getItem('tadawul_theme') || 'dark';
+if (savedTheme === 'light') {
+  document.documentElement.setAttribute('data-theme', 'light');
+} else {
+  document.documentElement.setAttribute('data-theme', 'dark');
+}
 const fontScale = { small: '0.9', medium: '1', large: '1.12' };
 document.documentElement.style.setProperty('--font-scale', fontScale[savedFont] || '1');
 var zoomMap = {small: '0.92', medium: '1', large: '1.1'};
