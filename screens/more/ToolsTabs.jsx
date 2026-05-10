@@ -389,7 +389,10 @@ function SettingsTab(props) {
   setFontSize(f.k);
   var scales={small:'0.9',medium:'1',large:'1.12'};
   document.documentElement.style.setProperty('--font-scale', scales[f.k]);
-  try{localStorage.setItem('tadawul_font_size', f.k);}catch(e){}
+  var zoomMap = {small: '0.92', medium: '1', large: '1.1'};
+document.documentElement.style.zoom = zoomMap[f.k];
+try{localStorage.setItem('tadawul_font_size', f.k);}catch(e){}
+try{localStorage.setItem('tadawul_font_size', f.k);}catch(e){}
 }}
  style={{
                     flex:1,padding:"12px 6px",borderRadius:14,
