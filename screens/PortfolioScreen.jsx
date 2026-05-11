@@ -697,7 +697,7 @@ function Card(props) {
 
 function SellSheet(props) {
   var sellSheet=props.sellSheet, setSellSheet=props.setSellSheet, setTradeLog=props.setTradeLog, setPort=props.setPort;
-  var setPerfHistory=props.setPerfHistory, sl=props.sl||[];
+  var sl=props.sl||[];
   var sq=useState(String(sellSheet.qty)); var sellQty=sq[0], setSellQty=sq[1];
   var sp=useState(sellSheet.curPrice.toFixed(2)); var sellPrice=sp[0], setSellPrice=sp[1];
   var qty=parseFloat(sellQty)||0, price=parseFloat(sellPrice)||0;
