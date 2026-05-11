@@ -2093,25 +2093,6 @@ return result;
   nowT={nowT}
 />
 
-                {/* ══ زكاة المحفظة ══ */}
-                {tv >= zakatCalc.nisab && (
-                  <div style={{
-                    marginTop:8, padding:"10px 14px",
-                    background:"linear-gradient(135deg,rgba(240,192,80,.12),rgba(240,192,80,.06))",
-                    border:"1px solid rgba(240,192,80,.3)", borderRadius:12,
-                    display:"flex", justifyContent:"space-between", alignItems:"center",
-                  }}>
-                    <div>
-                      <div style={{fontSize:9,color:"#f0c050",fontWeight:700,marginBottom:2}}>
-                        ☪ زكاة المحفظة (2.5%)
-                      </div>
-                      <div style={{fontSize:8,color:"#94a3b8"}}>{zakatCalc.note}</div>
-                    </div>
-                    <div style={{fontSize:16,fontWeight:900,color:"#f0c050"}}>
-                      {zakatCalc.zakatDue(tv).toLocaleString("ar-SA")} ر.س
-                    </div>
-                  </div>
-                )}
 
                 {/* ══ أزرار التصدير ══ */}
                 <div style={{display:"flex",gap:8,marginTop:8}}>
