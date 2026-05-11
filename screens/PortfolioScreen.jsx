@@ -775,18 +775,6 @@ function SellSheet(props) {
       }).filter(Boolean);
     });
     
-    // ✨ تحديث perfHistory مع حساب صحيح
-    if(setPerfHistory) {
-      var today=new Date().toISOString().slice(0,10);
-      setPerfHistory(function(prev){
-        var lastV=prev.length?prev[prev.length-1].v:0;
-        // الفرق = ربح/خسارة من البيع
-        var pnlFromSale = soldValue - soldCost;
-        var newV=Math.max(0, lastV + pnlFromSale - soldValue);
-        return prev.concat([{date:today,v:Math.round(newV)}]);
-      });
-    }
-    
     if(navigator.vibrate) navigator.vibrate(50);
     setSellSheet(null);
 }
