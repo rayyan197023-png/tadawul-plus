@@ -1216,19 +1216,6 @@ if (result && typeof result === 'object' && !result.grade) {
   }
 }
 
-// ✨ Debug: نُضيف معلومات للفحص
-result._debug = {
-  positionsCount: positions.length,
-  firstPos: positions[0] ? {
-    sym: positions[0].sym,
-    qty: positions[0].qty,
-    hasStk: !!positions[0].stk,
-    hasHealth: !!positions[0].health,
-    value: positions[0].value,
-    cost: positions[0].cost,
-  } : null,
-};
-
 return result;
     } catch(e) {
       console.error('[Portfolio IQ Error]', e);
