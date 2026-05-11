@@ -93,27 +93,38 @@ function getDecision(p) {
       'لا تدخل': 'block',
     };
     
-    return {
-      act: sa.action,
-      pct: sa.percent,
-      color: sa.color,
-      icon: iconMap[sa.action] || 'hold',
-      reason: sa.reason,
-      detail: sa.positionHealth ? 
-        `صحة المركز: ${sa.positionHealth.composite}/100 (${sa.positionHealth.label}) · ${sa.positionHealth.daysHeld} يوم · ثقة ${sa.confidence}%` :
-        `ثقة ${sa.confidence}%`,
-      urgent: sa.urgency === 'critical' || sa.urgency === 'high',
-      upside: null,
-      rr: sa.targets ? sa.targets.expectedRR : null,
-      // ✨ بيانات إضافية من Smart Engine
-      smartData: {
-        stopPrice: sa.stopData ? sa.stopData.stopPrice : null,
-        stopPct: sa.stopData ? sa.stopData.stopPct : null,
-        targets: sa.targets,
-        positionHealth: sa.positionHealth,
-                confidence: sa.confidence,
-      },
-    };
+    var currentScore = p.health ? p.health.score || 50 : 50;
+
+// تفسير حالة السهم بناءً على الدرجة
+var scoreContext = '';
+if(currentScore < 35) {
+  scoreContext = ' · ⚠️ الدرجة ' + currentScore + ' منخفضة جداً -- راقب الوقف عن كثب';
+} else if(currentScore < 45) {
+  scoreContext = ' · الدرجة ' + currentScore + ' تراجعت -- السهم أضعف من وقت الدخول';
+} else if(currentScore < 55) {
+  scoreContext = ' · الدرجة ' + currentScore + ' متوسطة -- انتظر تحسناً قبل الزيادة';
+}
+
+return {
+  act: sa.action,
+  pct: sa.percent,
+  color: sa.color,
+  icon: iconMap[sa.action] || 'hold',
+  reason: sa.reason,
+  detail: sa.positionHealth ? 
+    `صحة المركز: ${sa.positionHealth.composite}/100 (${sa.positionHealth.label}) · ${sa.positionHealth.daysHeld} يوم · ثقة ${sa.confidence}%` + scoreContext :
+    `ثقة ${sa.confidence}%` + scoreContext,
+  urgent: sa.urgency === 'critical' || sa.urgency === 'high',
+  upside: null,
+  rr: sa.targets ? sa.targets.expectedRR : null,
+  smartData: {
+    stopPrice: sa.stopData ? sa.stopData.stopPrice : null,
+    stopPct: sa.stopData ? sa.stopData.stopPct : null,
+    targets: sa.targets,
+    positionHealth: sa.positionHealth,
+    confidence: sa.confidence,
+  },
+};
   }
   
   // ── Fallback: Logic القديم (إذا smartAction غير متوفر) ──
