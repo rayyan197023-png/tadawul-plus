@@ -675,8 +675,31 @@ function Card(props) {
           </div>
           
           {/* أزرار الإجراءات */}
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",paddingTop:6,borderTop:"1px solid "+C.line+"33"}}>
-            <span style={{fontSize:11,color:C.smoke,background:"rgba(255,255,255,.04)",borderRadius:8,padding:"3px 9px",border:"1px solid "+C.line}}>{p.curWeightPct.toFixed(1)}% من المحفظة</span>
+<div style={{display:"flex",alignItems:"center",justifyContent:"space-between",
+  paddingTop:6,borderTop:"1px solid "+C.line+"33"}}>
+  {p.curWeightPct >= 90 ? (
+    <span style={{
+      fontSize:11,fontWeight:800,color:C.coral,
+      background:C.coral+"18",borderRadius:8,padding:"3px 9px",
+      border:"1px solid "+C.coral+"44",
+      animation:"dangerPulse 2.4s ease-in-out infinite",
+    }}>
+      ⚠️ {p.curWeightPct.toFixed(1)}% -- هذا السهم = كل محفظتك
+    </span>
+  ) : p.curWeightPct >= 30 ? (
+    <span style={{
+      fontSize:11,fontWeight:800,color:C.amber,
+      background:C.amber+"15",borderRadius:8,padding:"3px 9px",
+      border:"1px solid "+C.amber+"44",
+    }}>
+      ⚠️ {p.curWeightPct.toFixed(1)}% -- تركيز عالٍ
+    </span>
+  ) : (
+    <span style={{fontSize:11,color:C.smoke,background:"rgba(255,255,255,.04)",
+      borderRadius:8,padding:"3px 9px",border:"1px solid "+C.line}}>
+      {p.curWeightPct.toFixed(1)}% من المحفظة
+    </span>
+  )}
             {p.value>0&&(
               <div style={{display:"flex",gap:6}}>
                 <button onClick={handleEdit} style={{background:"rgba(255,255,255,.04)",border:"1px solid "+C.line,borderRadius:8,padding:"5px 12px",cursor:"pointer",fontSize:11,fontWeight:700,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>
