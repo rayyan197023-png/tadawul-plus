@@ -2092,29 +2092,6 @@ return result;
   benchmarkReturn={benchmarkReturn}
   nowT={nowT}
 />
-
-
-                {/* ══ أزرار التصدير ══ */}
-                <div style={{display:"flex",gap:8,marginTop:8}}>
-                  <button onClick={exportToCSV} style={{
-                    flex:1,padding:"8px",borderRadius:10,
-                    background:"rgba(77,159,255,.15)",border:"1px solid rgba(77,159,255,.3)",
-                    color:"#4d9fff",fontSize:9,fontWeight:700,cursor:"pointer",
-                    display:"flex",alignItems:"center",justifyContent:"center",gap:5,
-                  }}>
-                    ⬇ تصدير المحفظة CSV
-                  </button>
-                  {tradeHistory.length > 0 && (
-                    <button onClick={exportTradeHistory} style={{
-                      flex:1,padding:"8px",borderRadius:10,
-                      background:"rgba(16,201,126,.12)",border:"1px solid rgba(16,201,126,.25)",
-                      color:"#10c97e",fontSize:9,fontWeight:700,cursor:"pointer",
-                      display:"flex",alignItems:"center",justifyContent:"center",gap:5,
-                    }}>
-                      ⬇ سجل الصفقات CSV
-                    </button>
-                  )}
-                </div>
                 </div>
               </div>
  
