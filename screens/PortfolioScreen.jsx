@@ -113,7 +113,6 @@ function getDecision(p) {
         positionHealth: sa.positionHealth,
                 confidence: sa.confidence,
       },
-      strategicInsight: strategicInsight,
     };
   }
   
