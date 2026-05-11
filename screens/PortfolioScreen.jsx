@@ -1232,29 +1232,6 @@ useEffect(() => {
     try { localStorage.setItem(key, JSON.stringify(value)); } catch(e){}
   }
 
-  // ══ تصدير المحفظة CSV ══
-  function exportToCSV() {
-    var rows = [
-      ['الرمز','الاسم','القطاع','الكمية','سعر الدخول','السعر الحالي','P&L%','P&L ريال','الوزن%'],
-    ];
-    positions.forEach(function(p){
-      rows.push([
-        p.sym, p.stk?p.stk.name:p.sym, p.stk?p.stk.sec:'',
-        p.qty, p.avgCost.toFixed(2),
-        p.curPrice?p.curPrice.toFixed(2):'',
-        p.pnlPct?p.pnlPct.toFixed(2):'',
-        p.pnl?p.pnl.toFixed(2):'',
-        p.curWeightPct?p.curWeightPct.toFixed(1):'',
-      ]);
-    });
-    var csv = rows.map(function(r){ return r.join(','); }).join('\n');
-    var blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url; a.download = 'portfolio_'+new Date().toISOString().split('T')[0]+'.csv';
-    a.click(); URL.revokeObjectURL(url);
-  }
-
   // تصدير سجل الصفقات
   function exportTradeHistory() {
     var rows = [['الرمز','الكمية','سعر الدخول','سعر الخروج','P&L%','P&L ريال','تاريخ الإغلاق']];
