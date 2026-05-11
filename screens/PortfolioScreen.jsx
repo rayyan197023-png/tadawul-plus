@@ -1232,20 +1232,6 @@ useEffect(() => {
     try { localStorage.setItem(key, JSON.stringify(value)); } catch(e){}
   }
 
-  // تصدير سجل الصفقات
-  function exportTradeHistory() {
-    var rows = [['الرمز','الكمية','سعر الدخول','سعر الخروج','P&L%','P&L ريال','تاريخ الإغلاق']];
-    tradeHistory.forEach(function(t){
-      rows.push([t.sym,t.qty,t.openPrice,t.closePrice,t.pnlPct,t.pnlAmount,t.closeDate]);
-    });
-    var csv = rows.map(function(r){ return r.join(','); }).join('\n');
-    var blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url; a.download = 'trades_'+new Date().toISOString().split('T')[0]+'.csv';
-    a.click(); URL.revokeObjectURL(url);
-  }
-
   // ======= الحالة المحفوظة =======
   const haptic = useHaptic();
   var ps=useState(function(){ return loadLS("tp_port", []); });
