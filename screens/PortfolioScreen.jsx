@@ -2613,61 +2613,6 @@ return result;
           {topRec.reasoning}
         </div>
       </div>
-      
-      {/* التأثير المتوقع */}
-      {topRec.expectedImpact && (
-        <div style={{
-          background:"rgba(30,230,138,.06)",
-          border:"1px solid "+C.mint+"33",
-          borderRadius:10,
-          padding:"10px 12px",
-          marginBottom:10,
-        }}>
-          <div style={{fontSize:9,color:C.mint,fontWeight:800,letterSpacing:"1px",marginBottom:6}}>
-            💰 التأثير المتوقع
-          </div>
-          {Object.keys(topRec.expectedImpact).map(function(key,i){
-            return (
-              <div key={i} style={{
-                display:"flex",
-                justifyContent:"space-between",
-                alignItems:"center",
-                padding:"3px 0",
-                fontSize:10,
-                fontFamily:"Cairo,sans-serif",
-              }}>
-                <span style={{color:C.smoke,fontWeight:600}}>{key}</span>
-                <span style={{color:C.mint,fontWeight:800,fontFamily:"IBM Plex Mono,monospace"}}>
-                  {topRec.expectedImpact[key]}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      )}
-      
-      {/* المرجع الأكاديمي */}
-      {topRec.academicBasis && (
-        <div style={{
-          background:"rgba(167,139,250,.06)",
-          border:"1px solid "+C.plasma+"33",
-          borderRadius:10,
-          padding:"8px 12px",
-        }}>
-          <div style={{fontSize:9,color:C.plasma,fontWeight:800,letterSpacing:"1px",marginBottom:3}}>
-            📚 المرجع الأكاديمي
-          </div>
-          <div style={{
-            fontSize:10,
-            color:C.mist,
-            fontStyle:"italic",
-            lineHeight:1.5,
-            fontFamily:"Cairo,sans-serif",
-          }}>
-            {topRec.academicBasis}
-          </div>
-        </div>
-      )}
     </div>
   );
 })()}
