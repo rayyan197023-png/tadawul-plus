@@ -510,13 +510,46 @@ function Card(props) {
 
           {/* سبب القرار + confidence meter + detail */}
           <div style={{background:"linear-gradient(135deg,"+d.color+"12,"+d.color+"06)",border:"1px solid "+d.color+"22",borderRadius:12,padding:"10px 12px",marginBottom:10}}>
-            {/* السبب الرئيسي */}
-            <div style={{fontSize:11,color:C.mist,lineHeight:1.6,marginBottom:8}}>{d.reason}</div>
-            {/* detail */}
-            {d.detail&&(
-              <div style={{fontSize:12,color:C.smoke,lineHeight:1.5,borderTop:"1px solid "+d.color+"20",paddingTop:6}}>{d.detail}</div>
-            )}
-          </div>
+  <div style={{fontSize:11,color:C.mist,lineHeight:1.6,marginBottom:8}}>{d.reason}</div>
+  {d.detail&&(
+    <div style={{fontSize:12,color:C.smoke,lineHeight:1.5,borderTop:"1px solid "+d.color+"20",paddingTop:6}}>{d.detail}</div>
+  )}
+  {/* تفسير التناقض بين الدرجة والقرار */}
+  {score < 50 && (d.act === "احتفظ" || d.act === "انتظر") && (
+    <div style={{
+      marginTop:6,
+      padding:"5px 8px",
+      background:"rgba(251,191,36,.08)",
+      border:"1px solid "+C.amber+"33",
+      borderRadius:8,
+      fontSize:10,
+      color:C.amber,
+      display:"flex",
+      alignItems:"center",
+      gap:5,
+    }}>
+      <span>💡</span>
+      <span>الدرجة منخفضة لكن لا يوجد سبب للبيع الآن -- ضع وقف الخسارة وانتظر</span>
+    </div>
+  )}
+  {score >= 75 && (d.act === "بيع كامل" || d.act === "بيع 50%") && (
+    <div style={{
+      marginTop:6,
+      padding:"5px 8px",
+      background:"rgba(255,95,106,.08)",
+      border:"1px solid "+C.coral+"33",
+      borderRadius:8,
+      fontSize:10,
+      color:C.coral,
+      display:"flex",
+      alignItems:"center",
+      gap:5,
+    }}>
+      <span>⚠️</span>
+      <span>رغم الدرجة المرتفعة -- ضغط السوق يستوجب الخروج الآن</span>
+    </div>
+  )}
+</div>
           {/* ✨ Smart Position Panel - Bloomberg Level */}
           {d.smartData && d.smartData.stopPrice && (
             <div style={{
