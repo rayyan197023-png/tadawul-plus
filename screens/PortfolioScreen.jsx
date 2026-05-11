@@ -762,10 +762,6 @@ function SellSheet(props) {
       }].concat(prev);
     });
     
-    // ✨ احسب الأداء قبل setPort
-    var soldValue = qty * price;
-    var soldCost = qty * sellSheet.avgCost;
-    
     setPort(function(prev){
       return prev.map(function(pp){
         if(pp.sym!==sellSheet.sym)return pp;
