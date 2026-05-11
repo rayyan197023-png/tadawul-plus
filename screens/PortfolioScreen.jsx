@@ -746,21 +746,6 @@ function Card(props) {
           fontWeight:700,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>
         تعديل
       </button>
-      {d.smartData && d.smartData.stopPrice && (
-        <button
-          onClick={function(e){
-            e.stopPropagation();
-            alert("وقف الخسارة: "+d.smartData.stopPrice.toFixed(2)+" ر.س\nضعه في تطبيق التداول");
-          }}
-          style={{
-            background:C.coral+"12",border:"1px solid "+C.coral+"33",
-            borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:10,
-            fontWeight:800,color:C.coral,fontFamily:"Cairo,sans-serif",
-            display:"flex",alignItems:"center",gap:3,
-          }}>
-          🛑 وقف {d.smartData.stopPrice.toFixed(2)}
-        </button>
-      )}
       <button onClick={handleSell}
         style={{background:C.coral+"20",border:"1px solid "+C.coral+"44",
           borderRadius:8,padding:"5px 13px",cursor:"pointer",fontSize:11,
