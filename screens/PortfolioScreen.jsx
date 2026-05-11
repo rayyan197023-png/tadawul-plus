@@ -3354,26 +3354,6 @@ return result;
           );
         })}
       </div>
-      
-      {/* Methodology */}
-      <div style={{
-        background:"rgba(167,139,250,.06)",
-        border:"1px solid "+C.plasma+"33",
-        borderRadius:10,
-        padding:"8px 12px",
-      }}>
-        <div style={{fontSize:9,color:C.plasma,fontWeight:800,letterSpacing:"1px",marginBottom:3}}>
-          📚 المنهجية
-        </div>
-        <div style={{
-          fontSize:10,
-          color:C.mist,
-          lineHeight:1.5,
-          fontFamily:"Cairo,sans-serif",
-        }}>
-          {ss.methodology || 'ATR (14) + Chandelier Exit + تعديل قطاعي'}
-        </div>
-      </div>
     </div>
   );
 })()}
