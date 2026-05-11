@@ -708,66 +708,69 @@ function Card(props) {
           </div>
           
           {/* أزرار الإجراءات */}
-<div style={{display:"flex",alignItems:"center",justifyContent:"space-between",
-  paddingTop:6,borderTop:"1px solid "+C.line+"33"}}>
+<div style={{paddingTop:6,borderTop:"1px solid "+C.line+"33"}}>
+  
+  {/* السطر الأول: تحذير الوزن */}
   {p.curWeightPct >= 90 ? (
-    <span style={{
-      fontSize:11,fontWeight:800,color:C.coral,
-      background:C.coral+"18",borderRadius:8,padding:"3px 9px",
-      border:"1px solid "+C.coral+"44",
-      animation:"dangerPulse 2.4s ease-in-out infinite",
+    <div style={{
+      marginBottom:8,padding:"6px 10px",
+      background:C.coral+"18",border:"1px solid "+C.coral+"44",
+      borderRadius:8,fontSize:11,fontWeight:800,color:C.coral,
+      textAlign:"center",animation:"dangerPulse 2.4s ease-in-out infinite",
     }}>
       ⚠️ {p.curWeightPct.toFixed(1)}% -- هذا السهم = كل محفظتك
-    </span>
+    </div>
   ) : p.curWeightPct >= 30 ? (
-    <span style={{
-      fontSize:11,fontWeight:800,color:C.amber,
-      background:C.amber+"15",borderRadius:8,padding:"3px 9px",
-      border:"1px solid "+C.amber+"44",
+    <div style={{
+      marginBottom:8,padding:"6px 10px",
+      background:C.amber+"15",border:"1px solid "+C.amber+"44",
+      borderRadius:8,fontSize:11,fontWeight:800,color:C.amber,
+      textAlign:"center",
     }}>
       ⚠️ {p.curWeightPct.toFixed(1)}% -- تركيز عالٍ
-    </span>
-  ) : (
-    <span style={{fontSize:11,color:C.smoke,background:"rgba(255,255,255,.04)",
-      borderRadius:8,padding:"3px 9px",border:"1px solid "+C.line}}>
-      {p.curWeightPct.toFixed(1)}% من المحفظة
-    </span>
+    </div>
+  ) : null}
+
+  {/* السطر الثاني: الأزرار */}
+  {p.value>0&&(
+    <div style={{display:"flex",gap:6,justifyContent:"flex-end",alignItems:"center"}}>
+      {p.curWeightPct < 30 && (
+        <span style={{fontSize:11,color:C.smoke,background:"rgba(255,255,255,.04)",
+          borderRadius:8,padding:"3px 9px",border:"1px solid "+C.line,marginLeft:"auto"}}>
+          {p.curWeightPct.toFixed(1)}% من المحفظة
+        </span>
+      )}
+      <button onClick={handleEdit}
+        style={{background:"rgba(255,255,255,.04)",border:"1px solid "+C.line,
+          borderRadius:8,padding:"5px 11px",cursor:"pointer",fontSize:11,
+          fontWeight:700,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>
+        تعديل
+      </button>
+      {d.smartData && d.smartData.stopPrice && (
+        <button
+          onClick={function(e){
+            e.stopPropagation();
+            alert("وقف الخسارة: "+d.smartData.stopPrice.toFixed(2)+" ر.س\nضعه في تطبيق التداول");
+          }}
+          style={{
+            background:C.coral+"12",border:"1px solid "+C.coral+"33",
+            borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:10,
+            fontWeight:800,color:C.coral,fontFamily:"Cairo,sans-serif",
+            display:"flex",alignItems:"center",gap:3,
+          }}>
+          🛑 وقف {d.smartData.stopPrice.toFixed(2)}
+        </button>
+      )}
+      <button onClick={handleSell}
+        style={{background:C.coral+"20",border:"1px solid "+C.coral+"44",
+          borderRadius:8,padding:"5px 13px",cursor:"pointer",fontSize:11,
+          fontWeight:800,color:C.coral,fontFamily:"Cairo,sans-serif",
+          display:"flex",alignItems:"center",gap:4}}>
+        <SvgIcon name="sell" size={10} color={C.coral}/>بيع
+      </button>
+    </div>
   )}
-            {p.value>0&&(
-              <div style={{display:"flex",gap:6}}>
-  <button onClick={handleEdit}
-    style={{background:"rgba(255,255,255,.04)",border:"1px solid "+C.line,
-      borderRadius:8,padding:"5px 11px",cursor:"pointer",fontSize:11,
-      fontWeight:700,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>
-    تعديل
-  </button>
-  {/* زر وقف الخسارة المباشر */}
-  {d.smartData && d.smartData.stopPrice && (
-    <button
-      onClick={function(e){
-        e.stopPropagation();
-        alert("وقف الخسارة المقترح: "+d.smartData.stopPrice.toFixed(2)+" ر.س\nضعه في تطبيق التداول الخاص بك");
-      }}
-      style={{
-        background:C.coral+"12",
-        border:"1px solid "+C.coral+"33",
-        borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:10,
-        fontWeight:800,color:C.coral,fontFamily:"Cairo,sans-serif",
-        display:"flex",alignItems:"center",gap:3,
-      }}>
-      🛑 {d.smartData.stopPrice.toFixed(2)}
-    </button>
-  )}
-  <button onClick={handleSell}
-    style={{background:C.coral+"20",border:"1px solid "+C.coral+"44",
-      borderRadius:8,padding:"5px 13px",cursor:"pointer",fontSize:11,
-      fontWeight:800,color:C.coral,fontFamily:"Cairo,sans-serif",
-      display:"flex",alignItems:"center",gap:4}}>
-    <SvgIcon name="sell" size={10} color={C.coral}/>بيع
-  </button>
 </div>
-            )}
-          </div>
         </div>
       </div>
     </div>
