@@ -1237,28 +1237,6 @@ useEffect(() => {
   var ps=useState(function(){ return loadLS("tp_port", []); });
   var port=ps[0], setPort=ps[1];
 
-  // ══ سجل الصفقات المغلقة (Trade History) ══
-  const [tradeHistory, setTradeHistory] = useState(function(){
-    return loadLS("tp_trade_history", []);
-  });
-
-  // حفظ عند كل تغيير
-  useEffect(function(){ saveLS("tp_trade_history", tradeHistory); }, [tradeHistory]);
-
-  // دالة إغلاق صفقة وحفظها في السجل
-  function closeTrade(sym, qty, closePrice, openPrice) {
-    var pnlPct = openPrice > 0 ? ((closePrice - openPrice) / openPrice * 100) : 0;
-    var trade = {
-      id: Date.now(),
-      sym, qty, openPrice, closePrice,
-      pnlPct: +pnlPct.toFixed(2),
-      pnlAmount: +((closePrice - openPrice) * qty).toFixed(2),
-      openDate: null, // سيُضاف عند الدخول
-      closeDate: new Date().toISOString().split('T')[0],
-    };
-    setTradeHistory(function(prev){ return [trade, ...prev].slice(0, 200); });
-  }
-
   // حفظ المحفظة عند كل تغيير
   useEffect(function(){ saveLS("tp_port", port); },[port]);
 
