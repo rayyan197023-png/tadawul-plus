@@ -1,13 +1,13 @@
 'use client';
 /**
  * @module PortfolioScreen
- * @description شاشة المحفظة — تحليل الأداء وإدارة المراكز
+ * @description شاشة المحفظة -- تحليل الأداء وإدارة المراكز
  *
  * الوظائف الرئيسية:
  * - getDecision()    : توصية مبنية على محرك 9 الطبقات
- * - exportToCSV()    : تصدير المحفظة والصفقات
- * - closeTrade()     : تسجيل الصفقات المغلقة
- * - zakatCalc        : حساب الزكاة (2.5% عند بلوغ النصاب)
+ * - calcSmartAction(): إدارة المركز الذكية
+ * - analyzePortfolio(): تحليل المحفظة الشامل
+ * - analyzePortfolioIQ(): ذكاء المحفظة المتقدم
  *
  * @requires ../engines/analysisEngine stockHealth
  */
