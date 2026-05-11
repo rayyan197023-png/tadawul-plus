@@ -735,14 +735,37 @@ function Card(props) {
   )}
             {p.value>0&&(
               <div style={{display:"flex",gap:6}}>
-                <button onClick={handleEdit} style={{background:"rgba(255,255,255,.04)",border:"1px solid "+C.line,borderRadius:8,padding:"5px 12px",cursor:"pointer",fontSize:11,fontWeight:700,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>
-                  تعديل
-                </button>
-                <button onClick={handleSell} style={{background:"linear-gradient(135deg,"+C.coral+"25,"+C.coral+"10)",border:"1px solid "+C.coral+"44",borderRadius:8,padding:"5px 14px",cursor:"pointer",fontSize:11,fontWeight:800,color:C.coral,fontFamily:"Cairo,sans-serif",display:"flex",alignItems:"center",gap:4,boxShadow:"0 2px 8px "+C.coral+"18"}}>
-                  <SvgIcon name="sell" size={10} color={C.coral}/>
-                  بيع
-                </button>
-              </div>
+  <button onClick={handleEdit}
+    style={{background:"rgba(255,255,255,.04)",border:"1px solid "+C.line,
+      borderRadius:8,padding:"5px 11px",cursor:"pointer",fontSize:11,
+      fontWeight:700,color:C.smoke,fontFamily:"Cairo,sans-serif"}}>
+    تعديل
+  </button>
+  {/* زر وقف الخسارة المباشر */}
+  {d.smartData && d.smartData.stopPrice && (
+    <button
+      onClick={function(e){
+        e.stopPropagation();
+        alert("وقف الخسارة المقترح: "+d.smartData.stopPrice.toFixed(2)+" ر.س\nضعه في تطبيق التداول الخاص بك");
+      }}
+      style={{
+        background:C.coral+"12",
+        border:"1px solid "+C.coral+"33",
+        borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:10,
+        fontWeight:800,color:C.coral,fontFamily:"Cairo,sans-serif",
+        display:"flex",alignItems:"center",gap:3,
+      }}>
+      🛑 {d.smartData.stopPrice.toFixed(2)}
+    </button>
+  )}
+  <button onClick={handleSell}
+    style={{background:C.coral+"20",border:"1px solid "+C.coral+"44",
+      borderRadius:8,padding:"5px 13px",cursor:"pointer",fontSize:11,
+      fontWeight:800,color:C.coral,fontFamily:"Cairo,sans-serif",
+      display:"flex",alignItems:"center",gap:4}}>
+    <SvgIcon name="sell" size={10} color={C.coral}/>بيع
+  </button>
+</div>
             )}
           </div>
         </div>
