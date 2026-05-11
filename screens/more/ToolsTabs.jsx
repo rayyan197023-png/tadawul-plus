@@ -599,7 +599,7 @@ try{localStorage.setItem('tadawul_font_size', f.k);}catch(e){}
             {/* ═══ نافذة إعدادات التنبيهات الذكية ═══ */}
                     {showSmartPanel&&(
             <div style={{position:"fixed",inset:0,background:"rgba(6,8,15,.96)",zIndex:999,display:"flex",flexDirection:"column",justifyContent:"flex-end"}}>
-              <div style={{background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",borderRadius:"20px 20px 0 0",height:"92vh",maxHeight:"92vh",overflowY:"auto",WebkitOverflowScrolling:"touch",overscrollBehavior:"contain",padding:"24px 16px 80px",border:"1px solid "+C.line}}>
+              <div style={{background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",borderRadius:"20px 20px 0 0",height:"92vh",maxHeight:"92vh",overflowY:"auto",WebkitOverflowScrolling:"touch",overscrollBehavior:"contain",padding:"24px 16px 120px",border:"1px solid "+C.line}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
                   <button onClick={function(){setShowSmartPanel(false);}} style={{background:C.layer3,border:"1px solid "+C.line,color:C.smoke,padding:"7px 14px",borderRadius:10,cursor:"pointer",fontSize:12}}>
                     <Ico k="back" color={C.smoke} size={14}/>
