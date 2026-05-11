@@ -1296,18 +1296,6 @@ useEffect(() => {
     setTradeHistory(function(prev){ return [trade, ...prev].slice(0, 200); });
   }
 
-  // ══ الزكاة ══
-  // زكاة الاستثمار = 2.5% من قيمة الأسهم المحتفظ بها حولاً قمرياً
-  const zakatCalc = useMemo(function(){
-    var tv = 0; // إجمالي قيمة المحفظة سيُحسب لاحقاً
-    return {
-      zakatRate: 0.025,
-      zakatDue: function(portfolioValue){ return +(portfolioValue * 0.025).toFixed(2); },
-      nisab: 22540, // نصاب الذهب تقريباً بالريال (85g × سعر الذهب)
-      note: "تستحق الزكاة إذا بلغت القيمة النصاب وحال الحول"
-    };
-  }, []);
-
   // حفظ المحفظة عند كل تغيير
   useEffect(function(){ saveLS("tp_port", port); },[port]);
 
