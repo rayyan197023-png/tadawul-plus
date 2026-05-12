@@ -79,11 +79,21 @@ export async function fetchOHLCBars(sym, period = '3M', signal) {
 export async function fetchStockDetail(sym) {
   try {
     if (config.isLive && config.features.liveMarketData) {
-      const res = await fetch(`/api/sahmk?sym=${sym}&endpoint=quote`);
-      if (!res.ok) throw new Error(`Stock fetch failed: ${res.status}`);
-      const arr = await res.json();
-      const quote = arr[0];
-      if (quote) return { ...STOCKS_MAP[sym], ...quote };
+      const res = await fetch(`/api/market?sym=${sym}&endpoint=quote`);
+if (!res.ok) throw new Error(`Stock fetch failed: ${res.status}`);
+const quote = await res.json();
+if (quote && quote.price) {
+  return {
+    ...STOCKS_MAP[sym],
+    p:   quote.price,
+    ch:  quote.change,
+    pct: quote.change_percent,
+    v:   quote.volume,
+    o:   quote.open,
+    hi:  quote.high,
+    lo:  quote.low,
+  };
+}
     }
   } catch (err) {
     console.warn(`[stocksApi] fetchStockDetail(${sym}) failed:`, err.message);
@@ -107,12 +117,26 @@ export async function fetchAllStocks(signal) {
     if (config.isLive && config.features.liveMarketData) {
       if (!isSaudiMarketOpen()) return Object.values(STOCKS_MAP);
       const TOP_SYMS = ['2222','1120','2010','1010','2350'];
-      const res = await fetch(`/api/sahmk?sym=${TOP_SYMS.join(',')}&endpoint=quote`, { signal });
-      const quotes = await res.json();
-      return Object.values(STOCKS_MAP).map(seed => {
-        const quote = quotes.find(q => q?.sym === seed.sym);
-        return createStock(quote ? { ...seed, ...quote } : seed);
-      });
+      const results = await Promise.all(
+  Object.keys(STOCKS_MAP).map(async sym => {
+    try {
+      const res = await fetch(`/api/market?sym=${sym}&endpoint=quote`, { signal });
+      if (!res.ok) return STOCKS_MAP[sym];
+      const quote = await res.json();
+      if (quote && quote.price) {
+        return createStock({
+          ...STOCKS_MAP[sym],
+          p:   quote.price,
+          ch:  quote.change,
+          pct: quote.change_percent,
+          v:   quote.volume,
+        });
+      }
+    } catch(e) {}
+    return STOCKS_MAP[sym];
+  })
+);
+return results;
     }
   } catch (err) {
     console.warn('[stocksApi] fetchAllStocks failed:', err.message);
