@@ -142,11 +142,24 @@ export async function fetchAllStocks(signal) {
   try {
     if (config.isLive && config.features.liveMarketData) {
       // if (!isSaudiMarketOpen()) return Object.values(STOCKS_MAP);
-      const allSyms = Object.keys(STOCKS_MAP).join(',');
-      const res = await fetch(`/api/sahmkdata?endpoint=quotes&symbols=${allSyms}`, { signal });
-      if (!res.ok) throw new Error('Quotes fetch failed');
-      const json = await res.json();
-      const quotes = json.quotes || [];
+      const allSyms = Object.keys(STOCKS_MAP);
+const chunks = [];
+for (let i = 0; i < allSyms.length; i += 50) {
+  chunks.push(allSyms.slice(i, i + 50));
+}
+const allQuotes = [];
+for (const chunk of chunks) {
+  try {
+    const res = await fetch(
+      `/api/sahmkdata?endpoint=quotes&symbols=${chunk.join(',')}`,
+      { signal }
+    );
+    if (!res.ok) continue;
+    const json = await res.json();
+    if (json.quotes) allQuotes.push(...json.quotes);
+  } catch(e) {}
+}
+const quotes = allQuotes;
       return Object.values(STOCKS_MAP).map(function(seed) {
         const quote = quotes.find(function(q) { return q.symbol === seed.sym; });
         if (quote) {
