@@ -130,8 +130,8 @@ const config = {
     
     // Free - كل 25 ثانية
 return {
-  marketData:  25_000,
-  portfolio:   25_000,
+  marketData:  20_000,
+  portfolio:   20_000,
   news:        300_000,
 };
   })(),
