@@ -48,6 +48,12 @@ export function useLiveStockPrices() {
       }));
 
       dispatch({ type: 'UPDATE_PRICES', payload: updates });
+console.log('[LIVE] Updated', updates.length, 'stocks, first price:', updates[0]?.data?.p);
+// ✨ Debug مؤقت
+if (typeof window !== 'undefined') {
+  window.__lastPriceUpdate = new Date().toISOString();
+  window.__firstPrice = updates[0]?.data?.p;
+}
     } catch (err) {
       if (err.name !== 'AbortError') {
         errorCountRef.current++;
