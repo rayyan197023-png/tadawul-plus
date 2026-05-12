@@ -484,6 +484,21 @@ background:C.layer1,border:`1px solid ${C.line}`,borderRadius:16,padding:"16px",
           />
         );
       })()}
+        {process.env.NODE_ENV !== 'production' && (
+      <div style={{
+        position:'fixed', bottom:100, left:0, right:0,
+        background:'rgba(0,0,0,0.9)', color:'#fff',
+        fontSize:10, padding:'8px 12px', zIndex:9999,
+        borderTop:'1px solid #333', fontFamily:'monospace',
+      }}>
+        <div>priceCache: {Object.keys(priceCache).length} أسهم</div>
+        <div>أول سعر حي: {priceCache[Object.keys(priceCache)[0]]?.p ?? 'فارغ'}</div>
+        <div>liveStocks[0]: {liveStocks[0]?.sym} = {liveStocks[0]?.p}</div>
+        <div>isLive: {String(config.isLive)}</div>
+        <div>liveMarketData: {String(config.features.liveMarketData)}</div>
+        <div>آخر تحديث: {new Date().toLocaleTimeString('ar-SA')}</div>
+      </div>
+    )}
     </div>
   );
 }
