@@ -75,11 +75,8 @@ const stockState = useStockState();
     if (!config.isLive || !config.features.liveMarketData) return;
 
     async function fetchLive() {
-      try {
-        // 1. Fetch TASI index
-        // TASI من sahmk
-try {
-  const tasiRes = await fetch('/api/sahmkdata?endpoint=tasi');
+  try {
+    // 2. Fetch live stock prices مباشرة بدون TASI
   if (tasiRes.ok) {
     const tasiData = await tasiRes.json();
     if (tasiData && tasiData.value) {
