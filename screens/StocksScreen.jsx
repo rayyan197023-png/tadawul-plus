@@ -163,7 +163,7 @@ const [visibleCount, setVisibleCount] = useState(20);
   const allData = useMemo(()=>liveStocks.map(stk=>{
   if(!barsCache.current[stk.sym]) barsCache.current[stk.sym] = genBars(stk);
   return {stk, bars:barsCache.current[stk.sym]};
-}), [liveStocks]);
+}), [liveStocks, priceCache]);
   const SECTORS = useMemo(()=>[...new Set(STOCKS.map(s=>s.sec))],[]);
 
   const changeTab = v => { haptic.tap(); startTransition(() => setTab(v)); };
