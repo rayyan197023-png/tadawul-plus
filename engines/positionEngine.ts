@@ -509,7 +509,7 @@ export function calcSmartAction(
   const composite = positionHealth.composite;
   
   const stopData = calcSmartStopLoss(entryPrice, currentPrice, health, bars);
-  const targets = calcSmartTakeProfit(entryPrice, stopData.stopPrice, health);
+  const targets = calcSmartTakeProfit(entryPrice, stopData.stopPrice, health, bars);
   
   let action: string;
   let percent: number;
