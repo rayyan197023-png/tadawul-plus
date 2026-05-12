@@ -116,7 +116,6 @@ export async function fetchAllStocks(signal) {
   try {
     if (config.isLive && config.features.liveMarketData) {
       if (!isSaudiMarketOpen()) return Object.values(STOCKS_MAP);
-      const TOP_SYMS = ['2222','1120','2010','1010','2350'];
       const results = await Promise.all(
   Object.keys(STOCKS_MAP).map(async sym => {
     try {
