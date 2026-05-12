@@ -4,6 +4,7 @@ import { useHaptic }          from '../hooks/useHaptic';
 import { usePullToRefresh }   from '../hooks/usePullToRefresh';
 import { useNav, useSharedPrices, useStockState } from '../store';
 import { STOCKS } from '../constants/stocksData';
+import config from '../constants/config';
 import StockDetail from '../features/stock/StockDetail';
 
 const C = {
