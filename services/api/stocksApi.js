@@ -73,7 +73,7 @@ export async function fetchOHLCBars(sym, period = '3M', signal) {
   try {
     if (config.isLive && config.features.liveMarketData) {
       const res = await fetch(
-        `/api/market?sym=${sym}&endpoint=ohlcv&period=${period}`,
+  `/api/sahmkdata?sym=${sym}&endpoint=ohlcv&period=${period}`,
         { signal }
       );
       if (!res.ok) throw new Error(`OHLCV fetch failed: ${res.status}`);
