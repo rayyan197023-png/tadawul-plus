@@ -10,6 +10,9 @@ export async function GET(req: NextRequest) {
   const period   = searchParams.get('period')   ?? '3M';
   const from     = searchParams.get('from')     ?? '';
   const to       = searchParams.get('to')       ?? '';
+  const symbols  = searchParams.get('symbols')  ?? '';
+  const market   = searchParams.get('market')   ?? 'TASI';
+  const limit    = searchParams.get('limit')    ?? '300';
 
   if (!SAHMK_KEY) {
     return NextResponse.json({ error: 'SAHMK_KEY not set' }, { status: 500 });
@@ -23,9 +26,15 @@ export async function GET(req: NextRequest) {
   try {
     let url = '';
 
+    // ── سعر سهم واحد
     if (endpoint === 'quote') {
-      url = `${SAHMK_BASE}/quote/${sym}`;
+      url = `${SAHMK_BASE}/quote/${sym}/`;
     }
+    // ── أسعار متعددة (طلب واحد)
+    else if (endpoint === 'quotes') {
+      url = `${SAHMK_BASE}/quotes/?symbols=${symbols}`;
+    }
+    // ── شموع OHLCV
     else if (endpoint === 'ohlcv') {
       const daysMap: Record<string, number> = {
         '1D': 1, '1W': 7, '1M': 30,
@@ -36,20 +45,44 @@ export async function GET(req: NextRequest) {
         Date.now() - days * 86400000
       ).toISOString().slice(0, 10);
       const toDate = to || new Date().toISOString().slice(0, 10);
-      url = `${SAHMK_BASE}/historical/${sym}?from=${fromDate}&to=${toDate}`;
+      url = `${SAHMK_BASE}/historical/${sym}/?from=${fromDate}&to=${toDate}`;
     }
+    // ── تاسي
     else if (endpoint === 'tasi') {
-      url = `${SAHMK_BASE}/indices`;
+      url = `${SAHMK_BASE}/market/summary/?index=TASI`;
     }
-    else if (endpoint === 'fundamentals') {
-      url = `${SAHMK_BASE}/company/${sym}`;
+    // ── أعلى الرابحين
+    else if (endpoint === 'gainers') {
+      url = `${SAHMK_BASE}/market/gainers/?limit=10&index=TASI`;
     }
+    // ── أعلى الخاسرين
+    else if (endpoint === 'losers') {
+      url = `${SAHMK_BASE}/market/losers/?limit=10&index=TASI`;
+    }
+    // ── الأكثر تداولاً
+    else if (endpoint === 'volume') {
+      url = `${SAHMK_BASE}/market/volume/?limit=10&index=TASI`;
+    }
+    // ── القطاعات
     else if (endpoint === 'sectors') {
-  url = `${SAHMK_BASE}/sectors`;
-}
-else if (endpoint === 'companies') {
-  url = `${SAHMK_BASE}/companies?market=main&limit=300`;
-}
+      url = `${SAHMK_BASE}/market/sectors/?index=TASI`;
+    }
+    // ── قائمة الشركات
+    else if (endpoint === 'companies') {
+      url = `${SAHMK_BASE}/companies/?market=${market}&limit=${limit}`;
+    }
+    // ── أساسيات الشركة
+    else if (endpoint === 'fundamentals') {
+      url = `${SAHMK_BASE}/company/${sym}/`;
+    }
+    // ── بيانات مالية
+    else if (endpoint === 'financials') {
+      url = `${SAHMK_BASE}/financials/${sym}/?type=all&period=annual&history=3y`;
+    }
+    // ── توزيعات أرباح
+    else if (endpoint === 'dividends') {
+      url = `${SAHMK_BASE}/dividends/${sym}/`;
+    }
     else {
       return NextResponse.json({ error: 'Unknown endpoint' }, { status: 400 });
     }
