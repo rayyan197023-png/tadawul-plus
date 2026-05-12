@@ -111,6 +111,25 @@ const StockCard = React.memo(function StockCard({ stk, bars, flash, openDetail, 
 function StocksPage() {
   const haptic                  = useHaptic();
   const liveStocks = useSharedPrices();
+const { priceCache } = useStockState();
+
+// Debug Panel
+React.useEffect(() => {
+  const interval = setInterval(() => {
+    const keys = Object.keys(priceCache);
+    const first = keys[0];
+    console.log({
+      priceCacheSize: keys.length,
+      firstSym: first,
+      firstPrice: priceCache[first]?.p,
+      liveStocksFirst: liveStocks[0]?.sym,
+      liveStocksFirstPrice: liveStocks[0]?.p,
+      isLive: config.isLive,
+      liveMarketData: config.features.liveMarketData,
+    });
+  }, 5000);
+  return () => clearInterval(interval);
+}, [priceCache, liveStocks]);
 console.log('[liveStocks] first price:', liveStocks[0]?.p, liveStocks[0]?.sym);
 const { priceCache } = useStockState();
 const firstKey = Object.keys(priceCache)[0];
