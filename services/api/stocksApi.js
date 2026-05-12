@@ -152,8 +152,9 @@ for (const chunk of chunks) {
   try {
     const res = await fetch(
       `/api/sahmkdata?endpoint=quotes&symbols=${chunk.join(',')}`,
-      { signal }
+      { signal: signal || undefined }
     );
+    if (signal && signal.aborted) break;
     if (!res.ok) continue;
     const json = await res.json();
     if (json.quotes) allQuotes.push(...json.quotes);
