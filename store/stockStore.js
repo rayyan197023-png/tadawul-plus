@@ -218,11 +218,11 @@ function _gbmSeed(s) {
 
 export function useSharedPrices() {
   const { priceCache, stocks } = useStockState();
-const dispatch = useStockDispatch();
+  const dispatch = useStockDispatch();
   const tickRef = useRef(null);
 
-useEffect(() => {
-  if (config.features.liveMarketData) return;
+  useEffect(() => {
+    if (config.features.liveMarketData) return; // Live mode -- useLiveStockPrices يتولى التحديث
     // كل 3 ثوانٍ -- تذبذب ±0.3% لكل سهم
     tickRef.current = setInterval(() => {
       const rng = _gbmSeed(Date.now() & 0xffff);
