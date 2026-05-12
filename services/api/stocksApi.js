@@ -152,13 +152,14 @@ for (const chunk of chunks) {
   try {
     const res = await fetch(
       `/api/sahmkdata?endpoint=quotes&symbols=${chunk.join(',')}`,
-      { signal: signal || undefined }
+      { signal: undefined }
     );
-    if (signal && signal.aborted) break;
     if (!res.ok) continue;
     const json = await res.json();
-    if (json.quotes) allQuotes.push(...json.quotes);
-  } catch(e) { console.error('[chunk error]', e.message); }
+    if (json.quotes && json.quotes.length > 0) {
+      allQuotes.push(...json.quotes);
+    }
+  } catch(e) {}
 }
 const quotes = allQuotes;
 console.log('[fetchAllStocks] quotes:', quotes.length, quotes.slice(0,3).map(q => q.symbol + '=' + q.price));
