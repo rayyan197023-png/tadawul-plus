@@ -498,6 +498,8 @@ background:C.layer1,border:`1px solid ${C.line}`,borderRadius:16,padding:"16px",
 <div>priceCache[1120]: {priceCache['1120']?.p ?? 'غير موجود'}</div>
 <div>priceCache[2010]: {priceCache['2010']?.p ?? 'غير موجود'}</div>
 <div>liveStocks count: {liveStocks.length}</div>
+<div>liveStocks[2222]: {liveStocks.find(s=>s.sym==='2222')?.p}</div>
+<div>liveStocks[1120]: {liveStocks.find(s=>s.sym==='1120')?.p}</div>
         <div>isLive: {String(config.isLive)}</div>
         <div>liveMarketData: {String(config.features.liveMarketData)}</div>
         <div>آخر تحديث: {new Date().toLocaleTimeString('ar-SA')}</div>
