@@ -3416,6 +3416,14 @@ function stockHealth(stk: any, bars: any[]): any {
   var regime = tech.regime;
   var layers = tech.layers;
 
+  // ✨ أوزان النماذج الثلاثة (LA, LB, LC)
+  // معايرة حسب الـ Regime
+  var wA, wB, wC;
+  if(regime === "bull")         { wA=0.50; wB=0.30; wC=0.20; }
+  else if(regime === "bear")    { wA=0.40; wB=0.38; wC=0.22; }
+  else if(regime === "sideways"){ wA=0.35; wB=0.42; wC=0.23; }
+  else if(regime === "volatile"){ wA=0.55; wB=0.25; wC=0.20; }
+  else                          { wA=0.45; wB=0.33; wC=0.22; }
   // ── B) المحرك الأساسي
   var fm  = calcFactorModel(stk, bars);
   var em  = calcEarningsModel(stk);
