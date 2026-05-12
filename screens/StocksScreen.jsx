@@ -162,9 +162,13 @@ const [visibleCount, setVisibleCount] = useState(20);
   useEffect(()=>{ const t=setInterval(()=>setNow(new Date()),30000); return()=>clearInterval(t); },[]);
 
   const allData = useMemo(()=>liveStocks.map(stk=>{
-  if(!barsCache.current[stk.sym]) barsCache.current[stk.sym] = genBars(stk);
+  // أعد توليد الشموع عند تغير السعر
+  const cached = barsCache.current[stk.sym];
+  if(!cached || cached[cached.length-1]?.c !== stk.p) {
+    barsCache.current[stk.sym] = genBars(stk);
+  }
   return {stk, bars:barsCache.current[stk.sym]};
-}), [liveStocks, priceCache]);
+}), [liveStocks]);
   const SECTORS = useMemo(()=>[...new Set(STOCKS.map(s=>s.sec))],[]);
 
   const changeTab = v => { haptic.tap(); startTransition(() => setTab(v)); };
