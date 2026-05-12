@@ -28,7 +28,6 @@ export function useLiveStockPrices() {
     alert('LIVE DISABLED');
     return;
   }
-  alert('FETCHING...');
     
     // ✨ Skip if tab is hidden (saves battery)
     if (!isVisibleRef.current) return;
