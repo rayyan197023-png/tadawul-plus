@@ -70,8 +70,34 @@ export function generateOHLCBars(stk, days = 60) {
 }
 
 export async function fetchOHLCBars(sym, period = '3M', signal) {
+  try {
+    if (config.isLive && config.features.liveMarketData) {
+      const res = await fetch(
+        `/api/market?sym=${sym}&endpoint=ohlcv&period=${period}`,
+        { signal }
+      );
+      if (!res.ok) throw new Error(`OHLCV fetch failed: ${res.status}`);
+      const json = await res.json();
+      if (json && json.data && json.data.length > 0) {
+        return json.data.map(bar => ({
+          d:   bar.date,
+          o:   bar.open,
+          hi:  bar.high,
+          lo:  bar.low,
+          c:   bar.close,
+          vol: bar.volume,
+          pct: bar.close > bar.open 
+            ? +((bar.close - bar.open) / bar.open * 100).toFixed(2)
+            : +((bar.close - bar.open) / bar.open * 100).toFixed(2),
+        }));
+      }
+    }
+  } catch (err) {
+    console.warn(`[stocksApi] fetchOHLCBars(${sym}) failed:`, err.message);
+  }
+  // Fallback -- شموع وهمية
   const daysMap = { '1D': 1, '1W': 7, '1M': 30, '3M': 90, '6M': 180, '1Y': 365 };
-  const days    = daysMap[period] ?? 90;
+  const days = daysMap[period] ?? 90;
   const stk = STOCKS_MAP[sym];
   return stk ? generateOHLCBars(stk, Math.min(days + 28, 120)) : [];
 }
