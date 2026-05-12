@@ -111,6 +111,7 @@ const StockCard = React.memo(function StockCard({ stk, bars, flash, openDetail, 
 function StocksPage() {
   const haptic                  = useHaptic();
   const liveStocks = useSharedPrices();
+console.log('[liveStocks] first price:', liveStocks[0]?.p, liveStocks[0]?.sym);
 const { priceCache } = useStockState();
 const firstKey = Object.keys(priceCache)[0];
 console.log('[StocksScreen] priceCache:', Object.keys(priceCache).length, 'first:', firstKey, priceCache[firstKey]?.p);
