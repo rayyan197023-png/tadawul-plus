@@ -161,21 +161,17 @@ for (const chunk of chunks) {
     }
   } catch(e) {}
 }
-const quotes = allQuotes;
-console.log('[fetchAllStocks] quotes:', quotes.length, quotes.slice(0,3).map(q => q.symbol + '=' + q.price));
-return Object.values(STOCKS_MAP).map(function(seed) {
-        const quote = quotes.find(function(q) { return q.symbol === seed.sym; });
-        if (quote) {
-          return createStock({
-            ...seed,
-            p:   quote.price,
-            ch:  quote.change,
-            pct: quote.change_percent,
-            v:   quote.volume,
-          });
-        }
-        return createStock(seed);
-      });
+if (allQuotes.length > 0) {
+  allQuotes.forEach(function(quote) {
+    if (STOCKS_MAP[quote.symbol] && quote.price) {
+      STOCKS_MAP[quote.symbol].p   = quote.price;
+      STOCKS_MAP[quote.symbol].ch  = quote.change;
+      STOCKS_MAP[quote.symbol].pct = quote.change_percent;
+      STOCKS_MAP[quote.symbol].v   = quote.volume;
+    }
+  });
+  return Object.values(STOCKS_MAP);
+}
     }
   } catch (err) {
   console.error('[fetchAllStocks FAILED]', err.message);
