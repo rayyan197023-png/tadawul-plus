@@ -76,35 +76,20 @@ const stockState = useStockState();
 
     async function fetchLive() {
   try {
-    // 2. Fetch live stock prices مباشرة بدون TASI
-  if (tasiRes.ok) {
-    const tasiData = await tasiRes.json();
-    if (tasiData && tasiData.value) {
-      dispatch({
-        type:    MARKET_ACTIONS.SET_INDICES,
-        payload: [
-          { id:'tasi', name:'تاسي', value: tasiData.value, pct: tasiData.change_percent, ch: tasiData.change },
-          { id:'nomu', name:'نمو', value: 3124.8, pct: 1.12, ch: 34.6 },
-        ],
-      });
+    const liveStocks = await fetchAllStocks();
+    if (liveStocks.length > 0) {
+      const updates = liveStocks.map(s => ({ 
+        sym: s.sym, 
+        data: { p: s.p, ch: s.ch, pct: s.pct, v: s.v } 
+      }));
+      stockDispatch({ type: 'UPDATE_PRICES', payload: updates });
     }
+    dispatch({ type: MARKET_ACTIONS.SET_LAST_UPDATED, payload: Date.now() });
+    dispatch({ type: MARKET_ACTIONS.SET_STATUS, payload: 'open' });
+  } catch (err) {
+    console.warn('[useMarketBridge] Live fetch failed:', err.message);
   }
-} catch(e) {}
-
-        // 2. Fetch live stock prices (bulk — 1 API call)
-        const liveStocks = await fetchAllStocks();
-        if (liveStocks.length > 0) {
-  const updates = liveStocks.map(s => ({ sym: s.sym, data: { p: s.p, ch: s.ch, pct: s.pct, v: s.v } }));
-  stockDispatch({ type: 'UPDATE_PRICES', payload: updates });
 }
-
-        dispatch({ type: MARKET_ACTIONS.SET_LAST_UPDATED, payload: Date.now() });
-        dispatch({ type: MARKET_ACTIONS.SET_STATUS, payload: 'open' });
-      } catch (err) {
-        console.warn('[useMarketBridge] Live fetch failed:', err.message);
-        dispatch({ type: MARKET_ACTIONS.SET_ERROR, payload: err.message });
-      }
-    }
 
     // Fetch immediately on mount
     fetchLive();
