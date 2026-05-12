@@ -128,12 +128,12 @@ const config = {
       };
     }
     
-    // Free - كل 15 دقيقة (الافتراضي)
-    return {
-      marketData:  900_000,   // 15 دقيقة
-      portfolio:   900_000,   // 15 دقيقة
-      news:        900_000,   // 15 دقيقة
-    };
+    // Free - كل 25 ثانية
+return {
+  marketData:  25_000,
+  portfolio:   25_000,
+  news:        300_000,
+};
   })(),
 };
 
