@@ -495,6 +495,9 @@ background:C.layer1,border:`1px solid ${C.line}`,borderRadius:16,padding:"16px",
         <div>أول سعر حي: {priceCache[Object.keys(priceCache)[0]]?.p ?? 'فارغ'}</div>
         <div>liveStocks[0]: {liveStocks[0]?.sym} = {liveStocks[0]?.p}</div>
 <div>priceCache[2222]: {priceCache['2222']?.p ?? 'غير موجود'}</div>
+<div>priceCache[1120]: {priceCache['1120']?.p ?? 'غير موجود'}</div>
+<div>priceCache[2010]: {priceCache['2010']?.p ?? 'غير موجود'}</div>
+<div>liveStocks count: {liveStocks.length}</div>
         <div>isLive: {String(config.isLive)}</div>
         <div>liveMarketData: {String(config.features.liveMarketData)}</div>
         <div>آخر تحديث: {new Date().toLocaleTimeString('ar-SA')}</div>
