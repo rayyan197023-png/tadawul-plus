@@ -58,6 +58,9 @@ if (typeof window !== 'undefined') {
       if (err.name !== 'AbortError') {
         errorCountRef.current++;
         console.warn('[useLiveStockPrices] fetch failed:', err.message);
+if (typeof window !== 'undefined') {
+  window.__priceError = err.message;
+}
       }
     }
   }, [dispatch]);
