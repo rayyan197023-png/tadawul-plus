@@ -105,7 +105,7 @@ export async function fetchOHLCBars(sym, period = '3M', signal) {
 export async function fetchStockDetail(sym) {
   try {
     if (config.isLive && config.features.liveMarketData) {
-      const res = await fetch(`/api/market?sym=${sym}&endpoint=quote`);
+      const res = await fetch(`/api/sahmkdata?sym=${sym}&endpoint=quote`);
 if (!res.ok) throw new Error(`Stock fetch failed: ${res.status}`);
 const quote = await res.json();
 if (quote && quote.price) {
