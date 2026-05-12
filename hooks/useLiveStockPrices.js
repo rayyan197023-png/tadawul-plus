@@ -40,7 +40,6 @@ abortRef.current = ctrl;
     try {
       const stocks = await fetchAllStocks(ctrl.signal);
 if (ctrl.signal.aborted) return;
-alert('GOT: ' + stocks.length + ' stocks, first price: ' + stocks[0]?.p);
 
       // Reset error count on success
       errorCountRef.current = 0;
