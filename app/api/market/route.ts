@@ -35,6 +35,35 @@ export async function GET(req: NextRequest) {
     else if (endpoint === 'quotes') {
       url = `${SAHMK_BASE}/quotes/?symbols=${symbols}`;
     }
+    // ── أسعار متعددة
+else if (endpoint === 'quotes') {
+  url = `${SAHMK_BASE}/quotes/?symbols=${symbols}`;
+}
+// ── تاسي
+else if (endpoint === 'tasi') {
+  url = `${SAHMK_BASE}/market/summary/?index=TASI`;
+}
+// ── رابحين
+else if (endpoint === 'gainers') {
+  url = `${SAHMK_BASE}/market/gainers/?limit=10&index=TASI`;
+}
+// ── خاسرين
+else if (endpoint === 'losers') {
+  url = `${SAHMK_BASE}/market/losers/?limit=10&index=TASI`;
+}
+// ── الأكثر تداولاً
+else if (endpoint === 'volume') {
+  url = `${SAHMK_BASE}/market/volume/?limit=10&index=TASI`;
+}
+// ── القطاعات
+else if (endpoint === 'sectors') {
+  url = `${SAHMK_BASE}/market/sectors/?index=TASI`;
+}
+// ── قائمة الشركات
+else if (endpoint === 'companies') {
+  url = `${SAHMK_BASE}/companies/?market=${market}&limit=${limit}`;
+}
+
     // ── شموع OHLCV
     else if (endpoint === 'ohlcv') {
       const daysMap: Record<string, number> = {
