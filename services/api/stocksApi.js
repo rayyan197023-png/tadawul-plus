@@ -143,39 +143,23 @@ export async function fetchAllStocks(signal) {
     if (config.isLive && config.features.liveMarketData) {
       if (!isSaudiMarketOpen()) return Object.values(STOCKS_MAP);
       const allSyms = Object.keys(STOCKS_MAP).join(',');
-const res = await fetch(`/api/sahmkdata?endpoint=quotes&symbols=${allSyms}`, { signal });
-if (!res.ok) throw new Error('Quotes fetch failed');
-const json = await res.json();
-const quotes = json.quotes || [];
-return Object.values(STOCKS_MAP).map(seed => {
-  const quote = quotes.find((q) => q.symbol === seed.sym);
-  if (quote) {
-    return createStock({
-      ...seed,
-      p:   quote.price,
-      ch:  quote.change,
-      pct: quote.change_percent,
-      v:   quote.volume,
-    });
-  }
-  return createStock(seed);
-});
-      if (!res.ok) return STOCKS_MAP[sym];
-      const quote = await res.json();
-      if (quote && quote.price) {
-        return createStock({
-          ...STOCKS_MAP[sym],
-          p:   quote.price,
-          ch:  quote.change,
-          pct: quote.change_percent,
-          v:   quote.volume,
-        });
-      }
-    } catch(e) {}
-    return STOCKS_MAP[sym];
-  })
-);
-return results;
+      const res = await fetch(`/api/sahmkdata?endpoint=quotes&symbols=${allSyms}`, { signal });
+      if (!res.ok) throw new Error('Quotes fetch failed');
+      const json = await res.json();
+      const quotes = json.quotes || [];
+      return Object.values(STOCKS_MAP).map(function(seed) {
+        const quote = quotes.find(function(q) { return q.symbol === seed.sym; });
+        if (quote) {
+          return createStock({
+            ...seed,
+            p:   quote.price,
+            ch:  quote.change,
+            pct: quote.change_percent,
+            v:   quote.volume,
+          });
+        }
+        return createStock(seed);
+      });
     }
   } catch (err) {
     console.warn('[stocksApi] fetchAllStocks failed:', err.message);
