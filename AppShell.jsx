@@ -142,6 +142,8 @@ const [aiAnalysis, setAiAnalysis] = React.useState(null);
   const [commData, setCommData] = React.useState(COMM_DEFAULT);
 
   useLiveStockPrices();
+useMarketBridge();
+
 
   // ═══════════════════════════════════════════════
   // 🎯 Smart Preloading (on idle)
