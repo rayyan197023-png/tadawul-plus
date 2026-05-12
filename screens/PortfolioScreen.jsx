@@ -1093,13 +1093,19 @@ useEffect(() => {
       var smartAction = null;
       try {
         if(h && smartBars && smartBars.length >= 14) {
-          var positionData = {
-            sym: pp.sym,
-            avgCost: pp.avgCost,
-            curPrice: stk.p,
-            qty: pp.qty,
-            entryDate: pp.entryDate || new Date().toISOString(),
-          };
+          // ✨ استخدم تاريخ أول صفقة شراء من tradeLog إذا متوفر
+var entryFromLog = tradeLog.find(function(t){
+  return t.sym === pp.sym && t.action === "شراء";
+});
+
+var positionData = {
+  sym: pp.sym,
+  avgCost: pp.avgCost,
+  curPrice: stk.p,
+  qty: pp.qty,
+  entryDate: pp.entryDate || 
+             (entryFromLog ? entryFromLog.date + "T00:00:00.000Z" : null),
+};
           smartAction = calcSmartAction(positionData, h, smartBars, h.riskGate || 'SAFE');
         }
             } catch(e) {
