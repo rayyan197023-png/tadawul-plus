@@ -141,7 +141,7 @@ function isSaudiMarketOpen() {
 export async function fetchAllStocks(signal) {
   try {
     if (config.isLive && config.features.liveMarketData) {
-      // if (!isSaudiMarketOpen()) return Object.values(STOCKS_MAP);
+      console.log('[fetchAllStocks] Starting fetch...');
       const allSyms = Object.keys(STOCKS_MAP);
 const chunks = [];
 for (let i = 0; i < allSyms.length; i += 50) {
