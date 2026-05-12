@@ -549,7 +549,7 @@ export function generateSmartAlerts(currentStocks: any[], positions: any[] = [])
       try {
         // Smart Stop Loss
         const stopData = calcSmartStopLoss(myPosition.avgCost, stock.p, stock.health || {}, bars);
-        const targets = calcSmartTakeProfit(myPosition.avgCost, stopData.stopPrice, stock.health || {});
+        const targets = calcSmartTakeProfit(myPosition.avgCost, stopData.stopPrice, stock.health || null, null);
         
         // Stop Loss Hit
         if (stock.p <= stopData.stopPrice) {
