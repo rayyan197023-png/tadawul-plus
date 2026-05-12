@@ -148,7 +148,7 @@ if (!res.ok) throw new Error('Quotes fetch failed');
 const json = await res.json();
 const quotes = json.quotes || [];
 return Object.values(STOCKS_MAP).map(seed => {
-  const quote = quotes.find((q: any) => q.symbol === seed.sym);
+  const quote = quotes.find((q) => q.symbol === seed.sym);
   if (quote) {
     return createStock({
       ...seed,
