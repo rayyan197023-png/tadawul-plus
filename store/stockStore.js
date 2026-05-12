@@ -216,13 +216,13 @@ function _gbmSeed(s) {
   return () => { x = (x*1664525+1013904223)&0xffffffff; return (x>>>0)/0xffffffff; };
 }
 
-export function useSharedPrices() {
+ export function useSharedPrices() {
   const { priceCache, stocks } = useStockState();
   const dispatch = useStockDispatch();
   const tickRef = useRef(null);
 
   useEffect(() => {
-    if (config.features.liveMarketData) return; // Live mode -- useLiveStockPrices يتولى التحديث
+    if (config.features.liveMarketData) return;
     // كل 3 ثوانٍ -- تذبذب ±0.3% لكل سهم
     tickRef.current = setInterval(() => {
       const rng = _gbmSeed(Date.now() & 0xffff);
