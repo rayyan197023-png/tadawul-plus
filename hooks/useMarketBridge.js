@@ -68,9 +68,7 @@ const stockState = useStockState();
     dispatch({ type: MARKET_ACTIONS.SET_BREADTH, payload: { advancers: adv, decliners: dec, unchanged: stocks.length - adv - dec, total: stocks.length } });
     dispatch({ type: MARKET_ACTIONS.SET_LAST_UPDATED, payload: Date.now() });
 
-  }, [market.current, dispatch, stocks]);
-
-  }, [dispatch]);
+    }, [market.current, dispatch, stocks]);
 
   return market;
 }
