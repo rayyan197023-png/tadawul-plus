@@ -70,35 +70,6 @@ const stockState = useStockState();
 
   }, [market.current, dispatch, stocks]);
 
-  // ── Live price polling (only in production mode)
-  useEffect(() => {
-    if (!config.isLive || !config.features.liveMarketData) return;
-
-    async function fetchLive() {
-  try {
-    const liveStocks = await fetchAllStocks();
-    if (liveStocks.length > 0) {
-      const updates = liveStocks.map(s => ({ 
-        sym: s.sym, 
-        data: { p: s.p, ch: s.ch, pct: s.pct, v: s.v } 
-      }));
-      stockDispatch({ type: 'UPDATE_PRICES', payload: updates });
-    }
-    dispatch({ type: MARKET_ACTIONS.SET_LAST_UPDATED, payload: Date.now() });
-    dispatch({ type: MARKET_ACTIONS.SET_STATUS, payload: 'open' });
-  } catch (err) {
-    console.warn('[useMarketBridge] Live fetch failed:', err.message);
-  }
-}
-
-    // Fetch immediately on mount
-    fetchLive();
-
-    // Poll every 30 seconds
-    pollRef.current = setInterval(fetchLive, config.intervals.marketData);
-    return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
-    };
   }, [dispatch]);
 
   return market;
