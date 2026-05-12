@@ -24,7 +24,11 @@ export function useLiveStockPrices() {
   const isVisibleRef = useRef(true);
 
   const fetchAndDispatch = useCallback(async () => {
-    if (!config.isLive || !config.features.liveMarketData) return;
+  if (!config.isLive || !config.features.liveMarketData) {
+    alert('LIVE DISABLED');
+    return;
+  }
+  alert('FETCHING...');
     
     // ✨ Skip if tab is hidden (saves battery)
     if (!isVisibleRef.current) return;
