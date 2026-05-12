@@ -141,7 +141,7 @@ function isSaudiMarketOpen() {
 export async function fetchAllStocks(signal) {
   try {
     if (config.isLive && config.features.liveMarketData) {
-      if (!isSaudiMarketOpen()) return Object.values(STOCKS_MAP);
+      // if (!isSaudiMarketOpen()) return Object.values(STOCKS_MAP);
       const allSyms = Object.keys(STOCKS_MAP).join(',');
       const res = await fetch(`/api/sahmkdata?endpoint=quotes&symbols=${allSyms}`, { signal });
       if (!res.ok) throw new Error('Quotes fetch failed');
