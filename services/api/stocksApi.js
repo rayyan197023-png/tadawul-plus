@@ -157,7 +157,7 @@ for (const chunk of chunks) {
     if (!res.ok) continue;
     const json = await res.json();
     if (json.quotes) allQuotes.push(...json.quotes);
-  } catch(e) {}
+  } catch(e) { console.error('[chunk error]', e.message); }
 }
 const quotes = allQuotes;
       return Object.values(STOCKS_MAP).map(function(seed) {
