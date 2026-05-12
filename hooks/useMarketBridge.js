@@ -77,16 +77,22 @@ const stockState = useStockState();
     async function fetchLive() {
       try {
         // 1. Fetch TASI index
-        const tasi = await fetchTASIIndex();
-        if (tasi) {
-          dispatch({
-            type:    MARKET_ACTIONS.SET_INDICES,
-            payload: [
-              { id:'tasi', name:'تاسي', value: tasi.value, pct: tasi.pct, ch: tasi.change },
-              { id:'nomu', name:'نمو', value: 3124.8, pct: 1.12, ch: 34.6 },
-            ],
-          });
-        }
+        // TASI من sahmk
+try {
+  const tasiRes = await fetch('/api/sahmkdata?endpoint=tasi');
+  if (tasiRes.ok) {
+    const tasiData = await tasiRes.json();
+    if (tasiData && tasiData.value) {
+      dispatch({
+        type:    MARKET_ACTIONS.SET_INDICES,
+        payload: [
+          { id:'tasi', name:'تاسي', value: tasiData.value, pct: tasiData.change_percent, ch: tasiData.change },
+          { id:'nomu', name:'نمو', value: 3124.8, pct: 1.12, ch: 34.6 },
+        ],
+      });
+    }
+  }
+} catch(e) {}
 
         // 2. Fetch live stock prices (bulk — 1 API call)
         const liveStocks = await fetchAllStocks();
