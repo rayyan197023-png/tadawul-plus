@@ -45,8 +45,11 @@ export async function GET(req: NextRequest) {
       url = `${SAHMK_BASE}/company/${sym}`;
     }
     else if (endpoint === 'sectors') {
-      url = `${SAHMK_BASE}/sectors`;
-    }
+  url = `${SAHMK_BASE}/sectors`;
+}
+else if (endpoint === 'companies') {
+  url = `${SAHMK_BASE}/companies?market=main&limit=300`;
+}
     else {
       return NextResponse.json({ error: 'Unknown endpoint' }, { status: 400 });
     }
