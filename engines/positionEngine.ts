@@ -244,7 +244,8 @@ export function calcSmartStopLoss(
 export function calcSmartTakeProfit(
   entryPrice: number,
   stopPrice: number,
-  health: Health | null
+  health: Health | null,
+  bars: Bar[] | null
 ): TakeProfitResult | null {
   if (!entryPrice || !stopPrice) {
     return null;
@@ -253,11 +254,36 @@ export function calcSmartTakeProfit(
   const risk = entryPrice - stopPrice;
   const score = health?.score || 50;
   const grade = health?.grade || 'C';
-  
-  const rr1 = grade === 'S' || grade === 'A' ? 2.0 : 1.5;
-  const rr2 = grade === 'S' || grade === 'A' ? 3.0 : 2.5;
-  const rr3 = grade === 'S' ? 5.0 : grade === 'A' ? 4.5 : 4.0;
-  
+  const regime = health?.regime || 'chop';
+
+  // ✨ ATR الفعلي للسهم
+  const atrPct = health?.extras?.atrPct || 2.0;
+
+  // ✨ تعديل R:R بناءً على ATR + Grade + Regime
+  // سهم متقلب (ATR عالٍ) → أهداف أبعد
+  // سهم هادئ (ATR منخفض) → أهداف أقرب وأكثر واقعية
+  const atrMult = atrPct > 3.0 ? 1.3    // متقلب جداً
+                : atrPct > 2.0 ? 1.15   // متقلب
+                : atrPct > 1.0 ? 1.0    // طبيعي
+                : 0.85;                  // هادئ
+
+  // تعديل الـ Regime
+  const regimeMult = regime === 'bull'        ? 1.2
+                   : regime === 'bear'        ? 0.8
+                   : regime === 'volatile'    ? 1.1
+                   : regime === 'sideways'    ? 0.9
+                   : 1.0;
+
+  // R:R الأساسي حسب Grade
+  const baseRR1 = grade === 'S' || grade === 'A' ? 2.0 : 1.5;
+  const baseRR2 = grade === 'S' || grade === 'A' ? 3.0 : 2.5;
+  const baseRR3 = grade === 'S' ? 5.0 : grade === 'A' ? 4.5 : 4.0;
+
+  // ✨ R:R النهائي مع تعديل ATR + Regime
+  const rr1 = +(baseRR1 * atrMult * regimeMult).toFixed(2);
+  const rr2 = +(baseRR2 * atrMult * regimeMult).toFixed(2);
+  const rr3 = +(baseRR3 * atrMult * regimeMult).toFixed(2);
+
   const t1 = entryPrice + (risk * rr1);
   const t2 = entryPrice + (risk * rr2);
   const t3 = entryPrice + (risk * rr3);
