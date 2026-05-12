@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const SAHMK_BASE = 'https://app.sahmk.sa/api/v1';
+const _VERSION = '2.0'; // force redeploy
 const SAHMK_KEY  = process.env.SAHMK_KEY ?? '';
 
 export async function GET(req: NextRequest) {
