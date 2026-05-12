@@ -161,7 +161,8 @@ for (const chunk of chunks) {
   } catch(e) { console.error('[chunk error]', e.message); }
 }
 const quotes = allQuotes;
-      return Object.values(STOCKS_MAP).map(function(seed) {
+console.log('[fetchAllStocks] quotes count:', quotes.length, 'first:', quotes[0]?.symbol, quotes[0]?.price);
+return Object.values(STOCKS_MAP).map(function(seed) {
         const quote = quotes.find(function(q) { return q.symbol === seed.sym; });
         if (quote) {
           return createStock({
