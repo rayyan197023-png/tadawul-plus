@@ -62,13 +62,9 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await res.json();
-return NextResponse.json({
-  _debug: { url, status: res.status },
-  data,
-}, {
-  headers: { 'Cache-Control': 'no-store' },
-});
-
+    return NextResponse.json(data, {
+      headers: { 'Cache-Control': 'no-store' },
+    });
 
   } catch (err: any) {
     return NextResponse.json(
