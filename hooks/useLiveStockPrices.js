@@ -30,9 +30,9 @@ export function useLiveStockPrices() {
     if (!isVisibleRef.current) return;
 
     // Abort previous in-flight request
-    if (abortRef.current) abortRef.current.abort();
     const ctrl = new AbortController();
-    abortRef.current = ctrl;
+if (abortRef.current) abortRef.current.abort();
+abortRef.current = ctrl;
 
     try {
       const stocks = await fetchAllStocks(ctrl.signal);
