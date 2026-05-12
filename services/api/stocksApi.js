@@ -107,7 +107,7 @@ export async function fetchAllStocks(signal) {
     if (config.isLive && config.features.liveMarketData) {
       if (!isSaudiMarketOpen()) return Object.values(STOCKS_MAP);
       const TOP_SYMS = ['2222','1120','2010','1010','2350'];
-      const res = await fetch(`/api/sahmk?sym=${TOP_SYMS.join(',')}`, { signal });
+      const res = await fetch(`/api/sahmk?sym=${TOP_SYMS.join(',')}&endpoint=quote`, { signal });
       const quotes = await res.json();
       return Object.values(STOCKS_MAP).map(seed => {
         const quote = quotes.find(q => q?.sym === seed.sym);
