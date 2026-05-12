@@ -175,8 +175,8 @@ const quotes = allQuotes;
       });
     }
   } catch (err) {
-    console.warn('[stocksApi] fetchAllStocks failed:', err.message);
-  }
+  console.error('[fetchAllStocks FAILED]', err.message);
+}
   return Object.values(STOCKS_MAP);
 }
 export async function fetchAIAnalysis(prompt, maxTokens = 1200, signal = undefined) {
