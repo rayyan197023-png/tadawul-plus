@@ -1531,12 +1531,19 @@ function runCrystalBall(positions: IQPosition[], base: any, simulations: number 
 function simulateHorizon(initialValue: number, dailyReturn: number, dailyVol: number, days: number, sims: number): any {
   const finalValues: any[] = [];
   
-  for (let s = 0; s < sims; s++) {
+  // ✨ Seeded Random -- نتائج ثابتة لنفس المحفظة
+var seed = initialValue * days + dailyReturn * 1000000;
+function seededRandom() {
+  seed = (seed * 1664525 + 1013904223) & 0xffffffff;
+  return (seed >>> 0) / 0xffffffff;
+}
+
+for (let s = 0; s < sims; s++) {
     let value = initialValue;
     for (let d = 0; d < days; d++) {
       // Box-Muller transform for normal distribution
-      const u1 = Math.random();
-      const u2 = Math.random();
+      const u1 = Math.max(seededRandom(), 1e-10);
+      const u2 = seededRandom();
       const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
       
       // Geometric Brownian Motion
