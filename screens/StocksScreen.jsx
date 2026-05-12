@@ -112,6 +112,8 @@ function StocksPage() {
   const haptic                  = useHaptic();
   const liveStocks = useSharedPrices();
 const { priceCache } = useStockState();
+const firstKey = Object.keys(priceCache)[0];
+console.log('[StocksScreen] priceCache:', Object.keys(priceCache).length, 'first:', firstKey, priceCache[firstKey]?.p);
 // Debug
 React.useEffect(() => {
   const keys = Object.keys(priceCache);
