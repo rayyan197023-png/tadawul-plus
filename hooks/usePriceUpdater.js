@@ -36,11 +36,17 @@ export function usePriceUpdater() {
       }
       if (allQuotes.length === 0) return;
       const updates = allQuotes
-        .filter(q => q.price)
-        .map(q => ({
-          sym: q.symbol,
-          data: { p: q.price, ch: q.change, pct: q.change_percent, v: q.volume }
-        }));
+  .filter(q => q.price)
+  .map(q => ({
+    sym: q.symbol,
+    data: { 
+      p: q.price, 
+      ch: q.change, 
+      pct: q.change_percent, 
+      v: q.volume,
+      name: q.name_en ? q.name_en : undefined,
+    }
+  }));
       if (updates.length > 0) {
         dispatch({ type: 'UPDATE_PRICES', payload: updates });
       }
