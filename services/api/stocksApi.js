@@ -181,7 +181,7 @@ if (allQuotes.length > 0) {
       STOCKS_MAP[quote.symbol].v   = quote.volume;
     }
   });
-  return Object.values(STOCKS_MAP);
+  return [];
 }
     }
   } catch (err) {
