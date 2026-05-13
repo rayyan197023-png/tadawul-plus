@@ -144,7 +144,14 @@ export function useStocks() {
   const stocksWithLivePrices = state.stocks.map(s => {
     const live = state.priceCache[s.sym];
     if (!live) return s;
-    return { ...s, p: live.p, ch: live.ch, pct: live.pct, v: live.v };
+    return { 
+  ...s, 
+  p: live.p, 
+  ch: live.ch, 
+  pct: live.pct, 
+  v: live.v,
+  name: live.name || s.name,
+};
   });
 
   // Apply filter
