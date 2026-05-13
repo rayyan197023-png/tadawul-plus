@@ -3,12 +3,6 @@ import { useEffect } from 'react';
 import { useStockDispatch } from '../store/stockStore';
 import { useMarketDispatch, MARKET_ACTIONS } from '../store';
 
-// الريت -- نستبعدها
-const REIT_RANGE = (sym) => {
-  const n = parseInt(sym);
-  return n >= 4330 && n <= 4350;
-};
-
 export function usePriceUpdater() {
   const dispatch = useStockDispatch();
   const marketDispatch = useMarketDispatch();
@@ -16,29 +10,27 @@ export function usePriceUpdater() {
   useEffect(() => {
     async function fetchAll() {
       try {
-        // 1. جلب قائمة الشركات
+        // 1. جلب قائمة شركات تاسي
         const compRes = await fetch('/api/sahmkdata?endpoint=companies&market=TASI&limit=300');
         const compJson = await compRes.json();
         const companies = (compJson.results || []).filter(c => {
-          const sym = c.symbol;
-          if (!sym || sym.length !== 4 || isNaN(sym)) return false;
-          if (REIT_RANGE(sym)) return false;
+          const n = parseInt(c.symbol);
+          if (!c.symbol || c.symbol.length !== 4 || isNaN(n)) return false;
+          if (n >= 4330 && n <= 4350) return false; // استبعاد الريت
           return true;
         });
 
+        // 2. أسعار على دفعات 50
         const syms = companies.map(c => c.symbol);
-
-        // 2. جلب الأسعار على دفعات
         const chunks = [];
-        for (let i = 0; i < syms.length; i += 50) {
-          chunks.push(syms.slice(i, i + 50));
-        }
+        for (let i = 0; i < syms.length; i += 50) chunks.push(syms.slice(i, i + 50));
+
         const allQuotes = [];
         for (const chunk of chunks) {
           try {
-            const res = await fetch(`/api/sahmkdata?endpoint=quotes&symbols=${chunk.join(',')}`);
-            const json = await res.json();
-            if (json.quotes) allQuotes.push(...json.quotes);
+            const r = await fetch(`/api/sahmkdata?endpoint=quotes&symbols=${chunk.join(',')}`);
+            const j = await r.json();
+            if (j.quotes) allQuotes.push(...j.quotes);
           } catch(e) {}
         }
 
@@ -46,35 +38,53 @@ export function usePriceUpdater() {
           const compMap = {};
           companies.forEach(c => { compMap[c.symbol] = c; });
 
-          const updates = allQuotes
+          // بناء stocks كاملة من sahmk
+          const newStocks = allQuotes
             .filter(q => q.price)
             .map(q => ({
-              sym: q.symbol,
-              data: {
-                p:   q.price,
-                ch:  q.change,
-                pct: q.change_percent,
-                v:   q.volume,
-                name: compMap[q.symbol]?.name_ar || q.name_en || q.symbol,
-              }
+              sym:     q.symbol,
+              name:    compMap[q.symbol]?.name_ar || q.name_en || q.symbol,
+              sec:     '',
+              sectorId:'',
+              p:       q.price,
+              ch:      q.change,
+              pct:     q.change_percent,
+              v:       q.volume,
+              avgV:    q.volume,
+              hi:      q.high || q.price,
+              lo:      q.low  || q.price,
+              w52h:    null, w52l: null,
+              target:  null, eps:  null,
+              pe:      null, pb:   null,
+              divY:    null, roe:  null,
+              mktCap:  null, debt: null,
+              revGrw:  null, epsGrw: null,
+              freeCashFlow: null,
+              beta:    null, oilCorr: null,
+              rating:  50,
+              desc:    null, earnDate: null,
             }));
 
-          if (updates.length > 0) {
-            // أضف الأسهم الجديدة للـ store
-            dispatch({ type: 'SET_STOCKS_FROM_API', payload: updates });
-            dispatch({ type: 'UPDATE_PRICES', payload: updates });
-          }
+          // استبدال stocks كاملاً
+          dispatch({ type: 'SET_STOCKS', payload: newStocks });
+
+          // تحديث priceCache
+          const updates = newStocks.map(s => ({
+            sym:  s.sym,
+            data: { p: s.p, ch: s.ch, pct: s.pct, v: s.v, name: s.name }
+          }));
+          dispatch({ type: 'UPDATE_PRICES', payload: updates });
         }
 
         // 3. تاسي
         const tasiRes = await fetch('/api/sahmkdata?endpoint=tasi');
         const tasi = await tasiRes.json();
-        if (tasi && tasi.index_value) {
+        if (tasi?.index_value) {
           marketDispatch({
             type: MARKET_ACTIONS.SET_INDICES,
             payload: [
-              { id: 'tasi', name: 'تاسي', value: tasi.index_value, pct: tasi.index_change_percent, ch: tasi.index_change },
-              { id: 'nomu', name: 'نمو', value: 3124.8, pct: 1.12, ch: 34.6 },
+              { id:'tasi', name:'تاسي', value: tasi.index_value, pct: tasi.index_change_percent, ch: tasi.index_change },
+              { id:'nomu', name:'نمو',  value: 3124.8, pct: 1.12, ch: 34.6 },
             ],
           });
         }
