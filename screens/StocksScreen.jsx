@@ -515,6 +515,7 @@ background:C.layer1,border:`1px solid ${C.line}`,borderRadius:16,padding:"16px",
         borderTop:'1px solid #333', fontFamily:'monospace',
       }}>
 <div>priceCache: {Object.keys(priceCache).length} أسهم</div>
+<div>name[2222]: {priceCache['2222']?.name ?? 'فارغ'}</div>
 <div>name[2222]: {priceCache['2222']?.name ?? 'لا يوجد'}</div>
 <div>name[1120]: {priceCache['1120']?.name ?? 'لا يوجد'}</div>
         <div>أول سعر حي: {priceCache[Object.keys(priceCache)[0]]?.p ?? 'فارغ'}</div>
