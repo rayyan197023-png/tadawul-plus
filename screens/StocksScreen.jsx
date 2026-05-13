@@ -173,7 +173,7 @@ const [visibleCount, setVisibleCount] = useState(20);
           isRefreshing, touchHandlers } = usePullToRefresh(handleRefresh, 60);
 
   const { openStock } = useNav();
-  const openDetail = sym => { haptic.tap(); scrollPos.current=window.scrollY; setSel(sym); openStock(STOCKS.find(s=>s.sym===sym)); };
+  const openDetail = sym => { haptic.tap(); scrollPos.current=window.scrollY; setSel(sym); openStock(liveStocks.find(s=>s.sym===sym) || STOCKS.find(s=>s.sym===sym)); };
   const closeDetail = () => { setSel(null); requestAnimationFrame(()=>window.scrollTo({top:scrollPos.current})); };
   const [search,   setSearch]   = useState("");
   const [showSrch, setShowSrch] = useState(false);
