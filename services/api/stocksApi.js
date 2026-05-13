@@ -187,7 +187,7 @@ if (allQuotes.length > 0) {
   } catch (err) {
   console.error('[fetchAllStocks FAILED]', err.message);
 }
-  return Object.values(STOCKS_MAP);
+  return [];
 }
 export async function fetchAIAnalysis(prompt, maxTokens = 1200, signal = undefined) {
   const res = await fetch(config.claudeProxyUrl, {
