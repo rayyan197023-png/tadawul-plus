@@ -54,6 +54,7 @@ export function usePriceUpdater() {
 
           if (updates.length > 0) {
             dispatch({ type: 'UPDATE_PRICES', payload: updates });
+            console.log('sample update:', updates[0]);
           }
         }
 
