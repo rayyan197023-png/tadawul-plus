@@ -212,7 +212,7 @@ React.useEffect(() => {
   }
   return {stk, bars:barsCache.current[stk.sym]};
 }), [liveStocks]);
-  const SECTORS = useMemo(()=>[...new Set(STOCKS.map(s=>s.sec))],[]);
+  const SECTORS = useMemo(()=>[...new Set(liveStocks.map(s=>s.sec))],[liveStocks]);
 
   const changeTab = v => { haptic.tap(); startTransition(() => setTab(v)); };
   const changeSortBy = v => { setSortBy(v); setShowFilter(false); window.scrollTo({top:0,behavior:"smooth"}); };
