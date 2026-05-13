@@ -91,10 +91,12 @@ const stocks = allQuotes
       errorCountRef.current = 0;
 
       // Build price updates
-      const updates = stocks.map(s => ({
-  sym:  s.sym,
-  data: { p: s.p, ch: s.ch, pct: s.pct, v: s.v },
-}));
+      const updates = allQuotes
+  .filter(q => q.price)
+  .map(q => ({
+    sym:  q.symbol,
+    data: { p: q.price, ch: q.change, pct: q.change_percent, v: q.volume },
+  }));
 
       dispatch({ type: 'UPDATE_PRICES', payload: updates });
 console.log('[LIVE] Updated', updates.length, 'stocks, first price:', updates[0]?.data?.p);
