@@ -6,7 +6,6 @@ import { useNav, useSharedPrices, useStockState } from './store';
 import TadawulNav from './components/shared/TadawulNav';
 import { TABS, TAB_IDS } from './constants/navigation';
 import ErrorBoundary from './components/ErrorBoundary';
-import { useLiveStockPrices } from './hooks/useLiveStockPrices';
 import { usePriceUpdater } from './hooks/usePriceUpdater';
 import { useMarketBridge } from './hooks/useMarketBridge';
 import { useHaptic } from './hooks/useHaptic';
