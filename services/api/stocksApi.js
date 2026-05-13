@@ -150,10 +150,8 @@ for (let i = 0; i < allSyms.length; i += 50) {
 const allQuotes = [];
 for (const chunk of chunks) {
   try {
-    const res = await fetch(
-      `/api/sahmkdata?endpoint=quotes&symbols=${chunk.join(',')}`,
-      { signal: undefined }
-    );
+    const url = `/api/sahmkdata?endpoint=quotes&symbols=${chunk.join(',')}`;
+    const res = await fetch(url);
     if (!res.ok) continue;
     const json = await res.json();
     if (json.quotes && json.quotes.length > 0) {
