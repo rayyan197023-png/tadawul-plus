@@ -48,7 +48,7 @@ export function usePriceUpdater() {
                 ch: q.change,
                 pct: q.change_percent,
                 v: q.volume,
-                name: compMap[q.symbol]?.name_ar || q.name_en || q.symbol,
+                name: compMap[q.symbol]?.name_ar || q.name_en || undefined,
               }
             }));
 
