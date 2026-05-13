@@ -349,8 +349,8 @@ React.useEffect(() => {
               </div>
             </div>
             <div style={{display:"flex",height:4,borderRadius:2,overflow:"hidden",gap:1}}>
-              <div style={{width:`${(upCount/STOCKS.length)*100}%`,background:`linear-gradient(90deg,${C.mint}88,${C.mint})`,borderRadius:"2px 0 0 2px"}}/>
-              <div style={{width:`${((STOCKS.length-upCount-downCount)/STOCKS.length)*100}%`,background:C.smoke+"44"}}/>
+              <div style={{width:`${(upCount/liveStocks.length)*100}%`,background:`linear-gradient(90deg,${C.mint}88,${C.mint})`,borderRadius:"2px 0 0 2px"}}/>
+<div style={{width:`${((liveStocks.length-upCount-downCount)/liveStocks.length)*100}%`,background:C.smoke+"44"}}/>
               <div style={{flex:1,background:`linear-gradient(90deg,${C.coral},${C.coral}88)`,borderRadius:"0 2px 2px 0"}}/>
             </div>
           </div>
