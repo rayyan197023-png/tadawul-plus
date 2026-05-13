@@ -77,15 +77,6 @@ if (allQuotes.length === 0) {
   return;
 }
 console.log('[useLiveStockPrices] got', allQuotes.length, 'quotes, first:', allQuotes[0]?.symbol, allQuotes[0]?.price);
-const stocks = allQuotes
-  .filter(q => q.price)
-  .map(q => ({
-    sym: q.symbol,
-    p:   q.price,
-    ch:  q.change,
-    pct: q.change_percent,
-    v:   q.volume,
-  }));
 
       // Reset error count on success
       errorCountRef.current = 0;
