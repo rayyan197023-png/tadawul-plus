@@ -40,7 +40,6 @@ export function usePriceUpdater() {
           companies.forEach(c => { compMap[c.symbol] = c; });
 
           // بناء stocks كاملة من sahmk
-          import { STOCKS_MAP as SEED_MAP } from '../constants/stocksData';
 
 const newStocks = allQuotes
   .filter(q => q.price)
