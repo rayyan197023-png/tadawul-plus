@@ -38,8 +38,28 @@ if (abortRef.current) abortRef.current.abort();
 abortRef.current = ctrl;
 
     try {
-      const stocks = await fetchAllStocks(ctrl.signal);
-if (ctrl.signal.aborted) return;
+      const syms = Object.keys(STOCKS_MAP);
+const chunks = [];
+for (let i = 0; i < syms.length; i += 50) {
+  chunks.push(syms.slice(i, i + 50));
+}
+const allQuotes = [];
+for (const chunk of chunks) {
+  try {
+    const res = await fetch(`/api/sahmkdata?endpoint=quotes&symbols=${chunk.join(',')}`);
+    if (!res.ok) continue;
+    const json = await res.json();
+    if (json.quotes) allQuotes.push(...json.quotes);
+  } catch(e) {}
+}
+if (allQuotes.length === 0) return;
+const stocks = Object.values(STOCKS_MAP).map(seed => {
+  const q = allQuotes.find(q => q.symbol === seed.sym);
+  if (q && q.price) {
+    return { ...seed, p: q.price, ch: q.change, pct: q.change_percent, v: q.volume };
+  }
+  return seed;
+});
 
       // Reset error count on success
       errorCountRef.current = 0;
