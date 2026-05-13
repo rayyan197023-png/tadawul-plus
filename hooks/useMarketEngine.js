@@ -87,6 +87,27 @@ export function useMarketEngine() {
     chgPts:   +((CLOSE_PRICE - OPEN_PRICE) / OPEN_PRICE * 100).toFixed(2),
     chgVal:   +(CLOSE_PRICE - OPEN_PRICE).toFixed(2),
   }));
+  // تحديث تاسي من API الحقيقي
+  useEffect(() => {
+    if (!config.features.liveMarketData) return;
+    async function fetchTasi() {
+      try {
+        const res = await fetch('/api/sahmkdata?endpoint=tasi');
+        const tasi = await res.json();
+        if (tasi?.index_value) {
+          setState(prev => ({
+            ...prev,
+            current: tasi.index_value,
+            chgPts:  tasi.index_change_percent,
+            chgVal:  tasi.index_change,
+          }));
+        }
+      } catch(e) {}
+    }
+    fetchTasi();
+    const t = setInterval(fetchTasi, 20000);
+    return () => clearInterval(t);
+  }, []);
 
   useEffect(() => {
     if (config.features.liveMarketData) return; // في production لا محاكاة
