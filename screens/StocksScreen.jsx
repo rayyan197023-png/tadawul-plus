@@ -336,7 +336,7 @@ React.useEffect(() => {
           <div style={{background:C.layer1,borderRadius:12,padding:"8px 14px",border:`1px solid ${C.line}`,marginBottom:8}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
               <div style={{display:"flex",gap:14}}>
-                {[{v:upCount,l:"صاعد",c:C.mint},{v:downCount,l:"هابط",c:C.coral},{v:STOCKS.length-upCount-downCount,l:"مستقر",c:C.smoke}].map((it,i)=>(
+                {[{v:upCount,l:"صاعد",c:C.mint},{v:downCount,l:"هابط",c:C.coral},{v:liveStocks.length-upCount-downCount,l:"مستقر",c:C.smoke}].map((it,i)=>(
                   <div key={i} style={{textAlign:"center",paddingLeft:i>0?14:0,borderLeft:i>0?`1px solid ${C.line}`:"none"}}>
                     <div style={{fontSize:14,fontWeight:900,color:it.c}}>{it.v}</div>
                     <div style={{fontSize:11,color:C.ash}}>{it.l}</div>
