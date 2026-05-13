@@ -47,8 +47,15 @@ export const STOCK_ACTIONS = {
 };
 
 // ── Initial State
+function loadCachedStocks() {
+  try {
+    const raw = localStorage.getItem('td_stocks_cache_v1');
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
 const initialState = {
-  stocks:      [],
+  stocks: loadCachedStocks(),
   priceCache:  {},              // sym → { p, ch, pct, v, ts }
 
   watchlist:   loadWatchlist(), // Array of sym strings
