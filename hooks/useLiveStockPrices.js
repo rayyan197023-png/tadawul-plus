@@ -50,7 +50,11 @@ for (const chunk of chunks) {
     if (json.quotes) allQuotes.push(...json.quotes);
   } catch(e) {}
 }
-if (allQuotes.length === 0) return;
+if (allQuotes.length === 0) {
+  console.warn('[useLiveStockPrices] allQuotes empty!');
+  return;
+}
+console.log('[useLiveStockPrices] got', allQuotes.length, 'quotes, first:', allQuotes[0]?.symbol, allQuotes[0]?.price);
 const stocks = Object.values(STOCKS_MAP).map(seed => {
   const q = allQuotes.find(q => q.symbol === seed.sym);
   if (q && q.price) {
