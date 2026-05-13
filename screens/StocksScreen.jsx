@@ -186,7 +186,7 @@ React.useEffect(() => {
       const res = await fetch('/api/sahmkdata?endpoint=quotes&symbols=2222,1120');
       const json = await res.json();
       const q = json.quotes?.[0];
-      setDebugFetch(`✅ ${q?.symbol}=${q?.price} (${json.count} أسهم)`);
+      setDebugFetch(`✅ keys: ${Object.keys(json).join(',')} | raw: ${JSON.stringify(json).slice(0,100)}`);
     } catch(e) {
       setDebugFetch(`❌ خطأ: ${e.message}`);
     }
