@@ -507,7 +507,7 @@ background:C.layer1,border:`1px solid ${C.line}`,borderRadius:16,padding:"16px",
           />
         );
       })()}
-        {true && (
+        {process.env.NODE_ENV !== 'production' && (
       <div style={{
         position:'fixed', bottom:100, left:0, right:0,
         background:'rgba(0,0,0,0.9)', color:'#fff',
