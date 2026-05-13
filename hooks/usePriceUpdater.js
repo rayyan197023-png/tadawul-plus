@@ -17,7 +17,7 @@ export function usePriceUpdater() {
         const companies = (compJson.results || []).filter(c => {
           const n = parseInt(c.symbol);
           if (!c.symbol || c.symbol.length !== 4 || isNaN(n)) return false;
-          if (n >= 4330 && n <= 4350) return false; // استبعاد الريت
+          if (n >= 4330 && n <= 4350) return false;
           return true;
         });
 
@@ -39,41 +39,23 @@ export function usePriceUpdater() {
           const compMap = {};
           companies.forEach(c => { compMap[c.symbol] = c; });
 
-          // بناء stocks كاملة من sahmk
-
-const newStocks = allQuotes
-  .filter(q => q.price)
-  .map(q => ({
-    ...(SEED_MAP[q.symbol] || {}),
-    sym:     q.symbol,
-    name:    compMap[q.symbol]?.name_ar || q.name_en || q.symbol,
-    p:       q.price,
-    ch:      q.change,
-    pct:     q.change_percent,
-    v:       q.volume,
-              p:       q.price,
-              ch:      q.change,
-              pct:     q.change_percent,
-              v:       q.volume,
-              avgV:    q.volume,
-              hi:      q.high || q.price,
-              lo:      q.low  || q.price,
-              w52h:    null, w52l: null,
-              target:  null, eps:  null,
-              pe:      null, pb:   null,
-              divY:    null, roe:  null,
-              mktCap:  null, debt: null,
-              revGrw:  null, epsGrw: null,
-              freeCashFlow: null,
-              beta:    null, oilCorr: null,
-              rating:  50,
-              desc:    null, earnDate: null,
+          const newStocks = allQuotes
+            .filter(q => q.price)
+            .map(q => ({
+              ...(SEED_MAP[q.symbol] || {}),
+              sym:  q.symbol,
+              name: compMap[q.symbol]?.name_ar || q.name_en || q.symbol,
+              p:    q.price,
+              ch:   q.change,
+              pct:  q.change_percent,
+              v:    q.volume,
+              avgV: q.volume,
+              hi:   q.high || q.price,
+              lo:   q.low  || q.price,
             }));
 
-          // استبدال stocks كاملاً
           dispatch({ type: 'SET_STOCKS', payload: newStocks });
 
-          // تحديث priceCache
           const updates = newStocks.map(s => ({
             sym:  s.sym,
             data: { p: s.p, ch: s.ch, pct: s.pct, v: s.v, name: s.name }
