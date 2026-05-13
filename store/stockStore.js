@@ -50,7 +50,14 @@ export const STOCK_ACTIONS = {
 function loadCachedStocks() {
   try {
     const raw = localStorage.getItem('td_stocks_cache_v1');
-    return raw ? JSON.parse(raw) : [];
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    // تحقق أن الأسماء صحيحة -- إذا كان أول سهم اسمه رقم احذف الكاش
+    if (parsed[0] && /^\d+$/.test(parsed[0].name)) {
+      localStorage.removeItem('td_stocks_cache_v1');
+      return [];
+    }
+    return parsed;
   } catch { return []; }
 }
 
