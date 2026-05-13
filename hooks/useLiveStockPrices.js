@@ -70,9 +70,9 @@ const stocks = allQuotes
 
       // Build price updates
       const updates = stocks.map(s => ({
-        sym:  s.sym,
-        data: { p: s.p, ch: s.ch, pct: s.pct, v: s.v, o: s.o, hi: s.hi, lo: s.lo },
-      }));
+  sym:  s.sym,
+  data: { p: s.p, ch: s.ch, pct: s.pct, v: s.v },
+}));
 
       dispatch({ type: 'UPDATE_PRICES', payload: updates });
 console.log('[LIVE] Updated', updates.length, 'stocks, first price:', updates[0]?.data?.p);
