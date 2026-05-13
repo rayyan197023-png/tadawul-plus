@@ -152,10 +152,22 @@ for (const chunk of chunks) {
   try {
     const url = `/api/sahmkdata?endpoint=quotes&symbols=${chunk.join(',')}`;
     const res = await fetch(url);
-    if (!res.ok) continue;
-    const json = await res.json();
+    const text = await res.text();
+    const json = JSON.parse(text);
     if (json.quotes && json.quotes.length > 0) {
       allQuotes.push(...json.quotes);
+    }
+  } catch(e) {}
+}
+if (allQuotes.length === 0) {
+  // Fallback: جلب سهم واحد مباشرة
+  try {
+    const res = await fetch('/api/sahmkdata?endpoint=quote&sym=2222');
+    const json = await res.json();
+    if (json.price && STOCKS_MAP['2222']) {
+      STOCKS_MAP['2222'].p = json.price;
+      STOCKS_MAP['2222'].ch = json.change;
+      STOCKS_MAP['2222'].pct = json.change_percent;
     }
   } catch(e) {}
 }
