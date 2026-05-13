@@ -1,6 +1,5 @@
 'use client';
 import config from '../constants/config';
-import { STOCKS } from '../constants/stocksData';
 import { fetchTASIIndex }  from '../services/api/eodhdApi';
 /**
  * useMarketBridge — Syncs useMarketEngine into marketStore
