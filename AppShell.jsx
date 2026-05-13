@@ -7,6 +7,7 @@ import TadawulNav from './components/shared/TadawulNav';
 import { TABS, TAB_IDS } from './constants/navigation';
 import ErrorBoundary from './components/ErrorBoundary';
 import { usePriceUpdater } from './hooks/usePriceUpdater';
+import { useLiveStockPrices } from './hooks/useLiveStockPrices';
 import { useMarketBridge } from './hooks/useMarketBridge';
 import { useHaptic } from './hooks/useHaptic';
 import { colors } from './theme/tokens';
