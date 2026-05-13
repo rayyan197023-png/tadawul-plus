@@ -178,6 +178,13 @@ const [visibleCount, setVisibleCount] = useState(20);
   const [search,   setSearch]   = useState("");
   const [showSrch, setShowSrch] = useState(false);
   const [now,      setNow]      = useState(new Date());
+const [debugTime, setDebugTime] = React.useState('');
+React.useEffect(() => {
+  const t = setInterval(() => {
+    setDebugTime(new Date().toLocaleTimeString('ar-SA'));
+  }, 3000);
+  return () => clearInterval(t);
+}, []);
 
   useEffect(()=>{ const t=setInterval(()=>setNow(new Date()),30000); return()=>clearInterval(t); },[]);
 
