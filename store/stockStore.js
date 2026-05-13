@@ -15,7 +15,6 @@
 
 import { createContext, useContext, useReducer, useCallback, useEffect, useRef } from 'react';
 import config from '../constants/config';
-import { STOCKS } from '../constants/stocksData';
 
 // ── Persistence helpers (safe wrappers)
 const LS_KEY_WATCHLIST = 'td_watchlist_v2';
