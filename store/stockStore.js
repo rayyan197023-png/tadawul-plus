@@ -48,7 +48,7 @@ export const STOCK_ACTIONS = {
 
 // ── Initial State
 const initialState = {
-  stocks:      STOCKS,          // All stocks (seed data)
+  stocks:      [],
   priceCache:  {},              // sym → { p, ch, pct, v, ts }
 
   watchlist:   loadWatchlist(), // Array of sym strings
