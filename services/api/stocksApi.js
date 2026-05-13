@@ -150,7 +150,8 @@ for (let i = 0; i < allSyms.length; i += 50) {
 const allQuotes = [];
 for (const chunk of chunks) {
   try {
-    const url = `/api/sahmkdata?endpoint=quotes&symbols=${chunk.join(',')}`;
+const base = typeof window !== 'undefined' ? window.location.origin : '';
+const url = `${base}/api/sahmkdata?endpoint=quotes&symbols=${chunk.join(',')}`;
     const res = await fetch(url);
     const text = await res.text();
     const json = JSON.parse(text);
