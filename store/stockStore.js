@@ -68,8 +68,12 @@ const initialState = {
 function stockReducer(state, action) {
   switch (action.type) {
 
-    case STOCK_ACTIONS.SET_STOCKS:
+    case STOCK_ACTIONS.SET_STOCKS: {
+  try {
+    localStorage.setItem('td_stocks_cache_v1', JSON.stringify(action.payload));
+  } catch {}
   return { ...state, stocks: action.payload };
+}
 
     case STOCK_ACTIONS.UPDATE_PRICE: {
       const { sym, data } = action.payload;
