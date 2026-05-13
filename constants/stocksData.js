@@ -222,6 +222,24 @@ export const STOCKS = [
   { sym:"7010", name:"اس تي سي",                 sec:"تقنية",          sectorId:"telecom",     p:0, ch:0, pct:0, v:0, avgV:0, rating:80 },
 ];
 
+// إضافة الحقول المطلوبة بقيم افتراضية
+STOCKS.forEach(s => {
+  s.mktCap = null;
+  s.eps = null;
+  s.pe = null;
+  s.pb = null;
+  s.divY = null;
+  s.roe = null;
+  s.debt = null;
+  s.beta = null;
+  s.w52h = null;
+  s.w52l = null;
+  s.hi = 0;
+  s.lo = 0;
+  s.target = null;
+  s.oilCorr = null;
+});
+
 export const STOCKS_MAP = Object.fromEntries(STOCKS.map(s => [s.sym, s]));
 
 export const SECTORS = [
