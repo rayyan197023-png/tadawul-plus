@@ -528,6 +528,8 @@ background:C.layer1,border:`1px solid ${C.line}`,borderRadius:16,padding:"16px",
         <div>آخر تحديث: {debugTime}</div>
 <div>2222 live: {liveStocks.find(s=>s.sym==='2222')?.p}</div>
 <div>priceCache ts: {priceCache['2222']?.ts ?? 'لا يوجد'}</div>
+<div>fetch test: {debugFetch}</div>
+
       </div>
     )}
     </div>
