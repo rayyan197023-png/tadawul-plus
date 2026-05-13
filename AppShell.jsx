@@ -142,7 +142,8 @@ const [aiAnalysis, setAiAnalysis] = React.useState(null);
   ];
   const [commData, setCommData] = React.useState(COMM_DEFAULT);
 
-  useMarketBridge();
+  useLiveStockPrices();
+useMarketBridge();
 usePriceUpdater();
 
 
