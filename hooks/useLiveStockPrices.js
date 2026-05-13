@@ -13,7 +13,6 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import config from '../constants/config';
-import { STOCKS_MAP } from '../constants/stocksData';
 import { fetchAllStocks } from '../services/api/stocksApi';
 import { useStocks } from '../store';
 
