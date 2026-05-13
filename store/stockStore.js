@@ -62,8 +62,17 @@ const initialState = {
 function stockReducer(state, action) {
   switch (action.type) {
 
-    case STOCK_ACTIONS.SET_STOCKS:
-      return { ...state, stocks: action.payload };
+    case STOCK_ACTIONS.SET_STOCKS: {
+  // دمج الأسهم الجديدة مع القديمة للحفاظ على البيانات الأساسية
+  const oldMap = {};
+  state.stocks.forEach(s => { oldMap[s.sym] = s; });
+  const merged = action.payload.map(s => ({
+    ...(oldMap[s.sym] || {}),
+    ...s,
+    name: s.name || (oldMap[s.sym] && oldMap[s.sym].name) || s.sym,
+  }));
+  return { ...state, stocks: merged };
+}
 
     case STOCK_ACTIONS.UPDATE_PRICE: {
       const { sym, data } = action.payload;
