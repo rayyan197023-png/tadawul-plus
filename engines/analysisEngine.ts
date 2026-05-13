@@ -2787,8 +2787,9 @@ function calc9Layers(stk: any, bars: any[]): any {
   //  الطبقة ٤ — القوة النسبية + VWAP المؤسسي + Sector Momentum
   //  مدمج: RSC مرجّح بالقيمة السوقية + VWAP Score + أداء داخل القطاع
   // ════════════════════════════════════════
-  const mktWtd = STOCKS.reduce((s,x)=>s+x.ch*(x.mktCap||50),0)/
-                 STOCKS.reduce((s,x)=>s+(x.mktCap||50),0);
+  const mktWtd = STOCKS.reduce((s,x)=>s+x.ch*((x as any).mktCap||50),0)/
+               STOCKS.reduce((s,x)=>s+((x as any).mktCap||50),0);
+
   const rscRaw = stk.ch - mktWtd;
   const mktVar = STOCKS.reduce((s,x)=>s+Math.pow(x.ch-mktWtd,2),0)/STOCKS.length;
   const rscZ   = mktVar>0?rscRaw/Math.sqrt(mktVar):0;
