@@ -145,6 +145,7 @@ const [aiAnalysis, setAiAnalysis] = React.useState(null);
 
   useLiveStockPrices();
 useMarketBridge();
+usePriceUpdater();
 
 
   // ═══════════════════════════════════════════════
