@@ -179,6 +179,22 @@ const [visibleCount, setVisibleCount] = useState(20);
   const [showSrch, setShowSrch] = useState(false);
   const [now,      setNow]      = useState(new Date());
 const [debugTime, setDebugTime] = React.useState('');
+const [debugFetch, setDebugFetch] = React.useState('لم يُختبر');
+React.useEffect(() => {
+  const test = async () => {
+    try {
+      const res = await fetch('/api/sahmkdata?endpoint=quotes&symbols=2222,1120');
+      const json = await res.json();
+      const q = json.quotes?.[0];
+      setDebugFetch(`✅ ${q?.symbol}=${q?.price} (${json.count} أسهم)`);
+    } catch(e) {
+      setDebugFetch(`❌ خطأ: ${e.message}`);
+    }
+  };
+  test();
+  const t = setInterval(test, 20000);
+  return () => clearInterval(t);
+}, []);
 React.useEffect(() => {
   const t = setInterval(() => {
     setDebugTime(new Date().toLocaleTimeString('ar-SA'));
