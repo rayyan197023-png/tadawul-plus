@@ -260,14 +260,15 @@ function _gbmSeed(s) {
     const live = priceCache[s.sym];
     if (!live) return s;
     return {
-      ...s,
-      p:   live.p,
-      ch:  live.ch,
-      pct: live.pct,
-      v:   live.v,
-      ...(live.hi  != null && { hi: live.hi }),
-      ...(live.lo  != null && { lo: live.lo }),
-      ...(live.o   != null && { o:  live.o  }),
-    };
+  ...s,
+  p:   live.p,
+  ch:  live.ch,
+  pct: live.pct,
+  v:   live.v,
+  name: live.name || s.name,
+  ...(live.hi  != null && { hi: live.hi }),
+  ...(live.lo  != null && { lo: live.lo }),
+  ...(live.o   != null && { o:  live.o  }),
+};
   });
 }
