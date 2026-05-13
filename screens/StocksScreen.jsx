@@ -509,7 +509,8 @@ background:C.layer1,border:`1px solid ${C.line}`,borderRadius:16,padding:"16px",
 <div>liveStocks[1120]: {liveStocks.find(s=>s.sym==='1120')?.p}</div>
         <div>isLive: {String(config.isLive)}</div>
         <div>liveMarketData: {String(config.features.liveMarketData)}</div>
-        <div>آخر تحديث: {new Date().toLocaleTimeString('ar-SA')}</div>
+        <div>آخر تحديث: {debugTime}</div>
+<div>2222 live: {liveStocks.find(s=>s.sym==='2222')?.p}</div>
       </div>
     )}
     </div>
