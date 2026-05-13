@@ -139,56 +139,9 @@ function isSaudiMarketOpen() {
 }
 
 export async function fetchAllStocks(signal) {
-  try {
-    if (config.isLive && config.features.liveMarketData) {
-      console.log('[fetchAllStocks] Starting fetch...');
-      const allSyms = Object.keys(STOCKS_MAP);
-const chunks = [];
-for (let i = 0; i < allSyms.length; i += 50) {
-  chunks.push(allSyms.slice(i, i + 50));
-}
-const allQuotes = [];
-for (const chunk of chunks) {
-  try {
-const base = typeof window !== 'undefined' ? window.location.origin : '';
-const url = `${base}/api/sahmkdata?endpoint=quotes&symbols=${chunk.join(',')}`;
-    const res = await fetch(url);
-    const text = await res.text();
-    const json = JSON.parse(text);
-    if (json.quotes && json.quotes.length > 0) {
-      allQuotes.push(...json.quotes);
-    }
-  } catch(e) {}
-}
-if (allQuotes.length === 0) {
-  // Fallback: جلب سهم واحد مباشرة
-  try {
-    const res = await fetch('/api/sahmkdata?endpoint=quote&sym=2222');
-    const json = await res.json();
-    if (json.price && STOCKS_MAP['2222']) {
-      STOCKS_MAP['2222'].p = json.price;
-      STOCKS_MAP['2222'].ch = json.change;
-      STOCKS_MAP['2222'].pct = json.change_percent;
-    }
-  } catch(e) {}
-}
-if (allQuotes.length > 0) {
-  allQuotes.forEach(function(quote) {
-    if (STOCKS_MAP[quote.symbol] && quote.price) {
-      STOCKS_MAP[quote.symbol].p   = quote.price;
-      STOCKS_MAP[quote.symbol].ch  = quote.change;
-      STOCKS_MAP[quote.symbol].pct = quote.change_percent;
-      STOCKS_MAP[quote.symbol].v   = quote.volume;
-    }
-  });
   return [];
 }
-    }
-  } catch (err) {
-  console.error('[fetchAllStocks FAILED]', err.message);
-}
-  return [];
-}
+
 export async function fetchAIAnalysis(prompt, maxTokens = 1200, signal = undefined) {
   const res = await fetch(config.claudeProxyUrl, {
     method:  'POST',
