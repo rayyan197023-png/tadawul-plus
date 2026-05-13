@@ -176,8 +176,14 @@ export const STOCKS = [
   ..._STOCKS_EXPANDED,
 ];
 
-// Map للوصول السريع
-export const STOCKS_MAP = Object.fromEntries(STOCKS.map(s => [s.sym, s]));
+// Map للوصول السريع -- الأسعار تُحدَّث من API
+export const STOCKS_MAP = Object.fromEntries(STOCKS.map(s => [s.sym, {
+  ...s,
+  p:   0,
+  ch:  0,
+  pct: 0,
+  v:   0,
+}]));
 
 // Sectors metadata
 export const SECTORS = [
