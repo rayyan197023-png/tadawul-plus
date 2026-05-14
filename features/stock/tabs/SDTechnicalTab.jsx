@@ -4,7 +4,7 @@
  * @description تبويب التحليل التقني للسهم
  */
 import { useState, useRef, useMemo, useEffect } from 'react';
-import { C, SectionCard, SkeletonCard, Tag } from './StockDetailShared';
+import { C, SectionCard, SkeletonCard, Tag, nowStr } from './StockDetailShared';
 import { generateOHLCBars } from '../../../services/api/stocksApi';
 
 function TechLoader({ stk }) {
