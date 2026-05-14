@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { genBars, stockHealth } from '../engines/analysisEngine';
+import { stockHealth } from '../engines/analysisEngine';
 import { 
   backtest, 
   monteCarloSimulation, 
   compareWithBenchmark,
-  generateDataFromPortfolio,
-  generateDataFromStockList,
   generateDataFromMarket,
   createPortfolioBuyAndHoldStrategy,
+  generateDataFromPortfolioReal,
+  generateDataFromStockListReal,
 } from '../engines/backtestEngine';
 import { createTadawulStrategy, createBuyAndHoldStrategy } from '../engines/tadawulStrategy';
 import EquityCurveChart from '../components/charts/EquityCurveChart';
