@@ -177,14 +177,6 @@ useEffect(function(){
             history:c.history.slice(-9).concat([np])});
         });});
       }
-      // Sync stocksLive with priceCache from central store
-      setStocksLive(function(prev){return prev.map(function(s){
-        var d2=(Math.random()-0.49)*s.p*0.003;
-        var np=parseFloat((s.p+d2).toFixed(2));
-        var orig=STOCKS.filter(function(x){return x.sym===s.sym;})[0];
-        var npct=parseFloat(((np-(orig?orig.p:np))/(orig?orig.p:np)*100).toFixed(2));
-        return Object.assign({},s,{p:np,pct:npct,spark:(s.spark||[]).slice(-9).concat([np])});
-      });});
     },5000);
     return function(){clearInterval(t);};
   },[]);
