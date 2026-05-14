@@ -74,7 +74,7 @@ export default function TasiChart({ market }) {
 
   // جلب OHLCV تاسي
   useEffect(() => {
-    const periodMap = { 'شهر':'1M', '3 أشهر':'3M', 'سنة':'1Y' };
+    const periodMap = { 'يوم':'1D', 'أسبوع':'1W', 'شهر':'1M', '3 أشهر':'3M', 'سنة':'1Y' };
     const sahmkPeriod = periodMap[period];
     if (!sahmkPeriod) return;
     if (ohlcvData[period]) return;
