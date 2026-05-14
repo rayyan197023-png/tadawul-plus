@@ -109,10 +109,13 @@ const totalVol   = tasiLive?.total_volume ?? 0;
   // ── Build points for selected period
   const pts = useMemo(() => {
     if (period === 'يوم') {
-      const live = [...(market.todayPts ?? [idx])];
-      live[live.length - 1] = idx;
-      return live;
-    }
+  if (ohlcvData['يوم']?.length > 0) {
+    const live = [...ohlcvData['يوم']];
+    live[live.length - 1] = idx;
+    return live;
+  }
+  return [idx];
+}
     const base = ohlcvData[period] ?? [idx];
 
     const updated = [...base];
