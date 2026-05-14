@@ -5,8 +5,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { useStocks }  from '../../store';
-import { useNav }     from '../../store';
+import { useSharedPrices, useNav } from '../../store';
 import { colors }     from '../../theme/tokens';
 
 const C = colors;
