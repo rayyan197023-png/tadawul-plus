@@ -152,8 +152,6 @@ const [visibleCount, setVisibleCount] = useState(20);
   const [search,   setSearch]   = useState("");
   const [showSrch, setShowSrch] = useState(false);
   const [now,      setNow]      = useState(new Date());
-const [debugTime, setDebugTime] = React.useState('');
-const [debugFetch, setDebugFetch] = React.useState('لم يُختبر');
 React.useEffect(() => {
   const test = async () => {
     try {
