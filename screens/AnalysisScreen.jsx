@@ -271,6 +271,9 @@ const [filters, setFilters] = useState({
     return () => clearTimeout(t);
   }, [priceSignature]);
 
+const syms = liveStocks.slice(0, 50).map(s => s.sym);
+const ohlcvCache = useOHLCVCache(syms, '3M');
+
   const allData = useMemo(()=>{
     // ✨ تمرير liveMACRO كـ parameter بدلاً من تعديل MACRO global
     const result = liveStocks.map(stk=>{ 
