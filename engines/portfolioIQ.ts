@@ -2257,15 +2257,7 @@ function getBiasLabel(type: string): string {
   };
   return (labels as any)[type] || type;
 }
-function getRiskLevelLabel(level: string): string {
-  const labels = {
-    low: 'منخفض',
-    moderate: 'متوسط',
-    high: 'عالٍ',
-    extreme: 'شديد',
-  };
-  return (labels as any)[level] || level;
-}
+
 function emptyAnalysis(): IQAnalysis {
   return {
     iqScore: 0,
