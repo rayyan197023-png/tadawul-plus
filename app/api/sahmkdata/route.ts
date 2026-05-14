@@ -32,6 +32,9 @@ export async function GET(req: NextRequest) {
     else if (endpoint === 'quotes') {
       url = `${SAHMK_BASE}/quotes/?symbols=${symbols}`;
     }
+    else if (endpoint === 'prices') {
+  url = `${SAHMK_BASE}/quotes/?symbols=${symbols}`;
+}
     else if (endpoint === 'ohlcv') {
       const daysMap: Record<string, number> = {
         '1D': 1, '1W': 7, '1M': 30,
