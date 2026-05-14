@@ -459,34 +459,21 @@ background:C.layer1,border:`1px solid ${C.line}`,borderRadius:16,padding:"16px",
         );
       })()}
         {process.env.NODE_ENV === 'development' && (
-      <div style={{
-        position:'fixed', bottom:200, left:0, right:0,
-        background:'rgba(0,0,0,0.9)', color:'#fff',
-        fontSize:10, padding:'8px 12px', zIndex:9999,
-        borderTop:'1px solid #333', fontFamily:'monospace',
-      }}>
-<div>priceCache: {Object.keys(priceCache).length} أسهم</div>
-<div>pcName2222: {priceCache['2222']?.name ?? 'فارغ'}</div>
-<div>name[2222]: {priceCache['2222']?.name ?? 'فارغ'}</div>
-<div>name[2222]: {priceCache['2222']?.name ?? 'لا يوجد'}</div>
-<div>name[1120]: {priceCache['1120']?.name ?? 'لا يوجد'}</div>
-        <div>أول سعر حي: {priceCache[Object.keys(priceCache)[0]]?.p ?? 'فارغ'}</div>
-        <div>liveStocks[0]: {liveStocks[0]?.sym} = {liveStocks[0]?.p}</div>
-<div>priceCache[2222]: {priceCache['2222']?.p ?? 'غير موجود'}</div>
-<div>priceCache[1120]: {priceCache['1120']?.p ?? 'غير موجود'}</div>
-<div>priceCache[2010]: {priceCache['2010']?.p ?? 'غير موجود'}</div>
-<div>liveStocks count: {liveStocks.length}</div>
-<div>liveStocks[2222]: {liveStocks.find(s=>s.sym==='2222')?.p}</div>
-<div>liveStocks[1120]: {liveStocks.find(s=>s.sym==='1120')?.p}</div>
-        <div>isLive: {String(config.isLive)}</div>
-        <div>liveMarketData: {String(config.features.liveMarketData)}</div>
-        <div>آخر تحديث: {debugTime}</div>
-<div>2222 live: {liveStocks.find(s=>s.sym==='2222')?.p}</div>
-<div>priceCache ts: {priceCache['2222']?.ts ?? 'لا يوجد'}</div>
-<div>fetch test: {debugFetch}</div>
-
-      </div>
-    )}
+  <div style={{
+    position:'fixed', bottom:200, left:0, right:0,
+    background:'rgba(0,0,0,0.9)', color:'#fff',
+    fontSize:10, padding:'8px 12px', zIndex:9999,
+    borderTop:'1px solid #333', fontFamily:'monospace',
+  }}>
+    <div>priceCache: {Object.keys(priceCache).length} أسهم</div>
+    <div>priceCache[2222]: {priceCache['2222']?.p ?? 'غير موجود'}</div>
+    <div>priceCache[1120]: {priceCache['1120']?.p ?? 'غير موجود'}</div>
+    <div>liveStocks count: {liveStocks.length}</div>
+    <div>liveStocks[2222]: {liveStocks.find(s=>s.sym==='2222')?.p}</div>
+    <div>isLive: {String(config.isLive)}</div>
+    <div>liveMarketData: {String(config.features.liveMarketData)}</div>
+  </div>
+)}
     </div>
   );
 }
