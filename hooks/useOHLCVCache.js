@@ -26,7 +26,7 @@ export function useOHLCVCache(syms = [], period = '3M') {
           const r = await fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${sym}&period=${period}`);
           const j = await r.json();
           if (j?.data?.length > 0) {
-            cache[sym] = j.data.map(b => ({
+            cacheTime[sym] = Date.now();
               open:  b.open,
               hi:    b.high,
               lo:    b.low,
