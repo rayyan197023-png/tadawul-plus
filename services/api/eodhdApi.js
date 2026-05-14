@@ -1,178 +1,192 @@
 /**
- * @module services/api/eodhdApi
- * @description EODHD Market Data API -- جاهز للربط
+ * @module services/api/sahmkHistoricalApi
+ * @description جلب البيانات التاريخية الحقيقية من sahmk.sa
  *
- * الحالة الحالية: stub functions ترجع null
- * عند الاشتراك: ضع NEXT_PUBLIC_EODHD_KEY في Vercel وستعمل تلقائياً
+ * يحل محل genBars الوهمية في:
+ * - backtestEngine.ts → generateDataFromPortfolio / generateDataFromStockList
+ * - rebalancingEngine.ts → genBars calls
  *
- * التوثيق: https://eodhd.com/financial-apis/
+ * Endpoint المستخدم:
+ * GET /api/v1/historical/{symbol}/?from=YYYY-MM-DD&to=YYYY-MM-DD&interval=1d
+ *
+ * متطلبات: Starter plan أو أعلى
  */
 
-const API_KEY = process.env.NEXT_PUBLIC_EODHD_KEY ?? '';
+const SAHMK_BASE = 'https://app.sahmk.sa/api/v1';
+const SAHMK_KEY = process.env.NEXT_PUBLIC_SAHMK_KEY ?? '';
 
-const BASE_URL = 'https://eodhd.com/api';
-const EXCHANGE = 'SR';
-
-const hasKey = () => !!(API_KEY && API_KEY.length > 10);
-
-const buildUrl = (path, params = {}) => {
-  const url = new URL(`${BASE_URL}${path}`);
-  url.searchParams.set('api_token', API_KEY);
-  url.searchParams.set('fmt', 'json');
+function buildSahmkUrl(path, params = {}) {
+  const url = new URL(`${SAHMK_BASE}${path}`);
   Object.entries(params).forEach(([k, v]) => {
-    if (v != null) url.searchParams.set(k, v);
+    if (v != null) url.searchParams.set(k, String(v));
   });
   return url.toString();
-};
+}
 
-const apiFetch = async (url, signal, timeoutMs = 10000) => {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  const combinedSignal = signal || controller.signal;
+function daysAgo(n) {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return d.toISOString().slice(0, 10);
+}
+
+function mapSahmkBar(bar, prevClose) {
+  const c   = parseFloat(bar.close  ?? bar.c ?? 0);
+  const o   = parseFloat(bar.open   ?? bar.o ?? c);
+  const hi  = parseFloat(bar.high   ?? bar.h ?? c);
+  const lo  = parseFloat(bar.low    ?? bar.l ?? c);
+  const vol = parseInt(bar.volume   ?? bar.v ?? 0, 10);
+  const pct = prevClose && prevClose > 0
+    ? parseFloat(((c - prevClose) / prevClose * 100).toFixed(2))
+    : 0;
+  const t = bar.date ? new Date(bar.date).getTime() : Date.now();
+  return { t, d: bar.date ?? '', o, hi, lo, c, vol, pct };
+}
+
+export async function fetchHistoricalBars(symbol, days = 252, interval = '1d') {
+  if (!symbol) return [];
+  const from = daysAgo(days + 30);
+  const to   = new Date().toISOString().slice(0, 10);
+  const url  = buildSahmkUrl(`/historical/${symbol}/`, { from, to, interval });
+
   try {
-    const res = await fetch(url, { signal: combinedSignal });
-    clearTimeout(timer);
-    if (!res.ok) throw new Error(`EODHD HTTP ${res.status}`);
-    return res.json();
+    const res = await fetch(url, {
+      headers: { 'X-API-Key': SAHMK_KEY },
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) { console.warn(`[sahmkHistorical] HTTP ${res.status} for ${symbol}`); return []; }
+
+    const data    = await res.json();
+    const rawBars = Array.isArray(data) ? data : (data.data ?? data.results ?? []);
+    if (!rawBars.length) return [];
+
+    rawBars.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    const bars = [];
+    for (let i = 0; i < rawBars.length; i++) {
+      bars.push(mapSahmkBar(rawBars[i], i > 0 ? bars[i - 1].c : null));
+    }
+    return bars.slice(-days);
   } catch (e) {
-    clearTimeout(timer);
-    throw e;
+    console.warn(`[sahmkHistorical] fetchHistoricalBars(${symbol}):`, e.message);
+    return [];
   }
-};
-
-const toEODHDTicker = (sym) => {
-  if (!sym) return null;
-  if (sym.includes('.')) return sym;
-  return `${sym}.${EXCHANGE}`;
-};
-
-const mapFundamentals = (data) => {
-  if (!data) return null;
-  const g = data.General || {};
-  const h = data.Highlights || {};
-  const v = data.Valuation || {};
-  const s = data.SharesStats || {};
-  const d = data.SplitsDividends || {};
-  const t = data.Technicals || {};
-  return {
-    name:         g.Name,
-    sec:          g.Sector,
-    subsec:       g.Industry,
-    description:  g.Description,
-    website:      g.WebURL,
-    listedYear:   g.IPODate ? new Date(g.IPODate).getFullYear() : null,
-    mc:           h.MarketCapitalization ? (h.MarketCapitalization / 1e12).toFixed(2) + 'T' : null,
-    mcNum:        h.MarketCapitalization,
-    pe:           h.PERatio           ? parseFloat(h.PERatio)           : null,
-    forwardPE:    h.ForwardPE         ? parseFloat(h.ForwardPE)         : null,
-    eps:          h.EarningsShare     ? parseFloat(h.EarningsShare)     : null,
-    epsForward:   h.EPSEstimateNextYear ? parseFloat(h.EPSEstimateNextYear) : null,
-    bvps:         h.BookValue         ? parseFloat(h.BookValue)         : null,
-    pb:           v.PriceBookMRQ      ? parseFloat(v.PriceBookMRQ)      : null,
-    ps:           v.PriceSalesTTM     ? parseFloat(v.PriceSalesTTM)     : null,
-    evebitda:     v.EnterpriseValueEbitda ? parseFloat(v.EnterpriseValueEbitda) : null,
-    roe:          h.ReturnOnEquityTTM  ? parseFloat((h.ReturnOnEquityTTM  * 100).toFixed(2)) : null,
-    roa:          h.ReturnOnAssetsTTM  ? parseFloat((h.ReturnOnAssetsTTM  * 100).toFixed(2)) : null,
-    grossMargin:  h.GrossProfitTTM && h.RevenueTTM ? parseFloat((h.GrossProfitTTM / h.RevenueTTM * 100).toFixed(2)) : null,
-    opMargin:     h.OperatingMarginTTM ? parseFloat((h.OperatingMarginTTM * 100).toFixed(2)) : null,
-    netMargin:    h.ProfitMargin       ? parseFloat((h.ProfitMargin       * 100).toFixed(2)) : null,
-    rev:          h.RevenueTTM        ? Math.round(h.RevenueTTM / 1e6)  : null,
-    revGrowthYoY: h.RevenueGrowthQuarterlyYoy ? parseFloat((h.RevenueGrowthQuarterlyYoy * 100).toFixed(2)) : null,
-    net:          h.NetIncomeTTM      ? Math.round(h.NetIncomeTTM / 1e6): null,
-    ebitda:       h.EBITDA            ? Math.round(h.EBITDA / 1e6)      : null,
-    beta:         t.Beta              ? parseFloat(t.Beta)              : null,
-    hi52:         t['52WeekHigh']     ? parseFloat(t['52WeekHigh'])     : null,
-    lo52:         t['52WeekLow']      ? parseFloat(t['52WeekLow'])      : null,
-    ma50:         t['50DayMA']        ? parseFloat(t['50DayMA'])        : null,
-    ma200:        t['200DayMA']       ? parseFloat(t['200DayMA'])       : null,
-    shares:       s.SharesOutstanding ? (s.SharesOutstanding / 1e9).toFixed(2) + 'B' : null,
-    floatPct:     s.SharesFloat && s.SharesOutstanding ? parseFloat((s.SharesFloat / s.SharesOutstanding * 100).toFixed(2)) : null,
-    div:          d.ForwardAnnualDividendRate  ? parseFloat(d.ForwardAnnualDividendRate)           : null,
-    divYld:       d.ForwardAnnualDividendYield ? parseFloat((d.ForwardAnnualDividendYield * 100).toFixed(2)) : null,
-    payoutRatio:  d.PayoutRatio       ? parseFloat((d.PayoutRatio * 100).toFixed(2)) : null,
-    exDivDate:    d.ExDividendDate    || null,
-  };
-};
-
-const mapRealTimeQuote = (data) => {
-  if (!data) return null;
-  return {
-    p:        data.close        ? parseFloat(data.close)                        : null,
-    ch:       data.change       ? parseFloat(data.change)                       : null,
-    pct:      data.change_p     ? parseFloat(data.change_p)                     : null,
-    o:        data.open         ? parseFloat(data.open)                         : null,
-    dayHi:    data.high         ? parseFloat(data.high)                         : null,
-    dayLo:    data.low          ? parseFloat(data.low)                          : null,
-    prev:     data.previousClose? parseFloat(data.previousClose)                : null,
-    v:        data.volume       ? parseInt(data.volume)                         : null,
-    vwap:     data.vwap         ? parseFloat(data.vwap)                         : null,
-    updatedAt: data.timestamp   ? new Date(data.timestamp * 1000).toISOString() : null,
-  };
-};
-
-export async function fetchRealTimeQuote(sym, signal) {
-  if (!hasKey()) { console.info('[EODHD] لا يوجد API key'); return null; }
-  try {
-    const ticker = toEODHDTicker(sym);
-    const url = buildUrl(`/real-time/${ticker}`, { s: ticker });
-    const data = await apiFetch(url, signal);
-    return mapRealTimeQuote(data);
-  } catch (e) { console.warn('[EODHD] fetchRealTimeQuote:', e.message); return null; }
 }
 
-export async function fetchBulkQuotes(syms, signal) {
-  if (!hasKey() || !syms?.length) return [];
-  try {
-    const tickers = syms.map(toEODHDTicker).join(',');
-    const url = buildUrl(`/real-time/${syms[0]}.${EXCHANGE}`, { s: tickers });
-    const data = await apiFetch(url, signal);
-    const arr = Array.isArray(data) ? data : [data];
-    return arr.map(mapRealTimeQuote).filter(Boolean);
-  } catch (e) { console.warn('[EODHD] fetchBulkQuotes:', e.message); return []; }
-}
+export async function fetchHistoricalBarsBulk(symbols, days = 252) {
+  if (!symbols || symbols.length === 0) return {};
+  const BATCH_SIZE = 5;
+  const result = {};
 
-export async function fetchOHLCHistory(sym, params = {}, signal) {
-  if (!hasKey()) return [];
-  try {
-    const ticker = toEODHDTicker(sym);
-    const url = buildUrl(`/eod/${ticker}`, { from: params.from, to: params.to, period: params.period || 'd' });
-    const data = await apiFetch(url, signal);
-    if (!Array.isArray(data)) return [];
-    return data.map(bar => ({ date: bar.date, o: parseFloat(bar.open), h: parseFloat(bar.high), l: parseFloat(bar.low), c: parseFloat(bar.close), v: parseInt(bar.volume) }));
-  } catch (e) { console.warn('[EODHD] fetchOHLCHistory:', e.message); return []; }
-}
-
-export async function fetchFundamentals(sym, signal) {
-  if (!hasKey()) { console.info('[EODHD] لا يوجد API key'); return null; }
-  try {
-    const ticker = toEODHDTicker(sym);
-    const url = buildUrl(`/fundamentals/${ticker}`);
-    const data = await apiFetch(url, signal);
-    return mapFundamentals(data);
-  } catch (e) { console.warn('[EODHD] fetchFundamentals:', e.message); return null; }
-}
-
-export async function fetchTASIIndex(signal) {
-  if (!hasKey()) return null;
-  try {
-    const url = buildUrl('/real-time/TASI.SR');
-    const data = await apiFetch(url, signal);
-    return mapRealTimeQuote(data);
-  } catch (e) { console.warn('[EODHD] fetchTASIIndex:', e.message); return null; }
-}
-
-export function periodToEODHDParams(period) {
-  const now = new Date();
-  const fmt = d => d.toISOString().slice(0, 10);
-  const sub = (d, days) => { const x = new Date(d); x.setDate(x.getDate() - days); return x; };
-  switch (period) {
-    case '1D': return { from: fmt(sub(now, 1)),    to: fmt(now), period: 'd' };
-    case '1W': return { from: fmt(sub(now, 7)),    to: fmt(now), period: 'd' };
-    case '1M': return { from: fmt(sub(now, 30)),   to: fmt(now), period: 'd' };
-    case '3M': return { from: fmt(sub(now, 90)),   to: fmt(now), period: 'd' };
-    case '6M': return { from: fmt(sub(now, 180)),  to: fmt(now), period: 'w' };
-    case '1Y': return { from: fmt(sub(now, 365)),  to: fmt(now), period: 'w' };
-    case '5Y': return { from: fmt(sub(now, 1825)), to: fmt(now), period: 'm' };
-    default:   return { from: fmt(sub(now, 90)),   to: fmt(now), period: 'd' };
+  for (let i = 0; i < symbols.length; i += BATCH_SIZE) {
+    const batch = symbols.slice(i, i + BATCH_SIZE);
+    const batchResults = await Promise.allSettled(
+      batch.map(sym => fetchHistoricalBars(sym, days))
+    );
+    batch.forEach((sym, idx) => {
+      result[sym] = batchResults[idx].status === 'fulfilled' ? batchResults[idx].value : [];
+    });
+    if (i + BATCH_SIZE < symbols.length) {
+      await new Promise(resolve => setTimeout(resolve, 200));
+    }
   }
+  return result;
+}
+
+export async function fetchBarsForBacktest(symOrStk, days = 252) {
+  const symbol = typeof symOrStk === 'string'
+    ? symOrStk
+    : (symOrStk?.sym ?? symOrStk?.symbol ?? '');
+  if (!symbol) return [];
+  return fetchHistoricalBars(symbol, days);
+}
+
+export async function generateRealDataFromPortfolio(positions, days = 252) {
+  if (!positions || positions.length === 0) return [];
+
+  const symbols     = positions.map(p => p.sym).filter(Boolean);
+  const stocksBars  = await fetchHistoricalBarsBulk(symbols, days);
+  const validSyms   = symbols.filter(sym => stocksBars[sym]?.length > 10);
+  if (validSyms.length === 0) return [];
+
+  const minLen = Math.min(...validSyms.map(sym => stocksBars[sym].length));
+  const data   = [];
+
+  for (let i = 0; i < minLen; i++) {
+    const prices = {}, stocksData = [];
+    for (const sym of validSyms) {
+      const bars = stocksBars[sym];
+      const bar  = bars[bars.length - minLen + i];
+      if (!bar) continue;
+      prices[sym] = bar.c;
+      const pos = positions.find(p => p.sym === sym);
+      stocksData.push({
+        sym,
+        name: pos?.stk?.name ?? sym,
+        sector: pos?.stk?.sec ?? '',
+        bars: bars.slice(0, bars.length - minLen + i + 1),
+        currentPrice: bar.c,
+        targetWeight: pos?.weight ?? (1 / validSyms.length),
+      });
+    }
+    data.push({
+      date: stocksBars[validSyms[0]][stocksBars[validSyms[0]].length - minLen + i]?.d ?? '',
+      prices,
+      stocksData,
+    });
+  }
+  return data;
+}
+
+export async function generateRealDataFromStockList(stocksList, days = 252, maxStocks = 15) {
+  if (!stocksList || stocksList.length === 0) return [];
+
+  const selected   = stocksList.slice(0, maxStocks);
+  const symbols    = selected.map(s => s.sym).filter(Boolean);
+  const stocksBars = await fetchHistoricalBarsBulk(symbols, days);
+  const validSyms  = symbols.filter(sym => stocksBars[sym]?.length > 10);
+  if (validSyms.length === 0) return [];
+
+  const minLen = Math.min(...validSyms.map(sym => stocksBars[sym].length));
+  const data   = [];
+
+  for (let i = 0; i < minLen; i++) {
+    const prices = {}, stocksData = [];
+    for (const sym of validSyms) {
+      const bars = stocksBars[sym];
+      const bar  = bars[bars.length - minLen + i];
+      if (!bar) continue;
+      prices[sym] = bar.c;
+      const stk = selected.find(s => s.sym === sym);
+      stocksData.push({
+        sym,
+        name: stk?.name ?? sym,
+        sector: stk?.sec ?? '',
+        bars: bars.slice(0, bars.length - minLen + i + 1),
+        currentPrice: bar.c,
+      });
+    }
+    data.push({
+      date: stocksBars[validSyms[0]][stocksBars[validSyms[0]].length - minLen + i]?.d ?? '',
+      prices,
+      stocksData,
+    });
+  }
+  return data;
+}
+
+export async function sahmkHistoricalHandler(request) {
+  const { searchParams } = new URL(request.url);
+  const symbol   = searchParams.get('symbol');
+  const days     = parseInt(searchParams.get('days') ?? '252', 10);
+  const interval = searchParams.get('interval') ?? '1d';
+
+  if (!symbol) {
+    return Response.json({ error: 'symbol مطلوب' }, { status: 400 });
+  }
+
+  const bars = await fetchHistoricalBars(symbol, days, interval);
+  return Response.json(
+    { symbol, bars, count: bars.length },
+    { headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400' } }
+  );
 }
