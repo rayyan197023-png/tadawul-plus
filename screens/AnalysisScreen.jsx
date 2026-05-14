@@ -581,7 +581,9 @@ const tasiVal = 11842
         const tempOpacity = "0.018";
 
         // ٣ — Glanceable Dashboard
-        const best3  = [...allData].sort(function(a,b){ return b.health.score-a.health.score; }).slice(0,1)[0];
+const best3 = allData.length > 0
+  ? [...allData].sort(function(a,b){ return ((b&&b.health&&b.health.score)||0) - ((a&&a.health&&a.health.score)||0); }).slice(0,1)[0]
+  : null;
         const mktOk  = avgHealth >= 60;
         return(
         <div style={{paddingBottom:80,position:"relative",zIndex:1}}>
