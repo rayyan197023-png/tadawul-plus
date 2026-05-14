@@ -937,8 +937,9 @@ const best = allData.length > 0
                           <div style={{fontSize:6,color:C.smoke,marginTop:1}}>{best.health.grade}</div>
                         </div>
                       </div>
-                    </div>
+                         </div>
                   </div>
+                  )}
                 </div>
               </div>
             );
