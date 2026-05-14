@@ -152,21 +152,7 @@ const [visibleCount, setVisibleCount] = useState(20);
   const [search,   setSearch]   = useState("");
   const [showSrch, setShowSrch] = useState(false);
   const [now,      setNow]      = useState(new Date());
-React.useEffect(() => {
-  const test = async () => {
-    try {
-      const res = await fetch('/api/sahmkdata?endpoint=quotes&symbols=2222,1120');
-      const json = await res.json();
-      const q = json.quotes?.[0];
-      setDebugFetch(`✅ keys: ${Object.keys(json).join(',')} | raw: ${JSON.stringify(json).slice(0,100)}`);
-    } catch(e) {
-      setDebugFetch(`❌ خطأ: ${e.message}`);
-    }
-  };
-  test();
-  const t = setInterval(test, 20000);
-  return () => clearInterval(t);
-}, []);
+
 React.useEffect(() => {
   const t = setInterval(() => {
     setDebugTime(new Date().toLocaleTimeString('ar-SA'));
