@@ -377,4 +377,4 @@ const Tag = ({ text, color }) => (
 
 // ─── ChartLoader ─────────────────────────────────────────────────
 
-export { C, Skeleton, SkeletonCard, EmptyState, ErrorState, SectionCard, Row, Tag };
+export { C, Skeleton, SkeletonCard, EmptyState, ErrorState, SectionCard, Row, Tag, nowStr };
