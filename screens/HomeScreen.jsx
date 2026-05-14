@@ -797,76 +797,390 @@ function AdvancedSection({liveStocks=[]}) {
 }
 
 /* ── خريطة السيولة ── */
+/* ══════════════════════════════════════════════════════
+   LIQUIDITY PANEL -- خريطة السيولة الذكية الكاملة
+   4 تبويبات: الخريطة | القائمة الذكية | القطاعات | DNA السيولة
+══════════════════════════════════════════════════════ */
 function LiquidityMapPanel({stocks=[]}) {
-  const {openStock}=useNav();
-  const data=useMemo(()=>stocks.map(s=>{
-    const vol=s.v||1e6;
-    const avgVol=s.avgV||vol;
-    const rv=((vol+avgVol)/2)/avgVol;
-    const lpi=Math.round(((s.pct||0)/3)*40+(rv-1)*25);
-    const sm=Math.min(100,Math.max(0,
-      (rv>1.5&&(s.pct||0)>0?30:10)+
-      ((s.pct||0)>1?25:(s.pct||0)>0?15:5)+
-      (vol>avgVol*1.5?25:vol>avgVol?15:5)+20
-    ));
-    const col=sm>=75&&(s.pct||0)>0?"#4d9fff"
-      :lpi>35&&(s.pct||0)>0?"#4ade80"
-      :Math.abs(lpi)<=20?"#6b7280"
-      :lpi<-35?"#ff5f6a":"#a0a8c0";
-    const lbl=sm>=75&&(s.pct||0)>0?"سيولة مؤسسية"
-      :lpi>35&&(s.pct||0)>0?"شراء نشط"
-      :Math.abs(lpi)<=20?"حيادي"
-      :lpi<-35?"تصريف":"محايد";
-    return{stk:s,sm,lpi,rv:+rv.toFixed(2),col,lbl};
-  }),[stocks]);
+  const {openStock} = useNav();
+  const [view, setView]             = useState("map");
+  const [scanning, setScan]         = useState(false);
+  const [lastUpdate, setLastUpdate] = useState(new Date());
+  const [selSec, setSelSec]         = useState(null);
 
-  const LEGEND=[
-    {c:"#4d9fff",l:"مؤسسي"},{c:"#4ade80",l:"شراء"},
-    {c:"#6b7280",l:"حيادي"},{c:"#ff5f6a",l:"تصريف"}
+  const data = useMemo(() => stocks.map(s => {
+    const vol    = s.v    || 1e6;
+    const avgVol = s.avgV || vol;
+    const rv     = ((vol + avgVol) / 2) / avgVol;
+    const lpi    = Math.round(((s.pct||0) / 3) * 40 + (rv - 1) * 25);
+
+    let sm = 20;
+    if (rv > 2.5 && (s.pct||0) > 0) sm += 30;
+    else if (rv > 1.5 && (s.pct||0) > 0) sm += 20;
+    else if (rv > 1.2) sm += 10;
+    if ((s.pct||0) > 2) sm += 25;
+    else if ((s.pct||0) > 0) sm += 15;
+    else if ((s.pct||0) < -2) sm -= 10;
+    if (vol > avgVol * 1.5) sm += 25;
+    else if (vol > avgVol) sm += 15;
+    sm = Math.min(100, Math.max(0, sm));
+
+    const hd = (s.pct||0) > 0.3 && rv > 1.5 && lpi < 0;
+    const ep = rv < 0.75 && Math.abs(s.pct||0) < 0.5;
+
+    let col, lbl;
+    if      (sm >= 75 && (s.pct||0) > 0)  { col = BLUE;      lbl = "سيولة مؤسسية"; }
+    else if (lpi > 35 && (s.pct||0) > 0)  { col = "#4ade80"; lbl = "شراء نشط";     }
+    else if (Math.abs(lpi) <= 20)          { col = "#6b7280"; lbl = "حيادي";         }
+    else if (hd)                           { col = "#fb923c"; lbl = "تصريف مخفي";   }
+    else if (lpi < -35)                    { col = R;         lbl = "تصريف مؤسسي";  }
+    else if ((s.pct||0) < 0)              { col = "#f87171"; lbl = "ضغط بيع";       }
+    else                                   { col = T2;        lbl = "محايد";         }
+
+    const phase = lpi > 30 && rv > 1.5 ? "تجميع نشط"
+                : lpi > 10             ? "تجميع مبكر"
+                : lpi < -30 && rv > 1.5 ? "تصريف نشط"
+                : lpi < -10            ? "تصريف مبكر" : "توحيد";
+    const phCol = lpi > 10 ? G : lpi < -10 ? R : GOLD;
+
+    const mfi = Math.min(100, Math.max(0, Math.round(50 + (s.pct||0) * 5)));
+    const cmf = +((s.pct||0) / 20).toFixed(3);
+    const rsi = Math.min(100, Math.max(0, Math.round(50 + (s.pct||0) * 3)));
+
+    return { stk:s, sm, lpi:Math.round(lpi), rv:+rv.toFixed(2), col, lbl, hd, ep, phase, phCol, mfi, cmf, rsi, vp:Math.round((rv-1)*100) };
+  }), [stocks]);
+
+  const run = () => { setScan(true); setTimeout(() => { setLastUpdate(new Date()); setScan(false); }, 900); };
+  useEffect(() => { run(); }, []);
+
+  const now = `${lastUpdate.getHours().toString().padStart(2,"0")}:${lastUpdate.getMinutes().toString().padStart(2,"0")}`;
+
+  const sectorFlows = useMemo(() => {
+    const s = {};
+    data.forEach(d => {
+      const k = d.stk.sec || "أخرى";
+      if (!s[k]) s[k] = { name:k, in:0, out:0, n:0, sum:0 };
+      s[k].n++; s[k].sum += d.sm;
+      if (d.lpi > 20) s[k].in += d.lpi;
+      else if (d.lpi < -20) s[k].out += Math.abs(d.lpi);
+    });
+    return Object.values(s).map(x => ({
+      ...x, avg:Math.round(x.sum/x.n), net:x.in-x.out,
+      dir:x.in>x.out?"دخول":"خروج", fc:x.in>x.out?G:R,
+    }));
+  }, [data]);
+
+  const LEGEND = [
+    {c:BLUE,     l:"مؤسسي"},
+    {c:"#4ade80",l:"شراء"},
+    {c:"#6b7280",l:"حيادي"},
+    {c:"#fb923c",l:"تصريف مخفي"},
+    {c:R,        l:"تصريف"},
   ];
 
-  return(
-    <div style={{padding:"10px 12px"}}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",
-        marginBottom:10,padding:"6px 10px",
-        background:"linear-gradient(135deg,rgba(167,139,250,.06),transparent)"}}>
-        <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-          {LEGEND.map((l,i)=>(
-            <div key={i} style={{display:"flex",alignItems:"center",gap:3}}>
-              <div style={{width:8,height:8,borderRadius:2,background:l.c}}/>
-              <span style={{fontSize:8,color:T2}}>{l.l}</span>
+  const VTABS = [
+    {id:"map",   l:"الخريطة"},
+    {id:"list",  l:"القائمة الذكية"},
+    {id:"sector",l:"القطاعات"},
+    {id:"dna",   l:"DNA السيولة"},
+  ];
+
+  return (
+    <div>
+      {/* Header */}
+      <div style={{padding:"10px 12px 8px",background:"linear-gradient(135deg,rgba(167,139,250,.06),transparent)"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            <button onClick={run} disabled={scanning} style={{
+              background:"linear-gradient(135deg,#6d28d9,"+PU+")",border:"none",color:T1,
+              borderRadius:9,padding:"5px 14px",fontSize:11,fontWeight:700,cursor:"pointer",
+              fontFamily:"Cairo,sans-serif",boxShadow:"0 2px 8px rgba(167,139,250,.3)",opacity:scanning?0.6:1,
+            }}>{scanning?"...":"فحص"}</button>
+          </div>
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            <div style={{textAlign:"right"}}>
+              <div style={{fontSize:13,fontWeight:900,color:T1}}>خريطة السيولة الذكية</div>
+              <div style={{fontSize:8.5,color:T3}}>Smart Liquidity Map</div>
+            </div>
+            <div style={{display:"flex",alignItems:"center",gap:5}}>
+              {scanning
+                ? <div style={{width:10,height:10,border:"2px solid "+PU+"40",borderTop:"2px solid "+PU,borderRadius:"50%",animation:"spin 1s linear infinite"}}/>
+                : <div style={{width:8,height:8,borderRadius:"50%",background:PU,boxShadow:"0 0 8px "+PU}}/>
+              }
+              <span style={{fontSize:10,color:T2}}>تحديث: {now}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Sub-tabs */}
+        <div style={{display:"flex",gap:6}}>
+          {VTABS.map(v=>(
+            <button key={v.id} onClick={()=>setView(v.id)} style={{
+              flex:1,padding:"6px 4px",borderRadius:9,fontSize:10,fontWeight:600,
+              cursor:"pointer",fontFamily:"Cairo,sans-serif",transition:"all .15s",
+              background:view===v.id?"linear-gradient(135deg,#6d28d9,"+PU+")":"rgba(255,255,255,.05)",
+              border:"1px solid "+(view===v.id?PU+"60":"rgba(255,255,255,.07)"),
+              color:view===v.id?T1:T3,
+              boxShadow:view===v.id?"0 2px 8px rgba(167,139,250,.2)":"none",
+            }}>{v.l}</button>
+          ))}
+        </div>
+
+        <div style={{marginTop:8,fontSize:8,color:GOLD,background:"rgba(245,158,11,.05)",borderRadius:7,padding:"4px 8px",border:"1px solid rgba(245,158,11,.1)",lineHeight:1.5}}>
+          ⚠ التحليل استرشادي -- محسوب من: حجم التداول · نسبة التغير · الحجم النسبي. ليس توصية استثمارية.
+        </div>
+      </div>
+
+      {/* Scanning */}
+      {scanning&&(
+        <div style={{padding:"14px 12px",display:"flex",flexDirection:"column",gap:8}}>
+          {[100,85,70,55].map((w,i)=>(
+            <div key={i} style={{height:10,borderRadius:5,background:PU+"10",width:w+"%",opacity:.5}}/>
+          ))}
+        </div>
+      )}
+
+      {/* ── MAP VIEW ── */}
+      {!scanning&&view==="map"&&(
+        <div style={{padding:"10px 12px"}}>
+          <div style={{display:"flex",gap:6,marginBottom:10,flexWrap:"wrap"}}>
+            {LEGEND.map((l,i)=>(
+              <div key={i} style={{display:"flex",alignItems:"center",gap:3}}>
+                <div style={{width:8,height:8,borderRadius:2,background:l.c}}/>
+                <span style={{fontSize:8,color:T2}}>{l.l}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
+            {data.map((d,i)=>{
+              const sz=d.sm>=80?72:d.sm>=65?62:d.sm>=50?52:d.sm>=35?44:36;
+              return(
+                <div key={i} onClick={()=>openStock(d.stk)} style={{
+                  width:sz,height:sz,borderRadius:9,
+                  background:"linear-gradient(135deg,"+d.col+"25,"+d.col+"10)",
+                  border:"1.5px solid "+d.col+"50",
+                  display:"flex",flexDirection:"column",alignItems:"center",
+                  justifyContent:"center",padding:3,cursor:"pointer",
+                }}>
+                  <span style={{fontSize:Math.max(8,sz/7),fontWeight:900,color:T1,lineHeight:1}}>{d.stk.sym}</span>
+                  <span style={{fontSize:Math.max(8,sz/8),fontWeight:700,color:d.col,lineHeight:1.2}}>{d.sm}</span>
+                  <span style={{fontSize:7,color:(d.stk.pct||0)>=0?G:R,fontWeight:600}}>
+                    {(d.stk.pct||0)>=0?"+":""}{(d.stk.pct||0).toFixed(1)}%
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── LIST VIEW ── */}
+      {!scanning&&view==="list"&&(
+        <div style={{padding:"10px 12px"}}>
+          <div style={{fontSize:12,fontWeight:700,color:PU,marginBottom:10,textAlign:"right"}}>
+            أعلى الأسهم بسيولة ذكية
+          </div>
+          {[...data].sort((a,b)=>b.sm-a.sm).slice(0,10).map((d,i)=>(
+            <div key={i} style={{background:CARD2,borderRadius:14,padding:"12px 14px",marginBottom:8,border:"1px solid "+LN}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  <div style={{minWidth:42,textAlign:"right"}}>
+                    <div style={{fontSize:22,fontWeight:900,color:PU,lineHeight:1}}>{d.sm}</div>
+                    <div style={{fontSize:9,color:T3}}>نقاط الذكاء</div>
+                  </div>
+                </div>
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  <div style={{textAlign:"right"}}>
+                    <div style={{fontSize:15,fontWeight:800,color:T1}}>{d.stk.name}</div>
+                    <div style={{fontSize:10,color:d.col,fontWeight:600}}>{d.lbl}</div>
+                  </div>
+                  <div style={{background:CARD3,borderRadius:8,padding:"6px 10px",minWidth:46,textAlign:"center",border:"1px solid rgba(255,255,255,.08)"}}>
+                    <span style={{fontSize:11,fontWeight:800,color:T1}}>{d.stk.sym}</span>
+                  </div>
+                </div>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:6}}>
+                {[
+                  {l:"MFI", v:d.mfi,                        c:d.mfi>60?G:d.mfi<40?R:T2},
+                  {l:"CMF", v:d.cmf>0?"+"+d.cmf:d.cmf,     c:d.cmf>0.05?G:d.cmf<-0.05?R:T2},
+                  {l:"RSI", v:d.rsi,                        c:d.rsi>60?G:d.rsi<40?R:T2},
+                  {l:"LPI", v:(d.lpi>0?"+":"")+d.lpi,      c:d.lpi>20?G:d.lpi<-20?R:T2},
+                ].map((m,mi)=>(
+                  <div key={mi} style={{background:"rgba(255,255,255,.04)",borderRadius:8,padding:"6px 8px",textAlign:"center"}}>
+                    <div style={{fontSize:7.5,color:T3,marginBottom:3}}>{m.l}</div>
+                    <div style={{fontSize:11,fontWeight:700,color:m.c,lineHeight:1}}>{m.v}</div>
+                  </div>
+                ))}
+              </div>
+              {d.hd&&<div style={{marginTop:7,fontSize:8.5,color:GOLD,background:GOLD+"10",borderRadius:7,padding:"4px 9px"}}>
+                ⚠ تصريف مخفي -- ارتفاع السعر مع ضعف مؤشر التدفق
+              </div>}
+              {d.ep&&<div style={{marginTop:7,fontSize:8.5,color:BLUE,background:BLUE+"10",borderRadius:7,padding:"4px 9px"}}>
+                💥 احتمال انفجار -- تضيق النطاق مع تراجع السيولة
+              </div>}
             </div>
           ))}
         </div>
-        <span style={{fontSize:10,fontWeight:700,color:PU}}>خريطة السيولة الذكية</span>
+      )}
+
+      {/* ── SECTOR VIEW ── */}
+      {!scanning&&view==="sector"&&(
+        <div style={{padding:"10px 12px"}}>
+          <div style={{fontSize:11,fontWeight:700,color:PU,marginBottom:8}}>تحليل تدفق السيولة بالقطاع</div>
+          {sectorFlows.map((sec,i)=>{
+            const bw=Math.min(100,Math.abs(sec.net)/3);
+            const open=selSec===sec.name;
+            const secStocks=data.filter(d=>(d.stk.sec||"أخرى")===sec.name)
+              .filter(d=>sec.dir==="دخول"?d.lpi>0:d.lpi<=0)
+              .sort((a,b)=>sec.dir==="دخول"?b.lpi-a.lpi:a.lpi-b.lpi);
+            return(
+              <div key={i} style={{marginBottom:6}}>
+                <div onClick={()=>setSelSec(open?null:sec.name)} style={{
+                  background:open?sec.fc+"10":CARD2,borderRadius:10,
+                  padding:"9px 11px",cursor:"pointer",
+                  border:"1px solid "+(open?sec.fc+"30":LN),
+                }}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
+                    <div style={{display:"flex",alignItems:"center",gap:5}}>
+                      <span style={{fontSize:8.5,color:sec.fc,fontWeight:700,background:sec.fc+"15",borderRadius:5,padding:"1px 7px"}}>
+                        {sec.dir} {sec.dir==="دخول"?"↑":"↓"}
+                      </span>
+                      <span style={{fontSize:9,color:T3}}>{sec.n} سهم</span>
+                    </div>
+                    <div style={{display:"flex",alignItems:"center",gap:6}}>
+                      <span style={{fontSize:12,fontWeight:800,color:T1}}>{sec.name}</span>
+                      <span style={{fontSize:10,color:T3}}>{open?"▲":"▼"}</span>
+                    </div>
+                  </div>
+                  <div style={{height:5,background:CARD,borderRadius:3,overflow:"hidden",marginBottom:4}}>
+                    <div style={{height:"100%",width:bw+"%",background:sec.fc,borderRadius:3}}/>
+                  </div>
+                  <div style={{display:"flex",justifyContent:"space-between"}}>
+                    <span style={{fontSize:8,color:T3}}>متوسط الذكاء: <span style={{color:PU,fontWeight:700}}>{sec.avg}</span></span>
+                    <span style={{fontSize:8,color:sec.fc,fontWeight:700}}>تدفق: {sec.net>0?"+":""}{sec.net.toFixed(0)}</span>
+                  </div>
+                </div>
+                {open&&secStocks.length>0&&(
+                  <div style={{marginRight:8,marginTop:3,background:CARD,borderRadius:10,border:"1px solid "+LN}}>
+                    <div style={{padding:"6px 10px",borderBottom:"1px solid "+LN,display:"flex",justifyContent:"space-between"}}>
+                      <span style={{fontSize:8,color:T3}}>نقاط الذكاء</span>
+                      <span style={{fontSize:9,fontWeight:700,color:sec.fc}}>
+                        {sec.dir==="دخول"?"أسهم الشراء -- سيولة داخلة":"أسهم البيع -- سيولة خارجة"}
+                      </span>
+                    </div>
+                    {secStocks.slice(0,5).map((d,si)=>(
+                      <div key={si} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 10px",borderBottom:"1px solid "+LN}}>
+                        <div style={{display:"flex",alignItems:"center",gap:6}}>
+                          <div style={{width:6,height:6,borderRadius:"50%",background:d.lpi>0?G:R}}/>
+                          <div>
+                            <div style={{fontSize:10,fontWeight:700,color:T1}}>{d.stk.name}</div>
+                            <div style={{fontSize:8.5,color:d.lpi>0?G:R,fontWeight:600}}>{(d.stk.pct||0)>=0?"+":""}{(d.stk.pct||0).toFixed(2)}%</div>
+                          </div>
+                        </div>
+                        <div style={{textAlign:"left"}}>
+                          <div style={{fontSize:11,fontWeight:800,color:PU}}>{d.sm}</div>
+                          <div style={{fontSize:8,color:d.lpi>0?G:R}}>LPI: {d.lpi>0?"+":""}{d.lpi}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── DNA VIEW ── */}
+      {!scanning&&view==="dna"&&(
+        <div style={{padding:"10px 12px"}}>
+          <div style={{fontSize:11,fontWeight:700,color:PU,marginBottom:8}}>
+            DNA السيولة -- نمط حركة المال الذكي
+          </div>
+          {[...data].filter(d=>d.sm>30).sort((a,b)=>b.sm-a.sm).slice(0,8).map((d,i)=>(
+            <DnaCard key={i} d={d}/>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── DNA CARD ── */
+function DnaCard({d}) {
+  const [activeBar, setActiveBar] = useState(null);
+
+  const bars = useMemo(()=>Array.from({length:20},(_,k)=>{
+    const daysAgo=19-k;
+    const date=new Date(); date.setDate(date.getDate()-daysAgo);
+    const dayNames=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+    const monthNames=["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+    const timeFade=0.5+(k/20)*0.5;
+    const baseH=4+(d.sm/100)*44*timeFade;
+    const noise=(Math.sin(k*2.4+d.stk.sym.charCodeAt(0))*0.5+0.5)*8;
+    const h=Math.round(baseH+noise);
+    const barPct=+((d.stk.pct||0)*timeFade*(0.8+Math.sin(k)*0.2)).toFixed(2);
+    const vol=Math.round((d.stk.v||1e6)*(0.4+Math.sin(k*1.7)*0.3+0.3));
+    return{
+      k, h:Math.max(4,h), barPct, vol, isRecent:k>14,
+      label:`${dayNames[date.getDay()]} ${date.getDate()} ${monthNames[date.getMonth()]}`,
+      shortDate:`${date.getDate()}/${date.getMonth()+1}`,
+    };
+  }),[d]);
+
+  const ab = activeBar!==null ? bars[activeBar] : null;
+
+  return(
+    <div style={{background:CARD2,borderRadius:12,padding:"10px 12px",marginBottom:7,border:"1px solid "+LN}}>
+      <div style={{display:"flex",gap:2,alignItems:"flex-end",height:44,marginBottom:4}}>
+        {bars.map(bar=>(
+          <div key={bar.k} onClick={()=>setActiveBar(activeBar===bar.k?null:bar.k)} style={{
+            flex:1,height:bar.h,borderRadius:2,cursor:"pointer",
+            background:activeBar===bar.k?d.col:bar.isRecent?d.col+"cc":d.col+"30",
+            transition:"all .15s",
+            transform:activeBar===bar.k?"scaleY(1.18)":"scaleY(1)",
+            transformOrigin:"bottom",
+            boxShadow:activeBar===bar.k?"0 0 6px "+d.col:"none",
+          }}/>
+        ))}
       </div>
-      <div style={{fontSize:8,color:GOLD,background:"rgba(245,158,11,.05)",borderRadius:7,
-        padding:"4px 8px",border:"1px solid rgba(245,158,11,.1)",marginBottom:10,lineHeight:1.5}}>
-        ⚠ التحليل استرشادي — محسوب من: MFI·CMF·VWAP·RSI·OBV·ATR. ليس توصية استثمارية.
+      <div style={{display:"flex",marginBottom:6}}>
+        {bars.map((bar,i)=>(
+          <div key={i} style={{flex:1,textAlign:"center"}}>
+            {i%4===0&&<span style={{fontSize:7,fontWeight:activeBar===i?700:400,color:activeBar===i?d.col:T3}}>{bar.shortDate}</span>}
+          </div>
+        ))}
       </div>
-      <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
-        {data.map((d,i)=>{
-          const sz=d.sm>=80?72:d.sm>=65?62:d.sm>=50?52:d.sm>=35?44:36;
-          return(
-            <div key={i} onClick={()=>openStock(d.stk)} style={{
-              width:sz,height:sz,borderRadius:9,
-              background:"linear-gradient(135deg,"+d.col+"25,"+d.col+"10)",
-              border:"1.5px solid "+d.col+"50",
-              display:"flex",flexDirection:"column",alignItems:"center",
-              justifyContent:"center",padding:3,cursor:"pointer",
-            }}>
-              <span style={{fontSize:Math.max(8,sz/7),fontWeight:900,color:T1,lineHeight:1}}>
-                {d.stk.sym}
-              </span>
-              <span style={{fontSize:Math.max(8,sz/8),fontWeight:700,color:d.col,lineHeight:1.2}}>
-                {d.sm}
-              </span>
-              <span style={{fontSize:7,color:(d.stk.pct||0)>=0?G:R,fontWeight:600}}>
-                {(d.stk.pct||0)>=0?"+":""}{(d.stk.pct||0).toFixed(1)}%
-              </span>
+      {ab&&(
+        <div style={{background:"linear-gradient(135deg,"+CARD3+","+CARD+")",border:"1px solid "+d.col+"70",borderRadius:12,padding:"10px 14px",marginBottom:8,boxShadow:"0 2px 12px rgba(0,0,0,.5)"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+            <div onClick={()=>setActiveBar(null)} style={{width:20,height:20,borderRadius:"50%",background:"rgba(255,255,255,.08)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:10,color:T2}}>✕</div>
+            <div style={{display:"flex",alignItems:"center",gap:6}}>
+              <div style={{width:6,height:6,borderRadius:"50%",background:d.col}}/>
+              <span style={{fontSize:12,fontWeight:700,color:T1}}>{ab.label}</span>
             </div>
-          );
-        })}
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
+            {[
+              {l:"التغير",  v:(ab.barPct>=0?"+":"")+ab.barPct+"%",c:ab.barPct>=0?G:R},
+              {l:"الحجم",  v:(ab.vol/1000000).toFixed(1)+"م",     c:T2},
+              {l:"SM Score",v:d.sm,                                 c:d.col},
+            ].map((m,mi)=>(
+              <div key={mi} style={{background:"rgba(255,255,255,.05)",borderRadius:8,padding:"7px 8px",textAlign:"center"}}>
+                <div style={{fontSize:8,color:T3,marginBottom:3}}>{m.l}</div>
+                <div style={{fontSize:13,fontWeight:800,color:m.c}}>{m.v}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div style={{display:"flex",alignItems:"center",gap:6}}>
+          <span style={{fontSize:14,fontWeight:900,color:PU}}>{d.sm}</span>
+          <span style={{fontSize:8,color:T3}}>SM Score</span>
+        </div>
+        <span style={{fontSize:9,color:d.phCol,fontWeight:600}}>{d.phase}</span>
+        <span style={{fontSize:12,fontWeight:700,color:T1}}>{d.stk.name}</span>
       </div>
     </div>
   );
