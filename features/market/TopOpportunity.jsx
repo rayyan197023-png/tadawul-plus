@@ -14,7 +14,7 @@ import { colors }            from '../../theme/tokens';
 const C = colors;
 
 export default function TopOpportunity() {
-  const { stocks }    = useStocks();
+  const stocks = useSharedPrices();
   const { openStock } = useNav();
 
   const top = useMemo(() => {
