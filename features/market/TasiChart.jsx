@@ -116,7 +116,7 @@ const totalVol   = tasiLive?.total_volume ?? 0;
     const base = ohlcvData[period] ?? [idx];
 
     const updated = [...base];
-    updated[updated.length - 1] = idx;
+    }, [period, market.todayPts, idx, ohlcvData]);
     return updated;
   }, [period, market.todayPts, idx]);
 
