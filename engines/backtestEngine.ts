@@ -675,7 +675,7 @@ var meanResult = allResults.reduce(function(s: number, r: number) { return s + r
     
     // إحصاءات العائد
     returns: {
-      mean: +mean.toFixed(2),
+      mean: +meanResult.toFixed(2),
       median: +median.toFixed(2),
       min: +minResult.toFixed(2),
       max: +maxResult.toFixed(2),
