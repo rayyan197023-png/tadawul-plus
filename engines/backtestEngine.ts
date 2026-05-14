@@ -731,8 +731,8 @@ var meanResult = allResults.reduce(function(s: number, r: number) { return s + r
     
     // الملخص
     interpretation: generateInterpretation(
-      mean, 
-      median, 
+  meanResult, 
+  median,
       probabilityOfProfit, 
       getPercentile(allResults, 5),
       getPercentile(allResults, 95)
