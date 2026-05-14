@@ -146,6 +146,25 @@ const [aiAnalysis, setAiAnalysis] = React.useState(null);
 useMarketBridge();
 usePriceUpdater();
 
+// ✨ تحميل Fundamentals الحقيقية من sahmk.sa
+useEffect(() => {
+  const loadFundamentals = async () => {
+    try {
+      const { loadFundamentalsIntoStocks } = await import('./services/api/sahmkFundamentalsApi');
+      const { STOCKS_MAP, STOCKS } = await import('./constants/stocksData');
+      const symbols = STOCKS.map(s => s.sym);
+      await loadFundamentalsIntoStocks(STOCKS_MAP, symbols);
+    } catch (e) {
+      console.warn('[Fundamentals] فشل التحميل:', e.message);
+    }
+  };
+
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(loadFundamentals, { timeout: 5000 });
+  } else {
+    setTimeout(loadFundamentals, 5000);
+  }
+}, []);
 
   // ═══════════════════════════════════════════════
   // 🎯 Smart Preloading (on idle)
