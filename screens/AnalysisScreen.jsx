@@ -802,7 +802,9 @@ animation:'shimmer 1.4s ease infinite',
             const mktIcon    = avgHealth>=75?"rocket":avgHealth>=60?"trendUp":avgHealth>=50?"scale":avgHealth>=38?"trendDn":"warning";
             const breadthPct = Math.round(allData.filter(d=>d.health.score>=50).length/totalN*100);
             const bColor     = breadthPct>=65?C.mint:breadthPct>=50?C.electric:breadthPct>=35?C.amber:C.coral;
-            const best       = [...allData].sort((a,b)=>b.health.score-a.health.score)[0];
+const best = allData.length > 0
+  ? [...allData].sort((a,b)=>((b&&b.health&&b.health.score)||0)-((a&&a.health&&a.health.score)||0))[0]
+  : null;
 
             return(
               <div style={{margin:"0 16px 14px",position:"relative"}}>
