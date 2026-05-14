@@ -57,6 +57,7 @@ export default function TasiChart({ market }) {
   const [period,    setPeriod]    = useState('يوم');
   const [tasiLive,  setTasiLive]  = useState(null);
   const [ohlcvData, setOhlcvData] = useState({});
+const todayPtsRef = useRef([]);
 
   // جلب بيانات تاسي الحية
   useEffect(() => {
