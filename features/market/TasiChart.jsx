@@ -55,6 +55,43 @@ const PERIOD_CFG = {
 
 export default function TasiChart({ market }) {
   const [period,    setPeriod]    = useState('يوم');
+  const [tasiLive,  setTasiLive]  = useState(null);
+  const [ohlcvData, setOhlcvData] = useState({});
+
+  // جلب بيانات تاسي الحية
+  useEffect(() => {
+    const fetchTasi = async () => {
+      try {
+        const r = await fetch('/api/sahmkdata?endpoint=tasi');
+        const j = await r.json();
+        if (j?.index_value) setTasiLive(j);
+      } catch(e) {}
+    };
+    fetchTasi();
+    const t = setInterval(fetchTasi, 20000);
+    return () => clearInterval(t);
+  }, []);
+
+  // جلب OHLCV تاسي
+  useEffect(() => {
+    const periodMap = { 'شهر':'1M', '3 أشهر':'3M', 'سنة':'1Y' };
+    const sahmkPeriod = periodMap[period];
+    if (!sahmkPeriod) return;
+    if (ohlcvData[period]) return;
+    const fetchOHLCV = async () => {
+      try {
+        const r = await fetch(`/api/sahmkdata?endpoint=ohlcv&sym=TASI&period=${sahmkPeriod}`);
+        const j = await r.json();
+        if (j?.data?.length > 0) {
+          setOhlcvData(prev => ({
+            ...prev,
+            [period]: j.data.map(b => b.close),
+          }));
+        }
+      } catch(e) {}
+    };
+    fetchOHLCV();
+  }, [period]);
   const [chartType, setChartType] = useState('line');  // 'line' | 'candle'
   const [tooltip,   setTooltip]   = useState(null);
   const svgRef                    = useRef(null);
