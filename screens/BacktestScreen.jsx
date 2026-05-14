@@ -382,7 +382,7 @@ historicalData = await generateDataFromStockListReal(STOCKS, config.days, 15);
         </div>
 
                 <button
-          onClick={() => { haptic.strong(); runBacktest(); }}
+onClick={() => { haptic.strong(); runBacktest(); }}
           disabled={isRunning || (config.mode === 'portfolio' && !hasPortfolio)}
           style={{
             width: "100%", padding: "12px",
