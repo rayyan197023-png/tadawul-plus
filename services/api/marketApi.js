@@ -67,23 +67,6 @@ export async function fetchSectors() {
 }
 
 /**
- * Fetch live prices for all stocks
- * @returns {Promise<Array<{ sym, p, ch, pct, v }>>}
- */
-export async function fetchLivePrices() {
-  if (config.isLive && config.features.liveMarketData) {
-    // INTEGRATION: Live data via EODHD API — auto-activates with NEXT_PUBLIC_EODHD_KEY
-    // const res = await fetch(`${config.sahmkBaseUrl}/prices`);
-    // const data = await res.json();
-    // return data.map(d => ({ sym: d.symbol, p: d.price, ch: d.change, pct: d.changePct, v: d.volume }));
-  }
-
-  await delay(SIMULATE_DELAY);
-  // Return seed prices (same as constants) — no change in simulation mode
-  return STOCKS.map(s => ({ sym: s.sym, p: s.p, ch: s.ch, pct: s.pct, v: s.v }));
-}
-
-/**
  * Fetch market breadth (advancers / decliners)
  * @returns {Promise<{ advancers, decliners, unchanged, total }>}
  */
