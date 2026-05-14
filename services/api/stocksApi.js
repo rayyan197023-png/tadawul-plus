@@ -86,9 +86,7 @@ export async function fetchOHLCBars(sym, period = '3M', signal) {
           lo:  bar.low,
           c:   bar.close,
           vol: bar.volume,
-          pct: bar.close > bar.open 
-            ? +((bar.close - bar.open) / bar.open * 100).toFixed(2)
-            : +((bar.close - bar.open) / bar.open * 100).toFixed(2),
+          pct: +((bar.close - bar.open) / bar.open * 100).toFixed(2),
         }));
       }
     }
