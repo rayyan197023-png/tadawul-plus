@@ -133,7 +133,7 @@ const { setTab } = useNav();
   const [commLoading, setCommLoading] = useState(false);
   const [notifSound, setNotifSound] = useState(true);
   const [rankTick, setRankTick] = useState(0);
-  const [stocksLive, setStocksLive] = useState(liveStocks.map(function(s){return Object.assign({},s);}));
+const stocksLive = liveStocks;
 
   // ── effects ──
   useEffect(function(){var el=document.createElement("style");el.textContent=CSS_STR;document.head.appendChild(el);return function(){document.head.removeChild(el);};},[]);
