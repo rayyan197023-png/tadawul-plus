@@ -11,7 +11,9 @@ import { colors }           from '../../theme/tokens';
 const C = colors;
 
 export default function StockHeader({ stk, onClose }) {
-  const { toggleWatchlist, isInWatchlist } = useStocks();
+  const stocks = useSharedPrices();
+const toggleWatchlist  = stocks.toggleWatchlist  ?? (() => {});
+const isInWatchlist    = stocks.isInWatchlist    ?? (() => false);
   const [alertOpen,  setAlertOpen]  = useState(false);
   const [alertPrice, setAlertPrice] = useState(() => stk ? +(stk.p * 1.05).toFixed(2) : 0);
   const [alertType,  setAlertType]  = useState('فوق');
