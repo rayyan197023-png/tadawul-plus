@@ -1027,3 +1027,11 @@ export function createPortfolioBuyAndHoldStrategy(positions: any[]): any {
     },
   };
 }
+export async function generateDataFromPortfolioReal(positions: any[], days: number = 252): Promise<any[]> {
+  return generateRealDataFromPortfolio(positions, days);
+}
+
+export async function generateDataFromStockListReal(stocksList: any[], days: number = 252, maxStocks: number = 15): Promise<any[]> {
+  return generateRealDataFromStockList(stocksList, days, maxStocks);
+}
+
