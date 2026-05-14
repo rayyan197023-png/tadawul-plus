@@ -108,15 +108,16 @@ if (!res.ok) throw new Error(`Stock fetch failed: ${res.status}`);
 const quote = await res.json();
 if (quote && quote.price) {
   return {
-    ...STOCKS_MAP[sym],
-    p:   quote.price,
-    ch:  quote.change,
-    pct: quote.change_percent,
-    v:   quote.volume,
-    o:   quote.open,
-    hi:  quote.high,
-    lo:  quote.low,
-  };
+  ...STOCKS_MAP[sym],
+  p:    quote.price,
+  ch:   quote.change_percent,
+  v:    quote.volume,
+  o:    quote.open,
+  hi:   quote.high,
+  lo:   quote.low,
+  prev: quote.previous_close,
+  name: quote.name || STOCKS_MAP[sym]?.name,
+};
 }
     }
   } catch (err) {
