@@ -27,6 +27,7 @@ export function useOHLCVCache(syms = [], period = '3M') {
           const j = await r.json();
           if (j?.data?.length > 0) {
             cacheTime[sym] = Date.now();
+            cache[sym] = j.data.map(b => ({
               open:  b.open,
               hi:    b.high,
               lo:    b.low,
