@@ -5,7 +5,7 @@
  */
 
 import { useState, useRef } from 'react';
-import { useStocks }        from '../../store';
+import { useSharedPrices } from '../../store';
 import { colors }           from '../../theme/tokens';
 
 const C = colors;
