@@ -117,7 +117,7 @@ export default function BacktestScreen() {
             return;
           }
           modeLabel = 'محفظتي الحالية';
-          historicalData = generateDataFromPortfolio(positions, genBars, config.days);
+          historicalData = await generateDataFromPortfolioReal(positions, config.days);
           strategy = createPortfolioBuyAndHoldStrategy(positions);
           var equalWeight = positions.map(function(p) {
             return Object.assign({}, p, { weight: 1 / positions.length });
