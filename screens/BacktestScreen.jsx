@@ -125,7 +125,7 @@ export default function BacktestScreen() {
           benchmarkStrategy = createPortfolioBuyAndHoldStrategy(equalWeight);
         } else if (config.mode === 'analysis') {
           modeLabel = 'قائمة التحليل (Tadawul Strategy)';
-          historicalData = generateDataFromStockList(STOCKS, genBars, config.days, 15);
+historicalData = await generateDataFromStockListReal(STOCKS, config.days, 15);
           strategy = createTadawulStrategy(stockHealth);
           var benchSymbols = historicalData[0].stocksData.slice(0, 5).map(function(s) { return s.sym; });
           benchmarkStrategy = createBuyAndHoldStrategy(benchSymbols);
