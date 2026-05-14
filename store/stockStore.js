@@ -300,24 +300,23 @@ function _gbmSeed(s) {
     async function fetchLive() {
       try {
         const syms = stocks.map(s => s.sym).join(',');
-        const res  = await fetch(`/api/sahmkdata?endpoint=prices&symbols=${syms}`);
-        if (!res.ok) return;
-        const json = await res.json();
-        if (!json || !json.data) return;
-        const updates = json.data
-          .filter(item => item.symbol)
-          .map(item => ({
-            sym:  item.symbol,
-            data: {
-              p:    item.price          ?? item.close ?? 0,
-              ch:   item.change_percent ?? 0,
-              v:    item.volume         ?? 0,
-              name: item.name           ?? '',
-              o:    item.open           ?? 0,
-              hi:   item.high           ?? 0,
-              lo:   item.low            ?? 0,
-            },
-          }));
+const res  = await fetch(`/api/sahmkdata?endpoint=quotes&symbols=${syms}`);
+if (!res.ok) return;
+const json = await res.json();
+if (!json || !json.quotes) return;
+const updates = json.quotes
+  .filter(item => item.symbol)
+  .map(item => ({
+    sym:  item.symbol,
+    data: {
+      p:    item.price          ?? 0,
+      ch:   item.change_percent ?? 0,
+      v:    item.volume         ?? 0,
+      name: item.name           ?? '',
+      hi:   item.high           ?? 0,
+      lo:   item.low            ?? 0,
+    },
+  }));
         if (updates.length > 0) {
           dispatch({ type: 'UPDATE_PRICES', payload: updates });
         }
