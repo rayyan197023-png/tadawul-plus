@@ -113,12 +113,8 @@ const totalVol   = tasiLive?.total_volume ?? 0;
       live[live.length - 1] = idx;
       return live;
     }
-    const base = {
-      'أسبوع':  [...HISTORICAL_SERIES.week],
-      'شهر':    [...HISTORICAL_SERIES.month],
-      '3 أشهر': [...HISTORICAL_SERIES.q3m],
-      'سنة':    [...HISTORICAL_SERIES.year],
-    }[period] ?? [idx];
+    const base = ohlcvData[period] ?? [idx];
+
     const updated = [...base];
     updated[updated.length - 1] = idx;
     return updated;
