@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef } from 'react';
 
 const cache = {};
+const cacheTime = {};
+const CACHE_TTL = 5 * 60 * 1000; // 5 دقائق
 
 export function useOHLCVCache(syms = [], period = '3M') {
   const [data, setData] = useState(cache);
