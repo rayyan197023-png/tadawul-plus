@@ -15,6 +15,7 @@
 
 import { mean, std, simpleReturns } from '../utils/portfolioMath';
 import { recordFeedback } from './analysisEngine';
+import { generateRealDataFromPortfolio, generateRealDataFromStockList } from '../services/api/sahmkHistoricalApi';
 
 /**
  * إعدادات Backtest الافتراضية
