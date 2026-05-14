@@ -182,7 +182,7 @@ export default function TasiChart({ market }) {
             <div style={{ width: 7, height: 7, borderRadius: '50%', background: isUpToday ? C.positive : C.negative, boxShadow: `0 0 7px ${isUpToday ? C.positive : C.negative}`, animation: 'homeScreenPulse 2s infinite' }} />
             <span style={{ fontSize: 9, color: isUpToday ? C.positive : C.negative, fontWeight: 600 }}>مباشر</span>
           </div>
-          {[{ l:'142', sl:'صاعد', c: C.positive }, { l:'58', sl:'هابط', c: C.negative }, { l:'12', sl:'ثابت', c: C.textSecondary }].map((s, i) => (
+          {[{ l:'--', sl:'صاعد', c: C.positive }, { l:'--', sl:'هابط', c: C.negative }, { l:'--', sl:'ثابت', c: C.textSecondary }].map((s, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 3, background: 'rgba(255,255,255,.06)', borderRadius: 16, padding: '2px 8px', border: '1px solid rgba(255,255,255,.05)' }}>
               <div style={{ width: 5, height: 5, borderRadius: '50%', background: s.c }} />
               <span style={{ fontSize: 10, color: s.c, fontWeight: 700 }}>{s.l}</span>
