@@ -766,7 +766,7 @@ animation:'shimmer 1.4s ease infinite',
             <div style={{flex:1.4,textAlign:"center",padding:"0 12px"}}>
               <div style={{fontSize:8,color:C.smoke,marginBottom:3}}>أفضل فرصة</div>
               <div style={{fontSize:14,fontWeight:900,color:C.gold,lineHeight:1}}>{best3 && best3.stk ? best3.stk.name : '--'}</div>
-              <div style={{fontSize:8,color:best3.health.sigC,marginTop:2,fontWeight:700}}>{best3 && best3.health ? best3.health.sig : '--'}</div>
+<div style={{fontSize:8,color:best3 && best3.health ? best3.health.sigC : C.smoke,marginTop:2,fontWeight:700}}>{best3 && best3.health ? best3.health.sig : '--'}</div>
             </div>
             <div style={{width:1,height:36,background:C.line}}/>
             {/* السؤال ٣: هل الآن وقت الدخول؟ */}
