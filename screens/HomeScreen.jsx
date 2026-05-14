@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import TasiChart from '../features/market/TasiChart';
 import { useSharedPrices, useNav } from '../store';
-import { STOCKS, STOCKS_MAP, SECTORS } from '../constants/stocksData';
+// stocksData imported via liveStocks from useSharedPrices
 import { useHaptic }          from '../hooks/useHaptic';
 import { usePullToRefresh }   from '../hooks/usePullToRefresh';
 import config from '../constants/config';
