@@ -116,9 +116,7 @@ const totalVol   = tasiLive?.total_volume ?? 0;
     const base = ohlcvData[period] ?? [idx];
 
     const updated = [...base];
-    }, [period, market.todayPts, idx, ohlcvData]);
-    return updated;
-  }, [period, market.todayPts, idx]);
+        }, [period, market.todayPts, idx, ohlcvData]);
 
   // ── Chart geometry
   const W = 340, H = 96;
