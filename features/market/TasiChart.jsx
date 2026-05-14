@@ -80,7 +80,7 @@ export default function TasiChart({ market }) {
     if (ohlcvData[period]) return;
     const fetchOHLCV = async () => {
       try {
-        const r = await fetch(`/api/sahmkdata?endpoint=ohlcv&sym=TASI&period=${sahmkPeriod}`);
+        const r = await fetch(`/api/sahmkdata?endpoint=tasi-ohlcv&period=${sahmkPeriod}`);
         const j = await r.json();
         if (j?.data?.length > 0) {
           setOhlcvData(prev => ({
