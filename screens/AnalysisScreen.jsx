@@ -895,9 +895,11 @@ const best = allData.length > 0
                   })()}
 
                   <div style={{height:1,background:`linear-gradient(90deg,transparent,${C.line},transparent)`}}/>
-                  {/* ══ القسم ٢ — أفضل اختيار (دائماً مرئي) ══ */}
+                  {/* ══ القسم ٢ -- أفضل اختيار (دائماً مرئي) ══ */}
+                  {best && best.stk && best.health && (
                   <div style={{padding:"12px 16px 14px"}}>
                     <div style={{display:"flex",alignItems:"center",gap:10}}>
+
                       {/* يمين — اسم + رقم + قطاع + سعر + % */}
                       <div style={{flexShrink:0,display:"flex",flexDirection:"column",alignItems:"flex-end",gap:3}}>
 {best && best.stk && (
