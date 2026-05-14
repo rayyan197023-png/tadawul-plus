@@ -170,15 +170,13 @@ historicalData = await generateDataFromStockListReal(STOCKS, config.days, 15);
           monteCarlo: monteCarloResult,
           modeLabel: modeLabel,
         });
-      } catch (err) {
-        console.error('Backtest error:', err);
-        setResults({ error: err.message || 'حدث خطأ أثناء التشغيل' });
-      } finally {
-        setIsRunning(false);
-      }
-    }, 100);
+          } catch (err) {
+      console.error('Backtest error:', err);
+      setResults({ error: err.message || 'حدث خطأ أثناء التشغيل' });
+    } finally {
+      setIsRunning(false);
+    }
   }
-
   return (
     <div style={{
       background: C.ink,
