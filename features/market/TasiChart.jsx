@@ -165,7 +165,7 @@ const totalVol   = tasiLive?.total_volume ?? 0;
     });
   }, [pts, cfg, period, openPrice, firstPt]);
 
-  const dayChgVal  = +(idx - openPrice).toFixed(2);
+const dayChgVal = +chgVal.toFixed(2);
 
   return (
     <div style={{
