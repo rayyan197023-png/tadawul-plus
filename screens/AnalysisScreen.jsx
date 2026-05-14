@@ -573,7 +573,9 @@ const tasiVal = 11842
       ══════════════════════════════════ */}
       {page==="home"&&(()=>{
         // ٤ — Contextual Color Temperature
-        const avgHealth = Math.round(allData.reduce(function(s,d){ return s+d.health.score; },0)/allData.length);
+        const avgHealth = allData.length > 0
+  ? Math.round(allData.reduce(function(s,d){ return s + ((d && d.health && d.health.score) || 0); },0) / allData.length)
+  : 50;
         const mktWarm   = avgHealth >= 65; // سوق صاعد → دفء ذهبي
         const tempColor = mktWarm ? C.gold : C.electric;
         const tempOpacity = "0.018";
