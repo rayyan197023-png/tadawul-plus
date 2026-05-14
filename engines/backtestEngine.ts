@@ -604,7 +604,7 @@ export function monteCarloSimulation(backtestResult: any, iterations?: number): 
 
   // ③ حساب الإحصاءات
   var median = allResults[Math.floor(iterations / 2)];
-var mean = allResults.reduce(function(s: number, r: number) { return s + r; }, 0) / iterations;
+var meanResult = allResults.reduce(function(s: number, r: number) { return s + r; }, 0) / iterations;
   
   var positiveCount = allResults.filter(function(r: number) { return r > 0; }).length;
   var probabilityOfProfit = (positiveCount / iterations) * 100;
