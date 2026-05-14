@@ -205,7 +205,7 @@ const dayChgVal = +chgVal.toFixed(2);
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 5 }}>
             <span style={{ fontSize: 10, color: 'rgba(255,255,255,.55)' }}>
-             حجم التداول: <span style={{ color: 'rgba(255,255,255,.85)', fontWeight: 600 }}>--</span>
+             حجم التداول: <span style={{ color: 'rgba(255,255,255,.85)', fontWeight: 600 }}>{totalVol ? (totalVol/1e9).toFixed(2)+' مليار' : '--'}</span>
             </span>
             <span style={{ color: 'rgba(255,255,255,.35)' }}>·</span>
             <span style={{ fontSize: 10, color: 'rgba(255,255,255,.55)' }}>
