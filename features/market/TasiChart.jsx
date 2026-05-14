@@ -65,7 +65,10 @@ const todayPtsRef = useRef([]);
       try {
         const r = await fetch('/api/sahmkdata?endpoint=tasi');
         const j = await r.json();
-        if (j?.index_value) setTasiLive(j);
+        if (j?.index_value) {
+  setTasiLive(j);
+  todayPtsRef.current = [...todayPtsRef.current, j.index_value].slice(-390);
+}
       } catch(e) {}
     };
     fetchTasi();
