@@ -277,7 +277,8 @@ const ohlcvCache = useOHLCVCache(syms, '3M');
   const allData = useMemo(()=>{
     // ✨ تمرير liveMACRO كـ parameter بدلاً من تعديل MACRO global
     const result = liveStocks.map(stk=>{ 
-      const bars=genBars(stk); 
+      const bars = ohlcvCache[stk.sym] || genBars(stk);
+
       // مرّر liveMACRO إلى stockHealth (إذا كانت تدعم ذلك)
       return {stk, bars, health:stockHealth(stk, bars, liveMACRO)}; 
     });
