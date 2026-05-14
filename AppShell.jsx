@@ -83,19 +83,18 @@ function Loader() {
       
       {/* Cards skeleton */}
       {[1, 2, 3].map(i => (
-        <div key={i} style={{
-          background: `linear-gradient(135deg, ${C.layer1}, ${C.layer2})`,
-          borderRadius: 14,
-          border: `1px solid ${C.line}`,
-          padding: 14,
-          marginBottom: 10,
-          height: 120,
-          background: `linear-gradient(90deg, ${C.layer1} 25%, ${C.layer2} 50%, ${C.layer1} 75%)`,
-          backgroundSize: '200% 100%',
-          animation: 'skelShimmer 1.5s ease-in-out infinite',
-          animationDelay: `${i * 0.1}s`,
-        }} />
-      ))}
+  <div key={i} style={{
+    borderRadius: 14,
+    border: `1px solid ${C.line}`,
+    padding: 14,
+    marginBottom: 10,
+    height: 120,
+    background: `linear-gradient(90deg, ${C.layer1} 25%, ${C.layer2} 50%, ${C.layer1} 75%)`,
+    backgroundSize: '200% 100%',
+    animation: 'skelShimmer 1.5s ease-in-out infinite',
+    animationDelay: `${i * 0.1}s`,
+  }} />
+))}
       
       <style>{`
         @keyframes skelShimmer {
