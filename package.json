@@ -8,17 +8,17 @@
     "build": "NEXT_TURBOPACK=0 next build",
     "start": "next start"
   },
-  "dependencies": {
+"dependencies": {
     "next": "16.2.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
     "lucide-react": "0.469.0",
     "@supabase/supabase-js": "^2.49.1"
   },
   "devDependencies": {
     "typescript": "^5.3.0",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@types/node": "^20.0.0"
   }
 }
