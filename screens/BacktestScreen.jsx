@@ -100,11 +100,10 @@ export default function BacktestScreen() {
 
   var hasPortfolio = positions && positions.length > 0;
 
-  function runBacktest() {
+  async function runBacktest() {
     setIsRunning(true);
     setResults(null);
 
-    setTimeout(function() {
       try {
         var historicalData;
         var strategy;
