@@ -900,7 +900,10 @@ const best = allData.length > 0
                     <div style={{display:"flex",alignItems:"center",gap:10}}>
                       {/* يمين — اسم + رقم + قطاع + سعر + % */}
                       <div style={{flexShrink:0,display:"flex",flexDirection:"column",alignItems:"flex-end",gap:3}}>
-                        <div style={{fontSize:15,fontWeight:900,color:C.snow}}>{best.stk.name}</div>
+{best && best.stk && (
+<div style={{fontSize:15,fontWeight:900,color:C.snow}}>{best.stk.name}</div>
+)}
+
                         <div style={{display:"flex",alignItems:"center",gap:4}}>
                           <span style={{fontSize:8,color:C.smoke,background:C.layer3,padding:"1px 6px",borderRadius:4}}>{best.stk.sym}</span>
                           <span style={{fontSize:8,color:C.smoke}}>{best.stk.sec}</span>
