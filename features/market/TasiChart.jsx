@@ -96,10 +96,15 @@ export default function TasiChart({ market }) {
   const [tooltip,   setTooltip]   = useState(null);
   const svgRef                    = useRef(null);
 
-  const idx      = market.current;
-  const openPrice= market.open;
-  const chgP     = market.chgPts;
-  const isUpToday= chgP >= 0;
+  const idx      = tasiLive?.index_value     ?? market.current  ?? 0;
+const chgP     = tasiLive?.index_change_percent ?? market.chgPts ?? 0;
+const chgVal   = tasiLive?.index_change    ?? market.chgVal   ?? 0;
+const openPrice= idx - chgVal;
+const isUpToday= chgP >= 0;
+const advancing  = tasiLive?.advancing   ?? 0;
+const declining  = tasiLive?.declining   ?? 0;
+const unchanged  = tasiLive?.unchanged   ?? 0;
+const totalVol   = tasiLive?.total_volume ?? 0;
 
   // ── Build points for selected period
   const pts = useMemo(() => {
