@@ -11,7 +11,11 @@ export function useOHLCVCache(syms = [], period = '3M') {
 
   useEffect(() => {
     if (!syms.length) return;
-    const missing = syms.filter(s => !cache[s] && !loadingRef.current.has(s));
+    const missing = syms.filter(s => {
+  if (loadingRef.current.has(s)) return false;
+  if (!cache[s]) return true;
+  return Date.now() - (cacheTime[s] || 0) > CACHE_TTL;
+});
     if (!missing.length) return;
 
     missing.forEach(s => loadingRef.current.add(s));
