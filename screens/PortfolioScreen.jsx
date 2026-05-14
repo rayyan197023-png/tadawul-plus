@@ -927,35 +927,40 @@ useEffect(() => {
   }); var livePrices=lp[0], setLivePrices=lp[1];
   var lastUpdate_s=useState(null); var lastUpdate=lastUpdate_s[0], setLastUpdate=lastUpdate_s[1];
 
-  useEffect(function(){
+ useEffect(function(){
     function fetchPrices() {
-      // ============================================================
-      // ربط API هنا - استبدل هذه الدالة بطلب حقيقي:
-      // fetch("https://your-api.com/prices").then(r=>r.json()).then(data=>{
-      //   setLivePrices(data); setLastUpdate(new Date());
-      // });
-      // ============================================================
-      // محاكاة تغير طفيف في الأسعار للاختبار
-      setLivePrices(function(prev){
-        var next={};
-        Object.keys(prev).forEach(function(sym){
-          var old=prev[sym];
-          var delta=(Math.random()-0.48)*0.15;
-          var newP=Math.max(0.1, old.p*(1+delta/100));
-          var newCh=old.ch+delta*0.3;
-          next[sym]={p:parseFloat(newP.toFixed(2)),ch:parseFloat(newCh.toFixed(2))};
+      fetch('/api/sahmkdata?endpoint=prices')
+        .then(function(r){ return r.json(); })
+        .then(function(json){
+          if(!json || !json.data) return;
+          var next={};
+          json.data.forEach(function(item){
+            if(item.symbol){
+              next[item.symbol] = {
+                p:  parseFloat(item.close  || item.last || 0),
+                ch: parseFloat(item.change || 0),
+              };
+            }
+          });
+          if(Object.keys(next).length > 0){
+            setLivePrices(function(prev){
+              return Object.assign({}, prev, next);
+            });
+            setLastUpdate(new Date());
+          }
+        })
+        .catch(function(e){
+          console.warn('[Portfolio] فشل جلب الأسعار:', e.message);
         });
-        return next;
-      });
-      setLastUpdate(new Date());
     }
-    
+
     // ✨ Fetch أول مرة فوراً عند التحميل
     fetchPrices();
-    
-    var interval=setInterval(fetchPrices, 30000); // كل 30 ثانية
+
+    var interval = setInterval(fetchPrices, 30000); // كل 30 ثانية
     return function(){ clearInterval(interval); };
   },[]);
+ 
   // دمج الأسعار الحية مع STOCKS
   var sl=useMemo(function(){
     var base=stocks.length?stocks:STOCKS;
