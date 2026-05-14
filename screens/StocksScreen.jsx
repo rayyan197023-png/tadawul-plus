@@ -113,31 +113,6 @@ function StocksPage() {
   const liveStocks = useSharedPrices();
 const { priceCache, stocks } = useStockState();
 
-// Debug Panel
-React.useEffect(() => {
-  const interval = setInterval(() => {
-    const keys = Object.keys(priceCache);
-    const first = keys[0];
-    console.log({
-      priceCacheSize: keys.length,
-      firstSym: first,
-      firstPrice: priceCache[first]?.p,
-      liveStocksFirst: liveStocks[0]?.sym,
-      liveStocksFirstPrice: liveStocks[0]?.p,
-      isLive: config.isLive,
-      liveMarketData: config.features.liveMarketData,
-    });
-  }, 5000);
-  return () => clearInterval(interval);
-}, [priceCache, liveStocks]);
-console.log('[liveStocks] first price:', liveStocks[0]?.p, liveStocks[0]?.sym);
-const firstKey = Object.keys(priceCache)[0];
-console.log('[StocksScreen] priceCache:', Object.keys(priceCache).length, 'first:', firstKey, priceCache[firstKey]?.p);
-// Debug
-React.useEffect(() => {
-  const keys = Object.keys(priceCache);
-  console.log('[StocksScreen] priceCache size:', keys.length, 'first:', keys[0], priceCache[keys[0]]?.p);
-}, [priceCache]);
   const barsCache = useRef({});
   const [sel,      setSel]      = useState(null);
   const [tab,      setTab]      = useState("all");
