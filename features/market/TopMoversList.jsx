@@ -67,7 +67,7 @@ function StockRow({ s, rank, source }) {
 
 export default function TopMoversList() {
   const [tab, setTab] = useState(0);
-  const { stocks }    = useStocks();
+  const stocks = useSharedPrices();
 
   const lists = useMemo(() => [
     [...stocks].sort((a, b) => b.pct - a.pct).slice(0, 6),
