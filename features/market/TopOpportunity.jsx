@@ -6,8 +6,7 @@
  */
 
 import { useMemo }           from 'react';
-import { useStocks }         from '../../store';
-import { useNav }            from '../../store';
+import { useSharedPrices, useNav } from '../../store';
 import { calcRadarScore }    from '../../engines/radarEngine';
 import { generateOHLCBars }  from '../../services/api/stocksApi';
 import { colors }            from '../../theme/tokens';
