@@ -1232,7 +1232,7 @@ function HomeContent({idx,chgP,market,liveStocks=[],isLoadingH=false,isRefreshin
     <div style={{paddingBottom:30,animation:"fadeUp .28s ease both"}}>
 
       {/* ── 1. TASI Hero with Live Chart ── */}
-      <TasiCard idx={idx} chgP={chgP} market={market}/>
+<TasiChart market={market}/>
 
       {/* ── 2. Pro / Beginner toggle ── */}
       <div style={{
