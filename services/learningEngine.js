@@ -3,7 +3,7 @@
 // lib/learningEngine.js
 // ================================================================
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://kdgqncnmaifrmohjoemc.supabase.co";
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_ANON = process.env.NEXT_PUBLIC_SUPABASE_KEY || '';
 
 /* ── HTTP helper ── */
