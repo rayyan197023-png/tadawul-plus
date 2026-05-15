@@ -41,19 +41,36 @@ export function usePriceUpdater() {
           companies.forEach(c => { compMap[c.symbol] = c; });
 
                     const newStocks = allQuotes
-            .filter(q => q.price && q.symbol && compMap[q.symbol])
-            .map(q => ({
-              ...(SEED_MAP[q.symbol] || {}),
-              sym:  q.symbol,
-name: q.name || compMap[q.symbol]?.name_ar || q.name_en || q.symbol,
-              p:    q.price,
-              ch:   q.change ?? 0,
-pct:  q.change_percent ?? 0,
-              v:    q.volume,
-              avgV: q.volume,
-              hi:   q.high || q.price,
-              lo:   q.low  || q.price,
-            }));
+  .filter(q => q.price && q.symbol && compMap[q.symbol])
+  .map(q => {
+    const seed = SEED_MAP[q.symbol] || {};
+    return {
+      sym:      q.symbol,
+      name:     q.name || compMap[q.symbol]?.name_ar || q.name_en || q.symbol,
+      sec:      seed.sec      || compMap[q.symbol]?.sector || '',
+      sectorId: seed.sectorId || '',
+      rating:   seed.rating   || 50,
+      oilCorr:  seed.oilCorr  || null,
+      p:        q.price,
+      ch:       q.change        ?? 0,
+      pct:      q.change_percent ?? 0,
+      v:        q.volume,
+      avgV:     q.volume,
+      hi:       q.high  || q.price,
+      lo:       q.low   || q.price,
+      mktCap:   null,
+      eps:      null,
+      pe:       null,
+      pb:       null,
+      divY:     null,
+      roe:      null,
+      debt:     null,
+      beta:     null,
+      w52h:     null,
+      w52l:     null,
+      target:   null,
+    };
+  });
 
           dispatch({ type: 'SET_STOCKS', payload: newStocks });
         }
