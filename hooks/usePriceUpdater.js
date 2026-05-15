@@ -15,11 +15,12 @@ export function usePriceUpdater() {
         const compRes = await fetch('/api/sahmkdata?endpoint=companies&market=TASI&limit=300');
         const compJson = await compRes.json();
         const companies = (compJson.results || []).filter(c => {
-          const n = parseInt(c.symbol);
-          if (!c.symbol || c.symbol.length !== 4 || isNaN(n)) return false;
-          if (n >= 4330 && n <= 4350) return false;
-          return true;
-        });
+  const n = parseInt(c.symbol);
+  if (!c.symbol || c.symbol.length !== 4 || isNaN(n)) return false;
+  if (n >= 8000) return false;
+  if (n >= 4330 && n <= 4350) return false;
+  return true;
+});
 
         // 2. أسعار على دفعات 50
         const syms = companies.map(c => c.symbol);
