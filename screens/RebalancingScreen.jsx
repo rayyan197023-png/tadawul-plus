@@ -3,7 +3,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useNav } from '../store';
 import { analyzePortfolio, formatCurrency } from '../engines/rebalancingEngine';
-import { STOCKS } from '../constants/stocksData';
+import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
 import { genBars, stockHealth } from '../engines/analysisEngine';
 import Tooltip from '../components/Tooltip';
 
