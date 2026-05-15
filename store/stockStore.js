@@ -223,7 +223,6 @@ export function useStocks() {
  export function useSharedPrices() {
   const { priceCache, stocks } = useStockState();
   const dispatch = useStockDispatch();
-  const tickRef = useRef(null);
 
   useEffect(() => {
     // usePriceUpdater يتولى كل التحديثات
