@@ -21,26 +21,29 @@ async function sahmkFetch(path) {
 function mapCompanyData(data) {
   if (!data) return {};
   return {
-    mktCap:  data.market_cap        ?? null,
-    pe:      data.pe_ratio          ?? null,
-    pb:      data.pb_ratio          ?? null,
-    eps:     data.eps               ?? null,
-    beta:    data.beta              ?? null,
-    w52h:    data.week52_high       ?? null,
-    w52l:    data.week52_low        ?? null,
-    divY:    data.dividend_yield    ?? null,
+    mktCap: data.market_cap    ?? null,
+    pe:     data.pe_ratio      ?? null,
+    pb:     data.pb_ratio      ?? null,
+    eps:    data.eps           ?? null,
+    beta:   data.beta          ?? null,
+    w52h:   data.week52_high   ?? null,
+    w52l:   data.week52_low    ?? null,
+    divY:   data.dividend_yield ?? null,
   };
 }
 
-// ─── تحويل بيانات financials إلى شكل STOCKS ─────────
-function mapFinancialsData(data) {
-  if (!data) return {};
-
-  const income = data.income_statements?.[0] ?? {};
-
+function mapRatiosData(data) {
+  if (!data || !data.ratios || !data.ratios[0]) return {};
+  const r  = data.ratios[0].ratios      ?? {};
+  const km = data.ratios[0].key_metrics ?? {};
   return {
-    freeCashFlow: income.net_income    ?? null,
-    revGrw:       income.total_revenue ?? null,
+    roe:          r.roe                   ?? null,
+    roa:          r.roa                   ?? null,
+    netMargin:    r.net_margin            ?? null,
+    debt:         r.debt_ratio            ?? null,
+    revGrw:       r.revenue_growth_yoy    ?? null,
+    epsGrw:       r.net_income_growth_yoy ?? null,
+    freeCashFlow: km.operating_cash_flow  ?? null,
     oilCorr:      null,
     target:       null,
   };
