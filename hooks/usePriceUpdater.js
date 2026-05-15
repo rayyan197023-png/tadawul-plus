@@ -29,7 +29,7 @@ const syms = STOCKS.map(s => s.sym);
           const compMap = {};
 
                     const newStocks = allQuotes
-  .filter(q => q.price && q.symbol && compMap[q.symbol])
+.filter(q => q.price && q.symbol)
   .map(q => {
     const seed = SEED_MAP[q.symbol] || {};
     return {
