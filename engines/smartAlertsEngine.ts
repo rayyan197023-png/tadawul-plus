@@ -11,7 +11,7 @@
  * 5. Multi-condition signals
  */
 
-import { STOCKS } from '../constants/stocksData';
+import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
 import { calcSmartStopLoss, calcSmartTakeProfit } from './positionEngine';
 
 // ─── الثوابت الأساسية ─────────────────────────
