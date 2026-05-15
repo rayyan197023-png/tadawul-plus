@@ -72,7 +72,8 @@ export function usePriceUpdater() {
     };
   });
 
-          dispatch({ type: 'SET_STOCKS', payload: newStocks });
+dispatch({ type: 'SET_STOCKS', payload: newStocks });
+updateLiveStocks(newStocks);
         }
 
         // 3. تاسي
