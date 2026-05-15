@@ -40,8 +40,8 @@ export function usePriceUpdater() {
           const compMap = {};
           companies.forEach(c => { compMap[c.symbol] = c; });
 
-          const newStocks = allQuotes
-            .filter(q => q.price)
+                    const newStocks = allQuotes
+            .filter(q => q.price && q.symbol && compMap[q.symbol])
             .map(q => ({
               ...(SEED_MAP[q.symbol] || {}),
               sym:  q.symbol,
