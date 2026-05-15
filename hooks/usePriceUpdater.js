@@ -17,7 +17,7 @@ export function usePriceUpdater() {
         const companies = (compJson.results || []).filter(c => {
   const n = parseInt(c.symbol);
   if (!c.symbol || c.symbol.length !== 4 || isNaN(n)) return false;
-  if (n >= 8000) return false;
+  if (n >= 7000) return false;
   if (n >= 4330 && n <= 4350) return false;
   return true;
 });
