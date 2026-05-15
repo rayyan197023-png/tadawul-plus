@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from "react"; 
-import { STOCKS } from '../constants/stocksData';
+import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
 
 // SVG Icons
 const IconMicroscope = ({size=16,color="currentColor"}) => (
