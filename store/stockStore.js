@@ -327,8 +327,7 @@ const updates = json.quotes
 
     // جلب فوري عند التحميل
     fetchLive();
-    tickRef.current = setInterval(fetchLive, config.intervals.marketData);
-    return () => clearInterval(tickRef.current);
+return;
   }, [stocks.length]); // يُعاد عند تغيّر عدد الأسهم فقط
 
   return stocks.map(s => {
