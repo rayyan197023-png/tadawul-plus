@@ -63,8 +63,9 @@ export async function GET(req: NextRequest) {
       url = `${SAHMK_BASE}/market/sectors/?index=TASI`;
     }
     else if (endpoint === 'companies') {
-      url = `${SAHMK_BASE}/companies/?market=${market}&limit=${limit}`;
-    }
+  const offset = searchParams.get('offset') ?? '0';
+  url = `${SAHMK_BASE}/companies/?market=${market}&limit=${limit}&offset=${offset}`;
+}
     else if (endpoint === 'fundamentals') {
       url = `${SAHMK_BASE}/company/${sym}/`;
     }
