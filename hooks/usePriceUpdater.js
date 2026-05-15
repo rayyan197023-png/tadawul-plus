@@ -12,28 +12,7 @@ export function usePriceUpdater() {
     async function fetchAll() {
       try {
         // 1. جلب قائمة شركات تاسي
-const [compRes1, compRes2] = await Promise.all([
-  fetch('/api/sahmkdata?endpoint=companies&market=TASI&limit=300&offset=0'),
-  fetch('/api/sahmkdata?endpoint=companies&market=TASI&limit=300&offset=300'),
-]);
-const [compJson1, compJson2] = await Promise.all([
-  compRes1.json(),
-  compRes2.json(),
-]);
-const allResults = [
-  ...(compJson1.results || []),
-  ...(compJson2.results || []),
-];
-const companies = allResults.filter(c => {
-  const n = parseInt(c.symbol);
-  if (!c.symbol || c.symbol.length !== 4 || isNaN(n)) return false;
-  if (n >= 7000) return false;
-  if (n >= 4330 && n <= 4350) return false;
-  return true;
-});
-
-        // 2. أسعار على دفعات 50
-        const syms = companies.map(c => c.symbol);
+const syms = STOCKS.map(s => s.sym);
         const chunks = [];
         for (let i = 0; i < syms.length; i += 50) chunks.push(syms.slice(i, i + 50));
 
