@@ -5,7 +5,7 @@
  */
 import { useMemo, useRef, useState } from 'react';
 import { C, SectionCard, Row, Tag, EmptyState } from './StockDetailShared';
-import { STOCKS } from '../../../constants/stocksData';
+import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
 
 function InfoTooltip({ color, title, children }) {
   const [show, setShow] = React.useState(false);
