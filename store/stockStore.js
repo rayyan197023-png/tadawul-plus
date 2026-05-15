@@ -46,13 +46,8 @@ export const STOCK_ACTIONS = {
   SET_LOADING:       'SET_LOADING',
 };
 
-// ── Initial State
 function loadCachedStocks() {
-  try {
-    // امسح الكاش القديم دائماً -- سيُعاد بناؤه من API
-    localStorage.removeItem('td_stocks_cache_v1');
-    return [];
-  } catch { return []; }
+  return [];
 }
 
 const initialState = {
