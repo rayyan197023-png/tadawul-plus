@@ -46,7 +46,7 @@ export function usePriceUpdater() {
               sym:  q.symbol,
               name: (SEED_MAP[q.symbol]?.name) || compMap[q.symbol]?.name_ar || q.name_en || q.symbol,
               p:    q.price,
-              ch:   q.change_percent ?? 0,
+              ch:   q.change ?? 0,
 pct:  q.change_percent ?? 0,
               v:    q.volume,
               avgV: q.volume,
