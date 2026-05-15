@@ -4,15 +4,9 @@
  * يُحدِّث STOCKS_MAP تلقائياً عند تحميل التطبيق
  */
 
-const SAHMK_BASE = 'https://app.sahmk.sa/api/v1';
-const SAHMK_KEY = process.env.NEXT_PUBLIC_SAHMK_KEY ?? '';
-
-// ─── Helper: جلب مع timeout ─────────────────────────
 async function sahmkFetch(path) {
-  const res = await fetch(`${SAHMK_BASE}${path}`, {
-    headers: { 'X-API-Key': SAHMK_KEY },
-    next: { revalidate: 86400 }, // cache يوم كامل
-  });
+  const url = `/api/sahmkdata?endpoint=fundamentals&path=${encodeURIComponent(path)}`;
+  const res = await fetch(url, { next: { revalidate: 86400 } });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
