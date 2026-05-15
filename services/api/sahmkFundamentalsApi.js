@@ -35,24 +35,14 @@ function mapCompanyData(data) {
 // ─── تحويل بيانات financials إلى شكل STOCKS ─────────
 function mapFinancialsData(data) {
   if (!data) return {};
-  
-  // نأخذ آخر سنة متاحة
+
   const income = data.income_statements?.[0] ?? {};
-  const balance = data.balance_sheets?.[0] ?? {};
-  
-  const equity = balance.total_equity ?? 0;
-  const netIncome = income.net_income ?? 0;
-  const totalDebt = balance.total_debt ?? 0;
-  const totalAssets = balance.total_assets ?? 1;
 
   return {
-    roe:      equity > 0 ? +((netIncome / equity) * 100).toFixed(2) : null,
-    debt:     totalAssets > 0 ? +(totalDebt / totalAssets).toFixed(2) : null,
-    freeCashFlow: income.free_cash_flow ?? null,
-    epsGrw:   income.eps_growth        ?? null,
-    revGrw:   income.revenue_growth    ?? null,
-    oilCorr:  null, // غير متاح من sahmk
-    target:   null, // غير متاح من sahmk
+    freeCashFlow: income.net_income    ?? null,
+    revGrw:       income.total_revenue ?? null,
+    oilCorr:      null,
+    target:       null,
   };
 }
 
