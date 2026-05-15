@@ -17,7 +17,7 @@
  *   import { stockHealth, genBars, scoreWord } from '../engines/analysisEngine';
  */
 
-import { STOCKS } from '../constants/stocksData';
+import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
 import { calcRSI, calcATR, calcVWAP, calcCMF, calcOBV, calcMACD, calcMarketStructure } from './technicalEngine';
 import { calcOrderBlocks, calcLiqSweep } from './radarEngine';
 
