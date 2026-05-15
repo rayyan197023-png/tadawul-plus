@@ -34,8 +34,8 @@ const syms = STOCKS.map(s => s.sym);
     const seed = SEED_MAP[q.symbol] || {};
     return {
       sym:      q.symbol,
-      name:     q.name || compMap[q.symbol]?.name_ar || q.name_en || q.symbol,
-      sec:      seed.sec      || compMap[q.symbol]?.sector || '',
+name: q.name || q.name_en || q.symbol,
+sec:  seed.sec || '',
       sectorId: seed.sectorId || '',
       rating:   seed.rating   || 50,
       oilCorr:  seed.oilCorr  || null,
