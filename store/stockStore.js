@@ -325,10 +325,9 @@ const updates = json.quotes
       }
     }
 
-    // جلب فوري عند التحميل
-    fetchLive();
-return;
-  }, [stocks.length]); // يُعاد عند تغيّر عدد الأسهم فقط
+       // usePriceUpdater يتولى التحديث -- لا نحتاج جلب مزدوج
+  }, [stocks.length]);
+ // يُعاد عند تغيّر عدد الأسهم فقط
 
   return stocks.map(s => {
     const live = priceCache[s.sym];
