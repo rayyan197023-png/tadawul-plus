@@ -51,8 +51,8 @@ function mapRatiosData(data) {
 export async function fetchFundamentals(symbol) {
   try {
     const [company, ratios] = await Promise.allSettled([
-      sahmkFetch(`/company/${symbol}/`),
-      sahmkFetch(`/analytics/ratios/${symbol}/`),
+      sahmkFetch('fundamentals', symbol),
+      sahmkFetch('ratios', symbol),
     ]);
 
     const companyData = company.status === 'fulfilled'
