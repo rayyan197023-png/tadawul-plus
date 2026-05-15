@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useStockDispatch } from '../store/stockStore';
 import { useMarketDispatch, MARKET_ACTIONS } from '../store';
-import { STOCKS_MAP as SEED_MAP } from '../constants/stocksData';
+import { STOCKS_MAP as SEED_MAP, updateLiveStocks } from '../constants/stocksData';
 
 export function usePriceUpdater() {
   const dispatch = useStockDispatch();
