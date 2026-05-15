@@ -106,38 +106,7 @@ function stockReducer(state, action) {
 
     case STOCK_ACTIONS.SET_FILTER:
       return { ...state, filter: action.payload };
-case 'SET_STOCKS_FROM_API': {
-  const newStocks = action.payload.map(u => ({
-    sym: u.sym,
-    name: u.data.name || u.sym,
-    sec: '',
-    sectorId: '',
-    p: u.data.p,
-    ch: u.data.ch,
-    pct: u.data.pct,
-    v: u.data.v,
-    avgV: 0, hi: 0, lo: 0,
-    w52h: null, w52l: null,
-    target: null, eps: null, pe: null,
-    pb: null, divY: null, roe: null,
-    mktCap: null, debt: null,
-    revGrw: null, epsGrw: null,
-    freeCashFlow: null, beta: null,
-    oilCorr: null, rating: 50,
-    desc: null, earnDate: null,
-  }));
-  // دمج مع الأسهم الموجودة
-  const existingSyms = new Set(state.stocks.map(s => s.sym));
-  const merged = [...state.stocks];
-  newStocks.forEach(s => {
-    if (!existingSyms.has(s.sym)) merged.push(s);
-    else {
-      const idx = merged.findIndex(x => x.sym === s.sym);
-      if (idx >= 0) merged[idx] = { ...merged[idx], name: s.name };
-    }
-  });
-  return { ...state, stocks: merged };
-}
+
     case STOCK_ACTIONS.SET_LOADING:
       return { ...state, isLoading: action.payload };
 
