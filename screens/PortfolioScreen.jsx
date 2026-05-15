@@ -30,7 +30,7 @@ import MonthlyReturnsHeatmap from '../components/charts/MonthlyReturnsHeatmap';
 import RiskReturnScatter from '../components/charts/RiskReturnScatter';
 import CorrelationHeatmap from '../components/charts/CorrelationHeatmap';
 import VaRDistributionChart from '../components/charts/VaRDistributionChart';
-import { STOCKS } from '../constants/stocksData';
+import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
 import { useNav } from '../store';
 import { TAB_IDS } from '../constants/navigation';
 
