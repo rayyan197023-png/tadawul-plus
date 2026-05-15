@@ -257,3 +257,8 @@ export const INDICES = [
 ];
 
 export default STOCKS;
+export let STOCKS_LIVE = STOCKS;
+
+export function updateLiveStocks(newStocks) {
+  STOCKS_LIVE = newStocks;
+}
