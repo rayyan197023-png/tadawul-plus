@@ -4,9 +4,10 @@
  * يُحدِّث STOCKS_MAP تلقائياً عند تحميل التطبيق
  */
 
-async function sahmkFetch(path) {
-  const url = `/api/sahmkdata?endpoint=fundamentals&path=${encodeURIComponent(path)}`;
-  const res = await fetch(url, { next: { revalidate: 86400 } });
+async function sahmkFetch(endpoint, sym) {
+  const res = await fetch(`/api/sahmkdata?endpoint=${endpoint}&sym=${sym}`, {
+    next: { revalidate: 86400 },
+  });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
