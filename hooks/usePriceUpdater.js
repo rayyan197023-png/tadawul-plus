@@ -12,7 +12,7 @@ export function usePriceUpdater() {
     async function fetchAll() {
       try {
         // 1. جلب قائمة شركات تاسي
-        const compRes = await fetch('/api/sahmkdata?endpoint=companies&market=TASI&limit=300');
+        const compRes = await fetch('/api/sahmkdata?endpoint=companies&market=TASI&limit=500');
         const compJson = await compRes.json();
         const companies = (compJson.results || []).filter(c => {
   const n = parseInt(c.symbol);
