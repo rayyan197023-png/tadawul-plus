@@ -55,20 +55,20 @@ function mapRatiosData(data) {
 
 export async function fetchFundamentals(symbol) {
   try {
-    const [company, financials] = await Promise.allSettled([
+    const [company, ratios] = await Promise.allSettled([
       sahmkFetch(`/company/${symbol}/`),
-      sahmkFetch(`/financials/${symbol}/?type=all&period=annual&history=3y&result=latest`),
+      sahmkFetch(`/analytics/ratios/${symbol}/`),
     ]);
 
     const companyData = company.status === 'fulfilled'
       ? mapCompanyData(company.value)
       : {};
 
-    const financialsData = financials.status === 'fulfilled'
-      ? mapFinancialsData(financials.value)
+    const ratiosData = ratios.status === 'fulfilled'
+      ? mapRatiosData(ratios.value)
       : {};
 
-    return { ...companyData, ...financialsData };
+    return { ...companyData, ...ratiosData };
 
   } catch (e) {
     console.warn(`[sahmkFundamentals] ${symbol}:`, e.message);
