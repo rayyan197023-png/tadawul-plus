@@ -226,63 +226,8 @@ export function useStocks() {
   const tickRef = useRef(null);
 
   useEffect(() => {
-    if (!config.features.liveMarketData) {
-      // وضع المحاكاة -- GBM فقط عند demo
-      tickRef.current = setInterval(() => {
-        const rng = _gbmSeed(Date.now() & 0xffff);
-        const updates = stocks.map(s => {
-          const cur   = priceCache[s.sym] ? priceCache[s.sym].p : s.p;
-          const base  = s.p;
-          const drift = (base - cur) * 0.02;
-          const sigma = cur * 0.003;
-          const delta = drift + (rng() - 0.49) * sigma;
-          const newP  = Math.max(base * 0.7, parseFloat((cur + delta).toFixed(2)));
-          const newCh = parseFloat((newP - base).toFixed(2));
-          const newPct = parseFloat(((newP - base) / base * 100).toFixed(2));
-          const rawVol = s.v || s.avgV || 1000000;
-          const newV  = Math.round(rawVol * (0.6 + rng() * 0.8));
-          return {
-            sym: s.sym,
-            data: { p: newP, ch: newCh, pct: newPct, v: newV }
-          };
-        });
-        dispatch({ type: 'UPDATE_PRICES', payload: updates });
-      }, 5000);
-      return () => clearInterval(tickRef.current);
-    }
-
-    // وضع الأسعار الحية -- sahmk API
-    async function fetchLive() {
-      try {
-        const syms = stocks.map(s => s.sym).join(',');
-const res  = await fetch(`/api/sahmkdata?endpoint=quotes&symbols=${syms}`);
-if (!res.ok) return;
-const json = await res.json();
-if (!json || !json.quotes) return;
-const updates = json.quotes
-  .filter(item => item.symbol)
-  .map(item => ({
-    sym:  item.symbol,
-    data: {
-      p:    item.price          ?? 0,
-      ch:   item.change_percent ?? 0,
-      v:    item.volume         ?? 0,
-      name: item.name           ?? '',
-      hi:   item.high           ?? 0,
-      lo:   item.low            ?? 0,
-    },
-  }));
-        if (updates.length > 0) {
-          dispatch({ type: 'UPDATE_PRICES', payload: updates });
-        }
-      } catch (e) {
-        console.warn('[useSharedPrices] fetch failed:', e.message);
-      }
-    }
-
-       // usePriceUpdater يتولى التحديث -- لا نحتاج جلب مزدوج
+    // usePriceUpdater يتولى كل التحديثات
   }, [stocks.length]);
- // يُعاد عند تغيّر عدد الأسهم فقط
 
   return stocks.map(s => {
     const live = priceCache[s.sym];
