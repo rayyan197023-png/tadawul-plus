@@ -13,7 +13,7 @@
  * Everything else is in-memory.
  */
 
-import { createContext, useContext, useReducer, useCallback, useEffect, useRef } from 'react';
+import { createContext, useContext, useReducer, useCallback, useEffect } from 'react';
 import config from '../constants/config';
 
 // ── Persistence helpers (safe wrappers)
