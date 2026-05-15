@@ -27,7 +27,6 @@ const syms = STOCKS.map(s => s.sym);
 
         if (allQuotes.length > 0) {
           const compMap = {};
-          companies.forEach(c => { compMap[c.symbol] = c; });
 
                     const newStocks = allQuotes
   .filter(q => q.price && q.symbol && compMap[q.symbol])
