@@ -225,11 +225,6 @@ export function useStocks() {
 // جميع الشاشات تقرأ من نفس priceCache → أسعار موحدة
 // ══════════════════════════════════════════════════════════════
 
-function _gbmSeed(s) {
-  let x = s;
-  return () => { x = (x*1664525+1013904223)&0xffffffff; return (x>>>0)/0xffffffff; };
-}
-
  export function useSharedPrices() {
   const { priceCache, stocks } = useStockState();
   const dispatch = useStockDispatch();
