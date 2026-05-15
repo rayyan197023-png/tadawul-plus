@@ -68,6 +68,9 @@ export async function GET(req: NextRequest) {
     else if (endpoint === 'fundamentals') {
       url = `${SAHMK_BASE}/company/${sym}/`;
     }
+    else if (endpoint === 'ratios') {
+      url = `${SAHMK_BASE}/analytics/ratios/${sym}/`;
+    }
     else if (endpoint === 'financials') {
       url = `${SAHMK_BASE}/financials/${sym}/?type=all&period=annual&history=3y`;
     }
