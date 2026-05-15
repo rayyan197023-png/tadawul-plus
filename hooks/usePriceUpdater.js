@@ -56,12 +56,6 @@ pct:  q.change_percent ?? 0,
             }));
 
           dispatch({ type: 'SET_STOCKS', payload: newStocks });
-
-          const updates = newStocks.map(s => ({
-            sym:  s.sym,
-            data: { p: s.p, ch: s.ch, pct: s.pct, v: s.v, name: s.name }
-          }));
-          dispatch({ type: 'UPDATE_PRICES', payload: updates });
         }
 
         // 3. تاسي
