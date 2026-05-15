@@ -221,8 +221,7 @@ export function useStocks() {
 // ══════════════════════════════════════════════════════════════
 
  export function useSharedPrices() {
-  const { priceCache, stocks } = useStockState();
-  const dispatch = useStockDispatch();
+    const { priceCache, stocks } = useStockState();
 
   useEffect(() => {
     // usePriceUpdater يتولى كل التحديثات
