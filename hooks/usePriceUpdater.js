@@ -30,10 +30,10 @@ const syms = STOCKS.map(s => s.sym);
             }
           }
         }
-const debugDiv = document.getElementById('tadawul-debug');
-if (debugDiv) {
-  debugDiv.style.display = 'block';
-  debugDiv.textContent = `sahmk رجع: ${allQuotes.length} سهم من أصل ${syms.length}`;
+const debugDiv5 = document.getElementById('tadawul-debug');
+if (debugDiv5) {
+  debugDiv5.style.display = 'block';
+  debugDiv5.textContent = `sahmk رجع: ${allQuotes.length} سهم من أصل ${syms.length}`;
 }
         if (allQuotes.length > 0) {
 
