@@ -26,7 +26,6 @@ const syms = STOCKS.map(s => s.sym);
         }
 
         if (allQuotes.length > 0) {
-          const compMap = {};
 
                     const newStocks = allQuotes
 .filter(q => q.price && q.symbol)
