@@ -74,8 +74,7 @@ if (setDebug) setDebug(`sahmk: ${allQuotes.length} | بعد الفلتر: ${newS
         }
 
       } catch(e) {
-        const d = document.getElementById('tadawul-debug');
-        if (d) { d.style.display='block'; d.textContent='خطأ عام: '+e.message; }
+if (setDebug) setDebug('خطأ عام: '+e.message);
       }
     }
 
