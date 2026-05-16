@@ -94,9 +94,8 @@ if (debugDiv) {
             } catch(e) {
         console.warn('[usePriceUpdater] fetchAll error:', e.message);
         // عرض الخطأ مرئياً
-        const debugDiv = document.getElementById('tadawul-debug');
-        if (debugDiv) debugDiv.textContent = 'خطأ: ' + e.message;
-      }
+        const debugDiv4 = document.getElementById('tadawul-debug');
+        if (debugDiv4) debugDiv4.textContent = 'خطأ: ' + e.message;
     }
 
     fetchAll();
