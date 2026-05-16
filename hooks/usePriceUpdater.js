@@ -23,10 +23,10 @@ const syms = STOCKS.map(s => s.sym);
             const j = await r.json();
             if (j.quotes) allQuotes.push(...j.quotes);
           } catch(e) {
-            const debugDiv = document.getElementById('tadawul-debug');
-            if (debugDiv) {
-              debugDiv.style.display = 'block';
-              debugDiv.textContent = 'خطأ دفعة: ' + e.message;
+            const debugDiv3 = document.getElementById('tadawul-debug');
+            if (debugDiv3) {
+              debugDiv3.style.display = 'block';
+              debugDiv3.textContent = 'خطأ دفعة: ' + e.message;
             }
           }
         }
