@@ -188,7 +188,7 @@ import('./lib/registerSW').then(({ unregisterServiceWorker }) => {
     const initAlerts = async () => {
       try {
         const { runSmartAlertsEngine, requestNotificationPermission } = await import('./engines/smartAlertsEngine');
-        const { STOCKS } = await import('./constants/stocksData');
+const { STOCKS_LIVE: STOCKS } = await import('./constants/stocksData');
         const { analyzeStockRadar } = await import('./engines/analysisEngine');
         
         // طلب إذن Browser Notifications
