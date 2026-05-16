@@ -22,7 +22,7 @@ const C = colors;
 
 // ── Lazy Screens ─────────────────────────────────────────────
 const HomeScreen        = lazy(() => import('./screens/HomeScreen'));
-const StocksScreen      = lazy(() => import('./screens/StocksScreen'));
+const StocksScreen = lazy(() => import('./screens/StocksScreen?v=2'));
 const AnalysisScreen    = lazy(() => import('./screens/AnalysisScreen'));
 const PortfolioScreen   = lazy(() => import('./screens/PortfolioScreen'));
 const NewsScreen        = lazy(() => import('./screens/NewsScreen'));
