@@ -1,22 +1,13 @@
 'use client';
 /**
- * STOCK STORE
- *
- * Owns:
- * - All stocks list (normalized)
- * - Selected stock (for detail view)
- * - Watchlist (persisted to localStorage)
- * - Price cache (sym → live price)
- * - Sort/filter preferences
- *
- * The watchlist is the ONLY data persisted to localStorage.
- * Everything else is in-memory.
+ * @module store/stockStore
+ * @description إدارة حالة الأسهم المركزية
+ * المصدر الوحيد للحقيقة لجميع بيانات الأسهم
  */
 
-import { createContext, useContext, useReducer, useCallback, useEffect } from 'react';
-import config from '../constants/config';
+import { createContext, useContext, useReducer, useCallback } from 'react';
 
-// ── Persistence helpers (safe wrappers)
+// ── Persistence helpers
 const LS_KEY_WATCHLIST = 'td_watchlist_v2';
 
 function loadWatchlist() {
@@ -31,56 +22,61 @@ function loadWatchlist() {
 function saveWatchlist(list) {
   try {
     localStorage.setItem(LS_KEY_WATCHLIST, JSON.stringify(list));
-  } catch { /* storage full — silent fail */ }
+  } catch {}
 }
 
 // ── Action Types
 export const STOCK_ACTIONS = {
-  SET_STOCKS:        'SET_STOCKS',
-  UPDATE_PRICE:      'UPDATE_PRICE',
-  UPDATE_PRICES:     'UPDATE_PRICES',
-  ADD_TO_WATCHLIST:  'ADD_TO_WATCHLIST',
-  REMOVE_WATCHLIST:  'REMOVE_WATCHLIST',
-  SET_SORT:          'SET_SORT',
-  SET_FILTER:        'SET_FILTER',
-  SET_LOADING:       'SET_LOADING',
+  SET_STOCKS:       'SET_STOCKS',
+  UPDATE_PRICE:     'UPDATE_PRICE',
+  UPDATE_PRICES:    'UPDATE_PRICES',
+  ADD_TO_WATCHLIST: 'ADD_TO_WATCHLIST',
+  REMOVE_WATCHLIST: 'REMOVE_WATCHLIST',
+  SET_SORT:         'SET_SORT',
+  SET_FILTER:       'SET_FILTER',
+  SET_LOADING:      'SET_LOADING',
 };
 
-function loadCachedStocks() {
-  return [];
-}
-
+// ── Initial State
 const initialState = {
-  stocks: loadCachedStocks(),
-  priceCache:  {},              // sym → { p, ch, pct, v, ts }
-
-  watchlist:   loadWatchlist(), // Array of sym strings
-  sort:        'volume',        // 'volume'|'gainers'|'losers'|'name'|'price'
-  filter:      'all',           // sectorId or 'all'
-  isLoading:   false,
+  stocks:     [],
+  priceCache: {},
+  watchlist:  [],
+  sort:       'volume',
+  filter:     'all',
+  isLoading:  false,
 };
 
 // ── Reducer
 function stockReducer(state, action) {
   switch (action.type) {
 
-    case STOCK_ACTIONS.SET_STOCKS: {
-  return { ...state, stocks: action.payload };
-}
+    case STOCK_ACTIONS.SET_STOCKS:
+      return { ...state, stocks: action.payload };
+
     case STOCK_ACTIONS.UPDATE_PRICE: {
       const { sym, data } = action.payload;
       return {
         ...state,
-        priceCache: { ...state.priceCache, [sym]: { ...data, ts: Date.now() } },
+        priceCache: {
+          ...state.priceCache,
+          [sym]: { ...data, ts: Date.now() },
+        },
       };
     }
 
     case STOCK_ACTIONS.UPDATE_PRICES: {
       const updates = {};
-      (Array.isArray(action.payload) ? action.payload : Object.values(action.payload)).forEach(({ sym, data }) => {
+      const items = Array.isArray(action.payload)
+        ? action.payload
+        : Object.values(action.payload);
+      items.forEach(({ sym, data }) => {
         updates[sym] = { ...data, ts: Date.now() };
       });
-      return { ...state, priceCache: { ...state.priceCache, ...updates } };
+      return {
+        ...state,
+        priceCache: { ...state.priceCache, ...updates },
+      };
     }
 
     case STOCK_ACTIONS.ADD_TO_WATCHLIST: {
@@ -110,13 +106,17 @@ function stockReducer(state, action) {
   }
 }
 
-// ── Context
+// ── Contexts
 const StockStateContext    = createContext(initialState);
 const StockDispatchContext = createContext(null);
 
 // ── Provider
 export function StockProvider({ children }) {
-  const [state, dispatch] = useReducer(stockReducer, initialState);
+  const [state, dispatch] = useReducer(stockReducer, {
+    ...initialState,
+    watchlist: loadWatchlist(),
+  });
+
   return (
     <StockDispatchContext.Provider value={dispatch}>
       <StockStateContext.Provider value={state}>
@@ -126,7 +126,7 @@ export function StockProvider({ children }) {
   );
 }
 
-// ── Base hooks
+// ── Base Hooks
 export function useStockState() {
   return useContext(StockStateContext);
 }
@@ -137,75 +137,68 @@ export function useStockDispatch() {
   return d;
 }
 
-// ── Composed hook
+// ── useStocks -- للشاشات التي تحتاج فلترة وترتيب
 export function useStocks() {
   const state    = useStockState();
   const dispatch = useStockDispatch();
 
-  // Merge live prices into stock objects
-  const stocksWithLivePrices = state.stocks.map(s => {
+  const stocks = state.stocks.map(s => {
     const live = state.priceCache[s.sym];
     if (!live) return s;
-   return {
-  ...s,
-  p:   live.p,
-  ch:  live.ch,
-  pct: live.pct,
-  v:   live.v,
-  name: live.name || s.name,
-};
+    return {
+      ...s,
+      p:    live.p,
+      ch:   live.ch,
+      pct:  live.pct,
+      v:    live.v,
+      name: live.name || s.name,
+      hi:   live.hi   ?? s.hi,
+      lo:   live.lo   ?? s.lo,
+    };
   });
 
-  // Apply filter
   const filtered = state.filter === 'all'
-    ? stocksWithLivePrices
-    : stocksWithLivePrices.filter(s => s.sectorId === state.filter);
+    ? stocks
+    : stocks.filter(s => s.sectorId === state.filter);
 
-  // Apply sort
   const sorted = [...filtered].sort((a, b) => {
     switch (state.sort) {
-      case 'gainers':  return b.pct - a.pct;
-      case 'losers':   return a.pct - b.pct;
-      case 'volume':   return b.v   - a.v;
-      case 'price':    return b.p   - a.p;
-      case 'name':     return a.name.localeCompare(b.name, 'ar');
-      default:         return b.v   - a.v;
+      case 'gainers': return b.pct - a.pct;
+      case 'losers':  return a.pct - b.pct;
+      case 'volume':  return b.v   - a.v;
+      case 'price':   return b.p   - a.p;
+      case 'name':    return (a.name || '').localeCompare(b.name || '', 'ar');
+      default:        return b.v   - a.v;
     }
   });
 
-  const isInWatchlist = useCallback((sym) => {
-    return state.watchlist.includes(sym);
-  }, [state.watchlist]);
+  const isInWatchlist = useCallback(
+    sym => state.watchlist.includes(sym),
+    [state.watchlist]
+  );
 
-
-  const toggleWatchlist = useCallback((sym) => {
-    const action = state.watchlist.includes(sym)
-      ? STOCK_ACTIONS.REMOVE_WATCHLIST
-      : STOCK_ACTIONS.ADD_TO_WATCHLIST;
-    dispatch({ type: action, payload: sym });
+  const toggleWatchlist = useCallback(sym => {
+    dispatch({
+      type: state.watchlist.includes(sym)
+        ? STOCK_ACTIONS.REMOVE_WATCHLIST
+        : STOCK_ACTIONS.ADD_TO_WATCHLIST,
+      payload: sym,
+    });
   }, [dispatch, state.watchlist]);
 
-  const setSort = useCallback((sort) => {
-    dispatch({ type: STOCK_ACTIONS.SET_SORT, payload: sort });
-  }, [dispatch]);
-
-  const setFilter = useCallback((filter) => {
-    dispatch({ type: STOCK_ACTIONS.SET_FILTER, payload: filter });
-  }, [dispatch]);
+  const setSort   = useCallback(v => dispatch({ type: STOCK_ACTIONS.SET_SORT,   payload: v }), [dispatch]);
+  const setFilter = useCallback(v => dispatch({ type: STOCK_ACTIONS.SET_FILTER, payload: v }), [dispatch]);
 
   return {
-    // State
-    stocks:        stocksWithLivePrices,
-    filteredStocks: sorted,
-    watchlist:     state.watchlist,
-    sort:          state.sort,
-    filter:        state.filter,
-    isLoading:     state.isLoading,
-    priceCache:    state.priceCache,
-    // Derived
-    watchlistStocks: stocksWithLivePrices.filter(s => state.watchlist.includes(s.sym)),
+    stocks,
+    filteredStocks:  sorted,
+    watchlist:       state.watchlist,
+    watchlistStocks: stocks.filter(s => state.watchlist.includes(s.sym)),
+    sort:            state.sort,
+    filter:          state.filter,
+    isLoading:       state.isLoading,
+    priceCache:      state.priceCache,
     isInWatchlist,
-    // Actions
     toggleWatchlist,
     setSort,
     setFilter,
@@ -213,19 +206,9 @@ export function useStocks() {
   };
 }
 
-// ══════════════════════════════════════════════════════════════
-// useSharedPrices — الأسعار المشتركة بين جميع الشاشات
-//
-// يُشغّل محاكاة GBM مركزية واحدة
-// جميع الشاشات تقرأ من نفس priceCache → أسعار موحدة
-// ══════════════════════════════════════════════════════════════
-
- export function useSharedPrices() {
-    const { priceCache, stocks } = useStockState();
-
-  useEffect(() => {
-    // usePriceUpdater يتولى كل التحديثات
-  }, [stocks.length]);
+// ── useSharedPrices -- للشاشات التي تقرأ الأسعار مباشرة
+export function useSharedPrices() {
+  const { stocks, priceCache } = useStockState();
 
   return stocks.map(s => {
     const live = priceCache[s.sym];
@@ -237,9 +220,8 @@ export function useStocks() {
       pct:  live.pct,
       v:    live.v,
       name: live.name || s.name,
-      ...(live.hi != null && { hi: live.hi }),
-      ...(live.lo != null && { lo: live.lo }),
-      ...(live.o  != null && { o:  live.o  }),
+      hi:   live.hi   ?? s.hi,
+      lo:   live.lo   ?? s.lo,
     };
   });
 }
