@@ -57,8 +57,7 @@ if (setDebug) setDebug(`sahmk رجع: ${allQuotes.length} من أصل ${syms.len
           dispatch({ type: 'SET_STOCKS', payload: newStocks });
           updateLiveStocks(newStocks);
 
-          const d2 = document.getElementById('tadawul-debug');
-          if (d2) { d2.style.display='block'; d2.textContent=`sahmk: ${allQuotes.length} | بعد الفلتر: ${newStocks.length}`; }
+if (setDebug) setDebug(`sahmk: ${allQuotes.length} | بعد الفلتر: ${newStocks.length}`);
         }
 
         // تاسي
