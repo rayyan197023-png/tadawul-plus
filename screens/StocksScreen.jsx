@@ -252,6 +252,9 @@ function StocksPage() {
       ref={pullRef}
       {...touchHandlers}
     >
+      <div style={{position:'fixed',top:0,left:0,right:0,background:'#000',color:'#0f0',fontSize:12,padding:8,zIndex:99999}}>
+        liveStocks: {liveStocks.length} | stocks: {stocks.length} | cache: {Object.keys(priceCache).length}
+      </div>
       {/* Pull to Refresh */}
       {(isPulling || isRefreshing) && (
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 10, background: "linear-gradient(180deg,rgba(7,11,18,.95),transparent)", paddingTop: 8, transform: `translateY(${Math.round((isPulling ? pullProgress : 1) * 48 - 48)}px)`, transition: isRefreshing ? "none" : "transform .15s" }}>
