@@ -442,7 +442,7 @@ paddingTop: 'env(safe-area-inset-top, 0px)',
       
       <PWAPrompt />
 <div style={{
-  position:'fixed', bottom:200, left:0, right:0,
+position:'fixed', top:100, left:0, right:0,
   background:'yellow', color:'#000',
   fontSize:14, padding:'10px 12px', zIndex:99999,
   fontFamily:'monospace', textAlign:'center',
