@@ -72,6 +72,11 @@ sec:  seed.sec || '',
 dispatch({ type: 'SET_STOCKS', payload: newStocks });
 updateLiveStocks(newStocks);
         }
+const debugDiv = document.getElementById('tadawul-debug');
+if (debugDiv) {
+  debugDiv.style.display = 'block';
+  debugDiv.textContent = `sahmk: ${allQuotes.length} | بعد الفلتر: ${newStocks.length}`;
+}
 
         // 3. تاسي
         const tasiRes = await fetch('/api/sahmkdata?endpoint=tasi');
