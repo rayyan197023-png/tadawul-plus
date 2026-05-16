@@ -30,7 +30,11 @@ const syms = STOCKS.map(s => s.sym);
             }
           }
         }
-
+const debugDiv = document.getElementById('tadawul-debug');
+if (debugDiv) {
+  debugDiv.style.display = 'block';
+  debugDiv.textContent = `sahmk رجع: ${allQuotes.length} سهم من أصل ${syms.length}`;
+}
         if (allQuotes.length > 0) {
 
                     const newStocks = allQuotes
