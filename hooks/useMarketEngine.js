@@ -1,6 +1,12 @@
 'use client';
-import config from '../constants/config';
+/**
+ * @module hooks/useMarketEngine
+ * @description جلب بيانات مؤشر تاسي من sahmk API
+ */
+
 import { useState, useEffect } from 'react';
+
+const INTERVAL_MS = 30_000;
 
 export function useMarketEngine() {
   const [state, setState] = useState({
@@ -15,19 +21,21 @@ export function useMarketEngine() {
     async function fetchTasi() {
       try {
         const res = await fetch('/api/sahmkdata?endpoint=tasi');
+        if (!res.ok) return;
         const tasi = await res.json();
         if (tasi?.index_value) {
           setState(prev => ({
             ...prev,
             current: tasi.index_value,
-            chgPts:  tasi.index_change_percent,
-            chgVal:  tasi.index_change,
+            chgPts:  tasi.index_change_percent ?? 0,
+            chgVal:  tasi.index_change         ?? 0,
           }));
         }
-      } catch(e) {}
+      } catch {}
     }
+
     fetchTasi();
-    const t = setInterval(fetchTasi, 20000);
+    const t = setInterval(fetchTasi, INTERVAL_MS);
     return () => clearInterval(t);
   }, []);
 
