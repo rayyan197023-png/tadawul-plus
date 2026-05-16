@@ -22,8 +22,7 @@ export function usePriceUpdater(setDebug) {
             const j = await r.json();
             if (j.quotes) allQuotes.push(...j.quotes);
           } catch(e) {
-            const d = document.getElementById('tadawul-debug');
-            if (d) { d.style.display='block'; d.textContent='خطأ دفعة: '+e.message; }
+           if (setDebug) setDebug('خطأ دفعة: '+e.message);
           }
         }
 
