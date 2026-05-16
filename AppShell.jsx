@@ -115,7 +115,7 @@ function Shell() {
   const haptic = useHaptic();
   const { priceCache } = useStockState();
   const [expandedChart, setExpandedChart] = React.useState(false);
-  
+  const [debugMsg, setDebugMsg] = React.useState('جارٍ التحميل...');
   const [watchlist, setWatchlist] = React.useState(() => {
     try {
       const r = typeof window !== 'undefined' && window.localStorage.getItem('tadawul_watchlist');
