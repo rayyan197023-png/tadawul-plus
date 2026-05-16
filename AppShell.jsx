@@ -441,6 +441,13 @@ paddingTop: 'env(safe-area-inset-top, 0px)',
       )}
       
       <PWAPrompt />
+<div id="tadawul-debug" style={{
+  position:'fixed', bottom:120, left:0, right:0,
+  background:'rgba(255,0,0,0.9)', color:'#fff',
+  fontSize:11, padding:'6px 12px', zIndex:9999,
+  fontFamily:'monospace', textAlign:'center',
+  display:'none',
+}}/>
     </div>
   );
 }
