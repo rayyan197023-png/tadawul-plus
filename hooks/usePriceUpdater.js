@@ -76,11 +76,16 @@ updateLiveStocks(newStocks);
           });
         }
 
-      } catch(e) {}
+            } catch(e) {
+        console.warn('[usePriceUpdater] fetchAll error:', e.message);
+        // عرض الخطأ مرئياً
+        const debugDiv = document.getElementById('tadawul-debug');
+        if (debugDiv) debugDiv.textContent = 'خطأ: ' + e.message;
+      }
     }
 
     fetchAll();
-    const t = setInterval(fetchAll, 20000);
-    return () => clearInterval(t);
-  }, [dispatch, marketDispatch]);
-}
+                const t = setInterval(fetchAll, 20000);
+                return () => clearInterval(t);
+              }, [dispatch, marketDispatch]);
+            }
