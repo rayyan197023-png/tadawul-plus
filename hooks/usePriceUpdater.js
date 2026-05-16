@@ -27,8 +27,7 @@ export function usePriceUpdater(setDebug) {
         }
 
         // عرض عدد الأسهم المستلمة
-        const d1 = document.getElementById('tadawul-debug');
-        if (d1) { d1.style.display='block'; d1.textContent=`sahmk رجع: ${allQuotes.length} من أصل ${syms.length}`; }
+if (setDebug) setDebug(`sahmk رجع: ${allQuotes.length} من أصل ${syms.length}`);
 
         if (allQuotes.length > 0) {
           const newStocks = allQuotes
