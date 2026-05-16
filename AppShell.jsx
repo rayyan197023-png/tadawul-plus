@@ -144,7 +144,7 @@ const [aiAnalysis, setAiAnalysis] = React.useState(null);
 
   useLiveStockPrices();
 useMarketBridge();
-usePriceUpdater();
+usePriceUpdater(setDebugMsg);
 
 // ✨ تحميل Fundamentals الحقيقية من sahmk.sa
 useEffect(() => {
