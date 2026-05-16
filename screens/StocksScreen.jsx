@@ -136,8 +136,8 @@ const StockCard = React.memo(function StockCard({ stk, bars, flash, openDetail, 
 // ── Main Screen ───────────────────────────────────────────────
 function StocksPage() {
   const haptic                  = useHaptic();
-  const liveStocks              = useSharedPrices();
-  const { priceCache }          = useStockState();
+const { stocks, priceCache } = useStockState();
+const liveStocks = stocks.length > 0 ? stocks : [];
   const { openStock }           = useNav();
 
   const barsCache    = useRef({});
