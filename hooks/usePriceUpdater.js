@@ -17,12 +17,18 @@ const syms = STOCKS.map(s => s.sym);
         for (let i = 0; i < syms.length; i += 50) chunks.push(syms.slice(i, i + 50));
 
         const allQuotes = [];
-        for (const chunk of chunks) {
+                for (const chunk of chunks) {
           try {
             const r = await fetch(`/api/sahmkdata?endpoint=quotes&symbols=${chunk.join(',')}`);
             const j = await r.json();
             if (j.quotes) allQuotes.push(...j.quotes);
-          } catch(e) {}
+          } catch(e) {
+            const debugDiv = document.getElementById('tadawul-debug');
+            if (debugDiv) {
+              debugDiv.style.display = 'block';
+              debugDiv.textContent = 'خطأ دفعة: ' + e.message;
+            }
+          }
         }
 
         if (allQuotes.length > 0) {
