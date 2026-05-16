@@ -11,74 +11,59 @@ export function usePriceUpdater() {
   useEffect(() => {
     async function fetchAll() {
       try {
-        // 1. جلب قائمة شركات تاسي
-const syms = STOCKS.map(s => s.sym);
+        const syms = STOCKS.map(s => s.sym);
         const chunks = [];
         for (let i = 0; i < syms.length; i += 50) chunks.push(syms.slice(i, i + 50));
 
         const allQuotes = [];
-                for (const chunk of chunks) {
+        for (const chunk of chunks) {
           try {
             const r = await fetch(`/api/sahmkdata?endpoint=quotes&symbols=${chunk.join(',')}`);
             const j = await r.json();
             if (j.quotes) allQuotes.push(...j.quotes);
           } catch(e) {
-            const debugDiv3 = document.getElementById('tadawul-debug');
-            if (debugDiv3) {
-              debugDiv3.style.display = 'block';
-              debugDiv3.textContent = 'خطأ دفعة: ' + e.message;
-            }
+            const d = document.getElementById('tadawul-debug');
+            if (d) { d.style.display='block'; d.textContent='خطأ دفعة: '+e.message; }
           }
         }
-const debugDiv5 = document.getElementById('tadawul-debug');
-if (debugDiv5) {
-  debugDiv5.style.display = 'block';
-  debugDiv5.textContent = `sahmk رجع: ${allQuotes.length} سهم من أصل ${syms.length}`;
-}
+
+        // عرض عدد الأسهم المستلمة
+        const d1 = document.getElementById('tadawul-debug');
+        if (d1) { d1.style.display='block'; d1.textContent=`sahmk رجع: ${allQuotes.length} من أصل ${syms.length}`; }
+
         if (allQuotes.length > 0) {
+          const newStocks = allQuotes
+            .filter(q => q.price && q.symbol)
+            .map(q => {
+              const seed = SEED_MAP[q.symbol] || {};
+              return {
+                sym:      q.symbol,
+                name:     q.name || q.name_en || q.symbol,
+                sec:      seed.sec      || '',
+                sectorId: seed.sectorId || '',
+                rating:   seed.rating   || 50,
+                oilCorr:  seed.oilCorr  || null,
+                p:        q.price,
+                ch:       q.change         ?? 0,
+                pct:      q.change_percent ?? 0,
+                v:        q.volume,
+                avgV:     q.volume,
+                hi:       q.high  || q.price,
+                lo:       q.low   || q.price,
+                mktCap: null, eps: null, pe: null, pb: null,
+                divY: null, roe: null, debt: null, beta: null,
+                w52h: null, w52l: null, target: null,
+              };
+            });
 
-                    const newStocks = allQuotes
-.filter(q => q.price && q.symbol)
-  .map(q => {
-    const seed = SEED_MAP[q.symbol] || {};
-    return {
-      sym:      q.symbol,
-name: q.name || q.name_en || q.symbol,
-sec:  seed.sec || '',
-      sectorId: seed.sectorId || '',
-      rating:   seed.rating   || 50,
-      oilCorr:  seed.oilCorr  || null,
-      p:        q.price,
-      ch:       q.change        ?? 0,
-      pct:      q.change_percent ?? 0,
-      v:        q.volume,
-      avgV:     q.volume,
-      hi:       q.high  || q.price,
-      lo:       q.low   || q.price,
-      mktCap:   null,
-      eps:      null,
-      pe:       null,
-      pb:       null,
-      divY:     null,
-      roe:      null,
-      debt:     null,
-      beta:     null,
-      w52h:     null,
-      w52l:     null,
-      target:   null,
-    };
-  });
+          dispatch({ type: 'SET_STOCKS', payload: newStocks });
+          updateLiveStocks(newStocks);
 
-dispatch({ type: 'SET_STOCKS', payload: newStocks });
-updateLiveStocks(newStocks);
+          const d2 = document.getElementById('tadawul-debug');
+          if (d2) { d2.style.display='block'; d2.textContent=`sahmk: ${allQuotes.length} | بعد الفلتر: ${newStocks.length}`; }
         }
-const debugDiv6 = document.getElementById('tadawul-debug');
-if (debugDiv6) {
-  debugDiv6.style.display = 'block';
-  debugDiv6.textContent = `sahmk: ${allQuotes.length} | بعد الفلتر: ${newStocks.length}`;
-}
 
-        // 3. تاسي
+        // تاسي
         const tasiRes = await fetch('/api/sahmkdata?endpoint=tasi');
         const tasi = await tasiRes.json();
         if (tasi?.index_value) {
@@ -91,15 +76,14 @@ if (debugDiv6) {
           });
         }
 
-            } catch(e) {
-        console.warn('[usePriceUpdater] fetchAll error:', e.message);
-        // عرض الخطأ مرئياً
-        const debugDiv4 = document.getElementById('tadawul-debug');
-        if (debugDiv4) debugDiv4.textContent = 'خطأ: ' + e.message;
+      } catch(e) {
+        const d = document.getElementById('tadawul-debug');
+        if (d) { d.style.display='block'; d.textContent='خطأ عام: '+e.message; }
+      }
     }
 
     fetchAll();
-                const t = setInterval(fetchAll, 20000);
-                return () => clearInterval(t);
-              }, [dispatch, marketDispatch]);
-            }
+    const t = setInterval(fetchAll, 20000);
+    return () => clearInterval(t);
+  }, [dispatch, marketDispatch]);
+}
