@@ -10,8 +10,8 @@ import { useStockDispatch } from '../store/stockStore';
 import { useMarketDispatch, MARKET_ACTIONS } from '../store';
 import { STOCKS_MAP as SEED_MAP, updateLiveStocks, STOCKS } from '../constants/stocksData';
 
-const INTERVAL_MS    = 30_000; // تحديث كل 30 ثانية
-const CHUNK_SIZE     = 50;     // حد sahmk لكل طلب
+const INTERVAL_MS = 30_000;
+const CHUNK_SIZE  = 50;
 
 export function usePriceUpdater(setDebug) {
   const dispatch       = useStockDispatch();
@@ -28,7 +28,7 @@ export function usePriceUpdater(setDebug) {
 
     async function fetchAll() {
       try {
-        // ── ① أسعار الأسهم ──────────────────────────────
+        // ── ① أسعار الأسهم
         const syms   = STOCKS.map(s => s.sym);
         const chunks = [];
         for (let i = 0; i < syms.length; i += CHUNK_SIZE) {
@@ -47,7 +47,7 @@ export function usePriceUpdater(setDebug) {
 
         if (!isMounted.current) return;
 
-        setDebug?.(`sahmk: ${allQuotes.length} سهم من أصل ${syms.length}`);
+        setDebugRef.current?.(`sahmk: ${allQuotes.length} سهم من أصل ${syms.length}`);
 
         if (allQuotes.length > 0) {
           const newStocks = allQuotes
@@ -77,11 +77,11 @@ export function usePriceUpdater(setDebug) {
 
           dispatch({ type: 'SET_STOCKS', payload: newStocks });
           updateLiveStocks(newStocks);
-          setDebug?.(`✅ ${newStocks.length} سهم محمّل`);
+          setDebugRef.current?.(`✅ ${newStocks.length} سهم محمّل`);
         }
 
-        // ── ② مؤشر تاسي ─────────────────────────────────
-        const tasiRes  = await fetch('/api/sahmkdata?endpoint=tasi');
+        // ── ② مؤشر تاسي
+        const tasiRes = await fetch('/api/sahmkdata?endpoint=tasi');
         if (!tasiRes.ok) return;
         const tasi = await tasiRes.json();
 
@@ -102,7 +102,7 @@ export function usePriceUpdater(setDebug) {
         }
 
       } catch(e) {
-        setDebug?.('خطأ: ' + e.message);
+        setDebugRef.current?.('خطأ: ' + e.message);
       }
     }
 
