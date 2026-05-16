@@ -1,71 +1,79 @@
 'use client';
-import config from '../constants/config';
 /**
- * useMarketBridge — Syncs useMarketEngine into marketStore
- *
- * Call ONCE at HomeScreen level.
- * Ensures SectorBar, TopBar, and all marketStore consumers
- * see the same live TASI data.
+ * @module hooks/useMarketBridge
+ * @description يربط بيانات السوق الحية بـ marketStore
+ * يُستدعى مرة واحدة في AppShell
  */
 
 import { useEffect, useRef } from 'react';
 import { useMarketEngine }   from './useMarketEngine';
 import { useMarketDispatch, MARKET_ACTIONS } from '../store';
-import { useStockState, useStockDispatch } from '../store/stockStore';
+import { useStockState } from '../store/stockStore';
 
 export function useMarketBridge() {
   const market   = useMarketEngine();
   const dispatch = useMarketDispatch();
-  const stockDispatch = useStockDispatch();
-const stockState = useStockState();
-  // Merge live priceCache into stocks so sector/breadth calculations use live prices
-  const stocks = stockState.stocks.map(s => {
-    const live = stockState.priceCache[s.sym];
+  const { stocks, priceCache } = useStockState();
+  const prevIdx  = useRef(null);
+
+  // دمج الأسعار الحية في الأسهم
+  const liveStocks = stocks.map(s => {
+    const live = priceCache[s.sym];
     if (!live) return s;
     return { ...s, p: live.p, ch: live.ch, pct: live.pct, v: live.v };
   });
-  const prevIdx  = useRef(null);
-  const pollRef  = useRef(null);
 
   useEffect(() => {
-    // Only dispatch on meaningful change (avoid thrashing on every 2s tick)
+    if (!market.current) return;
     if (prevIdx.current === market.current) return;
     prevIdx.current = market.current;
 
-    // ── Push live TASI to marketStore
+    // ── تاسي
     dispatch({
       type:    MARKET_ACTIONS.SET_INDICES,
       payload: [
-        { id: 'tasi', name: 'تاسي', value: market.current, pct: market.chgPts, ch: market.chgVal },
-        { id: 'nomu', name: 'نمو',  value: 3124.8,          pct: 1.12,          ch: 34.6 },
+        { id:'tasi', name:'تاسي', value: market.current, pct: market.chgPts ?? 0, ch: market.chgVal ?? 0 },
+        { id:'nomu', name:'نمو',  value: 0, pct: 0, ch: 0 },
       ],
     });
 
-    // ── Compute live sector performance from stock prices
-    // Group stocks by sector and average their pct change
+    // ── أداء القطاعات
     const sectorMap = {};
-    stocks.forEach(s => {
+    liveStocks.forEach(s => {
       if (!s.sectorId) return;
       if (!sectorMap[s.sectorId]) sectorMap[s.sectorId] = { pcts: [], name: s.sec };
       sectorMap[s.sectorId].pcts.push(s.pct ?? 0);
     });
 
-    const liveSectors = Object.entries(sectorMap).map(([id, { pcts, name }]) => {
-      const avg = pcts.reduce((a, b) => a + b, 0) / (pcts.length || 1);
-      return { id, name, pct: +avg.toFixed(2), count: pcts.length };
-    }).sort((a, b) => b.pct - a.pct);
+    const liveSectors = Object.entries(sectorMap)
+      .map(([id, { pcts, name }]) => ({
+        id,
+        name,
+        pct:   +(pcts.reduce((a, b) => a + b, 0) / (pcts.length || 1)).toFixed(2),
+        count: pcts.length,
+      }))
+      .sort((a, b) => b.pct - a.pct);
 
     if (liveSectors.length > 0) {
       dispatch({ type: MARKET_ACTIONS.SET_SECTORS, payload: liveSectors });
     }
 
-    // ── Market breadth
-    const adv = stocks.filter(s => (s.pct ?? 0) > 0).length;
-    const dec = stocks.filter(s => (s.pct ?? 0) < 0).length;
-    dispatch({ type: MARKET_ACTIONS.SET_BREADTH, payload: { advancers: adv, decliners: dec, unchanged: stocks.length - adv - dec, total: stocks.length } });
+    // ── اتساع السوق
+    const adv = liveStocks.filter(s => (s.pct ?? 0) > 0).length;
+    const dec = liveStocks.filter(s => (s.pct ?? 0) < 0).length;
+    dispatch({
+      type:    MARKET_ACTIONS.SET_BREADTH,
+      payload: {
+        advancers:  adv,
+        decliners:  dec,
+        unchanged:  liveStocks.length - adv - dec,
+        total:      liveStocks.length,
+      },
+    });
+
     dispatch({ type: MARKET_ACTIONS.SET_LAST_UPDATED, payload: Date.now() });
 
-    }, [market.current, dispatch, stocks]);
+  }, [market.current, dispatch, liveStocks]);
 
   return market;
 }
