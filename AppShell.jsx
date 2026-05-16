@@ -442,9 +442,9 @@ paddingTop: 'env(safe-area-inset-top, 0px)',
       
       <PWAPrompt />
 <div style={{
-  position:'fixed', bottom:120, left:0, right:0,
-  background:'rgba(255,0,0,0.9)', color:'#fff',
-  fontSize:11, padding:'6px 12px', zIndex:9999,
+  position:'fixed', bottom:200, left:0, right:0,
+  background:'yellow', color:'#000',
+  fontSize:14, padding:'10px 12px', zIndex:99999,
   fontFamily:'monospace', textAlign:'center',
 }}>{debugMsg}</div>
     </div>
