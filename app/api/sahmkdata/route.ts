@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   if (!SAHMK_KEY) {
     return NextResponse.json({ error: 'SAHMK_KEY not set' }, { status: 500 });
   }
-
+ 
   const headers = {
     'Accept': 'application/json',
     'X-API-Key': SAHMK_KEY,
