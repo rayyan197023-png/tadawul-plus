@@ -446,8 +446,7 @@ paddingTop: 'env(safe-area-inset-top, 0px)',
   background:'rgba(255,0,0,0.9)', color:'#fff',
   fontSize:11, padding:'6px 12px', zIndex:9999,
   fontFamily:'monospace', textAlign:'center',
-  display:'none',
-}}/>
+}}>جارٍ التحميل...</div>
     </div>
   );
 }
