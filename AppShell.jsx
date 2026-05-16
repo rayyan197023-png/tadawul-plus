@@ -354,16 +354,14 @@ function Shell() {
       <PWAPrompt />
 
       {/* Debug -- احذفه بعد حل المشكلة */}
-      {debugMsg ? (
-        <div style={{
-          position: 'fixed', top: 100, left: 0, right: 0,
-          background: 'rgba(0,0,0,0.85)', color: '#1ee68a',
-          fontSize: 12, padding: '8px 12px', zIndex: 99999,
-          fontFamily: 'monospace', textAlign: 'center',
-        }}>
-          {debugMsg}
-        </div>
-      ) : null}
+      <div style={{
+  position: 'fixed', top: 50, left: 0, right: 0,
+  background: 'red', color: '#fff',
+  fontSize: 14, padding: '10px', zIndex: 99999,
+  textAlign: 'center',
+}}>
+  {debugMsg || 'لم يبدأ التحميل بعد'}
+</div>
     </div>
   );
 }
