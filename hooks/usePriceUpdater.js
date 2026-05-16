@@ -4,7 +4,7 @@ import { useStockDispatch } from '../store/stockStore';
 import { useMarketDispatch, MARKET_ACTIONS } from '../store';
 import { STOCKS_MAP as SEED_MAP, updateLiveStocks, STOCKS } from '../constants/stocksData';
 
-export function usePriceUpdater() {
+export function usePriceUpdater(setDebug) {
   const dispatch = useStockDispatch();
   const marketDispatch = useMarketDispatch();
 
