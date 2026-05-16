@@ -17,6 +17,11 @@ export function usePriceUpdater(setDebug) {
   const dispatch       = useStockDispatch();
   const marketDispatch = useMarketDispatch();
   const isMounted      = useRef(true);
+  const setDebugRef    = useRef(setDebug);
+
+  useEffect(() => {
+    setDebugRef.current = setDebug;
+  }, [setDebug]);
 
   useEffect(() => {
     isMounted.current = true;
