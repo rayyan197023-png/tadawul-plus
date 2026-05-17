@@ -40,7 +40,42 @@ function ChartLoader({ sym, base, per, chartType, stk, onExpand }) {
 }
 
 function CChart({ sym, base, per, chartType, stk, onExpand }) {
-  const history = stk?.priceHistory || [];
+  // جلب الشموع الحقيقية من sahmk
+  const [sahmkBars, setSahmkBars] = useState([]);
+  const [sahmkLoading, setSahmkLoading] = useState(false);
+
+  const periodMap = {
+    "1D": "1D", "1W": "5D", "1M": "1Mo", "3M": "3Mo",
+    "6M": "6Mo", "1Y": "1Y", "5Y": "5Y", "MAX": "Max"
+  };
+
+  useEffect(() => {
+    if (!sym) return;
+    let cancelled = false;
+    setSahmkLoading(true);
+    const periodParam = periodMap[per] || "3Mo";
+    fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${sym}&period=${periodParam}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (cancelled || !data) return;
+        const bars = data.bars || data.data || data.ohlcv || [];
+        const normalized = bars
+          .map(b => ({
+            o: +(b.o ?? b.open ?? b.Open ?? 0),
+            h: +(b.h ?? b.high ?? b.High ?? 0),
+            l: +(b.l ?? b.low  ?? b.Low  ?? 0),
+            c: +(b.c ?? b.close ?? b.Close ?? b.last ?? 0),
+            v: +(b.v ?? b.volume ?? b.Volume ?? 0),
+          }))
+          .filter(b => b.c > 0);
+        setSahmkBars(normalized);
+      })
+      .catch(() => { if (!cancelled) setSahmkBars([]); })
+      .finally(() => { if (!cancelled) setSahmkLoading(false); });
+    return () => { cancelled = true; };
+  }, [sym, per]);
+
+  const history = sahmkBars.length > 0 ? sahmkBars : (stk?.priceHistory || []);
   const canvasRef  = useRef(null);
   const volRef     = useRef(null);
   const [crosshair, setCrosshair] = useState(null);
