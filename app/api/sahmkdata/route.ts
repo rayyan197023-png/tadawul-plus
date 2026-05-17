@@ -77,13 +77,12 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // إصلاح ترميز sahmk عبر Buffer (Node.js runtime)
-    const buf = Buffer.from(await res.arrayBuffer());
-    // الـ buffer يحتوي bytes UTF-8 صحيحة، نفكها مباشرة
-    const text = buf.toString('utf-8');
-    const data = JSON.parse(text);
+    // نأخذ النص كما هو من sahmk بدون أي محاولة لتعديل الترميز
+    const text = await res.text();
 
-    return NextResponse.json(data, {
+    // نرجع النص الخام مباشرة (Next.js لن يحاول re-serialize)
+    return new NextResponse(text, {
+      status: 200,
       headers: {
         'Cache-Control': 'no-store',
         'Content-Type': 'application/json; charset=utf-8',
