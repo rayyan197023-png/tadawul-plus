@@ -23,6 +23,7 @@ import StockHeader from './StockHeader';
 
 export default function StockDetail({ stk: baseStk, onClose }) {
   const [activeTab, setActiveTab] = useState("overview");
+  const [expanded, setExpanded] = useState(false);
 
   // جلب البيانات الحية من sahmk
   const { stk, loading, lastFetch, apiStatus, apiError } = useSahmkData(baseStk);
