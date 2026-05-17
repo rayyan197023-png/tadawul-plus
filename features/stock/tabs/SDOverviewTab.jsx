@@ -971,29 +971,47 @@ function SDOverview({ stk, per, setPer, onNav, onExpand }) {
   const scoreColor = s => s>=75?C.mint:s>=50?C.amber:C.coral;
   const scoreLabel = s => s>=75?"قوي":s>=50?"متوسط":"ضعيف";
 
-  const statRowsMain = [
+    const statRowsMain = [
     {section:"السعر والتداول"},
-    stk.dayHi&&stk.dayLo?{l:"مدى يومي",v:`${stk.dayLo} - ${stk.dayHi}`}:null,
-    stk.hi52&&stk.lo52?{l:"نطاق 52 أسبوعاً",v:`${stk.lo52} - ${stk.hi52}`}:null,
-    stk.mc?{l:"القيمة السوقية",v:stk.mc}:null,
-    stk.bid&&stk.ask?{l:"طلب/عرض",v:`${stk.bid} / ${stk.ask}`}:null,
-    stk.v?{l:"الحجم",v:(stk.v/1e6).toFixed(1)+"م"}:null,
-    stk.prev?{l:"الإغلاق السابق",v:stk.prev}:null,
-    stk.o?{l:"سعر الفتح",v:stk.o}:null,
+    {l:"مدى يومي", v: stk.dayHi&&stk.dayLo ? `${stk.dayLo} - ${stk.dayHi}` : "--"},
+    {l:"نطاق 52 أسبوعاً", v: stk.hi52&&stk.lo52 ? `${stk.lo52} - ${stk.hi52}` : "--"},
+    {l:"القيمة السوقية", v: stk.mc || "--"},
+    {l:"طلب/عرض", v: stk.bid&&stk.ask ? `${stk.bid} / ${stk.ask}` : "--"},
+    {l:"الحجم", v: stk.v ? (stk.v/1e6).toFixed(1)+"م" : "--"},
+    {l:"الإغلاق السابق", v: stk.prev ? stk.prev.toFixed(2) : "--"},
+    {l:"سعر الفتح", v: stk.o ? stk.o.toFixed(2) : "--"},
     {section:"التقييم"},
-    stk.pe?{l:"مكررات الأرباح",v:stk.pe+"x"}:null,
-    stk.eps?{l:"ربحية السهم EPS",v:stk.eps+" ر.س"}:null,
-    stk.bvps?{l:"القيمة الدفترية/السهم",v:stk.bvps+" ر.س"}:null,
-    stk.beta?{l:"بيتا",v:stk.beta}:null,
-  ].filter(Boolean);
+    {l:"مكررات الأرباح (P/E)", v: stk.pe ? stk.pe.toFixed(2)+"x" : "--"},
+    {l:"ربحية السهم EPS", v: stk.eps ? stk.eps.toFixed(2)+" ر.س" : "--"},
+    {l:"القيمة الدفترية/السهم", v: stk.bvps ? stk.bvps.toFixed(2)+" ر.س" : "--"},
+    {l:"بيتا", v: stk.beta ? stk.beta.toFixed(2) : "--"},
+  ];
 
   const statRowsExtra = [
-    stk.forwardPE?{l:"مضاعف الأرباح المتوقع",v:stk.forwardPE+"x"}:null,
-    stk.pb?{l:"السعر/القيمة الدفترية",v:stk.pb+"x"}:null,
-    stk.divYld?{l:"عائد التوزيعات",v:stk.divYld+"%"}:null,
-    stk.sharesOut?{l:"الأسهم القائمة",v:(stk.sharesOut/1e6).toFixed(0)+"م"}:null,
-    stk.floatPct?{l:"الأسهم الحرة",v:stk.floatPct+"%"}:null,
-  ].filter(Boolean);
+    {section:"مضاعفات إضافية"},
+    {l:"مضاعف الأرباح المتوقع (Forward P/E)", v: stk.forwardPE ? stk.forwardPE.toFixed(2)+"x" : "--"},
+    {l:"السعر/القيمة الدفترية (P/B)", v: stk.pb ? stk.pb.toFixed(2)+"x" : "--"},
+    {l:"السعر/المبيعات (P/S)", v: stk.ps ? stk.ps.toFixed(2)+"x" : "--"},
+    {l:"EV/EBITDA", v: stk.evEbitda ? stk.evEbitda.toFixed(2)+"x" : "--"},
+    {l:"PEG", v: stk.peg ? stk.peg.toFixed(2) : "--"},
+    {section:"العوائد"},
+    {l:"العائد على حقوق الملكية (ROE)", v: stk.roe!=null ? stk.roe+"%" : "--"},
+    {l:"العائد على الأصول (ROA)", v: stk.roa!=null ? stk.roa+"%" : "--"},
+    {l:"العائد على رأس المال (ROIC)", v: stk.roic!=null ? stk.roic+"%" : "--"},
+    {section:"الهوامش"},
+    {l:"الهامش الإجمالي", v: stk.grossMargin!=null ? stk.grossMargin+"%" : "--"},
+    {l:"الهامش التشغيلي", v: stk.opMargin!=null ? stk.opMargin+"%" : "--"},
+    {l:"الهامش الصافي", v: stk.netMargin!=null ? stk.netMargin+"%" : "--"},
+    {section:"المديونية والسيولة"},
+    {l:"الدين/حقوق الملكية", v: stk.debtEquity!=null ? stk.debtEquity+"x" : "--"},
+    {l:"نسبة التداول", v: stk.currentRatio!=null ? stk.currentRatio : "--"},
+    {section:"التوزيعات"},
+    {l:"عائد التوزيعات", v: stk.divYld!=null ? stk.divYld+"%" : "--"},
+    {l:"آخر توزيع", v: stk.div ? stk.div+" ر.س" : "--"},
+    {section:"الأسهم"},
+    {l:"الأسهم القائمة", v: stk.sharesOut ? (stk.sharesOut/1e6).toFixed(0)+"م" : "--"},
+    {l:"الأسهم الحرة", v: stk.floatPct!=null ? stk.floatPct+"%" : "--"},
+  ];
 
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:0 }}>
