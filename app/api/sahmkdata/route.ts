@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unknown endpoint' }, { status: 400 });
     }
 
-        const res = await fetch(url, { headers });
+            const res = await fetch(url, { headers });
 
     if (!res.ok) {
       const text = await res.text();
@@ -92,16 +92,15 @@ export async function GET(req: NextRequest) {
       );
     }
 
-        // sahmk يرسل بيانات بترميز مكسور (UTF-8 مفسّر كـ Latin-1)
-    // الحل: نأخذ الـ bytes كما هي ونعيد فكها بـ Latin-1 ثم بـ UTF-8
+    // sahmk يرسل بيانات بترميز مكسور (UTF-8 مفسّر كـ Latin-1)
+    // الإصلاح: bytes → Latin-1 → bytes → UTF-8
     const buf = await res.arrayBuffer();
-
-    // فك أولي بـ Latin-1 (يعطي النص المكسور الذي خزّنه sahmk)
     const broken = new TextDecoder('latin1').decode(buf);
-
-    // إعادة ترميز الـ characters كـ bytes ثم فك UTF-8 الصحيح
-    const fixed = decodeURIComponent(escape(broken));
-
+    const bytes = new Uint8Array(broken.length);
+    for (let i = 0; i < broken.length; i++) {
+      bytes[i] = broken.charCodeAt(i) & 0xff;
+    }
+    const fixed = new TextDecoder('utf-8').decode(bytes);
     const data = JSON.parse(fixed);
 
     return NextResponse.json(data, {
