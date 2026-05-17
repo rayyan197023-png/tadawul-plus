@@ -175,33 +175,28 @@ export default function StockDetail({ stk: baseStk, onClose }) {
           </div>
         )}
       </div>
-          {/* شارت موسّع - شاشة كاملة */}
+      {/* شارت احترافي - شاشة كاملة عبر chart.html */}
       {expanded && (
         <div style={{
-          position: "fixed", inset: 0, zIndex: 2000,
-          background: C.ink, display: "flex", flexDirection: "column",
+          position: "fixed",
+          inset: 0,
+          zIndex: 2000,
+          background: C.ink,
+          display: "flex",
+          flexDirection: "column",
         }}>
-          <div style={{
-            padding: "12px 16px", borderBottom: `1px solid ${C.line}`,
-            display: "flex", justifyContent: "space-between", alignItems: "center",
-            background: C.layer1,
-          }}>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: C.snow }}>{stk?.name}</div>
-              <div style={{ fontFamily: "IBM Plex Mono,monospace", fontSize: 11, color: C.smoke }}>
-                {stk?.sym} · {stk?.p?.toFixed(2)} ر.س
-              </div>
-            </div>
-            <button onClick={() => setExpanded(false)} style={{
-              width: 36, height: 36, borderRadius: 10,
-              background: C.layer3, border: `1px solid ${C.line}`,
-              color: C.snow, fontSize: 20, fontWeight: 700,
-              cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-            }}>×</button>
-          </div>
-          <div style={{ flex: 1, overflowY: "auto", padding: 10 }}>
-            <SDOverview stk={stk}/>
-          </div>
+          <iframe
+            src={`/chart.html?sym=${stk?.sym}&per=1D&name=${encodeURIComponent(stk?.name || '')}`}
+            style={{
+              flex: 1,
+              width: "100%",
+              height: "100%",
+              border: "none",
+              background: C.ink,
+            }}
+            title={`شارت ${stk?.name}`}
+            allow="fullscreen"
+          />
         </div>
       )}
     </div>
