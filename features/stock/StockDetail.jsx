@@ -24,7 +24,14 @@ import StockHeader from './StockHeader';
 export default function StockDetail({ stk: baseStk, onClose }) {
   const [activeTab, setActiveTab] = useState("overview");
   const [expanded, setExpanded] = useState(false);
-
+  // استماع لرسالة الإغلاق من chart.html
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.data === 'closeChart') setExpanded(false);
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, []);
   // جلب البيانات الحية من sahmk
   const { stk, loading, lastFetch, apiStatus, apiError } = useSahmkData(baseStk);
 
