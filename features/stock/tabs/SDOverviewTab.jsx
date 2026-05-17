@@ -1096,10 +1096,24 @@ function SDOverview({ stk, per, setPer, onNav, onExpand }) {
           <Row key={i} label={row.l} value={row.v} sub={row.sub}
             color={row.l.includes("توزيع")||row.l.includes("عائد")?C.gold:row.l.includes("هامش")?C.mint:row.l.includes("دين")?C.coralL:C.mist}
             even={i%2===0}/>)}
-        {showMore && statRowsExtra.map((row,i)=>
-          <Row key={"e"+i} label={row.l} value={row.v} sub={row.sub}
-            color={row.l.includes("توزيع")||row.l.includes("عائد")?C.gold:row.l.includes("هامش")?C.mint:row.l.includes("دين")?C.coralL:C.mist}
-            even={i%2===0}/>)}
+                {showMore && statRowsExtra.map((row, i) => {
+          if (row.section) return <Row key={"e" + i} section={row.section}/>;
+          return (
+            <Row
+              key={"e" + i}
+              label={row.l}
+              value={row.v}
+              sub={row.sub}
+              color={
+                row.l && row.l.includes("توزيع") ? C.gold :
+                row.l && row.l.includes("هامش") ? C.mint :
+                row.l && row.l.includes("دين") ? C.coralL :
+                C.mist
+              }
+              even={i % 2 === 0}
+            />
+          );
+        })}
                 <button onClick={()=>setShowMore(v=>!v)} style={{display:"flex",width:"100%",justifyContent:"space-between",alignItems:"center",padding:"13px 16px",background:`${C.electric}08`,cursor:"pointer",border:"none",borderTop:`1px solid ${C.line}33`,minHeight:44}}>
           <span style={{fontSize:11,color:C.electric,fontWeight:700}}>{showMore?"اظهار أقل":"اظهار المزيد ("+statRowsExtra.length+" حقل إضافي)"}</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.electric} strokeWidth="2.5">{showMore?<polyline points="18 15 12 9 6 15"/>:<polyline points="6 9 12 15 18 9"/>}</svg>
