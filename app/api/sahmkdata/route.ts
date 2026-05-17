@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unknown endpoint' }, { status: 400 });
     }
 
-    const res = await fetch(url, { headers });
+        const res = await fetch(url, { headers });
 
     if (!res.ok) {
       const text = await res.text();
@@ -92,9 +92,16 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const data = await res.json();
+    // قراءة الاستجابة كـ UTF-8 صراحة لتفادي كسر الترميز العربي
+    const buf  = await res.arrayBuffer();
+    const text = new TextDecoder('utf-8').decode(buf);
+    const data = JSON.parse(text);
+
     return NextResponse.json(data, {
-      headers: { 'Cache-Control': 'no-store' },
+      headers: {
+        'Cache-Control': 'no-store',
+        'Content-Type': 'application/json; charset=utf-8',
+      },
     });
 
   } catch (err: any) {
