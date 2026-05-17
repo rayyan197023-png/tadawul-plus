@@ -154,7 +154,7 @@ export default function StockDetail({ stk: baseStk, onClose }) {
         background: C.ink,
       }}>
         <div style={{ animation: "fadeIn 0.3s ease" }}>
-          {activeTab === "overview"     && <SDOverview     stk={stk}/>}
+                    {activeTab === "overview"     && <SDOverview     stk={stk} onExpand={() => setExpanded(true)}/>}
           {activeTab === "technical"    && <SDTechnical    stk={stk}/>}
           {activeTab === "fundamental"  && <SDFundamental  stk={stk}/>}
           {activeTab === "shareholders" && <SDShareholders stk={stk}/>}
