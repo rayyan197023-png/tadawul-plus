@@ -110,9 +110,9 @@ const list = json.results || json.companies || json.data || (Array.isArray(json)
             sectorId: seed.sectorId || '',
             rating:   seed.rating   || 50,
             oilCorr:  seed.oilCorr  || null,
-            p:        q.price,
-            ch:       q.change          ?? 0,
-            pct:      q.change_percent  ?? 0,
+                        p:        q.price,
+            ch:       q.change_percent  ?? 0,   // النسبة المئوية (StockCard يعرضها كـ %)
+            pct:      q.change_percent  ?? 0,   // نفس القيمة، للتوافق
             v:        q.volume          ?? 0,
             avgV:     q.volume          ?? 0,
             hi:       q.high            || q.price,
