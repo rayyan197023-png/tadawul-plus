@@ -1104,7 +1104,6 @@ function SDOverview({ stk, per, setPer, onNav, onExpand }) {
           <span style={{fontSize:11,color:C.electric,fontWeight:700}}>{showMore?"اظهار أقل":"اظهار المزيد ("+statRowsExtra.length+" حقل إضافي)"}</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.electric} strokeWidth="2.5">{showMore?<polyline points="18 15 12 9 6 15"/>:<polyline points="6 9 12 15 18 9"/>}</svg>
         </button>
-        )}
       </SectionCard>
 
       {/* درجات الصحة المالية */}
