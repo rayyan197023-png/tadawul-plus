@@ -43,7 +43,7 @@ export function usePriceUpdater(setDebug) {
           const res = await fetch(`/api/sahmkdata?endpoint=companies&market=TASI&limit=${limit}&offset=${offset}`);
           if (!res.ok) break;
           const json = await res.json();
-          const list = json.companies || json.data || json.results || (Array.isArray(json) ? json : []);
+const list = json.results || json.companies || json.data || (Array.isArray(json) ? json : []);
           if (!Array.isArray(list) || list.length === 0) break;
 
           for (const c of list) {
