@@ -92,10 +92,17 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // قراءة الاستجابة كـ UTF-8 صراحة لتفادي كسر الترميز العربي
-    const buf  = await res.arrayBuffer();
-    const text = new TextDecoder('utf-8').decode(buf);
-    const data = JSON.parse(text);
+        // sahmk يرسل بيانات بترميز مكسور (UTF-8 مفسّر كـ Latin-1)
+    // الحل: نأخذ الـ bytes كما هي ونعيد فكها بـ Latin-1 ثم بـ UTF-8
+    const buf = await res.arrayBuffer();
+
+    // فك أولي بـ Latin-1 (يعطي النص المكسور الذي خزّنه sahmk)
+    const broken = new TextDecoder('latin1').decode(buf);
+
+    // إعادة ترميز الـ characters كـ bytes ثم فك UTF-8 الصحيح
+    const fixed = decodeURIComponent(escape(broken));
+
+    const data = JSON.parse(fixed);
 
     return NextResponse.json(data, {
       headers: {
