@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const runtime = 'nodejs';
+
 const SAHMK_BASE = 'https://app.sahmk.sa/api/v1';
 const SAHMK_KEY  = process.env.SAHMK_KEY ?? '';
 
@@ -17,9 +19,10 @@ export async function GET(req: NextRequest) {
   if (!SAHMK_KEY) {
     return NextResponse.json({ error: 'SAHMK_KEY not set' }, { status: 500 });
   }
- 
+
   const headers = {
     'Accept': 'application/json',
+    'Accept-Charset': 'utf-8',
     'X-API-Key': SAHMK_KEY,
   };
 
@@ -28,61 +31,43 @@ export async function GET(req: NextRequest) {
 
     if (endpoint === 'quote') {
       url = `${SAHMK_BASE}/quote/${sym}/`;
-    }
-    else if (endpoint === 'quotes') {
+    } else if (endpoint === 'quotes' || endpoint === 'prices') {
       url = `${SAHMK_BASE}/quotes/?symbols=${symbols}`;
-    }
-    else if (endpoint === 'prices') {
-  url = `${SAHMK_BASE}/quotes/?symbols=${symbols}`;
-}
-    else if (endpoint === 'ohlcv') {
+    } else if (endpoint === 'ohlcv') {
       const daysMap: Record<string, number> = {
         '1D': 1, '1W': 7, '1M': 30,
         '3M': 90, '6M': 180, '1Y': 365
       };
       const days = daysMap[period] ?? 90;
-      const fromDate = from || new Date(
-        Date.now() - days * 86400000
-      ).toISOString().slice(0, 10);
-      const toDate = to || new Date().toISOString().slice(0, 10);
+      const fromDate = from || new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);
+      const toDate   = to   || new Date().toISOString().slice(0, 10);
       url = `${SAHMK_BASE}/historical/${sym}/?from=${fromDate}&to=${toDate}`;
-    }
-    else if (endpoint === 'tasi') {
+    } else if (endpoint === 'tasi') {
       url = `${SAHMK_BASE}/market/summary/?index=TASI`;
-    }
-    else if (endpoint === 'gainers') {
+    } else if (endpoint === 'gainers') {
       url = `${SAHMK_BASE}/market/gainers/?limit=10&index=TASI`;
-    }
-    else if (endpoint === 'losers') {
+    } else if (endpoint === 'losers') {
       url = `${SAHMK_BASE}/market/losers/?limit=10&index=TASI`;
-    }
-    else if (endpoint === 'volume') {
+    } else if (endpoint === 'volume') {
       url = `${SAHMK_BASE}/market/volume/?limit=10&index=TASI`;
-    }
-    else if (endpoint === 'sectors') {
+    } else if (endpoint === 'sectors') {
       url = `${SAHMK_BASE}/market/sectors/?index=TASI`;
-    }
-    else if (endpoint === 'companies') {
-  const offset = searchParams.get('offset') ?? '0';
-  url = `${SAHMK_BASE}/companies/?market=${market}&limit=${limit}&offset=${offset}`;
-}
-    else if (endpoint === 'fundamentals') {
+    } else if (endpoint === 'companies') {
+      const offset = searchParams.get('offset') ?? '0';
+      url = `${SAHMK_BASE}/companies/?market=${market}&limit=${limit}&offset=${offset}`;
+    } else if (endpoint === 'fundamentals') {
       url = `${SAHMK_BASE}/company/${sym}/`;
-    }
-    else if (endpoint === 'ratios') {
+    } else if (endpoint === 'ratios') {
       url = `${SAHMK_BASE}/analytics/ratios/${sym}/`;
-    }
-    else if (endpoint === 'financials') {
+    } else if (endpoint === 'financials') {
       url = `${SAHMK_BASE}/financials/${sym}/?type=all&period=annual&history=3y`;
-    }
-    else if (endpoint === 'dividends') {
+    } else if (endpoint === 'dividends') {
       url = `${SAHMK_BASE}/dividends/${sym}/`;
-    }
-    else {
+    } else {
       return NextResponse.json({ error: 'Unknown endpoint' }, { status: 400 });
     }
 
-            const res = await fetch(url, { headers });
+    const res = await fetch(url, { headers });
 
     if (!res.ok) {
       const text = await res.text();
@@ -92,16 +77,11 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // sahmk يرسل بيانات بترميز مكسور (UTF-8 مفسّر كـ Latin-1)
-    // الإصلاح: bytes → Latin-1 → bytes → UTF-8
-    const buf = await res.arrayBuffer();
-    const broken = new TextDecoder('latin1').decode(buf);
-    const bytes = new Uint8Array(broken.length);
-    for (let i = 0; i < broken.length; i++) {
-      bytes[i] = broken.charCodeAt(i) & 0xff;
-    }
-    const fixed = new TextDecoder('utf-8').decode(bytes);
-    const data = JSON.parse(fixed);
+    // إصلاح ترميز sahmk عبر Buffer (Node.js runtime)
+    const buf = Buffer.from(await res.arrayBuffer());
+    // الـ buffer يحتوي bytes UTF-8 صحيحة، نفكها مباشرة
+    const text = buf.toString('utf-8');
+    const data = JSON.parse(text);
 
     return NextResponse.json(data, {
       headers: {
