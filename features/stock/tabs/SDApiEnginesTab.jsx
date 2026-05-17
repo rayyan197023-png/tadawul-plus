@@ -1,7 +1,11 @@
 'use client';
 /**
  * @module features/stock/tabs/SDApiEnginesTab
- * @description تبويب محركات التحليل المتقدمة
+ * @description تبويب محركات API + Hook الاتصال بـ sahmk
+ *
+ * ✨ نسخة منظفة:
+ * - sahmkFetch يستخدم proxy `/api/sahmkdata` (يحل CORS)
+ * - ANALYST_EST فارغ -- يُملأ من API لاحقاً
  */
 import { useState, useEffect, useMemo } from 'react';
 import { NLPLoader, OrderBookLoader, TickLoader } from './SDSubComponents';
@@ -15,15 +19,15 @@ function SDApiEngines({ stk }) {
       <div style={{ background:hasLive?C.mint+"10":C.electric+"08", border:`1px solid ${hasLive?C.mint:C.electric}22`, borderRadius:14, padding:"10px 14px" }}>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
           <div style={{ fontSize:12, fontWeight:700, color:hasLive?C.mint:C.electric }}>
-            {hasLive?"✓ بيانات حية — SAHMK API":"محركات — تحميل..."}
+            {hasLive?"✓ بيانات حية -- SAHMK API":"محركات -- تحميل..."}
           </div>
           {hasLive && <span style={{ fontSize:9, color:C.smoke }}>{"تتجدد كل 30 ث"}</span>}
         </div>
-        {hasLive && stk.netFlow && (
+        {hasLive && stk.netFlow != null && (
           <div style={{ marginTop:8, display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:6 }}>
             {[
-              {l:"تدفق شراء",  v:(stk.inflow/1e6).toFixed(1)+"M",  c:C.mint},
-              {l:"تدفق بيع",   v:(stk.outflow/1e6).toFixed(1)+"M", c:C.coral},
+              {l:"تدفق شراء",  v:((stk.inflow||0)/1e6).toFixed(1)+"M",  c:C.mint},
+              {l:"تدفق بيع",   v:((stk.outflow||0)/1e6).toFixed(1)+"M", c:C.coral},
               {l:"صافي",       v:(stk.netFlow>=0?"+":"")+(stk.netFlow/1e6).toFixed(1)+"M", c:stk.netFlow>=0?C.mint:C.coral},
             ].map((item,i)=>(
               <div key={i} style={{ background:item.c+"10", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
@@ -41,84 +45,63 @@ function SDApiEngines({ stk }) {
     </div>
   );
 }
-//
-const DTABS   = ["نظرة-عامة","تقني","أساسي","محركات","ملاك"];
-const DLABELS = ["نظرة عامة","تقني","الأساسي","محركات","كبار الملاك"];
 
-// ─── ANALYST_EST — helper ─────────────────────────────────────────
+// ─── ANALYST_EST -- تقديرات المحللين (فارغ -- يُملأ من API) ───────────
 export const ANALYST_EST = {
-  //
-  "2222": { buy:8, hold:10, sell:2, targetPrice:28.30, upside:5.2 },
-  default:{ buy:5, hold:4,  sell:3, targetPrice:null,  upside:null },
+  default: { buy: 0, hold: 0, sell: 0, targetPrice: null, upside: null },
 };
 
-// ─── StockDetail ──────────────────────────────────────────────────
 // ══════════════════════════════════════════════════════════════════
-//
-// ══════════════════════════════════════════════════════════════════
-// SAHMK API — https://app.sahmk.sa/api/v1
+// SAHMK API -- عبر proxy داخلي /api/sahmkdata (يحل CORS)
 // ══════════════════════════════════════════════════════════════════
 
-const SAHMK_KEY    = process.env.NEXT_PUBLIC_SAHMK_KEY || "";
-const SAHMK_BASE   = "https://app.sahmk.sa/api/v1";
-const LOCAL_SERVER = ""; // not used in Next.js
-
-// يجرب السيرفر المحلي أولاً (بدون CORS) ثم المباشر
-const sahmkFetch = async (path) => {
+const sahmkFetch = async (endpoint, params = {}) => {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
+  const timeout = setTimeout(() => controller.abort(), 10000);
 
-  // السيرفر المحلي: /quote/2222 (بدون /api/v1)
-  const localPath = path.replace("/api/v1","").replace(/\/$/, "");
-  const urls = [
-    { url: `${LOCAL_SERVER}${localPath}`, headers: {} },
-    { url: `${SAHMK_BASE}${path}`,        headers: { "X-API-Key": SAHMK_KEY } },
-  ];
+  try {
+    const qs = new URLSearchParams({ endpoint, ...params }).toString();
+    const url = `/api/sahmkdata?${qs}`;
 
-  let lastErr;
-  for (const { url, headers } of urls) {
-    try {
-      const res = await fetch(url, { headers, signal: controller.signal });
-      clearTimeout(timeout);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return res.json();
-    } catch(e) {
-      lastErr = e;
-      if (e.name === "AbortError") { clearTimeout(timeout); throw new Error("timeout"); }
-    }
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeout);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (e) {
+    clearTimeout(timeout);
+    if (e.name === "AbortError") throw new Error("timeout");
+    throw e;
   }
-  clearTimeout(timeout);
-  throw lastErr;
 };
 
-// جلب السعر الحالي + التدفق
+// جلب الـ quote الكامل (سعر + تدفق سيولة)
 const fetchSahmkQuote = async (sym) => {
   try {
-    const d = await sahmkFetch(`/quote/${sym}/`);
+    const d = await sahmkFetch("quote", { sym });
     return {
-      p:       parseFloat(d.price),
-      ch:      parseFloat(d.change),
-      pct:     parseFloat(d.change_percent),
-      v:       parseInt(d.volume),
-      o:       parseFloat(d.open),
-      dayHi:   parseFloat(d.high),
-      dayLo:   parseFloat(d.low),
-      prev:    parseFloat(d.previous_close),
-      bid:     parseFloat(d.bid),
-      ask:     parseFloat(d.ask),
-      val:     d.value,
-      inflow:  d.liquidity?.inflow_value,
-      outflow: d.liquidity?.outflow_value,
-      netFlow: d.liquidity?.net_value,
-      inflowV: d.liquidity?.inflow_volume,
-      outflowV:d.liquidity?.outflow_volume,
-      inflowT: d.liquidity?.inflow_trades,
-      outflowT:d.liquidity?.outflow_trades,
+      p:        parseFloat(d.price),
+      ch:       parseFloat(d.change),
+      pct:      parseFloat(d.change_percent),
+      v:        parseInt(d.volume),
+      o:        parseFloat(d.open),
+      dayHi:    parseFloat(d.high),
+      dayLo:    parseFloat(d.low),
+      prev:     parseFloat(d.previous_close),
+      bid:      parseFloat(d.bid),
+      ask:      parseFloat(d.ask),
+      val:      d.value,
+      inflow:   d.liquidity?.inflow_value,
+      outflow:  d.liquidity?.outflow_value,
+      netFlow:  d.liquidity?.net_value,
+      inflowV:  d.liquidity?.inflow_volume,
+      outflowV: d.liquidity?.outflow_volume,
+      inflowT:  d.liquidity?.inflow_trades,
+      outflowT: d.liquidity?.outflow_trades,
       isDelayed: d.is_delayed,
       updatedAt: d.updated_at,
       _apiErr: null,
     };
-  } catch(e) {
+  } catch (e) {
     return { _apiErr: e.message };
   }
 };
@@ -126,7 +109,7 @@ const fetchSahmkQuote = async (sym) => {
 // جلب معلومات الشركة + الأساسيات
 const fetchSahmkCompany = async (sym) => {
   try {
-    const d = await sahmkFetch(`/company/${sym}/`);
+    const d = await sahmkFetch("company", { sym });
     const f = d.fundamentals || {};
     const a = d.analysts || {};
     const v = d.valuation || {};
@@ -136,7 +119,6 @@ const fetchSahmkCompany = async (sym) => {
       sec:         d.sector,
       industry:    d.industry,
       website:     d.website,
-      // أساسيات
       pe:          f.pe_ratio,
       forwardPE:   f.forward_pe,
       eps:         f.eps,
@@ -150,37 +132,55 @@ const fetchSahmkCompany = async (sym) => {
                      : null,
       hi52:        f.fifty_two_week_high,
       lo52:        f.fifty_two_week_low,
-      // محللون
       targetMean:  a.target_mean,
       targetHigh:  a.target_high,
       targetLow:   a.target_low,
       consensus:   a.consensus,
       numAnalysts: a.num_analysts,
-      // تقييم
       fv:          v.fair_price,
       fvConf:      v.fair_price_confidence,
-      // تقني
       rsi:         t.rsi_14,
       macd:        t.macd_line,
       macdSig:     t.macd_signal,
       ma50:        t.fifty_day_average,
     };
-  } catch(e) {
+  } catch (e) {
     return null;
   }
 };
 
-// Hook رئيسي
+// جلب الشارت التاريخي
+const fetchSahmkOhlcv = async (sym, period = '3M') => {
+  try {
+    const d = await sahmkFetch("ohlcv", { sym, period });
+    if (d?.data?.length > 0) {
+      return d.data.map(bar => ({
+        d:   bar.date,
+        o:   bar.open,
+        h:   bar.high,
+        l:   bar.low,
+        c:   bar.close,
+        v:   bar.volume,
+        pct: bar.open ? +((bar.close - bar.open) / bar.open * 100).toFixed(2) : 0,
+      }));
+    }
+    return [];
+  } catch (e) {
+    return [];
+  }
+};
+
+// ─── Hook رئيسي لجلب بيانات السهم ────────────────────────────────
 const useSahmkData = (baseStkData) => {
-  const [liveData,    setLiveData]    = useState(null);
-  const [loading,     setLoading]     = useState(false);
-  const [lastFetch,   setLastFetch]   = useState(null);
-  const [apiStatus,   setApiStatus]   = useState("loading");
-  const [apiError,    setApiError]    = useState(null);
+  const [liveData,  setLiveData]  = useState(null);
+  const [loading,   setLoading]   = useState(false);
+  const [lastFetch, setLastFetch] = useState(null);
+  const [apiStatus, setApiStatus] = useState("loading");
+  const [apiError,  setApiError]  = useState(null);
 
   useEffect(() => {
     let cancelled = false;
-    const sym = baseStkData.sym;
+    const sym = baseStkData?.sym;
     if (!sym) return;
 
     const fetchAll = async () => {
@@ -190,13 +190,20 @@ const useSahmkData = (baseStkData) => {
       try {
         const quote = await fetchSahmkQuote(sym);
         if (!quote || quote._apiErr) throw new Error(quote?._apiErr || "لا استجابة");
+
         const company = await fetchSahmkCompany(sym);
+        const priceHistory = await fetchSahmkOhlcv(sym, '3M');
+
         if (!cancelled) {
-          setLiveData({ ...quote, ...(company||{}) });
+          setLiveData({
+            ...quote,
+            ...(company || {}),
+            priceHistory,
+          });
           setLastFetch(new Date().toLocaleTimeString("ar-SA"));
           setApiStatus(quote.isDelayed ? "delayed" : "live");
         }
-      } catch(e) {
+      } catch (e) {
         if (!cancelled) {
           setApiStatus("error");
           setApiError(e.message);
@@ -208,9 +215,10 @@ const useSahmkData = (baseStkData) => {
 
     fetchAll();
 
+    // تحديث الـ quote فقط كل 30 ثانية
     const interval = setInterval(() => {
       fetchSahmkQuote(sym).then(q => {
-        if (!cancelled && q) {
+        if (!cancelled && q && !q._apiErr) {
           setLiveData(prev => prev ? { ...prev, ...q } : q);
           setLastFetch(new Date().toLocaleTimeString("ar-SA"));
           setApiStatus(q.isDelayed ? "delayed" : "live");
@@ -218,14 +226,14 @@ const useSahmkData = (baseStkData) => {
       });
     }, 30000);
 
-    return () => { cancelled = true; clearInterval(interval); };
-  }, [baseStkData.sym]);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [baseStkData?.sym]);
 
   const stk = liveData ? { ...baseStkData, ...liveData } : baseStkData;
   return { stk, loading, lastFetch, apiStatus, apiError };
 };
 
-
-
-
-export { SDApiEngines };
+export { SDApiEngines, useSahmkData, sahmkFetch, fetchSahmkQuote, fetchSahmkCompany, fetchSahmkOhlcv };
