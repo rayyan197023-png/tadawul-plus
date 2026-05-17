@@ -153,89 +153,95 @@ function _calcDivergences(prices, indArr, label, color){
 }
 
 const API_CONFIG = {
-  // تداول+ -- API Configuration Layer
-  // To activate: set enabled=true and fill your endpoint URLs
-  // All functions gracefully fall back to mock data when disabled
+  // تداول+ -- SAHMK API Integration via Next.js proxy
+  // Proxy route: /api/sahmkdata?endpoint=<type>&sym=<symbol>...
+  
+  enabled: true,
 
-  enabled: false,
-
-  // ── Endpoint Configuration ────────────────────────────────────
-  // Fill these with your actual API base URLs
+  // ── SAHMK endpoints (all via /api/sahmkdata proxy) ────────────
   endpoints: {
-    // Candle/OHLCV data -- required for core functionality
-    candles:   null, // 'https://your-api.com/candles'
-
-    // Real-time price ticker (WebSocket or polling)
-    ticker:    null, // 'wss://your-api.com/ticker' OR 'https://...'
-    tickerMode:'poll', // 'ws' for WebSocket, 'poll' for HTTP polling
-
-    // Stock list with prices
-    stocks:    null, // 'https://your-api.com/stocks'
-
-    // Order flow / tape data
-    orderflow: null, // 'https://your-api.com/orderflow'
-
-    // Economic calendar
-    calendar:  null, // 'https://your-api.com/calendar'
-
-    // News feed
-    news:      null, // 'https://your-api.com/news'
-
-    // Company info / fundamentals
-    info:      null, // 'https://your-api.com/info'
+    candles:    '/api/sahmkdata',
+    ticker:     '/api/sahmkdata',
+    tickerMode: 'poll',
+    stocks:     '/api/sahmkdata',
+    orderflow:  null,
+    calendar:   null,
+    news:       null,
+    info:       '/api/sahmkdata',
   },
 
-  // ── Auth ──────────────────────────────────────────────────────
-  headers: {
-    // 'Authorization': 'Bearer YOUR_TOKEN',
-    // 'X-API-Key': 'YOUR_KEY',
-  },
+  // ── Auth (sahmk public, no auth needed) ──────────────────────
+  headers: {},
 
-  // ── Timeframe mapping ─────────────────────────────────────────
-  // Map app timeframes to your API's interval names
+  // ── Timeframe mapping: app → sahmk ohlcv period ──────────────
   tfMap: {
-    '1m':'1',  '5m':'5',  '15m':'15', '30m':'30',
-    '1H':'60', '4H':'240','1D':'D',   '1W':'W',   '1M':'M'
+    '1m':'1M',   '5m':'5M',   '15m':'15M', '30m':'30M',
+    '1H':'1H',   '4H':'4H',   '1D':'1D',
+    '1W':'1W',   '1M':'1Mo'
   },
 
-  // ── HTTP Fetch ────────────────────────────────────────────────
+  // Map app period → sahmk period query param
+  periodMap: {
+    '1m':'1D',   '5m':'5D',   '15m':'1Mo', '30m':'1Mo',
+    '1H':'3Mo',  '4H':'6Mo',  '1D':'1Y',
+    '1W':'5Y',   '1M':'Max'
+  },
+
+  // ── HTTP Fetch with sahmk endpoint routing ───────────────────
   async fetch(type, params={}) {
-    const url = this.endpoints[type];
-    if(!url || !this.enabled) return null;
+    const base = this.endpoints[type];
+    if(!base || !this.enabled) return null;
     try {
-      const qs = new URLSearchParams(params).toString();
-      const r = await fetch(url + (qs?'?'+qs:''), {
+      let qs = '';
+      
+      if(type === 'candles') {
+        // sahmk OHLCV: ?endpoint=ohlcv&sym=2010&period=3M
+        const per = params.interval || '1D';
+        const periodParam = this.periodMap[per] || '3Mo';
+        qs = `?endpoint=ohlcv&sym=${params.symbol}&period=${periodParam}`;
+      } else if(type === 'ticker') {
+        // sahmk quote: ?endpoint=quote&sym=2010
+        qs = `?endpoint=quote&sym=${params.symbol}`;
+      } else if(type === 'stocks') {
+        // sahmk companies: ?endpoint=companies&market=TASI
+        qs = `?endpoint=companies&market=TASI`;
+      } else if(type === 'info') {
+        // sahmk company info: ?endpoint=company&sym=2010
+        qs = `?endpoint=company&sym=${params.symbol}`;
+      }
+      
+      const r = await fetch(base + qs, {
         headers: this.headers,
-        signal: AbortSignal.timeout(8000)
+        signal: AbortSignal.timeout(10000)
       });
       if(!r.ok) throw new Error('HTTP '+r.status);
-      return await r.json();
+      const data = await r.json();
+      
+      // Unwrap sahmk response shapes
+      if(type === 'candles') {
+        return data.bars || data.data || data.ohlcv || data;
+      }
+      if(type === 'ticker') {
+        return data.quote || data.data || data;
+      }
+      if(type === 'stocks') {
+        return data.companies || data.data || data;
+      }
+      if(type === 'info') {
+        return data.company || data.data || data;
+      }
+      return data;
     } catch(e) {
-      console.warn('[API]', type, e.message);
+      console.warn('[sahmk API]', type, e.message);
       return null;
     }
   },
 
-  // ── WebSocket for live prices ─────────────────────────────────
+  // ── WebSocket (sahmk doesn't support WS -- polling only) ─────
   _ws: null,
   _wsCb: null,
-  wsConnect(onTick) {
-    const url = this.endpoints.ticker;
-    if(!url||!this.enabled||this.tickerMode!=='ws') return;
-    if(this._ws) this._ws.close();
-    this._ws = new WebSocket(url);
-    this._wsCb = onTick;
-    this._ws.onmessage = e => {
-      try { const d=JSON.parse(e.data); onTick(d); } catch(_){}
-    };
-    this._ws.onclose = () => {
-      // Auto-reconnect after 3s
-      if(this.enabled) setTimeout(()=>this.wsConnect(onTick), 3000);
-    };
-  },
-  wsDisconnect() {
-    if(this._ws) { this._ws.close(); this._ws=null; }
-  }
+  wsConnect(onTick) { /* sahmk uses polling */ },
+  wsDisconnect() { /* no-op */ }
 }
 
 // ── Zoom Controls ────────────────────────────────────
