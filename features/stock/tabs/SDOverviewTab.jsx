@@ -1091,16 +1091,11 @@ function SDOverview({ stk, per, setPer, onNav, onExpand }) {
 
       {/* الإحصائيات */}
       <SectionCard title="الإحصائيات الشاملة" accent={C.electric}>
-        {statRowsMain.map((row,i)=>
-          row.section?<Row key={i} section={row.section}/>:
-          <Row key={i} label={row.l} value={row.v} sub={row.sub}
-            color={row.l.includes("توزيع")||row.l.includes("عائد")?C.gold:row.l.includes("هامش")?C.mint:row.l.includes("دين")?C.coralL:C.mist}
-            even={i%2===0}/>)}
-                {showMore && statRowsExtra.map((row, i) => {
-          if (row.section) return <Row key={"e" + i} section={row.section}/>;
+                {statRowsMain.map((row, i) => {
+          if (row.section) return <Row key={i} section={row.section}/>;
           return (
             <Row
-              key={"e" + i}
+              key={i}
               label={row.l}
               value={row.v}
               sub={row.sub}
