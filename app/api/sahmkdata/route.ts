@@ -89,9 +89,15 @@ export async function GET(req: NextRequest) {
       },
     });
 
-  } catch (err: any) {
+    } catch (err: any) {
+    console.error('PROXY ERROR:', err.name, '|', err.message, '|', err.stack);
     return NextResponse.json(
-      { error: 'Proxy failed', detail: err.message },
+      {
+        error: 'Proxy failed',
+        name: err.name,
+        message: err.message,
+        stack: err.stack?.split('\n').slice(0, 5).join(' | '),
+      },
       { status: 500 }
     );
   }
