@@ -45,38 +45,43 @@ function mapSahmkBar(bar, prevClose) {
 export async function fetchHistoricalBars(symbol, days = 252, interval = '1d') {
   if (!symbol) return [];
   
-  // استخدام proxy الداخلي الذي يعمل بالفعل
-  // sahmk يدعم: 1D, 1W, 1Y (راجع نتائج اختبار test-sahmk)
-  let period = '1Y';
-  if (days <= 7)  period = '1W';
-  if (days <= 1)  period = '1D';
+  // sahmk يدعم 1Y فقط للبيانات التاريخية الكاملة
+  // (1D = شمعة واحدة، 1W = 5 شموع، 1Y = 249 شمعة)
+  const period = '1Y';
   
   try {
     const res = await fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${symbol}&period=${period}`);
+    
     if (!res.ok) {
-      console.warn(`[sahmkHistorical] HTTP ${res.status} for ${symbol}`);
+      console.warn(`[sahmkHistorical] ${symbol}: HTTP ${res.status}`);
       return [];
     }
     
     const data = await res.json();
     const rawBars = data.bars || data.data || data.ohlcv || [];
-    if (!Array.isArray(rawBars) || rawBars.length === 0) return [];
     
-    // تطبيع البيانات
+    if (!Array.isArray(rawBars) || rawBars.length === 0) {
+      console.warn(`[sahmkHistorical] ${symbol}: empty bars`);
+      return [];
+    }
+    
+    // تطبيع التواريخ
     rawBars.sort((a, b) => {
       const da = new Date(a.date || a.t || a.time || 0);
       const db = new Date(b.date || b.t || b.time || 0);
       return da - db;
     });
     
+    // تحويل لتنسيق التطبيق
     const bars = [];
     for (let i = 0; i < rawBars.length; i++) {
       bars.push(mapSahmkBar(rawBars[i], i > 0 ? bars[i - 1].c : null));
     }
     
+    // إرجاع آخر N يوم فقط
     return bars.slice(-days);
   } catch (e) {
-    console.warn(`[sahmkHistorical] fetchHistoricalBars(${symbol}):`, e.message);
+    console.warn(`[sahmkHistorical] ${symbol} error:`, e.message);
     return [];
   }
 }
