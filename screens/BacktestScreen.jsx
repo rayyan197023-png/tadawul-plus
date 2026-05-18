@@ -130,18 +130,21 @@ export default function BacktestScreen() {
             return Object.assign({}, p, { weight: 1 / positions.length });
           });
           benchmarkStrategy = createPortfolioBuyAndHoldStrategy(equalWeight);
-        } else if (config.mode === 'analysis') {
+                } else if (config.mode === 'analysis') {
           modeLabel = 'قائمة التحليل (Tadawul Strategy)';
-historicalData = await generateDataFromStockListReal(STOCKS, config.days, 15);
-          strategy = createTadawulStrategy(stockHealth);
-          if (!historicalData || historicalData.length === 0 || !historicalData[0]?.stocksData) {
+          historicalData = await generateDataFromStockListReal(STOCKS, config.days, 15);
+          
+          if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
             setResults({ error: 'لا توجد بيانات تاريخية كافية - تحقق من اتصال API' });
             setIsRunning(false);
             return;
           }
+          
+          strategy = createTadawulStrategy(stockHealth);
           var benchSymbols = historicalData[0].stocksData.slice(0, 5).map(function(s) { return s.sym; });
           benchmarkStrategy = createBuyAndHoldStrategy(benchSymbols);
-        } else if (config.mode === 'market') {
+        }
+         else if (config.mode === 'market') {
           modeLabel = 'السوق بالكامل (Sector Rotation)';
           historicalData = generateDataFromMarket(STOCKS, genBars, config.days);
           strategy = createTadawulStrategy(stockHealth, { maxPositions: 10, maxPositionWeight: 0.15 });
