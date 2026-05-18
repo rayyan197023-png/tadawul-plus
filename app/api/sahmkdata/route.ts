@@ -90,11 +90,21 @@ export async function GET(req: NextRequest) {
 
     const res = await fetch(url, { headers });
 
-    if (!res.ok) {
+        if (!res.ok) {
       const text = await res.text();
-      return NextResponse.json(
-        { error: `sahmk error ${res.status}`, detail: text },
-        { status: res.status }
+      
+      // عند rate limit (429)، نحفظ الخطأ لـ 5 دقائق لتجنب طلبات متتالية
+      const errorCacheDuration = res.status === 429 ? 300 : 10;
+      
+      return new NextResponse(
+        JSON.stringify({ error: `sahmk error ${res.status}`, detail: text }),
+        {
+          status: res.status,
+          headers: {
+            'Cache-Control': `public, s-maxage=${errorCacheDuration}`,
+            'Content-Type': 'application/json; charset=utf-8',
+          },
+        }
       );
     }
 
