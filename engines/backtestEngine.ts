@@ -408,9 +408,9 @@ function calcPerformanceMetrics(equityCurve: any[], dailyReturns: number[], trad
   }
   var cvar95 = varIdx >= 0 ? -(cvarSum / (varIdx + 1)) * 100 : 0;
 
-  // ⑪ مقاييس إضافية
-  var bestDay = Math.max.apply(null, dailyReturns) * 100;
-  var worstDay = Math.min.apply(null, dailyReturns) * 100;
+    // ⑪ مقاييس إضافية (محمية من array فارغة)
+  var bestDay = dailyReturns.length > 0 ? Math.max.apply(null, dailyReturns) * 100 : 0;
+  var worstDay = dailyReturns.length > 0 ? Math.min.apply(null, dailyReturns) * 100 : 0;
   
   var positiveDays = dailyReturns.filter(function(r: number) { return r > 0; }).length;
   var negativeDays = dailyReturns.filter(function(r: number) { return r < 0; }).length;
