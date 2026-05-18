@@ -146,7 +146,7 @@ export default function BacktestScreen() {
         }
                  else if (config.mode === 'market') {
           modeLabel = 'السوق بالكامل (Sector Rotation)';
-          historicalData = generateDataFromMarket(STOCKS, genBars, config.days);
+historicalData = await generateDataFromMarketReal(STOCKS, config.days);
           
           if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
             setResults({ error: 'فشل توليد بيانات السوق' });
