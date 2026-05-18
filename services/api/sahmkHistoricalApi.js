@@ -211,9 +211,9 @@ export async function generateRealDataFromStockList(stocksList, days = 252, maxS
   
   const stocksBars = await fetchHistoricalBarsBulk(symbols, days);
   
-  // تخفيف الفلترة: من > 10 إلى > 5 (لقبول أسهم بسجل أقصر)
-  const MIN_BARS = 5;
-  const validSyms = symbols.filter(sym => stocksBars[sym]?.length > MIN_BARS);
+// نضمن سجل شبه كامل لسنة (Backtest عالي الجودة)
+const MIN_BARS = 200;
+const validSyms = symbols.filter(sym => stocksBars[sym]?.length > MIN_BARS);
   
   console.log(`[generateRealData] أسهم صالحة: ${validSyms.length}/${symbols.length}`);
   
