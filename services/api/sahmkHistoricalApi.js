@@ -149,9 +149,10 @@ export async function generateRealDataFromPortfolio(positions, days = 252) {
   
   const stocksBars = await fetchHistoricalBarsBulk(symbols, days);
   
- // نضمن سجل شبه كامل لسنة (Backtest عالي الجودة)
-const MIN_BARS = 200;
+// MIN_BARS ديناميكي: 80% من الفترة المطلوبة (حد أدنى 30)
+const MIN_BARS = Math.max(30, Math.floor(days * 0.8));
 const validSyms = symbols.filter(sym => stocksBars[sym]?.length > MIN_BARS);
+console.log(`[generateRealPortfolio] MIN_BARS = ${MIN_BARS} (من ${days} يوم مطلوب)`);
   
   console.log(`[generateRealPortfolio] أسهم صالحة: ${validSyms.length}/${symbols.length}`);
   
