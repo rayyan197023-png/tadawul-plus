@@ -150,11 +150,31 @@ export default function BacktestScreen() {
           }).filter(s => s.p > 0); // فقط الأسهم التي لها أسعار
           
           historicalData = await generateDataFromStockListReal(enrichedStocks, config.days, 15);
-  alert(
-  '📊 تشخيص:\n' +
-  'عدد الأيام: ' + (historicalData?.length || 0) + '\n' +
-  'عدد الأسهم: ' + (historicalData?.[0]?.stocksData?.length || 0) + '\n' +
-  'شموع لأول سهم: ' + (historicalData?.[0]?.stocksData?.[0]?.bars?.length || 0)
+  // اختبر اليوم رقم 100 (بعد 30 يوم warm-up)
+const testDay = historicalData[100];
+const firstStock = testDay?.stocksData?.[0];
+
+let healthInfo = 'لم يُحسب';
+let signalCheck = 'لم يصل';
+
+if (firstStock?.bars?.length >= 30) {
+  try {
+    const { stockHealth } = await import('../engines/analysisEngine');
+    const health = stockHealth(firstStock, firstStock.bars);
+    healthInfo = `score=${health?.score}, sig=${health?.sig}`;
+    signalCheck = health?.score >= 70 ? '✅ سيشتري' : '❌ score منخفض';
+  } catch (e) {
+    healthInfo = 'خطأ: ' + e.message;
+  }
+}
+
+alert(
+  '🔍 تشخيص اليوم 100:\n\n' +
+  'عدد الأسهم: ' + (testDay?.stocksData?.length || 0) + '\n' +
+  'شموع لأول سهم: ' + (firstStock?.bars?.length || 0) + '\n' +
+  'السهم: ' + (firstStock?.sym || 'لا يوجد') + '\n\n' +
+  'Health: ' + healthInfo + '\n' +
+  'القرار: ' + signalCheck
 );
         
           if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
