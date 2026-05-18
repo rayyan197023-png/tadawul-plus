@@ -1035,3 +1035,29 @@ export async function generateDataFromStockListReal(stocksList: any[], days: num
   return generateRealDataFromStockList(stocksList, days, maxStocks);
 }
 
+export async function generateDataFromMarketReal(allStocks: any[], days: number = 252): Promise<any[]> {
+  if (!allStocks || allStocks.length === 0) {
+    console.warn('[generateDataFromMarketReal] القائمة فارغة');
+    return [];
+  }
+  
+  // اختيار 30 سهم من قطاعات متنوعة
+  const sectorMap: any = {};
+  allStocks.forEach((stk: any) => {
+    const sector = stk.sector || stk.sec || 'other';
+    if (!sectorMap[sector]) sectorMap[sector] = [];
+    sectorMap[sector].push(stk);
+  });
+  
+  // 3 أسهم من كل قطاع، حد أقصى 30
+  let selected: any[] = [];
+  Object.keys(sectorMap).forEach((sector: string) => {
+    selected = selected.concat(sectorMap[sector].slice(0, 3));
+  });
+  if (selected.length > 30) selected = selected.slice(0, 30);
+  
+  console.log(`[generateDataFromMarketReal] اختير ${selected.length} سهم من ${Object.keys(sectorMap).length} قطاع`);
+  
+  return generateRealDataFromStockList(selected, days, selected.length);
+}
+
