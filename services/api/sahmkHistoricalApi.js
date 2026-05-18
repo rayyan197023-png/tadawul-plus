@@ -88,21 +88,44 @@ export async function fetchHistoricalBars(symbol, days = 252, interval = '1d') {
 
 export async function fetchHistoricalBarsBulk(symbols, days = 252) {
   if (!symbols || symbols.length === 0) return {};
-  const BATCH_SIZE = 5;
+  
+  const BATCH_SIZE = 3;        // ⬇️ من 5 إلى 3 (أرفق على sahmk)
+  const BATCH_DELAY_MS = 500;  // ⬆️ من 200 إلى 500 (delay أطول)
   const result = {};
+  
+  console.log(`[sahmkBulk] جلب ${symbols.length} سهم في batches من ${BATCH_SIZE}`);
 
   for (let i = 0; i < symbols.length; i += BATCH_SIZE) {
     const batch = symbols.slice(i, i + BATCH_SIZE);
+    const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+    const totalBatches = Math.ceil(symbols.length / BATCH_SIZE);
+    
+    console.log(`[sahmkBulk] batch ${batchNum}/${totalBatches}: ${batch.join(', ')}`);
+    
     const batchResults = await Promise.allSettled(
       batch.map(sym => fetchHistoricalBars(sym, days))
     );
+    
     batch.forEach((sym, idx) => {
-      result[sym] = batchResults[idx].status === 'fulfilled' ? batchResults[idx].value : [];
+      const r = batchResults[idx];
+      if (r.status === 'fulfilled') {
+        result[sym] = r.value;
+      } else {
+        console.warn(`[sahmkBulk] ${sym} failed:`, r.reason?.message);
+        result[sym] = [];
+      }
     });
+    
+    // delay قبل الـ batch التالي (إلا إذا كان الأخير)
     if (i + BATCH_SIZE < symbols.length) {
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, BATCH_DELAY_MS));
     }
   }
+  
+  // تقرير النتائج
+  const successCount = Object.values(result).filter(bars => bars.length > 0).length;
+  console.log(`[sahmkBulk] نجح: ${successCount}/${symbols.length} سهم`);
+  
   return result;
 }
 
