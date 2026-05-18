@@ -138,6 +138,11 @@ historicalData = await generateDataFromStockListReal(STOCKS, config.days, 15);
           modeLabel = 'السوق بالكامل (Sector Rotation)';
           historicalData = generateDataFromMarket(STOCKS, genBars, config.days);
           strategy = createTadawulStrategy(stockHealth, { maxPositions: 10, maxPositionWeight: 0.15 });
+          if (!historicalData || historicalData.length === 0 || !historicalData[0]?.stocksData) {
+            setResults({ error: 'لا توجد بيانات تاريخية كافية - تحقق من اتصال API' });
+            setIsRunning(false);
+            return;
+          }
           var marketBenchSymbols = historicalData[0].stocksData.slice(0, 10).map(function(s) { return s.sym; });
           benchmarkStrategy = createBuyAndHoldStrategy(marketBenchSymbols);
         }
