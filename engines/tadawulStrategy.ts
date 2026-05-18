@@ -160,6 +160,7 @@ export function createTadawulStrategy(healthFn: any, options?: any): any {
                 sym: stock.sym,
                 value: availableValue,
                 reason: 'Score=' + stock.score + '/' + config.buyScoreThreshold,
+                layers: stock.health?.layers || null,  // ✨ AI Learning: pass actual layers
               });
             }
           });
