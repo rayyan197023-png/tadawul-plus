@@ -653,10 +653,10 @@ var meanResult = allResults.reduce(function(s: number, r: number) { return s + r
   }
 
   // ⑥ توزيع النتائج (20 bin)
-  var minResult = allResults[0];
-  var maxResult = allResults[allResults.length - 1];
+  var minResult = allResults.length > 0 ? allResults[0] : 0;
+  var maxResult = allResults.length > 0 ? allResults[allResults.length - 1] : 0;
   var numBins = 20;
-  var binWidth = (maxResult - minResult) / numBins;
+  var binWidth = numBins > 0 && maxResult !== minResult ? (maxResult - minResult) / numBins : 1;
   
   var distribution: any[] = [];
   for (var b = 0; b < numBins; b++) {
