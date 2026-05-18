@@ -168,13 +168,30 @@ if (firstStock?.bars?.length >= 30) {
   }
 }
 
+const testDay = historicalData[100];
+const firstStock = testDay?.stocksData?.[0];
+
+const stockKeys = firstStock ? Object.keys(firstStock).join(', ') : 'لا يوجد';
+const hasPrice = firstStock?.p !== undefined ? '✅' : '❌';
+const hasPE = firstStock?.pe !== undefined ? '✅' : '❌';
+const hasROE = firstStock?.roe !== undefined ? '✅' : '❌';
+const hasSec = firstStock?.sec !== undefined ? '✅' : '❌';
+const hasMktCap = firstStock?.mktCap !== undefined ? '✅' : '❌';
+const hasCh = firstStock?.ch !== undefined ? '✅' : '❌';
+
 alert(
-  '🔍 تشخيص اليوم 100:\n\n' +
-  'عدد الأسهم: ' + (testDay?.stocksData?.length || 0) + '\n' +
-  'شموع لأول سهم: ' + (firstStock?.bars?.length || 0) + '\n' +
-  'السهم: ' + (firstStock?.sym || 'لا يوجد') + '\n\n' +
-  'Health: ' + healthInfo + '\n' +
-  'القرار: ' + signalCheck
+  '🔍 فحص بنية السهم:\n\n' +
+  'السهم: ' + (firstStock?.sym || 'لا') + '\n' +
+  'currentPrice: ' + (firstStock?.currentPrice || 'لا') + '\n\n' +
+  'الحقول المتوفرة:\n' +
+  stockKeys.substring(0, 200) + '\n\n' +
+  'الحقول المهمة:\n' +
+  hasPrice + ' p (السعر)\n' +
+  hasCh + ' ch (التغير)\n' +
+  hasPE + ' pe (P/E)\n' +
+  hasROE + ' roe\n' +
+  hasSec + ' sec (القطاع)\n' +
+  hasMktCap + ' mktCap'
 );
         
           if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
