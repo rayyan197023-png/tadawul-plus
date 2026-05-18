@@ -86,8 +86,9 @@ export default function BacktestScreen() {
   var haptic = useHaptic();
   var positions = [];
   
-  var [config, setConfig] = useState({
+    var [config, setConfig] = useState({
     mode: 'analysis',
+    category: 'leaders',  // ✨ فئة الأسهم للاختبار
     initialCapital: 100000,
     days: 252,
     includeCosts: true,
