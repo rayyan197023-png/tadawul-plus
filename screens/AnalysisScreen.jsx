@@ -659,8 +659,8 @@ const best3 = allData.length > 0
 
                   <div style={{fontSize:8,color:C.smoke,letterSpacing:"1px",marginBottom:2}}>تاسي</div>
                   <div className="num-lg" style={{fontSize:18,fontWeight:900,color:C.goldL,lineHeight:1,direction:"ltr"}}>{tasiVal.toLocaleString()}</div>
-                  <div style={{fontSize:10,fontWeight:700,color:avgChange>=0?C.mint:C.coral,marginTop:2,direction:"ltr"}}>
-                    {avgChange>=0?"▲":"▼"} {Math.abs(avgChange)}%
+                  <div style={{fontSize:10,fontWeight:700,color:tasiPct>=0?C.mint:C.coral,marginTop:2,direction:"ltr"}}>
+                    {tasiPct>=0?"▲":"▼"} {Math.abs(tasiPct).toFixed(2)}%
                   </div>
                 </div>
                 {/* أزرار الإعدادات — 44px touch target (Apple HIG) */}
