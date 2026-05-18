@@ -175,25 +175,52 @@ export async function generateRealDataFromPortfolio(positions, days = 252) {
 }
 
 export async function generateRealDataFromStockList(stocksList, days = 252, maxStocks = 15) {
-  if (!stocksList || stocksList.length === 0) return [];
+  if (!stocksList || stocksList.length === 0) {
+    console.warn('[generateRealData] قائمة الأسهم فارغة');
+    return [];
+  }
 
-  const selected   = stocksList.slice(0, maxStocks);
-  const symbols    = selected.map(s => s.sym).filter(Boolean);
+  const selected = stocksList.slice(0, maxStocks);
+  const symbols  = selected.map(s => s.sym).filter(Boolean);
+  
+  console.log(`[generateRealData] طلب بيانات لـ ${symbols.length} سهم`);
+  
   const stocksBars = await fetchHistoricalBarsBulk(symbols, days);
-  const validSyms  = symbols.filter(sym => stocksBars[sym]?.length > 10);
-  if (validSyms.length === 0) return [];
+  
+  // تخفيف الفلترة: من > 10 إلى > 5 (لقبول أسهم بسجل أقصر)
+  const MIN_BARS = 5;
+  const validSyms = symbols.filter(sym => stocksBars[sym]?.length > MIN_BARS);
+  
+  console.log(`[generateRealData] أسهم صالحة: ${validSyms.length}/${symbols.length}`);
+  
+  if (validSyms.length === 0) {
+    console.warn('[generateRealData] لا توجد أسهم صالحة - كل الطلبات فشلت');
+    return [];
+  }
+  
+  // عرض كم شمعة لكل سهم
+  validSyms.forEach(sym => {
+    console.log(`[generateRealData] ${sym}: ${stocksBars[sym].length} شمعة`);
+  });
 
+  // أقصر طول مشترك (لمواءمة كل الأسهم)
   const minLen = Math.min(...validSyms.map(sym => stocksBars[sym].length));
-  const data   = [];
+  console.log(`[generateRealData] minLen = ${minLen} يوم`);
+  
+  const data = [];
 
   for (let i = 0; i < minLen; i++) {
-    const prices = {}, stocksData = [];
+    const prices = {};
+    const stocksData = [];
+    
     for (const sym of validSyms) {
       const bars = stocksBars[sym];
-      const bar  = bars[bars.length - minLen + i];
+      const bar = bars[bars.length - minLen + i];
       if (!bar) continue;
+      
       prices[sym] = bar.c;
       const stk = selected.find(s => s.sym === sym);
+      
       stocksData.push({
         sym,
         name: stk?.name ?? sym,
@@ -202,12 +229,15 @@ export async function generateRealDataFromStockList(stocksList, days = 252, maxS
         currentPrice: bar.c,
       });
     }
+    
     data.push({
       date: stocksBars[validSyms[0]][stocksBars[validSyms[0]].length - minLen + i]?.d ?? '',
       prices,
       stocksData,
     });
   }
+  
+  console.log(`[generateRealData] تم توليد ${data.length} يوم تداول`);
   return data;
 }
 
