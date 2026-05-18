@@ -44,9 +44,16 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
   const [sahmkBars, setSahmkBars] = useState([]);
   const [sahmkLoading, setSahmkLoading] = useState(false);
 
+    // sahmk فترات مدعومة فعلياً: 1D, 1W, 1Y فقط (الباقي يرجع ~3 أشهر افتراضياً)
   const periodMap = {
-    "1D": "1D", "1W": "5D", "1M": "1Mo", "3M": "3Mo",
-    "6M": "6Mo", "1Y": "1Y", "5Y": "5Y", "MAX": "Max"
+    "1D":  "1D",     // 1 شمعة (اليوم)
+    "1W":  "1W",     // 5 شموع (أسبوع)
+    "1M":  "3Mo",    // 58 شمعة (~3 أشهر، الأقرب)
+    "3M":  "3Mo",    // 58 شمعة (3 أشهر) ✓
+    "6M":  "1Y",     // نأخذ نصف 249 شمعة
+    "1Y":  "1Y",     // 249 شمعة (سنة كاملة) ✓
+    "5Y":  "1Y",     // الحد الأقصى من sahmk
+    "MAX": "1Y"      // الحد الأقصى من sahmk
   };
 
   useEffect(() => {
