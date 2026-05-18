@@ -138,24 +138,45 @@ export async function fetchBarsForBacktest(symOrStk, days = 252) {
 }
 
 export async function generateRealDataFromPortfolio(positions, days = 252) {
-  if (!positions || positions.length === 0) return [];
+  if (!positions || positions.length === 0) {
+    console.warn('[generateRealPortfolio] لا توجد مراكز في المحفظة');
+    return [];
+  }
 
-  const symbols     = positions.map(p => p.sym).filter(Boolean);
-  const stocksBars  = await fetchHistoricalBarsBulk(symbols, days);
-  const validSyms   = symbols.filter(sym => stocksBars[sym]?.length > 10);
-  if (validSyms.length === 0) return [];
+  const symbols = positions.map(p => p.sym).filter(Boolean);
+  
+  console.log(`[generateRealPortfolio] طلب بيانات لـ ${symbols.length} سهم من المحفظة`);
+  
+  const stocksBars = await fetchHistoricalBarsBulk(symbols, days);
+  
+  // تخفيف الفلترة: من > 10 إلى > 5
+  const MIN_BARS = 5;
+  const validSyms = symbols.filter(sym => stocksBars[sym]?.length > MIN_BARS);
+  
+  console.log(`[generateRealPortfolio] أسهم صالحة: ${validSyms.length}/${symbols.length}`);
+  
+  if (validSyms.length === 0) {
+    console.warn('[generateRealPortfolio] لا توجد أسهم صالحة من المحفظة');
+    return [];
+  }
 
   const minLen = Math.min(...validSyms.map(sym => stocksBars[sym].length));
-  const data   = [];
+  console.log(`[generateRealPortfolio] minLen = ${minLen} يوم`);
+  
+  const data = [];
 
   for (let i = 0; i < minLen; i++) {
-    const prices = {}, stocksData = [];
+    const prices = {};
+    const stocksData = [];
+    
     for (const sym of validSyms) {
       const bars = stocksBars[sym];
-      const bar  = bars[bars.length - minLen + i];
+      const bar = bars[bars.length - minLen + i];
       if (!bar) continue;
+      
       prices[sym] = bar.c;
       const pos = positions.find(p => p.sym === sym);
+      
       stocksData.push({
         sym,
         name: pos?.stk?.name ?? sym,
@@ -165,12 +186,15 @@ export async function generateRealDataFromPortfolio(positions, days = 252) {
         targetWeight: pos?.weight ?? (1 / validSyms.length),
       });
     }
+    
     data.push({
       date: stocksBars[validSyms[0]][stocksBars[validSyms[0]].length - minLen + i]?.d ?? '',
       prices,
       stocksData,
     });
   }
+  
+  console.log(`[generateRealPortfolio] تم توليد ${data.length} يوم تداول`);
   return data;
 }
 
