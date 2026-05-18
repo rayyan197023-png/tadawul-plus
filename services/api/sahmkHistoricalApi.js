@@ -13,7 +13,7 @@
  */
 
 const SAHMK_BASE = 'https://app.sahmk.sa/api/v1';
-const SAHMK_KEY = process.env.NEXT_PUBLIC_SAHMK_KEY ?? '';
+const SAHMK_KEY = process.env.NEXT_PUBLIC_SAHMK_KEY ?? process.env.SAHMK_KEY ?? '';
 
 function buildSahmkUrl(path, params = {}) {
   const url = new URL(`${SAHMK_BASE}${path}`);
