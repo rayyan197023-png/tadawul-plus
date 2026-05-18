@@ -144,15 +144,17 @@ export default function BacktestScreen() {
           var benchSymbols = historicalData[0].stocksData.slice(0, 5).map(function(s) { return s.sym; });
           benchmarkStrategy = createBuyAndHoldStrategy(benchSymbols);
         }
-         else if (config.mode === 'market') {
+                 else if (config.mode === 'market') {
           modeLabel = 'السوق بالكامل (Sector Rotation)';
           historicalData = generateDataFromMarket(STOCKS, genBars, config.days);
-          strategy = createTadawulStrategy(stockHealth, { maxPositions: 10, maxPositionWeight: 0.15 });
-          if (!historicalData || historicalData.length === 0 || !historicalData[0]?.stocksData) {
-            setResults({ error: 'لا توجد بيانات تاريخية كافية - تحقق من اتصال API' });
+          
+          if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
+            setResults({ error: 'فشل توليد بيانات السوق' });
             setIsRunning(false);
             return;
           }
+          
+          strategy = createTadawulStrategy(stockHealth, { maxPositions: 10, maxPositionWeight: 0.15 });
           var marketBenchSymbols = historicalData[0].stocksData.slice(0, 10).map(function(s) { return s.sym; });
           benchmarkStrategy = createBuyAndHoldStrategy(marketBenchSymbols);
         }
