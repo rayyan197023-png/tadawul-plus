@@ -181,10 +181,11 @@ const API_CONFIG = {
   },
 
   // Map app period → sahmk period query param
+    // sahmk supports only: 1D, 1W, 1Y -- everything else → 3Mo default
   periodMap: {
-    '1m':'1D',   '5m':'5D',   '15m':'1Mo', '30m':'1Mo',
-    '1H':'3Mo',  '4H':'6Mo',  '1D':'1Y',
-    '1W':'5Y',   '1M':'Max'
+    '1m':'1Y',   '5m':'1Y',   '15m':'1Y',  '30m':'1Y',
+    '1H':'1Y',   '4H':'1Y',   '1D':'1Y',
+    '1W':'1Y',   '1M':'1Y'
   },
 
   // ── HTTP Fetch with sahmk endpoint routing ───────────────────
