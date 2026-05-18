@@ -80,34 +80,6 @@ export async function fetchHistoricalBars(symbol, days = 252, interval = '1d') {
     return [];
   }
 }
-  if (!symbol) return [];
-  const from = daysAgo(days + 30);
-  const to   = new Date().toISOString().slice(0, 10);
-  const url  = buildSahmkUrl(`/historical/${symbol}/`, { from, to, interval });
-
-  try {
-    const res = await fetch(url, {
-      headers: { 'X-API-Key': SAHMK_KEY },
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) { console.warn(`[sahmkHistorical] HTTP ${res.status} for ${symbol}`); return []; }
-
-    const data    = await res.json();
-    const rawBars = Array.isArray(data) ? data : (data.data ?? data.results ?? []);
-    if (!rawBars.length) return [];
-
-    rawBars.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    const bars = [];
-    for (let i = 0; i < rawBars.length; i++) {
-      bars.push(mapSahmkBar(rawBars[i], i > 0 ? bars[i - 1].c : null));
-    }
-    return bars.slice(-days);
-  } catch (e) {
-    console.warn(`[sahmkHistorical] fetchHistoricalBars(${symbol}):`, e.message);
-    return [];
-  }
-}
 
 export async function fetchHistoricalBarsBulk(symbols, days = 252) {
   if (!symbols || symbols.length === 0) return {};
