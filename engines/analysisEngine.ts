@@ -3896,27 +3896,119 @@ function saveFeedbackState(state: any): void {
 }
 
 function getAdaptiveWeightAdjustment(sym: string): any {
-  /* يُرجع delta للأوزان بناءً على سجل أداء هذا السهم:
-     إذا كانت إشارات L9 صحيحة باستمرار → رفع وزنها
-     إذا كانت L5 تُخطئ كثيراً → خفض وزنها        */
+  /* ✨ ABM-Powered Weight Adjustment
+     ─────────────────────────────────
+     يأخذ قراراً ذكياً بناءً على:
+     1. Short-Term Performance (الحديث الأهم)
+     2. Long-Term Stability (التاريخ)
+     3. Regime Awareness (السوق الحالي)
+     4. Confidence Gating (لا تتعلم من بيانات قليلة)
+  */
+  
   const state = loadFeedbackState();
-  if(!state || !state[sym]) return null;
+  if (!state || !state[sym]) return null;
   const perf = state[sym];
-  if(perf.total < 3) return null; // نحتاج 3 إشارات مُتحقَّق منها على الأقل
-
+  
+  // ── Migration check ──
+  if (!perf.version) return null; // البيانات القديمة لم تُحدّث بعد
+  
+  // ── Confidence Gating: نحتاج عينة كافية ──
+  const totalEver = perf.longTerm?.totalEver || 0;
+  if (totalEver < 5) return null; // أقل من 5 صفقات → لا ثقة
+  
+  // ── حساب 3 مقاييس مستقلة ──
+  
+  // 1) Short-Term Accuracy (الأهم - وزن 50%)
+  const shortAcc = perf.shortTerm?.weightedAccuracy || 0.5;
+  
+  // 2) Long-Term Accuracy (وزن 25%)
+  const longAcc = totalEver > 0 ? perf.longTerm.correctEver / totalEver : 0.5;
+  
+  // 3) Live Accuracy (Live > Backtest، وزن 25%)
+  const liveCtx = perf.context?.live || { total: 0, correct: 0 };
+  const liveAcc = liveCtx.total >= 3 ? liveCtx.correct / liveCtx.total : longAcc;
+  
+  // ── Composite Accuracy ──
+  const composite = shortAcc * 0.50 + longAcc * 0.25 + liveAcc * 0.25;
+  
+  // ── Regime Change Detection ──
+  // إذا الحديث أسوأ من التاريخي بكثير → تحذير
+  const regimeShift = shortAcc < longAcc - 0.15;
+  // إذا الحديث أفضل بكثير → ثقة متزايدة
+  const improving = shortAcc > longAcc + 0.10;
+  
+  // ── حساب التعديل لكل طبقة ──
   const adj: any = {};
-  // لكل طبقة: إذا كانت دقتها > 70% رفع وزنها، < 40% خفضه
-  Object.keys(perf.layers||{}).forEach(k=>{
+  
+  Object.keys(perf.layers || {}).forEach(k => {
     const lp = perf.layers[k];
-    if(!lp || lp.total < 2) return;
-    const acc = lp.correct / lp.total;
-    if     (acc > 0.70) adj[k] = +0.02;  // دقيقة → رفع 2%
-    else if(acc > 0.55) adj[k] = +0.01;  // مقبولة → رفع 1%
-    else if(acc < 0.40) adj[k] = -0.015; // ضعيفة → خفض 1.5%
-    else if(acc < 0.30) adj[k] = -0.025; // سيئة → خفض 2.5%
+    if (!lp || lp.total < 3) return; // نحتاج 3+ صفقات لكل طبقة
+    
+    // Layer accuracy: تاريخي + حديث
+    const layerHistAcc = lp.correct / lp.total;
+    const recentLayer = lp.recent || [];
+    let recentLayerAcc = layerHistAcc;
+    
+    if (recentLayer.length >= 3) {
+      let rCorrect = 0, rTotal = 0;
+      recentLayer.forEach((r: any) => {
+        if (r.correct) rCorrect += r.weight;
+        rTotal += r.weight;
+      });
+      recentLayerAcc = rTotal > 0 ? rCorrect / rTotal : layerHistAcc;
+    }
+    
+    // Layer composite (حديث 60% + تاريخي 40%)
+    const layerAcc = recentLayerAcc * 0.60 + layerHistAcc * 0.40;
+    
+    // ── منطق التعديل (مع Regime Awareness) ──
+    let baseAdj = 0;
+    
+    if (layerAcc >= 0.75) {
+      baseAdj = +0.025;  // ممتاز → رفع 2.5%
+    } else if (layerAcc >= 0.65) {
+      baseAdj = +0.015;  // جيد → رفع 1.5%
+    } else if (layerAcc >= 0.55) {
+      baseAdj = +0.008;  // مقبول → رفع طفيف
+    } else if (layerAcc < 0.35) {
+      baseAdj = -0.030;  // سيء → خفض 3%
+    } else if (layerAcc < 0.45) {
+      baseAdj = -0.020;  // ضعيف → خفض 2%
+    }
+    
+    // ── Regime Adjustment ──
+    if (regimeShift) {
+      // السوق تغير → قلل الاعتماد على القديم
+      baseAdj *= 0.6;
+    } else if (improving) {
+      // الأداء يتحسن → زِد الاعتماد
+      baseAdj *= 1.2;
+    }
+    
+    // ── Confidence Scaling ──
+    // طبقات أقل من 10 صفقات → تأثير أقل
+    if (lp.total < 10) baseAdj *= 0.5;
+    else if (lp.total < 20) baseAdj *= 0.8;
+    
+    if (Math.abs(baseAdj) > 0.001) {
+      adj[k] = +baseAdj.toFixed(4);
+    }
   });
-
-  return Object.keys(adj).length > 0 ? adj : null;
+  
+  // ── Meta info للمتابعة ──
+  if (Object.keys(adj).length > 0) {
+    (adj as any).__meta = {
+      composite: +composite.toFixed(3),
+      shortAcc: +shortAcc.toFixed(3),
+      longAcc: +longAcc.toFixed(3),
+      liveAcc: +liveAcc.toFixed(3),
+      regimeShift,
+      improving,
+      sampleSize: Math.round(totalEver),
+    };
+  }
+  
+  return Object.keys(adj).filter(k => k !== '__meta').length > 0 ? adj : null;
 }
 
 function recordFeedback(sym: string, signal: any, layers: any, actualOutcome: any, context?: any): any {
