@@ -110,17 +110,19 @@ const declining  = tasiLive?.declining   ?? 0;
 const unchanged  = tasiLive?.unchanged   ?? 0;
 const totalVol   = tasiLive?.total_volume ?? 0;
 
-  // ── Build points for selected period
+    // ── Build points for selected period
   const pts = useMemo(() => {
     if (period === 'يوم') {
-  const pts = todayPtsRef.current;
-  return pts.length > 0 ? pts : [idx];
-}
-    const base = ohlcvData[period] ?? [idx];
-
-    const updated = [...base];
-        }, [period, market.todayPts, idx, ohlcvData]);
-
+      const today = todayPtsRef.current;
+      return today.length > 0 ? today : [idx];
+    }
+    // الفترات الأخرى من OHLCV
+    const base = ohlcvData[period];
+    if (!base || !Array.isArray(base) || base.length === 0) {
+      return [idx];
+    }
+    return base;
+  }, [period, idx, ohlcvData]);
   // ── Chart geometry
   const W = 340, H = 96;
   const minV = Math.min(...pts), maxV = Math.max(...pts);
