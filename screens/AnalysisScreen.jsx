@@ -384,7 +384,9 @@ const avgChange = (liveStocks && liveStocks.length > 0)
   ? (liveStocks.reduce((sum, x) => sum + (x ? x.ch : 0), 0) / liveStocks.length).toFixed(2)
   : "0.00";
 
-const tasiVal = 11842
+  const tasi = market?.indices?.find(i => i.id === 'tasi');
+  const tasiVal = tasi?.value || 0;
+  const tasiPct = tasi?.pct || 0;
   const navItems = [
     { id:"home",      icon:"⌂",  label:"الرئيسية" },
     { id:"portfolio", icon:"◎",  label:"محفظتي"   },
