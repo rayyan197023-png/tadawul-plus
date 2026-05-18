@@ -20,6 +20,26 @@ export async function GET(req: NextRequest) {
   if (!SAHMK_KEY) {
     return NextResponse.json({ error: 'SAHMK_KEY not set' }, { status: 500 });
   }
+  // ⚡ مدة الـ cache حسب نوع الـ endpoint (بالثواني)
+  const cacheDuration: Record<string, number> = {
+    tasi:         60,      // 1 دقيقة (سعر التاسي اللحظي)
+    quote:        60,      // 1 دقيقة (سعر سهم واحد)
+    quotes:       60,      // 1 دقيقة (مجموعة أسعار)
+    prices:       60,      // 1 دقيقة
+    gainers:      300,     // 5 دقائق (أعلى الرابحين)
+    losers:       300,     // 5 دقائق (أعلى الخاسرين)
+    volume:       300,     // 5 دقائق (الأعلى تداولاً)
+    ohlcv:        300,     // 5 دقائق (الشموع)
+    sectors:      3600,    // ساعة (القطاعات لا تتغير كثيراً)
+    companies:    86400,   // 24 ساعة (قائمة الشركات)
+    fundamentals: 21600,   // 6 ساعات (الأساسيات تتحدث ربعياً)
+    ratios:       21600,   // 6 ساعات
+    financials:   86400,   // 24 ساعة (البيانات المالية)
+    dividends:    86400,   // 24 ساعة (التوزيعات)
+  };
+  
+  const maxAge = cacheDuration[endpoint] ?? 60;
+  const staleAge = maxAge * 5; // مدة stale-while-revalidate
 
   const headers = {
     'Accept': 'application/json',
