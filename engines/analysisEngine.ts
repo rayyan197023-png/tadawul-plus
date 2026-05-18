@@ -3919,51 +3919,127 @@ function getAdaptiveWeightAdjustment(sym: string): any {
   return Object.keys(adj).length > 0 ? adj : null;
 }
 
-function recordFeedback(sym: string, signal: any, layers: any, actualOutcome: any): any {
-  /* ✨ Smart Weighted Learning System
-     actualOutcome: قيمة بين -2.0 إلى +2.0 (مرجّحة حسب قوة النتيجة)
-     - 2.0 = إشارة ممتازة (ربح +10%)
-     - 1.5 = إشارة قوية (ربح +5%)
-     - 1.0 = إشارة واضحة (ربح +3%)
-     - 0.5 = إشارة ضعيفة (ربح +1%)
-     - 0.2 = إشارة طفيفة (ربح <1%)
-     (والقيم السالبة للخسائر) */
+function recordFeedback(sym: string, signal: any, layers: any, actualOutcome: any, context?: any): any {
+  /* ✨ Adaptive Bayesian Memory (ABM) System
+     ─────────────────────────────────────────
+     نظام هجين يجمع:
+     • Long-term memory (لا ينسى)
+     • Short-term memory (الحديث الأهم)
+     • Context-aware (Backtest vs Live, Bull vs Bear)
+     • Bayesian confidence (ثقة حقيقية)
+  */
   
   const state = loadFeedbackState() || {};
-  if(!state[sym]) state[sym] = {total:0, correct:0, weight:0, layers:{}};
-  const perf = state[sym];
+  const now = Date.now();
   
-  // 🎯 Weighted Counting بدل Counting بسيط
-  const weight = Math.abs(actualOutcome); // قوة الإشارة (0.2 إلى 2.0)
-  perf.total += weight;
-  if(actualOutcome > 0) perf.correct += weight;
-  perf.weight = (perf.weight || 0) + weight;
-
-  // تتبع دقة كل طبقة (Weighted)
+  // ── Migration: ترقية البيانات القديمة تلقائياً ──
+  if (state[sym] && !state[sym].version) {
+    const old = state[sym];
+    state[sym] = {
+      version: 2,
+      longTerm: {
+        totalEver: old.total || 0,
+        correctEver: old.correct || 0,
+      },
+      shortTerm: {
+        recent: [] as any[],
+        weightedAccuracy: old.total > 0 ? old.correct / old.total : 0.5,
+      },
+      context: {
+        backtest: { total: old.total || 0, correct: old.correct || 0 },
+        live:     { total: 0, correct: 0 },
+        bull:     { total: 0, correct: 0 },
+        bear:     { total: 0, correct: 0 },
+      },
+      layers: old.layers || {},
+      meta: {
+        lastUpdate: now,
+        firstUpdate: now,
+      }
+    };
+  }
+  
+  // ── تهيئة سهم جديد ──
+  if (!state[sym]) {
+    state[sym] = {
+      version: 2,
+      longTerm: { totalEver: 0, correctEver: 0 },
+      shortTerm: { recent: [], weightedAccuracy: 0.5 },
+      context: {
+        backtest: { total: 0, correct: 0 },
+        live:     { total: 0, correct: 0 },
+        bull:     { total: 0, correct: 0 },
+        bear:     { total: 0, correct: 0 },
+      },
+      layers: {},
+      meta: { lastUpdate: now, firstUpdate: now }
+    };
+  }
+  
+  const perf = state[sym];
+  const weight = Math.abs(actualOutcome);
+  const isCorrect = actualOutcome > 0;
+  
+  // ── 1) Long-Term Memory (لا ينسى أبداً) ──
+  perf.longTerm.totalEver += weight;
+  if (isCorrect) perf.longTerm.correctEver += weight;
+  
+  // ── 2) Short-Term Memory (آخر 30 صفقة بالتفصيل) ──
+  perf.shortTerm.recent.push({
+    timestamp: now,
+    outcome: actualOutcome,
+    signal,
+    weight,
+  });
+  if (perf.shortTerm.recent.length > 30) {
+    perf.shortTerm.recent.shift();
+  }
+  
+  // ── Exponential Weighted Accuracy (الحديث وزنه أعلى) ──
+  const decay = 0.92; // كل صفقة قديمة تفقد 8% من وزنها
+  let weightedSum = 0;
+  let totalWeight = 0;
+  perf.shortTerm.recent.forEach((trade: any, i: number, arr: any[]) => {
+    const age = arr.length - 1 - i;
+    const w = Math.pow(decay, age) * trade.weight;
+    if (trade.outcome > 0) weightedSum += w;
+    totalWeight += w;
+  });
+  perf.shortTerm.weightedAccuracy = totalWeight > 0 ? weightedSum / totalWeight : 0.5;
+  
+  // ── 3) Context-Aware Tracking ──
+  const ctxType = context?.type === 'live' ? 'live' : 'backtest';
+  perf.context[ctxType].total += weight;
+  if (isCorrect) perf.context[ctxType].correct += weight;
+  
+  // حالة السوق (Bull/Bear)
+  const marketRegime = context?.regime === 'bear' ? 'bear' : 'bull';
+  perf.context[marketRegime].total += weight;
+  if (isCorrect) perf.context[marketRegime].correct += weight;
+  
+  // ── 4) Layer Performance Tracking ──
   const lnames = ['L1','L2','L3','L4','L5','L6','L7','L8','L9'];
-  lnames.forEach(k=>{
-    if(layers[k] === undefined) return;
-    if(!perf.layers[k]) perf.layers[k] = {total:0, correct:0};
+  lnames.forEach(k => {
+    if (layers[k] === undefined) return;
+    if (!perf.layers[k]) perf.layers[k] = { total: 0, correct: 0, recent: [] as any[] };
+    
     perf.layers[k].total += weight;
     
     const layerDir = layers[k] > 55 ? 1 : layers[k] < 45 ? -1 : 0;
-    const signalDir = signal==='شراء قوي'||signal==='مراقبة' ? 1
-                    : signal==='تخفيف' ? -1 : 0;
+    const signalDir = signal === 'شراء قوي' || signal === 'مراقبة' ? 1
+                    : signal === 'تخفيف' ? -1 : 0;
     
-    // الطبقة "صح" إذا توافقت مع النتيجة الفعلية
-    if(layerDir !== 0 && layerDir === signalDir && actualOutcome > 0)
-      perf.layers[k].correct += weight;
-    else if(layerDir !== 0 && layerDir !== signalDir && actualOutcome < 0)
-      perf.layers[k].correct += weight;
+    const layerCorrect = (layerDir !== 0 && layerDir === signalDir && isCorrect) ||
+                         (layerDir !== 0 && layerDir !== signalDir && !isCorrect);
+    if (layerCorrect) perf.layers[k].correct += weight;
+    
+    // Recent layer accuracy (آخر 20)
+    perf.layers[k].recent.push({ correct: layerCorrect, weight });
+    if (perf.layers[k].recent.length > 20) perf.layers[k].recent.shift();
   });
-
-  // احتفظ بآخر 100 صفقة (مع الحفاظ على النسبة)
-  if(perf.total > 100){
-    const ratio = perf.correct / perf.total;
-    perf.total = 50;
-    perf.correct = +(50 * ratio).toFixed(2);
-    perf.weight = 50;
-  }
+  
+  // ── 5) Meta Information ──
+  perf.meta.lastUpdate = now;
   
   saveFeedbackState(state);
 }
