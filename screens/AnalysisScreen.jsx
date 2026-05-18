@@ -14,7 +14,7 @@
 
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
-import { useNav, useSharedPrices } from '../store';
+import { useNav, useSharedPrices, useMarketState } from '../store';
 import { useOHLCVCache } from '../hooks/useOHLCVCache';
 
 // ── المحركات الحسابية
