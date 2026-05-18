@@ -127,6 +127,11 @@ export default function BacktestScreen() {
           modeLabel = 'قائمة التحليل (Tadawul Strategy)';
 historicalData = await generateDataFromStockListReal(STOCKS, config.days, 15);
           strategy = createTadawulStrategy(stockHealth);
+          if (!historicalData || historicalData.length === 0 || !historicalData[0]?.stocksData) {
+            setResults({ error: 'لا توجد بيانات تاريخية كافية - تحقق من اتصال API' });
+            setIsRunning(false);
+            return;
+          }
           var benchSymbols = historicalData[0].stocksData.slice(0, 5).map(function(s) { return s.sym; });
           benchmarkStrategy = createBuyAndHoldStrategy(benchSymbols);
         } else if (config.mode === 'market') {
