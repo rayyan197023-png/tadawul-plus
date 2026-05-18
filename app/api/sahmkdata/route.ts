@@ -102,10 +102,11 @@ export async function GET(req: NextRequest) {
     const text = await res.text();
 
     // نرجع النص الخام مباشرة (Next.js لن يحاول re-serialize)
-    return new NextResponse(text, {
+        return new NextResponse(text, {
       status: 200,
       headers: {
-        'Cache-Control': 'no-store',
+        'Cache-Control': `public, s-maxage=${maxAge}, stale-while-revalidate=${staleAge}`,
+        'CDN-Cache-Control': `public, max-age=${maxAge}`,
         'Content-Type': 'application/json; charset=utf-8',
       },
     });
