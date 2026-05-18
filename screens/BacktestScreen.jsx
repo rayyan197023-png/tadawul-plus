@@ -131,9 +131,25 @@ export default function BacktestScreen() {
             return Object.assign({}, p, { weight: 1 / positions.length });
           });
           benchmarkStrategy = createPortfolioBuyAndHoldStrategy(equalWeight);
-                } else if (config.mode === 'analysis') {
-          modeLabel = 'قائمة التحليل (Tadawul Strategy)';
-          historicalData = await generateDataFromStockListReal(STOCKS, config.days, 15);
+                        } else if (config.mode === 'analysis') {
+          // ✨ استخدام الفئة المختارة
+          var category = STOCK_CATEGORIES[config.category];
+          var categoryStocks = getStocksByCategory(config.category);
+          modeLabel = `${category.icon} ${category.name} (${categoryStocks.length} سهم)`;
+          
+          if (categoryStocks.length === 0) {
+            setResults({ error: 'لا توجد أسهم في هذه الفئة' });
+            setIsRunning(false);
+            return;
+          }
+          
+          // دمج مع STOCKS_LIVE للحصول على الأسعار الحية
+          var enrichedStocks = categoryStocks.map(s => {
+            var live = STOCKS.find(x => x.sym === s.sym);
+            return live ? { ...s, ...live } : s;
+          }).filter(s => s.p > 0); // فقط الأسهم التي لها أسعار
+          
+          historicalData = await generateDataFromStockListReal(enrichedStocks, config.days, 15);
           
           if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
             setResults({ error: 'لا توجد بيانات تاريخية كافية - تحقق من اتصال API' });
