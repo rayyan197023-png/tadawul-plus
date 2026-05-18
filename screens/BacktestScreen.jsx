@@ -150,7 +150,13 @@ export default function BacktestScreen() {
           }).filter(s => s.p > 0); // فقط الأسهم التي لها أسعار
           
           historicalData = await generateDataFromStockListReal(enrichedStocks, config.days, 15);
-          
+  alert(
+  '📊 تشخيص:\n' +
+  'عدد الأيام: ' + (historicalData?.length || 0) + '\n' +
+  'عدد الأسهم: ' + (historicalData?.[0]?.stocksData?.length || 0) + '\n' +
+  'شموع لأول سهم: ' + (historicalData?.[0]?.stocksData?.[0]?.bars?.length || 0)
+);
+        
           if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
             setResults({ error: 'لا توجد بيانات تاريخية كافية - تحقق من اتصال API' });
             setIsRunning(false);
