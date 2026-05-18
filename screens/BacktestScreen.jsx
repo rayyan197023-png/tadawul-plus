@@ -302,15 +302,70 @@ historicalData = await generateDataFromMarketReal(STOCKS, config.days);
           }}
         />
 
-        <ModeCard
+                <ModeCard
           icon="🔍"
           title="قائمة التحليل"
-          description="استراتيجية الطبقات التسع على 15 سهم مختار"
+          description="استراتيجية الطبقات التسع - اختر فئة الأسهم"
           question="هل الطبقات التسع دقيقة فعلاً؟"
           color={C.gold}
           active={config.mode === 'analysis'}
                     onClick={function() { haptic.tap(); setConfig(Object.assign({}, config, { mode: 'analysis' })); }}
         />
+        
+        {/* ✨ اختيار الفئة (يظهر فقط عند وضع التحليل) */}
+        {config.mode === 'analysis' && (
+          <div style={{
+            marginBottom: 10,
+            padding: '10px 12px',
+            background: C.void + "55",
+            borderRadius: 10,
+            border: "1px solid " + C.gold + "33",
+          }}>
+            <div style={{ fontSize: 10, color: C.gold, fontWeight: 800, marginBottom: 8, letterSpacing: "0.5px" }}>
+              🎯 اختر فئة الأسهم
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+              {Object.values(STOCK_CATEGORIES).map(function(cat) {
+                var count = getStocksByCategory(cat.id).length;
+                var isActive = config.category === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={function() {
+                      haptic.tap();
+                      setConfig(Object.assign({}, config, { category: cat.id }));
+                    }}
+                    style={{
+                      padding: "8px 6px",
+                      background: isActive ? cat.color + "22" : C.void,
+                      border: "1.5px solid " + (isActive ? cat.color : C.line + "44"),
+                      borderRadius: 8,
+                      cursor: "pointer",
+                      textAlign: "right",
+                      fontFamily: "Cairo, sans-serif",
+                    }}
+                  >
+                    <div style={{
+                      fontSize: 11,
+                      fontWeight: 800,
+                      color: isActive ? cat.color : C.snow,
+                      marginBottom: 2,
+                    }}>
+                      {cat.icon} {cat.name}
+                    </div>
+                    <div style={{
+                      fontSize: 8,
+                      color: C.smoke,
+                      fontWeight: 500,
+                    }}>
+                      {count} سهم • {cat.description}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <ModeCard
           icon="🌐"
