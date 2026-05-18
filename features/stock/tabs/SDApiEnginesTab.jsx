@@ -115,7 +115,7 @@ const fetchSahmkCompany = async (sym) => {
     const v = d.valuation || {};
     const t = d.technicals || {};
     return {
-      name:        d.name,
+            name:        d.name_ar || d.short_name || d.name,
       sec:         d.sector,
       industry:    d.industry,
       website:     d.website,
