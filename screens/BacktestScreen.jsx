@@ -165,24 +165,33 @@ export default function BacktestScreen() {
           return;
         }
 
-        var strategyResult = backtest(strategy, historicalData, {
-          initialCapital: config.initialCapital,
-          includeCosts: config.includeCosts,
-        });
-
-        var benchmarkResult = backtest(benchmarkStrategy, historicalData, {
-          initialCapital: config.initialCapital,
-          includeCosts: config.includeCosts,
-        });
-
+                var strategyResult, benchmarkResult;
         var comparison = null;
-        if (strategyResult.success && benchmarkResult.success) {
-          comparison = compareWithBenchmark(strategyResult, benchmarkResult);
-        }
-
         var monteCarloResult = null;
-        if (config.runMonteCarlo && strategyResult.success) {
-          monteCarloResult = monteCarloSimulation(strategyResult, config.monteCarloIterations);
+        
+        try {
+          strategyResult = backtest(strategy, historicalData, {
+            initialCapital: config.initialCapital,
+            includeCosts: config.includeCosts,
+          });
+
+          benchmarkResult = backtest(benchmarkStrategy, historicalData, {
+            initialCapital: config.initialCapital,
+            includeCosts: config.includeCosts,
+          });
+
+          if (strategyResult.success && benchmarkResult.success) {
+            comparison = compareWithBenchmark(strategyResult, benchmarkResult);
+          }
+
+          if (config.runMonteCarlo && strategyResult.success) {
+            monteCarloResult = monteCarloSimulation(strategyResult, config.monteCarloIterations);
+          }
+        } catch (innerErr) {
+          console.error('[Backtest engine error]', innerErr);
+          setResults({ error: 'فشل تشغيل المحاكاة: بيانات غير كافية أو تنسيق غير متوافق' });
+          setIsRunning(false);
+          return;
         }
 
         setResults({
