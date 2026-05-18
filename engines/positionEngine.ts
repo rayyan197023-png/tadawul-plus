@@ -538,6 +538,11 @@ export function calcSmartAction(
   bars: Bar[] | null,
   riskGate: string | null
 ): SmartActionResult | null {
+  // ✨ AI Learning: نضيف sym لـ health ليصل للدوال الفرعية
+  if (health && position?.sym) {
+    (health as any).sym = position.sym;
+  }
+  
   const positionHealth = calcPositionHealth(position, health, bars);
   if (!positionHealth) return null;
   
