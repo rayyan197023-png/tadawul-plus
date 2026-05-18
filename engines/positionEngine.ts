@@ -420,6 +420,11 @@ export function calcPositionHealth(
 ): PositionHealthResult | null {
   if (!position || !health) return null;
   
+  // ✨ AI Learning: ضمان وصول sym
+  if (health && position?.sym && !(health as any).sym) {
+    (health as any).sym = position.sym;
+  }
+  
   const entryPrice = position.avgCost || 0;
   const currentPrice = position.curPrice || entryPrice;
   const pnlPct = entryPrice > 0 
