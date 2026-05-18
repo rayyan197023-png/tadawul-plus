@@ -110,7 +110,7 @@ export default function BacktestScreen() {
         var benchmarkStrategy;
         var modeLabel;
 
-        if (config.mode === 'portfolio') {
+                if (config.mode === 'portfolio') {
           if (!hasPortfolio) {
             setResults({ error: 'المحفظة فارغة! أضف أسهماً أولاً.' });
             setIsRunning(false);
@@ -118,6 +118,13 @@ export default function BacktestScreen() {
           }
           modeLabel = 'محفظتي الحالية';
           historicalData = await generateDataFromPortfolioReal(positions, config.days);
+          
+          if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData) {
+            setResults({ error: 'فشل جلب بيانات المحفظة التاريخية' });
+            setIsRunning(false);
+            return;
+          }
+          
           strategy = createPortfolioBuyAndHoldStrategy(positions);
           var equalWeight = positions.map(function(p) {
             return Object.assign({}, p, { weight: 1 / positions.length });
