@@ -16,7 +16,6 @@ import { useMarketBridge }    from './hooks/useMarketBridge';
 import { useHaptic }          from './hooks/useHaptic';
 import { colors }             from './theme/tokens';
 import { getGlobalStyles }    from './theme/globalStyles';
-import PWAPrompt              from './components/PWAPrompt';
 
 const C = colors;
 
@@ -349,8 +348,6 @@ function Shell() {
           <ChartScreen stk={liveStock} onClose={() => setExpandedChart(false)} />
         </Suspense>
       )}
-
-      <PWAPrompt />
     </div>
   );
 }
