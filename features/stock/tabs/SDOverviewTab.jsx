@@ -74,8 +74,15 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
             c: +(b.c ?? b.close ?? b.Close ?? b.last ?? 0),
             v: +(b.v ?? b.volume ?? b.Volume ?? 0),
           }))
-          .filter(b => b.c > 0);
-        setSahmkBars(normalized);
+                    .filter(b => b.c > 0);
+        
+        // قص حسب الفترة المطلوبة من المستخدم
+        let sliced = normalized;
+        if (per === "6M") sliced = normalized.slice(-130);   // نصف سنة
+        else if (per === "1M") sliced = normalized.slice(-22); // شهر تقريباً
+        else if (per === "3M") sliced = normalized.slice(-65); // 3 أشهر
+        
+        setSahmkBars(sliced);
       })
       .catch(() => { if (!cancelled) setSahmkBars([]); })
       .finally(() => { if (!cancelled) setSahmkLoading(false); });
