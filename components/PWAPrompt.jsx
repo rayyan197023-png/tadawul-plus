@@ -60,48 +60,6 @@ export default function PWAPrompt() {
   // Don't show if installed or dismissed
   if (isInstalled || dismissed) return null;
 
-  // ── iOS instructions
-  if (isIOS) {
-    return (
-      <div style={{
-        position: 'fixed', bottom: 90, left: '50%', transform: 'translateX(-50%)',
-        width: 'calc(100% - 32px)', maxWidth: 448,
-        background: C.layer2, borderRadius: 16,
-        border: `1px solid ${C.gold}33`,
-        padding: '14px 16px',
-        boxShadow: '0 8px 32px rgba(0,0,0,.6)',
-        zIndex: 500, direction: 'rtl',
-        fontFamily: "'Cairo','Segoe UI',sans-serif",
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <button onClick={dismiss} style={{ background: 'none', border: 'none', color: C.textTertiary, fontSize: 18, cursor: 'pointer', lineHeight: 1 }}>×</button>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 13, fontWeight: 800, color: C.textPrimary, marginBottom: 8 }}>
-              📲 أضف تداول+ للشاشة الرئيسية
-            </div>
-            <div style={{ fontSize: 11, color: C.textSecondary, lineHeight: 1.7 }}>
-              ١. اضغط على زر <span style={{ color: C.gold }}>مشاركة</span> ↑ في Safari
-              <br />
-              ٢. اختر <span style={{ color: C.gold }}>"إضافة إلى الشاشة الرئيسية"</span>
-              <br />
-              ٣. اضغط <span style={{ color: C.gold }}>إضافة</span> ✓
-            </div>
-          </div>
-          <div style={{
-            width: 44, height: 44, borderRadius: 10, background: C.gold,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            flexShrink: 0, marginRight: 10,
-            boxShadow: `0 2px 10px ${C.glowGold}`,
-          }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2.5">
-              <polyline points="4,16 8,10 12,13 17,7 20,9" />
-            </svg>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   // ── Android / Desktop install button
   if (canInstall) {
     return (
