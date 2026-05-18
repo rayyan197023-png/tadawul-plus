@@ -6,10 +6,10 @@ import {
   backtest, 
   monteCarloSimulation, 
   compareWithBenchmark,
-  generateDataFromMarket,
   createPortfolioBuyAndHoldStrategy,
   generateDataFromPortfolioReal,
   generateDataFromStockListReal,
+  generateDataFromMarketReal,
 } from '../engines/backtestEngine';
 import { createTadawulStrategy, createBuyAndHoldStrategy } from '../engines/tadawulStrategy';
 import EquityCurveChart from '../components/charts/EquityCurveChart';
