@@ -147,8 +147,8 @@ historicalData = await generateDataFromStockListReal(STOCKS, config.days, 15);
           benchmarkStrategy = createBuyAndHoldStrategy(marketBenchSymbols);
         }
 
-        if (!historicalData || historicalData.length === 0) {
-          setResults({ error: 'فشل توليد البيانات التاريخية' });
+        if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
+          setResults({ error: 'فشل توليد البيانات التاريخية - تحقق من إعدادات API أو جرّب وضعاً آخر' });
           setIsRunning(false);
           return;
         }
