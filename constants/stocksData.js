@@ -302,6 +302,66 @@ export const STOCKS = [
 
 export const STOCKS_MAP = Object.fromEntries(STOCKS.map(s => [s.sym, s]));
 
+
+// ═══════════════════════════════════════════════════════════
+// 🎯 STOCK CATEGORIES -- فئات ذكية للتصفية
+// تُستخدم في Backtest لاختبار النظام على أنواع مختلفة من الأسهم
+// ═══════════════════════════════════════════════════════════
+
+export const STOCK_CATEGORIES = {
+  leaders: {
+    id: 'leaders',
+    name: 'القيادية',
+    icon: '🏆',
+    description: 'كبار السوق - تقييم عالي (75+)',
+    color: '#f0c050',
+    filter: (s) => s.rating >= 75,
+  },
+  
+  highQuality: {
+    id: 'highQuality',
+    name: 'عالية الجودة',
+    icon: '⚡',
+    description: 'أسهم قوية (تقييم 70-74)',
+    color: '#22d3ee',
+    filter: (s) => s.rating >= 70 && s.rating < 75,
+  },
+  
+  oilLinked: {
+    id: 'oilLinked',
+    name: 'مرتبطة بالنفط',
+    icon: '💎',
+    description: 'أسهم تتأثر بأسعار النفط',
+    color: '#fbbf24',
+    filter: (s) => (s.oilCorr || 0) >= 0.55,
+  },
+  
+  healthcare: {
+    id: 'healthcare',
+    name: 'الرعاية الصحية',
+    icon: '🏥',
+    description: 'قطاع دفاعي مستقر',
+    color: '#f472b6',
+    filter: (s) => s.sectorId === 'healthcare',
+  },
+  
+  banks: {
+    id: 'banks',
+    name: 'البنوك',
+    icon: '🏦',
+    description: 'القطاع المصرفي الكامل',
+    color: '#4d9fff',
+    filter: (s) => s.sectorId === 'banks',
+  },
+};
+
+// دالة جلب أسهم فئة معينة
+export function getStocksByCategory(categoryId) {
+  const category = STOCK_CATEGORIES[categoryId];
+  if (!category) return [];
+  return STOCKS.filter(category.filter);
+}
+
 // ═══════════════════════════════════════════════════════════
 // 🏭 SECTORS -- القطاعات الرسمية الـ 18 من تاسي (بدون ريت وصناديق)
 // ═══════════════════════════════════════════════════════════
