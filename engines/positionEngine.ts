@@ -292,9 +292,32 @@ export function calcSmartTakeProfit(
                    : 1.0;
 
   // R:R الأساسي حسب Grade
-  const baseRR1 = grade === 'S' || grade === 'A' ? 2.0 : 1.5;
-  const baseRR2 = grade === 'S' || grade === 'A' ? 3.0 : 2.5;
-  const baseRR3 = grade === 'S' ? 5.0 : grade === 'A' ? 4.5 : 4.0;
+    let baseRR1 = grade === 'S' || grade === 'A' ? 2.0 : 1.5;
+  let baseRR2 = grade === 'S' || grade === 'A' ? 3.0 : 2.5;
+  let baseRR3 = grade === 'S' ? 5.0 : grade === 'A' ? 4.5 : 4.0;
+  
+  // ✨ AI Learning: تعديل الأهداف بناءً على دقة التعلم
+  try {
+    const sym = (health as any)?.sym;
+    if (sym) {
+      const feedback = loadFeedbackState();
+      const symData = feedback?.[sym];
+      if (symData && symData.total >= 3) {
+        const accuracy = symData.correct / symData.total;
+        if (accuracy >= 0.70) {
+          // النظام دقيق → ارفع الأهداف 10%
+          baseRR1 *= 1.10;
+          baseRR2 *= 1.10;
+          baseRR3 *= 1.10;
+        } else if (accuracy < 0.40) {
+          // النظام غير دقيق → أهداف أقرب 10%
+          baseRR1 *= 0.90;
+          baseRR2 *= 0.90;
+          baseRR3 *= 0.90;
+        }
+      }
+    }
+  } catch (e) {}
 
   // ✨ R:R النهائي مع تعديل ATR + Regime
   const rr1 = +(baseRR1 * atrMult * regimeMult).toFixed(2);
