@@ -4137,21 +4137,39 @@ function recordFeedback(sym: string, signal: any, layers: any, actualOutcome: an
 }
 
 
-/* ══ applyFeedbackToWeights: تطبيق الضبط التكيّفي على الأوزان ══ */
+/* ══ applyFeedbackToWeights: تطبيق الضبط التكيّفي مع ABM ══ */
 function applyFeedbackToWeights(WC: any, sym: string): any {
   const adj = getAdaptiveWeightAdjustment(sym);
-  if(!adj) return WC; // لا تاريخ كافٍ → الأوزان كما هي
-
-  const result = {...WC};
+  if (!adj) return WC; // لا تاريخ كافٍ → الأوزان كما هي
+  
+  const result = { ...WC };
   const keys = Object.keys(result);
-
-  // تطبيق التعديلات
-  keys.forEach(k=>{ if(adj[k]) result[k] = Math.max(0.005, result[k] + adj[k]); });
-
-  // إعادة تطبيع Σ=1
-  const total = keys.reduce((s,k)=>s+result[k],0);
-  keys.forEach(k=>{ result[k] = +(result[k]/total).toFixed(4); });
-
+  
+  // ── تطبيق التعديلات (تجاهل __meta) ──
+  let totalAdjustment = 0;
+  keys.forEach(k => {
+    if (adj[k] && typeof adj[k] === 'number') {
+      result[k] = Math.max(0.005, result[k] + adj[k]);
+      totalAdjustment += Math.abs(adj[k]);
+    }
+  });
+  
+  // ── إذا التعديلات صغيرة جداً → ارجع الأصل (تجنب الضوضاء) ──
+  if (totalAdjustment < 0.005) return WC;
+  
+  // ── إعادة تطبيع Σ=1 ──
+  const total = keys.reduce((s, k) => s + result[k], 0);
+  if (total > 0) {
+    keys.forEach(k => {
+      result[k] = +(result[k] / total).toFixed(4);
+    });
+  }
+  
+  // ── حفظ معلومات الـ Meta للمتابعة (اختياري) ──
+  if (adj.__meta) {
+    (result as any).__meta = adj.__meta;
+  }
+  
   return result;
 }
 
