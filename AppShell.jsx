@@ -94,7 +94,6 @@ function Shell() {
   const [snapshots,     setSnapshots]     = React.useState([]);
   const [snapOpen,      setSnapOpen]      = React.useState(false);
   const [aiAnalysis,    setAiAnalysis]    = React.useState(null);
-  const [debugMsg,      setDebugMsg]      = React.useState('');
 
   const [watchlist, setWatchlist] = React.useState(() => {
     try {
@@ -120,7 +119,7 @@ function Shell() {
   // ── Hooks الأساسية ──────────────────────────────────────────
   useLiveStockPrices();
   useMarketBridge();
-  usePriceUpdater(setDebugMsg);
+    usePriceUpdater();
 
   // ── تحميل Fundamentals ──────────────────────────────────────
   useEffect(() => {
