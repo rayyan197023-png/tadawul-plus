@@ -185,6 +185,7 @@ function AddStockForm({ STOCKS, setPort, setPortSheet, haptic, C }) {
 
 function AnalysisScreenInner({ commData: extCommData } = {}) {
   const liveStocks = useSharedPrices(); // أسعار مشتركة محدَّثة
+    const market = useMarket();
   const haptic = useHaptic();
   
   // ── تحديث MACRO من الأسعار الحية (commData من AppShell) ──────────
