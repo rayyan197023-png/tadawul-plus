@@ -93,7 +93,6 @@ const list = json.results || json.companies || json.data || (Array.isArray(json)
 
         const quotesCount = Object.keys(quotesMap).length;
         const namesCount  = Object.keys(NAMES_MAP).length;
-        setDebugRef.current?.(`💹 ${quotesCount}/${syms.length} سعر | 📛 ${namesCount} اسم`);
 
         // ③ بناء القائمة: فقط الأسهم التي لها quote، مع ضمان مطابقة الاسم بالرمز
         const newStocks = [];
