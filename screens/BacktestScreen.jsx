@@ -350,7 +350,6 @@ export default function BacktestScreen() {
               { days: 60, label: '3 أشهر' },
               { days: 126, label: '6 أشهر' },
               { days: 252, label: 'سنة' },
-              { days: 504, label: 'سنتين' },
             ].map(function(opt) {
               return (
                 <button
