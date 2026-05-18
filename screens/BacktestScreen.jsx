@@ -15,7 +15,7 @@ import { createTadawulStrategy, createBuyAndHoldStrategy } from '../engines/tada
 import EquityCurveChart from '../components/charts/EquityCurveChart';
 import BacktestResultsCard from '../components/charts/BacktestResultsCard';
 import MonteCarloChart from '../components/charts/MonteCarloChart';
-import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
+import { STOCKS_LIVE as STOCKS, STOCK_CATEGORIES, getStocksByCategory } from '../constants/stocksData';
 import { useNav } from '../store';
 import Tooltip from '../components/Tooltip';
 import { useHaptic } from '../hooks/useHaptic';
