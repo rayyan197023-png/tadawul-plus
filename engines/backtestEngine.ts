@@ -138,6 +138,14 @@ export function backtest(strategy: any, historicalData: any[], options?: any): a
     }
   }
 
+  // ✅ حماية: تحقق من وجود بيانات قبل الحساب
+  if (equityCurve.length === 0) {
+    return {
+      error: 'فشل توليد منحنى الأسهم - لا توجد بيانات',
+      success: false,
+    };
+  }
+
   // ③ حساب مقاييس الأداء
   var performance = calcPerformanceMetrics(
     equityCurve,
