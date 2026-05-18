@@ -206,7 +206,24 @@ export function calcSmartStopLoss(
   
   // ③ Percentage-based stop
   const score = health?.score || 50;
-  const pctStopValue = score >= 75 ? -8 : score >= 60 ? -6 : -4;
+  let pctStopValue = score >= 75 ? -8 : score >= 60 ? -6 : -4;
+  
+  // ✨ AI Learning: تعديل خفي بناءً على دقة التعلم لهذا السهم
+  try {
+    const sym = (health as any)?.sym;
+    if (sym) {
+      const feedback = loadFeedbackState();
+      const symData = feedback?.[sym];
+      if (symData && symData.total >= 3) {
+        const accuracy = symData.correct / symData.total;
+        if (accuracy >= 0.70) {
+          pctStopValue *= 1.15;  // النظام دقيق → اعطِ مساحة
+        } else if (accuracy < 0.40) {
+          pctStopValue *= 0.85;  // النظام غير دقيق → احذر
+        }
+      }
+    }
+  } catch (e) {}
   const pctStop = entryPrice * (1 + pctStopValue / 100);
   
   // ④ Pick the smartest
