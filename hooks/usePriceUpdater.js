@@ -18,16 +18,11 @@ const CHUNK_SIZE  = 50;
 // خريطة دائمة للأسماء، تُملأ مرة واحدة عند البدء
 const NAMES_MAP = {};
 
-export function usePriceUpdater(setDebug) {
+export function usePriceUpdater() {
   const dispatch       = useStockDispatch();
   const marketDispatch = useMarketDispatch();
   const isMounted      = useRef(true);
-  const setDebugRef    = useRef(setDebug);
   const namesLoaded    = useRef(false);
-
-  useEffect(() => {
-    setDebugRef.current = setDebug;
-  }, [setDebug]);
 
   useEffect(() => {
     isMounted.current = true;
@@ -43,7 +38,7 @@ export function usePriceUpdater(setDebug) {
           const res = await fetch(`/api/sahmkdata?endpoint=companies&market=TASI&limit=${limit}&offset=${offset}`);
           if (!res.ok) break;
           const json = await res.json();
-const list = json.results || json.companies || json.data || (Array.isArray(json) ? json : []);
+          const list = json.results || json.companies || json.data || (Array.isArray(json) ? json : []);
           if (!Array.isArray(list) || list.length === 0) break;
 
           for (const c of list) {
@@ -91,9 +86,6 @@ const list = json.results || json.companies || json.data || (Array.isArray(json)
 
         if (!isMounted.current) return;
 
-        const quotesCount = Object.keys(quotesMap).length;
-        const namesCount  = Object.keys(NAMES_MAP).length;
-
         // ③ بناء القائمة: فقط الأسهم التي لها quote، مع ضمان مطابقة الاسم بالرمز
         const newStocks = [];
         for (const seed of STOCKS) {
@@ -109,9 +101,9 @@ const list = json.results || json.companies || json.data || (Array.isArray(json)
             sectorId: seed.sectorId || '',
             rating:   seed.rating   || 50,
             oilCorr:  seed.oilCorr  || null,
-                        p:        q.price,
-            ch:       q.change_percent  ?? 0,   // النسبة المئوية (StockCard يعرضها كـ %)
-            pct:      q.change_percent  ?? 0,   // نفس القيمة، للتوافق
+            p:        q.price,
+            ch:       q.change_percent  ?? 0,
+            pct:      q.change_percent  ?? 0,
             v:        q.volume          ?? 0,
             avgV:     q.volume          ?? 0,
             hi:       q.high            || q.price,
@@ -148,7 +140,7 @@ const list = json.results || json.companies || json.data || (Array.isArray(json)
         }
 
       } catch(e) {
-        setDebugRef.current?.('خطأ: ' + e.message);
+        console.warn('[usePriceUpdater]', e.message);
       }
     }
 
