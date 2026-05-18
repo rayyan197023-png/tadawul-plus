@@ -44,6 +44,43 @@ function mapSahmkBar(bar, prevClose) {
 
 export async function fetchHistoricalBars(symbol, days = 252, interval = '1d') {
   if (!symbol) return [];
+  
+  // استخدام proxy الداخلي الذي يعمل بالفعل
+  // sahmk يدعم: 1D, 1W, 1Y (راجع نتائج اختبار test-sahmk)
+  let period = '1Y';
+  if (days <= 7)  period = '1W';
+  if (days <= 1)  period = '1D';
+  
+  try {
+    const res = await fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${symbol}&period=${period}`);
+    if (!res.ok) {
+      console.warn(`[sahmkHistorical] HTTP ${res.status} for ${symbol}`);
+      return [];
+    }
+    
+    const data = await res.json();
+    const rawBars = data.bars || data.data || data.ohlcv || [];
+    if (!Array.isArray(rawBars) || rawBars.length === 0) return [];
+    
+    // تطبيع البيانات
+    rawBars.sort((a, b) => {
+      const da = new Date(a.date || a.t || a.time || 0);
+      const db = new Date(b.date || b.t || b.time || 0);
+      return da - db;
+    });
+    
+    const bars = [];
+    for (let i = 0; i < rawBars.length; i++) {
+      bars.push(mapSahmkBar(rawBars[i], i > 0 ? bars[i - 1].c : null));
+    }
+    
+    return bars.slice(-days);
+  } catch (e) {
+    console.warn(`[sahmkHistorical] fetchHistoricalBars(${symbol}):`, e.message);
+    return [];
+  }
+}
+  if (!symbol) return [];
   const from = daysAgo(days + 30);
   const to   = new Date().toISOString().slice(0, 10);
   const url  = buildSahmkUrl(`/historical/${symbol}/`, { from, to, interval });
