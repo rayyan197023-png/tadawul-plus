@@ -4703,8 +4703,9 @@ function recordFeedback(sym: string, signal: any, layers: any, actualOutcome: an
 
 
 /* ══ applyFeedbackToWeights: تطبيق الضبط التكيّفي مع ABM ══ */
-function applyFeedbackToWeights(WC: any, sym: string): any {
-  const adj = getAdaptiveWeightAdjustment(sym);
+function applyFeedbackToWeights(WC: any, sym: string, currentRegime?: string): any {
+  const adj = getAdaptiveWeightAdjustment(sym, currentRegime);
+
   if (!adj) return WC; // لا تاريخ كافٍ → الأوزان كما هي
   
   const result = { ...WC };
