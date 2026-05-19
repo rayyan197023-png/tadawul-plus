@@ -3043,29 +3043,48 @@ function calc9Layers(stk: any, bars: any[]): any {
     WC[k] = +(WC[k]/wcTotal).toFixed(4);
   });
 
-  // ════════════════════════════════════════
-  //  البوابات الثلاث (معايير محسّنة)
-  // ════════════════════════════════════════
-  // البوابة ١: سيولة ذكية — معيار مرن حسب الـ regime
-  const gate1Thr = regime==="volatile" ? 48 : regime==="bear" ? 55 : 52;
-  const gate1 = L9 >= gate1Thr;
-
-  // البوابة ٢: هيكل — معيار مرن
-  const gate2Thr = regime==="sideways" ? 42 : 48;
-  const gate2 = L1 >= gate2Thr;
-
-  // البوابة ٣: الزخم + القوة النسبية
-  const gate3Score = Math.round(L4*0.55 + L5*0.45); // L4 وزن أكبر في الاتجاه
-  const gate3Thr   = regime==="bear" ? 52 : 48;
-  const gate3 = gate3Score >= gate3Thr;
-
-  const gatesPassed    = [gate1,gate2,gate3].filter(Boolean).length;
-  const allGates       = gate1&&gate2&&gate3;
-  // gateMultiplier: سلّم أكثر دقة
-  const gateMultiplier = gatesPassed===3 ? 1.00
-                       : gatesPassed===2 ? 0.83
-                       : gatesPassed===1 ? 0.63
-                       : 0.44;
+  // ════════════════════════════════════════════════════════
+  //  البوابات الثلاث -- Professional Gate System
+  //  
+  //  المبدأ العلمي:
+  //  • Gate 1 (Liquidity): L9 - السيولة الذكية
+  //  • Gate 2 (Structure): L1 - هيكل السوق
+  //  • Gate 3 (Momentum): متوسط L4+L5 - الزخم والقوة
+  //  
+  //  العتبات ثابتة لضمان:
+  //  ✓ الاتساق عبر جميع regimes
+  //  ✓ التطابق مع opp.matrix
+  //  ✓ سهولة الفهم والصيانة
+  // ════════════════════════════════════════════════════════
+  
+  // ─── عتبات Professional Grade (ثابتة) ───
+  const GATE_THRESHOLDS = {
+    liquidity: 55,    // L9 >= 55
+    structure: 50,    // L1 >= 50
+    momentum:  50,    // (L4+L5)/2 >= 50
+  };
+  
+  // ─── حساب البوابات ───
+  const gate1 = L9 >= GATE_THRESHOLDS.liquidity;
+  const gate2 = L1 >= GATE_THRESHOLDS.structure;
+  
+  // Gate 3: متوسط L4 و L5 (متساوي - أعدل من 55/45)
+  const gate3Score = Math.round((L4 + L5) / 2);
+  const gate3 = gate3Score >= GATE_THRESHOLDS.momentum;
+  
+  // ─── إحصاءات البوابات ───
+  const gatesPassed = [gate1, gate2, gate3].filter(Boolean).length;
+  const allGates = gatesPassed === 3;
+  
+  // ─── Gate Multiplier (سلّم منطقي) ───
+  // 3/3 → 1.00 (إشارة كاملة)
+  // 2/3 → 0.90 (إشارة جيدة، 10% خصم بسيط)
+  // 1/3 → 0.75 (إشارة ضعيفة)
+  // 0/3 → 0.55 (إشارة شبه معدومة)
+  const gateMultiplier = gatesPassed === 3 ? 1.00
+                       : gatesPassed === 2 ? 0.90
+                       : gatesPassed === 1 ? 0.75
+                       : 0.55;
 
   // ════════════════════════════════════════
   //  مصفوفة الفرصة
