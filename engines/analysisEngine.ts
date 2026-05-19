@@ -3417,14 +3417,6 @@ function stockHealth(stk: any, bars: any[]): any {
   var regime = tech.regime;
   var layers = tech.layers;
 
-  // ✨ أوزان النماذج الثلاثة (LA, LB, LC)
-  // معايرة حسب الـ Regime
-  var wA, wB, wC;
-  if(regime === "bull")         { wA=0.50; wB=0.30; wC=0.20; }
-  else if(regime === "bear")    { wA=0.40; wB=0.38; wC=0.22; }
-  else if(regime === "sideways"){ wA=0.35; wB=0.42; wC=0.23; }
-  else if(regime === "volatile"){ wA=0.55; wB=0.25; wC=0.20; }
-  else                          { wA=0.45; wB=0.33; wC=0.22; }
   // ── B) المحرك الأساسي
   var fm  = calcFactorModel(stk, bars);
   var em  = calcEarningsModel(stk);
@@ -3473,16 +3465,36 @@ function stockHealth(stk: any, bars: any[]): any {
   var riskMult = risk.sortino>2.0 ? 1.07 : risk.sortino>1.0 ? 1.03 : risk.sharpe>0.5 ? 1.00 : risk.sharpe>0 ? 0.96 : 0.89;
   var finalMult = _clamp(riskMult * inter.multiplier * (micro ? micro.multiplier : 1.0), 0.70, 1.30);
 
-  // ── E) الأوزان الديناميكية LA/LB/LC
+  // ═══════════════════════════════════════════════════
+  // ── E) Dynamic Weights -- Regime-Aware Allocation
+  //  المبدأ العلمي:
+  //  • LA (تقني): يتفوق في Bull/Volatile (الحركة سريعة)
+  //  • LB (أساسي): يتفوق في Sideways (لا اتجاه واضح)
+  //  • LC (سلوكي): يتفوق في News-driven (الأخبار تحرك)
+  // ═══════════════════════════════════════════════════
   var wA, wB, wC;
   switch(regime){
-    case "bull":        wA=0.32; wB=0.40; wC=0.28; break;
-    case "bear":        wA=0.28; wB=0.38; wC=0.34; break;
-    case "sideways":    wA=0.40; wB=0.35; wC=0.25; break;
-    case "volatile":    wA=0.45; wB=0.30; wC=0.25; break;
-    case "news-driven": wA=0.35; wB=0.28; wC=0.37; break;
-    default:            wA=0.38; wB=0.32; wC=0.30;
+    // Bull: LA يقود (الزخم الفني)
+    case "bull":        wA=0.50; wB=0.30; wC=0.20; break;
+    // Bear: متوازن (الكل مهم)
+    case "bear":        wA=0.40; wB=0.35; wC=0.25; break;
+    // Sideways: LB يقود (التقييم مهم)
+    case "sideways":    wA=0.30; wB=0.45; wC=0.25; break;
+    // Volatile: LA يقود (الاستجابة السريعة)
+    case "volatile":    wA=0.55; wB=0.25; wC=0.20; break;
+    // News-driven: LC يقود (السلوك يستجيب للأخبار)
+    case "news-driven": wA=0.30; wB=0.30; wC=0.40; break;
+    // Default: متوازن
+    default:            wA=0.45; wB=0.30; wC=0.25;
   }
+  // ─── التحقق: Σ(w) = 1.0 ───
+  // bull: 0.50+0.30+0.20 = 1.00 ✓
+  // bear: 0.40+0.35+0.25 = 1.00 ✓
+  // sideways: 0.30+0.45+0.25 = 1.00 ✓
+  // volatile: 0.55+0.25+0.20 = 1.00 ✓
+  // news: 0.30+0.30+0.40 = 1.00 ✓
+  // default: 0.45+0.30+0.25 = 1.00 ✓
+  
   var bayesAdj = tech.extras && tech.extras.bayesMult ? tech.extras.bayesMult : 1.0;
   var tasiCtx = tech.tasiCtx || null;
 
