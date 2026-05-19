@@ -2548,23 +2548,58 @@ var neut = normalizeProb(prob.neutral);
                           border:`1px solid ${health.sigC}30`,
                           borderRadius:14,padding:"12px 14px",marginBottom:12,
                         }}>
-                          {/* السطر ١ — القرار */}
-                          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+                                                   {/* السطر ١ -- القرار + Grade Enhanced */}
+                          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,flexWrap:"wrap"}}>
+                            {/* signal badge */}
                             <div style={{
                               background:health.sigC+"22",border:`1px solid ${health.sigC}44`,
                               borderRadius:8,padding:"4px 12px",
                               fontSize:12,fontWeight:800,color:health.sigC,
                             }}>{health.sig}</div>
-                            <div style={{
-                              display:"flex",alignItems:"center",gap:4,
-                              background:"rgba(255,255,255,.05)",borderRadius:8,padding:"4px 10px",
-                            }}>
-                              <span style={{fontSize:10,color:C.smoke}}>ثقة</span>
-                              <span style={{fontSize:13,fontWeight:900,color:health.sigC}}>{scoreWord(health.score)}</span>
-                              <span style={{fontSize:10,color:C.smoke,fontWeight:700,
-                                background:C.layer3,padding:"1px 5px",borderRadius:4}}>{health.grade}</span>
-                            </div>
+                            
+                            {/* Grade Enhanced -- يستخدم gradeLabel + gradeColor */}
+                            {(function(){
+                              var gColor = health.gradeColor || health.sigC;
+                              var gLabel = health.gradeLabel || scoreWord(health.score);
+                              return(
+                                <div style={{
+                                  display:"flex",alignItems:"center",gap:5,
+                                  background:gColor + "15",
+                                  border:"1px solid " + gColor + "33",
+                                  borderRadius:8,padding:"4px 10px",
+                                }}>
+                                  {/* الحرف */}
+                                  <span style={{
+                                    fontSize:11,fontWeight:900,color:gColor,
+                                    background:gColor + "22",
+                                    padding:"1px 6px",borderRadius:4,
+                                    lineHeight:1,
+                                  }}>{health.grade}</span>
+                                  {/* الوصف العربي */}
+                                  <span style={{
+                                    fontSize:11,fontWeight:700,color:gColor,
+                                  }}>{gLabel}</span>
+                                </div>
+                              );
+                            })()}
                           </div>
+                          
+                          {/* Grade Description -- وصف تفصيلي */}
+                          {health.gradeDescription && (
+                            <div style={{
+                              background:"rgba(255,255,255,.03)",
+                              border:"1px solid rgba(255,255,255,.06)",
+                              borderRadius:8,padding:"5px 10px",
+                              marginBottom:8,
+                              display:"flex",alignItems:"center",gap:6,
+                            }}>
+                              <span style={{fontSize:10}}>📊</span>
+                              <span style={{
+                                fontSize:9,color:C.mist,lineHeight:1.4,
+                              }}>{health.gradeDescription}</span>
+                            </div>
+                          )}
+
                           {/* السطر ٢ -- السبب بعربي بسيط */}
                           {/* 🎯 معايرة علمية: 65/55/45 */}
                           <div style={{fontSize:11,color:C.mist,lineHeight:1.6,marginBottom:8}}>
