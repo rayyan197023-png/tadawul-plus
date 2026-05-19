@@ -1700,6 +1700,209 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                         );
                       })()}
 
+                      {/* ══════════════════════════════════════════════════════
+                          🎯 TRADING PLAN -- Professional Wall Street Grade
+                          
+                          يعرض من analysisEngine:
+                          • entry, stopLoss, target1, target2 (محسوبة بـ ATR)
+                          • R/R Ratio مع تقييم نصي
+                          • Time Horizon (حسب regime)
+                          • Worst Case Scenario
+                          • Action Plan مع لون مناسب
+                      ══════════════════════════════════════════════════════ */}
+                      {health.tradingPlan && (function(){
+                        var tp = health.tradingPlan;
+                        var sigColor = tp.actionColor || health.sigC;
+                        
+                        return(
+                          <div style={{
+                            marginTop:10,
+                            background:"linear-gradient(135deg," + sigColor + "10," + sigColor + "06)",
+                            border:"1px solid " + sigColor + "33",
+                            borderRadius:14,
+                            overflow:"hidden",
+                          }}>
+                            {/* عنوان البطاقة */}
+                            <div style={{
+                              display:"flex",alignItems:"center",justifyContent:"space-between",
+                              padding:"8px 12px",
+                              background:sigColor + "15",
+                              borderBottom:"1px solid " + sigColor + "20",
+                            }}>
+                              <div style={{display:"flex",alignItems:"center",gap:6}}>
+                                <span style={{fontSize:13}}>🎯</span>
+                                <span style={{fontSize:10,fontWeight:800,color:sigColor,letterSpacing:".3px"}}>
+                                  خطة التداول الاحترافية
+                                </span>
+                              </div>
+                              {tp.timeHorizon && (
+                                <div style={{
+                                  background:sigColor + "20",
+                                  border:"1px solid " + sigColor + "33",
+                                  borderRadius:5,padding:"1px 8px",
+                                }}>
+                                  <span style={{fontSize:8,fontWeight:700,color:sigColor}}>
+                                    ⏱ {tp.timeHorizon}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* جسم البطاقة */}
+                            <div style={{padding:"10px 12px"}}>
+                              {/* الصف الأول: Entry + Stop + Target1 + Target2 */}
+                              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:6}}>
+                                {/* Entry */}
+                                <div style={{
+                                  background:"rgba(255,255,255,.03)",
+                                  border:"1px solid rgba(255,255,255,.06)",
+                                  borderRadius:8,padding:"6px 8px",
+                                }}>
+                                  <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:2}}>
+                                    <span style={{fontSize:9}}>📍</span>
+                                    <span style={{fontSize:8,color:C.smoke,fontWeight:600}}>الدخول</span>
+                                  </div>
+                                  <div className="num" style={{fontSize:14,fontWeight:900,color:C.snow,direction:"ltr"}}>
+                                    {tp.entry ? tp.entry.toFixed(2) : "-"}
+                                  </div>
+                                </div>
+                                
+                                {/* Stop Loss */}
+                                <div style={{
+                                  background:"rgba(240,79,90,.06)",
+                                  border:"1px solid rgba(240,79,90,.18)",
+                                  borderRadius:8,padding:"6px 8px",
+                                }}>
+                                  <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:2}}>
+                                    <span style={{fontSize:9}}>🛡️</span>
+                                    <span style={{fontSize:8,color:C.smoke,fontWeight:600}}>وقف الخسارة</span>
+                                  </div>
+                                  <div style={{display:"flex",alignItems:"baseline",gap:4,direction:"ltr"}}>
+                                    <div className="num" style={{fontSize:13,fontWeight:900,color:C.coral}}>
+                                      {tp.stopLoss ? tp.stopLoss.toFixed(2) : "-"}
+                                    </div>
+                                    <div style={{fontSize:8,fontWeight:700,color:C.coral}}>
+                                      ({tp.stopLossPct ? tp.stopLossPct.toFixed(1) : "-"}%)
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* الصف الثاني: Target1 + Target2 */}
+                              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:6}}>
+                                {/* Target 1 */}
+                                <div style={{
+                                  background:"rgba(16,201,126,.06)",
+                                  border:"1px solid rgba(16,201,126,.18)",
+                                  borderRadius:8,padding:"6px 8px",
+                                }}>
+                                  <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:2}}>
+                                    <span style={{fontSize:9}}>🎯</span>
+                                    <span style={{fontSize:8,color:C.smoke,fontWeight:600}}>الهدف الأول</span>
+                                  </div>
+                                  <div style={{display:"flex",alignItems:"baseline",gap:4,direction:"ltr"}}>
+                                    <div className="num" style={{fontSize:13,fontWeight:900,color:C.mint}}>
+                                      {tp.target1 ? tp.target1.toFixed(2) : "-"}
+                                    </div>
+                                    <div style={{fontSize:8,fontWeight:700,color:C.mint}}>
+                                      (+{tp.target1Pct ? tp.target1Pct.toFixed(1) : "-"}%)
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* Target 2 */}
+                                <div style={{
+                                  background:"rgba(16,201,126,.09)",
+                                  border:"1px solid rgba(16,201,126,.25)",
+                                  borderRadius:8,padding:"6px 8px",
+                                }}>
+                                  <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:2}}>
+                                    <span style={{fontSize:9}}>🚀</span>
+                                    <span style={{fontSize:8,color:C.smoke,fontWeight:600}}>الهدف الثاني</span>
+                                  </div>
+                                  <div style={{display:"flex",alignItems:"baseline",gap:4,direction:"ltr"}}>
+                                    <div className="num" style={{fontSize:13,fontWeight:900,color:C.mint}}>
+                                      {tp.target2 ? tp.target2.toFixed(2) : "-"}
+                                    </div>
+                                    <div style={{fontSize:8,fontWeight:700,color:C.mint}}>
+                                      (+{tp.target2Pct ? tp.target2Pct.toFixed(1) : "-"}%)
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* الصف الثالث: R/R Ratio + Worst Case */}
+                              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8}}>
+                                {/* R/R Ratio */}
+                                <div style={{
+                                  background:"rgba(212,168,67,.06)",
+                                  border:"1px solid rgba(212,168,67,.2)",
+                                  borderRadius:8,padding:"6px 8px",
+                                }}>
+                                  <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:2}}>
+                                    <span style={{fontSize:9}}>📊</span>
+                                    <span style={{fontSize:8,color:C.smoke,fontWeight:600}}>المخاطرة/العائد</span>
+                                  </div>
+                                  <div style={{display:"flex",alignItems:"baseline",gap:6}}>
+                                    <div className="num" style={{fontSize:13,fontWeight:900,color:C.gold}}>
+                                      {tp.rrRatio ? tp.rrRatio.toFixed(1) : "-"}
+                                    </div>
+                                    <div style={{fontSize:8,color:C.gold,fontWeight:700}}>
+                                      {tp.rrLabel || ""}
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* Worst Case */}
+                                {tp.worstCase && (
+                                  <div style={{
+                                    background:"rgba(245,158,11,.06)",
+                                    border:"1px solid rgba(245,158,11,.2)",
+                                    borderRadius:8,padding:"6px 8px",
+                                  }}>
+                                    <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:2}}>
+                                      <span style={{fontSize:9}}>💀</span>
+                                      <span style={{fontSize:8,color:C.smoke,fontWeight:600}}>أسوأ سيناريو</span>
+                                    </div>
+                                    <div style={{display:"flex",alignItems:"baseline",gap:4,direction:"ltr"}}>
+                                      <div className="num" style={{fontSize:13,fontWeight:900,color:C.amber}}>
+                                        -{tp.worstCase.percentage ? tp.worstCase.percentage.toFixed(1) : "-"}%
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              {/* Action Plan - السطر الأخير */}
+                              {tp.actionPlan && (
+                                <div style={{
+                                  background:sigColor + "18",
+                                  border:"1px solid " + sigColor + "44",
+                                  borderRadius:10,padding:"8px 12px",
+                                  display:"flex",alignItems:"center",gap:8,
+                                }}>
+                                  <span style={{fontSize:16,flexShrink:0}}>🎬</span>
+                                  <div style={{flex:1}}>
+                                    <div style={{
+                                      fontSize:11,fontWeight:900,
+                                      color:sigColor,lineHeight:1.3,
+                                    }}>{tp.actionPlan}</div>
+                                    {tp.riskWarning && (
+                                      <div style={{
+                                        fontSize:8,color:C.amber,
+                                        marginTop:3,lineHeight:1.4,
+                                      }}>
+                                        ⚠ {tp.riskWarning}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })()}
+
                       {/* ══ البوابات الثلاث + مصفوفة الفرصة ══ */}
                       {(function(){
                         var gates = health.gates || {};
