@@ -18,14 +18,14 @@
  * إعدادات الاستراتيجية
  */
 export var STRATEGY_DEFAULTS = {
-  // معايير الشراء
-  buyScoreThreshold: 70,       // Health Score >= 70 للشراء
+  // معايير الشراء (محسّنة للسوق الواقعي)
+  buyScoreThreshold: 55,       // Health Score >= 55 للشراء (بدل 70)
   maxPositions: 8,             // أقصى عدد مراكز
   maxPositionWeight: 0.20,     // أقصى وزن 20% لكل سهم
   minPositionValue: 5000,      // أقل قيمة صفقة 5,000 ر.س
   
-  // معايير البيع
-  sellScoreThreshold: 40,      // Health Score < 40 للبيع
+  // معايير البيع (محسّنة)
+  sellScoreThreshold: 42,      // Health Score < 42 للبيع (بدل 40)
   stopLossPct: -0.10,          // وقف خسارة -10%
   takeProfitPct: 0.25,         // جني أرباح +25%
   maxHoldDays: 180,            // أقصى فترة احتفاظ 180 يوم
