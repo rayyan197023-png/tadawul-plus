@@ -3982,96 +3982,126 @@ function ensembleVote(LA: number, LB: number, LC: number, regime: any, gates: an
 }
 
 /* ══════════════════════════════════════════════════════════════
-   ② Confidence Threshold Engine
-   "لا إشارة" أفضل من إشارة خاطئة
-   يحسب درجة اليقين — إذا كانت منخفضة → يُصدر "انتظر"
-   المعايير: تعارض الطبقات + قوة الأوزان + اتساق الإشارات
+   🎯 Confidence Engine -- Professional Grade
+   
+   المبدأ العلمي:
+   confidence = كم النظام واثق من القرار؟
+   
+   4 مكونات بسيطة (بدلاً من 6 + 4 boosts):
+   1. Score Clarity (40%): كم score بعيد عن 50 (لا تردد)
+   2. Gate Quality (30%): كم بوابة ناجحة
+   3. Ensemble Agreement (20%): اتفاق النماذج
+   4. Layer Consistency (10%): اتساق الطبقات الأساسية
+   
+   shouldAbstain: نادر جداً (فقط للحالات الخطرة)
 ══════════════════════════════════════════════════════════════ */
 function calcConfidenceThreshold(score: number, layers: any, ensemble: any, conflictCount: number, gates: any, regime: any): any {
-  const {L1, L4, L5, L7, L9} = layers;
-
-  // ① اتساق 4 طبقات أساسية (L1+L4+L5+L9)
-  const coreScores  = [L1, L4, L5, L9];
-  const coreMean    = coreScores.reduce((s,v)=>s+v,0)/4;
-  const coreStd     = Math.sqrt(coreScores.reduce((s,v)=>s+Math.pow(v-coreMean,2),0)/4);
-  const coreConsist = _clamp(1 - coreStd/48, 0, 1);
-
-  // ② بايزي مُعزَّز
-  const bayesConf  = _clamp(Math.abs(L7-50)/50, 0, 1);
-  const bayesStrong = L7 > 70 || L7 < 30;
-
-  // ③ اتفاق الـ Ensemble
-  const ensembleConf = ensemble.bullCount===3||ensemble.bearCount===3 ? 1.0
-                     : ensemble.bullCount===2||ensemble.bearCount===2 ? 0.78
-                     : ensemble.neutCount>=2                           ? 0.42
-                     : 0.18;
-
-  // ④ Gate Quality مستمر (من ensembleVote)
-  const gateQual  = ensemble.gateQuality || (gates===3?1.0:gates===2?0.70:gates===1?0.40:0.12);
-  const gatesConf = gateQual;
-
-  // ⑤ Trend Confirmation
-  const trendScore = (L1+L4+L5)/3;
-  const trendDist  = _clamp(Math.abs(trendScore-50)/50, 0, 1);
-
-  // ⑥ عقوبة التعارض
-  const conflictPenalty = _clamp(conflictCount * 0.26, 0, 0.65);
-
-  // ⑦ بُعد الدرجة عن المركز
-  const scoreDist = _clamp(Math.abs(score-50)/50, 0, 1);
-
-  // ⑧ Soft Bull من Ensemble يُعزز الثقة عند الحالات الحدية
-  const softConf = _clamp(Math.abs(ensemble.softBull||0) * 0.12, 0, 0.12);
-
-  // ⑨ Tech Consensus يُضيف ثقة إضافية
-  const tcConf = ensemble.techConsensus!==0 ? 0.04 : 0;
-
-  const rawConf = (
-    coreConsist  * 0.19 +
-    bayesConf    * 0.21 +
-    ensembleConf * 0.30 +
-    gatesConf    * 0.22 +
-    trendDist    * 0.04 +
-    scoreDist    * 0.04
-  ) * (1 - conflictPenalty);
-
-  const bayesBoost = bayesStrong&&(ensemble.bullCount>=2||ensemble.bearCount>=2)?0.05:0;
-  const confidence = _clamp(Math.round((rawConf+bayesBoost+softConf+tcConf)*100), 0, 100);
-
-  // Adaptive ABSTAIN — عتبة ديناميكية حسب حالة السوق
-  // VIX<18: هادئ → عتبة أخفض (مزيد إشارات)
-  // VIX>25: متقلب → عتبة أعلى (إشارات أقل وأقوى)
-  // VIX>32: خطر → عتبة عالية جداً
-  const vixNow = MACRO.vix || 20;
-  const ABSTAIN_LEVEL = vixNow < 18 ? 40
-                      : vixNow < 25 ? 45
-                      : vixNow < 32 ? 58
-                      : 70;
-  const THRESHOLD_NORMAL = 55;
-  const THRESHOLD_STRONG = 68;
-
-  // Anti-False-Signal مُحسَّن: WD ضعيف أيضاً سبب للامتناع
-  const weakSignal    = Math.abs(score-50) < 7;
-  const wdWeak        = Math.abs(ensemble.weightedDir||0) < 0.15;
-  const shouldAbstain = confidence < ABSTAIN_LEVEL || (weakSignal && (conflictCount>=1||wdWeak));
-  const isStrong      = confidence >= THRESHOLD_STRONG && !shouldAbstain;
-  const isNormal      = confidence >= THRESHOLD_NORMAL && !isStrong && !shouldAbstain;
-
+  const {L1, L4, L5, L9} = layers;
+  
+  // ════════════════════════════════════════
+  //  المكون 1: Score Clarity (40%)
+  //  كم score بعيد عن 50 (نقطة التردد)
+  // ════════════════════════════════════════
+  const scoreClarity = _clamp(Math.abs(score - 50) / 50, 0, 1);
+  // score=80 → 0.60 (واضح)
+  // score=50 → 0.00 (تردد)
+  // score=20 → 0.60 (واضح هابط)
+  
+  // ════════════════════════════════════════
+  //  المكون 2: Gate Quality (30%)
+  //  كم بوابة ناجحة
+  // ════════════════════════════════════════
+  const gateQuality = gates === 3 ? 1.00
+                    : gates === 2 ? 0.75
+                    : gates === 1 ? 0.45
+                    : 0.20;
+  
+  // ════════════════════════════════════════
+  //  المكون 3: Ensemble Agreement (20%)
+  //  اتفاق النماذج الثلاثة
+  // ════════════════════════════════════════
+  const ensembleAgreement = ensemble.bullCount === 3 || ensemble.bearCount === 3 ? 1.00
+                          : ensemble.bullCount === 2 || ensemble.bearCount === 2 ? 0.70
+                          : ensemble.neutCount >= 2 ? 0.40
+                          : 0.20;
+  
+  // ════════════════════════════════════════
+  //  المكون 4: Layer Consistency (10%)
+  //  هل الطبقات الأساسية متفقة؟
+  // ════════════════════════════════════════
+  const coreScores = [L1, L4, L5, L9];
+  const coreMean = coreScores.reduce((s, v) => s + v, 0) / 4;
+  const coreStd = Math.sqrt(
+    coreScores.reduce((s, v) => s + Math.pow(v - coreMean, 2), 0) / 4
+  );
+  const layerConsistency = _clamp(1 - coreStd / 40, 0, 1);
+  // std=0 → 1.0 (تطابق كامل)
+  // std=20 → 0.5 (تشتت متوسط)
+  // std=40+ → 0.0 (تشتت كامل)
+  
+  // ════════════════════════════════════════
+  //  Conflict Penalty (مخفّف!)
+  //  -3% لكل تعارض (بدلاً من -26%)
+  // ════════════════════════════════════════
+  const conflictPenalty = _clamp(conflictCount * 0.03, 0, 0.20);
+  
+  // ════════════════════════════════════════
+  //  Final Confidence (Weighted Sum)
+  // ════════════════════════════════════════
+  const rawConfidence = (
+    scoreClarity     * 0.40 +
+    gateQuality      * 0.30 +
+    ensembleAgreement * 0.20 +
+    layerConsistency * 0.10
+  );
+  
+  const confidence = _clamp(
+    Math.round(rawConfidence * (1 - conflictPenalty) * 100),
+    0, 100
+  );
+  
+  // ════════════════════════════════════════
+  //  shouldAbstain (نادر جداً!)
+  //  
+  //  الشروط الصارمة:
+  //  1. confidence < 25 (ضعيف جداً)
+  //  2. AND gates = 0 (لا بوابات ناجحة)
+  //  3. AND conflicts >= 3 (تعارضات كثيرة)
+  // ════════════════════════════════════════
+  const shouldAbstain = (
+    confidence < 25 &&
+    gates === 0 &&
+    conflictCount >= 3
+  );
+  
+  // ════════════════════════════════════════
+  //  Strength Levels
+  // ════════════════════════════════════════
+  const isStrong = confidence >= 70 && !shouldAbstain;
+  const isNormal = confidence >= 50 && confidence < 70 && !shouldAbstain;
+  const isWeak = confidence < 50 && !shouldAbstain;
+  
   return {
     confidence,
     shouldAbstain,
     isStrong,
     isNormal,
-    coreConsist:+coreConsist.toFixed(3),
-    bayesConf:+bayesConf.toFixed(3),
-    ensembleConf:+ensembleConf.toFixed(3),
-    gatesConf:+gatesConf.toFixed(3),
-    label: confidence>=75?"ثقة عالية"
-         : confidence>=55?"ثقة معقولة"
-         : confidence>=35?"ثقة منخفضة"
-         : "ثقة ضعيفة — انتظر"
+    isWeak,
+    // مكونات للشفافية
+    scoreClarity: +scoreClarity.toFixed(3),
+    gateQuality: +gateQuality.toFixed(3),
+    ensembleAgreement: +ensembleAgreement.toFixed(3),
+    layerConsistency: +layerConsistency.toFixed(3),
+    conflictPenalty: +conflictPenalty.toFixed(3),
+    // تصنيف نصي
+    label: confidence >= 75 ? "ثقة عالية"
+         : confidence >= 60 ? "ثقة جيدة"
+         : confidence >= 45 ? "ثقة معقولة"
+         : confidence >= 30 ? "ثقة منخفضة"
+         : "ثقة ضعيفة"
   };
 }
+
 
 /* ══════════════════════════════════════════════════════════════
    ③ Feedback Loop — Adaptive Weight Calibration
