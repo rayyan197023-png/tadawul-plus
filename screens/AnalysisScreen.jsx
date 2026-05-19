@@ -2324,8 +2324,6 @@ var neut = normalizeProb(prob.neutral);
                 boxShadow:`0 4px 20px rgba(0,0,0,.3), inset 0 0 0 1px ${health.sigC}08`,
               }}>
                 <div style={{display:"flex",alignItems:"center",gap:12}}>
-                  {/* النقطة الملوّنة */}
-                  <div style={{
                                       {/* النقطة الملوّنة */}
                   {/* 🎯 معايرة: 65/55 */}
                   <div style={{
