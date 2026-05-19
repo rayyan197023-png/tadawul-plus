@@ -4559,11 +4559,14 @@ function getAdaptiveWeightAdjustment(sym: string, currentRegime?: string): any {
   
   // ── Meta info للمتابعة ──
   if (Object.keys(adj).length > 0) {
-    (adj as any).__meta = {
+        (adj as any).__meta = {
       composite: +composite.toFixed(3),
       shortAcc: +shortAcc.toFixed(3),
       longAcc: +longAcc.toFixed(3),
       liveAcc: +liveAcc.toFixed(3),
+      regimeAcc: +regimeAcc.toFixed(3),
+      regimeBoost: +regimeBoost.toFixed(3),
+      currentRegime: currentRegime || 'unknown',
       regimeShift,
       improving,
       sampleSize: Math.round(totalEver),
