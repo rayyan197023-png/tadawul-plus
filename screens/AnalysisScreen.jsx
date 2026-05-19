@@ -2077,7 +2077,9 @@ var neut = normalizeProb(prob.neutral);
                               : "ضغط بيعي مرتفع -- السيولة الذكية تخرج من السهم"}
                           </div>
                           {/* السطر ٣ — التحذير إن وُجد */}
-                          {health.score<75&&(
+                                                    {/* السطر ٣ -- التحذير إن وُجد */}
+                          {/* 🎯 معايرة: عتبة 65 بدلاً من 75 */}
+                          {health.score<65&&(
                             <div style={{
                               display:"flex",alignItems:"center",gap:6,
                               background:"rgba(245,158,11,.08)",border:"1px solid rgba(245,158,11,.2)",
@@ -2086,7 +2088,7 @@ var neut = normalizeProb(prob.neutral);
                               <span style={{fontSize:11}}>⚠</span>
                               <span style={{fontSize:10,color:C.amber}}>
                                 {health.score<45
-                                  ? "لا تدخل — انتظر حتى تتحسن قراءة السيولة"
+                                  ? "لا تدخل -- انتظر حتى تتحسن قراءة السيولة"
                                   : "تحقق من حجم التداول قبل الدخول"}
                               </span>
                             </div>
