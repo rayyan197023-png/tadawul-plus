@@ -86,9 +86,9 @@ export default function BacktestScreen() {
   var haptic = useHaptic();
   var positions = [];
   
-    var [config, setConfig] = useState({
+  var [config, setConfig] = useState({
     mode: 'analysis',
-    category: 'leaders',  // ✨ فئة الأسهم للاختبار
+    category: 'leaders',
     initialCapital: 100000,
     days: 252,
     includeCosts: true,
@@ -105,156 +105,155 @@ export default function BacktestScreen() {
     setIsRunning(true);
     setResults(null);
 
-      try {
-        var historicalData;
-        var strategy;
-        var benchmarkStrategy;
-        var modeLabel;
+    try {
+      var historicalData;
+      var strategy;
+      var benchmarkStrategy;
+      var modeLabel;
 
-                if (config.mode === 'portfolio') {
-          if (!hasPortfolio) {
-            setResults({ error: 'المحفظة فارغة! أضف أسهماً أولاً.' });
-            setIsRunning(false);
-            return;
-          }
-          modeLabel = 'محفظتي الحالية';
-          historicalData = await generateDataFromPortfolioReal(positions, config.days);
-          
-          if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData) {
-            setResults({ error: 'فشل جلب بيانات المحفظة التاريخية' });
-            setIsRunning(false);
-            return;
-          }
-          
-          strategy = createPortfolioBuyAndHoldStrategy(positions);
-          var equalWeight = positions.map(function(p) {
-            return Object.assign({}, p, { weight: 1 / positions.length });
-          });
-          benchmarkStrategy = createPortfolioBuyAndHoldStrategy(equalWeight);
-                        } else if (config.mode === 'analysis') {
-          // ✨ استخدام الفئة المختارة
-          var category = STOCK_CATEGORIES[config.category];
-          var categoryStocks = getStocksByCategory(config.category);
-          modeLabel = `${category.icon} ${category.name} (${categoryStocks.length} سهم)`;
-          
-          if (categoryStocks.length === 0) {
-            setResults({ error: 'لا توجد أسهم في هذه الفئة' });
-            setIsRunning(false);
-            return;
-          }
-          
-          // دمج مع STOCKS_LIVE للحصول على الأسعار الحية
-          var enrichedStocks = categoryStocks.map(s => {
-            var live = STOCKS.find(x => x.sym === s.sym);
-            return live ? { ...s, ...live } : s;
-          }).filter(s => s.p > 0); // فقط الأسهم التي لها أسعار
-          
-          historicalData = await generateDataFromStockListReal(enrichedStocks, config.days, 15);
-
-// فحص stockHealth على بيانات حقيقية
-const testIdx = Math.min(40, historicalData.length - 1);
-const testDay = historicalData[testIdx];
-const testStock = testDay?.stocksData?.[0];
-
-let result = 'لم يتم';
-let hasFields = '';
-
-if (testStock) {
-  hasFields = 
-    'p=' + (testStock.p !== undefined ? '✅' : '❌') +
-    ' ch=' + (testStock.ch !== undefined ? '✅' : '❌') +
-    ' pe=' + (testStock.pe !== undefined ? '✅' : '❌') +
-    ' sec=' + (testStock.sec !== undefined ? '✅' : '❌');
-  
-  try {
-    const health = stockHealth(testStock, testStock.bars);
-    if (health && health.score !== undefined) {
-      result = '✅ score=' + health.score + ', sig=' + health.sig;
-    } else {
-      result = '⚠️ health فارغ';
-    }
-  } catch (e) {
-    result = '❌ ' + (e.message || 'خطأ');
-  }
-}
-
-alert(
-  '🔍 فحص stockHealth:\n\n' +
-  'اليوم: ' + testIdx + '\n' +
-  'السهم: ' + (testStock?.sym || 'لا') + '\n' +
-  'شموع: ' + (testStock?.bars?.length || 0) + '\n\n' +
-  'الحقول:\n' + hasFields + '\n\n' +
-  'النتيجة:\n' + result
-);
-        
-          if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
-            setResults({ error: 'لا توجد بيانات تاريخية كافية - تحقق من اتصال API' });
-            setIsRunning(false);
-            return;
-          }
-          
-          strategy = createTadawulStrategy(stockHealth);
-          var benchSymbols = historicalData[0].stocksData.slice(0, 5).map(function(s) { return s.sym; });
-          benchmarkStrategy = createBuyAndHoldStrategy(benchSymbols);
-        }
-                 else if (config.mode === 'market') {
-          modeLabel = 'السوق بالكامل (Sector Rotation)';
-historicalData = await generateDataFromMarketReal(STOCKS, config.days);
-          
-          if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
-            setResults({ error: 'فشل توليد بيانات السوق' });
-            setIsRunning(false);
-            return;
-          }
-          
-          strategy = createTadawulStrategy(stockHealth, { maxPositions: 10, maxPositionWeight: 0.15 });
-          var marketBenchSymbols = historicalData[0].stocksData.slice(0, 10).map(function(s) { return s.sym; });
-          benchmarkStrategy = createBuyAndHoldStrategy(marketBenchSymbols);
-        }
-
-                var strategyResult, benchmarkResult;
-        var comparison = null;
-        var monteCarloResult = null;
-        
-        try {
-          strategyResult = backtest(strategy, historicalData, {
-            initialCapital: config.initialCapital,
-            includeCosts: config.includeCosts,
-          });
-
-          benchmarkResult = backtest(benchmarkStrategy, historicalData, {
-            initialCapital: config.initialCapital,
-            includeCosts: config.includeCosts,
-          });
-
-          if (strategyResult.success && benchmarkResult.success) {
-            comparison = compareWithBenchmark(strategyResult, benchmarkResult);
-          }
-
-          if (config.runMonteCarlo && strategyResult.success) {
-            monteCarloResult = monteCarloSimulation(strategyResult, config.monteCarloIterations);
-          }
-        } catch (innerErr) {
-          console.error('[Backtest engine error]', innerErr);
-          setResults({ error: 'فشل تشغيل المحاكاة: بيانات غير كافية أو تنسيق غير متوافق' });
+      if (config.mode === 'portfolio') {
+        if (!hasPortfolio) {
+          setResults({ error: 'المحفظة فارغة! أضف أسهماً أولاً.' });
           setIsRunning(false);
           return;
         }
-
-        setResults({
-          strategy: strategyResult,
-          benchmark: benchmarkResult,
-          comparison: comparison,
-          monteCarlo: monteCarloResult,
-          modeLabel: modeLabel,
+        modeLabel = 'محفظتي الحالية';
+        historicalData = await generateDataFromPortfolioReal(positions, config.days);
+        
+        if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData) {
+          setResults({ error: 'فشل جلب بيانات المحفظة التاريخية' });
+          setIsRunning(false);
+          return;
+        }
+        
+        strategy = createPortfolioBuyAndHoldStrategy(positions);
+        var equalWeight = positions.map(function(p) {
+          return Object.assign({}, p, { weight: 1 / positions.length });
         });
-          } catch (err) {
+        benchmarkStrategy = createPortfolioBuyAndHoldStrategy(equalWeight);
+      } else if (config.mode === 'analysis') {
+        var category = STOCK_CATEGORIES[config.category];
+        var categoryStocks = getStocksByCategory(config.category);
+        modeLabel = `${category.icon} ${category.name} (${categoryStocks.length} سهم)`;
+        
+        if (categoryStocks.length === 0) {
+          setResults({ error: 'لا توجد أسهم في هذه الفئة' });
+          setIsRunning(false);
+          return;
+        }
+        
+        var enrichedStocks = categoryStocks.map(s => {
+          var live = STOCKS.find(x => x.sym === s.sym);
+          return live ? { ...s, ...live } : s;
+        }).filter(s => s.p > 0);
+        
+        historicalData = await generateDataFromStockListReal(enrichedStocks, config.days, 15);
+
+        // 🔍 فحص stockHealth على بيانات حقيقية
+        const testIdx = Math.min(40, historicalData.length - 1);
+        const testDay = historicalData[testIdx];
+        const testStock = testDay?.stocksData?.[0];
+
+        let healthResult = 'لم يتم';
+        let hasFields = '';
+
+        if (testStock) {
+          hasFields = 
+            'p=' + (testStock.p !== undefined ? '✅' : '❌') +
+            ' ch=' + (testStock.ch !== undefined ? '✅' : '❌') +
+            ' pe=' + (testStock.pe !== undefined ? '✅' : '❌') +
+            ' sec=' + (testStock.sec !== undefined ? '✅' : '❌');
+          
+          try {
+            const health = stockHealth(testStock, testStock.bars);
+            if (health && health.score !== undefined) {
+              healthResult = '✅ score=' + health.score + ', sig=' + health.sig;
+            } else {
+              healthResult = '⚠️ health فارغ';
+            }
+          } catch (e) {
+            healthResult = '❌ ' + (e.message || 'خطأ');
+          }
+        }
+
+        alert(
+          '🔍 فحص stockHealth:\n\n' +
+          'اليوم: ' + testIdx + '\n' +
+          'السهم: ' + (testStock?.sym || 'لا') + '\n' +
+          'شموع: ' + (testStock?.bars?.length || 0) + '\n\n' +
+          'الحقول:\n' + hasFields + '\n\n' +
+          'النتيجة:\n' + healthResult
+        );
+        
+        if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
+          setResults({ error: 'لا توجد بيانات تاريخية كافية - تحقق من اتصال API' });
+          setIsRunning(false);
+          return;
+        }
+        
+        strategy = createTadawulStrategy(stockHealth);
+        var benchSymbols = historicalData[0].stocksData.slice(0, 5).map(function(s) { return s.sym; });
+        benchmarkStrategy = createBuyAndHoldStrategy(benchSymbols);
+      }
+      else if (config.mode === 'market') {
+        modeLabel = 'السوق بالكامل (Sector Rotation)';
+        historicalData = await generateDataFromMarketReal(STOCKS, config.days);
+        
+        if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
+          setResults({ error: 'فشل توليد بيانات السوق' });
+          setIsRunning(false);
+          return;
+        }
+        
+        strategy = createTadawulStrategy(stockHealth, { maxPositions: 10, maxPositionWeight: 0.15 });
+        var marketBenchSymbols = historicalData[0].stocksData.slice(0, 10).map(function(s) { return s.sym; });
+        benchmarkStrategy = createBuyAndHoldStrategy(marketBenchSymbols);
+      }
+
+      var strategyResult, benchmarkResult;
+      var comparison = null;
+      var monteCarloResult = null;
+      
+      try {
+        strategyResult = backtest(strategy, historicalData, {
+          initialCapital: config.initialCapital,
+          includeCosts: config.includeCosts,
+        });
+
+        benchmarkResult = backtest(benchmarkStrategy, historicalData, {
+          initialCapital: config.initialCapital,
+          includeCosts: config.includeCosts,
+        });
+
+        if (strategyResult.success && benchmarkResult.success) {
+          comparison = compareWithBenchmark(strategyResult, benchmarkResult);
+        }
+
+        if (config.runMonteCarlo && strategyResult.success) {
+          monteCarloResult = monteCarloSimulation(strategyResult, config.monteCarloIterations);
+        }
+      } catch (innerErr) {
+        console.error('[Backtest engine error]', innerErr);
+        setResults({ error: 'فشل تشغيل المحاكاة: بيانات غير كافية أو تنسيق غير متوافق' });
+        setIsRunning(false);
+        return;
+      }
+
+      setResults({
+        strategy: strategyResult,
+        benchmark: benchmarkResult,
+        comparison: comparison,
+        monteCarlo: monteCarloResult,
+        modeLabel: modeLabel,
+      });
+    } catch (err) {
       console.error('Backtest error:', err);
       setResults({ error: err.message || 'حدث خطأ أثناء التشغيل' });
     } finally {
       setIsRunning(false);
     }
   }
+
   return (
     <div style={{
       background: C.ink,
@@ -264,7 +263,6 @@ historicalData = await generateDataFromMarketReal(STOCKS, config.days);
       direction: "rtl",
     }}>
 
-      {/* 🔙 زر الرجوع */}
       <div style={{
         display: "flex",
         alignItems: "center",
@@ -272,7 +270,7 @@ historicalData = await generateDataFromMarketReal(STOCKS, config.days);
         marginBottom: 14,
       }}>
         <button
-                    onClick={function() { haptic.tap(); nav.setTab('more'); }}
+          onClick={function() { haptic.tap(); nav.setTab('more'); }}
           style={{
             width: 40,
             height: 40,
@@ -304,7 +302,6 @@ historicalData = await generateDataFromMarketReal(STOCKS, config.days);
       }}>
         <div style={{ fontSize: 11, color: C.gold, fontWeight: 800, letterSpacing: "1px", marginBottom: 4 }}>
           🧪 محرك Backtesting
-          
         </div>
         <div style={{ fontSize: 15, color: C.snow, fontWeight: 900, marginBottom: 4 }}>
           اختبار الاستراتيجية التاريخية
@@ -332,23 +329,22 @@ historicalData = await generateDataFromMarketReal(STOCKS, config.days);
           question="كيف كانت محفظتي ستؤدي تاريخياً؟"
           color={C.mint}
           active={config.mode === 'portfolio'}
-                    onClick={function() { 
+          onClick={function() { 
             haptic.tap();
             if (hasPortfolio) setConfig(Object.assign({}, config, { mode: 'portfolio' }));  
           }}
         />
 
-                <ModeCard
+        <ModeCard
           icon="🔍"
           title="قائمة التحليل"
           description="استراتيجية الطبقات التسع - اختر فئة الأسهم"
           question="هل الطبقات التسع دقيقة فعلاً؟"
           color={C.gold}
           active={config.mode === 'analysis'}
-                    onClick={function() { haptic.tap(); setConfig(Object.assign({}, config, { mode: 'analysis' })); }}
+          onClick={function() { haptic.tap(); setConfig(Object.assign({}, config, { mode: 'analysis' })); }}
         />
         
-        {/* ✨ اختيار الفئة (يظهر فقط عند وضع التحليل) */}
         {config.mode === 'analysis' && (
           <div style={{
             marginBottom: 10,
@@ -410,7 +406,7 @@ historicalData = await generateDataFromMarketReal(STOCKS, config.days);
           question="هل النظام يكتشف أفضل الفرص في السوق؟"
           color={C.teal}
           active={config.mode === 'market'}
-                    onClick={function() { haptic.tap(); setConfig(Object.assign({}, config, { mode: 'market' })); }}
+          onClick={function() { haptic.tap(); setConfig(Object.assign({}, config, { mode: 'market' })); }}
         />
       </div>
 
@@ -506,15 +502,15 @@ historicalData = await generateDataFromMarketReal(STOCKS, config.days);
               onChange={function(e) { setConfig(Object.assign({}, config, { runMonteCarlo: e.target.checked })); }}
               style={{ cursor: "pointer" }}
             />
-                        <span style={{ fontSize: 11, color: C.mist, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 4 }}>
+            <span style={{ fontSize: 11, color: C.mist, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 4 }}>
               🎰 Monte Carlo ({config.monteCarloIterations.toLocaleString()} محاكاة)
               <Tooltip termKey="Monte Carlo" size="small"/>
             </span>
           </label>
         </div>
 
-                <button
-onClick={() => { haptic.strong(); runBacktest(); }}
+        <button
+          onClick={() => { haptic.strong(); runBacktest(); }}
           disabled={isRunning || (config.mode === 'portfolio' && !hasPortfolio)}
           style={{
             width: "100%", padding: "12px",
