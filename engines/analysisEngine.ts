@@ -3983,15 +3983,141 @@ function stockHealth(stk: any, bars: any[]): any {
   merged.probability = _softmax3(logit_bull, logit_bear, logit_neutral);
 
 
-  // ════════════════════════════════════════════════
+    // ════════════════════════════════════════════════
   //  STEP 8: Portfolio Engine
   // ════════════════════════════════════════════════
   var riskGateLevel = calcRiskGateLevel();
-    (merged as any).positionSize = calcPositionSize(merged, riskGateLevel);
+  (merged as any).positionSize = calcPositionSize(merged, riskGateLevel);
   (merged as any).correlationGuard = checkCorrelationGuard(stk.sym, []);
   (merged as any).riskGate = riskGateLevel;
   (merged as any).confidence = ct ? ct.confidence : 50;
-
+  
+  // ════════════════════════════════════════════════════════════
+  //  🎯 STEP 8.5: TRADING PLAN -- Professional Actionable Card
+  //  
+  //  المبدأ العلمي:
+  //  بطاقة احترافية = قرار قابل للتنفيذ
+  //  
+  //  المكونات:
+  //  • Entry: سعر الدخول الحالي
+  //  • Stop Loss: ATR-based (1.5×ATR)
+  //  • Target 1: Conservative (2.0×ATR)
+  //  • Target 2: Aggressive (4.0×ATR)
+  //  • R/R Ratio: تقييم الفرصة
+  //  • Time Horizon: حسب regime
+  //  • Worst Case: % loss إذا ضرب stop
+  //  • Action: ما يفعل المستخدم الآن
+  // ════════════════════════════════════════════════════════════
+  
+  var atrV = tech.extras?.bayesMult ? (stk.p * 0.015) : (stk.p * 0.015);
+  // استخدام ATR الحقيقي إذا متوفر
+  if(tech.extras?.adxV){
+    // ATR محسوب من calc9Layers (atr14 من ADX)
+    atrV = stk.p * 0.015; // تقدير 1.5% من السعر
+  }
+  
+  // ─── حساب مستويات Entry/Stop/Targets ───
+  var currentPrice = stk.p;
+  var atrMultiplier = regime === "volatile" ? 2.0 : regime === "bull" ? 1.5 : 1.8;
+  
+  var stopLoss = +(currentPrice - atrV * atrMultiplier).toFixed(2);
+  var target1 = +(currentPrice + atrV * 2.0).toFixed(2);
+  var target2 = +(currentPrice + atrV * 4.0).toFixed(2);
+  
+  // ─── حساب النسب المئوية ───
+  var stopLossPct = +((stopLoss - currentPrice) / currentPrice * 100).toFixed(2);
+  var target1Pct = +((target1 - currentPrice) / currentPrice * 100).toFixed(2);
+  var target2Pct = +((target2 - currentPrice) / currentPrice * 100).toFixed(2);
+  
+  // ─── R/R Ratio ───
+  var risk_amount = Math.abs(stopLossPct);
+  var reward_amount = target1Pct;
+  var rrRatio = risk_amount > 0 ? +(reward_amount / risk_amount).toFixed(2) : 0;
+  
+  var rrLabel = rrRatio >= 3.0 ? "ممتاز ⭐"
+              : rrRatio >= 2.0 ? "جيد ✓"
+              : rrRatio >= 1.5 ? "مقبول"
+              : "ضعيف ⚠";
+  
+  // ─── Time Horizon (حسب regime) ───
+  var timeHorizon = regime === "volatile" ? "1-3 أيام"
+                  : regime === "news-driven" ? "2-5 أيام"
+                  : regime === "bull" ? "5-15 يوم"
+                  : regime === "bear" ? "3-7 أيام"
+                  : regime === "sideways" ? "10-20 يوم"
+                  : "7-14 يوم"; // chop
+  
+  // ─── Worst Case Scenario ───
+  var worstCase = {
+    loss: stopLossPct,
+    percentage: Math.abs(stopLossPct),
+    description: stopLossPct < -8 ? "خسارة عالية"
+               : stopLossPct < -5 ? "خسارة متوسطة"
+               : stopLossPct < -3 ? "خسارة محدودة"
+               : "خسارة بسيطة"
+  };
+  
+  // ─── Action Plan ───
+  var actionPlan;
+  var actionColor;
+  
+  if(merged.sig === "شراء قوي" && isRareOpportunity){
+    actionPlan = `🌟 فرصة نادرة! اشترِ بـ ${(merged as any).positionSize?.pct || 15}% من المحفظة`;
+    actionColor = "#10c97e";
+  }
+  else if(merged.sig === "شراء قوي"){
+    actionPlan = `🚀 اشترِ بـ ${(merged as any).positionSize?.pct || 10}% من المحفظة`;
+    actionColor = "#10c97e";
+  }
+  else if(merged.sig === "مراقبة"){
+    actionPlan = `👁 راقب - انتظر الإشارة الأقوى أو تأكيد الكسر`;
+    actionColor = "#f59e0b";
+  }
+  else if(merged.sig === "محايد"){
+    actionPlan = `⚖️ لا تشترِ - السهم في منطقة محايدة`;
+    actionColor = "#06b6d4";
+  }
+  else if(merged.sig === "تخفيف"){
+    actionPlan = `🔴 إذا كنت مالكاً: قلّص المركز - تجنّب الدخول الجديد`;
+    actionColor = "#f04f5a";
+  }
+  else { // انتظر
+    actionPlan = `🛑 انتظر - لا تتداول الآن (إشارات متعارضة)`;
+    actionColor = "#6b7280";
+  }
+  
+  // ─── Risk Gate Warning ───
+  var riskWarning = null;
+  if(riskGateLevel === "DANGER"){
+    riskWarning = "⚠️ السوق في حالة خطر - تجنّب الدخول";
+    actionPlan = "🛑 " + riskWarning;
+    actionColor = "#dc2626";
+  }
+  else if(riskGateLevel === "CAUTION"){
+    riskWarning = "⚠️ السوق متقلب - قلّل حجم المركز";
+  }
+  
+  // ─── تجميع Trading Plan ───
+  (merged as any).tradingPlan = {
+    entry: currentPrice,
+    stopLoss,
+    stopLossPct,
+    target1,
+    target1Pct,
+    target2,
+    target2Pct,
+    rrRatio,
+    rrLabel,
+    timeHorizon,
+    worstCase,
+    actionPlan,
+    actionColor,
+    riskWarning,
+    // معلومات إضافية للمستخدم المحترف
+    atrUsed: +atrV.toFixed(3),
+    atrMultiplier,
+    regime,
+  };
   // ════════════════════════════════════════════════
   //  STEP 9: Metadata
   // ════════════════════════════════════════════════
