@@ -1514,14 +1514,15 @@ var alertPct = Math.max(0.5, Math.min(3, atrPct * 0.5));
 var stop = (stk.p * (1 - stopPct/100)).toFixed(2);
 var tgt  = (stk.p * (1 + tgtPct/100)).toFixed(2);
 var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
+                        // 🎯 معايرة علمية: 65/55/45
                         var icon, line1, line2, bg, border;
-                        if(health.score >= 75){
+                        if(health.score >= 65){
                           icon  = "✅";
                           line1 = "ادخل بـ " + pct + "% من المحفظة";
                           line2 = "وقف: " + stop + " · هدف: " + tgt;
                           bg    = "rgba(16,201,126,.08)";
                           border= "rgba(16,201,126,.25)";
-                        } else if(health.score >= 60){
+                        } else if(health.score >= 55){
                           icon  = "🔔";
                           line1 = "اضبط تنبيهاً عند " + alert;
                           line2 = "لا تدخل قبل تأكيد الحجم";
@@ -1540,6 +1541,7 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                           bg    = "rgba(240,79,90,.08)";
                           border= "rgba(240,79,90,.22)";
                         }
+
 
                         return(
                           <div style={{
