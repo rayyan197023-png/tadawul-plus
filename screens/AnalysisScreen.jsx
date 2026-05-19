@@ -290,9 +290,10 @@ const ohlcvCache = useOHLCVCache(syms, '3M');
     // ✨ Safety check
     if (!allData || !Array.isArray(allData) || allData.length === 0) return [];
     
+    // 🎯 معايرة علمية: 65/55/45 بدلاً من 75/60/45
     var arr;
-    if(tab==="buy")    arr = allData.filter(d=>d && d.health && d.health.score>=75);
-    else if(tab==="watch")  arr = allData.filter(d=>d && d.health && d.health.score>=60 && d.health.score<75);
+    if(tab==="buy")    arr = allData.filter(d=>d && d.health && d.health.score>=65);
+    else if(tab==="watch")  arr = allData.filter(d=>d && d.health && d.health.score>=55 && d.health.score<65);
     else if(tab==="reduce") arr = allData.filter(d=>d && d.health && d.health.score<45);
     else arr = [...allData];
     return arr.sort(function(a,b){ 
