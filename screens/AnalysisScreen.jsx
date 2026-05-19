@@ -3719,6 +3719,224 @@ function getTooltipKey(title) {
                   </div>
                 ))}
 
+                {/* ══════════════════════════════════════════════════════
+                    🤖 ABM INFO -- شفافية نظام التعلم الذكي
+                    
+                    يعرض من analysisEngine (الإصلاح 4):
+                    • abmInfo.applied (هل التعلم مُفعَّل؟)
+                    • abmInfo.originalScore / finalScore (التغيّر)
+                    • abmInfo.meta (regime accuracy, boost, إلخ)
+                ══════════════════════════════════════════════════════ */}
+                {health.abmInfo && (function(){
+                  var abm = health.abmInfo;
+                  var isActive = abm.applied;
+                  var meta = abm.meta;
+                  var brandColor = isActive ? C.electric : C.smoke;
+                  
+                  return(
+                    <div style={{
+                      marginBottom:10,
+                      background:"linear-gradient(135deg," + brandColor + "0a," + brandColor + "04)",
+                      border:"1px solid " + brandColor + "28",
+                      borderRadius:14,
+                      overflow:"hidden",
+                    }}>
+                      {/* عنوان */}
+                      <div style={{
+                        display:"flex",alignItems:"center",justifyContent:"space-between",
+                        padding:"8px 14px",
+                        background:brandColor + "12",
+                        borderBottom:"1px solid " + brandColor + "18",
+                      }}>
+                        <div style={{display:"flex",alignItems:"center",gap:6}}>
+                          <span style={{fontSize:13}}>🤖</span>
+                          <span style={{fontSize:10,fontWeight:800,color:brandColor,letterSpacing:".3px"}}>
+                            نظام التعلم الذكي (ABM v2.1)
+                          </span>
+                        </div>
+                        <div style={{
+                          background:brandColor + "22",
+                          border:"1px solid " + brandColor + "44",
+                          borderRadius:5,padding:"1px 8px",
+                        }}>
+                          <span style={{fontSize:8,fontWeight:800,color:brandColor}}>
+                            {isActive ? "✓ مُفعَّل" : "غير مُفعَّل"}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {/* جسم البطاقة */}
+                      <div style={{padding:"10px 14px"}}>
+                        {!isActive ? (
+                          // الحالة 1: ABM غير مُفعَّل
+                          <div style={{
+                            background:"rgba(255,255,255,.03)",
+                            border:"1px solid rgba(255,255,255,.06)",
+                            borderRadius:8,padding:"8px 12px",
+                            display:"flex",alignItems:"center",gap:8,
+                          }}>
+                            <span style={{fontSize:14}}>📊</span>
+                            <div style={{flex:1}}>
+                              <div style={{fontSize:10,fontWeight:700,color:C.smoke,marginBottom:2}}>
+                                لا توجد بيانات كافية للتعلم بعد
+                              </div>
+                              <div style={{fontSize:8,color:C.ash,lineHeight:1.4}}>
+                                يحتاج ABM إلى 5+ صفقات سابقة لبدء التعلم. سيتفعّل تلقائياً مع مرور الوقت.
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          // الحالة 2: ABM مُفعَّل ويعمل
+                          <>
+                            {/* التغيّر في Score */}
+                            {abm.originalScore != null && abm.finalScore != null && (
+                              <div style={{
+                                background:"rgba(255,255,255,.03)",
+                                border:"1px solid rgba(255,255,255,.06)",
+                                borderRadius:10,padding:"8px 12px",
+                                marginBottom:8,
+                                display:"flex",alignItems:"center",gap:10,
+                              }}>
+                                {/* Score الأصلي */}
+                                <div style={{flex:1,textAlign:"center"}}>
+                                  <div style={{fontSize:7,color:C.smoke,marginBottom:2}}>قبل التعلم</div>
+                                  <div className="num" style={{
+                                    fontSize:18,fontWeight:900,color:C.mist,lineHeight:1,
+                                  }}>{abm.originalScore}</div>
+                                </div>
+                                
+                                {/* السهم */}
+                                <div style={{textAlign:"center"}}>
+                                  <div style={{
+                                    fontSize:14,fontWeight:900,
+                                    color: abm.finalScore > abm.originalScore ? C.mint
+                                         : abm.finalScore < abm.originalScore ? C.coral
+                                         : C.smoke,
+                                    lineHeight:1,
+                                  }}>
+                                    {abm.finalScore > abm.originalScore ? "↗" : abm.finalScore < abm.originalScore ? "↘" : "→"}
+                                  </div>
+                                  <div style={{
+                                    fontSize:8,fontWeight:700,marginTop:2,
+                                    color: abm.finalScore > abm.originalScore ? C.mint
+                                         : abm.finalScore < abm.originalScore ? C.coral
+                                         : C.smoke,
+                                  }}>
+                                    {abm.finalScore - abm.originalScore > 0 ? "+" : ""}{abm.finalScore - abm.originalScore}
+                                  </div>
+                                </div>
+                                
+                                {/* Score النهائي */}
+                                <div style={{flex:1,textAlign:"center"}}>
+                                  <div style={{fontSize:7,color:brandColor,fontWeight:700,marginBottom:2}}>بعد التعلم</div>
+                                  <div className="num" style={{
+                                    fontSize:18,fontWeight:900,color:brandColor,lineHeight:1,
+                                  }}>{abm.finalScore}</div>
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* Meta Info: Regime Accuracy + Boost + Sample Size */}
+                            {meta && (
+                              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:5}}>
+                                {/* Regime Accuracy */}
+                                {meta.regimeAcc != null && (
+                                  <div style={{
+                                    background:"rgba(255,255,255,.03)",
+                                    border:"1px solid rgba(255,255,255,.06)",
+                                    borderRadius:8,padding:"6px 8px",
+                                    textAlign:"center",
+                                  }}>
+                                    <div style={{fontSize:7,color:C.smoke,marginBottom:2}}>دقة النظام</div>
+                                    <div className="num" style={{
+                                      fontSize:13,fontWeight:900,
+                                      color: meta.regimeAcc >= 0.6 ? C.mint
+                                           : meta.regimeAcc >= 0.45 ? C.amber
+                                           : C.coral,
+                                      lineHeight:1,
+                                    }}>{Math.round(meta.regimeAcc * 100)}%</div>
+                                    <div style={{fontSize:6,color:C.ash,marginTop:2}}>
+                                      في {meta.currentRegime || "?"}
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                {/* Regime Boost */}
+                                {meta.regimeBoost != null && (
+                                  <div style={{
+                                    background:"rgba(255,255,255,.03)",
+                                    border:"1px solid rgba(255,255,255,.06)",
+                                    borderRadius:8,padding:"6px 8px",
+                                    textAlign:"center",
+                                  }}>
+                                    <div style={{fontSize:7,color:C.smoke,marginBottom:2}}>Boost</div>
+                                    <div className="num" style={{
+                                      fontSize:13,fontWeight:900,
+                                      color: meta.regimeBoost > 1.05 ? C.mint
+                                           : meta.regimeBoost < 0.95 ? C.coral
+                                           : C.smoke,
+                                      lineHeight:1,
+                                    }}>×{meta.regimeBoost.toFixed(2)}</div>
+                                    <div style={{fontSize:6,color:C.ash,marginTop:2}}>
+                                      {meta.regimeBoost > 1.05 ? "↑ ثقة" 
+                                       : meta.regimeBoost < 0.95 ? "↓ حذر" 
+                                       : "محايد"}
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                {/* Sample Size */}
+                                {meta.sampleSize != null && (
+                                  <div style={{
+                                    background:"rgba(255,255,255,.03)",
+                                    border:"1px solid rgba(255,255,255,.06)",
+                                    borderRadius:8,padding:"6px 8px",
+                                    textAlign:"center",
+                                  }}>
+                                    <div style={{fontSize:7,color:C.smoke,marginBottom:2}}>عدد الصفقات</div>
+                                    <div className="num" style={{
+                                      fontSize:13,fontWeight:900,
+                                      color: meta.sampleSize >= 20 ? C.mint
+                                           : meta.sampleSize >= 10 ? C.amber
+                                           : C.smoke,
+                                      lineHeight:1,
+                                    }}>{meta.sampleSize}</div>
+                                    <div style={{fontSize:6,color:C.ash,marginTop:2}}>تاريخي</div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                            
+                            {/* Regime Shift Warning */}
+                            {meta && (meta.regimeShift || meta.improving) && (
+                              <div style={{
+                                marginTop:6,
+                                background:meta.regimeShift ? "rgba(245,158,11,.08)" : "rgba(16,201,126,.08)",
+                                border:"1px solid " + (meta.regimeShift ? "rgba(245,158,11,.25)" : "rgba(16,201,126,.25)"),
+                                borderRadius:8,padding:"5px 10px",
+                                display:"flex",alignItems:"center",gap:6,
+                              }}>
+                                <span style={{fontSize:10}}>
+                                  {meta.regimeShift ? "⚠" : "📈"}
+                                </span>
+                                <span style={{
+                                  fontSize:8,color:meta.regimeShift ? C.amber : C.mint,
+                                  lineHeight:1.4,fontWeight:600,
+                                }}>
+                                  {meta.regimeShift 
+                                    ? "تغيّر في السوق - النظام يقلّل ثقته في البيانات القديمة" 
+                                    : "الأداء يتحسّن - النظام يزيد ثقته"}
+                                </span>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+
                 {/* ملخص الدمج */}
                 <div style={{
                   marginTop:6,
