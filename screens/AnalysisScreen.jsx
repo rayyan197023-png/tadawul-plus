@@ -1292,7 +1292,7 @@ const rankUp=stk.ch>0;
                               <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={C.gold} strokeWidth={2} strokeLinecap="round" style={{filter:"drop-shadow(0 0 3px "+C.gold+")"}}/>
                               <text x={cx+r*Math.cos(rad)*1.18} y={cy+r*Math.sin(rad)*1.18} textAnchor="middle" dominantBaseline="middle" fill={C.gold} fontSize={5} fontWeight="700">65</text>
                             </svg>);
-                          })()
+                          })()}
                           {(function(){
                             var trend=stk.ch>=0,delta=Math.max(1,Math.min(12,Math.abs(Math.round(health.score*stk.ch/100*3))));
                             return(<div style={{position:"absolute",bottom:-18,left:"50%",transform:"translateX(-50%)",display:"flex",alignItems:"center",gap:2,background:trend?"rgba(16,201,126,.15)":"rgba(240,79,90,.15)",border:"1px solid "+(trend?"rgba(16,201,126,.3)":"rgba(240,79,90,.3)"),borderRadius:5,padding:"1px 5px",whiteSpace:"nowrap"}}>
