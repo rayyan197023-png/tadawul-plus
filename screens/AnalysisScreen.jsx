@@ -1203,12 +1203,12 @@ const rankUp=stk.ch>0;
                         {rankUp?"↑":"↓"}
                       </span>
                     </div>
-                    {/* شريط اللون العلوي — تمييز بصري فوري للإشارة */}
+                    {/* شريط اللون العلوي -- معايرة علمية: 65/55/45 */}
                     <div style={{
                       height:3,
-                      background:health.score>=75
+                      background:health.score>=65
                         ? `linear-gradient(90deg,${C.mint}00,${C.mint},${C.mint}00)`
-                        : health.score>=60
+                        : health.score>=55
                         ? `linear-gradient(90deg,${C.amber}00,${C.amber},${C.amber}00)`
                         : health.score>=45
                         ? `linear-gradient(90deg,${C.teal}00,${C.teal},${C.teal}00)`
