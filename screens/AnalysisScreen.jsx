@@ -2169,7 +2169,10 @@ var neut = normalizeProb(prob.neutral);
                                 فرصة نادرة — درجة {health.score}/100
                               </div>
                               <div style={{fontSize:10,color:C.mist,lineHeight:1.5}}>
-                                هذا السهم في أعلى {Math.round((1-globalRank/allData.length)*100)}% من السوق — الإشارة استثنائية
+                                {globalRank === 1 
+                                  ? "هذا السهم الأول في السوق -- الإشارة استثنائية"
+                                  : "هذا السهم في أعلى " + Math.min(99, Math.round((1-globalRank/allData.length)*100)) + "% من السوق -- الإشارة استثنائية"
+                                }
                               </div>
                             </div>
                           </div>
