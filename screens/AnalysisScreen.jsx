@@ -589,7 +589,8 @@ const avgChange = (liveStocks && liveStocks.length > 0)
 const best3 = allData.length > 0
   ? [...allData].sort(function(a,b){ return ((b&&b.health&&b.health.score)||0) - ((a&&a.health&&a.health.score)||0); }).slice(0,1)[0]
   : null;
-        const mktOk  = avgHealth >= 60;
+                // 🎯 معايرة: 55 بدلاً من 60
+        const mktOk  = avgHealth >= 55;
         return(
         <div style={{paddingBottom:80,position:"relative",zIndex:1}}>
 
