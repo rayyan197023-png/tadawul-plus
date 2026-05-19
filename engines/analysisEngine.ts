@@ -4121,9 +4121,10 @@ function stockHealth(stk: any, bars: any[]): any {
   var currentPrice = stk.p;
   var atrMultiplier = regime === "volatile" ? 2.0 : regime === "bull" ? 1.5 : 1.8;
   
-  var stopLoss = +(currentPrice - atrV * atrMultiplier).toFixed(2);
-  var target1 = +(currentPrice + atrV * 2.0).toFixed(2);
-  var target2 = +(currentPrice + atrV * 4.0).toFixed(2);
+  // ─── حساب المستويات بـ multipliers مُخصَّصة لكل regime ───
+  var stopLoss = +(currentPrice - atrV * stopMultiplier).toFixed(2);
+  var target1 = +(currentPrice + atrV * target1Multiplier).toFixed(2);
+  var target2 = +(currentPrice + atrV * target2Multiplier).toFixed(2);
   
   // ─── حساب النسب المئوية ───
   var stopLossPct = +((stopLoss - currentPrice) / currentPrice * 100).toFixed(2);
