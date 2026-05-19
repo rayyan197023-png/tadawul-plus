@@ -151,30 +151,36 @@ export default function BacktestScreen() {
           
           historicalData = await generateDataFromStockListReal(enrichedStocks, config.days, 15);
 
-const testDay = historicalData[100];
-const firstStock = testDay?.stocksData?.[0];
+// فحص أيام متعددة
+const day0 = historicalData[0];
+const day50 = historicalData[50];
+const day100 = historicalData[100];
+const day200 = historicalData[200];
 
-const stockKeys = firstStock ? Object.keys(firstStock).join(', ') : 'لا يوجد';
-const hasPrice = firstStock?.p !== undefined ? '✅' : '❌';
-const hasPE = firstStock?.pe !== undefined ? '✅' : '❌';
-const hasROE = firstStock?.roe !== undefined ? '✅' : '❌';
-const hasSec = firstStock?.sec !== undefined ? '✅' : '❌';
-const hasMktCap = firstStock?.mktCap !== undefined ? '✅' : '❌';
-const hasCh = firstStock?.ch !== undefined ? '✅' : '❌';
+const info = [];
+[
+  { label: 'اليوم 0', day: day0 },
+  { label: 'اليوم 50', day: day50 },
+  { label: 'اليوم 100', day: day100 },
+  { label: 'اليوم 200', day: day200 },
+].forEach(({ label, day }) => {
+  if (!day) {
+    info.push(`${label}: لا يوجد`);
+    return;
+  }
+  const sd = day.stocksData;
+  const count = sd?.length || 0;
+  const first = sd?.[0];
+  const bars = first?.bars?.length || 0;
+  const keys = first ? Object.keys(first).slice(0, 5).join(',') : 'لا';
+  info.push(`${label}: ${count} سهم، أول=${first?.sym || 'لا'}, شموع=${bars}`);
+});
 
 alert(
-  '🔍 فحص بنية السهم:\n\n' +
-  'السهم: ' + (firstStock?.sym || 'لا') + '\n' +
-  'currentPrice: ' + (firstStock?.currentPrice || 'لا') + '\n\n' +
-  'الحقول المتوفرة:\n' +
-  stockKeys.substring(0, 200) + '\n\n' +
-  'الحقول المهمة:\n' +
-  hasPrice + ' p (السعر)\n' +
-  hasCh + ' ch (التغير)\n' +
-  hasPE + ' pe (P/E)\n' +
-  hasROE + ' roe\n' +
-  hasSec + ' sec (القطاع)\n' +
-  hasMktCap + ' mktCap'
+  '🔍 تشخيص متعدد الأيام:\n\n' +
+  info.join('\n\n') + '\n\n' +
+  '═══════════════\n' +
+  'إجمالي الأيام: ' + (historicalData?.length || 0)
 );
         
           if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
