@@ -755,16 +755,17 @@ animation:'shimmer 1.4s ease infinite',
 }}>
 
             {/* السؤال ١: كيف السوق؟ */}
+            {/* 🎯 معايرة: 65/55/45 */}
             <div style={{flex:1,textAlign:"center"}}>
               <div style={{fontSize:8,color:C.smoke,marginBottom:3}}>حال السوق</div>
               <div style={{
                 fontSize:16,fontWeight:900,lineHeight:1,
-                color: avgHealth>=75?C.mint:avgHealth>=60?C.electric:avgHealth>=45?C.amber:C.coral,
+                color: avgHealth>=65?C.mint:avgHealth>=55?C.electric:avgHealth>=45?C.amber:C.coral,
               }}>{avgHealth}</div>
               <div style={{
                 fontSize:7,fontWeight:700,marginTop:2,
-                color: avgHealth>=75?C.mint:avgHealth>=60?C.electric:avgHealth>=45?C.amber:C.coral,
-              }}>{avgHealth>=75?"ممتاز":avgHealth>=60?"جيد":avgHealth>=45?"محايد":"حذر"}</div>
+                color: avgHealth>=65?C.mint:avgHealth>=55?C.electric:avgHealth>=45?C.amber:C.coral,
+              }}>{avgHealth>=65?"ممتاز":avgHealth>=55?"جيد":avgHealth>=45?"محايد":"حذر"}</div>
             </div>
             <div style={{width:1,height:36,background:C.line}}/>
             {/* السؤال ٢: ما أفضل سهم؟ */}
