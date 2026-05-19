@@ -4091,12 +4091,31 @@ function stockHealth(stk: any, bars: any[]): any {
   //  • Action: ما يفعل المستخدم الآن
   // ════════════════════════════════════════════════════════════
   
-  var atrV = tech.extras?.bayesMult ? (stk.p * 0.015) : (stk.p * 0.015);
-  // استخدام ATR الحقيقي إذا متوفر
-  if(tech.extras?.adxV){
-    // ATR محسوب من calc9Layers (atr14 من ADX)
-    atrV = stk.p * 0.015; // تقدير 1.5% من السعر
+  // ════════════════════════════════════════════════════════
+  //  ATR Calculation -- استخدام البيانات الفعلية
+  //  
+  //  الأولوية:
+  //  1. extras.atrPct (محسوب من ADX في calc9Layers)
+  //  2. atr14 (إذا متوفر)
+  //  3. fallback: 2% من السعر
+  // ════════════════════════════════════════════════════════
+  var atrPct = tech.extras?.atrPct;
+  var atrV;
+  
+  if(atrPct && atrPct > 0){
+    // الأفضل: ATR محسوب من البيانات الفعلية
+    atrV = stk.p * (atrPct / 100);
+  } else if(tech.extras?.atr14){
+    // البديل: atr14 من ADX
+    atrV = tech.extras.atr14;
+  } else {
+    // fallback آمن: 2% من السعر (وليس 1.5% الثابت)
+    atrV = stk.p * 0.02;
   }
+  
+  // ─── حد أدنى لـ ATR (لا أقل من 1.5% من السعر) ───
+  // لتجنب stops قريبة جداً
+  atrV = Math.max(atrV, stk.p * 0.015);
   
   // ─── حساب مستويات Entry/Stop/Targets ───
   var currentPrice = stk.p;
