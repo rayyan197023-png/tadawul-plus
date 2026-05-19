@@ -1422,13 +1422,24 @@ const rankUp=stk.ch>0;
                               :health.score>=45?"لا تتسرع"
                               :"احتاط"}
                             </div>
-                            <div style={{fontSize:8.5,color:C.smoke,lineHeight:1.3}}>
-                                                                                          {health.score>=65?"السيولة والزخم يدعمان"
-                              :health.score>=55?"انتظر تأكيد الحجم"
-                              :health.score>=45?"الإشارة غير حاسمة"
-                              :health.score>=30 && stk.ch >= -2?"إشارة ضعيفة"
-                              :stk.ch < -2?"ضغط بيعي مرتفع"
-                              :"إشارة ضعيفة"}
+                                                        <div style={{fontSize:8.5,color:C.smoke,lineHeight:1.3}}>
+                              {/* 🔧 إصلاح: نص أكثر دقة بناءً على السياق */}
+                              {(function(){
+                                var vr = (health.extras && health.extras.vr) || 1;
+                                if(health.score>=65) return "السيولة والزخم يدعمان";
+                                if(health.score>=55) return "انتظر تأكيد الحجم";
+                                if(health.score>=45) {
+                                  if(vr >= 1.5) return "حجم عالٍ - راقب الاتجاه";
+                                  return "الإشارة غير حاسمة";
+                                }
+                                if(health.score>=35) {
+                                  if(vr >= 1.5 && stk.ch >= 0) return "حجم عالٍ رغم الضعف";
+                                  if(stk.ch < -1) return "تراجع متواصل";
+                                  return "إشارة ضعيفة";
+                                }
+                                if(stk.ch < -2) return "ضغط بيعي مرتفع";
+                                return "إشارة ضعيفة جداً";
+                              })()}
                             </div>
                           </div>
                         </div>
