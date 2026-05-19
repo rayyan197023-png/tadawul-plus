@@ -4119,9 +4119,47 @@ function stockHealth(stk: any, bars: any[]): any {
   
   // ─── حساب مستويات Entry/Stop/Targets ───
   var currentPrice = stk.p;
-  var atrMultiplier = regime === "volatile" ? 2.0 : regime === "bull" ? 1.5 : 1.8;
   
-  // ─── حساب المستويات بـ multipliers مُخصَّصة لكل regime ───
+  // ════════════════════════════════════════════════════════
+  //  ATR Multipliers -- مُخصَّصة لكل Regime
+  //  
+  //  المبدأ العلمي:
+  //  • stop ضيق + target واسع = R/R أعلى
+  //  • multipliers تتكيف مع طبيعة السوق
+  //  • Renaissance Tech methodology
+  // ════════════════════════════════════════════════════════
+  var stopMultiplier, target1Multiplier, target2Multiplier;
+  
+  if(regime === "volatile"){
+    stopMultiplier = 1.8;
+    target1Multiplier = 2.8;
+    target2Multiplier = 4.8;
+  } else if(regime === "bull"){
+    stopMultiplier = 1.5;
+    target1Multiplier = 3.0;
+    target2Multiplier = 5.5;
+  } else if(regime === "bear"){
+    stopMultiplier = 1.5;
+    target1Multiplier = 2.0;
+    target2Multiplier = 3.5;
+  } else if(regime === "sideways"){
+    stopMultiplier = 1.5;
+    target1Multiplier = 2.5;
+    target2Multiplier = 4.0;
+  } else if(regime === "news-driven"){
+    stopMultiplier = 2.0;
+    target1Multiplier = 3.0;
+    target2Multiplier = 5.0;
+  } else { // chop or unknown
+    stopMultiplier = 1.7;
+    target1Multiplier = 2.5;
+    target2Multiplier = 4.0;
+  }
+  
+  // ─── atrMultiplier للـ backward compatibility ───
+  var atrMultiplier = stopMultiplier;
+  
+  // ─── حساب المستويات ───
   var stopLoss = +(currentPrice - atrV * stopMultiplier).toFixed(2);
   var target1 = +(currentPrice + atrV * target1Multiplier).toFixed(2);
   var target2 = +(currentPrice + atrV * target2Multiplier).toFixed(2);
