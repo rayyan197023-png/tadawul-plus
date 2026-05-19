@@ -2954,14 +2954,15 @@ function getTooltipKey(title) {
         const finalColor = health.sigC;
 
         // ملخص القرار الثلاثي
-        const decisionText = finalScore>=75
+        // 🎯 معايرة علمية: 65/55/45
+        const decisionText = finalScore>=65
           ? "السيولة والزخم يدعمان الدخول"
-          : finalScore>=60
-          ? "إشارة إيجابية — انتظر تأكيد الحجم"
+          : finalScore>=55
+          ? "إشارة إيجابية -- انتظر تأكيد الحجم"
           : finalScore>=45
           ? "لا توجد إشارة واضحة حالياً"
-          : "ضغط بيعي — تجنّب الدخول";
-        const warningText = finalScore<75
+          : "ضغط بيعي -- تجنّب الدخول";
+        const warningText = finalScore<65
           ? finalScore<45 ? "ابتعد عن هذا السهم الآن" : "تحقق من الحجم قبل الدخول"
           : null;
 
