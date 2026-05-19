@@ -4543,15 +4543,19 @@ function getAdaptiveWeightAdjustment(sym: string, currentRegime?: string): any {
       baseAdj *= 1.2;
     }
     
-    // ── Confidence Scaling ──
+        // ── Confidence Scaling ──
     // طبقات أقل من 10 صفقات → تأثير أقل
     if (lp.total < 10) baseAdj *= 0.5;
     else if (lp.total < 20) baseAdj *= 0.8;
+    
+    // ⭐ Regime Boost (NEW)
+    baseAdj *= regimeBoost;
     
     if (Math.abs(baseAdj) > 0.001) {
       adj[k] = +baseAdj.toFixed(4);
     }
   });
+
   
   // ── Meta info للمتابعة ──
   if (Object.keys(adj).length > 0) {
