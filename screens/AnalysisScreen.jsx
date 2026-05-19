@@ -1318,32 +1318,53 @@ const rankUp=stk.ch>0;
 
                         var why, icon, urgency, whyColor;
 
-                        if(vr >= 1.4 && ch > 0){
-                          why      = "الحجم أعلى من المعدل بـ " + volPct + "% — دخول مؤسسي اليوم";
+                                                // 🔧 إصلاح: توافق "لماذا الآن" مع التصنيف الإجمالي
+                        var isStrong = health.score >= 60;  // سهم قوي
+                        var isWeak = health.score < 45;     // سهم ضعيف
+                        
+                        if(vr >= 1.4 && ch > 0 && !isWeak){
+                          why      = "الحجم أعلى من المعدل بـ " + volPct + "% -- دخول مؤسسي اليوم";
                           icon     = "🏦"; urgency = "عاجل"; whyColor = C.mint;
+                        } else if(vr >= 1.4 && ch > 0 && isWeak){
+                          // 🆕 حجم عالٍ على سهم ضعيف = شراء مضاربي
+                          why      = "حجم عالٍ بـ " + volPct + "% -- لكن السهم ضعيف هيكلياً (احذر)";
+                          icon     = "⚠";  urgency = "حذر"; whyColor = C.amber;
                         } else if(vr >= 1.4 && ch < 0){
-                          why      = "حجم بيع مرتفع بـ " + volPct + "% — خروج مؤسسي محتمل";
+                          why      = "حجم بيع مرتفع بـ " + volPct + "% -- خروج مؤسسي محتمل";
                           icon     = "⚠";  urgency = "تحذير"; whyColor = C.coral;
-                        } else if(L1 >= 80){
+                        } else if(L1 >= 80 && !isWeak){
                           why      = "هيكل الحركة يُشبه نمط الاختراق الحقيقي";
                           icon     = "📐"; urgency = "إشارة"; whyColor = C.electric;
-                        } else if(L9 >= 75 && ch > 0){
-                          why      = "المال الذكي يتراكم — سيولة مؤسسية إيجابية";
+                        } else if(L9 >= 75 && ch > 0 && !isWeak){
+                          why      = "المال الذكي يتراكم -- سيولة مؤسسية إيجابية";
                           icon     = "💧"; urgency = "إيجابي"; whyColor = C.mint;
-                        } else if(L9 >= 75 && ch < 0){
-                          why      = "سيولة قوية رغم الهبوط — قد يكون تجميعاً خفياً";
+                        } else if(L9 >= 75 && ch < 0 && isStrong){
+                          why      = "سيولة قوية رغم الهبوط -- قد يكون تجميعاً خفياً";
                           icon     = "🔍"; urgency = "راقب"; whyColor = C.amber;
-                        } else if(L7 >= 75){
+                        } else if(L9 >= 75 && ch < 0 && isWeak){
+                          // 🆕 سيولة عالية + هبوط + سهم ضعيف = تصريف
+                          why      = "سيولة عالية مع هبوط -- قد يكون تصريفاً مؤسسياً";
+                          icon     = "🔻"; urgency = "تحذير"; whyColor = C.coral;
+                        } else if(L7 >= 75 && !isWeak){
                           why      = "الاحتمالية الرياضية تدعم استمرار الاتجاه";
                           icon     = "🧮"; urgency = "إشارة"; whyColor = C.electric;
+                        } else if(isWeak){
+                          // 🆕 رسالة افتراضية للأسهم الضعيفة
+                          if(ch < -1) {
+                            why      = "ضغط بيعي مستمر -- تجنّب الدخول الآن";
+                            icon     = "🔻"; urgency = "تحذير"; whyColor = C.coral;
+                          } else {
+                            why      = "السهم في مرحلة ضعف -- لا توجد فرصة دخول";
+                            icon     = "🛑"; urgency = "تجنّب"; whyColor = C.coral;
+                          }
                         } else if(vr < 0.7){
-                          why      = "حجم خفيف — لا توجد حركة مؤسسية اليوم";
+                          why      = "حجم خفيف -- لا توجد حركة مؤسسية اليوم";
                           icon     = "😴"; urgency = "هادئ"; whyColor = C.smoke;
                         } else if(ch > 0.5){
-                          why      = "حركة إيجابية — الحجم مناسب للارتفاع";
+                          why      = "حركة إيجابية -- الحجم مناسب للارتفاع";
                           icon     = "📊"; urgency = "عادي"; whyColor = C.teal;
                         } else {
-                          why      = "تراجع طبيعي — لا ضغط بيعي استثنائي";
+                          why      = "تراجع طبيعي -- لا ضغط بيعي استثنائي";
                           icon     = "📊"; urgency = "عادي"; whyColor = C.teal;
                         }
 
