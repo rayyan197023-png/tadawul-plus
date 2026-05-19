@@ -4463,12 +4463,31 @@ function getAdaptiveWeightAdjustment(sym: string, currentRegime?: string): any {
   // 2) Long-Term Accuracy (وزن 25%)
   const longAcc = totalEver > 0 ? perf.longTerm.correctEver / totalEver : 0.5;
   
-  // 3) Live Accuracy (Live > Backtest، وزن 25%)
+    // 3) Live Accuracy (Live > Backtest، وزن 25%)
   const liveCtx = perf.context?.live || { total: 0, correct: 0 };
   const liveAcc = liveCtx.total >= 3 ? liveCtx.correct / liveCtx.total : longAcc;
   
-  // ── Composite Accuracy ──
-  const composite = shortAcc * 0.50 + longAcc * 0.25 + liveAcc * 0.25;
+  // 4) ⭐ Regime-Specific Accuracy (NEW)
+  // نستخدم context.bull أو context.bear حسب السوق الحالي
+  let regimeAcc = longAcc; // default fallback
+  let regimeBoost = 1.0;
+  if(currentRegime){
+    const regimeKey = (currentRegime === 'bear' || currentRegime === 'volatile') ? 'bear' : 'bull';
+    const regimeCtx = perf.context?.[regimeKey] || { total: 0, correct: 0 };
+    
+    if(regimeCtx.total >= 5){
+      regimeAcc = regimeCtx.correct / regimeCtx.total;
+      // إذا أداء جيد في هذا regime → ثقة أعلى
+      if(regimeAcc >= 0.65) regimeBoost = 1.20;
+      else if(regimeAcc >= 0.55) regimeBoost = 1.10;
+      // إذا أداء سيء في هذا regime → ثقة أقل
+      else if(regimeAcc < 0.40) regimeBoost = 0.70;
+      else if(regimeAcc < 0.50) regimeBoost = 0.85;
+    }
+  }
+  
+  // ── Composite Accuracy (مع regime weight) ──
+  const composite = shortAcc * 0.40 + longAcc * 0.20 + liveAcc * 0.20 + regimeAcc * 0.20;
   
   // ── Regime Change Detection ──
   // إذا الحديث أسوأ من التاريخي بكثير → تحذير
