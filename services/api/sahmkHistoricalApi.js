@@ -179,13 +179,18 @@ console.log(`[generateRealPortfolio] MIN_BARS = ${MIN_BARS} (من ${days} يوم
       const pos = positions.find(p => p.sym === sym);
       
       stocksData.push({
-        sym,
-        name: pos?.stk?.name ?? sym,
-        sector: pos?.stk?.sec ?? '',
-        bars: bars.slice(0, bars.length - minLen + i + 1),
-        currentPrice: bar.c,
-        targetWeight: pos?.weight ?? (1 / validSyms.length),
-      });
+  // نسخ كل حقول السهم من المحفظة
+  ...(pos?.stk || {}),
+  ...(pos || {}),
+  // ثم نُحدّث الحقول الديناميكية
+  sym,
+  bars: bars.slice(0, bars.length - minLen + i + 1),
+  currentPrice: bar.c,
+  p: bar.c,
+  ch: pos?.stk?.ch ?? 0,
+  sec: pos?.stk?.sec ?? pos?.stk?.sector ?? '',
+  targetWeight: pos?.weight ?? (1 / validSyms.length),
+});
     }
     
     data.push({
