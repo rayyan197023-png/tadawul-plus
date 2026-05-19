@@ -1848,8 +1848,9 @@ var neut = normalizeProb(prob.neutral);
                                   s:rsiV>70?"ذروة شراء":rsiV<30?"ذروة بيع":"محايد"},
                                 {l:"MACD", v:macdH!=null?(macdH>0?"+":"")+macdH:"-", c:macdColor,
                                   s:macdH>0?"إيجابي":"سلبي"},
-                                {l:"ADX", v:adxV!=null?adxV:"-", c:adxColor,
-                                  s:adxV>35?"اتجاه قوي "+((adxBull?"↑":"↓")):adxV>25?"اتجاه نشط":"ضعيف"},
+                                                                {l:"ADX", v:adxV!=null?adxV:"-", c:adxColor,
+                                  // 🔧 إصلاح: إضافة الاتجاه لـ "اتجاه نشط" أيضاً
+                                  s:adxV>35?"اتجاه قوي "+((adxBull?"↑":"↓")):adxV>25?"اتجاه نشط "+((adxBull?"↑":"↓")):adxV>15?"اتجاه ضعيف":"عرضي"},
                               ].map(function(it,i){
                                 return(
                                   <div key={i} style={{
