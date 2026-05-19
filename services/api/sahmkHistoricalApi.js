@@ -248,12 +248,16 @@ console.log(`[generateRealData] MIN_BARS = ${MIN_BARS} (من ${days} يوم مط
       const stk = selected.find(s => s.sym === sym);
       
       stocksData.push({
-        sym,
-        name: stk?.name ?? sym,
-        sector: stk?.sec ?? '',
-        bars: bars.slice(0, bars.length - minLen + i + 1),
-        currentPrice: bar.c,
-      });
+  // نسخ كل حقول السهم الأصلية
+  ...stk,
+  // ثم نُحدّث الحقول الديناميكية
+  sym,
+  bars: bars.slice(0, bars.length - minLen + i + 1),
+  currentPrice: bar.c,
+  p: bar.c,                          // السعر الحالي من sahmk
+  ch: stk?.ch ?? 0,                   // التغير اليومي
+  sec: stk?.sec ?? stk?.sector ?? '', // القطاع (دعم الاسمين)
+});
     }
     
     data.push({
