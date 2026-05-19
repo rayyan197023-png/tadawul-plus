@@ -3590,7 +3590,29 @@ function stockHealth(stk: any, bars: any[]): any {
     optScore*0.30 + ins.score*0.30 + alt.composite*0.15 +
     earningsSurprise*0.15 + sectorRotScore*0.10
   );
-  var lbLcConflict = (LB>72 && LC<33) ? 5 : (LC>72 && LB<33) ? 4 : 0;
+  // ════════════════════════════════════════════════════════
+  //  LB-LC Conflict Detection -- Continuous Scale
+  //  
+  //  المبدأ العلمي:
+  //  • Fundamental (LB) و Behavioral (LC) قد يتعارضان
+  //  • التعارض تدريجي (وليس on/off)
+  //  • نقيس الفجوة ونعطي عقوبة متناسبة
+  //  
+  //  العتبات:
+  //  • فرق >= 25 نقطة: بداية تعارض
+  //  • فرق >= 35 نقطة: تعارض حقيقي
+  //  • فرق >= 45 نقطة: تعارض حاد
+  // ════════════════════════════════════════════════════════
+  var lbLcGap = Math.abs(LB - LC);
+  var lbLcConflict = lbLcGap >= 25
+    ? Math.min(8, Math.round((lbLcGap - 20) / 3.5))
+    : 0;
+  // نطاق العقوبة: [0, 8]
+  // فرق 25 → 1.4 → 1
+  // فرق 30 → 2.9 → 3
+  // فرق 40 → 5.7 → 6
+  // فرق 50 → 8.6 → 8 (مُقيّد)
+
 
   // ── D) المضاعفات الخارجية
   var risk  = calcRiskAttribution(stk, bars);
