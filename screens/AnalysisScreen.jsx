@@ -1372,7 +1372,30 @@ const rankUp=stk.ch>0;
                           icon     = "📊"; urgency = "عادي"; whyColor = C.teal;
                         }
 
-                        return(
+                                             return(
+                          <>
+                          {/* 🆕 تحذير ذروة الشراء (RSI > 75) */}
+                          {(health.extras && health.extras.rsiV >= 75) && (
+                            <div style={{
+                              marginTop:8,
+                              background:"rgba(245,158,11,.1)",
+                              border:"1px solid rgba(245,158,11,.3)",
+                              borderRadius:10,
+                              padding:"6px 12px",
+                              display:"flex",alignItems:"center",gap:8,
+                            }}>
+                              <span style={{fontSize:14}}>⚠</span>
+                              <div style={{flex:1}}>
+                                <div style={{fontSize:9.5,color:C.amber,fontWeight:800}}>
+                                  RSI في ذروة الشراء ({Math.round(health.extras.rsiV)})
+                                </div>
+                                <div style={{fontSize:8.5,color:C.mist,marginTop:1}}>
+                                  السهم مرتفع نسبياً - احتمال تصحيح قريب
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
                           <div style={{
                             marginTop:8,
                             background: whyColor + "0d",
