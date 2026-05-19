@@ -3794,13 +3794,55 @@ function stockHealth(stk: any, bars: any[]): any {
   // ─── merged.score يبقى كما هو من calc9Layers ───
   // (لا نستبدله بـ conviction!)
   
-  // ─── grade يُحسب من score (متطابق مع calc9Layers) ───
+  // ════════════════════════════════════════════════════════
+  //  Grade System -- Professional + User-Friendly
+  //  
+  //  معايرة احترافية:
+  //  • S (85+): فرصة استثنائية (~1% من السوق)
+  //  • A (75-84): فرصة قوية (~5%)
+  //  • B (65-74): فرصة جيدة (~15%)
+  //  • C (55-64): محايد إيجابي (~25%)
+  //  • D (45-54): محايد سلبي (~30%)
+  //  • E (35-44): ضعيف (~20%)
+  //  • F (<35): سيء (~4%)
+  // ════════════════════════════════════════════════════════
+  
+  // ─── Grade حرف (للنظام الداخلي) ───
   merged.grade = merged.score >= 85 ? "S"
                : merged.score >= 75 ? "A"
                : merged.score >= 65 ? "B"
                : merged.score >= 55 ? "C"
                : merged.score >= 45 ? "D"
+               : merged.score >= 35 ? "E"
                : "F";
+  
+  // ─── Grade وصف عربي (للعرض) ───
+  (merged as any).gradeLabel = merged.score >= 85 ? "استثنائي 🏆"
+                              : merged.score >= 75 ? "ممتاز ⭐"
+                              : merged.score >= 65 ? "قوي ✓"
+                              : merged.score >= 55 ? "جيد"
+                              : merged.score >= 45 ? "محايد"
+                              : merged.score >= 35 ? "ضعيف"
+                              : "خطر ⚠";
+  
+  // ─── Grade لون (للواجهة) ───
+  (merged as any).gradeColor = merged.score >= 85 ? "#10c97e"  // أخضر مشرق
+                              : merged.score >= 75 ? "#10c97e"  // أخضر
+                              : merged.score >= 65 ? "#06b6d4"  // أزرق-أخضر
+                              : merged.score >= 55 ? "#06b6d4"  // أزرق
+                              : merged.score >= 45 ? "#6b7280"  // رمادي
+                              : merged.score >= 35 ? "#f59e0b"  // برتقالي
+                              : "#f04f5a";                       // أحمر
+  
+  // ─── Grade وصف تفصيلي (للـ tooltip) ───
+  (merged as any).gradeDescription = 
+    merged.score >= 85 ? "فرصة استثنائية - 1% من الأسهم"
+    : merged.score >= 75 ? "فرصة قوية - 5% من الأسهم"
+    : merged.score >= 65 ? "فرصة جيدة - 15% من الأسهم"
+    : merged.score >= 55 ? "أداء معقول - راقب التطورات"
+    : merged.score >= 45 ? "بدون إشارة واضحة"
+    : merged.score >= 35 ? "أداء ضعيف - تجنّب الدخول"
+    : "خطر عالٍ - قلّص أو ابتعد";
   
   // ─── conviction يُحفظ كحقل منفصل للعرض ───
   (merged as any).convictionScore = conviction;
