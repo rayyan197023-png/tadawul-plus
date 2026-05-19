@@ -4433,7 +4433,8 @@ function saveFeedbackState(state: any): void {
   }
 }
 
-function getAdaptiveWeightAdjustment(sym: string): any {
+function getAdaptiveWeightAdjustment(sym: string, currentRegime?: string): any {
+
   /* ✨ ABM-Powered Weight Adjustment
      ─────────────────────────────────
      يأخذ قراراً ذكياً بناءً على:
