@@ -3922,106 +3922,160 @@ function stockHealth(stk: any, bars: any[]): any {
 
 
 /* ══════════════════════════════════════════════════════════════
-   ① Ensemble Voting Engine
-   ثلاثة نماذج مستقلة تصوّت — القرار = أغلبية مرجّحة
-   النموذج التقني (LA) + الأساسي (LB) + السلوكي (LC)
-   كل نموذج يُصدر: "شراء" / "محايد" / "بيع"
-   الثقة = قوة الاتفاق بين النماذج
+   🎯 Ensemble Voting -- Professional Grade
+   
+   المبدأ العلمي:
+   3 نماذج مستقلة تصوّت:
+   • LA (Technical Analysis)
+   • LB (Fundamental Analysis)
+   • LC (Behavioral Analysis)
+   
+   النتائج:
+   • bullCount/bearCount/neutCount: للعرض
+   • agreementBoost: للـ confidence
+   • softBull: إشارة مستمرة [-1, 1]
+   • techConsensus: تأكيد فني
+   
+   ملاحظة:
+   ensembleVote = استشاري
+   sig النهائي يُحدد في stockHealth (Block 5)
 ══════════════════════════════════════════════════════════════ */
 function ensembleVote(LA: number, LB: number, LC: number, regime: any, gates: any, layers: any): any {
-  // layers اختياري — يُستخدم للتأكيد المتقدم
-  const L7 = layers ? (layers.L7||50) : 50;
-  const L1 = layers ? (layers.L1||50) : 50;
-  const L4 = layers ? (layers.L4||50) : 50;
-  const L5 = layers ? (layers.L5||50) : 50;
-  const L9 = layers ? (layers.L9||50) : 50;
-
-  // ── عتبات مُعايَرة بدقة ──
-  // التقني أكثر استجابةً (±10)، الأساسي أكثر تحفظاً (±13)
-  function modelVote(score: number, threshold_buy: number, threshold_sell: number): any {
-    if(score >= threshold_buy)  return {dir:1,  strength:(score-threshold_buy)/(100-threshold_buy)};
-    if(score <= threshold_sell) return {dir:-1, strength:(threshold_sell-score)/threshold_sell};
-    return {dir:0, strength:0};
+  // ─── Extract layers (للتأكيد المتقدم) ───
+  const L1 = layers ? (layers.L1 || 50) : 50;
+  const L5 = layers ? (layers.L5 || 50) : 50;
+  const L9 = layers ? (layers.L9 || 50) : 50;
+  
+  // ════════════════════════════════════════
+  //  Step 1: Vote per Model (Buy/Sell/Hold)
+  //  
+  //  عتبات معايرة:
+  //  • LA (تقني): حساس [60, 40]
+  //  • LB (أساسي): متوسط [62, 38]
+  //  • LC (سلوكي): مرن [58, 42]
+  // ════════════════════════════════════════
+  function modelVote(score: number, buyThr: number, sellThr: number): number {
+    if(score >= buyThr) return 1;   // صعودي
+    if(score <= sellThr) return -1; // هبوطي
+    return 0;                        // محايد
   }
-  const techVote  = modelVote(LA, 60, 40); // حساس — يُصدر إشارة أبكر
-  const fundVote  = modelVote(LB, 63, 37); // متوسط
-  const behavVote = modelVote(LC, 60, 40); // مرن
-
-  // ── أوزان مُحسَّنة حسب الـ Regime (LA أثقل دائماً) ──
+  
+  const techVote = modelVote(LA, 60, 40);
+  const fundVote = modelVote(LB, 62, 38);
+  const behavVote = modelVote(LC, 58, 42);
+  
+  // ════════════════════════════════════════
+  //  Step 2: Count Votes
+  // ════════════════════════════════════════
+  const votes = [techVote, fundVote, behavVote];
+  const bullCount = votes.filter(v => v > 0).length;
+  const bearCount = votes.filter(v => v < 0).length;
+  const neutCount = votes.filter(v => v === 0).length;
+  
+  // ════════════════════════════════════════
+  //  Step 3: Soft Voting (إشارة مستمرة)
+  //  
+  //  بدلاً من 1/0/-1 فقط:
+  //  نُعطي درجة بين -1 و +1
+  // ════════════════════════════════════════
+  // أوزان متطابقة مع stockHealth (Block 1)
   let wT, wF, wB;
   switch(regime){
-    case "bull":        wT=0.43; wF=0.34; wB=0.23; break;
-    case "bear":        wT=0.40; wF=0.38; wB=0.22; break;
-    case "sideways":    wT=0.32; wF=0.45; wB=0.23; break;
-    case "volatile":    wT=0.52; wF=0.25; wB=0.23; break;
-    case "news-driven": wT=0.32; wF=0.30; wB=0.38; break;
-    default:            wT=0.43; wF=0.34; wB=0.23;
+    case "bull":        wT=0.50; wF=0.30; wB=0.20; break;
+    case "bear":        wT=0.40; wF=0.35; wB=0.25; break;
+    case "sideways":    wT=0.30; wF=0.45; wB=0.25; break;
+    case "volatile":    wT=0.55; wF=0.25; wB=0.20; break;
+    case "news-driven": wT=0.30; wF=0.30; wB=0.40; break;
+    default:            wT=0.45; wF=0.30; wB=0.25;
   }
-
-  const weightedDir = techVote.dir*wT + fundVote.dir*wF + behavVote.dir*wB;
-  const votes    = [techVote.dir, fundVote.dir, behavVote.dir];
-  const bullCount = votes.filter(v=>v>0).length;
-  const bearCount = votes.filter(v=>v<0).length;
-  const neutCount = votes.filter(v=>v===0).length;
-
-  // ── L7 Bayesian كمحكّم مستقل ──
-  const l7Signal = L7 > 62 ? 1 : L7 < 38 ? -1 : 0;
-  const l7Strong = L7 > 72 || L7 < 28;
-
-  // ── Trend Score من L1+L4+L5 ──
-  const trendScore = (L1 + L4 + L5) / 3;
-  const trendDir   = trendScore > 60 ? 1 : trendScore < 40 ? -1 : 0;
-
-  // ── Boost مُحسَّن مع L7 + Trend ──
-  let agreementBoost;
-  if(bullCount===3 && l7Signal===1 && trendDir===1)        agreementBoost = 1.15; // تأكيد رباعي
-  else if(bearCount===3 && l7Signal===-1 && trendDir===-1) agreementBoost = 1.15;
-  else if((bullCount===3||bearCount===3) && gates===3)      agreementBoost = 1.12;
-  else if(bullCount===3||bearCount===3)                     agreementBoost = 1.10;
-  else if(bullCount===2||bearCount===2)                     agreementBoost = 1.03;
-  else                                                      agreementBoost = 0.91; // تعارض
-
-  // ── L7 Veto: الـ Bayesian يعارض الـ Ensemble بقوة → تخفيض ──
-  const l7Veto = l7Strong && ((l7Signal===-1 && bullCount===3) || (l7Signal===1 && bearCount===3));
-  if(l7Veto) agreementBoost *= 0.82;
-
-  // ── ① Soft Voting: قوة مستمرة لكل نموذج (بدل 0/1/-1 فقط) ──
-  const softT = _clamp((LA-50)/50, -1, 1);
-  const softF = _clamp((LB-50)/50, -1, 1);
-  const softB = _clamp((LC-50)/50, -1, 1);
-  const softBull = +(softT*wT + softF*wF + softB*wB).toFixed(3);
-
-  // ── ② Tech Consensus: L1+L5+L9 كلهم في نفس الاتجاه = تأكيد قوي ──
-  const techConsensus = L1>56&&L5>56&&L9>56 ? 1
-                      : L1<44&&L5<44&&L9<44 ? -1 : 0;
-
-  // ── ③ Gate Quality Score مستمر [0,1] ──
-  const gq1 = _clamp((L9-48)/52, 0, 1);
-  const gq2 = _clamp((L1-44)/56, 0, 1);
-  const gq3 = _clamp(((L4+L5)/2-44)/56, 0, 1);
-  const gateQuality = +((gq1+gq2+gq3)/3).toFixed(3);
-
-  // ── عتبة الإشارة ──
-  const signalThreshold = 0.16; // أكثر حساسية
-
-  const agreement = bullCount===3||bearCount===3 ? "كامل"
-                  : bullCount===2||bearCount===2 ? "جزئي"
-                  : neutCount>=2                  ? "محايد"
+  
+  const softT = _clamp((LA - 50) / 50, -1, 1);
+  const softF = _clamp((LB - 50) / 50, -1, 1);
+  const softB = _clamp((LC - 50) / 50, -1, 1);
+  const softBull = +(softT * wT + softF * wF + softB * wB).toFixed(3);
+  
+  // ════════════════════════════════════════
+  //  Step 4: Agreement Boost (للـ confidence)
+  //  
+  //  المنطق:
+  //  • إجماع كامل (3 votes): +10%
+  //  • إجماع جزئي (2 votes): +3%
+  //  • محايد (2+ neut): ±0%
+  //  • تعارض: -8%
+  // ════════════════════════════════════════
+  let agreementBoost = 1.0;
+  if(bullCount === 3 || bearCount === 3){
+    agreementBoost = 1.10;
+  }
+  else if(bullCount === 2 || bearCount === 2){
+    agreementBoost = 1.03;
+  }
+  else if(neutCount >= 2){
+    agreementBoost = 1.00;
+  }
+  else{
+    agreementBoost = 0.92;
+  }
+  
+  // Bonus إضافي إذا 3 gates أيضاً
+  if((bullCount === 3 || bearCount === 3) && gates === 3){
+    agreementBoost = Math.min(1.15, agreementBoost + 0.05);
+  }
+  
+  // ════════════════════════════════════════
+  //  Step 5: Tech Consensus
+  //  
+  //  L1 + L5 + L9 متفقة على نفس الاتجاه
+  //  = تأكيد فني قوي
+  // ════════════════════════════════════════
+  const techConsensus = L1 > 55 && L5 > 55 && L9 > 55 ? 1
+                      : L1 < 45 && L5 < 45 && L9 < 45 ? -1
+                      : 0;
+  
+  // ════════════════════════════════════════
+  //  Step 6: Agreement Label (للعرض)
+  // ════════════════════════════════════════
+  const agreement = bullCount === 3 || bearCount === 3 ? "كامل"
+                  : bullCount === 2 || bearCount === 2 ? "جزئي"
+                  : neutCount >= 2 ? "محايد"
                   : "متعارض";
-
+  
+  // ════════════════════════════════════════
+  //  Step 7: Ensemble Signal (استشاري فقط)
+  // ════════════════════════════════════════
+  const ensembleSig = bullCount >= 2 ? "صعودي"
+                    : bearCount >= 2 ? "هبوطي"
+                    : "محايد";
+  
+  // ─── النتيجة ───
   return {
-    weightedDir:+weightedDir.toFixed(3),
-    softBull, techConsensus, gateQuality,
-    agreement, agreementBoost:+agreementBoost.toFixed(3),
-    votes:{tech:techVote.dir, fund:fundVote.dir, behav:behavVote.dir},
-    bullCount, bearCount, neutCount,
-    l7Signal, l7Veto, trendDir, trendScore:+trendScore.toFixed(1),
-    signalThreshold,
-    ensembleSig: weightedDir > signalThreshold ? "صعودي"
-               : weightedDir < -signalThreshold ? "هبوطي"
-               : "محايد"
+    // Vote counts (للعرض في AnalysisScreen)
+    bullCount,
+    bearCount,
+    neutCount,
+    
+    // Soft voting (للحالات الحدية)
+    softBull,
+    
+    // Tech consensus (تأكيد إضافي)
+    techConsensus,
+    
+    // Agreement metrics
+    agreement,
+    agreementBoost: +agreementBoost.toFixed(3),
+    
+    // Ensemble signal (استشاري)
+    ensembleSig,
+    
+    // Votes individual (للشفافية)
+    votes: {
+      tech: techVote,
+      fund: fundVote,
+      behav: behavVote
+    }
   };
 }
+
 
 /* ══════════════════════════════════════════════════════════════
    🎯 Confidence Engine -- Professional Grade
