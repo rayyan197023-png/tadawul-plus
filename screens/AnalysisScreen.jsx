@@ -2323,15 +2323,17 @@ var neut = normalizeProb(prob.neutral);
                 <div style={{display:"flex",alignItems:"center",gap:12}}>
                   {/* النقطة الملوّنة */}
                   <div style={{
+                                      {/* النقطة الملوّنة */}
+                  {/* 🎯 معايرة: 65/55 */}
+                  <div style={{
                     width:44,height:44,borderRadius:12,flexShrink:0,
                     background:`linear-gradient(135deg,${health.sigC}22,${health.sigC}11)`,
                     border:`1px solid ${health.sigC}44`,
                     display:"flex",alignItems:"center",justifyContent:"center",
                     fontSize:18,
                   }}>
-                    {health.score>=75?"🚀":health.score>=60?"👁":"⚡"}
+                    {health.score>=65?"🚀":health.score>=55?"👁":"⚡"}
                   </div>
-
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
                       <span style={{fontSize:14,fontWeight:800,color:C.snow}}>{stk.name}</span>
