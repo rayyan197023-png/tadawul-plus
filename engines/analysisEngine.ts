@@ -3292,19 +3292,17 @@ function calc9Layers(stk: any, bars: any[]): any {
   const grade = score>=85?"S":score>=75?"A":score>=65?"B":score>=55?"C":score>=45?"D":"F";
 
 
-  // ════════════════════════════════════════
-  //  ⑦ Probability Output — معايرة محسّنة
-  //  المشكلة القديمة: neutral كان صغيراً جداً أو سالباً
-  //  الحل: neutral = فجوة حقيقية حول 50 ± 10
-  // ════════════════════════════════════════
-  const bullSignal    = score;
-  // bearSignal: يتصاعد بشكل سلس (ليس مجرد 100-score)
-  // عند score=50 → bear=50، عند score=85 → bear=10، عند score=20 → bear=75
-  const bearSignal    = _clamp(Math.round(100 - score * 1.05 + (allGates ? -8 : 5)), 0, 100);
-  // neutral: يكون أعلى في المنطقة الوسطى (45-65) حيث الإشارة ضبابية
-  const midnessFactor = Math.max(0, 20 - Math.abs(score-52)*0.8);
-  const neutralSignal = _clamp(Math.round(100 - bullSignal*0.7 - bearSignal*0.7 + midnessFactor), 5, 35);
-  const prob = _softmax3(bullSignal, bearSignal, neutralSignal);
+    // ════════════════════════════════════════════════════════
+  //  ⑦ Preliminary Probability (للأنظمة الخارجية)
+  //  
+  //  ملاحظة: probability النهائي يُحسب في stockHealth
+  //  باستخدام conviction + ensemble bias (أدق)
+  //  
+  //  هذا الحساب البدائي للأنظمة التي تستدعي calc9Layers
+  //  مباشرة (مثل backtestEngine)
+  // ════════════════════════════════════════════════════════
+  const prob = _softmax3(score - 50, 50 - score, 5);
+
 
     // ════════════════════════════════════════════════════════
   //  Preliminary Signal (calc9Layers level)
