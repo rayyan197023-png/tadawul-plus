@@ -1583,7 +1583,8 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                         }
 
 
-                        return(
+                                                return(
+                          <>
                           <div style={{
                             marginTop:8,
                             background:bg,
@@ -1604,6 +1605,65 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                               }}>{line2}</div>
                             </div>
                           </div>
+                          
+                          {/* 🆕 تنبيه التباعد - يظهر فقط عند تعارض CMF/OBV */}
+                          {(function(){
+                            var ex = health.extras || {};
+                            var cmf = ex.cmf;
+                            var obvUp = ex.obvRising;
+                            if (cmf == null || obvUp == null) return null;
+                            
+                            // تباعد إيجابي: OBV هابط + CMF إيجابي قوي
+                            if (!obvUp && cmf > 0.1) {
+                              return (
+                                <div style={{
+                                  marginTop:6,
+                                  background:"rgba(245,158,11,.08)",
+                                  border:"1px solid rgba(245,158,11,.25)",
+                                  borderRadius:10,
+                                  padding:"7px 12px",
+                                  display:"flex",alignItems:"center",gap:8,
+                                }}>
+                                  <span style={{fontSize:14}}>⚠</span>
+                                  <div style={{flex:1}}>
+                                    <div style={{fontSize:10,fontWeight:800,color:C.amber,marginBottom:2}}>
+                                      تباعد إيجابي مكتشف
+                                    </div>
+                                    <div style={{fontSize:8.5,color:C.mist,lineHeight:1.4}}>
+                                      السعر يهبط لكن المال يتدفق - قد يكون تجميعاً خفياً
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            }
+                            
+                            // تباعد سلبي: OBV صاعد + CMF سلبي
+                            if (obvUp && cmf < -0.1) {
+                              return (
+                                <div style={{
+                                  marginTop:6,
+                                  background:"rgba(240,79,90,.08)",
+                                  border:"1px solid rgba(240,79,90,.25)",
+                                  borderRadius:10,
+                                  padding:"7px 12px",
+                                  display:"flex",alignItems:"center",gap:8,
+                                }}>
+                                  <span style={{fontSize:14}}>⚠</span>
+                                  <div style={{flex:1}}>
+                                    <div style={{fontSize:10,fontWeight:800,color:C.coral,marginBottom:2}}>
+                                      تباعد سلبي مكتشف
+                                    </div>
+                                    <div style={{fontSize:8.5,color:C.mist,lineHeight:1.4}}>
+                                      السعر يصعد لكن المال يخرج - قد يكون تصريفاً
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            }
+                            
+                            return null;
+                          })()}
+                          </>
                         );
                       })()}
 
