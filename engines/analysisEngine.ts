@@ -3713,7 +3713,7 @@ function stockHealth(stk: any, bars: any[]): any {
   //  
   //  الفائدة: التعلم يؤثر على القرار النهائي ✓
   // ════════════════════════════════════════════════════════════
-  var WC_adapted = applyFeedbackToWeights(tech.weights || {}, stk.sym);
+  var WC_adapted = applyFeedbackToWeights(tech.weights || {}, stk.sym, regime);
   var feedbackApplied = WC_adapted !== tech.weights;
   
   if(feedbackApplied){
