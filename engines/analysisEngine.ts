@@ -3800,7 +3800,6 @@ function stockHealth(stk: any, bars: any[]): any {
   //  ✓ ثبات العتبات (65/55/45)
   //  ✓ الشفافية الكاملة
   // ════════════════════════════════════════════════════════
-  var merged = tech;
   // ─── merged.score يبقى كما هو من calc9Layers ───
   // (لا نستبدله بـ conviction!)
   
