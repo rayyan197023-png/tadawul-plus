@@ -3834,15 +3834,57 @@ function stockHealth(stk: any, bars: any[]): any {
   (merged as any).ensembleAgreement = ensembleAgreement;
   (merged as any).ensembleWarning = ensembleWarning;
 
-  // ════════════════════════════════════════════════
-  //  STEP 7: Probability (Softmax 3-way)
-  // ════════════════════════════════════════════════
-  var bullBoost = ensemble.bullCount===3 ? 15 : ensemble.bullCount===2 ? 8 : 0;
-  var bearBoost = ensemble.bearCount===3 ? 15 : ensemble.bearCount===2 ? 8 : 0;
-  var pBull = _clamp(conviction + bullBoost - bearBoost, 0, 100);
-  var pBear = _clamp(100 - conviction + bearBoost - bullBoost - (tech.gates && tech.gates.all ? 10 : 0), 0, 100);
-  var pNeutral = _clamp(100 - pBull - pBear + 10, 0, 100);
-  merged.probability = _softmax3(pBull, pBear, pNeutral);
+    // ════════════════════════════════════════════════════════════
+  //  🎯 STEP 7: Probability -- Softmax 3-way (Professional)
+  //  
+  //  المبدأ الرياضي:
+  //  1. logit_bull = score - 50 + ensemble_bias + gate_bias
+  //  2. logit_bear = -logit_bull
+  //  3. logit_neutral = -|logit_bull| (تردد = حياد)
+  //  4. softmax(logits) → probabilities
+  //  
+  //  النتيجة:
+  //  • score=80 → bull dominant
+  //  • score=50 → neutral dominant
+  //  • score=20 → bear dominant
+  //  
+  //  ضمانات:
+  //  ✓ Σ probabilities = 100%
+  //  ✓ منطقية رياضياً
+  //  ✓ متسقة مع score
+  // ════════════════════════════════════════════════════════════
+  
+  // ─── Step 1: حساب logits ───
+  // logit_bull = الإشارة الصعودية الخام
+  var logit_bull = conviction - 50;
+  
+  // Ensemble bias (إجماع النماذج)
+  var ensembleBias = 0;
+  if(ensemble.bullCount === 3) ensembleBias = 10;
+  else if(ensemble.bullCount === 2) ensembleBias = 5;
+  else if(ensemble.bearCount === 3) ensembleBias = -10;
+  else if(ensemble.bearCount === 2) ensembleBias = -5;
+  
+  // Gate bias (جودة البوابات)
+  var gateBias = 0;
+  if(tech.gates && tech.gates.passed === 3) gateBias = 5;
+  else if(tech.gates && tech.gates.passed === 2) gateBias = 2;
+  else if(tech.gates && tech.gates.passed === 0) gateBias = -5;
+  
+  // إجمالي logit للصعود
+  logit_bull = logit_bull + ensembleBias + gateBias;
+  
+  // logit_bear هو معكوس
+  var logit_bear = -logit_bull;
+  
+  // logit_neutral: عالٍ عند التردد (score قريب من 50)
+  // كلما ابتعدنا عن 50، يقل احتمال الحياد
+  var logit_neutral = 5 - Math.abs(logit_bull) * 0.4;
+  
+  // ─── Step 2: تطبيق Softmax 3-way ───
+  // _softmax3 موجود في الكود ويتعامل مع logits
+  merged.probability = _softmax3(logit_bull, logit_bear, logit_neutral);
+
 
   // ════════════════════════════════════════════════
   //  STEP 8: Portfolio Engine
