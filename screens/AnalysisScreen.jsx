@@ -1901,18 +1901,31 @@ var neut = normalizeProb(prob.neutral);
                                 );
                               })}
                             </div>
-                            {/* Row 2: CMF + OBV + VWAP */}
+                                                        {/* Row 2: CMF + OBV + VWAP */}
+                            {/* 🔧 إصلاح: تحسين VWAP وكشف تباعد CMF/OBV */}
                             <div style={{display:"flex",gap:5,marginBottom:5}}>
                               {[
                                 {l:"CMF", v:cmfV!=null?cmfV.toFixed(2):"-",
                                   c:cmfV>0.05?C.mint:cmfV<-0.05?C.coral:C.amber,
-                                  s:cmfV>0.15?"تدفق قوي":cmfV>0?"تدفق إيجابي":cmfV<-0.05?"ضغط بيع":"محايد"},
+                                  // 🆕 كشف التباعد: CMF إيجابي + OBV سلبي
+                                  s:(cmfV>0.05 && obvUp===false)?"تباعد إيجابي ⚠":
+                                    (cmfV<-0.05 && obvUp===true)?"تباعد سلبي ⚠":
+                                    cmfV>0.15?"تدفق قوي":cmfV>0?"تدفق إيجابي":cmfV<-0.05?"ضغط بيع":"محايد"},
                                 {l:"OBV", v:obvUp!=null?(obvUp?"صاعد ↑":"هابط ↓"):"-",
                                   c:obvUp?C.mint:C.coral,
-                                  s:obvUp?"تأكيد صعود":"تباعد"},
+                                  // 🆕 كشف التباعد في OBV
+                                  s:(obvUp && cmfV<-0.05)?"يصعد مع ضغط بيع":
+                                    (!obvUp && cmfV>0.05)?"يهبط مع تدفق إيجابي":
+                                    obvUp?"تأكيد صعود":"تباعد سلبي"},
                                 {l:"VWAP", v:vwapD!=null?vwapD.toFixed(1)+"%":"-",
-                                  c:vwapD>0?C.mint:vwapD<-3?C.coral:C.amber,
-                                  s:vwapD>2?"فوق VWAP":vwapD<-2?"تحت VWAP":"عند VWAP"},
+                                  c:vwapD>2?C.mint:vwapD<-2?C.coral:vwapD<-1?C.amber:vwapD>1?C.electric:C.amber,
+                                  // 🆕 وصف أدق لـ VWAP
+                                  s:vwapD>5?"فوق VWAP بقوة":
+                                    vwapD>2?"فوق VWAP":
+                                    vwapD>1?"يصعد فوق VWAP":
+                                    vwapD>-1?"عند VWAP":
+                                    vwapD>-3?"يهبط تحت VWAP":
+                                    "تحت VWAP بقوة"},
                               ].map(function(it,i){
                                 return(
                                   <div key={i} style={{
