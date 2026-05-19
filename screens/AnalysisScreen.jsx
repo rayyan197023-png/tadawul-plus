@@ -1945,9 +1945,14 @@ var neut = normalizeProb(prob.neutral);
                             {/* Row 1: RSI + MACD + ADX */}
                             <div style={{display:"flex",gap:5,marginBottom:5}}>
                               {[
-                                {l:"RSI", v:rsiV!=null?rsiV.toFixed(0):"-", c:rsiColor,
-
-                                  s:rsiV>70?"ذروة شراء":rsiV<30?"ذروة بيع":"محايد"},
+                                                                {l:"RSI", v:rsiV!=null?rsiV.toFixed(0):"-", c:rsiColor,
+                                  // 🔧 إضافة تحذير ذروة الشراء
+                                  s:rsiV>80?"ذروة شراء شديدة ⚠":
+                                    rsiV>70?"ذروة شراء":
+                                    rsiV<20?"ذروة بيع شديدة":
+                                    rsiV<30?"ذروة بيع":
+                                    rsiV>50?"محايد قوي":
+                                    rsiV>40?"محايد":"ضعيف"},
                                 {l:"MACD", v:macdH!=null?(macdH>0?"+":"")+macdH:"-", c:macdColor,
                                   s:macdH>0?"إيجابي":"سلبي"},
                                                                 {l:"ADX", v:adxV!=null?adxV:"-", c:adxColor,
