@@ -1554,35 +1554,41 @@ var alertPct = Math.max(0.5, Math.min(3, atrPct * 0.5));
 var stop = (stk.p * (1 - stopPct/100)).toFixed(2);
 var tgt  = (stk.p * (1 + tgtPct/100)).toFixed(2);
 var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
-                        // 🎯 معايرة علمية: 65/55/45
+                        
+
+                        // 🔧 إصلاح: نصوص أدق + سياق ثنائي (مالك/غير مالك)
                         var icon, line1, line2, bg, border;
                         if(health.score >= 65){
                           icon  = "✅";
-                          line1 = "ادخل بـ " + pct + "% من المحفظة";
+                          line1 = "فرصة شراء - " + pct + "% من المحفظة";
                           line2 = "وقف: " + stop + " · هدف: " + tgt;
                           bg    = "rgba(16,201,126,.08)";
                           border= "rgba(16,201,126,.25)";
                         } else if(health.score >= 55){
                           icon  = "🔔";
                           line1 = "اضبط تنبيهاً عند " + alert;
-                          line2 = "لا تدخل قبل تأكيد الحجم";
+                          line2 = "انتظر تأكيد الحجم قبل الشراء";
                           bg    = "rgba(245,158,11,.08)";
                           border= "rgba(245,158,11,.22)";
                         } else if(health.score >= 45){
                           icon  = "⏸";
-                          line1 = "لا إجراء مطلوب الآن";
-                          line2 = "راقب حتى تتحسن السيولة";
+                          line1 = "لا توجد إشارة دخول";
+                          line2 = "إذا كنت مالكاً: احتفظ وراقب";
                           bg    = "rgba(6,182,212,.07)";
                           border= "rgba(6,182,212,.2)";
+                        } else if(health.score >= 35){
+                          icon  = "⚠";
+                          line1 = "تجنّب الشراء الآن";
+                          line2 = "إذا كنت مالكاً: راجع وقف الخسارة";
+                          bg    = "rgba(245,158,11,.08)";
+                          border= "rgba(245,158,11,.22)";
                         } else {
                           icon  = "🔴";
-                          line1 = "قلّص إلى 50% من مركزك";
-                          line2 = "وقف دفاعي عند " + stop;
+                          line1 = "إشارة ضعف قوية";
+                          line2 = "إذا كنت مالكاً: قلّص أو وقف عند " + stop;
                           bg    = "rgba(240,79,90,.08)";
                           border= "rgba(240,79,90,.22)";
                         }
-
-
                                                 return(
                           <>
                           <div style={{
