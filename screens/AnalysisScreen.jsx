@@ -2020,6 +2020,138 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                         );
                       })()}
 
+                      {/* ══════════════════════════════════════════════════════
+                          🧠 CONVICTION CARD -- Single Source of Truth
+                          
+                          يعرض من analysisEngine (الإصلاحات 1+10):
+                          • convictionScore (منفصل عن score)
+                          • convictionLabel ("ثقة عالية ⭐")
+                          • convictionColor
+                          • convictionAlignment (متوافق/أعلى/أقل)
+                          • convictionGap
+                      ══════════════════════════════════════════════════════ */}
+                      {health.convictionScore != null && (function(){
+                        var cs = health.convictionScore;
+                        var cLabel = health.convictionLabel || "";
+                        var cColor = health.convictionColor || C.electric;
+                        var alignment = health.convictionAlignment || "متوافق";
+                        var gap = health.convictionGap || 0;
+                        var score = health.score;
+                        
+                        // تحديد رسالة Alignment
+                        var alignMsg, alignIcon, alignColor;
+                        if(alignment === "متوافق"){
+                          alignMsg = "محرك الثقة يدعم تقييم Score";
+                          alignIcon = "✓";
+                          alignColor = C.mint;
+                        } else if(alignment === "أعلى من Score"){
+                          alignMsg = "ensemble داعم - ثقة إضافية";
+                          alignIcon = "↑";
+                          alignColor = C.mint;
+                        } else {
+                          alignMsg = "ensemble متحفظ - تحقّق قبل الدخول";
+                          alignIcon = "↓";
+                          alignColor = C.amber;
+                        }
+                        
+                        return(
+                          <div style={{
+                            marginTop:8,
+                            background:"linear-gradient(135deg," + cColor + "0c," + cColor + "04)",
+                            border:"1px solid " + cColor + "28",
+                            borderRadius:12,
+                            overflow:"hidden",
+                          }}>
+                            {/* عنوان */}
+                            <div style={{
+                              display:"flex",alignItems:"center",justifyContent:"space-between",
+                              padding:"6px 12px",
+                              background:cColor + "10",
+                              borderBottom:"1px solid " + cColor + "18",
+                            }}>
+                              <div style={{display:"flex",alignItems:"center",gap:5}}>
+                                <span style={{fontSize:11}}>🧠</span>
+                                <span style={{fontSize:9,fontWeight:800,color:cColor,letterSpacing:".3px"}}>
+                                  محرك الثقة (Ensemble Voting)
+                                </span>
+                              </div>
+                              <div style={{
+                                background:cColor + "20",
+                                border:"1px solid " + cColor + "33",
+                                borderRadius:5,padding:"1px 7px",
+                              }}>
+                                <span style={{fontSize:8,fontWeight:700,color:cColor}}>
+                                  {cLabel}
+                                </span>
+                              </div>
+                            </div>
+                            
+                            {/* جسم البطاقة */}
+                            <div style={{padding:"10px 12px"}}>
+                              {/* المقارنة المرئية: Score vs Conviction */}
+                              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+                                {/* Score */}
+                                <div style={{flex:1,textAlign:"center"}}>
+                                  <div style={{fontSize:8,color:C.smoke,marginBottom:2}}>جودة الإشارة</div>
+                                  <div className="num" style={{
+                                    fontSize:22,fontWeight:900,
+                                    color:health.sigC,lineHeight:1,
+                                  }}>{score}</div>
+                                  <div style={{fontSize:7,color:C.smoke,marginTop:2}}>Score</div>
+                                </div>
+                                
+                                {/* السهم */}
+                                <div style={{flex:0,textAlign:"center"}}>
+                                  <div style={{
+                                    fontSize:18,
+                                    color: gap > 5 ? C.mint : gap < -5 ? C.amber : C.smoke,
+                                    fontWeight:900,lineHeight:1,
+                                  }}>
+                                    {gap > 5 ? "↗" : gap < -5 ? "↘" : "→"}
+                                  </div>
+                                  <div style={{fontSize:7,color:C.smoke,marginTop:3}}>
+                                    {gap > 0 ? "+" : ""}{gap}
+                                  </div>
+                                </div>
+                                
+                                {/* Conviction */}
+                                <div style={{flex:1,textAlign:"center"}}>
+                                  <div style={{fontSize:8,color:C.smoke,marginBottom:2}}>ثقة القرار</div>
+                                  <div className="num" style={{
+                                    fontSize:22,fontWeight:900,
+                                    color:cColor,lineHeight:1,
+                                  }}>{cs}</div>
+                                  <div style={{fontSize:7,color:cColor,marginTop:2,fontWeight:700}}>Conviction</div>
+                                </div>
+                              </div>
+                              
+                              {/* رسالة Alignment */}
+                              <div style={{
+                                background:alignColor + "10",
+                                border:"1px solid " + alignColor + "25",
+                                borderRadius:8,padding:"5px 10px",
+                                display:"flex",alignItems:"center",gap:6,
+                              }}>
+                                <span style={{
+                                  fontSize:10,fontWeight:900,
+                                  color:alignColor,
+                                }}>{alignIcon}</span>
+                                <div style={{flex:1}}>
+                                  <div style={{
+                                    fontSize:9,fontWeight:700,
+                                    color:alignColor,lineHeight:1.2,marginBottom:1,
+                                  }}>{alignment}</div>
+                                  <div style={{
+                                    fontSize:8,color:C.mist,lineHeight:1.4,
+                                  }}>{alignMsg}</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+
                       {/* ══ KPI Panel: Probability + PositionSize + Confidence ══ */}
                       {(function(){
                         var prob  = health.probability  || {};
