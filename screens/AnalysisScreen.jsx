@@ -1434,8 +1434,8 @@ const rankUp=stk.ch>0;
                         </div>
 
                         {/* نافذة الفرصة -- مبنية على بيانات الحجم الفعلية */}
-                        {/* 🎯 معايرة: 55 بدلاً من 60 */}
-                        {health.score>=55&&(function(){
+                        {/* 🎯 معايرة: 50 بدلاً من 55 - لتظهر مع "عاجل" */}
+                        {(health.score>=50 || ((health.extras && health.extras.vr) || 1) >= 1.4)&&(function(){
                           var vr   = (health.extras && health.extras.vr) || 1;
                           var L9   = (health.layers && health.layers.L9)  || 50;
 
