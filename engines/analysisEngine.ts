@@ -3169,58 +3169,15 @@ function calc9Layers(stk: any, bars: any[]): any {
     oppColor = C.coral;
     oppPriority = 0;
   }
-  // ════════════════════════════════════════
-  //  ④ Progressive Conflict Penalty
-  // ════════════════════════════════════════
-  const conflictData    = calcConflictPenalty({L1,L4,L5,L7,L9}, regime);
-  const innerConflictPenalty = conflictData.penalty;
-  const conflictCount   = conflictData.conflictCount;
-
-  // ════════════════════════════════════════
-  //  الدرجة الخام (مع Correlation-Controlled Weights)
-  // ════════════════════════════════════════
-  const rawWeighted = Math.round(
-    L9*WC.L9 + L1*WC.L1 + L5*WC.L5 + L4*WC.L4 +
-    L8*WC.L8 + L7*WC.L7 + L6*WC.L6 + L2*WC.L2 + L3*WC.L3
-  );
-  const rawScore = _clamp(rawWeighted - innerConflictPenalty, 0, 100);
-
-  // ════════════════════════════════════════
-  //  ⑤ Macro Impact Gate
-  // ════════════════════════════════════════
-  const macroScore100 = mc.score * 5; // [0,20] → [0,100]
-  const macroAdjusted = applyMacroGate(rawScore, macroScore100);
-
-  // ════════════════════════════════════════
-  //  ⑤-b TASI Context Adjustment — فريد لتاسي
-  // ════════════════════════════════════════
-  // ① TASI Dominance: إذا كبار الأسهم الـ3 متفقة مع الاتجاه → تأكيد
-  const tasiDomAdj = tc_tasi.domDir !== 0
-    ? Math.round(tc_tasi.domDir * (Math.abs(tc_tasi.domDir)===1 ? 5 : 2))
-    : 0;
-
-  // ② Oil-TASI Regime: CRASH → خفض 12%، DIVERGE → خفض 7%، RALLY → رفع 4%
-  const oilRegimeMult = tc_tasi.tasiRegime === "CRASH"   ? 0.88
-                      : tc_tasi.tasiRegime === "DIVERGE"  ? 0.93
-                      : tc_tasi.tasiRegime === "RALLY"    ? 1.04
-                      : 1.0; // DECOUPLE → محايد
-
-  // ③ Retail Euphoria: إذا الأفراد يبالغون في الصعود → خطر انعكاس
-  const retailPenalty = tc_tasi.retailEuphoria && macroAdjusted > 65 ? -6 : 0;
-
-  // ④ Sunday Effect: الأحد = إشارات أضعف موثوقية
-  const sundayAdj = tc_tasi.isSunday ? -3 : 0;
-
-  const tasiAdjustedRaw = _clamp(
-    Math.round((macroAdjusted + tasiDomAdj + retailPenalty + sundayAdj) * oilRegimeMult),
-    0, 100
-  );
-
-  // ════════════════════════════════════════
-  //  ⑤-c Momentum Persistence — خاصية تاسي
-  //  85% أفراد → momentum يستمر 3-5 أيام أطول
-  //  إشارة مستمرة = أقوى من إشارة لحظية
-  // ════════════════════════════════════════
+    // ════════════════════════════════════════════════════════════
+  //  Conflict Detection (Penalty calculation, no score impact yet)
+  // ════════════════════════════════════════════════════════════
+  const conflictData = calcConflictPenalty({L1,L4,L5,L7,L9}, regime);
+  const conflictCount = conflictData.conflictCount;
+  
+  // ════════════════════════════════════════════════════════════
+  //  Momentum Persistence (تستمر للجمع في adjustmentFactor)
+  // ════════════════════════════════════════════════════════════
   const consecutiveUp = (function(){
     let streak=0;
     for(let i=bars.length-1;i>=Math.max(0,bars.length-7);i--){
@@ -3237,28 +3194,103 @@ function calc9Layers(stk: any, bars: any[]): any {
     }
     return streak;
   })();
-  // حجم متصاعد مع الاتجاه = تأكيد Momentum
   const volTrendUp = vr > 1.15 && consecutiveUp >= 3;
   const volTrendDn = vr < 0.85 && consecutiveDn >= 3;
-  const momentumPersist = volTrendUp ? 8
-                        : consecutiveUp >= 4 ? 5
-                        : consecutiveUp >= 3 ? 3
-                        : volTrendDn ? -8
-                        : consecutiveDn >= 4 ? -5
-                        : consecutiveDn >= 3 ? -3
-                        : 0;
-
-  const finalRaw = _clamp(tasiAdjustedRaw + momentumPersist, 0, 100);
-
-  // ════════════════════════════════════════
-  //  ⑥ Confidence Engine
-  // ════════════════════════════════════════
-  const conflictRatio = _clamp(conflictCount * 0.08, 0, 0.24);
-  const score = _clamp(
-    Math.round(finalRaw * gateMultiplier * bayesMult * (1 - conflictRatio)),
-    0, 100
+  const momentumPersistRaw = volTrendUp ? 0.08
+                            : consecutiveUp >= 4 ? 0.05
+                            : consecutiveUp >= 3 ? 0.03
+                            : volTrendDn ? -0.08
+                            : consecutiveDn >= 4 ? -0.05
+                            : consecutiveDn >= 3 ? -0.03
+                            : 0;
+  
+  // ════════════════════════════════════════════════════════════
+  //  🎯 BASE SCORE -- Weighted Layer Score (لا تعديلات)
+  // ════════════════════════════════════════════════════════════
+  const baseScore = _clamp(Math.round(
+    L9*WC.L9 + L1*WC.L1 + L5*WC.L5 + L4*WC.L4 +
+    L8*WC.L8 + L7*WC.L7 + L6*WC.L6 + L2*WC.L2 + L3*WC.L3
+  ), 0, 100);
+  
+  // ════════════════════════════════════════════════════════════
+  //  🎯 UNIFIED ADJUSTMENT FACTOR -- 5 components, ONE multiplier
+  //  
+  //  المبدأ العلمي:
+  //  • كل factor في [0.7, 1.15]
+  //  • Weighted combination (لا ضرب متتالي)
+  //  • Final adjustment في [0.7, 1.15]
+  //  • Predictable, traceable, professional
+  // ════════════════════════════════════════════════════════════
+  
+  // ─── 1. Conflict Factor (وزن 25%) ───
+  // كل تعارض = خصم 4-6%
+  const conflictRatio = _clamp(conflictCount * 0.05, 0, 0.20);
+  const conflictFactor = 1.0 - conflictRatio;
+  // نطاق: [0.80, 1.00]
+  
+  // ─── 2. Macro Factor (وزن 20%) ───
+  // البيئة الاقتصادية الكلية
+  const macroScore100 = mc.score * 5; // [0,20] → [0,100]
+  const macroFactor = macroScore100 < 25 ? 0.85
+                    : macroScore100 < 40 ? 0.92
+                    : macroScore100 > 75 ? 1.08
+                    : macroScore100 > 60 ? 1.04
+                    : 1.0;
+  // نطاق: [0.85, 1.08]
+  
+  // ─── 3. TASI Context Factor (وزن 20%) ───
+  // خصائص السوق السعودي الفريدة
+  const tasiBase = tc_tasi.tasiRegime === "CRASH"   ? 0.88
+                 : tc_tasi.tasiRegime === "DIVERGE" ? 0.94
+                 : tc_tasi.tasiRegime === "RALLY"   ? 1.06
+                 : 1.0; // DECOUPLE
+  
+  // Dominance bonus/penalty
+  const tasiDom = tc_tasi.domDir !== 0
+                ? tc_tasi.domDir * 0.03 // ±3% max
+                : 0;
+  
+  // Retail euphoria warning (للأسهم القوية)
+  const retailAdj = tc_tasi.retailEuphoria && baseScore > 65 ? -0.04 : 0;
+  
+  // Sunday effect (تذبذب أعلى)
+  const sundayAdj = tc_tasi.isSunday ? -0.02 : 0;
+  
+  const tasiFactor = _clamp(tasiBase + tasiDom + retailAdj + sundayAdj, 0.85, 1.10);
+  // نطاق: [0.85, 1.10]
+  
+  // ─── 4. Gate Quality Factor (وزن 20%) ───
+  // كم بوابة نجحت
+  const gateFactor = gatesPassed === 3 ? 1.10
+                   : gatesPassed === 2 ? 1.00
+                   : gatesPassed === 1 ? 0.90
+                   : 0.80;
+  // نطاق: [0.80, 1.10]
+  
+  // ─── 5. Momentum + Bayes Factor (وزن 15%) ───
+  // الزخم + التحديث البايزي
+  const momentumBayesFactor = _clamp(
+    1.0 + momentumPersistRaw + (bayesMult - 1.0) * 0.5,
+    0.85, 1.10
   );
+  // نطاق: [0.85, 1.10]
+  
+  // ─── 🎯 COMBINED ADJUSTMENT (weighted average) ───
+  const adjustmentFactor = _clamp(
+    conflictFactor * 0.25 +
+    macroFactor * 0.20 +
+    tasiFactor * 0.20 +
+    gateFactor * 0.20 +
+    momentumBayesFactor * 0.15,
+    0.70, 1.15  // حدود صارمة!
+  );
+  
+  // ════════════════════════════════════════════════════════════
+  //  🎯 FINAL SCORE -- Applied ONCE
+  // ════════════════════════════════════════════════════════════
+  const score = _clamp(Math.round(baseScore * adjustmentFactor), 0, 100);
   const grade = score>=85?"S":score>=75?"A":score>=65?"B":score>=55?"C":score>=45?"D":"F";
+
 
   // ════════════════════════════════════════
   //  ⑦ Probability Output — معايرة محسّنة
