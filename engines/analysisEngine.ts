@@ -3844,12 +3844,66 @@ function stockHealth(stk: any, bars: any[]): any {
     : merged.score >= 35 ? "أداء ضعيف - تجنّب الدخول"
     : "خطر عالٍ - قلّص أو ابتعد";
   
-  // ─── conviction يُحفظ كحقل منفصل للعرض ───
+  // ════════════════════════════════════════════════════════
+  //  Conviction Display -- Enhanced
+  //  
+  //  conviction = درجة الثقة في القرار النهائي
+  //  مختلف عن score (الذي هو جودة الإشارة)
+  //  
+  //  مثال:
+  //  • score 80 + conviction 75 = فرصة قوية وموثوقة ✅
+  //  • score 80 + conviction 55 = فرصة قوية لكن إجماع ضعيف ⚠
+  // ════════════════════════════════════════════════════════
+  
+  // ─── conviction أساسي ───
   (merged as any).convictionScore = conviction;
-  (merged as any).convictionLabel = conviction >= 75 ? "ثقة عالية"
-                                  : conviction >= 60 ? "ثقة جيدة"
-                                  : conviction >= 45 ? "ثقة معقولة"
-                                  : "ثقة منخفضة";
+  
+  // ─── conviction label عربي + emoji ───
+  (merged as any).convictionLabel = conviction >= 85 ? "ثقة استثنائية 🏆"
+                                  : conviction >= 75 ? "ثقة عالية ⭐"
+                                  : conviction >= 65 ? "ثقة جيدة ✓"
+                                  : conviction >= 55 ? "ثقة معقولة"
+                                  : conviction >= 45 ? "ثقة محدودة"
+                                  : "ثقة منخفضة ⚠";
+  
+  // ─── conviction color للواجهة ───
+  (merged as any).convictionColor = conviction >= 75 ? "#10c97e"
+                                  : conviction >= 65 ? "#06b6d4"
+                                  : conviction >= 55 ? "#06b6d4"
+                                  : conviction >= 45 ? "#6b7280"
+                                  : conviction >= 35 ? "#f59e0b"
+                                  : "#f04f5a";
+  
+  // ─── conviction vs score gap (للشفافية) ───
+  // هل conviction يدعم score أم يتعارض معه؟
+  var convictionGap = conviction - merged.score;
+  (merged as any).convictionAlignment = 
+    Math.abs(convictionGap) <= 5 ? "متوافق" // gap صغير
+    : convictionGap > 5 ? "أعلى من Score" // ensemble داعم
+    : "أقل من Score"; // ensemble متحفظ
+  
+  (merged as any).convictionGap = convictionGap;
+  
+  // ─── Score Word (وصف عربي للـ score) ───
+  (merged as any).scoreWord = scoreWord(merged.score);
+  
+  // ─── Probability Percentages (للعرض السريع) ───
+  if(merged.probability){
+    (merged as any).probabilityDisplay = {
+      bull: Math.round(merged.probability.bull * 100) + "%",
+      bear: Math.round(merged.probability.bear * 100) + "%",
+      neutral: Math.round(merged.probability.neutral * 100) + "%",
+      // الإشارة الغالبة
+      dominant: merged.probability.bull > merged.probability.bear && merged.probability.bull > merged.probability.neutral ? "صعودي"
+              : merged.probability.bear > merged.probability.bull && merged.probability.bear > merged.probability.neutral ? "هبوطي"
+              : "محايد",
+      // قوة الإشارة
+      strength: Math.max(merged.probability.bull, merged.probability.bear, merged.probability.neutral) >= 0.60 ? "قوية"
+              : Math.max(merged.probability.bull, merged.probability.bear, merged.probability.neutral) >= 0.45 ? "متوسطة"
+              : "ضعيفة"
+    };
+  }
+
 
 
   
