@@ -2194,8 +2194,7 @@ var neut = normalizeProb(prob.neutral);
                             <div style={{fontSize:24,flexShrink:0}}>⭐</div>
                             <div>
                               <div style={{fontSize:12,fontWeight:900,color:C.gold,marginBottom:2}}>
-                                فرصة نادرة — درجة {health.score}/100
-                                                              فرصة نادرة -- درجة {health.score}/100
+                                فرصة نادرة -- درجة {health.score}/100
                               </div>
                               <div style={{fontSize:10,color:C.mist,lineHeight:1.5}}>
                                 {globalRank === 1 
