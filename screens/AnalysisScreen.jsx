@@ -1430,8 +1430,8 @@ const rankUp=stk.ch>0;
                                 fontSize:9,color:C.mist,
                                 lineHeight:1.55,fontWeight:500,
                               }}>{why}</span>
-                            </div>
-                          </div>
+                            </div>                                                   </div>
+                          </>
                         );
                       })()}
 
