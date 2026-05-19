@@ -151,36 +151,40 @@ export default function BacktestScreen() {
           
           historicalData = await generateDataFromStockListReal(enrichedStocks, config.days, 15);
 
-// فحص أيام متعددة
-const day0 = historicalData[0];
-const day50 = historicalData[50];
-const day100 = historicalData[100];
-const day200 = historicalData[200];
+// فحص stockHealth على بيانات حقيقية
+const testIdx = Math.min(40, historicalData.length - 1);
+const testDay = historicalData[testIdx];
+const testStock = testDay?.stocksData?.[0];
 
-const info = [];
-[
-  { label: 'اليوم 0', day: day0 },
-  { label: 'اليوم 50', day: day50 },
-  { label: 'اليوم 100', day: day100 },
-  { label: 'اليوم 200', day: day200 },
-].forEach(({ label, day }) => {
-  if (!day) {
-    info.push(`${label}: لا يوجد`);
-    return;
+let result = 'لم يتم';
+let hasFields = '';
+
+if (testStock) {
+  hasFields = 
+    'p=' + (testStock.p !== undefined ? '✅' : '❌') +
+    ' ch=' + (testStock.ch !== undefined ? '✅' : '❌') +
+    ' pe=' + (testStock.pe !== undefined ? '✅' : '❌') +
+    ' sec=' + (testStock.sec !== undefined ? '✅' : '❌');
+  
+  try {
+    const health = stockHealth(testStock, testStock.bars);
+    if (health && health.score !== undefined) {
+      result = '✅ score=' + health.score + ', sig=' + health.sig;
+    } else {
+      result = '⚠️ health فارغ';
+    }
+  } catch (e) {
+    result = '❌ ' + (e.message || 'خطأ');
   }
-  const sd = day.stocksData;
-  const count = sd?.length || 0;
-  const first = sd?.[0];
-  const bars = first?.bars?.length || 0;
-  const keys = first ? Object.keys(first).slice(0, 5).join(',') : 'لا';
-  info.push(`${label}: ${count} سهم، أول=${first?.sym || 'لا'}, شموع=${bars}`);
-});
+}
 
 alert(
-  '🔍 تشخيص متعدد الأيام:\n\n' +
-  info.join('\n\n') + '\n\n' +
-  '═══════════════\n' +
-  'إجمالي الأيام: ' + (historicalData?.length || 0)
+  '🔍 فحص stockHealth:\n\n' +
+  'اليوم: ' + testIdx + '\n' +
+  'السهم: ' + (testStock?.sym || 'لا') + '\n' +
+  'شموع: ' + (testStock?.bars?.length || 0) + '\n\n' +
+  'الحقول:\n' + hasFields + '\n\n' +
+  'النتيجة:\n' + result
 );
         
           if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
