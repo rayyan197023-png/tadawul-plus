@@ -3638,55 +3638,80 @@ function stockHealth(stk: any, bars: any[]): any {
   // ════════════════════════════════════════════════
   var ensemble = ensembleVote(LA, LB, LC, regime, tech.gates ? tech.gates.passed : 0, layers);
 
-  // ════════════════════════════════════════════════
-  //  STEP 3: حساب Conviction (مع ensemble متاح)
-  // ════════════════════════════════════════════════
+    // ════════════════════════════════════════════════════════════
+  //  🎯 STEP 3: UNIFIED CONVICTION -- Professional Grade
+  //  
+  //  المبدأ العلمي:
+  //  conviction = Σ(L_i × w_i) × ensembleQualityFactor
+  //  
+  //  المكونات:
+  //  • LA = Technical Analysis (calc9Layers score)
+  //  • LB = Fundamental Analysis (DCF + FM + EQ)
+  //  • LC = Behavioral Analysis (Options + Insider)
+  //  
+  //  العامل الوحيد:
+  //  • ensembleQualityFactor: [0.85, 1.15]
+  //    يعكس جودة الاتفاق بين النماذج
+  //  
+  //  ملاحظة: التعديلات الأخرى (macro, tasi) موجودة في
+  //  score (Block 4) - لا نُكررها هنا
+  // ════════════════════════════════════════════════════════════
   
-  // ── F.1) Raw Conviction الأساسي
-  var rawConviction = (LA*wA + LB*wB + LC*wC) * finalMult * bayesAdj;
+  // ─── Base Conviction (Weighted Ensemble) ───
+  var baseConviction = LA * wA + LB * wB + LC * wC;
   
-  // ── F.2) LA Boost إذا الاتفاق قوي و LA عالي (الآن يعمل!)
-  if(ensemble.agreementBoost >= 1.10 && LA >= 75){
-    var laBoost = 1.0 + (LA - 75) / 200; // boost: 1.000 إلى 1.125
-    rawConviction = (LA*wA*laBoost + LB*wB + LC*wC) * finalMult * bayesAdj;
+  // ─── Conflict Penalty (للنماذج المتعارضة) ───
+  // lbLcConflict موجود من قبل (تعارض LB و LC)
+  // و fundConflict (تعارض DCF و EQ)
+  var ensembleConflict = (lbLcConflict || 0) + (fundConflict || 0);
+  baseConviction = baseConviction - ensembleConflict;
+  
+  // ─── Ensemble Quality Factor (واحد فقط!) ───
+  var ensembleQualityFactor = 1.0;
+  
+  // 1. Agreement Bonus
+  if(ensemble.bullCount === 3 || ensemble.bearCount === 3){
+    ensembleQualityFactor *= 1.08;  // إجماع كامل: +8%
+  }
+  else if(ensemble.bullCount === 2 || ensemble.bearCount === 2){
+    ensembleQualityFactor *= 1.03;  // إجماع جزئي: +3%
+  }
+  else if(ensemble.neutCount >= 2){
+    ensembleQualityFactor *= 0.95;  // أغلبية محايدة: -5%
+  }
+  else{
+    ensembleQualityFactor *= 0.92;  // تعارض كامل: -8%
   }
   
-  // ── F.3) Conviction الأولي
-  var conviction0 = _clamp(Math.round(rawConviction - lbLcConflict), 0, 100);
-  
-  // ── F.4) تطبيق Agreement Boost
-  var conviction = _clamp(Math.round(conviction0 * ensemble.agreementBoost), 0, 100);
-
-  // ── F.5) Soft Vote Adjustment (للحالات الحدية)
-  if(Math.abs(conviction - 50) < 10 && ensemble.softBull !== undefined){
-    conviction = _clamp(Math.round(conviction + ensemble.softBull * 6), 0, 100);
+  // 2. Tech Consensus Bonus (L1+L5+L9 متفقة)
+  if(ensemble.techConsensus === 1){
+    ensembleQualityFactor *= 1.03;  // اتفاق صاعد: +3%
+  }
+  else if(ensemble.techConsensus === -1){
+    ensembleQualityFactor *= 0.97;  // اتفاق هابط: -3%
   }
   
-  // ── F.6) Tech Consensus Boost
-  if(ensemble.techConsensus !== 0){
-    conviction = _clamp(conviction + ensemble.techConsensus * 3, 0, 100);
-  }
-
-  // ── F.7) TASI Context Adjustments
-  if(tasiCtx){
-    if(tasiCtx.domDir !== 0){
-      var tasiDomBoost = tasiCtx.domDir * (Math.abs(tasiCtx.domDir)===1 ? 5 : 2);
-      conviction = _clamp(conviction + tasiDomBoost, 0, 100);
-    }
-    if(tasiCtx.tasiRegime === "CRASH")   conviction = _clamp(Math.round(conviction*0.88), 0, 100);
-    if(tasiCtx.tasiRegime === "RALLY")   conviction = _clamp(Math.round(conviction*1.04), 0, 100);
-    if(tasiCtx.tasiRegime === "DIVERGE") conviction = _clamp(Math.round(conviction*0.94), 0, 100);
-    if(tasiCtx.retailEuphoria && conviction > 65)
-      conviction = _clamp(conviction - 6, 0, 100);
-    if(tasiCtx.isSunday && Math.abs(conviction-50) < 15)
-      conviction = _clamp(conviction + (conviction>50 ? -3 : 3), 0, 100);
-  }
-
-  // ════════════════════════════════════════════════
-  //  STEP 4: FEEDBACK LOOP (الأوزان التكيّفية)
-  // ════════════════════════════════════════════════
+  // 3. Apply Quality Factor (حد أقصى)
+  ensembleQualityFactor = _clamp(ensembleQualityFactor, 0.85, 1.15);
+  
+  // ─── Final Conviction (مرة واحدة!) ───
+  var conviction = _clamp(
+    Math.round(baseConviction * ensembleQualityFactor),
+    0, 100
+  );
+  
+  // ════════════════════════════════════════════════════════════
+  //  🎯 STEP 4: FEEDBACK LOOP (مبسط)
+  //  
+  //  الـ feedback يُطبق على الأوزان (WC)
+  //  ليس على conviction مباشرة
+  //  لتجنب double-counting
+  // ════════════════════════════════════════════════════════════
   var WC_adapted = applyFeedbackToWeights(tech.weights || {}, stk.sym);
-  if(WC_adapted !== tech.weights){
+  var feedbackApplied = WC_adapted !== tech.weights;
+  
+  if(feedbackApplied){
+    // إعادة حساب LA مع الأوزان المُعدّلة
     var L = layers;
     var rawAdapted = Math.round(
       (L.L9||0)*WC_adapted.L9 + (L.L1||0)*WC_adapted.L1 + (L.L5||0)*WC_adapted.L5 +
@@ -3694,11 +3719,18 @@ function stockHealth(stk: any, bars: any[]): any {
       (L.L6||0)*WC_adapted.L6 + (L.L2||0)*WC_adapted.L2 + (L.L3||0)*WC_adapted.L3
     );
     var LA_adapted = _clamp(rawAdapted, 0, 100);
+    
+    // مزج محافظ: 80% الأصلي + 20% المُعدّل
+    // (نظراً لأن الـ feedback تعديل تدريجي)
+    var convictionAdapted = _clamp(Math.round(
+      (LA_adapted * wA + LB * wB + LC * wC) * ensembleQualityFactor
+    ), 0, 100);
+    
     conviction = _clamp(Math.round(
-      conviction*0.70 +
-      (LA_adapted*wA + LB*wB + LC*wC) * finalMult * bayesAdj * ensemble.agreementBoost * 0.30
+      conviction * 0.80 + convictionAdapted * 0.20
     ), 0, 100);
   }
+
 
   // ════════════════════════════════════════════════
   //  STEP 5: CONFIDENCE THRESHOLD
