@@ -1400,22 +1400,23 @@ const rankUp=stk.ch>0;
                           borderRadius:12,padding:"9px 12px",
                           display:"flex",alignItems:"center",gap:8,
                         }}>
+                          {/* 🎯 معايرة علمية: 65/55/45 */}
                           <span style={{fontSize:20,flexShrink:0,lineHeight:1}}>
-                            {health.score>=75?"🚀":health.score>=60?"👁":health.score>=45?"⚖️":"🛡"}
+                            {health.score>=65?"🚀":health.score>=55?"👁":health.score>=45?"⚖️":"🛡"}
                           </span>
                           <div>
                             <div style={{
                               fontSize:11,fontWeight:800,
                               color:health.sigC,lineHeight:1,marginBottom:3,
                             }}>
-                              {health.score>=75?"فرصة الآن"
-                              :health.score>=60?"راقب عن قرب"
+                              {health.score>=65?"فرصة الآن"
+                              :health.score>=55?"راقب عن قرب"
                               :health.score>=45?"لا تتسرع"
                               :"احتاط"}
                             </div>
                             <div style={{fontSize:8.5,color:C.smoke,lineHeight:1.3}}>
-                                                                                          {health.score>=75?"السيولة والزخم يدعمان"
-                              :health.score>=60?"انتظر تأكيد الحجم"
+                                                                                          {health.score>=65?"السيولة والزخم يدعمان"
+                              :health.score>=55?"انتظر تأكيد الحجم"
                               :health.score>=45?"الإشارة غير حاسمة"
                               :health.score>=30 && stk.ch >= -2?"إشارة ضعيفة"
                               :stk.ch < -2?"ضغط بيعي مرتفع"
