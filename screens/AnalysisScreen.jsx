@@ -350,6 +350,7 @@ const ohlcvCache = useOHLCVCache(syms, '3M');
 
 
   // ✨ Performance: حساب الأعداد مرة واحدة بدل تكرار filters
+  // 🎯 معايرة علمية: العتبات معدّلة لتعكس التوزيع الفعلي للـ scores
   const signalCounts = useMemo(() => {
     if (!allData || !Array.isArray(allData) || allData.length === 0) {
       return { buy: 0, watch: 0, neutral: 0, reduce: 0, total: 0 };
@@ -360,9 +361,9 @@ const ohlcvCache = useOHLCVCache(syms, '3M');
     allData.forEach(d => {
       if (!d || !d.health) return;
       const score = d.health.score;
-      if (score >= 75) buy++;
-      else if (score >= 60) watch++;
-      else if (score >= 45) neutral++;
+      if (score >= 65) buy++;          // كان 75 - معايرة علمية
+      else if (score >= 55) watch++;   // كان 60 - معايرة علمية
+      else if (score >= 45) neutral++; // يبقى - دفاعي
       else reduce++;
     });
     
