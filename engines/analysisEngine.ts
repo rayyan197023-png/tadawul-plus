@@ -2150,20 +2150,7 @@ function calcConflictPenalty(layers: any, regime: any): any {
    ثم تُدمج كـ sub-scores في calc9Layers لتعزيز دقة النتائج
 ══════════════════════════════════════════════════════════════ */
 
-const RADAR_MACRO={
-  oilPrice:   85.4,   // USD/barrel — WTI
-  oilTarget:  80,     // نقطة التوازن لميزانية السعودية
-  saudiRepoRate: 5.5, // % سعر الريبو
-  fedRate:    5.25,   // % الفيدرالي الأمريكي
-  cpi:        1.7,    // % تضخم المستهلك السعودي
-  gdpGrowth:  2.8,    // % نمو الناتج المحلي
-  tasiPE:     20.1,   // مكرر أرباح تاسي
-  usdSar:     3.75,   // سعر الصرف (ثابت)
-  vix:        18.5,   // مؤشر الخوف العالمي
-  m2Growth:   8.2,    // % نمو عرض النقود M2
-  // تصنيف البيئة الكلية: Bullish/Neutral/Bearish
-  env: "neutral",
-};
+
 
 const RADAR_SECTOR_PE={"البنوك":12.5,"الطاقة":16.0,"البتروكيماويات":15.0,"الاتصالات":14.0,"التجزئة":20.0,"الغذاء":22.0,"التأمين":16.0,"التعدين":18.0,"الصناعة":17.0};
 const RADAR_OIL_SENSITIVITY={
