@@ -3359,10 +3359,11 @@ function calc9Layers(stk: any, bars: any[]): any {
       pricePos, valScore,
       mktBreadth:+mktBreadth.toFixed(2),
       mktMomentum:+mktWtd.toFixed(2),
-      rawScore, rawWeighted,
-      macroScore100, macroAdjusted:+macroAdjusted.toFixed(1),
+      baseScore, adjustmentFactor:+adjustmentFactor.toFixed(3),
+      macroScore100,
       gateMultiplier:+gateMultiplier.toFixed(2),
       regimeData,
+
       // مؤشرات الرادار
       cmf:+cmf.toFixed(3),
       obvRising:obv.rising,
