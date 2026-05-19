@@ -3716,58 +3716,91 @@ function stockHealth(stk: any, bars: any[]): any {
   merged.score = conviction;
   merged.grade = conviction>=85 ? "S" : conviction>=75 ? "A" : conviction>=65 ? "B" : conviction>=55 ? "C" : conviction>=45 ? "D" : "F";
 
+  
+  // ════════════════════════════════════════════════════════════
+  //  🎯 UNIFIED SIGNAL LOGIC -- Professional Grade
+  //  
+  //  المبادئ العلمية:
+  //  1. score = القرار الرئيسي (لا conviction)
+  //  2. gates = filter (لا يُغيّر القرار جذرياً)
+  //  3. opp.priority = bonus للفرص الاستثنائية
+  //  4. ensemble = warning فقط (لا يحكم)
+  //  5. shouldAbstain = نادر جداً (فقط للحالات الخطرة)
+  //  
+  //  المستويات (6 levels):
+  //  🌟 Rare Opportunity: score≥80 + gates.all + opp=3
+  //  🚀 Strong Buy:      score≥70 + gates≥2
+  //  ✅ Buy:             score≥60 + gates≥2
+  //  👁 Watch:           score≥50 + gates≥1
+  //  ⚖️ Neutral:          score≥40
+  //  🔴 Reduce:          score<40
+  //  🛑 Abstain:         (نادر) score<30 + 4+ conflicts
+  // ════════════════════════════════════════════════════════════
+  
   var sig, sigC;
+  var isRareOpportunity = false;
   
-  // ── أولوية 1: shouldAbstain = "انتظر" دائماً (لا منطق متناقض)
-  if(ct.shouldAbstain){
+  // ─── Level 1: 🛑 Abstain (نادر جداً - حالات الخطر فقط) ───
+  if(conviction < 30 && conflictCnt >= 4 && tech.gates.passed === 0){
     sig = "انتظر";
-    sigC = "#6b7280";
-  }
-  // ── أولوية 2: شراء قوي (3 gates + conviction>=75 + bullish ensemble + strong)
-  else if(tech.gates && tech.gates.passed===3 && conviction>=75 && ensemble.bullCount>=2 && ct.isStrong){
-    sig = "شراء قوي";
-    sigC = "#10c97e";
-  }
-  // ── أولوية 3: مراقبة قوية (gates + conviction + bearish hint)
-  else if(tech.gates && tech.gates.passed===3 && conviction>=75 && ensemble.ensembleSig==="هبوطي" && ct.isStrong){
-    sig = "مراقبة";
-    sigC = "#f59e0b";
-  }
-  // ── أولوية 4: مراقبة عادية
-  else if(tech.gates && tech.gates.passed>=2 && conviction>=60 && ct.isNormal){
-    sig = "مراقبة";
-    sigC = "#f59e0b";
-  }
-  // ── أولوية 5: مراقبة بـ Soft + TC
-  else if(conviction>=52 && tech.gates && tech.gates.passed>=1){
-    var softCV = ensemble.softBull || 0;
-    if(Math.abs(softCV)>0.30 && ensemble.techConsensus!==0 &&
-       Math.sign(softCV) === Math.sign(conviction-50)){
-      sig = "مراقبة";
-      sigC = "#f59e0b";
-    } else {
-      sig = "محايد";
-      sigC = "#06b6d4";
-    }
-  }
-  // ── أولوية 6: تخفيف (conviction منخفض + bear)
-  else if(conviction<40 && ensemble.bearCount>=2){
-    sig = "تخفيف";
-    sigC = "#f04f5a";
-  }
-  // ── أولوية 7: تخفيف عام
-  else if(conviction<45){
-    sig = "تخفيف";
-    sigC = "#f04f5a";
-  }
-  // ── الافتراضي: محايد
-  else {
-    sig = "محايد";
-    sigC = "#06b6d4";
+    sigC = "#6b7280"; // gray
   }
   
+  // ─── Level 2: 🌟 Rare Opportunity ───
+  else if(conviction >= 80 && tech.gates.all && tech.opp.priority >= 3){
+    sig = "شراء قوي";
+    sigC = "#10c97e"; // mint
+    isRareOpportunity = true;
+  }
+  
+  // ─── Level 3: 🚀 Strong Buy ───
+  else if(conviction >= 70 && tech.gates.passed >= 2){
+    sig = "شراء قوي";
+    sigC = "#10c97e"; // mint
+  }
+  
+  // ─── Level 4: ✅ Buy ───
+  else if(conviction >= 60 && tech.gates.passed >= 2){
+    sig = "شراء قوي";
+    sigC = "#10c97e"; // mint
+  }
+  
+  // ─── Level 5: 👁 Watch ───
+  else if(conviction >= 50 && tech.gates.passed >= 1){
+    sig = "مراقبة";
+    sigC = "#f59e0b"; // amber
+  }
+  
+  // ─── Level 6: ⚖️ Neutral ───
+  else if(conviction >= 40){
+    sig = "محايد";
+    sigC = "#06b6d4"; // teal
+  }
+  
+  // ─── Level 7: 🔴 Reduce ───
+  else{
+    sig = "تخفيف";
+    sigC = "#f04f5a"; // coral
+  }
+  
+  // ─── Ensemble Warning (metadata only - لا يُغيّر sig) ───
+  var ensembleAgreement = ensemble.bullCount >= 2 ? "bullish"
+                        : ensemble.bearCount >= 2 ? "bearish"
+                        : "mixed";
+  var ensembleWarning = null;
+  if(sig === "شراء قوي" && ensembleAgreement === "bearish"){
+    ensembleWarning = "النماذج الأساسية/السلوكية متحفظة";
+  }
+  else if(sig === "تخفيف" && ensembleAgreement === "bullish"){
+    ensembleWarning = "النماذج تشير لاحتمال انعكاس";
+  }
+  
+  // ─── تطبيق النتيجة ───
   merged.sig = sig;
   merged.sigC = sigC;
+  (merged as any).isRareOpportunity = isRareOpportunity;
+  (merged as any).ensembleAgreement = ensembleAgreement;
+  (merged as any).ensembleWarning = ensembleWarning;
 
   // ════════════════════════════════════════════════
   //  STEP 7: Probability (Softmax 3-way)
