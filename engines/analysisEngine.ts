@@ -3742,12 +3742,38 @@ function stockHealth(stk: any, bars: any[]): any {
     tech.gates ? tech.gates.passed : 0, regime
   );
 
-  // ════════════════════════════════════════════════
-  //  STEP 6: تحديد الإشارة النهائية (Logic مُصلح)
-  // ════════════════════════════════════════════════
+    // ════════════════════════════════════════════════════════
+  //  STEP 6: تحديد الإشارة النهائية
+  //  
+  //  المبدأ العلمي - Single Source of Truth:
+  //  • merged.score = score الحقيقي من calc9Layers (Block 4)
+  //  • merged.convictionScore = conviction (للعرض فقط)
+  //  • منطق sig يستخدم score (وليس conviction)
+  //  
+  //  هذا يضمن:
+  //  ✓ التوافق مع AnalysisScreen
+  //  ✓ ثبات العتبات (65/55/45)
+  //  ✓ الشفافية الكاملة
+  // ════════════════════════════════════════════════════════
   var merged = tech;
-  merged.score = conviction;
-  merged.grade = conviction>=85 ? "S" : conviction>=75 ? "A" : conviction>=65 ? "B" : conviction>=55 ? "C" : conviction>=45 ? "D" : "F";
+  // ─── merged.score يبقى كما هو من calc9Layers ───
+  // (لا نستبدله بـ conviction!)
+  
+  // ─── grade يُحسب من score (متطابق مع calc9Layers) ───
+  merged.grade = merged.score >= 85 ? "S"
+               : merged.score >= 75 ? "A"
+               : merged.score >= 65 ? "B"
+               : merged.score >= 55 ? "C"
+               : merged.score >= 45 ? "D"
+               : "F";
+  
+  // ─── conviction يُحفظ كحقل منفصل للعرض ───
+  (merged as any).convictionScore = conviction;
+  (merged as any).convictionLabel = conviction >= 75 ? "ثقة عالية"
+                                  : conviction >= 60 ? "ثقة جيدة"
+                                  : conviction >= 45 ? "ثقة معقولة"
+                                  : "ثقة منخفضة";
+
 
   
   // ════════════════════════════════════════════════════════════
