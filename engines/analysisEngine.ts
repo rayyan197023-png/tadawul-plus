@@ -3086,18 +3086,89 @@ function calc9Layers(stk: any, bars: any[]): any {
                        : gatesPassed === 1 ? 0.75
                        : 0.55;
 
-  // ════════════════════════════════════════
-  //  مصفوفة الفرصة
-  // ════════════════════════════════════════
-  const hLiq=L9>=70, hStr=L1>=65, hMom=gate3Score>=65;
-  let oppMatrix,oppColor,oppPriority;
-  if(hLiq&&hStr&&hMom){oppMatrix="فرصة قصوى";oppColor=C.mint;oppPriority=4;}
-  else if(hLiq&&hStr) {oppMatrix="انتظر الزخم";oppColor=C.amber;oppPriority=3;}
-  else if(hLiq&&hMom) {oppMatrix="راقب الاختراق";oppColor=C.teal;oppPriority=2;}
-  else if(hStr&&hMom) {oppMatrix="انتظر الحجم";oppColor=C.electric;oppPriority=2;}
-  else if(hLiq)       {oppMatrix="تجميع مبكر";oppColor=C.amber;oppPriority=1;}
-  else                {oppMatrix="لا توجد فرصة";oppColor=C.coral;oppPriority=0;}
-
+    // ════════════════════════════════════════════════════════
+  //  Opportunity Matrix -- Gate-Aligned Professional System
+  //  
+  //  المبدأ العلمي:
+  //  ✓ كل بُعد (Liq/Str/Mom) يبني على gate المُقابل
+  //  ✓ "high" يعني: نجح Gate + قوة إضافية
+  //  ✓ يستحيل: gate ناجح + h فاشل (تناقض)
+  //  
+  //  المستويات:
+  //  • h-level: gate ناجح + L >= عتبة عالية
+  //  • Priority: 0-4 (0=لا فرصة، 4=فرصة قصوى)
+  // ════════════════════════════════════════════════════════
+  
+  // ─── العتبات العالية (Strong Opportunity) ───
+  const OPP_THRESHOLDS = {
+    liquidity: 65,    // L9 >= 65 (أقوى من gate1=55)
+    structure: 60,    // L1 >= 60 (أقوى من gate2=50)
+    momentum:  55,    // (L4+L5)/2 >= 55 (أقوى من gate3=50)
+  };
+  
+  // ─── حساب h-levels (يتطلب gate + قوة إضافية) ───
+  // المنطق: gate يجب أن ينجح أولاً، ثم نتحقق من القوة
+  const hLiq = gate1 && L9 >= OPP_THRESHOLDS.liquidity;
+  const hStr = gate2 && L1 >= OPP_THRESHOLDS.structure;
+  const hMom = gate3 && gate3Score >= OPP_THRESHOLDS.momentum;
+  
+  // ─── مصفوفة الفرص (6 حالات منطقية) ───
+  let oppMatrix, oppColor, oppPriority;
+  
+  if(hLiq && hStr && hMom){
+    // 🌟 فرصة قصوى: كل الأبعاد قوية
+    oppMatrix = "فرصة قصوى";
+    oppColor = C.mint;
+    oppPriority = 4;
+  }
+  else if(hLiq && hStr){
+    // 💎 فرصة قوية: سيولة + هيكل (زخم متوسط)
+    oppMatrix = "فرصة مكتملة";
+    oppColor = C.mint;
+    oppPriority = 3;
+  }
+  else if(hLiq && hMom){
+    // 🚀 اختراق محتمل: سيولة + زخم
+    oppMatrix = "اختراق محتمل";
+    oppColor = C.teal;
+    oppPriority = 3;
+  }
+  else if(hStr && hMom){
+    // 📈 صعود مؤكد: هيكل + زخم
+    oppMatrix = "صعود مؤكد";
+    oppColor = C.electric;
+    oppPriority = 3;
+  }
+  else if(hLiq){
+    // 🔍 تجميع: سيولة قوية فقط
+    oppMatrix = "تجميع نشط";
+    oppColor = C.amber;
+    oppPriority = 2;
+  }
+  else if(hStr){
+    // 📊 بنية صعودية: هيكل قوي فقط
+    oppMatrix = "بنية صعودية";
+    oppColor = C.amber;
+    oppPriority = 2;
+  }
+  else if(hMom){
+    // ⚡ زخم لحظي: زخم قوي بدون دعم
+    oppMatrix = "زخم لحظي";
+    oppColor = C.amber;
+    oppPriority = 1;
+  }
+  else if(gatesPassed >= 1){
+    // ⏸ مراقبة: بوابة واحدة على الأقل
+    oppMatrix = "مراقبة";
+    oppColor = C.teal;
+    oppPriority = 1;
+  }
+  else{
+    // 🔴 لا فرصة: كل البوابات فشلت
+    oppMatrix = "لا فرصة";
+    oppColor = C.coral;
+    oppPriority = 0;
+  }
   // ════════════════════════════════════════
   //  ④ Progressive Conflict Penalty
   // ════════════════════════════════════════
