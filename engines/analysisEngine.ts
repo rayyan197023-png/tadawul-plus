@@ -3920,7 +3920,7 @@ function stockHealth(stk: any, bars: any[]): any {
     optScore, insScore: ins.score, altScore: alt.composite,
     dcfUpside: dcf.upside, emUpside: em.upside,
     dcfRating: dcf.rating, fmGrade: fm.grade,
-    fundConflict, lbLcConflict, conviction0,
+    fundConflict, lbLcConflict,
     ensemble, confidenceThreshold: ct,
     feedbackApplied: WC_adapted !== tech.weights,
     risk: {sharpe: risk.sharpe, sortino: risk.sortino, alpha: risk.alpha, volatility: risk.volatility},
