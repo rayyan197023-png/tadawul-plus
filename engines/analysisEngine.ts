@@ -3721,35 +3721,73 @@ function stockHealth(stk: any, bars: any[]): any {
     0, 100
   );
   
-  // ════════════════════════════════════════════════════════════
-  //  🎯 STEP 4: FEEDBACK LOOP (مبسط)
+    // ════════════════════════════════════════════════════════════
+  //  🎯 STEP 4: ADAPTIVE FEEDBACK LOOP (مُحسّن)
   //  
-  //  الـ feedback يُطبق على الأوزان (WC)
-  //  ليس على conviction مباشرة
-  //  لتجنب double-counting
+  //  المبدأ العلمي:
+  //  ABM (Adaptive Bayesian Memory) يتعلم من القرارات السابقة
+  //  ويُعدّل الأوزان للطبقات بناءً على دقتها التاريخية
+  //  
+  //  التطبيق:
+  //  1. WC_adapted = أوزان مُعدّلة من ABM
+  //  2. LA_adapted = إعادة حساب LA مع الأوزان الجديدة
+  //  3. score يتأثر (تدريجياً 80/20)
+  //  4. conviction يتأثر (تدريجياً 80/20)
+  //  
+  //  الفائدة: التعلم يؤثر على القرار النهائي ✓
   // ════════════════════════════════════════════════════════════
   var WC_adapted = applyFeedbackToWeights(tech.weights || {}, stk.sym);
   var feedbackApplied = WC_adapted !== tech.weights;
   
   if(feedbackApplied){
-    // إعادة حساب LA مع الأوزان المُعدّلة
     var L = layers;
-    var rawAdapted = Math.round(
+    
+    // ─── إعادة حساب baseScore مع الأوزان المُعدّلة ───
+    var baseScoreAdapted = _clamp(Math.round(
       (L.L9||0)*WC_adapted.L9 + (L.L1||0)*WC_adapted.L1 + (L.L5||0)*WC_adapted.L5 +
       (L.L4||0)*WC_adapted.L4 + (L.L8||0)*WC_adapted.L8 + (L.L7||0)*WC_adapted.L7 +
       (L.L6||0)*WC_adapted.L6 + (L.L2||0)*WC_adapted.L2 + (L.L3||0)*WC_adapted.L3
-    );
-    var LA_adapted = _clamp(rawAdapted, 0, 100);
-    
-    // مزج محافظ: 80% الأصلي + 20% المُعدّل
-    // (نظراً لأن الـ feedback تعديل تدريجي)
-    var convictionAdapted = _clamp(Math.round(
-      (LA_adapted * wA + LB * wB + LC * wC) * ensembleQualityFactor
     ), 0, 100);
     
+    // ─── إعادة حساب score (مع نفس adjustmentFactor) ───
+    var adjFactor = tech.extras?.adjustmentFactor || 1.0;
+    var scoreAdapted = _clamp(Math.round(baseScoreAdapted * adjFactor), 0, 100);
+    
+    // ─── مزج محافظ 80/20 للـ score ───
+    // (ABM تعديل تدريجي - لا قفزات حادة)
+    var blendedScore = _clamp(Math.round(
+      tech.score * 0.80 + scoreAdapted * 0.20
+    ), 0, 100);
+    
+    // ─── تحديث LA لإعادة حساب conviction ───
+    var LA_adapted = blendedScore;
+    LA = LA_adapted; // يؤثر على conviction أيضاً
+    
+    // ─── إعادة حساب conviction مع LA_adapted ───
+    var baseConvictionAdapted = LA_adapted * wA + LB * wB + LC * wC - ensembleConflict;
+    var convictionAdapted = _clamp(Math.round(
+      baseConvictionAdapted * ensembleQualityFactor
+    ), 0, 100);
+    
+    // ─── مزج محافظ للـ conviction ───
     conviction = _clamp(Math.round(
       conviction * 0.80 + convictionAdapted * 0.20
     ), 0, 100);
+    
+    // ─── تطبيق score الجديد على merged ───
+    merged.score = blendedScore;
+    
+    // ─── حفظ معلومات ABM للشفافية ───
+    (merged as any).abmInfo = {
+      applied: true,
+      originalScore: tech.score,
+      adaptedScore: scoreAdapted,
+      finalScore: blendedScore,
+      blend: "80/20",
+      meta: (WC_adapted as any).__meta || null
+    };
+  } else {
+    (merged as any).abmInfo = { applied: false };
   }
 
 
