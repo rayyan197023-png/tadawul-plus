@@ -1251,7 +1251,11 @@ const rankUp=stk.ch>0;
                           </div>
                           <div style={{display:"inline-flex",alignItems:"center",gap:4,background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.08)",borderRadius:7,padding:"2px 8px"}}>
                             <span style={{fontSize:8,color:C.smoke}}>أعلى من</span>
-                            <span style={{fontSize:9,fontWeight:800,color:globalRank<=3?C.gold:globalRank<=5?C.mint:C.mist}}>{Math.round((allData.length-globalRank)/allData.length*100)+"%"}</span>
+                            <span style={{fontSize:9,fontWeight:800,color:globalRank<=3?C.gold:globalRank<=5?C.mint:C.mist}}>{
+                              globalRank === 1 ? "الأول" :
+                              globalRank <= 3 ? "أعلى " + Math.round((allData.length-globalRank)/allData.length*100) + "%" :
+                              Math.min(99, Math.round((allData.length-globalRank)/allData.length*100)) + "%"
+                            }</span>
                             <span style={{fontSize:8,color:C.smoke}}>من السوق</span>
                             {globalRank<=3&&<span style={{fontSize:9}}>🔥</span>}
                           </div>
