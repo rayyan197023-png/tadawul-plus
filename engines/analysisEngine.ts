@@ -3772,48 +3772,60 @@ function stockHealth(stk: any, bars: any[]): any {
   var sig, sigC;
   var isRareOpportunity = false;
   
-  // ─── Level 1: 🛑 Abstain (نادر جداً - حالات الخطر فقط) ───
-  if(conviction < 30 && conflictCnt >= 4 && tech.gates.passed === 0){
+  
+    // ════════════════════════════════════════════════════════════
+  //  🎯 UNIFIED SIGNAL LOGIC -- Score-Based (متوافق مع AnalysisScreen)
+  //  
+  //  العتبات الموحّدة:
+  //  • score >= 75 + gates.all + opp.priority>=3 → فرصة نادرة ⭐
+  //  • score >= 65 + gates.passed >= 2 → شراء قوي
+  //  • score >= 55 + gates.passed >= 1 → مراقبة
+  //  • score >= 45                    → محايد
+  //  • score < 45                     → تخفيف
+  //  
+  //  ملاحظة: نستخدم score (Block 4) وليس conviction
+  //  لضمان التوافق مع AnalysisScreen
+  // ════════════════════════════════════════════════════════════
+  
+  var score = merged.score;
+  
+  // ─── Level 1: 🛑 Abstain (نادر جداً) ───
+  if(score < 30 && conflictCnt >= 4 && tech.gates.passed === 0){
     sig = "انتظر";
     sigC = "#6b7280"; // gray
   }
   
   // ─── Level 2: 🌟 Rare Opportunity ───
-  else if(conviction >= 80 && tech.gates.all && tech.opp.priority >= 3){
+  else if(score >= 75 && tech.gates.all && tech.opp.priority >= 3){
     sig = "شراء قوي";
     sigC = "#10c97e"; // mint
     isRareOpportunity = true;
   }
   
   // ─── Level 3: 🚀 Strong Buy ───
-  else if(conviction >= 70 && tech.gates.passed >= 2){
+  else if(score >= 65 && tech.gates.passed >= 2){
     sig = "شراء قوي";
     sigC = "#10c97e"; // mint
   }
   
-  // ─── Level 4: ✅ Buy ───
-  else if(conviction >= 60 && tech.gates.passed >= 2){
-    sig = "شراء قوي";
-    sigC = "#10c97e"; // mint
-  }
-  
-  // ─── Level 5: 👁 Watch ───
-  else if(conviction >= 50 && tech.gates.passed >= 1){
+  // ─── Level 4: 👁 Watch ───
+  else if(score >= 55 && tech.gates.passed >= 1){
     sig = "مراقبة";
     sigC = "#f59e0b"; // amber
   }
   
-  // ─── Level 6: ⚖️ Neutral ───
-  else if(conviction >= 40){
+  // ─── Level 5: ⚖️ Neutral ───
+  else if(score >= 45){
     sig = "محايد";
     sigC = "#06b6d4"; // teal
   }
   
-  // ─── Level 7: 🔴 Reduce ───
+  // ─── Level 6: 🔴 Reduce ───
   else{
     sig = "تخفيف";
     sigC = "#f04f5a"; // coral
   }
+
   
   // ─── Ensemble Warning (metadata only - لا يُغيّر sig) ───
   var ensembleAgreement = ensemble.bullCount >= 2 ? "bullish"
