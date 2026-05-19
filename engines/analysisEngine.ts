@@ -3344,9 +3344,9 @@ function calc9Layers(stk: any, bars: any[]): any {
     tasiCtx: tc_tasi,
     layers:{L1,L2,L3,L4,L5,L6,L7,L8,L9},
     extras:{
-      spring, sos, upth, harm, div,
+            spring, sos, upth, harm, div,
       wyPhase, patternBonus, bayesMult,
-      conflictCount, innerConflictPenalty,
+      conflictCount,
       conflictDetails: conflictData.details,
       entr:+entr.toFixed(2),
       rscRaw:+rscRaw.toFixed(2),
