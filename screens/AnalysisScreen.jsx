@@ -1136,9 +1136,9 @@ const best = allData.length > 0
               const selected=sel===stk.sym;
               const globalRank = rankMap[stk.sym] || 1;
 const rankUp=stk.ch>0;
-              const isBuy=health.score>=75;
-              const isDanger=health.score<45;
-              const isRare=health.score>=85;
+                            const isBuy=health.score>=65;     // كان 75 - معايرة علمية
+              const isDanger=health.score<45;   // يبقى - دفاعي
+              const isRare=health.score>=75;    // كان 85 - فرصة استثنائية
               const isFlashing = flashCard === stk.sym;
               const level = cardLevel[stk.sym] || 1; // 1=مبسط 2=كامل
               return(
