@@ -3306,15 +3306,28 @@ function calc9Layers(stk: any, bars: any[]): any {
   const neutralSignal = _clamp(Math.round(100 - bullSignal*0.7 - bearSignal*0.7 + midnessFactor), 5, 35);
   const prob = _softmax3(bullSignal, bearSignal, neutralSignal);
 
-  // ════════════════════════════════════════
-  //  الإشارة النهائية
-  // ════════════════════════════════════════
-  let sig,sigC;
-  if(allGates&&score>=75&&oppPriority>=3){sig="شراء قوي";sigC=C.mint;}
-  else if(allGates&&score>=60&&oppPriority>=2){sig="مراقبة";sigC=C.amber;}
-  else if(gatesPassed>=2&&score>=55){sig="مراقبة";sigC=C.amber;}
-  else if(score>=45&&gatesPassed>=1){sig="محايد";sigC=C.teal;}
-  else{sig="تخفيف";sigC=C.coral;}
+    // ════════════════════════════════════════════════════════
+  //  Preliminary Signal (calc9Layers level)
+  //  
+  //  ملاحظة: sig النهائي يُحسب في stockHealth
+  //  هنا فقط preliminary للأنظمة الأخرى التي تستدعي calc9Layers
+  // ════════════════════════════════════════════════════════
+  let sig, sigC;
+  if(score >= 75 && allGates && oppPriority >= 3){
+    sig = "شراء قوي"; sigC = C.mint;
+  }
+  else if(score >= 65 && gatesPassed >= 2){
+    sig = "شراء قوي"; sigC = C.mint;
+  }
+  else if(score >= 55 && gatesPassed >= 2){
+    sig = "مراقبة"; sigC = C.amber;
+  }
+  else if(score >= 45 && gatesPassed >= 1){
+    sig = "محايد"; sigC = C.teal;
+  }
+  else{
+    sig = "تخفيف"; sigC = C.coral;
+  }
 
   return{
     score, grade, sig, sigC, regime,
