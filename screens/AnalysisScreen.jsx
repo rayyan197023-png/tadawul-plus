@@ -1700,9 +1700,18 @@ var normalizeProb = function(v) {
 var bull = normalizeProb(prob.bull);
 var bear = normalizeProb(prob.bear);
 var neut = normalizeProb(prob.neutral);
-                                                var pct   = ps.pct     != null ? ps.pct.toFixed(1)          : null;
+                                                                                                var pct   = ps.pct     != null ? ps.pct.toFixed(1)          : null;
                         var kelly = ps.kelly   != null ? ps.kelly.toFixed(1)        : null;
+                        // 🔧 إصلاح: إضافة fallback للـ recommended
                         var recK  = ps.recommended;
+                        if (!recK || recK === "") {
+                          var kellyNum = parseFloat(kelly);
+                          if (kellyNum >= 15) recK = "حجم كبير";
+                          else if (kellyNum >= 8) recK = "حجم متوسط";
+                          else if (kellyNum >= 3) recK = "حجم صغير";
+                          else if (kellyNum > 0) recK = "حجم ضئيل";
+                          else recK = "لا توصية";
+                        }
                         if(bull==null && pct==null) return null;
                         return(
                           <div style={{marginTop:8,display:"flex",flexDirection:"column",gap:6}}>
