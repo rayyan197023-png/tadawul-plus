@@ -1753,17 +1753,9 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                           </>
                         );
                       })()}
-                      <div style={{height:0,overflow:"hidden"}}>{/* fragment separator */}</div>
-                      {/* TRADING PLAN */}
-                          
-                          يعرض من analysisEngine:
-                          • entry, stopLoss, target1, target2 (محسوبة بـ ATR)
-                          • R/R Ratio مع تقييم نصي
-                          • Time Horizon (حسب regime)
-                          • Worst Case Scenario
-                          • Action Plan مع لون مناسب
-                      ══════════════════════════════════════════════════════ */}
+                      {/* Trading Plan */}
                       {health.tradingPlan && (function(){
+
                         var tp = health.tradingPlan;
                         var sigColor = tp.actionColor || health.sigC;
                         
