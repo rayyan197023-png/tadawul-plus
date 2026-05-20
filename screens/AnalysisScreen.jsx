@@ -1583,19 +1583,12 @@ const rankUp=stk.ch>0;
 
                       {/* ══ بطاقة الإجراء الفوري ══
                           سطر واحد — ماذا تفعل الآن بالضبط */}
-                      {(function(){
-                        // ─── استخدام positionSize من analysisEngine (مُوحَّد) ───
-                        var pct = health.positionSize?.pct 
-                                  ? Math.round(health.positionSize.pct)
-                                  : (function(){
-                                      // fallback: حساب من L6
-                                                            {(function(){
+                                           {(function(){
                         // ════════════════════════════════════════════════════════
                         //  Position Size -- موحد مع analysisEngine
                         //  
                         //  المبدأ:
                         //  • نستخدم health.positionSize.pct (Half-Kelly محسوب)
-                        //  • أو tradingPlan.actionPlan إذا متوفر
                         //  • fallback: حساب من L6
                         // ════════════════════════════════════════════════════════
                         var pct;
@@ -1609,7 +1602,6 @@ const rankUp=stk.ch>0;
                             : 0.05;
                           pct = Math.max(3, Math.min(20, Math.round(kelAdj * 100)));
                         }
-                                    })();
                         // ✨ حساب ديناميكي بناءً على ATR (تقلّب السهم)
 var atrPct = (health.extras && health.extras.atrPct) || 2.5;
 var stopPct = Math.max(3, Math.min(8, atrPct * 1.5));
