@@ -1748,9 +1748,9 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                                 </div>
                               );
                             }
-                            return null;
+                                                        return null;
                           })()}
-                          </>
+                          </div>
                         );
                       })()}
                       {/* Trading Plan */}
