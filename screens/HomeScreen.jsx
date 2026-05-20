@@ -1097,7 +1097,7 @@ function LiquidityMapPanel({stocks=[]}) {
           <div style={{fontSize:11,fontWeight:700,color:PU,marginBottom:8}}>
             DNA السيولة -- نمط حركة المال الذكي
           </div>
-          {[...data].filter(d=>d.sm>30).sort((a,b)=>b.sm-a.sm).slice(0,8).map((d,i)=>(
+                    {[...data].filter(d=>d.sm>30).sort((a,b)=>b.sm-a.sm).slice(0,50).map((d,i)=>(
             <DnaCard key={i} d={d}/>
           ))}
         </div>
