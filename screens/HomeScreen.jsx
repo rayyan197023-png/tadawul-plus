@@ -287,7 +287,7 @@ function SectorSection({liveStocks=[]}) {
           </div>
 
           {/* أسهم القطاع */}
-          {selSec.stocks.slice(0,5).map((st,i)=>(
+                    {selSec.stocks.map((st,i)=>(
             <div key={i} style={{
               display:"flex",justifyContent:"space-between",alignItems:"center",
               padding:"7px 0",
