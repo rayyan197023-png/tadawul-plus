@@ -743,10 +743,9 @@ function AdvancedSection({liveStocks=[]}) {
   const [open,setOpen]=useState(false);
   const [panel,setPanel]=useState("liquidity");
 
-  // ✨ كل الأسهم للتحليل الشامل (الخريطة/القطاعات/DNA)
-  // التبويبات الداخلية تحدد العرض (list: 10, dna: 8)
+    // ✨ أعلى 50 سهم بالسيولة (الحجم) -- توازن مثالي بين الشمولية والأداء
   const topStocks=useMemo(()=>
-    [...liveStocks].sort((a,b)=>(b.v||0)-(a.v||0)),
+    [...liveStocks].sort((a,b)=>(b.v||0)-(a.v||0)).slice(0,50),
     [liveStocks]
   );
 
