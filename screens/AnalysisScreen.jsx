@@ -2362,14 +2362,14 @@ var neut = normalizeProb(prob.neutral);
                                     Kelly كامل: {kelly}% · {recK||""}
                                   </div>
                                 </div>
-                                <div style={{
+                                                                <div style={{
                                   flex:1,background:C.layer2,
                                   border:"1px solid "+C.edge,
                                   borderRadius:12,padding:"10px 12px",
                                   display:"flex",flexDirection:"column",
                                   alignItems:"center",justifyContent:"center",
                                 }}>
-                                  <div   style={{fontSize:8,color:C.smoke,marginBottom:4,display:"flex",alignItems:"center",gap:3,justifyContent:"flex-end"}}>
+                                  <div style={{fontSize:8,color:C.smoke,marginBottom:4,display:"flex",alignItems:"center",gap:3,justifyContent:"flex-end"}}>
                                     الثقة
                                     <Tooltip termKey="الثقة" size="small"/>
                                   </div>
@@ -2379,6 +2379,30 @@ var neut = normalizeProb(prob.neutral);
                                     color:conf>=70?C.mint:conf>=50?C.amber:C.coral,
                                     lineHeight:1,
                                   }}>{conf}%</div>
+                                  
+                                  {/* ✨ سبب انخفاض الثقة (إذا منخفضة) */}
+                                  {conf < 60 && (function(){
+                                    var reason = null;
+                                    var rsiV = (health.extras && health.extras.rsiV) || 50;
+                                    var isVolatile = health.regime === "volatile" || health.regime === "news-driven";
+                                    var gatesPassed = (health.gates && health.gates.passed) || 0;
+                                    
+                                    if(isVolatile) reason = "سوق متقلب";
+                                    else if(rsiV >= 75) reason = "RSI مرتفع";
+                                    else if(rsiV <= 25) reason = "RSI منخفض";
+                                    else if(gatesPassed < 2) reason = "بوابات ضعيفة";
+                                    else reason = "إشارات متضاربة";
+                                    
+                                    return(
+                                      <div style={{
+                                        fontSize:6.5,color:C.smoke,
+                                        marginTop:3,fontWeight:600,
+                                        textAlign:"center",
+                                      }}>
+                                        ⚠ {reason}
+                                      </div>
+                                    );
+                                  })()}
                                 </div>
                               </div>
                             )}
