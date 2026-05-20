@@ -1748,14 +1748,13 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                                 </div>
                               );
                             }
-                            
-                               return null;
+                            return null;
                           })()}
                           </>
                         );
                       })()}
-                      {/* ══════════════════════════════════════════════════════
-                          🎯 TRADING PLAN -- Professional Wall Street Grade
+                      <div style={{height:0,overflow:"hidden"}}>{/* fragment separator */}</div>
+                      {/* TRADING PLAN */}
                           
                           يعرض من analysisEngine:
                           • entry, stopLoss, target1, target2 (محسوبة بـ ATR)
