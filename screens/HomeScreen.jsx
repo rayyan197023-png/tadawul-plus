@@ -1087,8 +1087,8 @@ function LiquidityMapPanel({stocks=[], allStocks=[]}) {
                         {sec.dir==="دخول"?"أسهم الشراء -- سيولة داخلة":"أسهم البيع -- سيولة خارجة"}
                       </span>
                     </div>
-                    {secStocks.slice(0,5).map((d,si)=>(
-                      <div key={si} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 10px",borderBottom:"1px solid "+LN}}>
+                    {secStocks.map((d,si)=>(
+                      <div key={si} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 10px",borderBottom:si<secStocks.length-1?"1px solid "+LN:"none"}}>
                         <div style={{display:"flex",alignItems:"center",gap:6}}>
                           <div style={{width:6,height:6,borderRadius:"50%",background:d.lpi>0?G:R}}/>
                           <div>
