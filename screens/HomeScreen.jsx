@@ -980,7 +980,7 @@ function LiquidityMapPanel({stocks=[]}) {
           <div style={{fontSize:12,fontWeight:700,color:PU,marginBottom:10,textAlign:"right"}}>
             أعلى الأسهم بسيولة ذكية
           </div>
-          {[...data].sort((a,b)=>b.sm-a.sm).slice(0,10).map((d,i)=>(
+          {[...data].sort((a,b)=>b.sm-a.sm).slice(0,50).map((d,i)=>(
             <div key={i} style={{background:CARD2,borderRadius:14,padding:"12px 14px",marginBottom:8,border:"1px solid "+LN}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
                 <div style={{display:"flex",alignItems:"center",gap:10}}>
