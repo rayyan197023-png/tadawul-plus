@@ -287,11 +287,11 @@ function SectorSection({liveStocks=[]}) {
           </div>
 
           {/* أسهم القطاع */}
-                    {selSec.stocks.map((st,i)=>(
+                              {selSec.stocks.map((st,i)=>(
             <div key={i} style={{
               display:"flex",justifyContent:"space-between",alignItems:"center",
               padding:"7px 0",
-              borderBottom:i<4?"1px solid rgba(255,255,255,.05)":"none",
+              borderBottom:i<selSec.stocks.length-1?"1px solid rgba(255,255,255,.05)":"none",
             }}>
               <div style={{textAlign:"left"}}>
                 <div style={{fontSize:12,fontWeight:700,color:(st.pct||0)>=0?G:R}}>
