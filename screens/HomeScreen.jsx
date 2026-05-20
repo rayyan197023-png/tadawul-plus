@@ -743,8 +743,10 @@ function AdvancedSection({liveStocks=[]}) {
   const [open,setOpen]=useState(false);
   const [panel,setPanel]=useState("liquidity");
 
+  // ✨ كل الأسهم للتحليل الشامل (الخريطة/القطاعات/DNA)
+  // التبويبات الداخلية تحدد العرض (list: 10, dna: 8)
   const topStocks=useMemo(()=>
-    [...liveStocks].sort((a,b)=>(b.v||0)-(a.v||0)).slice(0,20),
+    [...liveStocks].sort((a,b)=>(b.v||0)-(a.v||0)),
     [liveStocks]
   );
 
