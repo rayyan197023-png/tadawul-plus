@@ -1470,23 +1470,39 @@ const rankUp=stk.ch>0;
                               :health.score>=45?"لا تتسرع"
                               :"احتاط"}
                             </div>
-                                                        <div style={{fontSize:8.5,color:C.smoke,lineHeight:1.3}}>
-                              {/* 🔧 إصلاح: نص أكثر دقة بناءً على السياق */}
+                                                                                                                <div style={{fontSize:8.5,color:C.smoke,lineHeight:1.3}}>
+                              {/* ✨ رسالة موحدة مع regime + sig + RSI */}
                               {(function(){
                                 var vr = (health.extras && health.extras.vr) || 1;
-                                if(health.score>=65) return "السيولة والزخم يدعمان";
-                                if(health.score>=55) return "انتظر تأكيد الحجم";
-                                if(health.score>=45) {
+                                var rsiV = (health.extras && health.extras.rsiV) || 50;
+                                var regime = health.regime;
+                                var isVolatile = regime === "volatile" || regime === "news-driven";
+                                var isOverbought = rsiV >= 75;
+                                
+                                // ─── سهم قوي ──
+                                if(health.score >= 65){
+                                  if(isOverbought) return "إشارة قوية لكن RSI مرتفع - دخول تدريجي";
+                                  if(isVolatile) return "إشارة قوية في سوق متقلب - قلّل الحجم";
+                                  return "السيولة والزخم يدعمان الدخول";
+                                }
+                                // ─── سهم مراقبة ──
+                                if(health.score >= 55){
+                                  if(isVolatile) return "تذبذب عالٍ - انتظر استقراراً";
+                                  return "انتظر تأكيد الحجم قبل الدخول";
+                                }
+                                // ─── سهم محايد ──
+                                if(health.score >= 45){
                                   if(vr >= 1.5) return "حجم عالٍ - راقب الاتجاه";
-                                  return "الإشارة غير حاسمة";
+                                  return "الإشارة غير حاسمة - تجنّب الدخول";
                                 }
-                                if(health.score>=35) {
-                                  if(vr >= 1.5 && stk.ch >= 0) return "حجم عالٍ رغم الضعف";
-                                  if(stk.ch < -1) return "تراجع متواصل";
-                                  return "إشارة ضعيفة";
+                                // ─── سهم ضعيف ──
+                                if(health.score >= 35){
+                                  if(vr >= 1.5 && stk.ch >= 0) return "حجم عالٍ رغم الضعف - مضاربي";
+                                  if(stk.ch < -1) return "تراجع متواصل - تجنّب";
+                                  return "إشارة ضعيفة - لا تشتري";
                                 }
-                                if(stk.ch < -2) return "ضغط بيعي مرتفع";
-                                return "إشارة ضعيفة جداً";
+                                if(stk.ch < -2) return "ضغط بيعي مرتفع - ابتعد";
+                                return "إشارة ضعيفة جداً - خطر";
                               })()}
                             </div>
                           </div>
