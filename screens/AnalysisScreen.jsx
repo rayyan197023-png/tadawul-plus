@@ -2243,16 +2243,75 @@ var neut = normalizeProb(prob.neutral);
                               </span>
                             </div>
 
-                            {/* الاحتمالات الثلاثة */}
+                                                        {/* الاحتمالات الثلاثة + تفسير */}
                             {bull!=null&&(
                               <div style={{
                                 background:C.layer2,border:"1px solid "+C.edge,
                                 borderRadius:12,padding:"10px 12px",
                               }}>
-                                                                <div style={{fontSize:8,color:C.smoke,marginBottom:8,fontWeight:600,display:"flex",alignItems:"center",gap:3,justifyContent:"flex-end"}}>
+                                <div style={{fontSize:8,color:C.smoke,marginBottom:8,fontWeight:600,display:"flex",alignItems:"center",gap:3,justifyContent:"flex-end"}}>
                                   الاحتمال الموزون -- Softmax₃
                                   <Tooltip termKey="Softmax" size="small"/>
                                 </div>
+                                
+                                {/* ✨ رسالة تفسيرية -- توافق Probability مع Sig */}
+                                {(function(){
+                                  var maxProb = Math.max(bull, bear, neut);
+                                  var dominant = maxProb === bull ? "صاعد" 
+                                              : maxProb === bear ? "هابط" 
+                                              : "محايد";
+                                  var sigPositive = health.sig === "شراء قوي" || health.sig === "مراقبة";
+                                  var sigNegative = health.sig === "تخفيف";
+                                  
+                                  // ─── تحديد الرسالة ───
+                                  var msg = null;
+                                  var msgColor = C.smoke;
+                                  var msgIcon = "ℹ";
+                                  
+                                  if(sigPositive && dominant === "صاعد" && maxProb >= 60){
+                                    msg = "إجماع قوي على الصعود ✓";
+                                    msgColor = C.mint;
+                                    msgIcon = "🎯";
+                                  } else if(sigPositive && dominant === "صاعد" && maxProb >= 45){
+                                    msg = "ميل صاعد لكن غير حاسم";
+                                    msgColor = C.amber;
+                                    msgIcon = "⚖";
+                                  } else if(sigPositive && dominant === "صاعد" && maxProb < 45){
+                                    msg = "الإشارة قوية لكن الاحتمالات متذبذبة - قلّص الحجم";
+                                    msgColor = C.amber;
+                                    msgIcon = "⚠";
+                                  } else if(sigPositive && dominant !== "صاعد"){
+                                    msg = "تعارض: الإشارة إيجابية لكن الاحتمالات تشير لـ " + dominant;
+                                    msgColor = C.coral;
+                                    msgIcon = "⚠";
+                                  } else if(sigNegative && dominant === "هابط"){
+                                    msg = "إجماع على الضعف ✗";
+                                    msgColor = C.coral;
+                                    msgIcon = "🛑";
+                                  } else if(dominant === "محايد"){
+                                    msg = "السوق في حيرة - انتظر اتجاهاً واضحاً";
+                                    msgColor = C.amber;
+                                    msgIcon = "⚖";
+                                  }
+                                  
+                                  if(!msg) return null;
+                                  
+                                  return(
+                                    <div style={{
+                                      background: msgColor + "10",
+                                      border: "1px solid " + msgColor + "25",
+                                      borderRadius:6,padding:"4px 8px",
+                                      marginBottom:8,
+                                      display:"flex",alignItems:"center",gap:5,
+                                    }}>
+                                      <span style={{fontSize:9}}>{msgIcon}</span>
+                                      <span style={{
+                                        fontSize:8.5,color:msgColor,
+                                        lineHeight:1.3,fontWeight:600,
+                                      }}>{msg}</span>
+                                    </div>
+                                  );
+                                })()}
                                 <div style={{display:"flex",gap:6}}>
                                   {[
                                     {l:"صاعد",v:bull,c:C.mint},
