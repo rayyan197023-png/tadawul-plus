@@ -1068,7 +1068,7 @@ function LiquidityMapPanel({stocks=[], allStocks=[]}) {
           {sectorFlows.map((sec,i)=>{
             const bw=Math.min(100,Math.abs(sec.net)/3);
             const open=selSec===sec.name;
-            const secStocks=allData.filter(d=>(d.stk.sec||"أخرى")===sec.name)
+                        const secStocks=allData.filter(d=>(d.stk.sec||"أخرى")===sec.name)
               .filter(d=>sec.dir==="دخول"?d.lpi>0:d.lpi<=0)
               .sort((a,b)=>sec.dir==="دخول"?b.lpi-a.lpi:a.lpi-b.lpi);
             return(
