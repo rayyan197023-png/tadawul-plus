@@ -855,9 +855,28 @@ function LiquidityMapPanel({stocks=[], allStocks=[]}) {
 
   const now = `${lastUpdate.getHours().toString().padStart(2,"0")}:${lastUpdate.getMinutes().toString().padStart(2,"0")}`;
 
+    // ✨ القطاعات تحسب من كل الأسهم (allStocks) وليس 50 فقط
+  const allData = useMemo(() => allStocks.map(s => {
+    const vol    = s.v    || 1e6;
+    const avgVol = s.avgV || vol;
+    const rv     = ((vol + avgVol) / 2) / avgVol;
+    const lpi    = Math.round(((s.pct||0) / 3) * 40 + (rv - 1) * 25);
+    let sm = 20;
+    if (rv > 2.5 && (s.pct||0) > 0) sm += 30;
+    else if (rv > 1.5 && (s.pct||0) > 0) sm += 20;
+    else if (rv > 1.2) sm += 10;
+    if ((s.pct||0) > 2) sm += 25;
+    else if ((s.pct||0) > 0) sm += 15;
+    else if ((s.pct||0) < -2) sm -= 10;
+    if (vol > avgVol * 1.5) sm += 25;
+    else if (vol > avgVol) sm += 15;
+    sm = Math.min(100, Math.max(0, sm));
+    return { stk:s, sm, lpi:Math.round(lpi) };
+  }), [allStocks]);
+
   const sectorFlows = useMemo(() => {
     const s = {};
-    data.forEach(d => {
+    allData.forEach(d => {
       const k = d.stk.sec || "أخرى";
       if (!s[k]) s[k] = { name:k, in:0, out:0, n:0, sum:0 };
       s[k].n++; s[k].sum += d.sm;
@@ -868,7 +887,7 @@ function LiquidityMapPanel({stocks=[], allStocks=[]}) {
       ...x, avg:Math.round(x.sum/x.n), net:x.in-x.out,
       dir:x.in>x.out?"دخول":"خروج", fc:x.in>x.out?G:R,
     }));
-  }, [data]);
+  }, [allData]);
 
   const LEGEND = [
     {c:BLUE,     l:"مؤسسي"},
