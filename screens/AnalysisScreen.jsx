@@ -1621,14 +1621,31 @@ var tgt  = (stk.p * (1 + tgtPct/100)).toFixed(2);
 var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                         
 
-                        // 🔧 إصلاح: نصوص أدق + سياق ثنائي (مالك/غير مالك)
+                        // ✨ Action Plan مع وعي بـ RSI و regime
                         var icon, line1, line2, bg, border;
+                        var rsiV = (health.extras && health.extras.rsiV) || 50;
+                        var isOverbought = rsiV >= 75;
+                        var isRegimeVolatile = health.regime === "volatile" || health.regime === "news-driven";
+                        
                         if(health.score >= 65){
                           icon  = "✅";
-                          line1 = "فرصة شراء - " + pct + "% من المحفظة";
-                          line2 = "وقف: " + stop + " · هدف: " + tgt;
-                          bg    = "rgba(16,201,126,.08)";
-                          border= "rgba(16,201,126,.25)";
+                          // ─── رسالة سياقية حسب RSI ───
+                          if(isOverbought){
+                            line1 = "فرصة شراء بحذر - " + pct + "% من المحفظة";
+                            line2 = "RSI مرتفع - ادخل تدريجياً | وقف: " + stop;
+                            bg    = "rgba(245,158,11,.10)";
+                            border= "rgba(245,158,11,.30)";
+                          } else if(isRegimeVolatile){
+                            line1 = "فرصة شراء (سوق متقلب) - " + pct + "%";
+                            line2 = "قلّص الحجم | وقف: " + stop + " · هدف: " + tgt;
+                            bg    = "rgba(212,168,67,.10)";
+                            border= "rgba(212,168,67,.30)";
+                          } else {
+                            line1 = "فرصة شراء - " + pct + "% من المحفظة";
+                            line2 = "وقف: " + stop + " · هدف: " + tgt;
+                            bg    = "rgba(16,201,126,.08)";
+                            border= "rgba(16,201,126,.25)";
+                          }
                         } else if(health.score >= 55){
                           icon  = "🔔";
                           line1 = "اضبط تنبيهاً عند " + alert;
