@@ -1671,8 +1671,8 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                           bg    = "rgba(240,79,90,.08)";
                           border= "rgba(240,79,90,.22)";
                         }
-                                                return(
-                          <>
+                                                                                                return(
+                          <div>
                           <div style={{
                             marginTop:8,
                             background:bg,
