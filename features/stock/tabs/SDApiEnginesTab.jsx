@@ -273,4 +273,5 @@ const useSahmkData = (baseStkData) => {
   return { stk, loading, lastFetch, apiStatus, apiError };
 };
 
-export { SDApiEngines, useSahmkData, sahmkFetch, fetchSahmkQuote, fetchSahmkCompany, fetchSahmkOhlcv };
+export { SDApiEngines, useSahmkData, sahmkFetch, fetchSahmkQuote, fetchSahmkCompany, fetchSahmkRatios, fetchSahmkFinancials, fetchSahmkOhlcv };
+
