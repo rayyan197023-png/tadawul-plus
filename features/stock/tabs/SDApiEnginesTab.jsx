@@ -223,10 +223,13 @@ const useSahmkData = (baseStkData) => {
         const quote = await fetchSahmkQuote(sym);
         if (!quote || quote._apiErr) throw new Error(quote?._apiErr || "لا استجابة");
 
-        const company = await fetchSahmkCompany(sym);
-        const ratios = await fetchSahmkRatios(sym);
-        const financials = await fetchSahmkFinancials(sym);
-        const priceHistory = await fetchSahmkOhlcv(sym, '3M');
+        // جلب متوازي (أسرع + لا يُلغي بعضه)
+        const [company, ratios, financials, priceHistory] = await Promise.all([
+          fetchSahmkCompany(sym),
+          fetchSahmkRatios(sym),
+          fetchSahmkFinancials(sym),
+          fetchSahmkOhlcv(sym, '3M'),
+        ]);
 
         if (!cancelled) {
           setLiveData({
