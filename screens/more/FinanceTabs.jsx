@@ -102,7 +102,6 @@ function DividendsTab(props) {
         <div style={{position:"relative",zIndex:1}}>
           
           {divItem&&(
-          {divItem&&(
             <div style={{position:"fixed",inset:0,background:"rgba(6,8,15,.97)",zIndex:99,display:"flex",alignItems:"flex-end"}}>
               <div style={{
                 background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",
