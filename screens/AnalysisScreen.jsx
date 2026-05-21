@@ -275,14 +275,29 @@ const [filters, setFilters] = useState({
 const syms = liveStocks.slice(0, 50).map(s => s.sym);
 const ohlcvCache = useOHLCVCache(syms, '3M');
 
-  const allData = useMemo(()=>{
+    const allData = useMemo(()=>{
     // ✨ تمرير liveMACRO كـ parameter بدلاً من تعديل MACRO global
     const result = liveStocks.map(stk=>{ 
-      const bars = ohlcvCache[stk.sym] || genBars(stk);
+      // ✨ تحقق من صحة bars من الكاش - إن كانت ناقصة/فاسدة، استخدم genBars
+      var cached = ohlcvCache[stk.sym];
+      var bars;
+      if (cached && Array.isArray(cached) && cached.length >= 20 &&
+          cached.every(b => b && isFinite(b.c) && isFinite(b.vol))) {
+        bars = cached;
+      } else {
+        bars = genBars(stk);
+      }
 
-      // مرّر liveMACRO إلى stockHealth (إذا كانت تدعم ذلك)
-      return {stk, bars, health:stockHealth(stk, bars, liveMACRO)}; 
+      // مرّر liveMACRO إلى stockHealth
+      var h = stockHealth(stk, bars, liveMACRO);
+      // ✨ حماية: إن كان score غير صالح، استخدم fallback
+      if (!h || !isFinite(h.score)) {
+        h = stockHealth(stk, genBars(stk), liveMACRO);
+      }
+      return {stk, bars, health:h}; 
     });
+    return result;
+  },[throttledSig, liveMACRO]);
     return result;
   },[throttledSig, liveMACRO]); // ← throttled: recalc max every 5s not every 3s
 
