@@ -204,51 +204,55 @@ function DividendsTab(props) {
               </div>
             </div>
           )}
-                    <div style={{padding:"12px 16px",display:"flex",flexDirection:"column",gap:10}}>
-            {DIV_STOCKS.map(function(div,i){
-              // ── دمج سعر السوق الحي ──
-              var liveDiv=stocksLive&&stocksLive.filter(function(s){return s.sym===div.sym;})[0];
-              var curPrice=liveDiv?liveDiv.p:0;
+            <div style={{padding:"12px 16px",display:"flex",flexDirection:"column",gap:10}}>
+            {divLoading && (
+              <div style={{textAlign:"center",padding:"8px",fontSize:10,color:C.smoke}}>
+                جارٍ جلب التوزيعات... ({divItems.length}/{DIV_STOCKS.length})
+              </div>
+            )}
+            {divItems.map(function(item,i){
+              var div = buildDivCard(item);
               return(
-              <div key={i} className={"card-enter "+(div.daysLeft<=5?"danger-pulse":div.daysLeft<=20?"buy-glow":"")} style={{
+              <div key={div.sym} className={"card-enter "+(div.daysLeft&&div.daysLeft<=5?"danger-pulse":div.daysLeft&&div.daysLeft<=20?"buy-glow":"")} style={{
                 animationDelay:(i*0.06)+"s",
                 background:BOX,
-                border:"1px solid "+(div.daysLeft<=10?C.mint+"55":C.line),
+                border:"1px solid "+(div.daysLeft&&div.daysLeft<=10?C.mint+"55":C.line),
                 borderRadius:20,overflow:"hidden",
-                boxShadow:div.daysLeft<=10?SHD_ACTIVE+C.mint+"18, 0 0 0 1px "+C.mint+"22":SHD,
+                boxShadow:div.daysLeft&&div.daysLeft<=10?SHD_ACTIVE+C.mint+"18, 0 0 0 1px "+C.mint+"22":SHD,
               }}>
-                {div.daysLeft<=10&&<div style={{height:2,background:"linear-gradient(90deg,transparent,"+C.mint+",transparent)"}}/>}
+                {div.daysLeft&&div.daysLeft<=10&&<div style={{height:2,background:"linear-gradient(90deg,transparent,"+C.mint+",transparent)"}}/>}
                 <div style={{padding:"14px 16px",background:"linear-gradient(90deg,"+C.mint+"06,transparent)"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
                     <div>
                       <div style={{fontSize:14,fontWeight:800,color:C.snow,marginBottom:4}}>{div.name}</div>
                       <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
                         <span style={{fontSize:9,color:C.smoke,background:C.layer3,padding:"1px 8px",borderRadius:5,border:"1px solid "+C.line}}>{div.sec}</span>
-                        <span style={{fontSize:9,color:C.mint,background:C.mint+"12",padding:"1px 8px",borderRadius:5,border:"1px solid "+C.mint+"25"}}>{div.timesPerYear===4?"ربعي":div.timesPerYear===2?"نصف سنوي":"سنوي"}</span>
-                        {div.daysLeft<=10&&<span style={{fontSize:9,color:C.coral,background:C.coral+"15",padding:"1px 8px",borderRadius:5,display:"inline-flex",alignItems:"center",gap:3}}><Ico k="alert" color={C.coral} size={10}/>{div.daysLeft} يوم</span>}
+                        <span style={{fontSize:9,color:C.mint,background:C.mint+"12",padding:"1px 8px",borderRadius:5,border:"1px solid "+C.mint+"25"}}>{div.freq}</span>
+                        {div.daysLeft&&div.daysLeft<=10&&<span style={{fontSize:9,color:C.coral,background:C.coral+"15",padding:"1px 8px",borderRadius:5,display:"inline-flex",alignItems:"center",gap:3}}><Ico k="alert" color={C.coral} size={10}/>{div.daysLeft} يوم</span>}
                       </div>
-                      
+                      {div.history.length>1&&(
                       <div style={{display:"flex",gap:3,alignItems:"flex-end",height:22,marginTop:10}}>
                         {(function(){
-                          var mx2=Math.max.apply(null,div.hist)||1;
-                          return div.hist.map(function(v,hi){
+                          var mx2=Math.max.apply(null,div.history)||1;
+                          return div.history.map(function(v,hi){
                             var h2=Math.max(4,Math.round((v/mx2)*22));
-                            var isLast=hi===div.hist.length-1;
+                            var isLast=hi===div.history.length-1;
                             return(<div key={hi} style={{width:14,height:h2,borderRadius:3,background:isLast?C.mint:C.mint+"55",boxShadow:isLast?"0 0 6px "+C.mint+"88":"none"}}/>);
                           });
                         }())}
                       </div>
+                      )}
                     </div>
                     <div style={{textAlign:"left"}}>
                       <div className="num-lg glow-mint" style={{fontSize:24,fontWeight:900,color:C.mint}}>{cfmt(div.perShare)}</div>
                       <div style={{fontSize:9,color:C.smoke}}>/ سهم</div>
-                      <div style={{fontSize:10,fontWeight:700,color:C.teal,textAlign:"right",marginTop:3}}>عائد {((div.perShare*(div.timesPerYear||1))/div.price*100).toFixed(2)}%</div>
+                      <div style={{fontSize:10,fontWeight:700,color:C.teal,textAlign:"right",marginTop:3}}>عائد {div.yield.toFixed(2)}%</div>
                     </div>
                   </div>
                 </div>
                 <div style={{borderTop:"1px solid "+C.line+"22",padding:"10px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                   <div style={{display:"flex",gap:16}}>
-                    {divRowDates.map(function(d){return(
+                    {[{l:"استحقاق",v:div.exDate},{l:"توزيع",v:div.payDate}].map(function(d){return(
                       <div key={d.l}>
                         <div style={{fontSize:8,color:C.smoke,marginBottom:3}}>{d.l}</div>
                         <div className="m" style={{fontSize:11,fontWeight:700,color:C.mist,direction:"ltr"}}>{d.v}</div>
