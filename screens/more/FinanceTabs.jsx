@@ -168,13 +168,11 @@ function DividendsTab(props) {
               </div>
             </div>
           )}
-          <div style={{padding:"12px 16px",display:"flex",flexDirection:"column",gap:10}}>
-            {DIVS.map(function(div,i){
+                    <div style={{padding:"12px 16px",display:"flex",flexDirection:"column",gap:10}}>
+            {DIV_STOCKS.map(function(div,i){
               // ── دمج سعر السوق الحي ──
               var liveDiv=stocksLive&&stocksLive.filter(function(s){return s.sym===div.sym;})[0];
-              var curPrice=liveDiv?liveDiv.p:div.price;
-              var liveYield=curPrice>0?((div.perShare*div.timesPerYear)/curPrice*100).toFixed(2):null;
-              var divRowDates=[{l:"استحقاق",v:div.exDate},{l:"توزيع",v:div.payDate}];
+              var curPrice=liveDiv?liveDiv.p:0;
               return(
               <div key={i} className={"card-enter "+(div.daysLeft<=5?"danger-pulse":div.daysLeft<=20?"buy-glow":"")} style={{
                 animationDelay:(i*0.06)+"s",
