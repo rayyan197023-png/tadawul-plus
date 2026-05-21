@@ -224,14 +224,19 @@ const useSahmkData = (baseStkData) => {
         if (!quote || quote._apiErr) throw new Error(quote?._apiErr || "لا استجابة");
 
         const company = await fetchSahmkCompany(sym);
+        const ratios = await fetchSahmkRatios(sym);
+        const financials = await fetchSahmkFinancials(sym);
         const priceHistory = await fetchSahmkOhlcv(sym, '3M');
 
         if (!cancelled) {
           setLiveData({
             ...quote,
             ...(company || {}),
+            ...(ratios || {}),
+            ...(financials || {}),
             priceHistory,
           });
+
           setLastFetch(new Date().toLocaleTimeString("ar-SA"));
           setApiStatus(quote.isDelayed ? "delayed" : "live");
         }
