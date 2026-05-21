@@ -115,7 +115,7 @@ const fetchSahmkCompany = async (sym) => {
   try {
     const d = await sahmkFetch("fundamentals", { sym });
     const f = d.fundamentals || {};
-    return {
+    const result = {
       name:        d.name || d.name_en,
       sec:         d.sector,
       industry:    d.industry,
