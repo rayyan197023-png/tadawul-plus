@@ -102,6 +102,7 @@ function DividendsTab(props) {
         <div style={{position:"relative",zIndex:1}}>
           
           {divItem&&(
+          {divItem&&(
             <div style={{position:"fixed",inset:0,background:"rgba(6,8,15,.97)",zIndex:99,display:"flex",alignItems:"flex-end"}}>
               <div style={{
                 background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",
@@ -114,7 +115,7 @@ function DividendsTab(props) {
                 <div style={{textAlign:"center",marginBottom:20}}>
                   <div style={{fontSize:9,color:C.mint,fontWeight:700,letterSpacing:"2px",marginBottom:4}}>DIVIDENDS CALCULATOR</div>
                   <div className="glow-mint" style={{fontSize:18,fontWeight:900,color:C.snow}}>{divItem.name}</div>
-                  <div style={{fontSize:10,color:C.smoke,marginTop:3}}>سنوي · عائد {((divItem.perShare*(divItem.timesPerYear||1))/divItem.price*100).toFixed(2)}% سنوي</div>
+                  <div style={{fontSize:10,color:C.smoke,marginTop:3}}>{divItem.freq} · عائد {(divItem.yield||0).toFixed(2)}% سنوي</div>
                 </div>
                 <div style={{marginBottom:14}}>
                   <div style={{fontSize:10,color:C.smoke,marginBottom:6,textAlign:"right"}}>عدد الأسهم التي تمتلكها</div>
@@ -128,7 +129,7 @@ function DividendsTab(props) {
                   {(function(){
                     var cost=parseFloat(divCost);
                     if(!cost||cost<=0) return null;
-                    var annD=divItem.perShare*(divItem.timesPerYear||1); // التوزيع السنوي الكامل
+                    var annD=divItem.annualDiv||0;
                     var yoc=(annD/cost*100).toFixed(2);
                     return(<div className="glow-mint" style={{fontSize:12,color:C.mint,fontWeight:700,marginTop:5,textAlign:"right"}}>Yield on Cost: <span className="m">{yoc}%</span></div>);
                   }())}
@@ -145,27 +146,24 @@ function DividendsTab(props) {
                       <div className="num-lg glow-gold" style={{fontSize:22,fontWeight:900,color:C.gold}}>{cfmt((parseFloat(divShares)||0)*divItem.perShare)}</div>
                       <div style={{fontSize:9,color:C.smoke,marginTop:2}}>ر.س</div>
                     </div>
-                     </div>
+                  </div>
                   {(function(){
                     var shares=parseFloat(divShares)||0;
                     if(shares<=0) return null;
-                    // التوزيعات السعودية سنوية — perShare هو التوزيع السنوي للسهم
-                    var annD=shares*divItem.perShare;
-                    // سعر السهم: من DIVS مباشرة أو STOCKS
-                    var spArr=STOCKS.filter(function(s){return s.sym===divItem.sym;});
-                    var spPrice=divItem.price||(spArr.length>0?spArr[0].p:0);
+                    // التوزيع السنوي الكامل للسهم (من sahmk)
+                    var annDPerShare=divItem.annualDiv||0;
+                    var annD=shares*annDPerShare;          // توزيعات المستخدم السنوية
+                    var spPrice=divItem.price||0;
                     if(!spPrice||spPrice<=0) return null;
-                    // أسهم جديدة بالسنة = إجمالي التوزيعات ÷ سعر السهم
-                    var newSh=(annD/spPrice).toFixed(2);
-                    // عائد التوزيع الفعلي = perShare ÷ سعر السهم
-                    var yr=divItem.perShare/spPrice;
-                    // رصيد بعد 3 سنوات بإعادة استثمار التوزيعات (DRIP)
+                    // عائد التوزيع السنوي = السنوي ÷ السعر
+                    var yr=annDPerShare/spPrice;
+                    // DRIP -- رصيد بعد 3 سنوات بإعادة الاستثمار
                     var totalShares3=Math.round(shares*Math.pow(1+yr,3));
                     var newShares3=totalShares3-Math.round(shares);
                     var totalDiv3=parseFloat((annD*3).toFixed(2));
                     return(
                       <div style={{borderTop:"1px solid "+C.mint+"20",paddingTop:14}}>
-                        <div style={{fontSize:9,color:C.mint,fontWeight:700,marginBottom:8,textAlign:"right"}}>DRIP — إعادة استثمار التوزيعات · 3 سنوات</div>
+                        <div style={{fontSize:9,color:C.mint,fontWeight:700,marginBottom:8,textAlign:"right"}}>DRIP -- إعادة استثمار التوزيعات · 3 سنوات</div>
                         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6}}>
                           <div style={{background:C.mint+"10",borderRadius:10,padding:"10px 6px",textAlign:"center"}}>
                             <div style={{fontSize:8,color:C.smoke,marginBottom:3}}>توزيعات/سنة</div>
