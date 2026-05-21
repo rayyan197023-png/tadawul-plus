@@ -1,66 +1,63 @@
-'use client';
 /**
- * useDividend -- جلب توزيعات سهم واحد عند الطلب من sahmk
- *
- * الاستخدام:
- *   const { data, loading, error } = useDividend(sym);
- *
- * يجلب /api/sahmkdata?endpoint=dividends&sym={sym}
- * فقط عند تمرير sym صالح (عند الطلب)
+ * قائمة الأسهم السعودية الموزِّعة للأرباح
+ * تُستخدم في تبويب التوزيعات (جلب عند الطلب من sahmk)
  */
 
-import { useState, useEffect } from 'react';
+export const DIV_STOCKS = [
+  // البنوك
+  { sym: '1120', name: 'الراجحي', sec: 'بنوك' },
+  { sym: '1180', name: 'الأهلي', sec: 'بنوك' },
+  { sym: '1010', name: 'الرياض', sec: 'بنوك' },
+  { sym: '1150', name: 'الإنماء', sec: 'بنوك' },
+  { sym: '1060', name: 'الجزيرة', sec: 'بنوك' },
+  { sym: '1080', name: 'العربي الوطني', sec: 'بنوك' },
+  { sym: '1140', name: 'البلاد', sec: 'بنوك' },
+  { sym: '1050', name: 'الفرنسي', sec: 'بنوك' },
+  { sym: '1030', name: 'ساب', sec: 'بنوك' },
+  // الطاقة والبتروكيماويات
+  { sym: '2222', name: 'أرامكو السعودية', sec: 'طاقة' },
+  { sym: '2382', name: 'أديس', sec: 'طاقة' },
+  { sym: '2010', name: 'سابك', sec: 'بتروكيماويات' },
+  { sym: '2350', name: 'كيان', sec: 'بتروكيماويات' },
+  { sym: '2020', name: 'سابك للمغذيات', sec: 'بتروكيماويات' },
+  { sym: '2310', name: 'سبكيم', sec: 'بتروكيماويات' },
+  { sym: '2330', name: 'المتقدمة', sec: 'بتروكيماويات' },
+  { sym: '2001', name: 'كيمانول', sec: 'بتروكيماويات' },
+  { sym: '2210', name: 'نماء للكيماويات', sec: 'بتروكيماويات' },
+  // الاتصالات والتقنية
+  { sym: '7010', name: 'إس تي سي', sec: 'اتصالات' },
+  { sym: '7020', name: 'اتحاد عذيب', sec: 'اتصالات' },
+  { sym: '7030', name: 'زين', sec: 'اتصالات' },
+  { sym: '7040', name: 'موبايلي', sec: 'اتصالات' },
+  { sym: '7200', name: 'ام اي اس', sec: 'اتصالات' },
+  // التعدين
+  { sym: '1211', name: 'معادن', sec: 'تعدين' },
+  // الأغذية
+  { sym: '2280', name: 'المراعي', sec: 'أغذية' },
+  { sym: '2050', name: 'صافولا', sec: 'أغذية' },
+  { sym: '6001', name: 'حلواني إخوان', sec: 'أغذية' },
+  { sym: '6010', name: 'نادك', sec: 'أغذية' },
+  { sym: '2270', name: 'سدافكو', sec: 'أغذية' },
+  // التجزئة
+  { sym: '4190', name: 'جرير', sec: 'تجزئة' },
+  { sym: '4001', name: 'أسواق العثيم', sec: 'تجزئة' },
+  { sym: '4061', name: 'أنعام', sec: 'تجزئة' },
+  // الرعاية الصحية
+  { sym: '4013', name: 'الحبيب', sec: 'رعاية صحية' },
+  { sym: '4002', name: 'المواساة', sec: 'رعاية صحية' },
+  { sym: '4007', name: 'الحمادي', sec: 'رعاية صحية' },
+  { sym: '4004', name: 'دله الصحية', sec: 'رعاية صحية' },
+  // اللوجستية
+  { sym: '4030', name: 'البحري', sec: 'لوجستية' },
+  { sym: '4031', name: 'الخدمات الأرضية', sec: 'لوجستية' },
+  // التأمين
+  { sym: '8010', name: 'التعاونية', sec: 'تأمين' },
+  { sym: '8210', name: 'بوبا العربية', sec: 'تأمين' },
+  // الأسمنت
+  { sym: '3030', name: 'أسمنت السعودية', sec: 'مواد بناء' },
+  { sym: '3010', name: 'أسمنت العربية', sec: 'مواد بناء' },
+  { sym: '3060', name: 'أسمنت ينبع', sec: 'مواد بناء' },
+  { sym: '3040', name: 'أسمنت القصيم', sec: 'مواد بناء' },
+];
 
-// ذاكرة مؤقتة بسيطة (تبقى أثناء الجلسة)
-const cache = {};
-
-export function useDividend(sym) {
-  const [data, setData]       = useState(sym && cache[sym] ? cache[sym] : null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState(null);
-
-  useEffect(() => {
-    if (!sym) { setData(null); return; }
-
-    // إن كانت في الكاش، استخدمها فوراً
-    if (cache[sym]) {
-      setData(cache[sym]);
-      return;
-    }
-
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
-
-    fetch(`/api/sahmkdata?endpoint=dividends&sym=${sym}`)
-      .then(r => {
-        if (!r.ok) throw new Error('فشل جلب التوزيعات');
-        return r.json();
-      })
-      .then(json => {
-        if (cancelled) return;
-        if (json && json.error) {
-          setError(json.error);
-          setData(null);
-        } else {
-          cache[sym] = json;   // خزّن في الكاش
-          setData(json);
-        }
-      })
-      .catch(err => {
-        if (!cancelled) {
-          setError(err.message || 'خطأ');
-          setData(null);
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-
-    return () => { cancelled = true; };
-  }, [sym]);
-
-  return { data, loading, error };
-}
-
-
+export default DIV_STOCKS;
