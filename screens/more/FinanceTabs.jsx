@@ -64,6 +64,40 @@ function DividendsTab(props) {
   var liveTime=tp.liveTime; var commLastUpdate=tp.commLastUpdate;
   var rankTick=tp.rankTick;
   var divDateItems=divItem?[{l:"تاريخ الاستحقاق",v:divItem.exDate},{l:"تاريخ التوزيع",v:divItem.payDate}]:[];
+
+  // ✨ جلب توزيعات الأسهم الـ44 (دفعات + cache)
+  var divList = useDividendsList(DIV_STOCKS);
+  var divItems = divList.items;
+  var divLoading = divList.loading;
+
+  // دالة مساعدة: تحويل بيانات sahmk لشكل العرض
+  function buildDivCard(item) {
+    var d = item.divData;
+    var latest = (d.history && d.history[0]) || {};
+    var perShare = latest.value || 0;
+    var times = d.payments_last_year || 1;
+    var freq = times >= 4 ? "ربعي" : times === 2 ? "نصف سنوي" : times === 1 ? "سنوي" : times + "x/سنة";
+    // أيام متبقية للاستحقاق
+    var daysLeft = null;
+    if (latest.eligibility_date) {
+      var diff = Math.ceil((new Date(latest.eligibility_date) - new Date()) / 86400000);
+      daysLeft = diff > 0 ? diff : null;
+    }
+    return {
+      sym: item.sym, name: item.name, sec: item.sec,
+      perShare: perShare,
+      yield: d.trailing_12m_yield || 0,
+      annualDiv: d.trailing_12m_dividends || 0,
+      times: times, freq: freq,
+      price: d.current_price || 0,
+      exDate: latest.eligibility_date || "--",
+      payDate: latest.distribution_date || "--",
+      daysLeft: daysLeft,
+      upcoming: d.upcoming || [],
+      history: (d.history || []).slice(0, 6).map(function(h){ return h.value; }).reverse(),
+    };
+  }
+
   return(
         <div style={{position:"relative",zIndex:1}}>
           
