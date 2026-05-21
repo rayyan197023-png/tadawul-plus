@@ -106,22 +106,19 @@ const fetchSahmkQuote = async (sym) => {
   }
 };
 
-// جلب معلومات الشركة + الأساسيات
+// جلب معلومات الشركة + الأساسيات (endpoint: fundamentals)
 const fetchSahmkCompany = async (sym) => {
   try {
-    const d = await sahmkFetch("company", { sym });
+    const d = await sahmkFetch("fundamentals", { sym });
     const f = d.fundamentals || {};
-    const a = d.analysts || {};
-    const v = d.valuation || {};
-    const t = d.technicals || {};
     return {
-            name:        d.name_ar || d.short_name || d.name,
+      name:        d.name || d.name_en,
       sec:         d.sector,
       industry:    d.industry,
       website:     d.website,
       pe:          f.pe_ratio,
       forwardPE:   f.forward_pe,
-      eps:         f.eps,
+      eps:         f.eps_ttm || f.basic_eps || f.eps,
       bvps:        f.book_value,
       pb:          f.price_to_book,
       beta:        f.beta,
@@ -132,17 +129,52 @@ const fetchSahmkCompany = async (sym) => {
                      : null,
       hi52:        f.fifty_two_week_high,
       lo52:        f.fifty_two_week_low,
-      targetMean:  a.target_mean,
-      targetHigh:  a.target_high,
-      targetLow:   a.target_low,
-      consensus:   a.consensus,
-      numAnalysts: a.num_analysts,
-      fv:          v.fair_price,
-      fvConf:      v.fair_price_confidence,
-      rsi:         t.rsi_14,
-      macd:        t.macd_line,
-      macdSig:     t.macd_signal,
-      ma50:        t.fifty_day_average,
+    };
+  } catch (e) {
+    return null;
+  }
+};
+
+// جلب النسب المالية (ROE, ROA, الهوامش)
+const fetchSahmkRatios = async (sym) => {
+  try {
+    const d = await sahmkFetch("ratios", { sym });
+    const arr = d.ratios || [];
+    if (arr.length === 0) return null;
+    const r = arr[0].ratios || {};
+    const km = arr[0].key_metrics || {};
+    return {
+      roe:        r.roe,
+      roa:        r.roa,
+      netMargin:  r.net_margin,
+      opMargin:   r.operating_margin,
+      debtEquity: r.debt_to_equity,
+      _revenue:   km.total_revenue,
+      _netIncome: km.net_income,
+      _ocf:       km.operating_cash_flow,
+    };
+  } catch (e) {
+    return null;
+  }
+};
+
+// جلب البيانات المالية (للنمو + DCF)
+const fetchSahmkFinancials = async (sym) => {
+  try {
+    const d = await sahmkFetch("financials", { sym });
+    const inc = (d.income_statements || []).filter(x => x.is_full_year);
+    const cf  = (d.cash_flows || []).filter(x => x.is_full_year);
+    // نمو صافي الدخل (آخر سنتين كاملتين)
+    let growthYoY = null;
+    if (inc.length >= 2) {
+      var newer = inc[0].net_income, older = inc[1].net_income;
+      if (older && older !== 0) {
+        growthYoY = parseFloat(((newer - older) / Math.abs(older) * 100).toFixed(1));
+      }
+    }
+    return {
+      growthYoY: growthYoY,
+      _ocfLatest: cf.length > 0 ? cf[0].operating_cash_flow : null,
     };
   } catch (e) {
     return null;
