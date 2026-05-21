@@ -141,8 +141,7 @@ const fetchSahmkCompany = async (sym) => {
   }
 };
 
-// جلب النسب المالية
- (ROE, ROA, الهوامش)
+// جلب النسب المالية (ROE, ROA, الهوامش)
 const fetchSahmkRatios = async (sym) => {
   try {
     const d = await sahmkFetch("ratios", { sym });
