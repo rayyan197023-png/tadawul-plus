@@ -131,15 +131,18 @@ const fetchSahmkCompany = async (sym) => {
       floatPct:    f.float_shares && f.shares_outstanding
                      ? parseFloat((f.float_shares/f.shares_outstanding*100).toFixed(2))
                      : null,
-      hi52:        f.fifty_two_week_high,
+            hi52:        f.fifty_two_week_high,
       lo52:        f.fifty_two_week_low,
     };
+    fundCache['c_'+sym] = result;
+    return result;
   } catch (e) {
     return null;
   }
 };
 
-// جلب النسب المالية (ROE, ROA, الهوامش)
+// جلب النسب المالية
+ (ROE, ROA, الهوامش)
 const fetchSahmkRatios = async (sym) => {
   try {
     const d = await sahmkFetch("ratios", { sym });
