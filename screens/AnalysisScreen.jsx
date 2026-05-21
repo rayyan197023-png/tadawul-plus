@@ -801,9 +801,9 @@ animation:'shimmer 1.4s ease infinite',
             const watchN     = allData.filter(d=>d.health.score>=60&&d.health.score<75).length;
             const reduceN    = allData.filter(d=>d.health.score<45).length;
             const noSigN     = totalN-buyN-watchN-reduceN;
-            const avgHealth  = Math.round(allData.reduce((s,d)=>s+d.health.score,0)/totalN);
-            const avgConf    = Math.round(allData.reduce((s,d)=>s+d.health.score*.9,0)/totalN);
-            const avgRadar   = Math.round(allData.reduce((s,d)=>s+d.stk.rating,0)/totalN);
+            const avgHealth  = totalN>0 ? Math.round(allData.reduce((s,d)=>s+((d&&d.health&&d.health.score)||0),0)/totalN) : 50;
+            const avgConf    = totalN>0 ? Math.round(allData.reduce((s,d)=>s+(((d&&d.health&&d.health.score)||0)*.9),0)/totalN) : 50;
+            const avgRadar   = totalN>0 ? Math.round(allData.reduce((s,d)=>s+((d&&d.stk&&d.stk.rating)||0),0)/totalN) : 50;
             const mktLabel   = "المؤشر العام";
             // 🎯 معايرة علمية: 65/55/45/38
             const mktColor = avgHealth>=65?C.mint:avgHealth>=55?C.electric:avgHealth>=45?C.amber:avgHealth>=38?"#c0392b":"#a93226"
