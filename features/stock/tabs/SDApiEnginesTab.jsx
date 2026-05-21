@@ -111,6 +111,7 @@ const fetchSahmkQuote = async (sym) => {
 
 // جلب معلومات الشركة + الأساسيات (endpoint: fundamentals)
 const fetchSahmkCompany = async (sym) => {
+  if (fundCache['c_'+sym]) return fundCache['c_'+sym];
   try {
     const d = await sahmkFetch("fundamentals", { sym });
     const f = d.fundamentals || {};
