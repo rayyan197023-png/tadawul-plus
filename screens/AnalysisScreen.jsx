@@ -297,9 +297,7 @@ const ohlcvCache = useOHLCVCache(syms, '3M');
       return {stk, bars, health:h}; 
     });
     return result;
-  },[throttledSig, liveMACRO]);
-    return result;
-  },[throttledSig, liveMACRO]); // ← throttled: recalc max every 5s not every 3s
+    },[throttledSig, liveMACRO]); // ← throttled: recalc max every 5s not every 3s
 
  const filtered = useMemo(()=>{
     // ✨ Safety check
