@@ -63,4 +63,4 @@ export function useDividend(sym) {
   return { data, loading, error };
 }
 
-export default useDividend;
+
