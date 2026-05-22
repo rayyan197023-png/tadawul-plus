@@ -311,9 +311,19 @@ const fetchSahmkDividend = async (sym) => {
   try {
     const d = await sahmkFetch("dividends", { sym });
     const hist = d.history || [];
+    // سجل التوزيعات للعرض
+    var divHistory = hist.slice(0, 8).map(function(h){
+      return {
+        date: h.distribution_date || h.eligibility_date || "--",
+        div: h.value,
+        type: h.period || "",
+        yld: null,
+      };
+    });
     const result = {
       divYld:  d.trailing_12m_yield || null,
       lastDiv: hist.length > 0 ? hist[0].value : null,
+      divHistory: divHistory,
     };
     fundCache['d_'+sym] = result;
     return result;
