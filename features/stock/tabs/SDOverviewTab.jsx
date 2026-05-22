@@ -722,7 +722,7 @@ function SnowflakeCard({ stk, scores }) {
       label: getLabel("growth", stk.growthYoY),
       tip:"نمو الإيرادات سنوياً (YoY). الأعلى أفضل.",
       ranges:"أكثر من 20% = ممتاز | 10-20% = جيد | 5-10% = مقبول | 0-5% = ضعيف | سلبي = صفر",
-      v: Math.min(100,Math.max(0, stk.revGrowthYoY!=null ? Math.round(Math.min(100,Math.max(0,stk.revGrowthYoY)*5)) : scores?.growthScore||55)) },
+      v: Math.min(100,Math.max(0, stk.growthYoY!=null ? Math.round(Math.min(100,Math.max(0,stk.growthYoY)*5)) : scores?.growthScore||55)) },
     { l:"الربحية", col:C.plasma, key:"margin",
       raw: stk.netMargin!=null ? stk.netMargin+"%" : "-",
       label: getLabel("margin", stk.netMargin),
