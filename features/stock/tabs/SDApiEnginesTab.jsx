@@ -180,8 +180,11 @@ const fetchSahmkFinancials = async (sym) => {
   if (fundCache['f_'+sym]) return fundCache['f_'+sym];
   try {
     const d = await sahmkFetch("financials", { sym });
-    const inc = (d.income_statements || []).filter(x => x.is_full_year);
-    const cf  = (d.cash_flows || []).filter(x => x.is_full_year);
+    const incAll = (d.income_statements || []);
+    const balAll = (d.balance_sheets || []);
+    const cfAll  = (d.cash_flows || []);
+    const inc = incAll.filter(x => x.is_full_year);
+    const cf  = cfAll.filter(x => x.is_full_year);
     // نمو صافي الدخل (آخر سنتين كاملتين)
     let growthYoY = null;
     if (inc.length >= 2) {
@@ -190,10 +193,41 @@ const fetchSahmkFinancials = async (sym) => {
         growthYoY = parseFloat(((newer - older) / Math.abs(older) * 100).toFixed(1));
       }
     }
+    // تنسيق الأرقام (مليار)
+    var fmtB = function(v){ return v != null ? (v/1e9).toFixed(1)+" مليار" : "--"; };
+    // بناء جداول العرض (سنوي)
+    var incomeRows = incAll.slice(0,4).map(function(x){
+      return {
+        period: x.fiscal_year || "--",
+        "الإيرادات": fmtB(x.total_revenue),
+        "الدخل التشغيلي": fmtB(x.operating_income),
+        "صافي الدخل": fmtB(x.net_income),
+      };
+    });
+    var balanceRows = balAll.slice(0,4).map(function(x){
+      return {
+        period: x.fiscal_year || "--",
+        "إجمالي الأصول": fmtB(x.total_assets),
+        "إجمالي الخصوم": fmtB(x.total_liabilities),
+        "حقوق الملكية": fmtB(x.stockholders_equity),
+        "إجمالي الدين": fmtB(x.total_debt),
+      };
+    });
+    var cashflowRows = cfAll.slice(0,4).map(function(x){
+      return {
+        period: x.fiscal_year || "--",
+        "التدفق التشغيلي": fmtB(x.operating_cash_flow),
+      };
+    });
     const result = {
       growthYoY: growthYoY,
       _revLatest: inc.length > 0 ? inc[0].total_revenue : null,
       _ocfLatest: cf.length > 0 ? cf[0].operating_cash_flow : null,
+      financials: {
+        income:   { annual: incomeRows,   quarterly: [] },
+        balance:  { annual: balanceRows,  quarterly: [] },
+        cashflow: { annual: cashflowRows, quarterly: [] },
+      },
     };
     fundCache['f_'+sym] = result;
     return result;
