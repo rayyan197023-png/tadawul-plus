@@ -403,9 +403,8 @@ function FinancialsPane({ stk }) {
 ═══════════════════════════════════════════════════════════════ */
 
 function EarningsPane({ stk }) {
-  const earnings = EARNINGS_DATA[stk.sym] || EARNINGS_DATA.default;
-  const dividends = DIVIDENDS_DETAIL[stk.sym] || DIVIDENDS_DETAIL.default;
-
+  const earnings = stk.epsHistory || EARNINGS_DATA[stk.sym] || EARNINGS_DATA.default;
+  const dividends = stk.divHistory || DIVIDENDS_DETAIL[stk.sym] || DIVIDENDS_DETAIL.default;
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
 
