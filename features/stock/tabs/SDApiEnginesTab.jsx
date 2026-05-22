@@ -383,7 +383,7 @@ const useSahmkData = (baseStkData) => {
           fetchSahmkOhlcv(sym, '3M'),
         ]);
 
-        // حسابات إضافية (P/S, PEG)
+                // حسابات إضافية (P/S, PEG, EPS تاريخي)
         var extras = {};
         if (company && company.mc && financials && financials._revLatest) {
           var mcNum = parseFloat(company.mc) * 1e12; // T → رقم
@@ -393,6 +393,16 @@ const useSahmkData = (baseStkData) => {
         }
         if (company && company.pe && financials && financials.growthYoY && financials.growthYoY > 0) {
           extras.peg = parseFloat((company.pe / financials.growthYoY).toFixed(2));
+        }
+        // مسار EPS = net_income / shares_outstanding
+        if (company && company.sharesOut && financials && financials.epsHistoryRaw) {
+          var shares = company.sharesOut;
+          extras.epsHistory = financials.epsHistoryRaw.map(function(e){
+            return {
+              period: e.period,
+              eps: e._netIncome && shares ? parseFloat((e._netIncome / shares).toFixed(2)) : null,
+            };
+          });
         }
 
         if (!cancelled) {
