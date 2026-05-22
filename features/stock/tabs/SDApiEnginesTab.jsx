@@ -277,11 +277,21 @@ const fetchSahmkFinancials = async (sym) => {
       };
     }
 
+        // مسار EPS التاريخي (net_income / shares)
+    // shares من fundamentals - نمررها لاحقاً، هنا نحفظ net_income
+    var epsHistory = incAll.slice(0,8).reverse().map(function(x){
+      return {
+        period: x.fiscal_year || "--",
+        _netIncome: x.net_income,
+      };
+    });
+
     const result = {
       growthYoY: growthYoY,
       _revLatest: inc.length > 0 ? inc[0].total_revenue : null,
       _ocfLatest: cf.length > 0 ? cf[0].operating_cash_flow : null,
       finScores: scores,
+      epsHistoryRaw: epsHistory,
       financials: {
         income:   { annual: incomeRows,   quarterly: [] },
         balance:  { annual: balanceRows,  quarterly: [] },
