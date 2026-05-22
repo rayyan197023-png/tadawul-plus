@@ -261,13 +261,26 @@ const useSahmkData = (baseStkData) => {
         const quote = await fetchSahmkQuote(sym);
         if (!quote || quote._apiErr) throw new Error(quote?._apiErr || "لا استجابة");
 
-        // جلب متوازي (أسرع + لا يُلغي بعضه)
-        const [company, ratios, financials, priceHistory] = await Promise.all([
+             // جلب متوازي (أسرع + لا يُلغي بعضه)
+        const [company, ratios, financials, dividend, priceHistory] = await Promise.all([
           fetchSahmkCompany(sym),
           fetchSahmkRatios(sym),
           fetchSahmkFinancials(sym),
+          fetchSahmkDividend(sym),
           fetchSahmkOhlcv(sym, '3M'),
         ]);
+
+        // حسابات إضافية (P/S, PEG)
+        var extras = {};
+        if (company && company.mc && financials && financials._revLatest) {
+          var mcNum = parseFloat(company.mc) * 1e12; // T → رقم
+          if (financials._revLatest > 0) {
+            extras.ps = parseFloat((mcNum / financials._revLatest).toFixed(2));
+          }
+        }
+        if (company && company.pe && financials && financials.growthYoY && financials.growthYoY > 0) {
+          extras.peg = parseFloat((company.pe / financials.growthYoY).toFixed(2));
+        }
 
         if (!cancelled) {
           setLiveData({
@@ -275,6 +288,8 @@ const useSahmkData = (baseStkData) => {
             ...(company || {}),
             ...(ratios || {}),
             ...(financials || {}),
+            ...(dividend || {}),
+            ...extras,
             priceHistory,
           });
 
