@@ -1056,7 +1056,7 @@ function SDOverview({ stk, per, setPer, onNav, onExpand }) {
     {l:"نسبة التداول", v: stk.currentRatio!=null ? stk.currentRatio : "--"},
     {section:"التوزيعات"},
     {l:"عائد التوزيعات", v: stk.divYld!=null ? stk.divYld+"%" : "--"},
-    {l:"آخر توزيع", v: stk.div ? stk.div+" ر.س" : "--"},
+    {l:"آخر توزيع", v: stk.lastDiv ? stk.lastDiv+" ر.س" : "--"},
     {section:"الأسهم"},
     {l:"الأسهم القائمة", v: stk.sharesOut ? (stk.sharesOut/1e6).toFixed(0)+"م" : "--"},
     {l:"الأسهم الحرة", v: stk.floatPct!=null ? stk.floatPct+"%" : "--"},
