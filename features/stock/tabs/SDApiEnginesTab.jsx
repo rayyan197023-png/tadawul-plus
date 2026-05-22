@@ -219,10 +219,69 @@ const fetchSahmkFinancials = async (sym) => {
         "التدفق التشغيلي": fmtB(x.operating_cash_flow),
       };
     });
+        // ═══ حساب درجات الصحة المالية ═══
+    var scores = null;
+    var latestInc = inc[0], latestBal = balAll.filter(function(x){return x.is_full_year;})[0], latestCf = cf[0];
+    if (latestInc && latestBal) {
+      var assets = latestBal.total_assets || 0;
+      var liab = latestBal.total_liabilities || 0;
+      var equity = latestBal.stockholders_equity || 0;
+      var debt = latestBal.total_debt || 0;
+      var rev = latestInc.total_revenue || 0;
+      var opInc = latestInc.operating_income || 0;
+      var netInc = latestInc.net_income || 0;
+      var ocf = latestCf ? latestCf.operating_cash_flow : 0;
+
+      // Altman Z-Score (تقريبي)
+      var workingCap = assets - liab; // تقريب رأس المال العامل
+      var z = assets > 0 ? (
+        1.2 * (workingCap / assets) +
+        1.4 * (netInc / assets) +
+        3.3 * (opInc / assets) +
+        0.6 * (equity / (liab || 1)) +
+        1.0 * (rev / assets)
+      ) : 0;
+      z = parseFloat(z.toFixed(2));
+
+      // Cash Score (من التدفق النقدي)
+      var cashScore = rev > 0 ? Math.min(100, Math.round((ocf / rev) * 200)) : 0;
+
+      // الربحية (هامش صافي + ROE)
+      var nm = rev > 0 ? (netInc / rev * 100) : 0;
+      var roeCalc = equity > 0 ? (netInc / equity * 100) : 0;
+      var profitScore = Math.min(100, Math.round((nm * 2 + roeCalc * 2)));
+
+      // النمو
+      var growthScore = growthYoY != null ? Math.min(100, Math.max(0, Math.round(50 + growthYoY * 2))) : 50;
+
+      // الديون (أقل = أفضل)
+      var de = equity > 0 ? (debt / equity) : 0;
+      var debtScore = Math.min(100, Math.max(0, Math.round(100 - de * 50)));
+
+      // Piotroski تقريبي (من المتاح)
+      var piotroski = 0;
+      if (netInc > 0) piotroski += 2;
+      if (ocf > 0) piotroski += 2;
+      if (ocf > netInc) piotroski += 1;
+      if (growthYoY != null && growthYoY > 0) piotroski += 2;
+      if (de < 1) piotroski += 2;
+
+      scores = {
+        altmanZ: z,
+        piotroski: piotroski,
+        cashScore: cashScore,
+        beneish: -2.5, // افتراضي (لا تلاعب)
+        profitScore: Math.max(0, profitScore),
+        growthScore: growthScore,
+        debtScore: debtScore,
+      };
+    }
+
     const result = {
       growthYoY: growthYoY,
       _revLatest: inc.length > 0 ? inc[0].total_revenue : null,
       _ocfLatest: cf.length > 0 ? cf[0].operating_cash_flow : null,
+      finScores: scores,
       financials: {
         income:   { annual: incomeRows,   quarterly: [] },
         balance:  { annual: balanceRows,  quarterly: [] },
