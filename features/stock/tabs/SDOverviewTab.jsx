@@ -955,7 +955,7 @@ function PerDropdown({ per, setPer }) {
 function SDOverview({ stk, per, setPer, onNav, onExpand }) {
   const [chartType, setChartType] = useState("شموع");
   const [showMore, setShowMore] = useState(false);
-  const scores = FIN_SCORES[stk.sym] || FIN_SCORES.default;
+  const scores = stk.finScores || FIN_SCORES[stk.sym] || FIN_SCORES.default;
 
   // فترة افتراضية إذا لم تكن متوفرة من props
   const [internalPer, setInternalPer] = useState("3M");
