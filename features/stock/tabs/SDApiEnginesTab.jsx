@@ -177,6 +177,7 @@ const fetchSahmkRatios = async (sym) => {
 
 // جلب البيانات المالية (للنمو + DCF)
 const fetchSahmkFinancials = async (sym) => {
+  if (fundCache['f_'+sym]) return fundCache['f_'+sym];
   try {
     const d = await sahmkFetch("financials", { sym });
     const inc = (d.income_statements || []).filter(x => x.is_full_year);
@@ -189,10 +190,30 @@ const fetchSahmkFinancials = async (sym) => {
         growthYoY = parseFloat(((newer - older) / Math.abs(older) * 100).toFixed(1));
       }
     }
-    return {
+    const result = {
       growthYoY: growthYoY,
+      _revLatest: inc.length > 0 ? inc[0].total_revenue : null,
       _ocfLatest: cf.length > 0 ? cf[0].operating_cash_flow : null,
     };
+    fundCache['f_'+sym] = result;
+    return result;
+  } catch (e) {
+    return null;
+  }
+};
+
+// جلب التوزيعات (عائد + آخر توزيع)
+const fetchSahmkDividend = async (sym) => {
+  if (fundCache['d_'+sym]) return fundCache['d_'+sym];
+  try {
+    const d = await sahmkFetch("dividends", { sym });
+    const hist = d.history || [];
+    const result = {
+      divYld:  d.trailing_12m_yield || null,
+      lastDiv: hist.length > 0 ? hist[0].value : null,
+    };
+    fundCache['d_'+sym] = result;
+    return result;
   } catch (e) {
     return null;
   }
