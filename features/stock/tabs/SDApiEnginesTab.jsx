@@ -55,12 +55,9 @@ export const ANALYST_EST = {
 // SAHMK API -- عبر proxy داخلي /api/sahmkdata (يحل CORS)
 // ══════════════════════════════════════════════════════════════════
 
-// cache للأساسيات (ثابتة - لا نكررها)
-const fundCache = {};
 // cache للأساسيات (ثابتة - تقليل الطلبات)
 const fundCache = {};
 
-const sahmkFetch = async (endpoint, params = {}) => {
 const sahmkFetch = async (endpoint, params = {}) => {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10000);
