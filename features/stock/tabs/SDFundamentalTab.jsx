@@ -305,7 +305,8 @@ function FinancialsPane({ stk }) {
   const [period, setPeriod] = useState("annual"); // annual | quarterly
   const [section, setSection] = useState("income"); // income | balance | cashflow
 
-  const fin = FINANCIALS_FULL[stk.sym] || FINANCIALS_FULL.default;
+  // البيانات الحية من sahmk أولاً، وإلا الوهمية
+  const fin = stk.financials || FINANCIALS_FULL[stk.sym] || FINANCIALS_FULL.default;
   const data = fin[section]?.[period] || [];
 
   const sectionLabels = {
