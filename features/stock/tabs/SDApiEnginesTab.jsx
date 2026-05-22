@@ -143,22 +143,33 @@ const fetchSahmkCompany = async (sym) => {
 
 // جلب النسب المالية (ROE, ROA, الهوامش)
 const fetchSahmkRatios = async (sym) => {
+  if (fundCache['r_'+sym]) return fundCache['r_'+sym];
   try {
     const d = await sahmkFetch("ratios", { sym });
     const arr = d.ratios || [];
     if (arr.length === 0) return null;
     const r = arr[0].ratios || {};
     const km = arr[0].key_metrics || {};
-    return {
+    // ROIC تقريبي = صافي الدخل ÷ (حقوق الملكية + الدين)
+    var roic = null;
+    var equity = km.stockholders_equity, debt = km.total_debt, ni = km.net_income;
+    if (ni && equity) {
+      var capital = equity + (debt || 0);
+      if (capital > 0) roic = parseFloat((ni / capital * 100).toFixed(2));
+    }
+    const result = {
       roe:        r.roe,
       roa:        r.roa,
       netMargin:  r.net_margin,
       opMargin:   r.operating_margin,
       debtEquity: r.debt_to_equity,
+      roic:       roic,
       _revenue:   km.total_revenue,
       _netIncome: km.net_income,
       _ocf:       km.operating_cash_flow,
     };
+    fundCache['r_'+sym] = result;
+    return result;
   } catch (e) {
     return null;
   }
