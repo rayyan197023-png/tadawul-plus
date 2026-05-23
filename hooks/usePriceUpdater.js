@@ -92,7 +92,8 @@ export function usePriceUpdater() {
           const q = quotesMap[seed.sym];
           if (!q) continue; // نتجاهل الأسهم بدون quote
 
-          const nm = SEED_MAP[seed.sym] || seed.name || NAMES_MAP[seed.sym] || q.name_ar || q.name || seed.sym;
+          let nm = NAMES_MAP[seed.sym] || q.name_ar || q.name || seed.sym;
+          nm = shortenName(nm, seed.sym);
 
           newStocks.push({
             sym:      seed.sym,
