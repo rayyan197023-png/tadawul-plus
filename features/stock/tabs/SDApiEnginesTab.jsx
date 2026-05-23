@@ -75,7 +75,7 @@ const readFundCache = (sym) => {
 
 const writeFundCache = (sym, data) => {
   try {
-    localStorage.setItem(`stockFund_v3_${sym}`, JSON.stringify({
+    localStorage.setItem(`stockFund_v4_${sym}`, JSON.stringify({
       timestamp: Date.now(),
       data: data,
     }));
