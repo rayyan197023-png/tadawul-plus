@@ -446,15 +446,22 @@ const useSahmkData = (baseStkData) => {
           });
         }
 
+                // تجميع الأساسيات للتخزين (بدون السعر المتغير)
+        var fundData = {
+          ...(company || {}),
+          ...(ratios || {}),
+          ...(financials || {}),
+          ...(dividend || {}),
+          ...extras,
+          priceHistory,
+        };
+        // حفظ الأساسيات في cache الدائم (3 أشهر)
+        writeFundCache(sym, fundData);
+
         if (!cancelled) {
           setLiveData({
+            ...fundData,
             ...quote,
-            ...(company || {}),
-            ...(ratios || {}),
-            ...(financials || {}),
-            ...(dividend || {}),
-            ...extras,
-            priceHistory,
           });
 
           setLastFetch(new Date().toLocaleTimeString("ar-SA"));
