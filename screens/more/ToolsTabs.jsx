@@ -8,7 +8,7 @@ import { STOCKS_LIVE as STOCKS } from '../../constants/stocksData';
 import { C, Ico, MiniLine, PRIORITY_ORDER, SectionHeader, SparkLine, TagFilter } from './MoreShared';
 import { useHaptic } from '../../hooks/useHaptic';
 import { useNav } from '../../store';
-import { SOUND_PRESETS, loadAlertSettings, saveAlertSettings, playAlertSound } from '../../engines/smartAlertsEngine'; 
+import { useCompareData } from '../../hooks/useCompareData';
 import { useCompareData } from '../../hooks/useCompareData';
 
 function SnapshotsTab(props) {
