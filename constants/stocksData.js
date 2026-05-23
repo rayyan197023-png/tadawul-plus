@@ -223,6 +223,7 @@ export const STOCKS = [
   { sym:"4018", sec:"الرعاية الصحية", sectorId:"healthcare", rating:67 },
   { sym:"4019", sec:"الرعاية الصحية", sectorId:"healthcare", rating:67 },
   { sym:"4021", sec:"الرعاية الصحية", sectorId:"healthcare", rating:67 },
+  { sym:"2230", sec:"الرعاية الصحية", sectorId:"healthcare", rating:68 },
 
   // ── الأدوية (Pharma & Life Science) ──
   { sym:"2070", sec:"الأدوية", sectorId:"pharma", rating:65 },
