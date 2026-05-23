@@ -58,6 +58,30 @@ export const ANALYST_EST = {
 // cache للأساسيات (ثابتة - تقليل الطلبات)
 const fundCache = {};
 
+// cache دائم في localStorage (3 أشهر - الأساسيات الربعية)
+const FUND_CACHE_DURATION = 90 * 24 * 60 * 60 * 1000; // 90 يوم
+
+const readFundCache = (sym) => {
+  try {
+    const raw = localStorage.getItem(`stockFund_${sym}`);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (Date.now() - (parsed.timestamp || 0) > FUND_CACHE_DURATION) return null;
+    return parsed.data;
+  } catch (e) {
+    return null;
+  }
+};
+
+const writeFundCache = (sym, data) => {
+  try {
+    localStorage.setItem(`stockFund_${sym}`, JSON.stringify({
+      timestamp: Date.now(),
+      data: data,
+    }));
+  } catch (e) {}
+};
+
 const sahmkFetch = async (endpoint, params = {}) => {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10000);
