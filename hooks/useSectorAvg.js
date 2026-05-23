@@ -100,10 +100,10 @@ const computeSectorAvg = async (peers) => {
     return parseFloat((vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2));
   };
 
-  return {
-    netMargin: avgOf('netMargin'),
-    roe:       avgOf('roe'),
-    pe:        avgOf('pe'),
+    return {
+    netMargin: avgOf('netMargin', 100),   // هامش معقول < 100%
+    roe:       avgOf('roe', 100),         // ROE معقول < 100%
+    pe:        avgOf('pe', 200),          // P/E معقول < 200
     count:     results.length,
   };
 };
