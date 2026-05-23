@@ -111,7 +111,7 @@ const RANKINGS = [
   {title:"أعلى قيمة سوقية",   color:C.gold,    field:"mktCap",dir:1,  fmt:function(v){return v==null?"--":v>=1000?(v/1000).toFixed(2)+"T":v.toFixed(1)+"B";}},
   {title:"أعلى عائد توزيعات", color:C.teal,    field:"div",   dir:1,  fmt:function(v){return v==null?"--":v.toFixed(1)+"%";}},
   {title:"أفضل ROE",           color:C.plasma,  field:"roe",   dir:1,  fmt:function(v){return v==null?"--":v.toFixed(1)+"%";}},
-  {title:"أقل P/E",            color:C.electric,field:"pe",    dir:-1, fmt:function(v){return v==null?"--":v+"x";}},
+  {title:"أقل P/E",            color:C.electric,field:"pe",    dir:-1, fmt:function(v){return v==null?"--":v.toFixed(1)+"x";}},
 ];
 
 const COMM = [
