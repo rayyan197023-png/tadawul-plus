@@ -150,13 +150,13 @@ const fetchSahmkCompany = async (sym) => {
       bvps:        f.book_value,
       pb:          f.price_to_book,
       beta:        f.beta,
-      mc:          f.market_cap
+            mc:          f.market_cap
                      ? (f.market_cap >= 1e12
                          ? (f.market_cap/1e12).toFixed(2)+"T"
                          : (f.market_cap/1e9).toFixed(2)+"B")
                      : null,
+      mcRaw:       f.market_cap || null,
       sharesOut:   f.shares_outstanding,
-      floatPct:    f.float_shares && f.shares_outstanding
                      ? parseFloat((f.float_shares/f.shares_outstanding*100).toFixed(2))
                      : null,
             hi52:        f.fifty_two_week_high,
