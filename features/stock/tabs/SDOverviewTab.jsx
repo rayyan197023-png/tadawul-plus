@@ -1048,7 +1048,6 @@ function SDOverview({ stk, per, setPer, onNav, onExpand }) {
     {l:"العائد على الأصول (ROA)", v: stk.roa!=null ? stk.roa+"%" : "--"},
     {l:"العائد على رأس المال (ROIC)", v: stk.roic!=null ? stk.roic+"%" : "--"},
     {section:"الهوامش"},
-    {l:"الهامش الإجمالي", v: stk.grossMargin!=null ? stk.grossMargin+"%" : "--"},
     {l:"الهامش التشغيلي", v: stk.opMargin!=null ? stk.opMargin+"%" : "--"},
     {l:"الهامش الصافي", v: stk.netMargin!=null ? stk.netMargin+"%" : "--"},
     {section:"المديونية والسيولة"},
