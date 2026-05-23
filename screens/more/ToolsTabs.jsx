@@ -9,7 +9,6 @@ import { C, Ico, MiniLine, PRIORITY_ORDER, SectionHeader, SparkLine, TagFilter }
 import { useHaptic } from '../../hooks/useHaptic';
 import { useNav } from '../../store';
 import { useCompareData } from '../../hooks/useCompareData';
-import { useCompareData } from '../../hooks/useCompareData';
 
 function SnapshotsTab(props) {
   var tp=props.p?props.p:props;
