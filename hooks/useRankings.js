@@ -104,7 +104,8 @@ export const useRankings = (stocksLive) => {
     const merged = constants.map(c => {
       const price = priceMap[c.sym] || null;
       let mc = null, pe = null, divYld = null;
-      if (price && c.sharesOut) mc = price * c.sharesOut;
+      if (price && c.sharesOut) mc = (price * c.sharesOut) / 1e9; // بالمليار
+
       if (price && c.eps && c.eps > 0) pe = price / c.eps;
       if (price && c.annualDiv) divYld = (c.annualDiv / price) * 100;
       return { sym: c.sym, name: c.name, sec: c.sec, mc, pe, divYld, roe: c.roe };
