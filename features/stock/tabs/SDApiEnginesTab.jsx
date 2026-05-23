@@ -162,6 +162,7 @@ const fetchSahmkCompany = async (sym) => {
                      : null,
       hi52:        f.fifty_two_week_high,
       lo52:        f.fifty_two_week_low,
+    };
     fundCache['c_'+sym] = result;
     return result;
   } catch (e) {
