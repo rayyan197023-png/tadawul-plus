@@ -144,8 +144,8 @@ const fetchSahmkCompany = async (sym) => {
       sec:         d.sector,
       industry:    d.industry,
       website:     d.website,
-      pe:          f.pe_ratio,
-      forwardPE:   f.forward_pe,
+            pe:          (f.pe_ratio != null && f.pe_ratio > 0.5 && f.pe_ratio < 300) ? f.pe_ratio : null,
+      forwardPE:   (f.forward_pe != null && f.forward_pe > 0.5 && f.forward_pe < 300) ? f.forward_pe : null,
       eps:         (function(){
                      var e = f.eps_ttm || f.basic_eps || f.eps;
                      // تحقق منطقي: لو EPS أكبر من 50% من السعر، استخدم basic
