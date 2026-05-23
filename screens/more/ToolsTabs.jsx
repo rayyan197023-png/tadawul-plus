@@ -1037,6 +1037,11 @@ function CompareView(props) {
   var onClose=props.onClose;
   var sA=useState(STOCKS[0]); var a=sA[0]; var setA=sA[1];
   var sB=useState(STOCKS[1]); var b=sB[0]; var setB=sB[1];
+    // جلب بيانات fundamentals للمقارنة (cache أو API)
+  var cmp = useCompareData(a.sym, b.sym, a.p, b.p);
+  // دمج: السعر/التغير من STOCKS_LIVE + الأساسيات المحسوبة
+  var aFull = Object.assign({}, a, cmp.extraA);
+  var bFull = Object.assign({}, b, cmp.extraB);
   var metrics=[
     {l:"السعر",   ka:"p",      higher:true},
     {l:"التغير",  ka:"pct",    higher:true},
