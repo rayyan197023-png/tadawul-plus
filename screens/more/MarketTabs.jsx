@@ -148,18 +148,6 @@ function RankingsTab(props) {
             );})}
           </div>
           
-          <div style={{padding:"6px 16px 4px",overflowX:"auto",display:"flex",gap:5,whiteSpace:"nowrap"}}>
-            {secList.map(function(s){return(
-              <button key={s} onClick={function(){setRankSec(s);}} style={{
-                padding:"4px 12px",borderRadius:14,
-                border:"1px solid "+(rankSec===s?C.electric+"55":C.line),
-                background:rankSec===s?C.electric+"15":C.layer3,
-                color:rankSec===s?C.electric:C.smoke,
-                fontSize:9,cursor:"pointer",flexShrink:0,fontWeight:rankSec===s?700:400,
-              }}>{s}</button>
-            );})}
-          </div>
-          
           <div style={{padding:"10px 16px",display:"flex",flexDirection:"column",gap:8}}>
             {rankItems.map(function(s,i){
   return <RankItem key={s.sym} s={s} i={i} rField={rField} BOX={BOX} SHD={SHD} SHD_ACTIVE={SHD_ACTIVE}/>;
