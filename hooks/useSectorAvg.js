@@ -90,8 +90,12 @@ const computeSectorAvg = async (peers) => {
 
   if (results.length === 0) return null;
 
-  const avgOf = (key) => {
-    const vals = results.map(r => r[key]).filter(v => v != null && isFinite(v));
+    const avgOf = (key, maxValid) => {
+    var vals = results.map(r => r[key]).filter(v => v != null && isFinite(v));
+    // تصفية القيم الشاذة (outliers)
+    if (maxValid != null) {
+      vals = vals.filter(v => Math.abs(v) <= maxValid);
+    }
     if (vals.length === 0) return null;
     return parseFloat((vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2));
   };
