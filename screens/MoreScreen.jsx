@@ -17,7 +17,6 @@ import { useSharedPrices } from '../store';
 import { useHaptic } from '../hooks/useHaptic';
 import AILearningDashboard from '../components/AILearningDashboard';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
-import { usePullToRefresh } from '../hooks/usePullToRefresh';
 import { useRankings } from '../hooks/useRankings';
 // ── Shared constants + UI
 import { C, Ico, COMM, PRIORITY_ORDER, WATCHLIST_DEFAULT, RANKINGS, FUNDS, IPOS, EVENTS, DIVS, CSS_STR, TADAWUL, WTI } from './more/MoreShared'; 
