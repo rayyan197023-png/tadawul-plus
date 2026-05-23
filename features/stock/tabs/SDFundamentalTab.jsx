@@ -641,32 +641,42 @@ function DupontPane({ stk }) {
           ))}
         </div>
       </SectionCard>
-
       {/* جودة الأرباح */}
       <SectionCard title="جودة الأرباح" accent={C.teal}>
         <div style={{ padding: "10px 14px" }}>
+          {sectorLoading && (
+            <div style={{
+              padding: "10px", fontSize: 10, color: C.teal,
+              textAlign: "center", background: C.layer3, borderRadius: 8, marginBottom: 8,
+            }}>
+              جارٍ حساب متوسط القطاع (أول مرة)...
+            </div>
+          )}
           <SectorCompare
             label="هامش الربح"
             value={stk.netMargin}
-            sectorAvg={stk.sectorNetMargin}
+            sectorAvg={sectorAvg?.netMargin}
           />
           <SectorCompare
             label="ROE"
             value={stk.roe}
-            sectorAvg={stk.sectorROE}
+            sectorAvg={sectorAvg?.roe}
           />
           <SectorCompare
             label="P/E (أقل أفضل)"
             value={stk.pe}
-            sectorAvg={stk.sectorPE}
+            sectorAvg={sectorAvg?.pe}
             isLowerBetter
           />
-          <SectorCompare
-            label="نمو الإيرادات"
-            value={stk.revGrowth}
-            sectorAvg={stk.sectorRevGrowth}
-          />
-          {(!stk.sectorNetMargin && !stk.sectorROE && !stk.sectorPE) && (
+          {sectorAvg?.count && (
+            <div style={{
+              padding: "6px 10px", fontSize: 9, color: C.smoke,
+              textAlign: "center", marginTop: 6,
+            }}>
+              المتوسط محسوب من {sectorAvg.count} شركات بالقطاع
+            </div>
+          )}
+          {(!sectorAvg && !sectorLoading) && (
             <div style={{
               padding: "10px", fontSize: 10, color: C.smoke,
               textAlign: "center", background: C.layer3, borderRadius: 8, marginTop: 8,
