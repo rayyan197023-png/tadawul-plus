@@ -298,6 +298,28 @@ export default function AILearningDashboard({ onBack }) {
             <LayerPerformance layers={stats.layerAccuracy} />
           </SectionCard>
 
+          {/* مؤشر الحفظ التلقائي */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            marginTop: 16,
+            padding: '12px',
+            background: `linear-gradient(135deg, ${C.mint}15, ${C.mint}05)`,
+            border: `1px solid ${C.mint}33`,
+            borderRadius: 14,
+          }}>
+            <span style={{ fontSize: 14 }}>💾</span>
+            <span style={{
+              fontSize: 12,
+              color: C.mint,
+              fontWeight: 700,
+            }}>
+              يتم الحفظ تلقائياً
+            </span>
+          </div>
+
           {/* Info Box */}
           <div style={{
             marginTop: 20,
