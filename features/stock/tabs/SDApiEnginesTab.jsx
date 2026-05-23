@@ -147,7 +147,6 @@ const fetchSahmkCompany = async (sym) => {
       pe:          (f.pe_ratio != null && f.pe_ratio > 3 && f.pe_ratio < 300) ? f.pe_ratio : null,
       forwardPE:   (f.forward_pe != null && f.forward_pe > 0.5 && f.forward_pe < 300) ? f.forward_pe : null,
       eps:         (function(){
-      eps:         (function(){
                      var e = f.eps_ttm || f.basic_eps || f.eps;
                      // تحقق منطقي: EPS عادة < 30% من السعر
                      var px = d.current_price || f.fifty_two_week_high || 100;
