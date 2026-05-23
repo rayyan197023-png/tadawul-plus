@@ -323,9 +323,29 @@ useEffect(function(){
     return rField.dir===-1&&rField.field==="pct"?rankBase.filter(function(s){return s.pct<0;}):
            rField.dir===1&&rField.field==="pct"?rankBase.filter(function(s){return s.pct>0;}):rankBase;
   },[rankBase, rField]);
+  // دمج بيانات حية (pct/spark/p) مع قائمة fundamentals
+  var enrichLive = function(arr, fieldName){
+    return arr.map(function(r){
+      var live = stocksLive.filter(function(s){return s.sym===r.sym;})[0] || {};
+      var obj = Object.assign({}, r, {
+        pct: live.pct || 0,
+        p: live.p || 0,
+        vol: live.v || 0,
+        spark: live.spark || [],
+      });
+      obj[fieldName] = r[fieldName==="mktCap"?"mc":fieldName==="div"?"divYld":fieldName];
+      return obj;
+    });
+  };
   var rankItems = useMemo(function(){
+    // القوائم من fundamentals (mc/div/roe/pe)
+    if (rField.field === "mktCap")  return enrichLive(fundRankings.byMarketCap, "mktCap");
+    if (rField.field === "div")     return enrichLive(fundRankings.byDividend, "div");
+    if (rField.field === "roe")     return enrichLive(fundRankings.byROE, "roe");
+    if (rField.field === "pe")      return enrichLive(fundRankings.byPE, "pe");
+    // القوائم الحية (pct/vol) - كما هي
     return rankFiltered.slice().sort(function(a,b){return rField.dir*(b[rField.field]-a[rField.field]);}).slice(0,10);
-  },[rankFiltered, rField]);
+  },[rankFiltered, rField, fundRankings, stocksLive]);
   var catList=["الكل"];
   commData.forEach(function(c){if(catList.indexOf(c.cat)===-1)catList.push(c.cat);});
   var commF=commCat==="الكل"?commData:commData.filter(function(c){return c.cat===commCat;});
