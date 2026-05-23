@@ -51,14 +51,24 @@ export default function AILearningDashboard({ onBack }) {
     const stockStats = [];
     const layerStats = { L1:{t:0,c:0}, L2:{t:0,c:0}, L3:{t:0,c:0}, L4:{t:0,c:0}, L5:{t:0,c:0}, L6:{t:0,c:0}, L7:{t:0,c:0}, L8:{t:0,c:0}, L9:{t:0,c:0} };
     
-    symbols.forEach(sym => {
+        symbols.forEach(sym => {
       const data = feedbackState[sym];
-      if (!data || !data.total) return;
+      if (!data) return;
       
-      totalTrades += data.total;
-      totalCorrect += data.correct || 0;
+      // دعم structure v2 (longTerm) + القديم (total)
+      const symTotal = data.version === 2 
+        ? (data.longTerm?.totalEver || 0)
+        : (data.total || 0);
+      const symCorrect = data.version === 2
+        ? (data.longTerm?.correctEver || 0)
+        : (data.correct || 0);
       
-      const accuracy = data.total > 0 ? (data.correct / data.total) * 100 : 0;
+      if (!symTotal) return;
+      
+      totalTrades += symTotal;
+      totalCorrect += symCorrect;
+      
+      const accuracy = symTotal > 0 ? (symCorrect / symTotal) * 100 : 0;
       const stockInfo = STOCKS_MAP && STOCKS_MAP[sym];
       
       stockStats.push({
