@@ -1037,11 +1037,12 @@ function CompareView(props) {
   var onClose=props.onClose;
   var sA=useState(STOCKS[0]); var a=sA[0]; var setA=sA[1];
   var sB=useState(STOCKS[1]); var b=sB[0]; var setB=sB[1];
-    // جلب بيانات fundamentals للمقارنة (cache أو API)
+
+  // جلب الأساسيات (cache أو API) + حساب mc/pe/divYld حياً
   var cmp = useCompareData(a.sym, b.sym, a.p, b.p);
-  // دمج: السعر/التغير من STOCKS_LIVE + الأساسيات المحسوبة
   var aFull = Object.assign({}, a, cmp.extraA);
   var bFull = Object.assign({}, b, cmp.extraB);
+
   var metrics=[
     {l:"السعر",   ka:"p",      higher:true},
     {l:"التغير",  ka:"pct",    higher:true},
@@ -1058,12 +1059,22 @@ function CompareView(props) {
     if(av==null||bv==null) return "tie";
     return (m.higher?(av>bv):(av<bv))?"a":(m.higher?(bv>av):(bv<av))?"b":"tie";
   }
-
   var aWins=0,bWins=0;
   for(var i=0;i<metrics.length;i++){
     var w=winner(metrics[i].ka);
     if(w==="a") aWins++;
     if(w==="b") bWins++;
+  }
+  // تنسيق القيم للعرض
+  function fmtVal(ka, v){
+    if(v==null) return "--";
+    if(ka==="p") return v.toFixed(2);
+    if(ka==="pct") return (v>=0?"+":"")+v.toFixed(2)+"%";
+    if(ka==="pe") return v.toFixed(1)+"x";
+    if(ka==="div") return v.toFixed(2)+"%";
+    if(ka==="roe") return v.toFixed(1)+"%";
+    if(ka==="mktCap") return v>=1000?(v/1000).toFixed(2)+"T":v.toFixed(1)+"B";
+    return String(v);
   }
   var stockPairs=[{s:a,set:setA,col:C.electric,lbl:"السهم الأول"},{s:b,set:setB,col:C.gold,lbl:"السهم الثاني"}];
   var winRows=[{s:a,col:C.electric,wins:aWins},{s:b,col:C.gold,wins:bWins}];
@@ -1071,9 +1082,7 @@ function CompareView(props) {
     <div style={{position:"fixed",inset:0,background:"rgba(6,8,15,.95)",zIndex:999,display:"flex",flexDirection:"column",justifyContent:"flex-end"}}>
       <div style={{background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",borderRadius:"20px 20px 0 0",maxHeight:"90vh",overflowY:"auto",paddingBottom:80,border:"1px solid "+C.line,boxShadow:"0 -24px 60px rgba(0,0,0,.6)"}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px",borderBottom:"1px solid "+C.line}}>
-          <button onClick={function()
-
- {onClose();}} style={{background:C.layer3,border:"1px solid "+C.line,color:C.smoke,padding:"7px 14px",borderRadius:10,fontSize:12,cursor:"pointer"}}>
+          <button onClick={function(){onClose();}} style={{background:C.layer3,border:"1px solid "+C.line,color:C.smoke,padding:"7px 14px",borderRadius:10,fontSize:12,cursor:"pointer"}}>
             <Ico k="back" color={C.smoke} size={14}/>
           </button>
           <div style={{textAlign:"center"}}>
@@ -1094,8 +1103,11 @@ function CompareView(props) {
               </div>
             );})}
           </div>
+          {cmp.loading&&(
+            <div style={{textAlign:"center",padding:"8px",fontSize:10,color:C.smoke}}>جارٍ جلب البيانات...</div>
+          )}
           <div style={{display:"flex",justifyContent:"center",marginBottom:14}}>
-            <RadarCompare a={a} b={b} metrics={metrics}/>
+            <RadarCompare a={aFull} b={bFull} metrics={metrics}/>
           </div>
           <div style={{display:"flex",gap:8,marginBottom:14}}>
             {winRows.map(function(row,ri){return(
@@ -1109,7 +1121,8 @@ function CompareView(props) {
           </div>
           {metrics.map(function(m){
             var w=winner(m.ka);
-            var aVal=a[m.ka]; var bVal=b[m.ka];
+            var aVal=fmtVal(m.ka, aFull[m.ka]);
+            var bVal=fmtVal(m.ka, bFull[m.ka]);
             return(
               <div key={m.ka} style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,padding:"10px 12px",background:C.layer3,borderRadius:11,border:"1px solid "+C.line}}>
                 <div style={{flex:1,textAlign:"left"}}>
