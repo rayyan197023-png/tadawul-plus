@@ -537,6 +537,9 @@ function EarningsPane({ stk }) {
 ═══════════════════════════════════════════════════════════════ */
 
 function DupontPane({ stk }) {
+  // متوسط القطاع (من أكبر 6 شركات، cache 3 أشهر)
+  const { avg: sectorAvg, loading: sectorLoading } = useSectorAvg(stk.sym);
+
   // معادلة دوبونت: ROE = هامش صافي × دوران الأصول × رافعة مالية
   const dupont = useMemo(() => {
     if (!stk.roe || !stk.netMargin) return null;
