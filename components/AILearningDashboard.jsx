@@ -65,8 +65,8 @@ export default function AILearningDashboard({ onBack }) {
       
       if (!symTotal) return;
       
-      totalTrades += symTotal;
-      totalCorrect += symCorrect;
+            totalTrades += Math.round(symTotal);
+      totalCorrect += Math.round(symCorrect);
       
       const accuracy = symTotal > 0 ? (symCorrect / symTotal) * 100 : 0;
       const stockInfo = STOCKS_MAP && STOCKS_MAP[sym];
