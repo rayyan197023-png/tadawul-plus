@@ -194,13 +194,13 @@ const fetchSahmkRatios = async (sym) => {
       var capital = equity + (debt || 0);
       if (capital > 0) roic = parseFloat((ni / capital * 100).toFixed(2));
     }
-    const result = {
-      roe:        r.roe,
-      roa:        r.roa,
-      netMargin:  r.net_margin,
-      opMargin:   r.operating_margin,
+        const result = {
+      roe:        (r.roe != null && Math.abs(r.roe) < 100) ? r.roe : null,
+      roa:        (r.roa != null && Math.abs(r.roa) < 50) ? r.roa : null,
+      netMargin:  (r.net_margin != null && Math.abs(r.net_margin) < 100) ? r.net_margin : null,
+      opMargin:   (r.operating_margin != null && Math.abs(r.operating_margin) < 100) ? r.operating_margin : null,
       debtEquity: r.debt_to_equity,
-      roic:       roic,
+      roic:       (roic != null && Math.abs(roic) < 80) ? roic : null,
       _revenue:   km.total_revenue,
       _netIncome: km.net_income,
       _ocf:       km.operating_cash_flow,
