@@ -1054,8 +1054,11 @@ function CompareView(props) {
     var m=null;
     for(var i=0;i<metrics.length;i++){if(metrics[i].ka===ka){m=metrics[i];break;}}
     if(!m) return "tie";
-    return (m.higher?(a[ka]>b[ka]):(a[ka]<b[ka]))?"a":(m.higher?(b[ka]>a[ka]):(b[ka]<a[ka]))?"b":"tie";
+    var av=aFull[ka], bv=bFull[ka];
+    if(av==null||bv==null) return "tie";
+    return (m.higher?(av>bv):(av<bv))?"a":(m.higher?(bv>av):(bv<av))?"b":"tie";
   }
+
   var aWins=0,bWins=0;
   for(var i=0;i<metrics.length;i++){
     var w=winner(metrics[i].ka);
