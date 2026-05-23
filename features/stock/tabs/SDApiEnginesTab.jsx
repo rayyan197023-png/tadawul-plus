@@ -390,7 +390,7 @@ const useSahmkData = (baseStkData) => {
     const sym = baseStkData?.sym;
     if (!sym) return;
 
-    const fetchAll = async () => {
+        const fetchAll = async () => {
       setLoading(true);
       setApiStatus("loading");
       setApiError(null);
@@ -398,7 +398,24 @@ const useSahmkData = (baseStkData) => {
         const quote = await fetchSahmkQuote(sym);
         if (!quote || quote._apiErr) throw new Error(quote?._apiErr || "لا استجابة");
 
-             // جلب متوازي (أسرع + لا يُلغي بعضه)
+        // تحقق من cache الدائم (3 أشهر) للأساسيات
+        const cachedFund = readFundCache(sym);
+        if (cachedFund) {
+          // الأساسيات من cache + السعر الحي فقط
+          if (!cancelled) {
+            setLiveData({
+              ...cachedFund,        // الأساسيات المخزّنة
+              ...quote,             // السعر الحي (يطغى)
+              priceHistory: cachedFund.priceHistory || [],
+            });
+            setLastFetch(new Date().toLocaleTimeString("ar-SA"));
+            setApiStatus(quote.isDelayed ? "delayed" : "live");
+            setLoading(false);
+          }
+          return; // لا نجلب الأساسيات (من cache)
+        }
+
+        // cache مفقود/قديم → جلب متوازي كامل
         const [company, ratios, financials, dividend, priceHistory] = await Promise.all([
           fetchSahmkCompany(sym),
           fetchSahmkRatios(sym),
