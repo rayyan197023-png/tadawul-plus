@@ -18,6 +18,28 @@ const CHUNK_SIZE  = 50;
 // خريطة دائمة للأسماء، تُملأ مرة واحدة عند البدء
 const NAMES_MAP = {};
 
+// أسماء مختصرة يدوية (استثناءات)
+const SHORT_OVERRIDES = {
+  "2010": "سابك",
+  "2222": "أرامكو",
+  "1120": "الراجحي",
+  "2230": "الكيميائية",
+};
+
+function shortenName(name, sym) {
+  if (SHORT_OVERRIDES[sym]) return SHORT_OVERRIDES[sym];
+  if (!name) return sym;
+  let n = String(name)
+    .replace(/الشركة\s*/g, "")
+    .replace(/السعودية\s*/g, "")
+    .replace(/القابضة\s*/g, "")
+    .replace(/للتأمين التعاوني\s*/g, "")
+    .replace(/مجموعة\s*/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return n.length >= 2 ? n : name;
+}
+
 export function usePriceUpdater() {
   const dispatch       = useStockDispatch();
   const marketDispatch = useMarketDispatch();
