@@ -13,7 +13,7 @@ import { STOCKS, STOCKS_MAP } from '../constants/stocksData';
 const CACHE_DURATION = 90 * 24 * 60 * 60 * 1000;
 
 // مفتاح التخزين (بالـ sectorId)
-const cacheKey = (sectorId) => `sectorAvg_${sectorId}`;
+const cacheKey = (sectorId) => `sectorAvg_v2_${sectorId}`;
 
 // قراءة من localStorage مع فحص العمر
 const readCache = (sectorId) => {
