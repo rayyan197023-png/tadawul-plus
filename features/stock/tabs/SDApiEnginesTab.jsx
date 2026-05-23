@@ -358,8 +358,9 @@ const fetchSahmkDividend = async (sym) => {
         yld: null,
       };
     });
-    const result = {
+        const result = {
       divYld:  d.trailing_12m_yield || null,
+      annualDiv: d.trailing_12m_dividends || null,
       lastDiv: hist.length > 0 ? hist[0].value : null,
       divHistory: divHistory,
     };
