@@ -53,7 +53,7 @@ const RankItem = React.memo(function RankItem({ s, i, rField, BOX, SHD, SHD_ACTI
         </div>
       </div>
       <div style={{textAlign:"left",minWidth:64}}>
-        <div className="num-lg" style={{fontSize:15,fontWeight:900,color:rField.color,direction:"ltr"}}>{rField.fmt(s[rField.field])}</div>
+        <div className="num-lg" style={{fontSize:15,fontWeight:900,color:rField.color,direction:"ltr"}}>{rField.field==="pct"?(s.p!=null?s.p.toFixed(2):"--"):rField.fmt(s[rField.field])}</div>
         <div style={{display:"flex",alignItems:"center",gap:4,marginTop:2,justifyContent:"flex-end"}}>
           <span className="num" style={{fontSize:10,fontWeight:700,color:s.pct>=0?C.mint:C.coral,direction:"ltr"}}>{s.pct>=0?"+":""}{(s.pct||0).toFixed(1)}%</span>
           {Math.abs(s.pct)>=5&&<span style={{fontSize:8,background:s.pct>=0?C.mint+"20":C.coral+"20",color:s.pct>=0?C.mint:C.coral,borderRadius:4,padding:"0 5px",fontWeight:700}}><Ico k="fire" color={C.amber} size={10}/></span>}
