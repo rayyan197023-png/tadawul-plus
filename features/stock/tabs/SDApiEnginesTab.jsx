@@ -146,7 +146,15 @@ const fetchSahmkCompany = async (sym) => {
       website:     d.website,
       pe:          f.pe_ratio,
       forwardPE:   f.forward_pe,
-      eps:         f.eps_ttm || f.basic_eps || f.eps,
+      eps:         (function(){
+                     var e = f.eps_ttm || f.basic_eps || f.eps;
+                     // تحقق منطقي: لو EPS أكبر من 50% من السعر، استخدم basic
+                     var px = f.fifty_two_week_high || 100;
+                     if (e != null && e > px * 0.5 && f.basic_eps != null && f.basic_eps < e) {
+                       return f.basic_eps;
+                     }
+                     return e;
+                   })(),
       bvps:        f.book_value,
       pb:          f.price_to_book,
       beta:        f.beta,
