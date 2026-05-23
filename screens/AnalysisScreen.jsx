@@ -300,6 +300,34 @@ const ohlcvCache = useOHLCVCache(syms, '3M');
     return result;
     },[throttledSig, liveMACRO]); // ← throttled: recalc max every 5s not every 3s
 
+  // ✨ لوحة التحليل → AI Learning (المصدر 2)
+  // عند انتهاء التحليل: قيّم التوصيات القديمة (7+ أيام) ثم احفظ "شراء قوي" الجديدة
+  useEffect(() => {
+    if (loading || !allData || allData.length === 0) return;
+
+    // 1. الأسعار الحالية لكل الأسهم
+    var prices = {};
+    allData.forEach(function(d){
+      if (d && d.stk && d.stk.sym) prices[d.stk.sym] = d.stk.p;
+    });
+
+    // 2. راجع التوصيات القديمة → recordFeedback (live)
+    evaluatePredictions(prices);
+
+    // 3. احفظ "شراء قوي" الجديدة (مرة يومياً عبر الحارس الداخلي)
+    var strongBuys = allData
+      .filter(function(d){ return d && d.health && d.health.sig === "شراء قوي"; })
+      .map(function(d){
+        return {
+          sym:    d.stk.sym,
+          signal: d.health.sig,
+          layers: d.health.layers,
+          price:  d.stk.p,
+        };
+      });
+    savePredictions(strongBuys);
+  }, [loading, allData]);
+
  const filtered = useMemo(()=>{
     // ✨ Safety check
     if (!allData || !Array.isArray(allData) || allData.length === 0) return [];
