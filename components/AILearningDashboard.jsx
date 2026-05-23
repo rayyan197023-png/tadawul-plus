@@ -132,27 +132,6 @@ export default function AILearningDashboard({ onBack }) {
     };
   }, [feedbackState]);
 
-  const resetLearning = () => {
-    if (confirm('⚠️ هل أنت متأكد؟ سيتم حذف كل بيانات التعلم!')) {
-      try {
-        localStorage.removeItem('tdw_feedback_state');
-        setRefreshKey(prev => prev + 1);
-      } catch(e) {}
-    }
-  };
-
-  const exportData = () => {
-    try {
-      const data = JSON.stringify(feedbackState, null, 2);
-      const blob = new Blob([data], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `tadawul-ai-learning-${new Date().toISOString().split('T')[0]}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch(e) {}
-  };
 
   const hasData = stats.totalTrades > 0;
 
