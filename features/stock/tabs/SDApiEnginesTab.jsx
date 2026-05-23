@@ -63,7 +63,7 @@ const FUND_CACHE_DURATION = 90 * 24 * 60 * 60 * 1000; // 90 يوم
 
 const readFundCache = (sym) => {
   try {
-    const raw = localStorage.getItem(`stockFund_v3_${sym}`);
+    const raw = localStorage.getItem(`stockFund_v4_${sym}`);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (Date.now() - (parsed.timestamp || 0) > FUND_CACHE_DURATION) return null;
