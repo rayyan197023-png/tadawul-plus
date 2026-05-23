@@ -427,15 +427,20 @@ const useSahmkData = (baseStkData) => {
           fetchSahmkDividend(sym),
           fetchSahmkOhlcv(sym, '3M'),
         ]);
-
-                // حسابات إضافية (P/S, PEG, EPS تاريخي)
+        
+        // حسابات إضافية (P/S, PEG, EPS تاريخي)
         var extras = {};
         if (company && company.mc && financials && financials._revLatest) {
-          var mcNum = parseFloat(company.mc) * 1e12; // T → رقم
+          // mc قد يكون "X.XXT" أو "X.XXB"
+          var mcStr = company.mc;
+          var mcNum = mcStr.indexOf('T') >= 0
+            ? parseFloat(mcStr) * 1e12
+            : parseFloat(mcStr) * 1e9;
           if (financials._revLatest > 0) {
             extras.ps = parseFloat((mcNum / financials._revLatest).toFixed(2));
           }
         }
+        
         if (company && company.pe && financials && financials.growthYoY && financials.growthYoY > 0) {
           extras.peg = parseFloat((company.pe / financials.growthYoY).toFixed(2));
         }
