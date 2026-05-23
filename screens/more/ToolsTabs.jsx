@@ -368,11 +368,51 @@ function SettingsTab(props) {
   var sRP=useState(false); var showRatingPanel=sRP[0]; var setShowRatingPanel=sRP[1];
   var sRated=useState(0); var ratingVal=sRated[0]; var setRatingVal=sRated[1];
   var sPP=useState(false); var showPrivacy=sPP[0]; var setShowPrivacy=sPP[1];
-    
+
   // ── إعدادات التنبيهات الذكية ──
   var sSmartPanel=useState(false); var showSmartPanel=sSmartPanel[0]; var setShowSmartPanel=sSmartPanel[1];
+
+  // الإعدادات الافتراضية + التحميل/الحفظ محلياً (localStorage)
+  var ALERT_DEFAULTS={soundEnabled:true,soundMode:"all",soundPreset:"chime",browserNotifications:true,vibration:true,volume:0.7};
+
+  function loadAlertSettings(){
+    try{
+      var r=window.localStorage.getItem("tadawul_alert_settings");
+      return r?Object.assign({},ALERT_DEFAULTS,JSON.parse(r)):ALERT_DEFAULTS;
+    }catch(e){return ALERT_DEFAULTS;}
+  }
+  function saveAlertSettings(s){
+    try{window.localStorage.setItem("tadawul_alert_settings",JSON.stringify(s));}catch(e){}
+  }
+
+  // نغمات التنبيه
+  var SOUND_PRESETS={
+    chime:{id:"chime",name:"رنّة كلاسيكية",description:"نغمة هادئة ومميزة"},
+    bell:{id:"bell",name:"جرس",description:"تنبيه واضح"},
+    ping:{id:"ping",name:"نبضة",description:"صوت قصير سريع"},
+  };
+
+  // تشغيل نغمة معاينة (Web Audio -- لا ملفات خارجية)
+  function playAlertSound(presetId, volume){
+    try{
+      var AC=window.AudioContext||window.webkitAudioContext;
+      if(!AC) return;
+      var ctx=new AC();
+      var osc=ctx.createOscillator();
+      var gain=ctx.createGain();
+      var freqMap={chime:880,bell:660,ping:1040};
+      osc.frequency.value=freqMap[presetId]||880;
+      osc.type="sine";
+      gain.gain.value=(volume!=null?volume:0.7)*0.3;
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start();
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.4);
+      osc.stop(ctx.currentTime+0.42);
+    }catch(e){}
+  }
+
   var sAlertSet=useState(function(){return loadAlertSettings();}); var alertSettings=sAlertSet[0]; var setAlertSettings=sAlertSet[1];
-  
+
   function updateAlertSettings(newValues) {
     var updated = Object.assign({}, alertSettings, newValues);
     setAlertSettings(updated);
