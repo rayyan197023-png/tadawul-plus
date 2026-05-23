@@ -155,13 +155,13 @@ const fetchSahmkCompany = async (sym) => {
                          ? (f.market_cap/1e12).toFixed(2)+"T"
                          : (f.market_cap/1e9).toFixed(2)+"B")
                      : null,
-      mcRaw:       f.market_cap || null,
+            mcRaw:       f.market_cap || null,
       sharesOut:   f.shares_outstanding,
+      floatPct:    f.float_shares && f.shares_outstanding
                      ? parseFloat((f.float_shares/f.shares_outstanding*100).toFixed(2))
                      : null,
-            hi52:        f.fifty_two_week_high,
+      hi52:        f.fifty_two_week_high,
       lo52:        f.fifty_two_week_low,
-    };
     fundCache['c_'+sym] = result;
     return result;
   } catch (e) {
