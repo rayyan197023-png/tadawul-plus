@@ -136,6 +136,7 @@ const { setTab } = useNav();
   const [notifSound, setNotifSound] = useState(true);
   const [rankTick, setRankTick] = useState(0);
 const stocksLive = liveStocks;
+const { rankings: fundRankings, loading: rankLoading } = useRankings(stocksLive);
 
   // ── effects ──
   useEffect(function(){var el=document.createElement("style");el.textContent=CSS_STR;document.head.appendChild(el);return function(){document.head.removeChild(el);};},[]);
