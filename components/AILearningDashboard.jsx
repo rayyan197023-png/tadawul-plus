@@ -71,12 +71,12 @@ export default function AILearningDashboard({ onBack }) {
       const accuracy = symTotal > 0 ? (symCorrect / symTotal) * 100 : 0;
       const stockInfo = STOCKS_MAP && STOCKS_MAP[sym];
       
-      stockStats.push({
+            stockStats.push({
         sym,
         name: stockInfo?.name || sym,
         sector: stockInfo?.sec || '--',
-        total: data.total,
-        correct: data.correct || 0,
+        total: symTotal,
+        correct: symCorrect,
         accuracy: +accuracy.toFixed(1),
       });
       
