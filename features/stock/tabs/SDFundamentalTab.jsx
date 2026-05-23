@@ -230,7 +230,7 @@ function OverviewPane({ stk }) {
       {/* هوامش وعوائد */}
       <SectionCard title="الهوامش والعوائد" accent={C.mint}>
         <div style={{ padding: "10px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-          <ValCard label="الهامش الإجمالي"  value={stk.grossMargin ? stk.grossMargin + "%" : null} color={C.mint}/>
+
           <ValCard label="الهامش التشغيلي"  value={stk.opMargin ? stk.opMargin + "%" : null}     color={C.mint}/>
           <ValCard label="هامش صافي"        value={stk.netMargin ? stk.netMargin + "%" : null}    color={C.mint}/>
           <ValCard label="ROE"              value={stk.roe ? stk.roe + "%" : null}                color={C.gold}/>
