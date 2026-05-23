@@ -298,47 +298,6 @@ export default function AILearningDashboard({ onBack }) {
             <LayerPerformance layers={stats.layerAccuracy} />
           </SectionCard>
 
-          {/* Actions */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: 10,
-            marginTop: 16,
-          }}>
-            <button
-              onClick={exportData}
-              style={{
-                background: `linear-gradient(135deg, ${C.electric}22, ${C.electric}08)`,
-                border: `1.5px solid ${C.electric}66`,
-                borderRadius: 14,
-                padding: '14px',
-                color: C.electric,
-                fontSize: 13,
-                fontWeight: 800,
-                cursor: 'pointer',
-                fontFamily: "'Cairo', sans-serif",
-              }}
-            >
-              💾 تصدير البيانات
-            </button>
-            <button
-              onClick={resetLearning}
-              style={{
-                background: `linear-gradient(135deg, ${C.coral}22, ${C.coral}08)`,
-                border: `1.5px solid ${C.coral}66`,
-                borderRadius: 14,
-                padding: '14px',
-                color: C.coral,
-                fontSize: 13,
-                fontWeight: 800,
-                cursor: 'pointer',
-                fontFamily: "'Cairo', sans-serif",
-              }}
-            >
-              🔄 إعادة تعيين
-            </button>
-          </div>
-
           {/* Info Box */}
           <div style={{
             marginTop: 20,
