@@ -9,6 +9,7 @@ import { C, Ico, MiniLine, PRIORITY_ORDER, SectionHeader, SparkLine, TagFilter }
 import { useHaptic } from '../../hooks/useHaptic';
 import { useNav } from '../../store';
 import { SOUND_PRESETS, loadAlertSettings, saveAlertSettings, playAlertSound } from '../../engines/smartAlertsEngine'; 
+import { useCompareData } from '../../hooks/useCompareData';
 
 function SnapshotsTab(props) {
   var tp=props.p?props.p:props;
