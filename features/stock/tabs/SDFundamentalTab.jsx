@@ -14,6 +14,12 @@ import {
   FINANCIALS_FULL, EARNINGS_DATA, DIVIDENDS_DETAIL,
   PROS_CONS, DISCLOSURES,
 } from './StockDetailShared';
+import {
+  C, SectionCard, Tag, Row, SkeletonCard, EmptyState, haptic,
+  FINANCIALS_FULL, EARNINGS_DATA, DIVIDENDS_DETAIL,
+  PROS_CONS, DISCLOSURES,
+} from './StockDetailShared';
+import { useSectorAvg } from '../../../hooks/useSectorAvg';
 
 /* ═══════════════════════════════════════════════════════════════
    InfoTooltip -- أداة الشرح
