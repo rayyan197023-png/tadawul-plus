@@ -146,7 +146,7 @@ const liveStocks = stocks.length > 0 ? stocks : [];
 
   const [sel,          setSel]         = useState(null);
   const [tab,          setTab]         = useState("all");
-  const [sortBy,       setSortBy]      = useState("ch");
+    const [sortBy, setSortBy] = useState("all");
   const [flash,        setFlash]       = useState(null);
   const [isLoading,    setIsLoading]   = useState(true);
   const [showTop,      setShowTop]     = useState(false);
