@@ -211,8 +211,8 @@ const API_CONFIG = {
       if(type === 'ticker') {
         return data.quote || data.data || data;
       }
-      if(type === 'stocks') {
-        return data.companies || data.data || data;
+            if(type === 'stocks') {
+        return data.results || data.companies || data.data || data;
       }
       if(type === 'info') {
         return data.company || data.data || data;
