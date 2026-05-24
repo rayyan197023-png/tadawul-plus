@@ -7933,8 +7933,11 @@ async function loadStk(){
         symbol:s.sym, interval:tf,
         limit:PER_COUNT[state.per]||130
       });
-      if(raw&&Array.isArray(raw)&&raw.length>5){
-        state.allCandles=normalizeCandles(raw);
+            if(raw&&Array.isArray(raw)&&raw.length>5){
+        let candles=normalizeCandles(raw);
+        // تجميع محلي للفريمات الأكبر من اليوم (سهمك يوفّر بيانات يومية فقط)
+        candles=_aggregateCandles(candles, state.per);
+        state.allCandles=candles;
         // Update live price from freshest candle
         const last=state.allCandles[state.allCandles.length-1];
         if(last){
