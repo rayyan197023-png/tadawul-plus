@@ -553,6 +553,28 @@ let state = {
  allCandles: [],
  crosshairX: null,
 };
+// ── قراءة السهم والفريم من رابط الـ iframe (?sym=2010&per=1D&name=...) ──
+(function _initFromURL(){
+ try{
+  const params=new URLSearchParams(location.search);
+  const sym=params.get('sym');
+  const per=params.get('per');
+  const name=params.get('name');
+  if(sym){
+   let found=STOCKS.find(s=>s.sym===sym);
+   if(!found){
+    // السهم غير موجود في القائمة الثابتة — أنشئ كائناً مؤقتاً
+    // (تُحدَّث تفاصيله تلقائياً عند جلب الشموع الحقيقية من سهمك)
+    found={sym,name:name||sym,sec:'',p:0,ch:0,pct:0};
+    STOCKS.push(found);
+   }
+   state.stk=found;
+  }
+  if(per&&typeof TF_MINS!=='undefined'&&TF_MINS[per]){
+   state.per=per;
+  }
+ }catch(e){console.warn('[initFromURL]',e);}
+})();
 
 // Pan/pinch drag state
 let drag = { x0:0, off0:0, d0:0, v0:50 };
