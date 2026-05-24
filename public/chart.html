@@ -2162,9 +2162,25 @@ function showCompareModal(){
    </div>
    <div style="font-size:12px;color:${s.pct>=0?'#22c55e':'#ef4444'};font-family:monospace">${s.p.toFixed(2)}</div>
   `;
-  b.onclick=()=>{
-   // Generate comparison candles for this stock
-   const cmp=genCandles(s.sym,s.p,PER_COUNT[state.per]||130,TF_MINS[state.per]||1440);
+    b.onclick=async()=>{
+   // جلب شموع حقيقية للسهم من سهمك
+   b.style.opacity='0.5';
+   b.innerHTML='<div style="flex:1;text-align:center;color:#f59e0b;font-family:Cairo,sans-serif;font-size:11px">جاري التحميل…</div>';
+   let cmp=null;
+   try{
+    if(API_CONFIG.enabled && API_CONFIG.endpoints.candles){
+     const tf=API_CONFIG.tfMap[state.per]||state.per;
+     const raw=await API_CONFIG.fetch('candles',{symbol:s.sym,interval:tf,limit:PER_COUNT[state.per]||130});
+     if(raw && Array.isArray(raw) && raw.length>5) cmp=normalizeCandles(raw);
+    }
+   }catch(e){ console.warn('[compare fetch]',e); }
+   if(!cmp || !cmp.length){
+    // فشل الجلب — لا نولّد بيانات وهمية
+    const t=document.getElementById('toast');
+    if(t){t.textContent='تعذّر تحميل بيانات '+s.name+' للمقارنة';t.style.display='block';t.classList.add('show');setTimeout(()=>{t.classList.remove('show');t.style.display='none';},2500);}
+    closeM();
+    return;
+   }
    compareStk={sym:s.sym,name:s.name,candles:cmp};
    showCompare=true;
    invalidateChart();render();
