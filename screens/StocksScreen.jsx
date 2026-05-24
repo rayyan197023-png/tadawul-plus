@@ -475,12 +475,15 @@ const liveStocks = stocks.length > 0 ? stocks : [];
               )}
             </div>
           ) : ((() => {
-            const groups = [];
-            const seen   = {};
+                        const groups = [];
+            const secIndex = {};
             filtered.forEach(item => {
               const sec = item.stk.sec || "أخرى";
-              if (!seen[sec]) { seen[sec] = true; groups.push({ sec, items: [] }); }
-              groups[groups.length - 1].items.push(item);
+              if (secIndex[sec] === undefined) {
+                secIndex[sec] = groups.length;
+                groups.push({ sec, items: [] });
+              }
+              groups[secIndex[sec]].items.push(item);
             });
             const singleSec = groups.length === 1;
             let globalIdx   = 0;
