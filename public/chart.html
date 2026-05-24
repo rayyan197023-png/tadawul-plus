@@ -7874,15 +7874,24 @@ async function loadStk(){
     } catch(e){ console.warn('[loadStk API]',e); }
   }
 
-  // ── Mock fallback ─────────────────────────────────────────────
-  state.allCandles=genCandles(s.sym,s.p,PER_COUNT[state.per]||65,TF_MINS[state.per]||1440);
-  if(!chartReady){state.offset=0;state.visible=dv[state.per]||48;}
-  chartReady=true;
-  invalidateChart();render();
-  setTimeout(hideLoader,120);_updateUndoButtons();
-  if(_aiDrawMode) setTimeout(()=>_buildAndDrawAIAnnotations(_aiDrawMode),400);
-}
 
+  // ── لا توجد بيانات حقيقية ─────────────────────────────────────
+  // فشل الـ API أو لم يُرجع بيانات كافية. لا نولّد بيانات وهمية.
+  // نحتفظ بآخر شموع ناجحة إن وُجدت، وإلا نعرض حالة "تعذّر التحميل".
+  if(state.allCandles && state.allCandles.length > 5){
+    // لدينا بيانات سابقة ناجحة — أبقِها واكتفِ بتنبيه خفيف
+    state.dataError = null;
+    hideLoader();
+    showToast('تعذّر تحديث البيانات — عرض آخر بيانات متاحة');
+    return;
+  }
+  // لا بيانات إطلاقاً — حالة خطأ
+  state.allCandles = [];
+  state.dataError = 'تعذّر تحميل بيانات السهم — تأكد من الاتصال وأعد المحاولة';
+  chartReady = true;
+  invalidateChart(); render();
+  hideLoader(); _updateUndoButtons();
+}
 
 // LIVE DATA SYSTEM — activates when API_CONFIG.enabled = true
 
