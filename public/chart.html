@@ -10145,10 +10145,15 @@ function toggleL2(){
  _l2Visible=!_l2Visible;
  const btn=document.getElementById('btn-l2');
  if(btn)btn.classList.toggle('active',_l2Visible);
- if(_l2Visible){
-  _showL2Panel();
-  _fetchL2();
-  _l2Timer=setInterval(_fetchL2,L2_CONFIG.updateInterval);
+  if(_l2Visible){
+  // إن لم يُربط API دفتر أوامر، اعرض لوحة "قريباً" بدل بيانات وهمية
+  if(!L2_CONFIG.endpoint){
+   _showL2ComingSoon();
+  } else {
+   _showL2Panel();
+   _fetchL2();
+   _l2Timer=setInterval(_fetchL2,L2_CONFIG.updateInterval);
+  }
  } else {
   if(_l2Timer){clearInterval(_l2Timer);_l2Timer=null;}
   const panel=document.getElementById('l2-panel');
