@@ -8066,16 +8066,17 @@ async function loadStockList(){
   // ── نهاية التشخيص ──
 
   if(!raw || !Array.isArray(raw)) return;
-  // Normalize stock list
-  const normalized = raw.map(s=>({
-    sym:  s.symbol || s.sym || s.ticker || s.code || '',
-    name: s.name || s.nameAr || s.companyName || s.sym || '',
-    sec:  s.sector || s.sectorNameAr || s.industry || 'عام',
-    p:    +(s.lastPrice || s.price || s.close || s.c || 0),
-    ch:   +(s.change || s.ch || 0),
-    pct:  +(s.changePercent || s.changePct || s.pct || 0),
-    avgVol: +(s.avgVolume || s.averageVolume || s.volume || 1e6),
-  })).filter(s=>s.sym && s.p > 0);
+    // تطبيع قائمة شركات سهمك — الحقول: symbol, name_ar, name_en, market, status
+  const normalized = raw
+    .filter(s=>s.status!=='suspended' && (s.symbol||s.sym))
+    .map(s=>({
+      sym:  s.symbol || s.sym || '',
+      name: s.name_ar || s.nameAr || s.name || s.name_en || s.symbol || '',
+      name_en: s.name_en || '',
+      sec:  s.sector || s.market || 'عام',
+      p:    0, ch:0, pct:0, // الأسعار تأتي عند فتح السهم عبر loadStk
+    }))
+    .filter(s=>s.sym);
   if(normalized.length > 0){
     // Merge with STOCKS array (API takes priority)
     normalized.forEach(ns=>{
