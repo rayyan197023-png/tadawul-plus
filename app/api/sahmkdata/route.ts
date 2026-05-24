@@ -55,9 +55,10 @@ export async function GET(req: NextRequest) {
     } else if (endpoint === 'quotes' || endpoint === 'prices') {
       url = `${SAHMK_BASE}/quotes/?symbols=${symbols}`;
     } else if (endpoint === 'ohlcv') {
-      const daysMap: Record<string, number> = {
+            const daysMap: Record<string, number> = {
         '1D': 1, '1W': 7, '1M': 30,
-        '3M': 90, '6M': 180, '1Y': 365
+        '3M': 90, '6M': 180, '1Y': 365,
+        '3Y': 1095, '5Y': 1825
       };
       const days = daysMap[period] ?? 90;
       const fromDate = from || new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);
