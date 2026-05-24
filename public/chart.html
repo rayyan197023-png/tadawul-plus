@@ -10104,18 +10104,9 @@ let _l2Data = { bids:[], asks:[], lastPrice:0, spread:0 };
 let _l2Timer = null;
 let _l2WS = null;
 
-// Generate realistic mock data (replaced by real API)
-function _generateL2Mock(basePrice){
- const bids=[], asks=[];
- let bp=basePrice, ap=basePrice;
- for(let i=0;i<12;i++){
-  bp -= (Math.random()*0.05+0.01);
-  ap += (Math.random()*0.05+0.01);
-  bids.push({price:+bp.toFixed(2), qty:Math.round(Math.random()*50000+1000), orders:Math.round(Math.random()*20+1)});
-  asks.push({price:+ap.toFixed(2), qty:Math.round(Math.random()*50000+1000), orders:Math.round(Math.random()*20+1)});
- }
- return{bids,asks,lastPrice:basePrice,spread:+(asks[0].price-bids[0].price).toFixed(2)};
-}
+// تم تعطيل توليد بيانات دفتر الأوامر الوهمية — سهمك لا يوفّر Level 2
+// تُستبدل هذه الدالة ببيانات حقيقية عند توفّر API دفتر أوامر
+function _generateL2Mock(){ return null; }
 
 // Connect to real API (call this with your token)
 function connectL2API(endpoint, apiKey){
