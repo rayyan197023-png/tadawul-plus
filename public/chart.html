@@ -1958,13 +1958,14 @@ const CALENDAR_MOCK = [
 ];
 
 let calendarData = [...CALENDAR_MOCK];
+let _calendarIsMock = true; // علم: البيانات الحالية تجريبية حتى يصل API
 let showCalendar = false;
 
 async function _loadCalendar(){
  const apiData = await API_CONFIG.fetch('calendar', {market:'SAU'});
  if(apiData && Array.isArray(apiData)){
   calendarData = apiData; // auto-wire when API available
-  if(showCalendar) renderCalendarPanel();
+  if(showCalendar) renderCalendarPanel(); 
  }
 }
 
