@@ -1963,9 +1963,10 @@ let showCalendar = false;
 
 async function _loadCalendar(){
  const apiData = await API_CONFIG.fetch('calendar', {market:'SAU'});
- if(apiData && Array.isArray(apiData)){
-  calendarData = apiData; // auto-wire when API available
-  if(showCalendar) renderCalendarPanel(); 
+ if(apiData && Array.isArray(apiData) && apiData.length){
+  calendarData = apiData; // بيانات حقيقية من API
+  _calendarIsMock = false;
+  if(showCalendar && typeof renderCalendarPanel==='function') renderCalendarPanel();
  }
 }
 
