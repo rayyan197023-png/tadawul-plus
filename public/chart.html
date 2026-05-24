@@ -8049,10 +8049,22 @@ async function loadStockList(){
   if(!API_CONFIG.enabled || !API_CONFIG.endpoints.stocks) return;
   const raw = await API_CONFIG.fetch('stocks');
   // ── تشخيص مؤقّت — احذفه بعد التأكد ──
-  console.log('[loadStockList] raw type:', Array.isArray(raw)?'array':typeof raw, 'len:', raw&&raw.length);
-  if(raw && raw.length) console.log('[loadStockList] أول عنصر:', JSON.stringify(raw[0]));
-  alert('قائمة الأسهم: '+(Array.isArray(raw)?raw.length+' سهم':'فشل — '+typeof raw)+'\n\nأول عنصر:\n'+(raw&&raw[0]?JSON.stringify(raw[0]):'لا يوجد'));
+    // ── تشخيص مؤقّت ٢ — اكتشاف مفاتيح الكائن ──
+  if(raw && typeof raw==='object' && !Array.isArray(raw)){
+   const keys=Object.keys(raw);
+   let report='مفاتيح الكائن:\n'+keys.join(', ')+'\n\n';
+   keys.forEach(k=>{
+    const val=raw[k];
+    if(Array.isArray(val)){
+     report+='▸ '+k+' = مصفوفة ('+val.length+' عنصر)';
+     if(val[0]) report+='\nأول عنصر: '+JSON.stringify(val[0]).slice(0,200);
+     report+='\n\n';
+    }
+   });
+   alert(report);
+  }
   // ── نهاية التشخيص ──
+
   if(!raw || !Array.isArray(raw)) return;
   // Normalize stock list
   const normalized = raw.map(s=>({
