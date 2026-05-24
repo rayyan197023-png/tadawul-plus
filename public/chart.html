@@ -2214,7 +2214,12 @@ function render(){
  requestAnimationFrame(_updateZoomCtrlPos);
  
  const all=state.allCandles;
- if(!all.length)return;
+ if(!all.length){
+  // لا بيانات — ارسم لوحة الخطأ بدل ترك الشاشة فارغة
+  _drawNoData(W,H);
+  return;
+ }
+
  const YW=38, CW=W-YW;
  const OF_H=showOrderFlow?getPanelH('of',H,0.10):0; // order flow panel
  const VOL_H=getPanelH('vol',H,0.14); // volume panel — resizable
