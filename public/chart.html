@@ -8048,6 +8048,11 @@ function _applyTick(tick){
 async function loadStockList(){
   if(!API_CONFIG.enabled || !API_CONFIG.endpoints.stocks) return;
   const raw = await API_CONFIG.fetch('stocks');
+  // ── تشخيص مؤقّت — احذفه بعد التأكد ──
+  console.log('[loadStockList] raw type:', Array.isArray(raw)?'array':typeof raw, 'len:', raw&&raw.length);
+  if(raw && raw.length) console.log('[loadStockList] أول عنصر:', JSON.stringify(raw[0]));
+  alert('قائمة الأسهم: '+(Array.isArray(raw)?raw.length+' سهم':'فشل — '+typeof raw)+'\n\nأول عنصر:\n'+(raw&&raw[0]?JSON.stringify(raw[0]):'لا يوجد'));
+  // ── نهاية التشخيص ──
   if(!raw || !Array.isArray(raw)) return;
   // Normalize stock list
   const normalized = raw.map(s=>({
