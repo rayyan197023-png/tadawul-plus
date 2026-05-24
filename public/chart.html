@@ -9410,20 +9410,30 @@ function _showComparePicker(){
  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
 }
 
-function _startCompare(sym,name){
+async function _startCompare(sym,name){
  document.getElementById('compare-picker')?.remove();
- _compareStk={sym,name};
- // Generate synthetic comparison data based on state.allCandles with slight variation
  const base=state.allCandles;
  if(!base.length)return;
- const seed=sym.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
- let rng=(()=>{let s=seed;return()=>{s=(s*1664525+1013904223)&0xffffffff;return(s>>>0)/0xffffffff;};})();
- let price=base[0].c*(0.8+rng()*0.4);
- _compareData=base.map(d=>{
-  const chg=(rng()-0.48)*0.03;
-  price*=(1+chg);
-  return{t:d.t,c:price,o:price*(1+(rng()-0.5)*0.005),hi:price*(1+rng()*0.008),lo:price*(1-rng()*0.008),v:d.v*(0.5+rng())};
- });
+ // جلب شموع حقيقية للسهم من سهمك
+ const t=document.getElementById('toast');
+ if(t){t.textContent='جاري تحميل '+name+' للمقارنة…';t.style.display='block';t.classList.add('show');}
+ let cmp=null;
+ try{
+  if(API_CONFIG.enabled && API_CONFIG.endpoints.candles){
+   const tf=API_CONFIG.tfMap[state.per]||state.per;
+   const PER_COUNT={'1m':200,'5m':180,'15m':160,'30m':150,'1H':140,'4H':130,'1D':130,'1W':104,'1M':96};
+   const raw=await API_CONFIG.fetch('candles',{symbol:sym,interval:tf,limit:PER_COUNT[state.per]||130});
+   if(raw && Array.isArray(raw) && raw.length>5) cmp=normalizeCandles(raw);
+  }
+ }catch(e){ console.warn('[_startCompare]',e); }
+ if(!cmp || !cmp.length){
+  // فشل الجلب — لا نولّد بيانات وهمية
+  if(t){t.textContent='تعذّر تحميل بيانات '+name+' للمقارنة';t.style.display='block';t.classList.add('show');setTimeout(()=>{t.classList.remove('show');t.style.display='none';},2500);}
+  return;
+ }
+ if(t){t.classList.remove('show');t.style.display='none';}
+ _compareStk={sym,name};
+ _compareData=cmp;
  _compareMode=true;
  document.getElementById('btn-multichart')?.classList.add('active');
  invalidateChart();render();
