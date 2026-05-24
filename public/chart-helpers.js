@@ -181,11 +181,11 @@ const API_CONFIG = {
     try {
       let qs = '';
       
-      if(type === 'candles') {
-        // sahmk OHLCV: ?endpoint=ohlcv&sym=2010&period=3M
+            if(type === 'candles') {
         const per = params.interval || '1D';
         const periodParam = this.periodMap[per] || '3Mo';
         qs = `?endpoint=ohlcv&sym=${params.symbol}&period=${periodParam}`;
+        console.log('[candles] طلب:', per, '→ period=', periodParam, 'URL:', base+qs);
       } else if(type === 'ticker') {
         // sahmk quote: ?endpoint=quote&sym=2010
         qs = `?endpoint=quote&sym=${params.symbol}`;
