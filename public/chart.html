@@ -8053,8 +8053,18 @@ async function loadStockList(){
 
   if(!raw || !Array.isArray(raw)) return;
     // تطبيع قائمة شركات سهمك — الحقول: symbol, name_ar, name_en, market, status
+    // استبعاد صناديق الريت وحقوق الأولوية من قائمة الشارت
+  const _isReitOrRights=(s)=>{
+   const ar=' '+(s.name_ar||'')+' ';
+   const en=(s.name_en||'').toLowerCase();
+   // ريت ككلمة منفصلة (يتجنّب "ريتيل") أو REIT بالإنجليزية
+   const isReit=/\sريت\s/.test(ar) || /\breit\b/.test(en);
+   // حقوق الأولوية: "حقوق" أو "أولوية" بالعربية، rights بالإنجليزية
+   const isRights=/حقوق|أولوية|اولوية/.test(ar) || /\brights?\b/.test(en);
+   return isReit || isRights;
+  };
   const normalized = raw
-    .filter(s=>s.status!=='suspended' && (s.symbol||s.sym))
+    .filter(s=>s.status!=='suspended' && (s.symbol||s.sym) && !_isReitOrRights(s))
     .map(s=>({
       sym:  s.symbol || s.sym || '',
       name: s.name_ar || s.nameAr || s.name || s.name_en || s.symbol || '',
