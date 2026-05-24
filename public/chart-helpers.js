@@ -203,9 +203,8 @@ const API_CONFIG = {
       });
       if(!r.ok) throw new Error('HTTP '+r.status);
       const data = await r.json();
-          if(type === 'candles') {
+                    if(type === 'candles') {
         const out = data.bars || data.data || data.ohlcv || data;
-        alert('الفريم المطلوب وصل.\nعدد الشموع: '+(Array.isArray(out)?out.length:'ليست مصفوفة')+'\nأول عنصر: '+(Array.isArray(out)&&out[0]?JSON.stringify(out[0]).slice(0,200):'-'));
         return out;
       }  
       // Unwrap sahmk response shapes
