@@ -10137,11 +10137,8 @@ async function _fetchL2(){
    }
   }catch(e){console.warn('L2 API error:',e);}
  }
- // Fallback: animated mock data
- _l2Data=_generateL2Mock(base);
- // Add small random movement for realism
- _l2Data.bids=_l2Data.bids.map(b=>({...b,qty:Math.max(100,b.qty+Math.round((Math.random()-0.5)*2000))}));
- _renderL2();
+ // لا API لدفتر الأوامر — لا نولّد بيانات وهمية. تبقى اللوحة بحالة "قريباً".
+ return;
 }
 
 function toggleL2(){
