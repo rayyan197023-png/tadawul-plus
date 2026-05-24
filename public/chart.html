@@ -2031,7 +2031,7 @@ function showCalendarPanel(){
    <span style="background:rgba(239,68,68,0.15);border-radius:4px;padding:2px 7px;color:#ef4444">عالي</span>
    <span style="background:rgba(245,158,11,0.15);border-radius:4px;padding:2px 7px;color:#f59e0b">متوسط</span>
    <span style="background:rgba(96,165,250,0.15);border-radius:4px;padding:2px 7px;color:#60a5fa">منخفض</span>
-   <span style="margin-right:auto;opacity:0.5">البيانات تُحدَّث تلقائياً عند ربط API</span>
+   <span id="cal-mock-badge" style="margin-right:auto;font-weight:700">${_calendarIsMock?'<span style=&quot;background:rgba(245,158,11,0.18);color:#f59e0b;border-radius:5px;padding:2px 8px&quot;>⚠ بيانات تجريبية</span>':'<span style=&quot;background:rgba(34,197,94,0.15);color:#22c55e;border-radius:5px;padding:2px 8px&quot;>● مباشر</span>'}</span>
   </div>
   <div style="flex:1;overflow-y:auto;padding:8px 12px 20px" id="cal-events"></div>
  `;
