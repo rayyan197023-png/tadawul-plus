@@ -475,17 +475,22 @@ const liveStocks = stocks.length > 0 ? stocks : [];
               )}
             </div>
           ) : ((() => {
-                        const groups = [];
-            const secIndex = {};
-            filtered.forEach(item => {
-              const sec = item.stk.sec || "أخرى";
-              if (secIndex[sec] === undefined) {
-                secIndex[sec] = groups.length;
-                groups.push({ sec, items: [] });
-              }
-              groups[secIndex[sec]].items.push(item);
-            });
-            const singleSec = groups.length === 1;
+            const groupBySector = sortBy === "all";
+            const groups = [];
+            if (groupBySector) {
+              const secIndex = {};
+              filtered.forEach(item => {
+                const sec = item.stk.sec || "أخرى";
+                if (secIndex[sec] === undefined) {
+                  secIndex[sec] = groups.length;
+                  groups.push({ sec, items: [] });
+                }
+                groups[secIndex[sec]].items.push(item);
+              });
+            } else {
+              groups.push({ sec: null, items: filtered });
+            }
+            const singleSec = !groupBySector || groups.length === 1;
             let globalIdx   = 0;
             return (
               <div key={listKey}>
