@@ -8048,21 +8048,7 @@ function _applyTick(tick){
 async function loadStockList(){
   if(!API_CONFIG.enabled || !API_CONFIG.endpoints.stocks) return;
   const raw = await API_CONFIG.fetch('stocks');
-  // ── تشخيص مؤقّت — احذفه بعد التأكد ──
-    // ── تشخيص مؤقّت ٢ — اكتشاف مفاتيح الكائن ──
-  if(raw && typeof raw==='object' && !Array.isArray(raw)){
-   const keys=Object.keys(raw);
-   let report='مفاتيح الكائن:\n'+keys.join(', ')+'\n\n';
-   keys.forEach(k=>{
-    const val=raw[k];
-    if(Array.isArray(val)){
-     report+='▸ '+k+' = مصفوفة ('+val.length+' عنصر)';
-     if(val[0]) report+='\nأول عنصر: '+JSON.stringify(val[0]).slice(0,200);
-     report+='\n\n';
-    }
-   });
-   alert(report);
-  }
+  
   // ── نهاية التشخيص ──
 
   if(!raw || !Array.isArray(raw)) return;
