@@ -185,7 +185,7 @@ const API_CONFIG = {
         const per = params.interval || '1D';
         const periodParam = this.periodMap[per] || '3Mo';
         qs = `?endpoint=ohlcv&sym=${params.symbol}&period=${periodParam}`;
-        alert('interval المُمرّر: '+per+'\nperiod المُرسل: '+periodParam);
+        alert('per='+per+' | periodParam='+periodParam+'\nperiodMap1M='+this.periodMap['1M']+'\nperiodMapPer='+this.periodMap[per]);
       } else if(type === 'ticker') {
         // sahmk quote: ?endpoint=quote&sym=2010
         qs = `?endpoint=quote&sym=${params.symbol}`;
