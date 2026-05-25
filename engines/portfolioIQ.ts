@@ -1702,8 +1702,9 @@ function calculateATR(bars: any[], period: number = 14): number {
   const trs: any[] = [];
   
   for (let i = 1; i < bars.length; i++) {
-    const high = bars[i].h || bars[i].c;
-    const low = bars[i].l || bars[i].c;
+    // ✨ نقبل كل صيغ الحقول (hi/h، lo/l) -- يمنع سقوط TR لصفر صامتاً
+    const high = bars[i].hi != null ? bars[i].hi : (bars[i].h != null ? bars[i].h : bars[i].c);
+    const low = bars[i].lo != null ? bars[i].lo : (bars[i].l != null ? bars[i].l : bars[i].c);
     const prevClose = bars[i - 1].c;
     
     const tr = Math.max(
