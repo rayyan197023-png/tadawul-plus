@@ -14,7 +14,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { stockHealth, loadFeedbackState, getAdaptiveWeightAdjustment } from './analysisEngine';
+import { loadFeedbackState } from './analysisEngine';
 
 // ═══════════════════════════════════════════════════════
 // 📊 TYPES
