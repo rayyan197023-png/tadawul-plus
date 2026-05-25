@@ -1610,9 +1610,10 @@ export function calcCalmarRatio(annualReturn: number, maxDrawdown: number): {
   }
 
   // حالة حدية: لا توجد خسائر (محفظة مثالية)
+  // ✨ نُرجع null لا Infinity/999 -- الواجهة تعرض "--" أو الملاحظة، لا رقماً مضلِّلاً
   if (maxDrawdown >= 0 || Math.abs(maxDrawdown) < 0.001) {
     return {
-      value: Infinity,
+      value: null,
       classification: 'perfect',
       label: 'لا خسائر',
       interpretation: 'المحفظة لم تسجل تراجعات كبيرة -- مؤشر استثنائي',
