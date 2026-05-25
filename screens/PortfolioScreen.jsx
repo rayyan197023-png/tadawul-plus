@@ -1424,6 +1424,29 @@ return result;
   var tbs_s=useState({bars:[], source:'pending'});
   var tasiBarsState=tbs_s[0], setTasiBarsState=tbs_s[1];
 
+  // ✨ جلب مؤشر تاسي الحقيقي مرة واحدة عند التحميل
+  useEffect(function(){
+    var cancelled = false;
+    fetchTasiBars().then(function(result){
+      if (cancelled) return;
+      if (result.bars && result.bars.length >= 30) {
+        // نجح الجلب الحقيقي
+        setTasiBarsState({ bars: result.bars, source: 'real' });
+        // اضبط tasiLive من آخر شمعة (لإصلاح الأرقام المعروضة)
+        var last = result.bars[result.bars.length - 1];
+        var prev = result.bars[result.bars.length - 2];
+        var changePct = (prev && prev.c > 0) ? ((last.c - prev.c) / prev.c * 100) : 0;
+        setTasiLive({ now: last.c, change: +changePct.toFixed(2) });
+      } else {
+        // فشل → احتياطي اصطناعي
+        setTasiBarsState({ bars: [], source: 'synthetic' });
+      }
+    }).catch(function(){
+      if (!cancelled) setTasiBarsState({ bars: [], source: 'synthetic' });
+    });
+    return function(){ cancelled = true; };
+  }, []);
+
   // عند أول صفقة: احفظ سعر تاسي الحالي كنقطة بداية
   useEffect(function(){
     if(tradeLog.length>0 && !tasiBaseline){
