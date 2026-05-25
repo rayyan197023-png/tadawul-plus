@@ -187,7 +187,6 @@ const API_CONFIG = {
         const fromD = new Date(Date.now() - days*86400000);
         const fmt = d => d.toISOString().slice(0,10);
         qs = `?endpoint=ohlcv&sym=${params.symbol}&from=${fmt(fromD)}&to=${fmt(toD)}`;
-        alert('URL الطلب:\n'+base+qs+'\n\nrangeDays='+params.rangeDays);
       } else if(type === 'ticker') {
         // sahmk quote: ?endpoint=quote&sym=2010
         qs = `?endpoint=quote&sym=${params.symbol}`;
