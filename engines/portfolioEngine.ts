@@ -3851,9 +3851,10 @@ export function generateRiskReturnScatter(positions: Position[], analysisData: a
     var annualReturn = meanDaily * 252;
     var annualVol = stdDaily * Math.sqrt(252);
 
-    // Sharpe Ratio
+    // Sharpe Ratio -- نستخدم ثابت RISK_FREE الموحّد (SAIBOR 6% سنوي)
+    var rf = CONFIG.RISK_FREE_DAILY * TRADING_DAYS; // = 0.06 سنوي، من مصدر واحد
     var sharpe = annualVol > 0 
-      ? (annualReturn - 0.06) / annualVol  // 6% risk-free
+      ? (annualReturn - rf) / annualVol 
       : 0;
 
     // تصنيف Quadrant
