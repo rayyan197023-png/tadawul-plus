@@ -1574,6 +1574,8 @@ for (let s = 0; s < sims; s++) {
   const profitCount = finalValues.filter(v => v > initialValue).length;
   const profitProbability = (profitCount / sims) * 100;
 
+    // ✨ إفصاح عن حدود النموذج: GBM يفترض توزيعاً طبيعياً (لا ذيول سمينة)
+  // → يقلّل تقدير احتمالات الانهيارات الحادة. النطاقات تقديرية احتمالية، ليست تنبؤاً.
   return {
     bestCase: Math.round(percentile95),
     bestCaseReturn: +((percentile95 / initialValue - 1) * 100).toFixed(1),
@@ -1585,9 +1587,14 @@ for (let s = 0; s < sims; s++) {
     pessimisticReturn: +((percentile25 / initialValue - 1) * 100).toFixed(1),
     worstCase: Math.round(percentile5),
     worstCaseReturn: +((percentile5 / initialValue - 1) * 100).toFixed(1),
+    // نطاق احتمالي مركزي 50% (بين الربع الأدنى والأعلى) -- التعبير الأصدق عن "الأرجح"
+    likelyRangeLow: Math.round(percentile25),
+    likelyRangeHigh: Math.round(percentile75),
     profitProbability: +profitProbability.toFixed(1),
+    isEstimate: true,
   };
 }
+
 
 /* ═══════════════════════════════════════════════════════════
    🛡️ INNOVATION #4 - SMART STOP-LOSS™
