@@ -20,6 +20,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useHaptic } from '../hooks/useHaptic';
 import { genBars, stockHealth, recordFeedback } from '../engines/analysisEngine';
+import { fetchEngineBars } from '../utils/historicalData';
 import { calcSmartAction } from '../engines/positionEngine';
 import { analyzePortfolio, addIntelligenceLayer, generatePortfolioValueChart, generateDrawdownChart, generateMonthlyReturnsHeatmap, generateRiskReturnScatter, generateCorrelationHeatmap, generateVaRDistribution } from '../engines/portfolioEngine';
 import { analyzePortfolioIQ } from '../engines/portfolioIQ';
