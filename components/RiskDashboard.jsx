@@ -346,7 +346,7 @@ export default function RiskDashboard(props) {
             />
             <MetricCard
               label="Sortino"
-              value={perf.sortino != null ? perf.sortino.toFixed(2) : '-'}
+              value={perf.sortino != null ? perf.sortino.toFixed(2) : (perf.sortinoClass === 'perfect' ? '∞' : '-')}
               classification={perf.sortinoClass}
               description={perf.sortinoLabel}
             />
