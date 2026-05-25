@@ -8017,10 +8017,12 @@ async function loadStk(){
         limit:PER_COUNT[state.per]||130
       });
       alert('raw نوع: '+(Array.isArray(raw)?'مصفوفة '+raw.length:typeof raw)+'\nأول عنصر: '+(raw&&raw[0]?JSON.stringify(raw[0]).slice(0,150):'لا شيء'));
-      if(raw&&Array.isArray(raw)&&raw.length>5){
-
-                let candles=normalizeCandles(raw);
+            if(raw&&Array.isArray(raw)&&raw.length>5){
+        let candles=normalizeCandles(raw);
+        const _afterNorm=candles.length;
         candles=_aggregateCandles(candles, state.per);
+        const _afterAgg=candles.length;
+        alert('بعد التطبيع: '+_afterNorm+'\nبعد التجميع: '+_afterAgg+'\nالفريم: '+state.per+'\nأول شمعة: '+(candles[0]?JSON.stringify(candles[0]).slice(0,120):'لا شيء'));
         state.allCandles=candles;
         // Update live price from freshest candle
         const last=state.allCandles[state.allCandles.length-1];
