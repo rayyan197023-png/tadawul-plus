@@ -199,8 +199,12 @@ export function calcSmartStopLoss(
   const atrStopPct = ((atrStop - entryPrice) / entryPrice) * 100;
   
   // ② Support-based stop (recent low - 1%)
+    // ✨ نقبل كل صيغ حقل القاع (lo / low / l) -- يمنع سقوط support stop لـ entryPrice صامتاً
   const last20Bars = bars.slice(-20);
-  const recentLow = Math.min(...last20Bars.map(b => b.lo || b.low || entryPrice));
+  const recentLow = Math.min(...last20Bars.map(b => {
+    var low = b.lo != null ? b.lo : (b.low != null ? b.low : (b.l != null ? b.l : null));
+    return low != null ? low : entryPrice;
+  }));
   const supportStop = recentLow * 0.99;
   const supportStopPct = ((supportStop - entryPrice) / entryPrice) * 100;
   
