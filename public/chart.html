@@ -6431,12 +6431,11 @@ function render(){
 
   _drawCM();
 
+ 
  } catch(err) {
-  alert('Render Error: ' + err.message + '\n\n' + err.stack);
-  console.error(err);
+  console.error('Render Error:', err);
  }
 }
-
   
 function renderCrosshair(){
  if(!_offValid||!_offCv||!_offCtx)return render(); // fallback to full render
