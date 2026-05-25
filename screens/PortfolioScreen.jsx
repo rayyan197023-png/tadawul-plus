@@ -1275,13 +1275,13 @@ var positionData = {
     };
 
         return analysis;
-  }, [positions, tasiBarsState]);
+  }, [positions, tasiBarsState, realBarsMap]);
  // ✨ تحليل Portfolio IQ - مع تخزين في useMemo (CRITICAL Performance Fix!)
 
 var portfolioIQ = useMemo(function(){
     if (!positions || positions.length === 0) return null;
     try {
-    var positionsWithDecision = positions.map(function(p){
+    var positionsWithDecision = positions.map(function(p){  
         return Object.assign({}, p, {
           entryDecision: p.health ? {
             grade: p.health.grade || 'C',
