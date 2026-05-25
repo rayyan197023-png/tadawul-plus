@@ -335,7 +335,16 @@ function calcPerformanceMetrics(equityCurve: any[], dailyReturns: number[], trad
   var totalReturn = (final / initial) - 1;
   var days = equityCurve.length;
   var years = days / 252;
-  var annualReturn = years > 0 ? Math.pow(1 + totalReturn, 1 / years) - 1 : 0;
+  // ✨ حارس المدد القصيرة: التحويل السنوي عند years<0.5 يُضخّم العائد بشكل مضلِّل.
+  // دون نصف سنة: نعرض العائد الكلي دون تحويل سنوي، مع علَم للإفصاح.
+  var annualReturn;
+  var annualReturnIsExtrapolated = false;
+  if (years >= 0.5) {
+    annualReturn = Math.pow(1 + totalReturn, 1 / years) - 1;
+  } else {
+    annualReturn = totalReturn; // مدة قصيرة جداً -- لا نُسنوِيه
+    annualReturnIsExtrapolated = false;
+  }
 
   // ② التذبذب
   var meanRet = dailyReturns.length > 0 ? mean(dailyReturns) : 0;
