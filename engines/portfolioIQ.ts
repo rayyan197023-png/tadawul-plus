@@ -1531,12 +1531,19 @@ function runCrystalBall(positions: IQPosition[], base: any, simulations: number 
 function simulateHorizon(initialValue: number, dailyReturn: number, dailyVol: number, days: number, sims: number): any {
   const finalValues: any[] = [];
   
-  // ✨ Seeded Random -- نتائج ثابتة لنفس المحفظة
-var seed = initialValue * days + dailyReturn * 1000000;
-function seededRandom() {
-  seed = (seed * 1664525 + 1013904223) & 0xffffffff;
-  return (seed >>> 0) / 0xffffffff;
-}
+  // ✨ Seeded Random -- نتائج ثابتة لنفس المحفظة، مع بذرة تعكس (العائد + التذبذب + الأفق)
+  // تضمين dailyVol يمنع تطابق التنبؤ بين محافظ مختلفة التذبذب رغم تشابه القيمة/العائد
+  var seed = Math.floor(
+    Math.abs(initialValue) * 7.13 +
+    days * 31.0 +
+    Math.abs(dailyReturn) * 1e6 +
+    Math.abs(dailyVol) * 9.7e6
+  ) % 2147483647;
+  if (seed === 0) seed = 12345; // تجنّب البذرة الصفرية
+  function seededRandom() {
+    seed = (seed * 1664525 + 1013904223) & 0xffffffff;
+    return (seed >>> 0) / 0xffffffff;
+  }
 
 for (let s = 0; s < sims; s++) {
     let value = initialValue;
