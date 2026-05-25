@@ -466,12 +466,6 @@ import { analyzePortfolio } from './portfolioEngine';
 const RISK_FREE_RATE = 0.06;
 
 /**
- * TASI Average Annual Return (10-year)
- * Source: Saudi Exchange historical data
- */
-const TASI_AVG_RETURN = 0.085;
-
-/**
  * Trading Days per Year
  */
 const TRADING_DAYS = 252;
