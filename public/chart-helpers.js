@@ -181,13 +181,13 @@ const API_CONFIG = {
     try {
       let qs = '';
       
-      if(type === 'candles') {
-        // المدى الزمني يحدّد عدد الأيام؛ نحسب from/to ونمرّرهما للبروكسي
+            if(type === 'candles') {
         const days = params.rangeDays || 365;
         const toD = new Date();
         const fromD = new Date(Date.now() - days*86400000);
         const fmt = d => d.toISOString().slice(0,10);
         qs = `?endpoint=ohlcv&sym=${params.symbol}&from=${fmt(fromD)}&to=${fmt(toD)}`;
+        alert('URL الطلب:\n'+base+qs+'\n\nrangeDays='+params.rangeDays);
       } else if(type === 'ticker') {
         // sahmk quote: ?endpoint=quote&sym=2010
         qs = `?endpoint=quote&sym=${params.symbol}`;
