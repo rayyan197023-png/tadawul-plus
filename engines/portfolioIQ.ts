@@ -1853,10 +1853,11 @@ function generateRecommendations(data: any): RecommendationsAnalysis {
       suggestedSectors: sector.missingSectors.slice(0, 2),
       reasoning: 'تركيز ' + (sector.largestSector.weight * 100).toFixed(0) + 
         '% في قطاع واحد يعرّضك لمخاطر القطاع',
-      expectedImpact: {
-        diversificationScore: '+15',
-        sectorHHI: '-30%',
-        correlationReduction: 'محتمل',
+            expectedImpact: {
+        diversificationScore: 'تحسّن درجة التنويع',
+        sectorHHI: 'انخفاض تركيز القطاع',
+        correlationReduction: 'احتمال انخفاض الارتباط',
+        note: 'الاتجاه المتوقع -- يعتمد على القطاعات التي تُضاف',
       },
       academicBasis: 'Fama-French (1993) - Sector diversification reduces idiosyncratic risk',
       urgency: 'Plan within this month',
