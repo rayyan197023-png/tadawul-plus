@@ -1222,9 +1222,10 @@ var positionData = {
       varDistribution: generateVaRDistribution(positionsWithBars),
     };
 
-    return analysis;
-  }, [positions]);
+        return analysis;
+  }, [positions, tasiBarsState]);
  // ✨ تحليل Portfolio IQ - مع تخزين في useMemo (CRITICAL Performance Fix!)
+
 var portfolioIQ = useMemo(function(){
     if (!positions || positions.length === 0) return null;
     try {
