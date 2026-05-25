@@ -1953,10 +1953,11 @@ function generateRecommendations(data: any): RecommendationsAnalysis {
       reasoning: 'Sharpe ' + baseAnalysis.performance.sharpe.toFixed(2) + 
         ' - يمكن تحسينه بإعادة التوازن',
       expectedImpact: {
-        sharpe: '+0.2 to +0.4',
-        annualReturn: 'Same or better',
-        risk: '-10% to -15%',
+        sharpe: 'تحسّن العائد المعدّل بالمخاطر',
+        risk: 'احتمال انخفاض التذبذب عبر إعادة التوازن',
+        note: 'الاتجاه المتوقع -- إعادة التوازن لا تضمن تحسّن Sharpe دائماً',
       },
+
       academicBasis: 'Sharpe (1966) - Risk-adjusted optimization',
       urgency: 'When time permits',
     });
