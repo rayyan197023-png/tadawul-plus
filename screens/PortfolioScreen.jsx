@@ -1423,10 +1423,6 @@ return result;
   var td2_s=useState({now:null, change:null});
   var tasiLive=td2_s[0], setTasiLive=td2_s[1];
 
-  // ✨ شموع تاسي الحقيقية + مصدر المرجع (للإفصاح)
-  var tbs_s=useState({bars:[], source:'pending'});
-  var tasiBarsState=tbs_s[0], setTasiBarsState=tbs_s[1];
-
   // ✨ جلب مؤشر تاسي الحقيقي مرة واحدة عند التحميل
   useEffect(function(){
     var cancelled = false;
