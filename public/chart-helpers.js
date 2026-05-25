@@ -181,11 +181,11 @@ const API_CONFIG = {
     try {
       let qs = '';
       
-            if(type === 'candles') {
-        const per = params.interval || '1D';
-        const periodParam = this.periodMap[per] || '3Mo';
+                  if(type === 'candles') {
+        // periodMap يستخدم مفاتيح الفريم الأصلية (1D,1W,1M) -- نمرّر params.period لا interval المحوّل
+        const perKey = params.period || params.interval || '1D';
+        const periodParam = this.periodMap[perKey] || '1Y';
         qs = `?endpoint=ohlcv&sym=${params.symbol}&period=${periodParam}`;
-        alert('per='+per+' | periodParam='+periodParam+'\nperiodMap1M='+this.periodMap['1M']+'\nperiodMapPer='+this.periodMap[per]);
       } else if(type === 'ticker') {
         // sahmk quote: ?endpoint=quote&sym=2010
         qs = `?endpoint=quote&sym=${params.symbol}`;
