@@ -1191,8 +1191,13 @@ var positionData = {
   var alpha = +(tpP - benchmarkReturn).toFixed(2); // Alpha vs TASI
   var decisions=useMemo(function(){var m={};positions.forEach(function(p){m[p.sym]=getDecision(p);});return m;},[positions]);
 
+  // ✨ شموع تاسي الحقيقية + مصدر المرجع (للإفصاح) -- مُعرّف هنا قبل portfolioAnalysis
+  var tbs_s=useState({bars:[], source:'pending'});
+  var tasiBarsState=tbs_s[0], setTasiBarsState=tbs_s[1];
+
   // ═══ تحليل المحفظة الشامل (المراحل 1-5) ═══
   var portfolioAnalysis = useMemo(function() {
+
     if (!positions || positions.length === 0) return null;
     var positionsWithBars = positions.map(function(p) {
       var bars = genBars(p.stk, 60);
