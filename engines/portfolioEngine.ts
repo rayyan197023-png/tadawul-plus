@@ -203,7 +203,7 @@ export function analyzePortfolio(positions: Position[], tasiBars: Bar[]): Portfo
 
         // مقاييس المخاطر (الخطوات 11-15 ✅) -- المرحلة 3 مكتملة!
     risk: (function() {
-      var portfolioReturns = calcPortfolioReturns(positions, weights);
+      var portfolioReturns = sharedReturns;
       // ⭐ Maximum Drawdown -- الخطوة 11
       var ddMetrics = calcMaxDrawdown(portfolioReturns);
       // ⭐ Value at Risk -- الخطوة 12
