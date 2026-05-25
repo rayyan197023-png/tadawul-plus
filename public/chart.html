@@ -8033,7 +8033,8 @@ async function loadStk(){
         if(!chartReady){state.offset=0;state.visible=dv[state.per]||48;}
         chartReady=true;
         invalidateChart();render();
-        setTimeout(hideLoader,120);_updateUndoButtons();
+        alert('بعد render:\nvisible='+state.visible+'\noffset='+state.offset+'\nallCandles='+state.allCandles.length+'\ndataError='+state.dataError);
+   
         _startLiveTicker();
         if(_aiDrawMode) setTimeout(()=>_buildAndDrawAIAnnotations(_aiDrawMode),400);
         return;
