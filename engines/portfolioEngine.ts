@@ -131,7 +131,7 @@ export function analyzePortfolio(positions: Position[], tasiBars: Bar[]): Portfo
 
               // مقاييس الأداء (الخطوات 5-10 ✅) -- المرحلة 2 مكتملة!
   performance: (function() {
-    var portfolioReturns = calcPortfolioReturns(positions, weights);
+    var portfolioReturns = sharedReturns;
     var returnsMetrics = calcReturnsMetrics(portfolioReturns);
     var volMetrics = calcVolatility(portfolioReturns);
     // ⭐ Sharpe Ratio -- الخطوة 7
