@@ -624,7 +624,8 @@ export function monteCarloSimulation(backtestResult: any, iterations?: number): 
     var finalValue = value;
     var totalReturn = (finalValue / initialCapital) - 1;
     var years = totalDays / 252;
-    var annualReturn = years > 0 ? Math.pow(1 + totalReturn, 1 / years) - 1 : 0;
+    // نفس حارس المدد القصيرة -- تجنّب تضخيم العائد في المحاكاة
+    var annualReturn = years >= 0.5 ? Math.pow(1 + totalReturn, 1 / years) - 1 : totalReturn;
 
     // حساب Sharpe للسيناريو
     var simMean = 0;
