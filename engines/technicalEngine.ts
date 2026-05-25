@@ -399,7 +399,18 @@ export function calcMarketStructure(bars: any[]): any {
   if (bars.length < 10) {
     return { trend: 'محايد', bos: false, choch: false, score: 5, label: 'هيكل محايد' };
   }
-  const recentRng = bars.slice(-10).reduce((s, b) => s + Math.abs(b.pct ?? 0), 0) / 10;
+  // ✨ نشتقّ نسبة التغيّر من الإغلاقات حين يغيب pct (بارات API الخام) -- لا نعتمد على حقل قد لا يوجد
+  const recent10 = bars.slice(-10);
+  let sumPct = 0;
+  for (let i = 0; i < recent10.length; i++) {
+    const b = recent10[i];
+    if (b.pct != null) {
+      sumPct += Math.abs(b.pct);
+    } else if (i > 0 && recent10[i - 1].c) {
+      sumPct += Math.abs((b.c - recent10[i - 1].c) / recent10[i - 1].c * 100);
+    }
+  }
+  const recentRng = sumPct / recent10.length;
   const swWin     = recentRng > 2.5 ? 2 : recentRng > 1.0 ? 3 : 4;
 
   const swings: any[] = [];
