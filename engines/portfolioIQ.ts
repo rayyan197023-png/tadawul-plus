@@ -276,6 +276,10 @@ export interface CrystalBallAnalysis {
   oneYear: CrystalBallHorizon;
   threeYears: CrystalBallHorizon;
   methodology: string;
+  // ✨ حقول الإفصاح (تطابق ما تُرجعه runCrystalBall فعلياً)
+  isEstimate?: boolean;
+  confidenceNote?: string;
+  disclaimer?: string;
 }
 
 export interface SmartStop {
