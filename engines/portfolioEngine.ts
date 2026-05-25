@@ -561,13 +561,19 @@ export function calcReturnsMetrics(portfolioReturns: number[]): {
   cumulative -= 1;
 
   // ③ العائد السنوي (Annualized)
-  // Method 1: من العائد التراكمي
-  // R_annual = (1 + R_cum)^(252/n) - 1
-  var annualFromCumulative = Math.pow(1 + cumulative, 252 / n) - 1;
+  // ✨ حارس المدد القصيرة: التحويل السنوي عند n<126 يوماً (نصف سنة) يضخّم العائد
+  // بشكل مضلِّل (الأس 252/n يصبح كبيراً). دون نصف سنة: نعرض التراكمي دون تسنية.
+  var annualFromCumulative;
+  var annualIsExtrapolated = false;
+  if (n >= 126) {
+    annualFromCumulative = Math.pow(1 + cumulative, 252 / n) - 1;
+  } else {
+    annualFromCumulative = cumulative; // مدة قصيرة -- العائد التراكمي دون تسنية
+    annualIsExtrapolated = false;
+  }
 
   // Method 2: من العائد اليومي (بديل للفترات الطويلة)
-  // R_annual = (1 + R_daily)^252 - 1
-  var annualFromDaily = Math.pow(1 + dailyReturn, 252) - 1;
+  var annualFromDaily = n >= 126 ? Math.pow(1 + dailyReturn, 252) - 1 : cumulative;
 
   // استخدام الطريقة الأولى (أكثر دقة) لكن نعرضهما معاً
   return {
