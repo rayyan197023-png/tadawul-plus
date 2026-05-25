@@ -80,16 +80,19 @@ export function std(arr: NumberArray): number {
 export function downsideDeviation(arr: NumberArray, threshold: number = 0): number {
   if (!arr || arr.length === 0) return 0;
   let sumSq = 0;
-  let count = 0;
+  let negativeCount = 0;
   for (let i = 0; i < arr.length; i++) {
     if (arr[i] < threshold) {
       const diff = arr[i] - threshold;
       sumSq += diff * diff;
-      count++;
+      negativeCount++;
     }
   }
-  if (count === 0) return 0;
-  return Math.sqrt(sumSq / count);
+  // لا توجد عوائد تحت العتبة → لا مخاطرة سلبية
+  if (negativeCount === 0) return 0;
+  // ✨ القسمة على العدد الكلي n (Sortino & Price 1994) -- وليس على عدد السلبية فقط.
+  // الأيام فوق العتبة تُسهم بصفر في البسط لكنها تبقى في المقام (semi-deviation حقيقي).
+  return Math.sqrt(sumSq / arr.length);
 }
 
 /* ══════════════════════════════════════════════════════════
