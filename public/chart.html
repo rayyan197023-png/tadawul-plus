@@ -7804,7 +7804,17 @@ function toggleCtMenu(){
  m.classList.add('open');b.classList.add('open');openCT=true;
 }
 function setPer(p){
- state.per=p;chartReady=false;saveSettings();showLoader(state.stk.name+' — '+p);
+ state.per=p;chartReady=false;
+ // ضبط المدى تلقائياً حسب الفريم — ما لم يغيّره المستخدم يدوياً
+ if(!state._rangeManual){
+  const autoRange = (p==='1M')?'الكل' : (p==='1W')?'5سنوات' : 'سنة';
+  state.range=autoRange;
+  const rb=document.getElementById('range-btn');
+  if(rb) rb.textContent=autoRange;
+  document.querySelectorAll('#range-menu .pmenu-item').forEach(el=>el.classList.toggle('active',el.textContent.trim()===autoRange));
+ }
+ saveSettings();showLoader(state.stk.name+' — '+p);
+
  const b=document.getElementById('per-btn');b.innerHTML=p+' <span style="font-size:9px;opacity:0.5"></span>';
  document.querySelectorAll('.pmenu-item').forEach(el=>el.classList.toggle('active',el.textContent.trim()===p));
  // Clear AI drawings when period changes
