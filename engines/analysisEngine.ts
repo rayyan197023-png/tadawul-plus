@@ -1245,11 +1245,17 @@ function calcMarketStructureFull(bars: any[]): any {
 
 if(bars.length<10)return{trend:"محايد",bos:false,choch:false,score:5,label:"هيكل محايد"};
 
+  // ✨ حارس توافق: نضمن وجود close في كل شمعة (genBars يُنتج c فقط).
+  // يمنع كسراً صامتاً حين تُستدعى الدالة ببارات لا تحوي close.
+  bars = bars.map(function(b: any){
+    return (b.close !== undefined) ? b : Object.assign({}, b, { close: b.c });
+  });
+
   // window ديناميكي من ATR السهم:
   // تقلب عالٍ → نافذة أضيق (2) للاستجابة السريعة
   // تقلب منخفض → نافذة أوسع (4) لتصفية الضوضاء
   const recentRng = bars.length>=10
-    ? bars.slice(-10).reduce((s: number, b: any)=>s+Math.abs(b.pct),0)/10
+    ? bars.slice(-10).reduce((s:  number, b: any)=>s+Math.abs(b.pct),0)/10
     : 1.5;
   const swWin = recentRng > 2.5 ? 2 : recentRng > 1.0 ? 3 : 4;
 
