@@ -824,9 +824,10 @@ export function calcSortinoRatio(portfolioReturns: number[], annualReturn: numbe
   var downsideDeviationAnnual = downsideDeviationDaily * Math.sqrt(252);
 
   // حالة حدية: لا توجد خسائر (محفظة مثالية)
+  // ✨ null لا Infinity -- الواجهة تعرض "--" أو الملاحظة، لا قيمة تكسر toFixed
   if (downsideDeviationAnnual <= 0) {
     return {
-      value: Infinity,
+      value: null,
       downsideDeviationAnnual: 0,
       classification: 'perfect',
       label: 'لا خسائر',
