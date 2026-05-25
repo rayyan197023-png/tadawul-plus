@@ -8010,13 +8010,15 @@ async function loadStk(){
     try{
             const tf=API_CONFIG.tfMap[state.per]||state.per;
       const _rangeDays=RANGE_DAYS[state.range]||365;
-      const raw=await API_CONFIG.fetch('candles',{
+            const raw=await API_CONFIG.fetch('candles',{
         symbol:s.sym, interval:tf,
         period:state.per,
         rangeDays:_rangeDays,
         limit:PER_COUNT[state.per]||130
       });
-            if(raw&&Array.isArray(raw)&&raw.length>5){
+      alert('raw نوع: '+(Array.isArray(raw)?'مصفوفة '+raw.length:typeof raw)+'\nأول عنصر: '+(raw&&raw[0]?JSON.stringify(raw[0]).slice(0,150):'لا شيء'));
+      if(raw&&Array.isArray(raw)&&raw.length>5){
+
                 let candles=normalizeCandles(raw);
         candles=_aggregateCandles(candles, state.per);
         state.allCandles=candles;
