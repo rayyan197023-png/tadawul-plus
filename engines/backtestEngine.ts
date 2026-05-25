@@ -348,8 +348,14 @@ function calcPerformanceMetrics(equityCurve: any[], dailyReturns: number[], trad
     : 0;
 
   // ④ Sortino Ratio (downside deviation)
+  // ✨ القسمة على n الكلي (Sortino & Price 1994) -- لا على عدد السالبة فقط.
+  // نفس تصحيح portfolioMath.downsideDeviation -- semi-deviation حقيقي.
   var downReturns = dailyReturns.filter(function(r: number) { return r < 0; });
-  var downStd = downReturns.length > 0 ? std(downReturns) : 0;
+  var downStd = 0;
+  if (downReturns.length > 0 && dailyReturns.length > 0) {
+    var sumSqDown = downReturns.reduce(function(s: number, r: number) { return s + r * r; }, 0);
+    downStd = Math.sqrt(sumSqDown / dailyReturns.length);
+  }
   var downsideVol = downStd * Math.sqrt(252);
   var sortino = downsideVol > 0 
     ? (annualReturn - config.riskFreeRate) / downsideVol 
