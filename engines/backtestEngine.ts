@@ -540,6 +540,17 @@ export function compareWithBenchmark(backtestResult: any, benchmarkResult: any):
  * @param {number} iterations - عدد المحاكيات (10,000 افتراضي)
  * @returns {Object} نتائج Monte Carlo
  */
+/**
+ * ✨ طول الكتلة الأمثل لـ Block Bootstrap
+ * قاعدة Politis & White (2004) المبسّطة: block ≈ n^(1/3)
+ * تحافظ على الترابط الزمني (volatility clustering + autocorrelation)
+ * مُقيّدة بين 5 و 20 يوماً (أسبوع تداول إلى ~شهر)
+ */
+function optimalBlockLength(n: number): number {
+  var raw = Math.round(Math.pow(n, 1 / 3));
+  return Math.max(5, Math.min(20, raw));
+}
+
 export function monteCarloSimulation(backtestResult: any, iterations?: number): any {
   iterations = iterations || 10000;
   
