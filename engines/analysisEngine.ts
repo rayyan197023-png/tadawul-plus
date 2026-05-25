@@ -2578,7 +2578,8 @@ function calc9Layers(stk: any, bars: any[]): any {
   // analyzeStockRadar يُشغّل محرك SMC الكامل:
   // MS/OB/LS/IVWAP/Trend/Momentum/Liquidity/Value/Macro
   // نتائجه تُدمج كـ sub-scores في الطبقات 1-9
-  const radar = analyzeStockRadar(stk);
+  const radar = analyzeStockRadar(stk, rBars);
+
   // sub-scores: 0-100 normalized من RadarTab
   const radarMS  = radar.factors.find((f: any)=>f.k==="ms")?.s  || 0;  // /15
   const radarOB  = radar.factors.find((f: any)=>f.k==="ob")?.s  || 0;  // /15
