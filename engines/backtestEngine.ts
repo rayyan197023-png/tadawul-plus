@@ -436,6 +436,7 @@ function calcPerformanceMetrics(equityCurve: any[], dailyReturns: number[], trad
     // العوائد
     totalReturn: +(totalReturn * 100).toFixed(2),
     annualReturn: +(annualReturn * 100).toFixed(2),
+    annualReturnNote: years < 0.5 ? 'المدة أقل من 6 أشهر -- العائد كلّي لا سنوي (التحويل السنوي يُضخّم)' : null,
     finalValue: +final.toFixed(2),
     
     // المخاطر
