@@ -352,7 +352,10 @@ export function calcSmartTakeProfit(
       rr: rr3, 
       sell: 34 
     },
-    expectedRR: ((rr1 * 0.33 + rr2 * 0.33 + rr3 * 0.34)).toFixed(1),
+    // ✨ متوسط R:R مرجّح بنسب البيع (33/33/34) -- ليس "العائد المتوقّع".
+    // يفترض بلوغ الأهداف الثلاثة؛ الأهداف الأبعد (T2/T3) قد لا تتحقّق.
+    weightedRR: ((rr1 * 0.33 + rr2 * 0.33 + rr3 * 0.34)).toFixed(1),
+    expectedRR: ((rr1 * 0.33 + rr2 * 0.33 + rr3 * 0.34)).toFixed(1), // مُبقى للتوافق العكسي
   };
 }
 
