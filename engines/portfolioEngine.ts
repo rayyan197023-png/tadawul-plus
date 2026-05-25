@@ -2754,7 +2754,7 @@ export function calcTwoPercentRule(
  * @param {Object} twoPercentResult - من calcTwoPercentRule
  * @returns {Object} {finalShares, finalValue, finalPercent, limitingFactor}
  */
-export function combineKellyAndRisk(kellyResult: any, twoPercentResult: any): any {
+export function combineKellyAndRisk(kellyResult: any, twoPercentResult: any, portfolioValue?: number): any {
   if (!kellyResult || !twoPercentResult) {
     return {
       finalShares: 0,
@@ -2764,7 +2764,7 @@ export function combineKellyAndRisk(kellyResult: any, twoPercentResult: any): an
     };
   }
 
-  // Kelly يعطي نسبة من المحفظة
+  // Kelly يعطي قيمة بالريال (safeKelly × قيمة المحفظة)
   var kellyValue = kellyResult.amountSAR || 0;
 
   // 2% Rule يعطي قيمة بناءً على Stop Loss
@@ -2785,21 +2785,34 @@ export function combineKellyAndRisk(kellyResult: any, twoPercentResult: any): an
   }
 
   // حساب الأسهم
-  var finalShares = twoPercentResult.stockPrice > 0
-    ? Math.floor(finalValue / twoPercentResult.stockPrice)
+  var stockPrice = twoPercentResult.stockPrice || 0;
+  var finalShares = stockPrice > 0 ? Math.floor(finalValue / stockPrice) : 0;
+  var actualValue = Math.round(finalShares * stockPrice);
+
+  // ✨ تحديد قيمة المحفظة المرجعية لحساب النسبة (بترتيب أولوية آمن):
+  //   ① المُمرّرة صراحةً  ② مُعاد بناؤها من Kelly (amountSAR / safeKelly)  ③ riskValue كحدّ أدنى
+  // يتجنّب القسمة على صفر عند Edge السالب (safeKelly = 0)
+  var refPortfolioValue = 0;
+  if (portfolioValue && portfolioValue > 0) {
+    refPortfolioValue = portfolioValue;
+  } else if (kellyResult.safeKelly && kellyResult.safeKelly > 0 && kellyValue > 0) {
+    refPortfolioValue = kellyValue / kellyResult.safeKelly;
+  }
+
+  var finalPercent = refPortfolioValue > 0
+    ? +(actualValue / refPortfolioValue * 100).toFixed(2)
     : 0;
 
   return {
     finalShares: finalShares,
-    finalValue: Math.round(finalShares * twoPercentResult.stockPrice),
-    finalPercent: twoPercentResult.stockPrice > 0
-      ? +((finalShares * twoPercentResult.stockPrice) / (kellyValue / (kellyResult.safeKelly || 0.01)) * 100).toFixed(2)
-      : 0,
+    finalValue: actualValue,
+    finalPercent: finalPercent,
     limitingFactor: limitingFactor,
     kellyValue: kellyValue,
     riskValue: riskValue,
   };
 }
+
 /* ══════════════════════════════════════════════════════════
    ㉑ ATR-based Stop Loss -- "وقف الخسارة الذكي"
    J. Welles Wilder 1978
