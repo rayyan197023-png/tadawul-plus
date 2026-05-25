@@ -184,12 +184,20 @@ export function correlation(x: NumberArray, y: NumberArray): number {
  * β > 1: أكثر تذبذباً من السوق
  * β < 1: أقل تذبذباً من السوق
  */
+
 export function beta(assetReturns: NumberArray, marketReturns: NumberArray): number {
+  // ✨ حماية المدخلات: مصفوفات قصيرة أو غير متطابقة → NaN (لا 1 المضلِّلة)
+  if (!assetReturns || !marketReturns ||
+      assetReturns.length !== marketReturns.length ||
+      marketReturns.length < 2) {
+    return NaN;
+  }
   const varMarket = variance(marketReturns);
-  if (varMarket === 0) return 1;
+  // تباين سوق صفري = بيانات ثابتة/فاسدة → NaN لا 1.
+  // إرجاع 1 يعني "يتحرك مع السوق" وهو رقم ذو معنى يُخفي فشل البيانات.
+  if (varMarket === 0) return NaN;
   return covariance(assetReturns, marketReturns) / varMarket;
 }
-
 /* ══════════════════════════════════════════════════════════
    ④ التحويلات الزمنية (Annualization)
 ═══════════════════════════════════════════════════════════ */
