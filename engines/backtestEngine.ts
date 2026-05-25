@@ -627,7 +627,7 @@ export function monteCarloSimulation(backtestResult: any, iterations?: number): 
     }
     var simStd = Math.sqrt(simVar / shuffledReturns.length);
     var simVol = simStd * Math.sqrt(252);
-    var simSharpe = simVol > 0 ? (annualReturn - 0.06) / simVol : 0;
+    var simSharpe = simVol > 0 ? (annualReturn - riskFreeRate) / simVol : 0;
 
     allResults.push(annualReturn * 100);
     allMaxDrawdowns.push(maxDD * 100);
