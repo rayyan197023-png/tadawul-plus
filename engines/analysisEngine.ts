@@ -2296,10 +2296,18 @@ function calcSMA(bars: any[], period: number): number {
    BOS = Break of Structure  → كسر الهيكل
    CHOCH = Change of Character → تغيّر طابع السوق
 ══════════════════════════════════════════════════════════════ */
-function analyzeStockRadar(stk: any): any {
-  /* ─── توليد البيانات: 60 يوم لـ warm-up كافٍ لجميع المحركات ─── */
-  const bars=generateBarsRadar(stk,60);
-  const p=stk.p,hi52=stk.hi||p*1.2,lo52=stk.lo||p*0.8;
+function analyzeStockRadar(stk: any, pastBars?: any[]): any {
+  /* ─── البيانات: نستخدم الشموع الماضية الحقيقية إن مُرِّرت (يمنع تسرّب المستقبل في الباك-تيست)،
+     وإلا نولّد للعرض الحيّ فقط ─── */
+  const bars = (pastBars && pastBars.length >= 15)
+    ? pastBars.map(function(b: any){
+        // توحيد الحقول: generateBarsRadar يستخدم b.close -- نضمن توافق الصيغتين
+        return { open: b.o ?? b.open ?? b.c, hi: b.hi, lo: b.lo, close: b.c ?? b.close, vol: b.vol, pct: b.pct };
+      })
+    : generateBarsRadar(stk, 60);
+  // ✨ p يُشتقّ من آخر شمعة ماضية (لا من stk.p الحالي) عند الباك-تيست
+  const p = (pastBars && pastBars.length >= 15) ? bars[bars.length-1].close : stk.p;
+  const hi52=stk.hi||p*1.2,lo52=stk.lo||p*0.8;
   const range52=hi52-lo52,pfl=range52>0?(p-lo52)/range52*100:50;
   const distHi=hi52>0?(hi52-p)/hi52*100:10;
   const distLo=lo52>0?(p-lo52)/lo52*100:10;
