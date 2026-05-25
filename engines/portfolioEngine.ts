@@ -1004,6 +1004,17 @@ export function calcPortfolioBeta(portfolioReturns: number[], marketReturns: num
   // حساب Beta
   var betaValue = beta(pReturns, mReturns);
 
+  // ✨ حارس NaN: beta تُرجع NaN عند تباين سوق صفري (بيانات ثابتة/فاسدة).
+  // لا نعرض رقماً مضلِّلاً -- نُرجع حالة "غير محسوب" صريحة.
+  if (betaValue == null || isNaN(betaValue)) {
+    return {
+      value: null,
+      classification: 'unknown',
+      label: 'غير محسوب',
+      interpretation: 'تعذّر حساب Beta -- بيانات السوق ثابتة أو غير كافية',
+    };
+  }
+
   // التصنيف
   var classification, label, interpretation;
 
