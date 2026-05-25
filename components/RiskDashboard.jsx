@@ -280,13 +280,35 @@ export default function RiskDashboard(props) {
           }}>
             صحة المحفظة: {gradeInfo.label}
           </div>
-          <div style={{
+                   <div style={{
             fontSize: 11,
             color: C.smoke,
             lineHeight: 1.4,
           }}>
             18 مقياساً عالمياً · تحليل أكاديمي شامل
           </div>
+
+          {/* ✨ إفصاح مصدر المرجع (TASI) -- يوضّح أساس Beta/Alpha */}
+          {analysis.benchmarkSource && analysis.benchmarkSource !== 'pending' && (
+            <div style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 4,
+              marginTop: 6,
+              padding: "2px 8px",
+              borderRadius: 6,
+              fontSize: 9,
+              fontWeight: 700,
+              fontFamily: "Cairo,sans-serif",
+              color: analysis.benchmarkSource === 'real' ? C.mint : C.amber,
+              background: (analysis.benchmarkSource === 'real' ? C.mint : C.amber) + "14",
+              border: "1px solid " + (analysis.benchmarkSource === 'real' ? C.mint : C.amber) + "33",
+            }}>
+              {analysis.benchmarkSource === 'real'
+                ? '✓ المرجع: مؤشر تاسي حقيقي'
+                : '⚠ المرجع: تقديري (مشتقّ من محفظتك) -- Beta/Alpha نسبية'}
+            </div>
+          )}
         </div>
       </div>
 
