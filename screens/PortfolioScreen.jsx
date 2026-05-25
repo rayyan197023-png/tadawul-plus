@@ -1226,8 +1226,20 @@ var positionData = {
       });
     });
 
-    return function(){ cancelled = true; };
+        return function(){ cancelled = true; };
   }, [port]);
+
+  // ✨ المرحلة 1: مُحدِّد مصدر البارات -- حقيقي إن توفّر، وإلا genBars (آمن)
+  // يُمرر له stk لأن genBars يحتاجه؛ ويُقصّ الطول لـ 60 لمطابقة سلوك genBars الحالي
+  function getBars(sym, stk, count) {
+    count = count || 60;
+    var real = realBarsMap[sym];
+    if (real && real.length >= 30) {
+      // نأخذ آخر count شمعة (أحدث البيانات) لمطابقة سلوك genBars
+      return real.length > count ? real.slice(-count) : real;
+    }
+    return genBars(stk, count);
+  }
 
   // ═══ تحليل المحفظة الشامل (المراحل 1-5) ═══
   var portfolioAnalysis = useMemo(function() {
