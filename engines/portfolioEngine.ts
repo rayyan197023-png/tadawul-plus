@@ -309,8 +309,8 @@ export function analyzePortfolio(positions: Position[], tasiBars: Bar[]): Portfo
         
 
                 // Position Sizing -- Kelly + 2% Rule + ATR (الخطوات 20-22 ✅) -- المرحلة 5 مكتملة!
-    positionSizing: (function() {
-      var portfolioReturns = calcPortfolioReturns(positions, weights);
+        positionSizing: (function() {
+      var portfolioReturns = sharedReturns;
       // ⭐ Kelly Criterion -- الخطوة 20
       var kellyInputs = estimateKellyInputs(portfolioReturns);
       var kellyResult = calcKellyCriterion(
