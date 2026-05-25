@@ -906,9 +906,46 @@ useEffect(() => {
   function loadLS(key, fallback) {
     try { var v=localStorage.getItem(key); return v?JSON.parse(v):fallback; } catch(e){ return fallback; }
   }
-  function saveLS(key, value) {
+    function saveLS(key, value) {
     try { localStorage.setItem(key, JSON.stringify(value)); } catch(e){}
   }
+
+  // ✨ جلب شموع مؤشر تاسي الحقيقية (حقيقي-أولاً، احتياطي-آمن)
+  // يجرّب عدة رموز محتملة للمؤشر؛ أول واحد يُرجع ≥30 شمعة يفوز
+  async function fetchTasiBars() {
+    var candidates = ['TASI', '^TASI', 'TASI.SR', '1'];
+    for (var i = 0; i < candidates.length; i++) {
+      try {
+        var sym = encodeURIComponent(candidates[i]);
+        var res = await fetch('/api/sahmkdata?endpoint=ohlcv&sym=' + sym + '&period=1Y');
+        if (!res.ok) continue;
+        var json = await res.json();
+        // sahmk قد يُرجع مصفوفة مباشرة أو داخل حقل data/results/historical
+        var rows = Array.isArray(json) ? json
+                 : (json && Array.isArray(json.data)) ? json.data
+                 : (json && Array.isArray(json.results)) ? json.results
+                 : (json && Array.isArray(json.historical)) ? json.historical
+                 : null;
+        if (!rows || rows.length < 30) continue;
+        // توحيد الصيغة: portfolioEngine يتوقّع {t,o,h,l,c,v}
+        var bars = rows.map(function(r){
+          var c = parseFloat(r.close ?? r.c ?? r.last ?? r.price);
+          var o = parseFloat(r.open  ?? r.o ?? c);
+          var h = parseFloat(r.high  ?? r.h ?? c);
+          var l = parseFloat(r.low   ?? r.l ?? c);
+          var v = parseFloat(r.volume ?? r.vol ?? r.v ?? 0);
+          return { t: r.date ?? r.t ?? r.timestamp ?? null, o:o, h:h, l:l, c:c, v:v };
+        }).filter(function(b){ return Number.isFinite(b.c) && b.c > 0; });
+        if (bars.length >= 30) {
+          return { bars: bars, symbol: candidates[i] };
+        }
+      } catch (e) {
+        // نتابع للرمز التالي بصمت
+      }
+    }
+    return { bars: [], symbol: null }; // فشل الكل → احتياطي اصطناعي
+  }
+
 
   // ======= الحالة المحفوظة =======
   const haptic = useHaptic();
