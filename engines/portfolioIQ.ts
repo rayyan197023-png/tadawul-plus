@@ -1828,9 +1828,11 @@ function generateRecommendations(data: any): RecommendationsAnalysis {
         reasoning: 'تركيز ' + currentWeight.toFixed(1) + 
           '% في سهم واحد يعرّضك لمخاطرة غير ضرورية',
         expectedImpact: {
-          hhi: '-' + Math.round(currentWeight * currentWeight - targetWeight * targetWeight),
-          volatility: '-' + ((currentWeight - targetWeight) * 0.001).toFixed(3),
-          sharpe: '+' + (0.05 + (currentWeight - targetWeight) * 0.005).toFixed(2),
+          // HHI قابل للحساب فعلياً من فرق مربّعات الأوزان (مساهمة هذا السهم وحده)
+          hhi: 'انخفاض ~' + Math.round(currentWeight * currentWeight - targetWeight * targetWeight) + ' نقطة',
+          concentration: 'انخفاض تركيز المخاطر',
+          diversification: 'تحسّن التنويع',
+          note: 'الاتجاه المتوقع -- الأثر الفعلي يعتمد على بقية المحفظة',
         },
         academicBasis: 'Markowitz (1952) - Diversification reduces unsystematic risk',
         urgency: 'Action recommended within 1 week',
