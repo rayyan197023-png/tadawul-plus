@@ -1882,11 +1882,13 @@ function generateRecommendations(data: any): RecommendationsAnalysis {
       correlation: highCorr.correlation,
       reasoning: 'هذان السهمان يتحركان معاً (' + (highCorr.correlation * 100).toFixed(0) + 
         '%) - استبدل أحدهما بسهم من قطاع مختلف',
-      expectedImpact: {
-        avgCorrelation: '-15%',
-        diversificationScore: '+10',
-        portfolioVolatility: '-2%',
+            expectedImpact: {
+        avgCorrelation: 'انخفاض متوسط الارتباط',
+        diversificationScore: 'تحسّن درجة التنويع',
+        portfolioVolatility: 'احتمال انخفاض التذبذب',
+        note: 'الاتجاه المتوقع -- يعتمد على السهم البديل',
       },
+
       academicBasis: 'Bridgewater (Ray Dalio) - "15-20 uncorrelated bets = Holy Grail"',
       urgency: 'Strategic adjustment',
     });
