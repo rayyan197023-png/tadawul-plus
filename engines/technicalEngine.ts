@@ -191,6 +191,8 @@ export function calcOBV(bars: any[]): {
   // Use last 40 bars as baseline — more sensitive to recent institutional activity
   const baseline = arr.slice(-Math.min(40, arr.length));
   const mean = baseline.reduce((s, v) => s + v, 0) / baseline.length;
+  // std=0 يعني OBV ثابت تماماً -- حينها البسط (last - mean) = 0 أيضاً، فالنتيجة 0/1=0 الصحيحة.
+  // الـ || 1 حارس ضد القسمة على صفر فقط، لا يُنتج إشارة وهمية.
   const std  = Math.sqrt(baseline.reduce((s, v) => s + (v - mean) ** 2, 0) / baseline.length) || 1;
   const obvZ = (arr[arr.length - 1] - mean) / std;
 
