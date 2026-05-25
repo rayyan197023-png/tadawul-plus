@@ -119,6 +119,9 @@ export function analyzePortfolio(positions: Position[], tasiBars: Bar[]): Portfo
   var totalValue = calcTotalValue(positions);
   var weights = calcWeights(positions, totalValue);
 
+  // ✨ نحسب عوائد المحفظة مرة واحدة ونمرّرها لكل الأقسام (بدل 5 مرات)
+  var sharedReturns = calcPortfolioReturns(positions, weights);
+
   // سيُضاف لاحقاً في الخطوات القادمة
   return {
     // البيانات الأساسية
