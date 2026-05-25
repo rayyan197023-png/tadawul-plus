@@ -80,6 +80,8 @@ export interface TakeProfitResult {
   t2: TakeProfitTarget;
   t3: TakeProfitTarget;
   expectedRR: string;
+  // ✨ متوسط R:R مرجّح بنسب البيع -- الاسم الأصدق (expectedRR مُبقى للتوافق)
+  weightedRR?: string;
 }
 
 export interface TrailingStopResult {
