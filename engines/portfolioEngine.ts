@@ -409,8 +409,8 @@ export function analyzePortfolio(positions: Position[], tasiBars: Bar[]): Portfo
       };
     })(),
         // Stress Tests -- الخطوة 24 ✅
-    stressTests: (function() {
-      var portfolioReturns = calcPortfolioReturns(positions, weights);
+        stressTests: (function() {
+      var portfolioReturns = sharedReturns;
       var marketReturns = buildTasiSyntheticReturns(positions);
       var betaResult = calcPortfolioBeta(portfolioReturns, marketReturns);
       return runStressTests(totalValue, betaResult.value);
