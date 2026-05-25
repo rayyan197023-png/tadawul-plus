@@ -1196,6 +1196,39 @@ var positionData = {
   var tbs_s=useState({bars:[], source:'pending'});
   var tasiBarsState=tbs_s[0], setTasiBarsState=tbs_s[1];
 
+  // ✨ المرحلة 1: خريطة البارات الحقيقية لأسهم المحفظة { sym: engineBars }
+  // تُملأ تدريجياً من sahmk؛ أي سهم غير موجود فيها يسقط لـ genBars (آمن)
+  var rbm_s = useState({}); var realBarsMap = rbm_s[0], setRealBarsMap = rbm_s[1];
+
+  // جلب بارات أسهم المحفظة الحقيقية (أسهم المحفظة فقط -- لا كل السوق)
+  useEffect(function() {
+    var syms = port.map(function(pp){ return pp.sym; });
+    if (syms.length === 0) return;
+    var cancelled = false;
+
+    // نجلب فقط الرموز غير الموجودة في الخريطة (تفادي إعادة الجلب)
+    var toFetch = syms.filter(function(s){ return !realBarsMap[s]; });
+    if (toFetch.length === 0) return;
+
+    Promise.all(toFetch.map(function(sym){
+      return fetchEngineBars(sym, { days: 365 })
+        .then(function(r){ return { sym: sym, bars: r.bars, source: r.source }; })
+        .catch(function(){ return { sym: sym, bars: [], source: 'empty' }; });
+    })).then(function(results){
+      if (cancelled) return;
+      setRealBarsMap(function(prev){
+        var next = Object.assign({}, prev);
+        results.forEach(function(r){
+          // نخزّن فقط إن جاء عدد كافٍ من الشموع (وإلا نترك genBars يتكفّل)
+          if (r.bars && r.bars.length >= 30) next[r.sym] = r.bars;
+        });
+        return next;
+      });
+    });
+
+    return function(){ cancelled = true; };
+  }, [port]);
+
   // ═══ تحليل المحفظة الشامل (المراحل 1-5) ═══
   var portfolioAnalysis = useMemo(function() {
 
