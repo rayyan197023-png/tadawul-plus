@@ -2299,12 +2299,16 @@ function calcSMA(bars: any[], period: number): number {
 function analyzeStockRadar(stk: any, pastBars?: any[]): any {
   /* ─── البيانات: نستخدم الشموع الماضية الحقيقية إن مُرِّرت (يمنع تسرّب المستقبل في الباك-تيست)،
      وإلا نولّد للعرض الحيّ فقط ─── */
-  const bars = (pastBars && pastBars.length >= 15)
+    const bars = (pastBars && pastBars.length >= 15)
     ? pastBars.map(function(b: any){
-        // توحيد الحقول: generateBarsRadar يستخدم b.close -- نضمن توافق الصيغتين
-        return { open: b.o ?? b.open ?? b.c, hi: b.hi, lo: b.lo, close: b.c ?? b.close, vol: b.vol, pct: b.pct };
+        // توحيد شامل: نضمن وجود c+close و o+open معاً
+        // كي تعمل كل الدوال سواء قرأت b.c (radarEngine) أو b.close (المحلية) -- يمنع الانكسار الصامت
+        const _c = b.c ?? b.close;
+        const _o = b.o ?? b.open ?? _c;
+        return { o: _o, open: _o, c: _c, close: _c, hi: b.hi, lo: b.lo, vol: b.vol, pct: b.pct };
       })
     : generateBarsRadar(stk, 60);
+
   // ✨ p يُشتقّ من آخر شمعة ماضية (لا من stk.p الحالي) عند الباك-تيست
   const p = (pastBars && pastBars.length >= 15) ? bars[bars.length-1].close : stk.p;
   const hi52=stk.hi||p*1.2,lo52=stk.lo||p*0.8;
