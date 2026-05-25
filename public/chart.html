@@ -2309,7 +2309,9 @@ function render(){
  const YW=38, CW=W-YW;
  const OF_H=showOrderFlow?getPanelH('of',H,0.10):0; // order flow panel
  const VOL_H=getPanelH('vol',H,0.14); // volume panel — resizable
+ if(!state.activeInds) state.activeInds = state.inds || [];
  const SUB_INDS_BASE=['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD'].filter(id=>state.activeInds.includes(id));
+
   // Auto-add MACD panel when TRIPLE_SCR strategy is active
   const _subBase=(activeStrategy==='TRIPLE_SCR'&&!SUB_INDS_BASE.includes('MACD'))
     ?['MACD',...SUB_INDS_BASE]
