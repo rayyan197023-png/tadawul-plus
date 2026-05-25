@@ -2571,10 +2571,6 @@ function calc9Layers(stk: any, bars: any[]): any {
   const vol5   = last5.reduce((s,b)=>s+b.vol,0)/5;
   const vr     = vol5/avgVol;
 
-  // RNG ثابت
-  let _s = parseInt(stk.sym)*997+13;
-  const rng = ()=>{ _s=(_s*1664525+1013904223)&0xffffffff; return(_s>>>0)/0xffffffff; };
-
     // ── محركات الرادار المدمجة (✨ من technicalEngine - الصحيحة رياضياً) ──
   const atr  = calcATR(rBars, 14) || stk.p * 0.015;
   const rsiV = calcRSI(rBars, 14);
@@ -2587,7 +2583,7 @@ function calc9Layers(stk: any, bars: any[]): any {
   const mc   = calcMacroFull(stk);
   const tc_tasi = calcTasiContext(stk, bars, STOCKS);
 
-  // ── رادار الفرص (SMC) — 9 عوامل مدمجة ──────────────────────
+  // ── رادار الفرص (SMC) — 9 عوامل    مدمجة ──────────────────────
   // analyzeStockRadar يُشغّل محرك SMC الكامل:
   // MS/OB/LS/IVWAP/Trend/Momentum/Liquidity/Value/Macro
   // نتائجه تُدمج كـ sub-scores في الطبقات 1-9
