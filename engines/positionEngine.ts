@@ -324,9 +324,10 @@ export function calcSmartTakeProfit(
   } catch (e) {}
 
   // ✨ R:R النهائي مع تعديل ATR + Regime
-  const rr1 = +(baseRR1 * atrMult * regimeMult).toFixed(2);
-  const rr2 = +(baseRR2 * atrMult * regimeMult).toFixed(2);
-  const rr3 = +(baseRR3 * atrMult * regimeMult).toFixed(2);
+  // حدّ أدنى صارم: T1≥1.5, T2≥2.0, T3≥3.0 -- يمنع أهدافاً بنسبة ~1:1 تكسر مبدأ R:R
+  const rr1 = +Math.max(1.5, baseRR1 * atrMult * regimeMult).toFixed(2);
+  const rr2 = +Math.max(2.0, baseRR2 * atrMult * regimeMult).toFixed(2);
+  const rr3 = +Math.max(3.0, baseRR3 * atrMult * regimeMult).toFixed(2);
 
   const t1 = entryPrice + (risk * rr1);
   const t2 = entryPrice + (risk * rr2);
