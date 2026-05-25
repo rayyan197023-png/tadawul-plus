@@ -440,7 +440,8 @@ function calcPerformanceMetrics(equityCurve: any[], dailyReturns: number[], trad
     sharpe: +sharpe.toFixed(2),
     sortino: +sortino.toFixed(2),
     calmar: +calmar.toFixed(2),
-    profitFactor: +profitFactor.toFixed(2),
+    profitFactor: profitFactor != null ? +profitFactor.toFixed(2) : null,
+    profitFactorNote: profitFactor == null ? 'لا خسائر مُسجّلة -- النسبة غير قابلة للحساب' : null,
     
     // الصفقات
     totalTrades: trades.length,
