@@ -2167,11 +2167,14 @@ function generateBarsRadar(stk: any, days: number = 60): any[] {
     const hi=cl*(1+rng()*0.020);
     const lo=cl*(1-rng()*0.020);
     const volM=0.4+rng()*1.4+Math.abs(dr+no)*10;
-    bars.push({open:p,hi,lo,close:cl,vol:Math.round(av*volM),pct:(dr+no)*100});
+    // ✨ توحيد شامل: o+open و c+close معاً -- تعمل مع كل الدوال (radarEngine تقرأ b.c)
+    // يُصلح انكساراً صامتاً كان يجعل calcOrderBlocks/calcLiqSweep ترى undefined
+    bars.push({o:p,open:p,c:cl,close:cl,hi,lo,vol:Math.round(av*volM),pct:(dr+no)*100});
     p=cl;
   }
   return bars;
 }
+
 
 /**
  * ✨ Stochastic Oscillator %K - George Lane Original
