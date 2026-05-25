@@ -1905,11 +1905,12 @@ function generateRecommendations(data: any): RecommendationsAnalysis {
       affectedStocks: stock.topPositions.slice(0, 5).map((s: any) => s.sym),
       reasoning: 'تراجع تاريخي ' + (Math.abs(baseAnalysis.risk.maxDrawdown) * 100).toFixed(1) + 
         '% - حماية رأس المال أولوية',
-      expectedImpact: {
-        maxDrawdown: '-30% to -40%',
-        sleepQuality: '+50%',
-        emotionalStress: '-60%',
+            expectedImpact: {
+        maxDrawdown: 'حدّ أقصى للخسارة في كل مركز',
+        capitalProtection: 'حماية رأس المال من الانهيارات الحادة',
+        note: 'Stop-Loss يحدّ الخسارة لكنه قد يتفعّل مبكراً في التذبذبات العادية',
       },
+
       academicBasis: 'Wilder (1978) ATR + Le Beau Chandelier Exit',
       urgency: 'Implement this week',
     });
