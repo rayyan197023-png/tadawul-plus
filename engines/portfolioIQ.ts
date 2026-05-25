@@ -824,10 +824,11 @@ function runBehavioralLayer(positions: IQPosition[], base: any, options: IQOptio
     }
   });
 
-  return {
+    return {
     biasCount: biases.length,
     biases: biases,
-    behavioralScore: 100 - (biases.length * 15),
+    // ✨ حدّ أدنى 0 -- يمنع درجة سالبة تتسرّب للواجهة ولحساب الـ IQ
+    behavioralScore: Math.max(0, 100 - (biases.length * 15)),
     riskFlags: biases.filter(b => b.severity === 'high' || b.severity === 'critical'),
   };
 }
