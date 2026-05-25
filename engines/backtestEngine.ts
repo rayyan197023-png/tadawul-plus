@@ -572,12 +572,20 @@ export function monteCarloSimulation(backtestResult: any, iterations?: number): 
   var allSharpes: number[] = [];
   var allFinalValues: number[] = [];
 
+  // ✨ Block Bootstrap -- يحافظ على الترابط الزمني (volatility clustering)
+  var blockLen = optimalBlockLength(totalDays);
+
   for (var sim = 0; sim < iterations; sim++) {
-    // خلط العوائد (Bootstrap with replacement)
+    // أخذ عيّنات كتلية متتالية بدل أيام منفردة (Künsch 1989)
     var shuffledReturns: number[] = [];
-    for (var d = 0; d < totalDays; d++) {
-      var randIdx = Math.floor(Math.random() * totalDays);
-      shuffledReturns.push(dailyReturns[randIdx]);
+    while (shuffledReturns.length < totalDays) {
+      // نقطة بداية عشوائية لكتلة متتالية
+      var startIdx = Math.floor(Math.random() * totalDays);
+      for (var b2 = 0; b2 < blockLen && shuffledReturns.length < totalDays; b2++) {
+        // التفاف دائري (circular) لضمان كتل كاملة دائماً
+        var srcIdx = (startIdx + b2) % totalDays;
+        shuffledReturns.push(dailyReturns[srcIdx]);
+      }
     }
 
     // حساب Equity Curve
