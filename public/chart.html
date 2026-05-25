@@ -8032,8 +8032,8 @@ async function loadStk(){
         }
         if(!chartReady){state.offset=0;state.visible=dv[state.per]||48;}
         chartReady=true;
-        invalidateChart();render();
-        alert('بعد render:\nvisible='+state.visible+'\noffset='+state.offset+'\nallCandles='+state.allCandles.length+'\ndataError='+state.dataError);
+               invalidateChart();render();
+        alert('canvas:\noffsetW='+cv.offsetWidth+' offsetH='+cv.offsetHeight+'\nwidth='+cv.width+' height='+cv.height);
    
         _startLiveTicker();
         if(_aiDrawMode) setTimeout(()=>_buildAndDrawAIAnnotations(_aiDrawMode),400);
