@@ -396,7 +396,8 @@ function calcPerformanceMetrics(equityCurve: any[], dailyReturns: number[], trad
   // ⑧ Profit Factor
   var grossProfit = winningTrades.reduce(function(s: number, t: any) { return s + t.pnl; }, 0);
   var grossLoss = Math.abs(losingTrades.reduce(function(s: number, t: any) { return s + t.pnl; }, 0));
-  var profitFactor = grossLoss > 0 ? grossProfit / grossLoss : (grossProfit > 0 ? 999 : 0);
+  // عند انعدام الخسائر: لا نعرض رقماً مضلِّلاً (999). نستخدم null كإشارة "لا يُحسب".
+  var profitFactor = grossLoss > 0 ? grossProfit / grossLoss : null;
 
   // ⑨ Expected Return per trade
   var expectedReturn = closedTrades.length > 0
