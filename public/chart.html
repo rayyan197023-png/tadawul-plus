@@ -8017,8 +8017,7 @@ async function loadStk(){
         rangeDays:_rangeDays,
         limit:PER_COUNT[state.per]||130
       });
-      alert('raw نوع: '+(Array.isArray(raw)?'مصفوفة '+raw.length:typeof raw)+'\nأول عنصر: '+(raw&&raw[0]?JSON.stringify(raw[0]).slice(0,150):'لا شيء'));
-            if(raw&&Array.isArray(raw)&&raw.length>5){
+      if(raw&&Array.isArray(raw)&&raw.length>5){
         let candles=normalizeCandles(raw);
         const _afterNorm=candles.length;
         candles=_aggregateCandles(candles, state.per);
