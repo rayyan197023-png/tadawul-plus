@@ -1516,12 +1516,20 @@ function runCrystalBall(positions: IQPosition[], base: any, simulations: number 
     threeYears: simulateHorizon(initialValue, dailyReturn, dailyVol, 756, simulations),
   };
 
-  return {
+    return {
     initialValue: initialValue,
     sixMonths: predictions.sixMonths,
     oneYear: predictions.oneYear,
     threeYears: predictions.threeYears,
-    methodology: 'Monte Carlo Simulation (' + simulations + ' iterations)',
+    methodology: 'محاكاة Monte Carlo (' + simulations + ' مسار) -- حركة براونية هندسية',
+    // ✨ إفصاح صريح يُعرض للمستخدم: هذه تقديرات احتمالية، ليست تنبؤاً
+    isEstimate: true,
+    confidenceNote: 'تقدير احتمالي وليس تنبؤاً',
+    disclaimer: 'هذه سيناريوهات احتمالية مبنية على محاكاة إحصائية تفترض توزيعاً طبيعياً للعوائد، ' +
+      'وتعتمد على أن العائد والتذبذب المستقبليين يشبهان الماضي. ' +
+      'النموذج لا يحسب الأزمات المفاجئة والانهيارات الحادة (الذيول السمينة)، ' +
+      'لذا قد تكون الخسائر الفعلية في الأزمات أكبر مما يظهر. ' +
+      'لا تتخذ قرارات استثمارية بناءً على هذه الأرقام وحدها.',
   };
 }
 
