@@ -459,8 +459,9 @@ export function calcIVWAP(bars: any[], stk?: any): any {
   const above  = [vwW, vwM, vwQ].filter(v => cur > v).length;
 
   const vwapDev  = avwap > 0 ? (cur - avwap) / avwap : 0;
-  const b1 = vwM - calcATR(bars, 14);
-  const b2 = vwM - 2 * calcATR(bars, 14);
+  const atr14 = calcATR(bars, 14); // ✨ نحسبه مرة واحدة بدل مرتين
+  const b1 = vwM - atr14;
+  const b2 = vwM - 2 * atr14;
   const belowB1  = cur < b1, belowB2 = cur < b2;
   const aboveAVWAP = cur > avwap;
 
