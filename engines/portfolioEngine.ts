@@ -1652,8 +1652,8 @@ export function calcCalmarRatio(annualReturn: number, maxDrawdown: number): {
     interpretation = 'خسارة مع تراجعات -- محفظة خاسرة تاريخياً';
   }
 
-  return {
-    value: calmar === Infinity ? 999 : +calmar.toFixed(3),
+    return {
+    value: +calmar.toFixed(3),
     classification: classification,
     label: label,
     interpretation: interpretation,
