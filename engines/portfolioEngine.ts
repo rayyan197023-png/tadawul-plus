@@ -2076,12 +2076,17 @@ function emptyPortfolioAnalysis(): PortfolioAnalysis {
       alpha: 0,
       beta: 0,
     },
-    risk: {
+        risk: {
       maxDrawdown: 0,
-      var95: 0,
-      cvar95: 0,
-      downsideDeviation: 0,
-      calmar: 0,
+      // ✨ نطابق أسماء الحقول الفعلية من دالة risk (var95Daily لا var95) -- يمنع undefined.toFixed
+      var95Daily: 0,
+      var95Weekly: 0,
+      var95Monthly: 0,
+      cvar95Daily: 0,
+      downsideDeviationDaily: 0,
+      downsideDeviationAnnual: 0,
+      calmar: null,
+      maxDrawdownDuration: 0,
     },
     diversification: {
       hhi: 0,
