@@ -573,6 +573,9 @@ export function monteCarloSimulation(backtestResult: any, iterations?: number): 
 
   var initialCapital = backtestResult.config.initialCapital;
   var totalDays = dailyReturns.length;
+  // ✨ نقرأ riskFreeRate من نفس config الباك-تيست -- لضمان اتساق Sharpe بين اللوحتين
+  var riskFreeRate = (backtestResult.config && backtestResult.config.riskFreeRate != null)
+    ? backtestResult.config.riskFreeRate : 0.06;
 
   // ① تشغيل المحاكاة
   var allResults: number[] = [];
