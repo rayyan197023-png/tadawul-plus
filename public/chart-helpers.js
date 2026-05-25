@@ -204,11 +204,10 @@ const API_CONFIG = {
       });
       if(!r.ok) throw new Error('HTTP '+r.status);
       const data = await r.json();
-                          if(type === 'candles') {
-        const out = data.bars || data.data || data.ohlcv || data;
-        alert('فكّ candles:\nمفاتيح data: '+Object.keys(data).join(',')+'\nنوع data.data: '+(Array.isArray(data.data)?'مصفوفة '+data.data.length:typeof data.data)+'\nنوع out: '+(Array.isArray(out)?'مصفوفة '+out.length:typeof out));
-        return out;
-      }  
+      
+      if(type === 'candles') {
+        return data.bars || data.data || data.ohlcv || data;
+      } 
       // Unwrap sahmk response shapes
       if(type === 'candles') {
         return data.bars || data.data || data.ohlcv || data;
