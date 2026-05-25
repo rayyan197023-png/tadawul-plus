@@ -1245,16 +1245,6 @@ var positionData = {
   var portfolioAnalysis = useMemo(function() {
 
     if (!positions || positions.length === 0) return null;
-    var positionsWithBars = positions.map(function(p) {
-      var bars = genBars(p.stk, 60);
-      return {
-        sym: p.sym,
-        qty: p.qty,
-        value: p.value,
-        bars: bars,
-        stk: p.stk,
-      };
-    });
                         var analysis = analyzePortfolio(positionsWithBars, tasiBarsState.bars || []);
     analysis.benchmarkSource = tasiBarsState.source; // 'real' | 'synthetic' | 'pending' (للإفصاح)
     analysis = addIntelligenceLayer(analysis, positionsWithBars, stockHealth);
