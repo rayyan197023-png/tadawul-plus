@@ -1204,8 +1204,10 @@ var positionData = {
         stk: p.stk,
       };
     });
-            var analysis = analyzePortfolio(positionsWithBars, []);
+                        var analysis = analyzePortfolio(positionsWithBars, tasiBarsState.bars || []);
+    analysis.benchmarkSource = tasiBarsState.source; // 'real' | 'synthetic' | 'pending' (للإفصاح)
     analysis = addIntelligenceLayer(analysis, positionsWithBars, stockHealth);
+
     // ⭐ بيانات الرسم البياني
                      analysis.chartData = {
       portfolioValue: generatePortfolioValueChart(
