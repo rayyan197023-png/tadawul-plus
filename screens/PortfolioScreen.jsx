@@ -1898,9 +1898,40 @@ return result;
                 </button>
               </div> 
               
-              {/* ═══ الرسوم البيانية المتقدمة (قابلة للطي) ═══ */}
-              {showAdvanced && (
+                            {/* ═══ الرسوم البيانية المتقدمة (قابلة للطي) ═══ */}
+              {/* ✨ حالة تحميل: نُخفي الأرقام حتى تصل البيانات الحقيقية (معالجة الوميض) */}
+              {showAdvanced && !barsReady && (
+                <div style={{
+                  background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
+                  border:"1px solid "+C.line, borderRadius:16, padding:"32px 20px",
+                  textAlign:"center", marginBottom:12,
+                }}>
+                  <div style={{
+                    width:40, height:40, margin:"0 auto 16px",
+                    border:"3px solid "+C.line, borderTopColor:C.electric,
+                    borderRadius:"50%", animation:"spin 0.9s linear infinite",
+                  }}/>
+                  <div style={{fontSize:13, fontWeight:800, color:C.mist, marginBottom:6}}>
+                    جارٍ جلب البيانات الحقيقية من تاسي…
+                  </div>
+                  <div style={{fontSize:11, color:C.smoke, lineHeight:1.6}}>
+                    نحلّل الأسعار التاريخية الفعلية لأسهم محفظتك
+                  </div>
+                  <style>{"@keyframes spin{to{transform:rotate(360deg)}}"}</style>
+                </div>
+              )}
+              {showAdvanced && barsReady && (
               <>
+              {/* ✨ إفصاح مصدر البيانات */}
+              {analysisDataSource === 'synthetic-timeout' && (
+                <div style={{
+                  background:C.amber+"12", border:"1px solid "+C.amber+"33",
+                  borderRadius:10, padding:"8px 12px", marginBottom:12,
+                  fontSize:11, color:C.amber, textAlign:"center",
+                }}>
+                  ⚠ تعذّر جلب كل البيانات الحقيقية -- بعض الأرقام تقديرية
+                </div>
+              )}
               {/* 📈 رسم بياني: قيمة المحفظة عبر الزمن */}
               {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.portfolioValue && portfolioAnalysis.chartData.portfolioValue.length > 0 && (
                 <PortfolioValueChart data={portfolioAnalysis.chartData.portfolioValue} />
