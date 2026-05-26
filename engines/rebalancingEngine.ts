@@ -552,28 +552,44 @@ function calculateExpectedImpact(issues: any[], currentHealth: number, performan
   };
 }
 
-// ─── Helper: اقتراحات القطاعات ────────────────
+// ─── Helper: اقتراحات القطاعات (مشتقّة من البيانات الحقيقية) ────
+// أسباب دفاعية/تنويعية لكل قطاع (للعرض فقط) -- مفاتيح = أسماء SECTORS الفعلية
+const SECTOR_REASONS: Record<string, string> = {
+  'البنوك': 'توزيعات + استقرار',
+  'الطاقة': 'دخل من النفط',
+  'الرعاية الصحية': 'دفاعي مستقر',
+  'الأدوية': 'دفاعي + نمو',
+  'الإتصالات': 'دفاعي + توزيعات',
+  'التطبيقات وخدمات التقنية': 'نمو مرتفع',
+  'إنتاج الأغذية': 'معاكس للدورة',
+  'تجزئة الأغذية': 'استهلاكي دفاعي',
+  'المرافق العامة': 'دخل ثابت',
+  'إدارة وتطوير العقارات': 'توزيعات',
+};
+
 function getSectorSuggestions(existingSectors: any[]): any[] {
-  const allSectors = {
-    'تقنية': { stocks: ['STC', 'Elm', 'سوليوشنز'], reason: 'نمو مرتفع' },
-    'صحة': { stocks: ['Bupa', 'موندير', 'الدكتور سليمان'], reason: 'دفاعي مستقر' },
-    'استهلاكي': { stocks: ['BinDawood', 'Jarir', 'Extra'], reason: 'معاكس للدورة' },
-    'عقاري': { stocks: ['دار الأركان', 'إعمار', 'الأندلس'], reason: 'توزيعات' },
-    'صناعي': { stocks: ['سابك', 'SIDCO', 'الكابلات'], reason: 'دورة اقتصادية' },
-    'مصارف': { stocks: ['الراجحي', 'الأهلي', 'سابك'], reason: 'توزيعات + استقرار' },
-    'طاقة': { stocks: ['أرامكو', 'بترو رابغ', 'الينساب'], reason: 'دخل سلبي' },
-    'اتصالات': { stocks: ['STC', 'موبايلي', 'زين'], reason: 'دفاعي + توزيعات' },
-  };
+  // القطاعات المرشّحة للتنويع (دفاعية/منخفضة الارتباط) -- أسماء فعلية من SECTORS
+  const preferredSectors = [
+    'البنوك', 'الرعاية الصحية', 'الإتصالات', 'إنتاج الأغذية',
+    'المرافق العامة', 'التطبيقات وخدمات التقنية', 'الطاقة', 'تجزئة الأغذية',
+  ];
 
   const suggestions: any[] = [];
-  Object.keys(allSectors).forEach((sector: string) => {
-    if (!existingSectors.includes(sector)) {
-      suggestions.push({
-        sector,
-        examples: (allSectors as any)[sector].stocks.slice(0, 2),
-        reason: (allSectors as any)[sector].reason,
-      });
-    }
+  preferredSectors.forEach((sectorName: string) => {
+    // تخطّى القطاعات الموجودة في المحفظة فعلاً
+    if (existingSectors.includes(sectorName)) return;
+    // اشتقّ أعلى سهمين (بالـ rating) من هذا القطاع من STOCKS الحقيقية
+    const inSector = STOCKS
+      .filter((s: any) => s.sec === sectorName)
+      .sort((a: any, b: any) => (b.rating || 0) - (a.rating || 0))
+      .slice(0, 2)
+      .map((s: any) => s.sym);
+    if (inSector.length === 0) return; // لا أسهم فعلية → تخطَّ
+    suggestions.push({
+      sector: sectorName,
+      examples: inSector,           // رموز حقيقية موجودة فعلاً
+      reason: SECTOR_REASONS[sectorName] || 'تنويع',
+    });
   });
 
   return suggestions.slice(0, 3);
