@@ -197,50 +197,9 @@ useEffect(function(){
     "DX-Y.NYB":{sym:"الدولار", cat:"عملات",   color:"#34d399"},
   };
 
-  function fetchYahooData(){
-    setCommLoading(true);
-    // Twelve Data API
-    var TD_KEY=(typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_TWELVE_KEY) || '';
-    var symbols=["BZ:CUR","USOIL","XAU/USD","XAG/USD","SPX","DJI","IXIC","DXY"];
-    var commSyms=["خام برنت","خام WTI","الذهب","الفضة","S&P 500","داو جونز","ناسداك","الدولار"];
-    if(!TD_KEY){setCommLoading(false);return;}
-    var requests=symbols.map(function(sym){
-      return fetch("https://api.twelvedata.com/price?symbol="+encodeURIComponent(sym)+"&apikey="+TD_KEY)
-        .then(function(r){return r.json();})
-        .catch(function(){return null;});
-    });
-    Promise.all(requests).then(function(results){
-      setCommData(function(prev){
-        return prev.map(function(c){
-          var idx2=commSyms.indexOf(c.sym);
-          if(idx2<0) return c;
-          var res=results[idx2];
-          if(!res||!res.price) return c;
-          var price=parseFloat(parseFloat(res.price).toFixed(2));
-          if(isNaN(price)||price<=0) return c;
-          var ch=parseFloat((price-c.open).toFixed(2));
-          var pct=c.open>0?parseFloat(((ch/c.open)*100).toFixed(2)):c.pct;
-          return Object.assign({},c,{
-            price:price, ch:ch, pct:pct,
-            history:c.history.slice(-6).concat([price]),
-          });
-        });
-      });
-      setCommLastUpdate(new Date());
-      setCommLU(new Date());
-    })
-    .catch(function(e){
-})
-    .finally(function(){setCommLoading(false);});
-  }
-
-  useEffect(function(){
-    fetchYahooData();
-    var t=setInterval(fetchYahooData, 10*60*1000);
-    return function(){clearInterval(t);};
-  },[]);
-
-
+  // الأسواق العالمية: لا مصدر بيانات حقيقي حالياً (Twelve Data لا يدعم احتياجنا، رُفض).
+  // التبويب يعرض "غير متاحة حالياً" حتى ربط مزوّد مناسب.
+  function fetchYahooData(){ /* معطّلة -- بانتظار مزوّد بيانات أسواق عالمية مناسب */ }
 
   // ── Push Notifications (Browser API) ────────────────────────────────
   useEffect(function(){
