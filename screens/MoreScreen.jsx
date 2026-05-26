@@ -167,18 +167,8 @@ useEffect(function(){
   useEffect(function(){
     var t=setInterval(function(){
       setRankTick(function(n){return n+1;});
-      // Sync commData simulation (merged from 8s tick)
-      setCommLU(new Date());
-      setCommLastUpdate(new Date());
-      if(!extCommData) { // only simulate if no live data from AppShell
-        setCommData(function(prev){return prev.map(function(c){
-          var v2=c.price*0.0012, delta=(Math.random()-0.5)*2*v2;
-          var np=Math.max(c.lo52*0.95,parseFloat((c.price+delta).toFixed(c.price>1000?0:2)));
-          return Object.assign({},c,{price:np,ch:parseFloat((np-c.open).toFixed(2)),
-            pct:parseFloat(((np-c.open)/c.open*100).toFixed(2)),
-            history:c.history.slice(-9).concat([np])});
-        });});
-      }
+      // ملاحظة: أُزيلت محاكاة أسعار السلع العشوائية (Math.random) -- كانت توهم بأسعار حقيقية.
+      // السلع تبقى على قيمها الأولية حتى ربط مزوّد حقيقي. التحديث الحيّ يأتي من extCommData (AppShell) إن توفّر.
     },5000);
     return function(){clearInterval(t);};
   },[]);
