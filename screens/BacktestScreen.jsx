@@ -149,41 +149,7 @@ export default function BacktestScreen() {
         
         historicalData = await generateDataFromStockListReal(enrichedStocks, config.days, 15);
 
-        // 🔍 فحص stockHealth على بيانات حقيقية
-        const testIdx = Math.min(40, historicalData.length - 1);
-        const testDay = historicalData[testIdx];
-        const testStock = testDay?.stocksData?.[0];
-
-        let healthResult = 'لم يتم';
-        let hasFields = '';
-
-        if (testStock) {
-          hasFields = 
-            'p=' + (testStock.p !== undefined ? '✅' : '❌') +
-            ' ch=' + (testStock.ch !== undefined ? '✅' : '❌') +
-            ' pe=' + (testStock.pe !== undefined ? '✅' : '❌') +
-            ' sec=' + (testStock.sec !== undefined ? '✅' : '❌');
-          
-          try {
-            const health = stockHealth(testStock, testStock.bars);
-            if (health && health.score !== undefined) {
-              healthResult = '✅ score=' + health.score + ', sig=' + health.sig;
-            } else {
-              healthResult = '⚠️ health فارغ';
-            }
-          } catch (e) {
-            healthResult = '❌ ' + (e.message || 'خطأ');
-          }
-        }
-
-        alert(
-          '🔍 فحص stockHealth:\n\n' +
-          'اليوم: ' + testIdx + '\n' +
-          'السهم: ' + (testStock?.sym || 'لا') + '\n' +
-          'شموع: ' + (testStock?.bars?.length || 0) + '\n\n' +
-          'الحقول:\n' + hasFields + '\n\n' +
-          'النتيجة:\n' + healthResult
-        );
+        if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
         
         if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
           setResults({ error: 'لا توجد بيانات تاريخية كافية - تحقق من اتصال API' });
