@@ -187,8 +187,16 @@ function AddStockForm({ STOCKS, setPort, setPortSheet, haptic, C }) {
 function AnalysisScreenInner({ commData: extCommData } = {}) {
   const liveStocks = useSharedPrices(); // أسعار مشتركة محدَّثة
     const market = useMarket();
-  const haptic = useHaptic();
-  
+    const haptic = useHaptic();
+
+  // ── جلب بيانات FRED الحية (نفط WTI + VIX) مرة واحدة عند التحميل ──
+  const [fredMacro, setFredMacro] = useState(null);
+  useEffect(function(){
+    fetch('/api/freddata').then(function(r){return r.ok?r.json():null;}).then(function(d){
+      if(d && (typeof d.oilPrice==='number' || typeof d.vix==='number')) setFredMacro(d);
+    }).catch(function(){});
+  },[]);
+
   // ── تحديث MACRO من الأسعار الحية (commData من AppShell) ──────────
   // هذا يجعل محرك 9 الطبقات يعمل بأسعار نفط/ذهب/دولار حقيقية
   const liveMACRO = React.useMemo(function() {
