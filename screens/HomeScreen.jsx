@@ -535,12 +535,10 @@ function FearGreedIndex({liveStocks=[]}) {
           desc:`متوسط التغير ${avgPct.toFixed(2)}%`,raw:"تقدير من pct الحالي"},
         {id:"cmf",label:"تدفق الأموال",weight:10,score:cmfScore,
           desc:`قيمة الصاعدة ${(valUp/1e9).toFixed(2)} مليار`,raw:"قيمة صاعد / إجمالي"},
-      ],
-      prevScore:Math.max(10,Math.min(90,total+Math.round((Math.random()-0.5)*8))),
-      weekAgo:Math.max(10,Math.min(90,total+Math.round((Math.random()-0.5)*15))),
-      monthAgo:Math.max(10,Math.min(90,total+Math.round((Math.random()-0.5)*22))),
+            ],
     };
   },[liveStocks]);
+
 
   const score=data.total;
 
