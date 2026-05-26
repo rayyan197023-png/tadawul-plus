@@ -212,16 +212,9 @@ function MiniLine(props) {
   );
 }
 
-export const MACRO = [
-  {id:"gdp",     label:"نمو الناتج المحلي",    val:2.6,  prev:3.1,  unit:"%",          period:"Q4 2025", color:"#4d9fff", cat:"نمو",   desc:"أقل من التوقعات",   trend:[3.8,3.1,2.9,3.1,2.6]},
-  {id:"cpi",     label:"التضخم",                val:1.9,  prev:2.1,  unit:"%",          period:"فبراير",  color:"#ff5555", cat:"أسعار", desc:"ضمن النطاق المستهدف",trend:[2.8,2.5,2.3,2.1,1.9]},
-  {id:"rate",    label:"سعر الفائدة",           val:5.25, prev:5.25, unit:"%",          period:"مارس",    color:"#f0c050", cat:"نقدي",  desc:"ثابت منذ 6 أشهر",   trend:[4.5,5.0,5.25,5.25,5.25]},
-  {id:"oil",     label:"إنتاج النفط السعودي",  val:9.0,  prev:9.0,  unit:"مليون ب/ي", period:"فبراير",  color:"#f97316", cat:"نفط",   desc:"ضمن حصة أوبك+",    trend:[9.5,9.2,9.0,9.0,9.0]},
-  {id:"pmi",     label:"مؤشر مديري المشتريات", val:56.4, prev:54.2, unit:"",           period:"فبراير",  color:"#1ee68a", cat:"نشاط",  desc:"توسع قوي",          trend:[52.1,53.0,54.2,55.8,56.4]},
-  {id:"trade",   label:"الميزان التجاري",       val:18.2, prev:16.8, unit:"مليار ر.س", period:"يناير",   color:"#1ee68a", cat:"تجارة", desc:"فائض متزايد",       trend:[14.5,15.2,16.8,17.1,18.2]},
-  {id:"unemp",   label:"معدل البطالة",          val:7.7,  prev:8.1,  unit:"%",          period:"Q3 2025", color:"#a78bfa", cat:"عمل",   desc:"تراجع تدريجي",      trend:[9.0,8.7,8.3,8.1,7.7]},
-  {id:"tadawul", label:"تداولات تاسي",          val:5.8,  prev:4.9,  unit:"مليار ر.س", period:"أمس",     color:"#f0c050", cat:"سوق",   desc:"نشاط مرتفع",        trend:[3.2,4.1,4.9,5.3,5.8]},
-];
+// الاقتصاد الكلي: بيانات وهمية حُذفت (مؤشرات GDP/تضخم/فائدة وقيم مخترعة).
+// تُربط بمصدر اقتصادي حقيقي عند توفّره. التبويب يعرض حالة "لا بيانات".
+export const MACRO = [];
 
 const WATCHLIST_DEFAULT = [
   {sym:"2222",name:"أرامكو",   color:"#f0c050"},
