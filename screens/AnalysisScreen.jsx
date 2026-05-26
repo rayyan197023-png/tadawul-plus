@@ -255,6 +255,7 @@ const [filters, setFilters] = useState({
   gatesAll:false,
 });
 
+
   useEffect(()=>{
     setAnim(true);
     // محاكاة وقت التحليل
