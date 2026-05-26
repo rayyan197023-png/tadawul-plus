@@ -328,7 +328,7 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
         },
         solution: {
           action: 'add_defensive',
-          message: 'أضف أسهماً دفاعية (STC, Bupa, الراجحي)',
+          message: 'أضف أسهماً دفاعية من قطاعات مستقرّة (الاتصالات، الرعاية الصحية، المرافق العامة)',
         },
       });
     }
