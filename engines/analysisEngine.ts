@@ -3570,7 +3570,7 @@ function stockHealth(stk: any, bars: any[]): any {
   var earningsSurprise = 50;
   if(stk.eps_q1 && stk.eps_q2 && stk.eps_q3){
     var qVals = [stk.eps_q1, stk.eps_q2, stk.eps_q3];
-    var qTrend = (qVals[2]-qVals[     /Math.max(Math.abs(qVals[0]), 0.01);
+    var qTrend = (qVals[2]-qVals[0])/Math.max(Math.abs(qVals[0]), 0.01);
     var qConsist = qVals[2]>qVals[1] && qVals[1]>qVals[0] ? 1 : qVals[2]<qVals[1] && qVals[1]<qVals[0] ? -1 : 0;
     earningsSurprise = _clamp(Math.round(50 + qTrend*100 + qConsist*12), 0, 100);
   } else if(stk.epsGrw>0){
