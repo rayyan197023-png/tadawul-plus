@@ -183,9 +183,9 @@ useEffect(function(){
     return function(){clearInterval(t);};
   },[]);
 
-  // ── Yahoo Finance API — الأسواق العالمية ──────────────────────────
-  var APIFY_TOKEN="apify_api_MsJ3LPDywCAcB0hTcAY6itez6Y72ku2nXDs2";
+  // ── الأسواق العالمية ──────────────────────────
   var YAHOO_TICKERS=["BZ=F","CL=F","GC=F","SI=F","^GSPC","^DJI","^IXIC","DX-Y.NYB"];
+
   var TICKER_MAP={
     "BZ=F":   {sym:"خام برنت",  cat:"نفط",     color:"#f97316"},
     "CL=F":   {sym:"خام WTI",   cat:"نفط",     color:"#fb923c"},
