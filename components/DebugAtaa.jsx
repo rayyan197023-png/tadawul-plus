@@ -75,6 +75,17 @@ export default function DebugAtaa() {
       lines.push('عائد تراكمي محرك: ' + (rm.cumulative * 100).toFixed(2) + '%');
       lines.push('عائد سنوي محرك: ' + (rm.annual * 100).toFixed(2) + '%');
 
+      // فحص ما يصل بكامل البارات (محاكاة الرسوم البيانية)
+      var fullPos = [{ sym: '4292', qty: 100, value: 5155, bars: bars, stk: { sym: '4292', p: 51.55 } }];
+      var prFull = calcPortfolioReturns(fullPos, { '4292': 1 });
+      var volFull = calcVolatility(prFull);
+      var rmFull = calcReturnsMetrics(prFull);
+      lines.push('');
+      lines.push('-- بكامل البارات (' + bars.length + ') --');
+      lines.push('عدد العوائد: ' + prFull.length);
+      lines.push('σ سنوي: ' + (volFull.annual * 100).toFixed(2) + '%');
+      lines.push('عائد سنوي: ' + (rmFull.annual * 100).toFixed(2) + '%');
+
       setOut(lines.join('\n'));
     }).catch(function (e) {
       setOut('خطأ: ' + (e && e.message ? e.message : String(e)));
