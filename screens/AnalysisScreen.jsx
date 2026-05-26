@@ -3438,9 +3438,9 @@ var neut = normalizeProb(prob.neutral);
 
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
               {[
-                {l:"المحفظة",v:"٢٤٠ ألف",c:C.gold},
-                {l:"العائد",  v:"+١٢.٣%",  c:C.mint},
-                {l:"الصفقات",v:"٤٧",       c:C.electric},
+                {l:"المحفظة", v: profileStats ? (profileStats.value>=1000 ? (profileStats.value/1000).toFixed(0)+" ألف" : Math.round(profileStats.value).toString()) : "--", c:C.gold},
+                {l:"العائد",  v: profileStats ? (profileStats.pnlPct>=0?"+":"")+profileStats.pnlPct.toFixed(1)+"%" : "--", c: profileStats ? (profileStats.pnlPct>=0?C.mint:C.coral) : C.smoke},
+                {l:"الصفقات", v: profileStats ? String(profileStats.trades) : "--", c:C.electric},
               ].map(i=>(
                 <div key={i.l} style={{
                   background:"rgba(255,255,255,.04)",borderRadius:12,
