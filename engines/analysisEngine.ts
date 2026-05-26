@@ -1699,37 +1699,37 @@ var volRatio = recentVol/avgVol20;
 var vol30pct = bars.slice(-30).reduce(function(s: number, b: any){return s+Math.abs(b.pct);},0)/30;
   var iv = +(vol30pct*14+8).toFixed(1);
 
-  // inferredPCR — مُستنتَج من سلوك السهم التاريخي (بدل عشوائي)
-  var pcrBase = 1.0;
+  // ضغط السوق السلوكي -- مُستنتَج من الزخم والحجم والأساسيات
+  // pressureRatio > 1 = ضغط بيعي | < 1 = ضغط شرائي (مقياس داخلي، ليس خيارات)
+  var pressureBase = 1.0;
 
-  // زخم إيجابي قوي → تدفق Call → يخفض PCR
-  if(momentum5 > 3)       pcrBase -= 0.15;
-  else if(momentum5 > 1)  pcrBase -= 0.08;
-  else if(momentum5 < -3) pcrBase += 0.20;
-  else if(momentum5 < -1) pcrBase += 0.10;
+  // زخم إيجابي قوي → ضغط شرائي → يخفض النسبة
+  if(momentum5 > 3)       pressureBase -= 0.15;
+  else if(momentum5 > 1)  pressureBase -= 0.08;
+  else if(momentum5 < -3) pressureBase += 0.20;
+  else if(momentum5 < -1) pressureBase += 0.10;
 
-  // سيولة عالية مع صعود → تدفق مؤسسي → يخفض PCR أكثر
-  if(volRatio > 2.5 && stk.ch > 0) pcrBase -= 0.15;
-  else if(volRatio > 1.5 && stk.ch > 0) pcrBase -= 0.08;
-  // سيولة عالية مع هبوط → ضغط Put
-  else if(volRatio > 2.0 && stk.ch < -3) pcrBase += 0.20;
+  // سيولة عالية مع صعود → تجميع → يخفض النسبة أكثر
+  if(volRatio > 2.5 && stk.ch > 0) pressureBase -= 0.15;
+  else if(volRatio > 1.5 && stk.ch > 0) pressureBase -= 0.08;
+  // سيولة عالية مع هبوط → ضغط بيعي
+  else if(volRatio > 2.0 && stk.ch < -3) pressureBase += 0.20;
 
-  // أساسيات قوية → ثقة المستثمرين → يخفض PCR
-  if(stk.roe > 20) pcrBase -= 0.08;
-  else if(stk.roe < 5) pcrBase += 0.12;
+  // أساسيات قوية → ثقة المستثمرين → يخفض النسبة
+  if(stk.roe > 20) pressureBase -= 0.08;
+  else if(stk.roe < 5) pressureBase += 0.12;
 
-  // قطاع التعدين في تاسي يرى Put ضغطاً أعلى
-  if(stk.sec === "تعدين" && stk.ch < 0) pcrBase += 0.10;
+  // قطاع التعدين في تاسي يرى ضغطاً بيعياً أعلى عند الهبوط
+  if(stk.sec === "تعدين" && stk.ch < 0) pressureBase += 0.10;
 
-  var putCallRatio = +Math.min(2.0,Math.max(0.3,pcrBase)).toFixed(2);
+  var pressureRatio = +Math.min(2.0,Math.max(0.3,pressureBase)).toFixed(2);
   var unusualActivity = volRatio > 1.8 && Math.abs(stk.ch) > 2.0;
-  var sentiment = putCallRatio<0.6?"صعودي قوي":putCallRatio<0.8?"صعودي":putCallRatio<1.1?"محايد":putCallRatio<1.4?"هبوطي":"هبوطي قوي";
-  var optScore  = Math.round(Math.min(100,Math.max(0,80-(putCallRatio-0.7)*60+(unusualActivity&&stk.ch>0?10:0))));
+  var sentiment = pressureRatio<0.6?"صعودي قوي":pressureRatio<0.8?"صعودي":pressureRatio<1.1?"محايد":pressureRatio<1.4?"هبوطي":"هبوطي قوي";
+  var pressureScore = Math.round(Math.min(100,Math.max(0,80-(pressureRatio-0.7)*60+(unusualActivity&&stk.ch>0?10:0))));
 
-  return{iv,putCallRatio,
-    callOI:Math.round(recentVol*0.35), putOI:Math.round(recentVol*0.35*putCallRatio),
-    unusualActivity,sentiment,score:optScore,
-    signal:unusualActivity&&putCallRatio<0.8?"نشاط استثنائي صعودي":unusualActivity&&putCallRatio>1.3?"نشاط استثنائي هبوطي":sentiment};
+  return{pressureRatio,realizedVol:iv,
+    unusualActivity,sentiment,score:pressureScore,
+    signal:unusualActivity&&pressureRatio<0.8?"نشاط استثنائي صعودي":unusualActivity&&pressureRatio>1.3?"نشاط استثنائي هبوطي":sentiment};
 }
 
 /* ══ Insider Transactions ══ */
