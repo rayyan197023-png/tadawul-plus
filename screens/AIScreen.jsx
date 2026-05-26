@@ -1716,15 +1716,9 @@ export default function AIScreen({ aiAnalysis, onClearAnalysis, commData }) {
       </div>
     </div>
   );
-  // ── استقبال تحليل الشارت من AppShell ──────────────────────────
-  useEffect(function() {
-    if (!aiAnalysis) return;
-    setChartData(aiAnalysis);
-    setShowChartAI(true);
-    const found = STOCKS.find(s => s.sym === aiAnalysis.sym);
-    if (found) setStock(found);
-    setType('comprehensive');
-  }, [aiAnalysis]);
+    </div>
+  );
 }
+
 
 
