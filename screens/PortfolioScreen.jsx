@@ -1724,6 +1724,23 @@ return result;
 
       {activeTab==="decisions"&&(
         <div id="tab-decisions" style={{overflowY:"auto",paddingTop:10,paddingLeft:20,paddingRight:20,paddingBottom:"calc(90px + env(safe-area-inset-bottom, 0px))",position:"relative",zIndex:1}}>
+          {/* 🔬 صندوق فحص مؤقت -- يُحذف بعد التشخيص */}
+          {positions.length > 0 && (function(){
+            var p0 = positions[0];
+            var real = realBarsMap[p0.sym];
+            var usedBars = getBars(p0.sym, p0.stk, 60);
+            return (
+              <div style={{direction:'ltr',background:'#1a0c0c',border:'1px solid #ff5f6a',borderRadius:8,padding:10,marginBottom:12,fontFamily:'monospace',fontSize:12,color:'#f0f6ff',lineHeight:1.7}}>
+                <div style={{color:'#f0c050',fontWeight:900,marginBottom:4}}>🔬 فحص {p0.sym}</div>
+                hasReal: {String(!!real)}<br/>
+                realBarsMap len: {real ? real.length : 0}<br/>
+                getBars len: {usedBars ? usedBars.length : 0}<br/>
+                getBars[0].c: {usedBars && usedBars[0] ? usedBars[0].c : 'null'}<br/>
+                getBars آخر.c: {usedBars && usedBars.length ? usedBars[usedBars.length-1].c : 'null'}<br/>
+                realBarsMap keys: {Object.keys(realBarsMap).join(',') || 'فارغة'}
+              </div>
+            );
+          })()}
           {positions.length===0?(
             <div style={{textAlign:"center",padding:"70px 20px"}}>
               <div style={{width:72,height:72,borderRadius:20,margin:"0 auto 20px",background:"linear-gradient(135deg,"+C.layer2+","+C.layer3+")",border:"1px solid "+C.line,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"inset 0 1px 0 "+C.edge}}>
