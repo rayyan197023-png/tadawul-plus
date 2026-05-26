@@ -241,7 +241,6 @@ function StockPopup({ sym, onClose }) {
     return () => document.removeEventListener("pointerdown", handler, { capture:true });
   }, [onClose]);
 
-  if (!data) return null;
   return (
     <div ref={ref} className="stock-popup" style={{ position:"absolute", insetBlockStart:"calc(100% + 6px)",
       insetInlineEnd:0, zIndex:200, minWidth:160,
@@ -253,19 +252,26 @@ function StockPopup({ sym, onClose }) {
         <button onClick={onClose} onPointerDown={ev => ev.stopPropagation()} aria-label="إغلاق" className="pressable"
           style={{ background:"none", color:C.ash, fontSize:14, lineHeight:1, paddingInline:"4px" }}>×</button>
       </div>
-      <div style={{ fontSize:22, fontWeight:900, color:C.snow, fontVariantNumeric:"tabular-nums",
-        letterSpacing:"-.5px" }}>{data.price}</div>
-      <div style={{ fontSize:11, fontWeight:700, marginBlockStart:2,
-        color: data.up ? C.mint : C.coral }}>
-        {data.change} ({data.pct})
-      </div>
+      {data ? (
+        <>
+          <div style={{ fontSize:22, fontWeight:900, color:C.snow, fontVariantNumeric:"tabular-nums",
+            letterSpacing:"-.5px" }}>{data.price}</div>
+          <div style={{ fontSize:11, fontWeight:700, marginBlockStart:2,
+            color: data.up ? C.mint : C.coral }}>
+            {data.change} ({data.pct})
+          </div>
+        </>
+      ) : (
+        <div style={{ fontSize:12, color:C.smoke, fontWeight:600, marginBlockStart:2, lineHeight:1.6 }}>
+          السعر غير متاح في العيّنة التجريبية
+        </div>
+      )}
       <div style={{ fontSize:9, color:C.ash, marginBlockStart:6, fontWeight:600 }}>
-        بيانات مؤجلة • تداول+
+        عيّنة تجريبية • تداول+
       </div>
     </div>
   );
 }
-
 
 const FEEDBACK_BTNS = [
   { key:"up",   emoji:"👍", baseLabel:"مفيد",     colorKey:"mint"  },
