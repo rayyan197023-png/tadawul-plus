@@ -1216,12 +1216,12 @@ var positionData = {
       return fetchEngineBars(sym, { days: 365 })
         .then(function(r){ return { sym: sym, bars: r.bars, source: r.source }; })
         .catch(function(){ return { sym: sym, bars: [], source: 'empty' }; });
-    })).then(function(results){
+     })).then(function(results){
       if (cancelled) return;
+      if (typeof window !== 'undefined') window.__fetchDbg += ' | وصل ' + results.length + ' نتيجة: ' + results.map(function(r){return r.sym+'='+(r.bars?r.bars.length:0)+'/'+r.source;}).join(',');
       setRealBarsMap(function(prev){
         var next = Object.assign({}, prev);
         results.forEach(function(r){
-          // نخزّن فقط إن جاء عدد كافٍ من الشموع (وإلا نترك genBars يتكفّل)
           if (r.bars && r.bars.length >= 30) next[r.sym] = r.bars;
         });
         return next;
