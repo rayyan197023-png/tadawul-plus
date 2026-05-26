@@ -78,14 +78,9 @@ const PRIORITY_ORDER = {high:0,medium:1,low:2};
 // ── DATA ─────────────────────────────────────────────────────
 
 
-const DIVS = [
-  {sym:"2222",name:"أرامكو",   sec:"الطاقة",          price:27.45,perShare:0.35,timesPerYear:4,exDate:"2026-03-15",payDate:"2026-04-05",daysLeft:5,  hist:[0.33,0.33,0.34,0.35]},
-  {sym:"1010",name:"الأهلي",   sec:"البنوك",           price:30.0, perShare:0.50,timesPerYear:2,exDate:"2026-03-28",payDate:"2026-04-18",daysLeft:18, hist:[0.45,0.47,0.48,0.50]},
-  {sym:"2010",name:"سابك",     sec:"البتروكيماويات",   price:68.90,perShare:1.25,timesPerYear:1,exDate:"2026-04-10",payDate:"2026-04-30",daysLeft:30, hist:[1.00,1.10,1.20,1.25]},
-  {sym:"1120",name:"الراجحي",  sec:"البنوك",           price:92.30,perShare:0.75,timesPerYear:2,exDate:"2026-04-22",payDate:"2026-05-12",daysLeft:42, hist:[0.65,0.68,0.70,0.75]},
-  {sym:"7010",name:"STC",      sec:"الاتصالات",        price:48.55,perShare:1.00,timesPerYear:2,exDate:"2026-05-05",payDate:"2026-05-25",daysLeft:55, hist:[0.90,0.93,0.95,1.00]},
-  {sym:"1211",name:"معادن",    sec:"التعدين",          price:36.0, perShare:0.40,timesPerYear:1,exDate:"2026-07-01",payDate:"2026-07-21",daysLeft:112,hist:[0.30,0.33,0.37,0.40]},
-];
+// التوزيعات: بيانات وهمية حُذفت (أسعار وتواريخ توزيع مكتوبة يدوياً تتناقض مع أسعار sahmk).
+// تُربط بمصدر توزيعات حقيقي عند توفّره. التبويب يعرض حالة "لا بيانات".
+const DIVS = [];
 
 // الاكتتابات: بيانات وهمية حُذفت (شركات مخترعة بأرقام غير حقيقية).
 // تُربط بمصدر اكتتابات حقيقي عند توفّره. التبويب يعرض حالة "لا بيانات".
