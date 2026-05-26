@@ -1529,7 +1529,7 @@ function calcFactorModel(stk: any, bars: any[]): any {
   var sectorPE_static={"طاقة":20,"بنوك":14,"بترو":18,"غذاء":22,"تقنية":18,"تعدين":16,"تجزئة":20,"تأمين":15};
 
   var sectorStocksForPE=STOCKS.filter(function(x: any){return x.sec===stk.sec&&x.pe>0&&x.pe<60;});
-  var benchPE=sectorStocksForPE.length>=2?  sectorStocksForPE.reduce(function(s: number, x: any){return s+x.pe;},0)/sectorStocksForPE.length:((sectorPE_static as any)[stk.sec]||18);
+var benchPE=sectorStocksForPE.length>=2?  sectorStocksForPE.reduce(function(s: number, x: any){return s+x.pe;},0)/sectorStocksForPE.length:((RADAR_SECTOR_PE as any)[stk.sec]||18);
   var valueScore=stk.pe>0?Math.round(Math.min(95,Math.max(5,50-45*Math.tanh((stk.pe/benchPE-1)*1.5)))):50;
   var ret1M_comp=bars.slice(-20).reduce(function(prod: number, b: any){return prod*(1+b.pct/100);},1)-1;
 var ret3M_comp=bars.slice(-60).reduce(function(prod: number, b: any){return prod*(1+b.pct/100);},1)-1;
