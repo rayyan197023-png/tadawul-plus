@@ -393,13 +393,23 @@ export default function NewsScreen() {
   const tabsRef           = useRef(null);
   const articleRef        = useRef(null);
   const tabTimerRef       = useRef(null);
+  // جلب الأخبار -- جاهز لاستقبال مصدر حقيقي عند ترقية باقة الـ API
+  // عند الترقية: استبدل سطر العيّنة بـ fetch من مزوّد الأخبار، وحوّل الرد لصيغة
+  // { id, title, ago, cat, sym, hot, body } ثم setNEWS(data)
   const fetchNews = useCallback(async () => {
-  // عند ربط API أضف هنا:
-  // const data = await newsApi.getLatest();
-  // setNEWS(data);
-}, []);
+    try {
+      // مثال للترقية المستقبلية:
+      //   const res  = await fetch('/api/news?market=tasi');
+      //   const data = await res.json();
+      //   if (Array.isArray(data) && data.length) { setNEWS(data); return; }
+      // حتى تتوفّر الباقة: نُبقي العيّنة التجريبية
+      setNEWS(MOCK_NEWS);
+    } catch (e) {
+      setNEWS(MOCK_NEWS); // فشل الجلب → عيّنة آمنة
+    }
+  }, []);
 
-useEffect(() => { fetchNews(); }, [fetchNews]);
+  useEffect(() => { fetchNews(); }, [fetchNews]);
   const tabScrollTimerRef = useRef(null);
   const copyTimerRef      = useRef(null);
   const liveTimerRef      = useRef(null);
