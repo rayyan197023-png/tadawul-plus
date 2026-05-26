@@ -1203,12 +1203,14 @@ var positionData = {
   // جلب بارات أسهم المحفظة الحقيقية (أسهم المحفظة فقط -- لا كل السوق)
   useEffect(function() {
     var syms = port.map(function(pp){ return pp.sym; });
+    if (typeof window !== 'undefined') window.__fetchDbg = 'useEffect ران, syms=' + syms.join(',');
     if (syms.length === 0) return;
     var cancelled = false;
 
-    // نجلب فقط الرموز غير الموجودة في الخريطة (تفادي إعادة الجلب)
     var toFetch = syms.filter(function(s){ return !realBarsMap[s]; });
+    if (typeof window !== 'undefined') window.__fetchDbg += ' | toFetch=' + toFetch.join(',');
     if (toFetch.length === 0) return;
+    if (typeof window !== 'undefined') window.__fetchDbg += ' | بدأ الجلب';
 
     Promise.all(toFetch.map(function(sym){
       return fetchEngineBars(sym, { days: 365 })
