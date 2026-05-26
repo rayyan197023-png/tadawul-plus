@@ -576,11 +576,12 @@ export function calcReturnsMetrics(portfolioReturns: number[]): {
   var annualFromDaily = n >= 126 ? Math.pow(1 + dailyReturn, 252) - 1 : cumulative;
 
   // استخدام الطريقة الأولى (أكثر دقة) لكن نعرضهما معاً
-  return {
+    return {
     daily: +dailyReturn.toFixed(6),
     cumulative: +cumulative.toFixed(4),
     annual: +annualFromCumulative.toFixed(4),
     annualFromDaily: +annualFromDaily.toFixed(4),
+    annualNote: n < 126 ? 'المدة أقل من 6 أشهر -- العائد تراكمي لا سنوي (التسنية تضخّم)' : null,
     periodDays: n,
   };
 }
