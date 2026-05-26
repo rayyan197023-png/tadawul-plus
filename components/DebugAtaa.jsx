@@ -6,6 +6,7 @@ import { calcPortfolioReturns, calcVolatility, calcReturnsMetrics } from '../eng
 export default function DebugAtaa() {
   var st = useState('جارٍ الجلب...');
   var out = st[0], setOut = st[1];
+  var hd = useState(false); var hidden = hd[0], setHidden = hd[1];
 
   useEffect(function () {
     fetchEngineBars('4292').then(function (r) {
