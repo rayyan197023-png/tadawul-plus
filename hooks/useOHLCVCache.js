@@ -1,70 +1,47 @@
 'use client';
 /**
  * @module hooks/useOHLCVCache
- * @description كاش البيانات التاريخية OHLCV من sahmk API
+ * @description كاش OHLCV -- يستخدم historicalData (كاش ثلاثي: ذاكرة+localStorage 12س+شبكة)
+ * أُعيدت كتابته ليرث الكاش المستدام من historicalData بدل كاش الذاكرة فقط.
+ * هذا يمنع إعادة الجلب عند كل reload (السبب الجذري لاستنزاف حدّ sahmk).
  */
 
 import { useState, useEffect, useRef } from 'react';
-
-const cache     = {};
-const cacheTime = {};
-const CACHE_TTL = 5 * 60 * 1000; // 5 دقائق
+import { fetchEngineBars } from '../utils/historicalData';
 
 export function useOHLCVCache(syms = [], period = '3M') {
-  const [data, setData]   = useState(cache);
-  const loadingRef        = useRef(new Set());
+  const [data, setData] = useState({});
+  const loadingRef = useRef(new Set());
+  // أيام البيانات حسب الفترة المطلوبة
+  const days = period === '1Y' ? 365 : period === '6M' ? 180 : 90; // 3M افتراضي
 
   useEffect(() => {
     if (!syms.length) return;
+    let cancelled = false;
 
-    const missing = syms.filter(s => {
-      if (loadingRef.current.has(s)) return false;
-      if (!cache[s]) return true;
-      return Date.now() - (cacheTime[s] || 0) > CACHE_TTL;
-    });
+    // اجلب فقط ما لم يُحمَّل/يُجلب بعد
+    const toFetch = syms.filter(s => !loadingRef.current.has(s) && !data[s]);
+    if (!toFetch.length) return;
+    toFetch.forEach(s => loadingRef.current.add(s));
 
-    if (!missing.length) return;
-    missing.forEach(s => loadingRef.current.add(s));
-
+    // دفعات من 5 (احترام لطيف لحدّ الـ API)
     async function fetchBatch(batch) {
       for (const sym of batch) {
         try {
-          const res = await fetch(
-            `/api/sahmkdata?endpoint=ohlcv&sym=${sym}&period=${period}`
-          );
-          if (!res.ok) continue;
-          const json = await res.json();
-
-          if (json?.data?.length > 0) {
-            cacheTime[sym] = Date.now();
-            // ✨ فرز تصاعدي بالتاريخ (الأقدم أولاً) لضمان اتجاه صحيح
-            // sahmk قد يُرجع البيانات تنازلياً حسب endpoint
-            var sorted = json.data.slice().sort(function(a, b) {
-              var da = new Date(a.date || a.t || a.timestamp || 0).getTime();
-              var db = new Date(b.date || b.t || b.timestamp || 0).getTime();
-              return da - db;
-            });
-            cache[sym] = sorted.map(b => ({
-              open:  b.open,
-              hi:    b.high,
-              lo:    b.low,
-              close: b.close,
-              vol:   b.volume,
-              pct:   b.open > 0
-                ? +((b.close - b.open) / b.open * 100).toFixed(3)
-                : 0,
-            }));
+          const r = await fetchEngineBars(sym, { days });
+          if (!cancelled && r.bars && r.bars.length > 0) {
+            setData(prev => Object.assign({}, prev, { [sym]: r.bars }));
           }
-        } catch { /* فشل سهم واحد لا يوقف الباقي */ }
+        } catch { /* فشل سهم لا يوقف الباقي */ }
         loadingRef.current.delete(sym);
       }
-      setData({ ...cache });
     }
 
-    // دفعات من 5 أسهم
-    for (let i = 0; i < missing.length; i += 5) {
-      fetchBatch(missing.slice(i, i + 5));
+    for (let i = 0; i < toFetch.length; i += 5) {
+      fetchBatch(toFetch.slice(i, i + 5));
     }
+
+    return () => { cancelled = true; };
   }, [syms.join(','), period]);
 
   return data;
