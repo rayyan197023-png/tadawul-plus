@@ -352,6 +352,7 @@ function Shell() {
         </Suspense>
       )}
     </div>
+    </>
   );
 }
 
