@@ -1165,7 +1165,24 @@ useEffect(() => {
     return genBars(stk, count);
   }
 
+  // ✨ المرحلة 1: صحة حقيقية لأسهم المحفظة فقط (من بياناتها المجلوبة)
+  // الـ 273 سهماً في allData تبقى genBars (تفادي 429)؛ نحسب الحقيقي فقط لما في المحفظة
+  var realHealthMap = useMemo(function(){
+    var map = {};
+    port.forEach(function(pp){
+      var real = realBarsMap[pp.sym];
+      if (real && real.length >= 30) {
+        var stk = sl.find(function(x){ return x.sym === pp.sym; });
+        if (stk) {
+          try { map[pp.sym] = stockHealth(stk, real); } catch(e){}
+        }
+      }
+    });
+    return map;
+  }, [port, sl, realBarsMap]);
+
   var positions=useMemo(function(){
+
     var tv=port.reduce(function(s,pp){var stk=sl.find(function(x){return x.sym===pp.sym;});return s+(stk?stk.p:pp.avgCost)*pp.qty;},0)||1;
         return port.map(function(pp){
       var stk=sl.find(function(x){return x.sym===pp.sym;})||{sym:pp.sym,name:pp.sym,p:pp.avgCost,ch:0,sec:"-"};
