@@ -530,8 +530,10 @@ export function calcReturnsMetrics(portfolioReturns: number[]): {
   cumulative: number;
   annual: number;
   annualFromDaily?: number;
+  annualNote?: string | null;
   periodDays: number;
 } {
+
   // فحص المدخلات
   if (!portfolioReturns || portfolioReturns.length === 0) {
     return {
