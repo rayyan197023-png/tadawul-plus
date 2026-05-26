@@ -730,7 +730,7 @@ const best3 = allData.length > 0
 
                     style={{
                       width:44,height:44,borderRadius:12,cursor:"pointer",
-                      background: darkMode
+                      background:  darkMode
                         ? "linear-gradient(135deg," + C.layer3 + "," + C.edge + ")"
                         : "linear-gradient(135deg,#e8edf8,#dde4f5)",
                       border:"1px solid " + C.line,
