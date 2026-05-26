@@ -9,6 +9,14 @@ export default function DebugAtaa() {
   var hd = useState(false); var hidden = hd[0], setHidden = hd[1];
 
   useEffect(function () {
+    var iv = setInterval(function(){
+      var d = (typeof window !== 'undefined') ? window.__dbgBars : null;
+      if (d) setOut(function(prev){
+        var marker = '-- حالة realBarsMap بالشاشة --';
+        var base = prev.split(marker)[0];
+        return base + marker + '\n' + JSON.stringify(d, null, 1);
+      });
+    }, 2000);
     fetchEngineBars('4292').then(function (r) {
       var bars = r.bars || [];
       if (!bars.length) { setOut('لا بيانات! source=' + r.source); return; }
