@@ -1,5 +1,5 @@
 // FRED macro data proxy -- oil (WTI) + VIX
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server'; 
 
 export const runtime = 'nodejs';
 
