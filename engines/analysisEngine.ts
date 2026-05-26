@@ -3562,16 +3562,16 @@ function stockHealth(stk: any, bars: any[]): any {
   var LB = _clamp(Math.round(dcfScore*0.35 + fm.composite*0.30 + emScore*0.20 + eq.composite*0.15 - fundConflict), 0, 100);
 
   // ── C) المحرك السلوكي المُعزَّز
-  var opt = calcOptionsFlow(stk, bars);
+  var opt = calcBehavioralPressure(stk, bars);
   var ins = calcInsiderTransactions(stk, bars);
   var alt = calcAlternativeData(stk, bars);
-  var optScore = _clamp(Math.round(80 - (opt.putCallRatio-0.7)*60 + (opt.unusualActivity && opt.putCallRatio<0.9 ? 10 : 0)), 0, 100);
+  var optScore = _clamp(Math.round(80 - (opt.pressureRatio-0.7)*60 + (opt.unusualActivity && opt.pressureRatio<0.9 ? 10 : 0)), 0, 100);
 
   // Earnings Surprise
   var earningsSurprise = 50;
   if(stk.eps_q1 && stk.eps_q2 && stk.eps_q3){
     var qVals = [stk.eps_q1, stk.eps_q2, stk.eps_q3];
-    var qTrend = (qVals[2]-qVals[0])/Math.max(Math.abs(qVals[0]), 0.01);
+    var qTrend = (qVals[2]-qVals[     /Math.max(Math.abs(qVals[0]), 0.01);
     var qConsist = qVals[2]>qVals[1] && qVals[1]>qVals[0] ? 1 : qVals[2]<qVals[1] && qVals[1]<qVals[0] ? -1 : 0;
     earningsSurprise = _clamp(Math.round(50 + qTrend*100 + qConsist*12), 0, 100);
   } else if(stk.epsGrw>0){
