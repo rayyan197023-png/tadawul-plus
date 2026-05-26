@@ -87,15 +87,6 @@ const DIVS = [
   {sym:"1211",name:"معادن",    sec:"التعدين",          price:36.0, perShare:0.40,timesPerYear:1,exDate:"2026-07-01",payDate:"2026-07-21",daysLeft:112,hist:[0.30,0.33,0.37,0.40]},
 ];
 
-const IPOS = [
-  {name:"شركة نيوم للتقنية",    sec:"التقنية",        price:120,status:"قريباً", open:true, subPct:185,analyst:"شراء",  target:145,shares:"50M", mktCap:"6 مليار",   duration:"15–25 مارس",   desc:"شركة تقنية متكاملة تابعة لمشروع نيوم"},
-  {name:"المملكة القابضة",      sec:"الاستثمار",      price:45, status:"قريباً", open:true, subPct:140,analyst:"محايد", target:50, shares:"80M", mktCap:"3.6 مليار", duration:"5–15 أبريل",   desc:"شركة استثمارية متنوعة القطاعات"},
-  {name:"دار الأركان",          sec:"العقارات",       price:18, status:"مكتمل",  open:false,subPct:320,analyst:"شراء",  target:22, shares:"120M",mktCap:"2.1 مليار", duration:"1–10 مارس",    desc:"أكبر شركات التطوير العقاري"},
-  {name:"تبوك للزراعة",         sec:"الزراعة",        price:32, status:"مكتمل",  open:false,subPct:97, analyst:"محايد", target:34, shares:"45M", mktCap:"1.4 مليار", duration:"1–8 فبراير",   desc:"شركة زراعية متكاملة شمال المملكة"},
-  {name:"الرياض للنقل",         sec:"النقل",          price:55, status:"قريباً", open:true, subPct:null,analyst:"شراء", target:68, shares:"60M", mktCap:"3.3 مليار", duration:"10–20 مايو",   desc:"مشغّل نقل عام متكامل في الرياض"},
-  {name:"الخليج للبتروكيماويات",sec:"البتروكيماويات", price:28, status:"مكتمل",  open:false,subPct:210,analyst:"تخفيف",target:26, shares:"90M", mktCap:"2.5 مليار", duration:"5–14 يناير",   desc:"متخصص في المواد الأساسية"},
-];
-
 const FUNDS = [
   {name:"صندوق الأسهم السعودية النمو",mgr:"الراجحي المالية", nav:12.45,ret1y:18.3,ret3y:42.1,ret5y:88.4, sharpe:1.42,beta:0.88,risk:"متوسط",stars:4,minInv:1000, type:"أسهم",  fee:1.5,bench:"تاسي +12.1%",maxDD:-14.2},
   {name:"صندوق الدخل المتوازن",       mgr:"سامبا كابيتال",   nav:8.92, ret1y:11.7,ret3y:28.4,ret5y:51.2, sharpe:1.18,beta:0.62,risk:"منخفض",stars:4,minInv:5000, type:"متوازن", fee:1.2,bench:"60/40 +9.8%",maxDD:-8.1},
