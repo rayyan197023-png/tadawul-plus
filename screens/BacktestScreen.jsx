@@ -150,8 +150,6 @@ export default function BacktestScreen() {
         historicalData = await generateDataFromStockListReal(enrichedStocks, config.days, 15);
 
         if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
-        
-        if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
           setResults({ error: 'لا توجد بيانات تاريخية كافية - تحقق من اتصال API' });
           setIsRunning(false);
           return;
