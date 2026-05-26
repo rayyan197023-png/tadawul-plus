@@ -956,8 +956,7 @@ useEffect(() => {
   // حفظ المحفظة عند كل تغيير
   useEffect(function(){ saveLS("tp_port", port); },[port]);
 
-  // ======= نظام الأسعار الحية =======
-  // عند ربط API: استبدل هذا الـ useEffect بطلب حقيقي
+  // ======= نظام الأسعار الحية (مربوط بـ sahmk عبر /api/sahmkdata) =======
   var lp=useState(function(){
     var init={};
     STOCKS.forEach(function(s){init[s.sym]={p:s.p,ch:s.ch};});
