@@ -39,7 +39,7 @@ function calcMacroScore(stk: any): any {
   const peScore = Math.max(0, Math.min(100, 100 - (pe - 15) * 2));
   
   // ② Oil component (25%) - للقطاعات الحساسة
-  const oilSens = (OIL_SENS as any)[stk.sec] || 0.5
+   const oilSens = (OIL_SENS as any)[stk.sec] || 0.5;
   const oilDelta = (MACRO.oilPrice - MACRO.oilTarget) / MACRO.oilTarget;
   const oilScore = Math.max(0, Math.min(100, 50 + oilSens * oilDelta * 80));
   
