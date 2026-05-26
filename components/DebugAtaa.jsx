@@ -114,9 +114,13 @@ export default function DebugAtaa() {
 
   return (
     <div style={{
-      direction: 'ltr', background: '#0c1020', color: '#f0f6ff',
+      direction: 'ltr',
+      background: hidden ? 'transparent' : '#0c1020',
+      color: '#f0f6ff',
       fontFamily: 'monospace', fontSize: 13, padding: 16,
-      minHeight: '100vh', whiteSpace: 'pre-wrap', lineHeight: 1.6,
+      minHeight: hidden ? 0 : '100vh',
+      pointerEvents: hidden ? 'none' : 'auto',
+      whiteSpace: 'pre-wrap', lineHeight: 1.6,
     }}>
       <div style={{ color: '#f0c050', marginBottom: 12, fontWeight: 900 }}>فحص عطاء 4292
         <button onClick={function(){setHidden(!hidden);}} style={{marginRight:12,padding:'4px 10px',background:'#4d9fff',border:'none',borderRadius:6,color:'#fff',fontSize:12}}>
