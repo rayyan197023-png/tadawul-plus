@@ -114,15 +114,9 @@ const COMM = [
   {sym:"الدولار",  cat:"عملات",  price:102.84,ch:-0.26,pct:-0.25,open:103.1,hi:103.3,lo:102.6,lo52:99, hi52:107, color:C.electric,fact:"ضغط من توقعات خفض الفائدة",    history:[103.2,103.1,103,102.95,102.9,102.87,102.84]},
 ];
 
-const EVENTS = [
-  {d:"15",m:"مار",ev:"نتائج أرامكو Q4 2025",       sym:"2222",imp:3,epsEst:0.39,epsLow:0.36,epsHigh:0.43,epsPrev:0.36,surprise:"+8%",daysLeft:2, whisper:0.41},
-  {d:"18",m:"مار",ev:"نتائج الراجحي Q4 2025",       sym:"1120",imp:3,epsEst:5.10,epsPrev:4.95,surprise:"+3%",daysLeft:5, whisper:5.25},
-  {d:"22",m:"مار",ev:"اجتماع الاحتياطي الفيدرالي",  sym:null,  imp:3,epsEst:null,epsPrev:null,surprise:null, daysLeft:9, whisper:null},
-  {d:"28",m:"مار",ev:"نتائج سابك Q4 2025",           sym:"2010",imp:2,epsEst:0.14,epsPrev:0.13,surprise:"+7%",daysLeft:15,whisper:0.16},
-  {d:"05",m:"أبر",ev:"بيانات التضخم السعودي",         sym:null,  imp:2,epsEst:null,epsPrev:null,surprise:null, daysLeft:23,whisper:null},
-  {d:"22",m:"أبر",ev:"نتائج الراجحي Q1 2026",        sym:"1120",imp:3,epsEst:5.30,epsPrev:4.95,surprise:null, daysLeft:40,whisper:5.45},
-  {d:"05",m:"مايو",ev:"اجتماع مجلس الأعمال السعودي", sym:null,  imp:1,epsEst:null,epsPrev:null,surprise:null, daysLeft:53,whisper:null},
-];
+// التقويم المالي: بيانات وهمية حُذفت (نتائج وتوقّعات أرباح EPS وتواريخ مخترعة).
+// يُربط بمصدر تقويم حقيقي عند توفّره. التبويب يعرض حالة "لا بيانات".
+const EVENTS = [];
 
 function Ico(props) {
   var k=props.k, c=props.color||"currentColor", sz=props.size||18;
