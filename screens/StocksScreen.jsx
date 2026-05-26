@@ -53,7 +53,8 @@ function genBars(stk) {
 
 function MiniChart({ bars, color, h = 40, id = "" }) {
   const W = 200, H = h;
-  const prices = bars.slice(-30).map(b => b.c);
+  // ✨ يدعم صيغتين: genBars المحلّي ({c}) وuseOHLCVCache ({close})
+  const prices = bars.slice(-30).map(b => (b.c != null ? b.c : b.close));
   const mn = Math.min(...prices), mx = Math.max(...prices), rng = mx - mn || 1;
   const toY  = p => H - ((p - mn) / rng) * (H - 8) - 4;
   const pts  = prices.map((p, i) => `${(i / (prices.length - 1)) * W},${toY(p)}`).join(" ");
