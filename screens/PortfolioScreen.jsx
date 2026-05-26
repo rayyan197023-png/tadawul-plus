@@ -1739,7 +1739,9 @@ return result;
                 getBars len: {usedBars ? usedBars.length : 0}<br/>
                 getBars[0].c: {usedBars && usedBars[0] ? usedBars[0].c : 'null'}<br/>
                 getBars آخر.c: {usedBars && usedBars.length ? usedBars[usedBars.length-1].c : 'null'}<br/>
-                realBarsMap keys: {Object.keys(realBarsMap).join(',') || 'فارغة'}
+                realBarsMap keys: {Object.keys(realBarsMap).join(',') || 'فارغة'}<br/>
+                <span style={{color:'#22d3ee'}}>fetchDbg: {(typeof window !== 'undefined' && window.__fetchDbg) || 'لم يُسجّل'}</span>
+
               </div>
             );
           })()}
