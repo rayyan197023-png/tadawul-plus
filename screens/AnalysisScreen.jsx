@@ -192,21 +192,29 @@ function AnalysisScreenInner({ commData: extCommData } = {}) {
   // ── تحديث MACRO من الأسعار الحية (commData من AppShell) ──────────
   // هذا يجعل محرك 9 الطبقات يعمل بأسعار نفط/ذهب/دولار حقيقية
   const liveMACRO = React.useMemo(function() {
-    // ✨ Safety check شامل
-    if (!extCommData || !Array.isArray(extCommData) || !extCommData.length) return MACRO;
+    // الأساس: MACRO + قيم FRED (نفط/VIX حقيقية) إن توفّرت
+    var base = Object.assign({}, MACRO);
+    if (fredMacro) {
+      if (typeof fredMacro.oilPrice === 'number' && fredMacro.oilPrice > 0) base.oilPrice = fredMacro.oilPrice;
+      if (typeof fredMacro.vix === 'number' && fredMacro.vix > 0) base.vix = fredMacro.vix;
+    }
+
+    // ✨ Safety check شامل -- إن لا سلع، نُرجع base (مع FRED مطبّقاً)
+    if (!extCommData || !Array.isArray(extCommData) || !extCommData.length) return base;
     
     var oil   = extCommData.find(function(c){return c && (c.sym==='خام برنت'||c.sym==='خام WTI');});
     var gold  = extCommData.find(function(c){return c && c.sym==='الذهب';});
     var dxy   = extCommData.find(function(c){return c && c.sym==='الدولار';});
     var sp    = extCommData.find(function(c){return c && c.sym==='S&P 500';});
     
-    return Object.assign({}, MACRO, {
-      oilPrice:  (oil && oil.price)  || MACRO.oilPrice,
-      goldPrice: (gold && gold.price) || (MACRO.goldPrice||2900),
-      dxy:       (dxy && dxy.price)  || (MACRO.dxy||103),
-      spx:       (sp && sp.price)    || (MACRO.spx||5500),
+    return Object.assign(base, {
+      oilPrice:  (oil && oil.price)  || base.oilPrice,
+      goldPrice: (gold && gold.price) || (base.goldPrice||2900),
+      dxy:       (dxy && dxy.price)  || (base.dxy||103),
+      spx:       (sp && sp.price)    || (base.spx||5500),
     });
-  }, [extCommData])
+  }, [extCommData, fredMacro])
+
   const { openStock } = useNav();
   const [page,        setPage]        = useState("home");
   const [sel,         setSel]         = useState(null);
