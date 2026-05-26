@@ -20,6 +20,7 @@ export async function GET(req: NextRequest) {
   if (!SAHMK_KEY) {
     return NextResponse.json({ error: 'SAHMK_KEY not set' }, { status: 500 });
   }
+  
   // ⚡ مدة الـ cache حسب نوع الـ endpoint (بالثواني)
   const cacheDuration: Record<string, number> = {
     tasi:         60,      // 1 دقيقة (سعر التاسي اللحظي)
