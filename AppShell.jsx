@@ -16,7 +16,6 @@ import { useMarketBridge }    from './hooks/useMarketBridge';
 import { useHaptic }          from './hooks/useHaptic';
 import { colors }             from './theme/tokens';
 import { getGlobalStyles }    from './theme/globalStyles';
-import DebugAtaa from './components/DebugAtaa';
 
 const C = colors;
 
@@ -268,7 +267,7 @@ function Shell() {
 
       return (
     <>
-    <div style={{position:'fixed',inset:0,zIndex:99999,overflow:'auto'}}><DebugAtaa/></div>
+  return (
     <div style={{
       minHeight: '100dvh', height: '100dvh',
       maxWidth: 480, margin: '0 auto',
