@@ -1168,7 +1168,7 @@ var positionData = {
         smartAction: smartAction, // ✨ جديد!
       });
     });
-  },[port,sl,allData]);
+  },[port,sl,allData,realBarsMap]);
 
   var tv=positions.reduce(function(s,p){return s+p.value;},0);
   var tp=positions.reduce(function(s,p){return s+p.pnl;},0);
