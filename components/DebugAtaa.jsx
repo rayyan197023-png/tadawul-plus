@@ -56,7 +56,7 @@ export default function DebugAtaa() {
       direction: 'ltr', background: '#0c1020', color: '#f0f6ff',
       fontFamily: 'monospace', fontSize: 13, padding: 16,
       minHeight: '100vh', whiteSpace: 'pre-wrap', lineHeight: 1.6,
-￼    }}>
+    }}>
       <div style={{ color: '#f0c050', marginBottom: 12, fontWeight: 900 }}>فحص عطاء 4292</div>
       {out}
     </div>
