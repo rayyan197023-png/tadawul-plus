@@ -567,6 +567,7 @@ const avgChange = (liveStocks && liveStocks.length > 0)
         @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
         @keyframes glow{0%,100%{box-shadow:0 0 8px ${C.gold}44}50%{box-shadow:0 0 20px ${C.gold}88}}
 
+
         /* ── Classes ── */
         .card-enter{animation:springIn .55s cubic-bezier(.16,1,.3,1) both}
         .fade-in{animation:fadeIn .35s ease both}
