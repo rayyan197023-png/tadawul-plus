@@ -1718,8 +1718,8 @@ var vol30pct = bars.slice(-30).reduce(function(s: number, b: any){return s+Math.
   if(stk.roe > 20) pressureBase -= 0.08;
   else if(stk.roe < 5) pressureBase += 0.12;
 
-  // قطاع التعدين في تاسي يرى ضغطاً بيعياً أعلى عند الهبوط
-  if(stk.sec === "تعدين" && stk.ch < 0) pressureBase += 0.10;
+  // قطاع المواد الأساسية (تعدين/بتروكيماويات) يرى ضغطاً بيعياً أعلى عند الهبوط
+  if(stk.sec === "المواد الأساسية" && stk.ch < 0) pressureBase += 0.10;
 
   var pressureRatio = +Math.min(2.0,Math.max(0.3,pressureBase)).toFixed(2);
   var unusualActivity = volRatio > 1.8 && Math.abs(stk.ch) > 2.0;
