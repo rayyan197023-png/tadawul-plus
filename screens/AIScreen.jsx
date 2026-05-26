@@ -935,7 +935,7 @@ export default function AIScreen({ aiAnalysis, onClearAnalysis, commData }) {
       await callAI(stock, type, chunk => {
         setResult(chunk);
         setWords(chunk.trim().split(/\s+/).filter(Boolean).length);
-      }, ctrl.signal, chartData);
+      }, ctrl.signal, chartData, commData);
       setStatus("done");
       setHistory(prev => {
         const entry = { sym:stock.sym, name:stock.name, typeId:type, typeLabel:selType.label, ts:Date.now() };
