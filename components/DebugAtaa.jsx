@@ -118,7 +118,11 @@ export default function DebugAtaa() {
       fontFamily: 'monospace', fontSize: 13, padding: 16,
       minHeight: '100vh', whiteSpace: 'pre-wrap', lineHeight: 1.6,
     }}>
-      <div style={{ color: '#f0c050', marginBottom: 12, fontWeight: 900 }}>فحص عطاء 4292</div>
+      <div style={{ color: '#f0c050', marginBottom: 12, fontWeight: 900 }}>فحص عطاء 4292
+        <button onClick={function(){setHidden(!hidden);}} style={{marginRight:12,padding:'4px 10px',background:'#4d9fff',border:'none',borderRadius:6,color:'#fff',fontSize:12}}>
+          {hidden ? 'إظهار' : 'إخفاء (افتح المحفظة)'}
+        </button>
+      </div>
       {out}
     </div>
   );
