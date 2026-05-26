@@ -85,6 +85,12 @@ export default function DebugAtaa() {
       lines.push('عدد العوائد: ' + prFull.length);
       lines.push('σ سنوي: ' + (volFull.annual * 100).toFixed(2) + '%');
       lines.push('عائد سنوي: ' + (rmFull.annual * 100).toFixed(2) + '%');
+      lines.push('عائد سنوي: ' + (rmFull.annual * 100).toFixed(2) + '%');
+
+      lines.push('');
+      lines.push('-- حالة realBarsMap بالشاشة --');
+      var dbg = (typeof window !== 'undefined') ? window.__dbgBars : null;
+      lines.push(dbg ? JSON.stringify(dbg) : 'لم تُفتح شاشة المحفظة بعد');
 
       setOut(lines.join('\n'));
     }).catch(function (e) {
