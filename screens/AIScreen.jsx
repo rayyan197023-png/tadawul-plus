@@ -624,7 +624,7 @@ ${s.name} (${s.sym}) كممثل للقطاع
 }
 
 /* ══ AI CALL - Claude Artifacts API (no auth header needed) ══ */
-async function callAI(stock, type, onChunk, signal, chartContext) {
+async function callAI(stock, type, onChunk, signal, chartContext, commData) {
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
