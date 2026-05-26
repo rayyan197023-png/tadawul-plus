@@ -4949,7 +4949,7 @@ export {
   calcMarketStructureFull, calcOrderBlocksFull, calcLiqSweepFull,
   calcIVWAP, generateBarsRadar, analyzeStockRadar, calc9Layers,
   calcFactorModel, calcEarningsModel, calcDCF,
-  calcEarningsQuality, calcOptionsFlow,
+  calcEarningsQuality,
   calcInsiderTransactions, calcAlternativeData,
   calcRiskAttribution, calcIntermarket, calcMicrostructure,
   calcPositionSize, calcRiskGateLevel, checkCorrelationGuard,
