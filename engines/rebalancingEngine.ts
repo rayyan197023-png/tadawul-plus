@@ -17,6 +17,7 @@ import {
 } from './portfolioEngine';
 import { stockHealth } from './analysisEngine';
 import { genBars } from './analysisEngine';
+import { STOCKS, SECTORS } from '../constants/stocksData';
 
 // ─── الثوابت الذكية ──────────────────────────
 const MAX_SINGLE_POSITION = 0.30;   // 30%
