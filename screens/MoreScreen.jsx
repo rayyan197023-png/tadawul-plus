@@ -172,19 +172,6 @@ useEffect(function(){
     },5000);
     return function(){clearInterval(t);};
   },[]);
-
-  // ── الأسواق العالمية ──────────────────────────
-  var YAHOO_TICKERS=["BZ=F","CL=F","GC=F","SI=F","^GSPC","^DJI","^IXIC","DX-Y.NYB"];
-
-  var TICKER_MAP={
-    "BZ=F":   {sym:"خام برنت",  cat:"نفط",     color:"#f97316"},
-    "CL=F":   {sym:"خام WTI",   cat:"نفط",     color:"#fb923c"},
-    "GC=F":   {sym:"الذهب",     cat:"معادن",   color:"#f0c050"},
-    "SI=F":   {sym:"الفضة",     cat:"معادن",   color:"#94a3b8"},
-    "^GSPC":  {sym:"S&P 500",   cat:"مؤشرات",  color:"#4d9fff"},
-    "^DJI":   {sym:"داو جونز",  cat:"مؤشرات",  color:"#818cf8"},
-    "^IXIC":  {sym:"ناسداك",    cat:"مؤشرات",  color:"#a78bfa"},
-    "DX-Y.NYB":{sym:"الدولار", cat:"عملات",   color:"#34d399"},
   };
 
   // الأسواق العالمية: لا مصدر بيانات حقيقي حالياً (Twelve Data لا يدعم احتياجنا، رُفض).
