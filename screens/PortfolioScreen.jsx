@@ -1505,12 +1505,9 @@ return result;
       {l:"مدة الاحتفاظ",v:avgHold,c:C.electric,sub:"متوسط"},
     ];
   },[tradeLog]);
-  // ======= بيانات تاسي - جاهز للـ API =======
-  // عند ربط API استبدل هذا الـ useEffect:
-  // fetch("https://your-api.com/tasi").then(r=>r.json()).then(data=>{
-  //   setTasiData({now: data.price, change: data.changePct});
-  // });
+  // ======= بيانات تاسي (مربوطة بـ sahmk عبر fetchTasiBars) =======
   var td_s=useState(function(){
+
     return loadLS("tp_tasi_baseline", null);
   }); var tasiBaseline=td_s[0], setTasiBaseline=td_s[1];
 
