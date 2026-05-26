@@ -1196,49 +1196,6 @@ var positionData = {
   var tbs_s=useState({bars:[], source:'pending'});
   var tasiBarsState=tbs_s[0], setTasiBarsState=tbs_s[1];
 
-  // ✨ المرحلة 1: خريطة البارات الحقيقية لأسهم المحفظة { sym: engineBars }
-  // تُملأ تدريجياً من sahmk؛ أي سهم غير موجود فيها يسقط لـ genBars (آمن)
-  var rbm_s = useState({}); var realBarsMap = rbm_s[0], setRealBarsMap = rbm_s[1];
-
-  // جلب بارات أسهم المحفظة الحقيقية (أسهم المحفظة فقط -- لا كل السوق)
-    useEffect(function() {
-    var syms = port.map(function(pp){ return pp.sym; });
-    if (syms.length === 0) return;
-    var cancelled = false;
-
-    var toFetch = syms.filter(function(s){ return !realBarsMap[s]; });
-    if (toFetch.length === 0) return;
-
-    Promise.all(toFetch.map(function(sym){
-      return fetchEngineBars(sym, { days: 365 })
-        .then(function(r){ return { sym: sym, bars: r.bars, source: r.source }; })
-        .catch(function(){ return { sym: sym, bars: [], source: 'empty' }; });
-    })).then(function(results){
-      if (cancelled) return;
-      setRealBarsMap(function(prev){
-
-        var next = Object.assign({}, prev);
-        results.forEach(function(r){
-          if (r.bars && r.bars.length >= 30) next[r.sym] = r.bars;
-        });
-        return next;
-      });
-    });
-
-        return function(){ cancelled = true; };
-  }, [port]);
-
-  // ✨ المرحلة 1: مُحدِّد مصدر البارات -- حقيقي إن توفّر، وإلا genBars (آمن)
-  // يُمرر له stk لأن genBars يحتاجه؛ ويُقصّ الطول لـ 60 لمطابقة سلوك genBars الحالي
-  function getBars(sym, stk, count) {
-    count = count || 60;
-    var real = realBarsMap[sym];
-    if (real && real.length >= 30) {
-      // نأخذ آخر count شمعة (أحدث البيانات) لمطابقة سلوك genBars
-      return real.length > count ? real.slice(-count) : real;
-    }
-    return genBars(stk, count);
-  }
 
   // ✨ هل بيانات كل أسهم المحفظة الحقيقية وصلت؟ (لمعالجة الوميض)
   // مهلة أمان: بعد 8 ثوانٍ نُظهر التحليل حتى لو لم تكتمل (يسقط لـ genBars بإفصاح)
