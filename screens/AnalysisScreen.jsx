@@ -279,7 +279,6 @@ const [filters, setFilters] = useState({
     return function(){ clearInterval(t); };
   },[]);
   
-
   // ── Throttled price snapshot — only recalculate when price changes >0.3%
   const priceSignature = useMemo(() =>
     liveStocks.map(s => Math.round(s.p * 100) + s.sym).join('|')
