@@ -2876,7 +2876,7 @@ function calc9Layers(stk: any, bars: any[]): any {
   const wrOlder  = older80.length>0 ? older80.filter(b=>b.pct>0).length/older80.length : wrRecent;
   const histWinRate = wrRecent*0.65 + wrOlder*0.35; // تحيّز للأحدث
 
-  const sectorWinAdj=({"طاقة":0.02,"بنوك":0.01,"تقنية":0.03,"تعدين":-0.01,"غذاء":0.02} as any)[stk.sec]||0;
+  const sectorWinAdj=({"الطاقة":0.02,"البنوك":0.01,"التطبيقات وخدمات التقنية":0.03,"المواد الأساسية":-0.01,"إنتاج الأغذية":0.02} as any)[stk.sec]||0;
 
   const volSignal  = vr>1.3?0.10:vr>1.0?0.05:vr<0.7?-0.05:0;
   const macroSignal= mc.score>14?0.08:mc.score>8?0.04:mc.score<4?-0.05:0;
