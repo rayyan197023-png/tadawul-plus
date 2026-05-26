@@ -1749,14 +1749,9 @@ var recentVol=n>=5?bars.slice(-5).reduce(function(s: number, b: any){return s+b.
   var isBuyDom=netScore>=50;
   var netBuy=(netScore-50)*stk.mktCap*1e6*0.0001;
   var signal=netScore>=75?"تراكم داخلي قوي":netScore>=60?"شراء داخلي معتدل":netScore<=25?"تصريف داخلي":netScore<=40?"بيع داخلي معتدل":"محايد";
-  var names=["المدير التنفيذي","رئيس مجلس الإدارة","المدير المالي","عضو مجلس إدارة","كبير المساهمين"];
+  // ✨ transactions أُفرغت -- كانت تخترع أسماء مناصب وكميات وتواريخ لصفقات لم تحدث.
+  // score (المستخدَم في LC) يبقى من المنطق الكمي (الحجم/السعر) -- لا يُمَسّ.
   var transactions: any[] = [];
-  var txCount=netScore>=70||netScore<=30?4:2;
-  for(var i=0;i<txCount;i++){
-    var isBuy=i===0?isBuyDom:(netScore>50?i%3!==0:i%3===0);
-    var sharesEst=Math.round(stk.mktCap*1e6*0.0002/stk.p);
-    transactions.push({name:names[i%names.length],type:isBuy?"شراء":"بيع",shares:sharesEst,price:stk.p,value:Math.round(sharesEst*stk.p),daysAgo:Math.round(5+i*12)});
-  }
   return{transactions,netBuy,buyValue:isBuyDom?Math.abs(netBuy):0,sellValue:isBuyDom?0:Math.abs(netBuy),
     signal,sentColor:isBuyDom?"#10c97e":"#f04f5a",score:netScore};
 }
