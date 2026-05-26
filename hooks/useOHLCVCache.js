@@ -37,7 +37,14 @@ export function useOHLCVCache(syms = [], period = '3M') {
 
           if (json?.data?.length > 0) {
             cacheTime[sym] = Date.now();
-            cache[sym] = json.data.map(b => ({
+            // ✨ فرز تصاعدي بالتاريخ (الأقدم أولاً) لضمان اتجاه صحيح
+            // sahmk قد يُرجع البيانات تنازلياً حسب endpoint
+            var sorted = json.data.slice().sort(function(a, b) {
+              var da = new Date(a.date || a.t || a.timestamp || 0).getTime();
+              var db = new Date(b.date || b.t || b.timestamp || 0).getTime();
+              return da - db;
+            });
+            cache[sym] = sorted.map(b => ({
               open:  b.open,
               hi:    b.high,
               lo:    b.low,
