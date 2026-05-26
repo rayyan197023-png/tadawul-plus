@@ -16,6 +16,7 @@ import { useMarketBridge }    from './hooks/useMarketBridge';
 import { useHaptic }          from './hooks/useHaptic';
 import { colors }             from './theme/tokens';
 import { getGlobalStyles }    from './theme/globalStyles';
+import DebugAtaa from './components/DebugAtaa';
 
 const C = colors;
 
