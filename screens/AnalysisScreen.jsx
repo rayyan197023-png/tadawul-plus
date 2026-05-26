@@ -11,7 +11,7 @@
  * المحركات الحسابية → src/engines/analysisEngine.js
  * مكونات UI المساعدة → src/components/analysis/AnalysisHelpers.jsx
  */ 
-
+ 
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
 import { useNav, useSharedPrices, useMarket } from '../store';
