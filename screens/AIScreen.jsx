@@ -911,6 +911,16 @@ export default function AIScreen({ aiAnalysis, onClearAnalysis, commData }) {
 
   const abortRef = useRef(null);
 
+  // ── استقبال تحليل الشارت من AppShell ──────────────────────────
+  useEffect(function() {
+    if (!aiAnalysis) return;
+    setChartData(aiAnalysis);
+    setShowChartAI(true);
+    const found = STOCKS.find(s => s.sym === aiAnalysis.sym);
+    if (found) setStock(found);
+    setType('comprehensive');
+  }, [aiAnalysis]);
+
   /* derived */
   const selType  = TYPES.find(t => t.id === type) || TYPES[0];
   const sc       = SEC[stock.sec] || C.electric;
