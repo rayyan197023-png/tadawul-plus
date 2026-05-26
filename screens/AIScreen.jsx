@@ -1722,13 +1722,11 @@ export default function AIScreen({ aiAnalysis, onClearAnalysis, commData }) {
             </div>
           </div>
                 )}
-
-      </div>
-    </div>
-  );
+            </div>
     </div>
   );
 }
+
 
 
 
