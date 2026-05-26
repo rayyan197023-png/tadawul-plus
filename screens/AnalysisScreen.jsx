@@ -276,12 +276,6 @@ const [filters, setFilters] = useState({
   , [liveStocks]);
 
   const [throttledSig, setThrottledSig] = useState('');
-  const [fredMacro, setFredMacro] = useState(null);
-  useEffect(function(){
-    fetch('/api/freddata').then(function(r){return r.ok?r.json():null;}).then(function(d){
-      if(d && (typeof d.oilPrice==='number' || typeof d.vix==='number')) setFredMacro(d);
-    }).catch(function(){});
-  },[]);
   useEffect(() => {
     const t = setTimeout(() => setThrottledSig(priceSignature), 5000); // max once/5s
     return () => clearTimeout(t);
