@@ -511,8 +511,8 @@ useEffect(() => { fetchNews(); }, [fetchNews]);
   }, [handleClose]);
 
   const filtered = useMemo(
-    () => activeTab === "كل الأخبار" ? MOCK_NEWS : MOCK_NEWS.filter(n => n.cat === activeTab),
-    [activeTab]
+    () => activeTab === "كل الأخبار" ? NEWS : NEWS.filter(n => n.cat === activeTab),
+    [activeTab, NEWS]
   );
 
   const displayed = useMemo(() => {
