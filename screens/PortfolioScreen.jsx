@@ -1186,7 +1186,9 @@ useEffect(() => {
     var tv=port.reduce(function(s,pp){var stk=sl.find(function(x){return x.sym===pp.sym;});return s+(stk?stk.p:pp.avgCost)*pp.qty;},0)||1;
         return port.map(function(pp){
       var stk=sl.find(function(x){return x.sym===pp.sym;})||{sym:pp.sym,name:pp.sym,p:pp.avgCost,ch:0,sec:"-"};
-      var h=allData.find(function(d){return d.stk&&d.stk.sym===pp.sym;}); h=h?h.health:null;
+      // ✨ صحة حقيقية إن توفّرت (من بيانات sahmk)، وإلا allData (genBars)
+      var h = realHealthMap[pp.sym] || null;
+      if (!h) { var hd=allData.find(function(d){return d.stk&&d.stk.sym===pp.sym;}); h=hd?hd.health:null; }
       var value=stk.p*pp.qty, cost=pp.avgCost*pp.qty, pnl=value-cost;
       
       // ✨ Smart Action Engine - تحليل احترافي لكل مركز (بيانات حقيقية إن توفّرت)
