@@ -350,8 +350,7 @@ function Shell() {
           <ChartScreen stk={liveStock} onClose={() => setExpandedChart(false)} />
         </Suspense>
       )}
-    </div>
-    </>
+        </div>
   );
 }
 
