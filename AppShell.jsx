@@ -266,7 +266,7 @@ function Shell() {
   const tabDef      = TABS.find(t => t.id === activeTab) ?? TABS[0];
   const ActiveScreen = SCREEN_MAP[activeTab] ?? HomeScreen;
 
-  return (
+    return (
     <div style={{
       minHeight: '100dvh', height: '100dvh',
       maxWidth: 480, margin: '0 auto',
