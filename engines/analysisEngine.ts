@@ -3485,11 +3485,10 @@ function checkCorrelationGuard(sym: string, activePositions: any[]): any {
 /* ③ Dynamic Risk Gate */
 function calcRiskGateLevel(): any {
   var vix     = MACRO.vix || 20;
-  var regime  = MACRO.oilTasiRegime || "RALLY";
   var breadth = STOCKS.filter(function(x){return x.ch>0;}).length / STOCKS.length;
 
-  // DANGER: VIX>30 أو CRASH Regime
-  if(vix>30 || regime==="CRASH") return "DANGER";
+  // DANGER: VIX>30 أو اتساع سلبي حاد
+  if(vix>30 || breadth<0.20) return "DANGER";
   // CAUTION: VIX>20 أو breadth ضعيف
   if(vix>20 || breadth<0.35)     return "CAUTION";
   return "SAFE";
