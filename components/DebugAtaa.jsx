@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { fetchEngineBars } from '../utils/historicalData';
+import { calcPortfolioReturns, calcVolatility, calcReturnsMetrics } from '../engines/portfolioEngine';
 
 export default function DebugAtaa() {
   var st = useState('جارٍ الجلب...');
