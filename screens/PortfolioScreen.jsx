@@ -1131,8 +1131,8 @@ useEffect(() => {
       var h=allData.find(function(d){return d.stk&&d.stk.sym===pp.sym;}); h=h?h.health:null;
       var value=stk.p*pp.qty, cost=pp.avgCost*pp.qty, pnl=value-cost;
       
-      // ✨ Smart Action Engine - تحليل احترافي لكل مركز
-      var smartBars = genBars(stk, 60);
+      // ✨ Smart Action Engine - تحليل احترافي لكل مركز (بيانات حقيقية إن توفّرت)
+      var smartBars = getBars(pp.sym, stk, 60);
       var smartAction = null;
       try {
         if(h && smartBars && smartBars.length >= 14) {
