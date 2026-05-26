@@ -1256,17 +1256,7 @@ var positionData = {
       };
     });
 
-    if (typeof window !== 'undefined') {
-      var dbgReal = realBarsMap[positions[0] && positions[0].sym];
-      window.__dbgBars = {
-        hasReal: !!dbgReal,
-        realLen: dbgReal ? dbgReal.length : 0,
-        firstBarsLen: positionsWithBars[0] ? positionsWithBars[0].bars.length : 0,
-        firstClose: positionsWithBars[0] && positionsWithBars[0].bars[0] ? positionsWithBars[0].bars[0].c : null,
-      };
-    }
-
-                        var analysis = analyzePortfolio(positionsWithBars, tasiBarsState.bars || []);
+        var analysis = analyzePortfolio(positionsWithBars, tasiBarsState.bars || []);
     analysis.benchmarkSource = tasiBarsState.source; // 'real' | 'synthetic' | 'pending' (للإفصاح)
     analysis = addIntelligenceLayer(analysis, positionsWithBars, stockHealth);
 
