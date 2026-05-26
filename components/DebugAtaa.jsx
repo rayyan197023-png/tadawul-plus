@@ -60,6 +60,21 @@ export default function DebugAtaa() {
       lines.push('متوسط يومي: ' + (mean * 100).toFixed(4) + '%');
       lines.push('أول c: ' + last60[0].c + ' / آخر c: ' + last60[last60.length - 1].c);
 
+      // محاكاة ما تفعله الشاشة: getBars يُرجع آخر 60، ثم calcPortfolioReturns
+      var last60b = bars.slice(-60);
+      var fakePos = [{ sym: '4292', qty: 100, value: 5155, bars: last60b, stk: { sym: '4292', p: 51.55 } }];
+      var w = { '4292': 1 };
+      var pr = calcPortfolioReturns(fakePos, w);
+      var vol = calcVolatility(pr);
+      var rm = calcReturnsMetrics(pr);
+      lines.push('');
+      lines.push('-- عبر المحرك (60 شمعة) --');
+      lines.push('عدد العوائد: ' + pr.length);
+      lines.push('σ يومي محرك: ' + (vol.daily * 100).toFixed(3) + '%');
+      lines.push('σ سنوي محرك: ' + (vol.annual * 100).toFixed(2) + '%');
+      lines.push('عائد تراكمي محرك: ' + (rm.cumulative * 100).toFixed(2) + '%');
+      lines.push('عائد سنوي محرك: ' + (rm.annual * 100).toFixed(2) + '%');
+
       setOut(lines.join('\n'));
     }).catch(function (e) {
       setOut('خطأ: ' + (e && e.message ? e.message : String(e)));
