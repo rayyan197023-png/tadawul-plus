@@ -15,7 +15,7 @@ const RankItem = React.memo(function RankItem({ s, i, rField, BOX, SHD, SHD_ACTI
       background:BOX,
       border:"1px solid "+(isBig?rField.color+"44":C.line),
       borderRadius:18,padding:"12px 14px",
-      display:"flex",alignItems:"center",gap:12,
+       display:"flex",alignItems:"center",gap:12,
       boxShadow:isBig?SHD_ACTIVE+rField.color+"20, 0 0 0 1px "+rField.color+"22":SHD,
       position:"relative",overflow:"hidden",cursor:"pointer",
     }}>
