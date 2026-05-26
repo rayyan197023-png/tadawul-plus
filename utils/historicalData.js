@@ -50,7 +50,13 @@ function normalizeCandles(rawData) {
     if (!o) o = c;
 
     return { o: o, hi: hi, lo: lo, c: c, v: v, t: t };
-  }).filter(function (d) { return d.c > 0; }); // إزالة الشموع غير الصالحة
+  })
+  .filter(function (d) { return d.c > 0; }) // إزالة الشموع غير الصالحة
+  .sort(function (a, b) { // ✨ فرز تصاعدي بالتاريخ (الأقدم أولاً) لاتجاه صحيح
+    var ta = a.t ? a.t.getTime() : 0;
+    var tb = b.t ? b.t.getTime() : 0;
+    return ta - tb;
+  });
 }
 
 /* ───────────────────────────────────────────────
