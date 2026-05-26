@@ -710,12 +710,12 @@ export default function RebalancingScreen() {
     };
   }, [showAutoApply]);
 
-  const positions = useMemo(() => {
+  // قراءة المحفظة من localStorage (الرموز فقط)
+  const rawPositions = useMemo(() => {
     try {
       const raw = typeof window !== 'undefined' && window.localStorage.getItem('tp_port');
       if (!raw) return [];
       const parsed = JSON.parse(raw);
-      
       return parsed.map(p => {
         const stk = STOCKS.find(s => s.sym === p.sym);
         return { ...p, stk };
@@ -724,6 +724,21 @@ export default function RebalancingScreen() {
       return [];
     }
   }, []);
+
+  // ✨ جلب بارات أسهم المحفظة الحقيقية (نفس الـ hook الموحّد)
+  const portSyms = useMemo(
+    () => rawPositions.map(p => p.sym),
+    [rawPositions]
+  );
+  const realBars = useOHLCVCache(portSyms, '3M');
+
+  // ✨ حقن البارات الحقيقية في positions (إن توفّرت)؛ المحرك يسقط لـ genBars وإلا
+  const positions = useMemo(() => {
+    return rawPositions.map(p => {
+      const bars = realBars[p.sym];
+      return (bars && bars.length >= 30) ? { ...p, bars } : p;
+    });
+  }, [rawPositions, realBars]);
 
   const analysis = useMemo(() => {
     return analyzePortfolio(positions);
