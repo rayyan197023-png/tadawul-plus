@@ -4,6 +4,7 @@ import { useHaptic }        from '../hooks/useHaptic';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
 import { useNav, useSharedPrices, useStockState } from '../store';
 import StockDetail          from '../features/stock/StockDetail';
+import { useOHLCVCache }    from '../hooks/useOHLCVCache';
 
 // ── Design Tokens ─────────────────────────────────────────────
 const C = {
