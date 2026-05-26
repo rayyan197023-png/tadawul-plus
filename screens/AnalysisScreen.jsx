@@ -3383,7 +3383,31 @@ var neut = normalizeProb(prob.neutral);
       {/* ══════════════════════════════════
            صفحة الحساب
       ══════════════════════════════════ */}
-      {page==="profile"&&(
+           {page==="profile"&&(()=>{
+        // ✨ إحصائيات حقيقية من محفظة المستخدم (بدل الأرقام الوهمية الثابتة)
+        var profileStats = (function(){
+          try {
+            var rawPort = typeof window !== 'undefined' ? window.localStorage.getItem('tp_port') : null;
+            var rawLog  = typeof window !== 'undefined' ? window.localStorage.getItem('tp_log')  : null;
+            var port = rawPort ? JSON.parse(rawPort) : [];
+            var log  = rawLog  ? JSON.parse(rawLog)  : [];
+            if (!port.length) return null;
+            var totalValue = 0, totalCost = 0;
+            port.forEach(function(p){
+              var live = (liveStocks || []).find(function(s){ return s.sym === p.sym; });
+              var price = live ? live.p : p.avgCost;
+              totalValue += price * p.qty;
+              totalCost  += p.avgCost * p.qty;
+            });
+            var pnlPct = totalCost > 0 ? ((totalValue - totalCost) / totalCost * 100) : 0;
+            return {
+              value: totalValue,
+              pnlPct: pnlPct,
+              trades: log.length,
+            };
+          } catch(e) { return null; }
+        })();
+        return (
         <div style={{padding:"52px 20px 90px",position:"relative",zIndex:1}}>
           {/* بطاقة الحساب */}
           <div style={{
