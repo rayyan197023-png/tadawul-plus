@@ -4,8 +4,8 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useNav } from '../store';
 import { analyzePortfolio, formatCurrency } from '../engines/rebalancingEngine';
 import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
-import { genBars, stockHealth } from '../engines/analysisEngine';
 import Tooltip from '../components/Tooltip';
+import { useOHLCVCache } from '../hooks/useOHLCVCache';
 
 const C = {
   ink: "#06080f",
