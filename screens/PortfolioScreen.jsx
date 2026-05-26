@@ -1541,16 +1541,15 @@ return result;
     return function(){ cancelled = true; };
   }, []);
 
-  // عند أول صفقة: احفظ سعر تاسي الحالي كنقطة بداية
+  // عند أول صفقة: احفظ سعر تاسي الحقيقي كنقطة بداية (لا رقم وهمي)
   useEffect(function(){
-    if(tradeLog.length>0 && !tasiBaseline){
-      // عند ربط API: استبدل 11500 بالسعر الحقيقي من API
-      var baselinePrice = tasiLive.now || 11500;
-      var baseline = {price: baselinePrice, date: tradeLog[tradeLog.length-1].date};
+    // نضع خط الأساس فقط عند توفّر سعر تاسي حقيقي -- وإلا ننتظر (لا نخترع 11500)
+    if(tradeLog.length>0 && !tasiBaseline && tasiLive.now){
+      var baseline = {price: tasiLive.now, date: tradeLog[tradeLog.length-1].date};
       setTasiBaseline(baseline);
       saveLS("tp_tasi_baseline", baseline);
     }
-  },[tradeLog.length]);
+  },[tradeLog.length, tasiLive.now]);
 
   // حساب عائد تاسي الحقيقي
   var tasiReturn = useMemo(function(){
