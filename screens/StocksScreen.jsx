@@ -512,13 +512,16 @@ const liveStocks = stocks.length > 0 ? stocks : [];
                       </div>
                     )}
                     <div style={{ display: "flex", flexDirection: "column", gap: 5, touchAction: "pan-y" }}>
-                      {group.items.slice(0, Math.max(0, visibleCount - globalIdx)).map(({ stk, bars }) => {
+                                            {group.items.slice(0, Math.max(0, visibleCount - globalIdx)).map(({ stk, bars }) => {
                         globalIdx++;
+                        // ✨ بيانات حقيقية إن توفّرت (للمرئي)، وإلا الرسم التقريبي
+                        var realB = realBars[stk.sym];
+                        var chartBars = (realB && realB.length >= 10) ? realB : bars;
                         return (
                           <StockCard
                             key={stk.sym}
                             stk={stk}
-                            bars={bars}
+                            bars={chartBars}
                             flash={flash}
                             openDetail={openDetail}
                             setFlash={setFlash}
