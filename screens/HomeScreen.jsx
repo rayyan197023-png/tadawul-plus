@@ -628,9 +628,6 @@ function FearGreedIndex({liveStocks=[]}) {
             <div style={{display:"flex",flexDirection:"column",gap:5}}>
               {[
                 {l:"الآن",v:score,c:lbl.col},
-                {l:"أمس",v:data.prevScore,c:fgLabel(data.prevScore).col},
-                {l:"أسبوع",v:data.weekAgo,c:fgLabel(data.weekAgo).col},
-                {l:"شهر",v:data.monthAgo,c:fgLabel(data.monthAgo).col},
               ].map((h,i)=>(
                 <div key={i} style={{display:"flex",alignItems:"center",gap:6}}>
                   <span style={{fontSize:9,color:T3,width:30,textAlign:"right"}}>{h.l}</span>
