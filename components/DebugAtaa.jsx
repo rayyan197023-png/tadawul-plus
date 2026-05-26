@@ -40,6 +40,25 @@ export default function DebugAtaa() {
         lines.push('  ' + s.pct.toFixed(2) + '%  c=' + s.c + '  t=' + fmtT(s.t));
       });
 
+      // فحص العوائد على آخر 60 شمعة (ما يستهلكه التحليل)
+      var last60 = bars.slice(-60);
+      var rets = [];
+      for (var k = 1; k < last60.length; k++) {
+        var pc = last60[k - 1].c;
+        if (pc > 0) rets.push((last60[k].c - pc) / pc);
+      }
+      var mean = rets.reduce(function (a, b) { return a + b; }, 0) / rets.length;
+      var variance = rets.reduce(function (a, b) { return a + Math.pow(b - mean, 2); }, 0) / rets.length;
+      var sd = Math.sqrt(variance);
+      var cum = last60[last60.length - 1].c / last60[0].c - 1;
+      lines.push('');
+      lines.push('-- تحليل آخر 60 شمعة --');
+      lines.push('عائد تراكمي: ' + (cum * 100).toFixed(2) + '%');
+      lines.push('σ يومي: ' + (sd * 100).toFixed(3) + '%');
+      lines.push('σ سنوي (×√252): ' + (sd * Math.sqrt(252) * 100).toFixed(2) + '%');
+      lines.push('متوسط يومي: ' + (mean * 100).toFixed(4) + '%');
+      lines.push('أول c: ' + last60[0].c + ' / آخر c: ' + last60[last60.length - 1].c);
+
       setOut(lines.join('\n'));
     }).catch(function (e) {
       setOut('خطأ: ' + (e && e.message ? e.message : String(e)));
