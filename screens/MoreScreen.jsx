@@ -184,7 +184,7 @@ useEffect(function(){
     }
   },[]);
 
-
+ 
   function sendPushNotif(title, body, icon) {
     if('Notification' in window && Notification.permission === 'granted'){
       try {
