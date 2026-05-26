@@ -12,6 +12,7 @@ const SERIES: Record<string, string> = {
   vix: 'VIXCLS',      // CBOE Volatility Index, daily
 };
 
+
 // جلب أحدث قيمة رقمية صالحة لسلسلة واحدة
 async function fetchLatest(seriesId: string): Promise<number | null> {
   // sort_order=desc + limit=5: نأخذ آخر 5 ونتخطى الفراغات (FRED يضع "." للعطلات)
