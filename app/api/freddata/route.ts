@@ -1,4 +1,4 @@
-// FRED macro data proxy -- oil (WTI) + VIX  [+ history for global markets]
+// FRED macro data proxy -- 10 global series (oil, indices, rates, FX) with history
 import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
@@ -7,8 +7,16 @@ const FRED_BASE = 'https://api.stlouisfed.org/fred/series/observations';
 const FRED_KEY  = process.env.FRED_API_KEY ?? '';
 
 const SERIES: Record<string, string> = {
-  oil: 'DCOILWTICO',
-  vix: 'VIXCLS',
+  oil:    'DCOILWTICO',
+  brent:  'DCOILBRENTEU',
+  natgas: 'DHHNGSP',
+  vix:    'VIXCLS',
+  sp500:  'SP500',
+  nasdaq: 'NASDAQCOM',
+  dow:    'DJIA',
+  dxy:    'DTWEXBGS',
+  fedrate:'DFF',
+  t10:    'DGS10',
 };
 
 async function fetchSeries(seriesId: string, limit: number): Promise<number[]> {
@@ -35,37 +43,42 @@ export async function GET(_req: NextRequest) {
   const staleAge = 86400;
 
   try {
-    const [oilHist, vixHist] = await Promise.all([
-      fetchSeries(SERIES.oil, 40),
-      fetchSeries(SERIES.vix, 40),
-    ]);
+    const keys = Object.keys(SERIES);
+    const results = await Promise.all(
+      keys.map(function(k){ return fetchSeries(SERIES[k], 40); })
+    );
 
-    const oil = oilHist.length ? oilHist[oilHist.length - 1] : null;
-    const vix = vixHist.length ? vixHist[vixHist.length - 1] : null;
+    const out: Record<string, any> = {};
+    var anyOk = false;
+    keys.forEach(function(k, i){
+      var hist = results[i];
+      if (hist && hist.length) {
+        out[k + 'Price']   = hist[hist.length - 1];
+        out[k + 'History'] = hist;
+        anyOk = true;
+      } else {
+        out[k + 'Price']   = null;
+        out[k + 'History'] = [];
+      }
+    });
 
-    if (oil === null && vix === null) {
+    out.oilPrice = out.oilPrice ?? null;
+    out.vix      = out.vixPrice ?? null;
+
+    if (!anyOk) {
       return new NextResponse(
         JSON.stringify({ error: 'FRED returned no valid data' }),
-        {
-          status: 502,
-          headers: {
-            'Cache-Control': 'public, s-maxage=300',
-            'Content-Type': 'application/json; charset=utf-8',
-          },
-        }
+        { status: 502, headers: {
+          'Cache-Control': 'public, s-maxage=300',
+          'Content-Type': 'application/json; charset=utf-8',
+        }}
       );
     }
 
-    const body = JSON.stringify({
-      oilPrice: oil,
-      vix: vix,
-      oilHistory: oilHist,
-      vixHistory: vixHist,
-      updatedAt: new Date().toISOString(),
-      source: 'FRED',
-    });
+    out.updatedAt = new Date().toISOString();
+    out.source = 'FRED';
 
-    return new NextResponse(body, {
+    return new NextResponse(JSON.stringify(out), {
       status: 200,
       headers: {
         'Cache-Control': `public, s-maxage=${maxAge}, stale-while-revalidate=${staleAge}`,
@@ -77,14 +90,9 @@ export async function GET(_req: NextRequest) {
   } catch (err: any) {
     console.error('FRED PROXY ERROR:', err.name, '|', err.message);
     return NextResponse.json(
-      {
-        error: 'FRED proxy failed',
-        name: err.name,
-        message: err.message,
-        stack: err.stack?.split('\n').slice(0, 5).join(' | '),
-      },
+      { error: 'FRED proxy failed', name: err.name, message: err.message,
+        stack: err.stack?.split('\n').slice(0, 5).join(' | ') },
       { status: 500 }
     );
   }
 }
-
