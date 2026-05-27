@@ -215,8 +215,6 @@ useEffect(function(){
   useEffect(function(){
     var t=setInterval(function(){
       setRankTick(function(n){return n+1;});
-      // ملاحظة: أُزيلت محاكاة أسعار السلع العشوائية (Math.random) -- كانت توهم بأسعار حقيقية.
-      // السلع تبقى على قيمها الأولية حتى ربط مزوّد حقيقي. التحديث الحيّ يأتي من extCommData (AppShell) إن توفّر.
       },5000);
     return function(){clearInterval(t);};
   },[]);
