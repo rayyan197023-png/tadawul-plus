@@ -146,10 +146,22 @@ const { setTab } = useNav();
           history: hist,
         };
       }
-      var oilItem = buildItem(d.oilHistory, d.oilPrice, 'خام WTI', 'WTI', 'نفط', C.gold, 'نطاق آخر 40 يوم تداول · مصدر: FRED (بيانات رسمية)');
-      var vixItem = buildItem(d.vixHistory, d.vix, 'مؤشر الخوف VIX', 'VIX', 'مؤشرات', C.electric, 'مؤشر تقلّب السوق الأمريكي · أقل = استقرار · مصدر: FRED');
-      if(oilItem) items.push(oilItem);
-      if(vixItem) items.push(vixItem);
+      var defs = [
+        {k:'oil',    name:'خام WTI',          cat:'نفط',     color:C.gold,    fact:'نفط غربي تكساس · نطاق آخر 40 يوم · FRED'},
+        {k:'brent',  name:'خام برنت',         cat:'نفط',     color:C.goldL,   fact:'النفط المرجعي العالمي · نطاق آخر 40 يوم · FRED'},
+        {k:'natgas', name:'الغاز الطبيعي',    cat:'طاقة',    color:C.amber,   fact:'غاز هنري هَب · $/MMBtu · FRED'},
+        {k:'vix',    name:'مؤشر الخوف VIX',   cat:'مؤشرات',  color:C.electric,fact:'تقلّب السوق الأمريكي · أقل = استقرار · FRED'},
+        {k:'sp500',  name:'ستاندرد آند بورز 500',cat:'مؤشرات',color:C.mint,  fact:'أكبر 500 شركة أمريكية · FRED'},
+        {k:'nasdaq', name:'ناسداك المركّب',   cat:'مؤشرات',  color:C.plasma,  fact:'مؤشر التقنية الأمريكي · FRED'},
+        {k:'dow',    name:'داو جونز',         cat:'مؤشرات',  color:C.teal,    fact:'30 شركة صناعية كبرى · FRED'},
+        {k:'dxy',    name:'مؤشر الدولار',     cat:'عملات',   color:C.coral,   fact:'قوة الدولار مرجّحاً تجارياً · FRED'},
+        {k:'fedrate',name:'الفائدة الفيدرالية',cat:'فائدة',  color:C.electric,fact:'سعر الفائدة الأمريكي اليومي % · FRED'},
+        {k:'t10',    name:'سندات 10 سنوات',   cat:'سندات',   color:C.smoke,   fact:'عائد السندات الأمريكية 10 سنوات % · FRED'},
+      ];
+      defs.forEach(function(def){
+        var it = buildItem(d[def.k+'History'], d[def.k+'Price'], def.name, def.k, def.cat, def.color, def.fact);
+        if(it) items.push(it);
+      });
       if(items.length) setFredComm(items);
     }).catch(function(){});
   },[]);
