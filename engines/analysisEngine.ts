@@ -867,40 +867,6 @@ function genBars(stk: any, n: number = 60): any[] {
   return bars;
 }
 
-/* ══ جلب الشموع الحقيقية من sahmk عبر proxy ══
-   ── async ─ تُرجع شموع سنة بصيغة المحرّك {o,hi,lo,c,vol,pct}
-   ── ترجع null إن فشل الجلب أو إن أتت أقل من 20 شمعة
-   ── لا تستبدل genBars؛ تعيش بجوارها للاختبار التدريجي
-*/
-async function fetchRealBars(stk: any): Promise<any[] | null> {
-  try {
-    if (!stk || !stk.sym) return null;
-    const r = await fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=1Y`);
-    if (!r.ok) return null;
-    const raw = await r.json();
-    const arr = raw && raw.data;
-    if (!Array.isArray(arr) || arr.length < 20) return null;
-
-    const bars: any[] = [];
-    let prevC: number | null = null;
-    for (let i = 0; i < arr.length; i++) {
-      const d = arr[i] || {};
-      const o  = +d.open;
-      const hi = +d.high;
-      const lo = +d.low;
-      const c  = +d.close;
-      const vol = +(d.volume || 0);
-      if (!isFinite(o) || !isFinite(hi) || !isFinite(lo) || !isFinite(c) || c <= 0) continue;
-      const pct = prevC && prevC > 0 ? ((c - prevC) / prevC) * 100 : 0;
-      bars.push({ o, hi, lo, c, vol, pct: +pct.toFixed(3) });
-      prevC = c;
-    }
-    if (bars.length < 20) return null;
-    return bars;
-  } catch (e) {
-    return null;
-  }
-}
 
 /* ══════════════════════════════════════════════════════════════
    المحركات المدمجة من رادار الفرص
