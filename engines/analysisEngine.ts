@@ -4990,7 +4990,7 @@ function scoreWord(score: number): string {
    الصادرات — exported for use by AnalysisScreen and others
    ══════════════════════════════════════════════════════════ */
 export {
-    seedRng, genBars, fetchRealBars,
+  seedRng, genBars,
   calcEMA, calcRSIFull, calcATRFull, calcVWAPFull,
   calcCMFFull, calcOBVFull, calcStoch, calcSMA, calcVPVR,
   calcMarketStructureFull, calcOrderBlocksFull, calcLiqSweepFull,
