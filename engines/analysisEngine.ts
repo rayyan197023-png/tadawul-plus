@@ -3211,21 +3211,9 @@ function calc9Layers(stk: any, bars: any[]): any {
   // ════════════════════════════════════════════════════════════
   //  🎯 BASE SCORE -- Weighted Layer Score (لا تعديلات)
   // ════════════════════════════════════════════════════════════
-  // L7 (بايزي) لم يعد يُجمع كطبقة -- يعمل حصرياً كمُعدّل ثقة عبر bayesMult.
-  // نُصفّر وزنه ونعيد توزيعه على البُعدين المستقلين (L8 أساسيات + L4 قيمة) ثم نُعيد التطبيع.
-  const WC7 = { ...WC };
-  const _l7w = WC7.L7;
-  WC7.L7 = 0;
-  WC7.L8 = (WC7.L8 || 0) + _l7w * 0.6;
-  WC7.L4 = (WC7.L4 || 0) + _l7w * 0.4;
-  const _w7tot = (Object.values(WC7) as number[]).reduce((s,v)=>s+v,0) || 1;
-  ['L1','L2','L3','L4','L5','L6','L7','L8','L9'].forEach(k=>{
-    (WC7 as any)[k] = (WC7 as any)[k] / _w7tot;
-  });
-
   const baseScore = _clamp(Math.round(
-    L9*WC7.L9 + L1*WC7.L1 + L5*WC7.L5 + L4*WC7.L4 +
-    L8*WC7.L8 + L7*WC7.L7 + L6*WC7.L6 + L2*WC7.L2 + L3*WC7.L3
+    L9*WC.L9 + L1*WC.L1 + L5*WC.L5 + L4*WC.L4 +
+    L8*WC.L8 + L7*WC.L7 + L6*WC.L6 + L2*WC.L2 + L3*WC.L3
   ), 0, 100);
   
   // ════════════════════════════════════════════════════════════
