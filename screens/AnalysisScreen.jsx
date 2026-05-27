@@ -293,8 +293,10 @@ const [filters, setFilters] = useState({
 const syms = liveStocks.map(s => s.sym);
 const ohlcvCache = useOHLCVCache(syms, '3M');
 
-    const allData = useMemo(()=>{
+        const allData = useMemo(()=>{
     // ✨ تمرير liveMACRO كـ parameter بدلاً من تعديل MACRO global
+    // 🔍 مؤقّت: عدّ الأسهم الحقيقية vs الملفّقة (يُحذف بعد القياس)
+    var _realCount = 0, _fakeCount = 0;
     const result = liveStocks.map(stk=>{ 
       // ✨ تحقق من صحة bars من الكاش - إن كانت ناقصة/فاسدة، استخدم genBars
       var cached = ohlcvCache[stk.sym];
@@ -302,8 +304,10 @@ const ohlcvCache = useOHLCVCache(syms, '3M');
       if (cached && Array.isArray(cached) && cached.length >= 20 &&
           cached.every(b => b && isFinite(b.c) && isFinite(b.vol))) {
         bars = cached;
+        _realCount++;
       } else {
         bars = genBars(stk);
+        _fakeCount++;
       }
 
       // مرّر liveMACRO إلى stockHealth
@@ -314,8 +318,11 @@ const ohlcvCache = useOHLCVCache(syms, '3M');
       }
       return {stk, bars, health:h}; 
     });
+    if (typeof window !== 'undefined') {
+      window.__tadawulCounts = { real: _realCount, fake: _fakeCount, total: result.length };
+    }
     return result;
-    },[throttledSig, liveMACRO]); // ← throttled: recalc max every 5s not every 3s
+    },[throttledSig, liveMACRO, ohlcvCache]); // ← throttled: recalc max every 5s not every 3s
 
   // ✨ لوحة التحليل → AI Learning (المصدر 2)
   // عند انتهاء التحليل: قيّم التوصيات القديمة (7+ أيام) ثم احفظ "شراء قوي" الجديدة
