@@ -3368,7 +3368,7 @@ function calc9Layers(stk: any, bars: any[]): any {
     },
     opp:{matrix:oppMatrix,color:oppColor,priority:oppPriority,highLiq:hLiq,highStr:hStr,highMom:hMom},
     tasiCtx: tc_tasi,
-    layers:{L1,L2,L3,L4,L5,L6,L7,L8,L9},
+    layers:{L1,L2,L3,L4,L5,L6,L7,L8,L9,L10},
     extras:{
             spring, sos, upth, harm, div,
       wyPhase, patternBonus, bayesMult,
