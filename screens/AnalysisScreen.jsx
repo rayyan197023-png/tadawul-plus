@@ -804,42 +804,6 @@ animation:'shimmer 1.4s ease infinite',
             </div>
           )}
 
-          {/* ══ زر قياس الطبقات (مؤقّت -- يُحذف بعد القياس) ══ */}
-          {!loading&&(
-            <div style={{padding:"8px 16px"}}>
-              <button onClick={function(){ var r=runLayerProbe(allData); if(r) setProbeJson(JSON.stringify(r)); }}
-                style={{width:"100%",padding:"10px",borderRadius:10,cursor:"pointer",
-                  background:"#a78bfa22",border:"1px solid #a78bfa55",
-                  color:"#a78bfa",fontSize:12,fontWeight:800,fontFamily:"Cairo,sans-serif"}}>
-                📊 قياس الطبقات (مؤقّت)
-              </button>
-            </div>
-          )}
-
-          {/* ══ نافذة عرض بيانات القياس (مؤقّتة) ══ */}
-          {probeJson&&(
-            <div onClick={function(){ setProbeJson(null); }} style={{
-              position:"fixed",inset:0,zIndex:500,background:"rgba(0,0,0,.85)",
-              display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
-              <div onClick={function(e){ e.stopPropagation(); }} style={{
-                background:"#16202e",border:"1px solid #32426a",borderRadius:16,
-                padding:16,maxWidth:430,width:"100%",maxHeight:"80vh",display:"flex",flexDirection:"column",gap:10}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                  <span style={{fontSize:14,fontWeight:800,color:"#f0f6ff"}}>بيانات القياس -- انسخها وأرسلها</span>
-                  <button onClick={function(){ setProbeJson(null); }} style={{background:"none",border:"none",color:"#90a4c8",fontSize:18,cursor:"pointer"}}>✕</button>
-                </div>
-                <button onClick={function(){ try{navigator.clipboard.writeText(probeJson);}catch(e){} }}
-                  style={{padding:"8px",borderRadius:8,background:"#1ee68a22",border:"1px solid #1ee68a55",color:"#1ee68a",fontSize:12,fontWeight:800,cursor:"pointer"}}>
-                  📋 نسخ الكل
-                </button>
-                <textarea readOnly value={probeJson} onClick={function(e){ e.target.select(); }}
-                  style={{flex:1,minHeight:200,background:"#0c1020",border:"1px solid #32426a",borderRadius:8,
-                    padding:10,color:"#c8d8f0",fontSize:10,fontFamily:"monospace",direction:"ltr",resize:"none"}}/>
-              </div>
-            </div>
-          )}
-
-
           {/* ══ Glanceable Dashboard -- نظرة واحدة تكفي ══ */}
           {!loading&&(
 <div style={{
