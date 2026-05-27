@@ -15,7 +15,7 @@ export function runLayerProbe(allData) {
     rows.push({
       sym: d.stk.sym, sec: d.stk.sec, ch: d.stk.ch, score: d.health.score,
       L1: L.L1, L2: L.L2, L3: L.L3, L4: L.L4, L5: L.L5,
-      L6: L.L6, L7: L.L7, L8: L.L8, L9: L.L9,
+      L6: L.L6, L7: L.L7, L8: L.L8, L9: L.L9, L10: L.L10,
       rsi: ex.rsiV, macdH: ex.macdH, adx: ex.adxV,
       vr: ex.vr, cmf: ex.cmf, vwapD: ex.vwapDev, atrP: ex.atrPct,
     });
