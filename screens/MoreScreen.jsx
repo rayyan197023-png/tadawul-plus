@@ -155,7 +155,11 @@ const { setTab } = useNav();
   },[]);
 
   // ── استخدام commData من AppShell إذا متاحة (أسعار حية) ──
-  var commData = extCommData !== undefined ? extCommData : _localCommData;
+  // الأولوية: extCommData (AppShell) ← fredComm (FRED حقيقي) ← _localCommData (COMM)
+  var commData = extCommData !== undefined ? extCommData
+               : (fredComm && fredComm.length) ? fredComm
+               : _localCommData;
+
   var setCommData = extCommData !== undefined
     ? function(updater) {
         if (setExtCommData) setExtCommData(updater);
