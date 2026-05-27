@@ -803,7 +803,19 @@ animation:'shimmer 1.4s ease infinite',
             </div>
           )}
 
-          {/* ══ Glanceable Dashboard — نظرة واحدة تكفي ══ */}
+          {/* ══ زر قياس الطبقات (مؤقّت -- يُحذف بعد القياس) ══ */}
+          {!loading&&(
+            <div style={{padding:"8px 16px"}}>
+              <button onClick={function(){ runLayerProbe(allData); }}
+                style={{width:"100%",padding:"10px",borderRadius:10,cursor:"pointer",
+                  background:"#a78bfa22",border:"1px solid #a78bfa55",
+                  color:"#a78bfa",fontSize:12,fontWeight:800,fontFamily:"Cairo,sans-serif"}}>
+                📊 قياس الطبقات (مؤقّت)
+              </button>
+            </div>
+          )}
+
+          {/* ══ Glanceable Dashboard -- نظرة واحدة تكفي ══ */}
           {!loading&&(
 <div style={{
     margin:"10px 16px 4px",
