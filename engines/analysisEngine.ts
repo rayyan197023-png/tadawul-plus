@@ -3245,7 +3245,7 @@ function calc9Layers(stk: any, bars: any[]): any {
   // L10 (كفاءة السيولة) -- بُعد متعامد مؤكّد (الرتبة 4.44→5.27).
   // نمنحه 7% مقتطعة بالتناسب من محور الزخم المكرّر (L1,L3,L5,L6,L7) فقط.
   const WCx = { ...WC, L10: 0 };
-  const _l10w = 0.07;
+  const _l10w = 0.10;
   const _momKeys = ['L1','L3','L5','L6','L7'];
   const _momSum = _momKeys.reduce((s,k)=>s+(WCx[k]||0),0) || 1;
   _momKeys.forEach(k=>{ WCx[k] = (WCx[k]||0) - _l10w * ((WCx[k]||0) / _momSum); });
