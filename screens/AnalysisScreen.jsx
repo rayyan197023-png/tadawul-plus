@@ -290,7 +290,7 @@ const [filters, setFilters] = useState({
     return () => clearTimeout(t);
   }, [priceSignature]);
 
-const syms = liveStocks.slice(0, 50).map(s => s.sym);
+const syms = liveStocks.map(s => s.sym);
 const ohlcvCache = useOHLCVCache(syms, '3M');
 
     const allData = useMemo(()=>{
