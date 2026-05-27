@@ -3242,9 +3242,26 @@ function calc9Layers(stk: any, bars: any[]): any {
   // ════════════════════════════════════════════════════════════
   //  🎯 BASE SCORE -- Weighted Layer Score (لا تعديلات)
   // ════════════════════════════════════════════════════════════
+  // L10 (كفاءة السيولة) -- بُعد متعامد مؤكّد (الرتبة 4.44→5.27).
+  // نمنحه وزناً محافظاً (7%) مقتطعاً من محور الزخم المكرّر فقط (L1,L3,L5,L6,L7)،
+  // مع إبقاء الأبعاد المتعامدة (L4,L8,L9) سليمة. ثم نعيد التطبيع.
+  const WCx = { ...WC };
+  const _l10w = 0.07;
+  const _momKeys = ['L1','L3','L5','L6','L7'];
+  const _momSum = _momKeys.reduce((s,k)=>s+(WCx[k]||0),0) || 1;
+  _momKeys.forEach(k=>{ WCx[k] = (WCx[k]||0) * (1 - _l10w / _momSum * 1); });
+  // نقتطع _l10w من مجموع محور الزخم بالتناسب
+  _momKeys.forEach(k=>{ WCx[k] = (WCx[k]||0) - (WCx[k]||0) * 0; });
+  let _wxTot = Object.keys(WCx).reduce((s,k)=>s+WCx[k],0);
+  // أضف وزن L10 ثم طبّع المجموع الكلي ليبقى = 1
+  WCx.L10 = _l10w;
+  _wxTot = ['L1','L2','L3','L4','L5','L6','L7','L8','L9','L10'].reduce((s,k)=>s+(WCx[k]||0),0) || 1;
+  ['L1','L2','L3','L4','L5','L6','L7','L8','L9','L10'].forEach(k=>{ WCx[k] = (WCx[k]||0) / _wxTot; });
+
   const baseScore = _clamp(Math.round(
-    L9*WC.L9 + L1*WC.L1 + L5*WC.L5 + L4*WC.L4 +
-    L8*WC.L8 + L7*WC.L7 + L6*WC.L6 + L2*WC.L2 + L3*WC.L3
+    L9*WCx.L9 + L1*WCx.L1 + L5*WCx.L5 + L4*WCx.L4 +
+    L8*WCx.L8 + L7*WCx.L7 + L6*WCx.L6 + L2*WCx.L2 + L3*WCx.L3 +
+    L10*WCx.L10
   ), 0, 100);
   
   // ════════════════════════════════════════════════════════════
