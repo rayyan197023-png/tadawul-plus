@@ -2961,12 +2961,13 @@ function calc9Layers(stk: any, bars: any[]): any {
   )));
   // oilCorr يُعدّل وزن L8 في قطاعات الطاقة
   const oilSensW  = (stk.oilCorr||0) > 0.5 ? 0.12 : 0.10;
-  const _L8raw = Math.round(
+    const _L8raw = Math.round(
     (L1/100)*13 + (L2/100)*3  + (L3/100)*2  +
-    (L4/100)*16 + (L5/100)*9  + (L6/100)*11 +
-    (L9/100)*8  + (stk.rating/100)*(10-oilSensW*100*0.02) +
+    (L4/100)*18 + (L5/100)*13 + (L6/100)*13 +
+    (stk.rating/100)*(10-oilSensW*100*0.02) +
     (valScore/100)*8 + (oilSensW*MACRO.oilPrice/100)
   );
+
 
   // + radarLQ (السيولة الذكية /10) → وزن 20%
   const L8 = Math.min(100, Math.max(0, _L8raw + Math.round((radarLQ/10*100 - 50) * 0.2)));
