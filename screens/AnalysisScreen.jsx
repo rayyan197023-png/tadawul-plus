@@ -192,6 +192,7 @@ function AnalysisScreenInner({ commData: extCommData } = {}) {
 
   // ── جلب بيانات FRED الحية (نفط WTI + VIX) مرة واحدة عند التحميل ──
   const [fredMacro, setFredMacro] = useState(null);
+  const [probeJson, setProbeJson] = useState(null);
   useEffect(function(){
     fetch('/api/freddata').then(function(r){return r.ok?r.json():null;}).then(function(d){
       if(d && (typeof d.oilPrice==='number' || typeof d.vix==='number')) setFredMacro(d);
