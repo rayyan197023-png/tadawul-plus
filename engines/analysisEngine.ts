@@ -3021,6 +3021,30 @@ function calc9Layers(stk: any, bars: any[]): any {
   const L9=Math.min(100,Math.max(0,smartMoney));
 
   // ════════════════════════════════════════
+  //  L10 -- جودة الاتجاه (Trend Quality)
+  //  انحدار خطّي على log(السعر) عبر آخر 20 يوم → R² × إشارة الميل
+  //  يقيس "نظافة" الاتجاه (بُعد زمني متعامد لا تقيسه أيّ طبقة)
+  // ════════════════════════════════════════
+  const _l10win = bars.slice(-20);
+  let L10 = 50;
+  if (_l10win.length >= 10) {
+    const _ys = _l10win.map(b => Math.log(Math.max(b.c, 0.01)));
+    const _n = _ys.length;
+    const _xMean = (_n - 1) / 2;
+    const _yMean = _ys.reduce((s,v)=>s+v,0) / _n;
+    let _sxy = 0, _sxx = 0, _syy = 0;
+    for (let i = 0; i < _n; i++) {
+      const _dx = i - _xMean, _dy = _ys[i] - _yMean;
+      _sxy += _dx * _dy; _sxx += _dx * _dx; _syy += _dy * _dy;
+    }
+    const _slope = _sxx > 0 ? _sxy / _sxx : 0;
+    const _r2 = (_sxx > 0 && _syy > 0) ? (_sxy * _sxy) / (_sxx * _syy) : 0;
+    const _sign = _slope > 0 ? 1 : _slope < 0 ? -1 : 0;
+    L10 = Math.round(_clamp(50 + _r2 * _sign * 50, 0, 100));
+  }
+
+
+  // ════════════════════════════════════════
   //  ① Regime Detection الموسّع (4 حالات)
   // ════════════════════════════════════════
   const mktBreadth  = STOCKS.filter(x=>x.ch>0).length/STOCKS.length;
