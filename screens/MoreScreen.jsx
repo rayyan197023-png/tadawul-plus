@@ -219,9 +219,9 @@ useEffect(function(){
     return function(){clearInterval(t);};
   },[]);
 
-  // الأسواق العالمية: لا مصدر بيانات حقيقي حالياً (Twelve Data لا يدعم احتياجنا، رُفض).
-  // التبويب يعرض "غير متاحة حالياً" حتى ربط مزوّد مناسب.
-  function fetchYahooData(){ /* معطّلة -- بانتظار مزوّد بيانات أسواق عالمية مناسب */ }
+  // الأسواق العالمية مربوطة بـ FRED (نفط/مؤشرات/فائدة) عبر useEffect أعلاه → fredComm.
+  // هذه الدالة تبقى placeholder لزر التحديث في CommoditiesTab (FRED يُجلب تلقائياً عند التحميل، cache 12 ساعة).
+  function fetchYahooData(){ /* لا حاجة لجلب يدوي -- FRED يُحدّث تلقائياً عبر cache */ }
 
   // ── Push Notifications (Browser API) ────────────────────────────────
   useEffect(function(){
