@@ -120,6 +120,40 @@ const { setTab } = useNav();
 });
   var fontScale={small:0.9,medium:1,large:1.12};
   const [_localCommData, _setLocalCommData] = useState(COMM);
+  // ── جلب الأسواق العالمية الحقيقية من FRED (نفط WTI + VIX) ──
+  const [fredComm, setFredComm] = useState([]);
+  useEffect(function(){
+    fetch('/api/freddata').then(function(r){return r.ok?r.json():null;}).then(function(d){
+      if(!d) return;
+      var items = [];
+      function buildItem(hist, price, name, sym, cat, color, fact){
+        if(!Array.isArray(hist) || hist.length < 2 || typeof price !== 'number') return null;
+        var prev = hist[hist.length-2];
+        var pct = prev ? ((price - prev)/prev*100) : 0;
+        var hi = Math.max.apply(null, hist);
+        var lo = Math.min.apply(null, hist);
+        return {
+          sym: name, cat: cat, color: color,
+          price: Math.round(price*100)/100,
+          pct: Math.round(pct*100)/100,
+          open: Math.round(prev*100)/100,
+          hi: Math.round(hi*100)/100,
+          lo: Math.round(lo*100)/100,
+          ch: Math.round((price-prev)*100)/100,
+          lo52: Math.round(lo*100)/100,
+          hi52: Math.round(hi*100)/100,
+          fact: fact,
+          history: hist,
+        };
+      }
+      var oilItem = buildItem(d.oilHistory, d.oilPrice, 'خام WTI', 'WTI', 'نفط', C.gold, 'نطاق آخر 40 يوم تداول · مصدر: FRED (بيانات رسمية)');
+      var vixItem = buildItem(d.vixHistory, d.vix, 'مؤشر الخوف VIX', 'VIX', 'مؤشرات', C.electric, 'مؤشر تقلّب السوق الأمريكي · أقل = استقرار · مصدر: FRED');
+      if(oilItem) items.push(oilItem);
+      if(vixItem) items.push(vixItem);
+      if(items.length) setFredComm(items);
+    }).catch(function(){});
+  },[]);
+
   // ── استخدام commData من AppShell إذا متاحة (أسعار حية) ──
   var commData = extCommData !== undefined ? extCommData : _localCommData;
   var setCommData = extCommData !== undefined
