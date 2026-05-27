@@ -2961,12 +2961,16 @@ function calc9Layers(stk: any, bars: any[]): any {
   )));
   // oilCorr يُعدّل وزن L8 في قطاعات الطاقة
   const oilSensW  = (stk.oilCorr||0) > 0.5 ? 0.12 : 0.10;
-    const _L8raw = Math.round(
-    (L1/100)*13 + (L2/100)*3  + (L3/100)*2  +
-    (L4/100)*18 + (L5/100)*13 + (L6/100)*13 +
-    (stk.rating/100)*(10-oilSensW*100*0.02) +
-    (valScore/100)*8 + (oilSensW*MACRO.oilPrice/100)
+  // L8 -- طبقة الأساسيات الخالصة (متعامدة عن التقنية)
+  // لا تُعيد تدوير L1..L6؛ تقرأ فقط: التقييم + الموقع + الحساسية للنفط
+  // valScore: PE + P/B | rating: تقييم السهم | pricePos: الموقع ضمن نطاق 52 أسبوع
+  const _L8raw = Math.round(
+    (valScore/100)*45 +
+    (stk.rating/100)*30 +
+    ((100-pricePos)/100)*15 +
+    (oilSensW*MACRO.oilPrice/100)*10
   );
+
 
 
   // + radarLQ (السيولة الذكية /10) → وزن 20%
