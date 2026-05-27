@@ -3021,26 +3021,33 @@ function calc9Layers(stk: any, bars: any[]): any {
   const L9=Math.min(100,Math.max(0,smartMoney));
 
   // ════════════════════════════════════════
-  //  L10 -- جودة الاتجاه (Trend Quality)
-  //  انحدار خطّي على log(السعر) عبر آخر 20 يوم → R² × إشارة الميل
-  //  يقيس "نظافة" الاتجاه (بُعد زمني متعامد لا تقيسه أيّ طبقة)
+  //  L10 -- كفاءة السيولة (Liquidity Efficiency)
+  //  معكوس نسبة Amihud للاسيولة: متوسط(|عائد| / حجم)
+  //  يقيس عمق السيولة -- كم يتحرّك السعر لكل وحدة حجم (بُعد متعامد)
+  //  سيولة عميقة (حركة هادئة بحجم كبير) → عالٍ | هشاشة → منخفض
   // ════════════════════════════════════════
   const _l10win = bars.slice(-20);
   let L10 = 50;
   if (_l10win.length >= 10) {
-    const _ys = _l10win.map(b => Math.log(Math.max(b.c, 0.01)));
-    const _n = _ys.length;
-    const _xMean = (_n - 1) / 2;
-    const _yMean = _ys.reduce((s,v)=>s+v,0) / _n;
-    let _sxy = 0, _sxx = 0, _syy = 0;
-    for (let i = 0; i < _n; i++) {
-      const _dx = i - _xMean, _dy = _ys[i] - _yMean;
-      _sxy += _dx * _dy; _sxx += _dx * _dx; _syy += _dy * _dy;
+    const _amihud = [];
+    for (const _b of _l10win) {
+      const _volM = (_b.vol || 0) / 1e6;            // الحجم بالملايين
+      const _ret = Math.abs(_b.pct || 0) / 100;     // |العائد|
+      if (_volM > 0) _amihud.push(_ret / _volM);    // أثر السعر لكل وحدة حجم
     }
-    const _slope = _sxx > 0 ? _sxy / _sxx : 0;
-    const _r2 = (_sxx > 0 && _syy > 0) ? (_sxy * _sxy) / (_sxx * _syy) : 0;
-    const _sign = _slope > 0 ? 1 : _slope < 0 ? -1 : 0;
-    L10 = Math.round(_clamp(50 + _r2 * _sign * 50, 0, 100));
+    if (_amihud.length >= 5) {
+      _amihud.sort((a,b)=>a-b);
+      // الوسيط (median) أمتن من المتوسط ضدّ القيم الشاذة
+      const _mid = Math.floor(_amihud.length / 2);
+      const _medianIlliq = _amihud.length % 2
+        ? _amihud[_mid]
+        : (_amihud[_mid-1] + _amihud[_mid]) / 2;
+      // تحويل لوغاريتمي ثم عكس: لا سيولة عالية → درجة منخفضة
+      // المعايرة: نطاق نموذجي للاسيولة في تاسي ~ 0.0001 إلى 0.05
+      const _logIlliq = Math.log10(Math.max(_medianIlliq, 1e-6));
+      // _logIlliq يتراوح تقريباً [-4, -1.3]؛ نعكسه ونطبّعه
+      L10 = Math.round(_clamp(50 - (_logIlliq + 2.7) * 22, 0, 100));
+    }
   }
 
 
