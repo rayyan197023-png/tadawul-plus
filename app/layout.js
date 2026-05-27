@@ -23,7 +23,6 @@ const ibmPlexMono = IBM_Plex_Mono({
   fallback: ['Consolas', 'Monaco', 'monospace'],
 });
 
-
 // ═══════════════════════════════════════════════
 // 📋 Metadata (SEO + Social + PWA)
 // ═══════════════════════════════════════════════
