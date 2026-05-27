@@ -708,6 +708,15 @@ const best3 = allData.length > 0
                     );
                   })}
                   <span style={{fontSize:8,fontWeight:700,color:C.mint,marginRight:2}}>مباشر</span>
+                  {(function(){
+                    var c = (typeof window !== 'undefined') ? window.__tadawulCounts : null;
+                    if (!c || !c.total) return null;
+                    var pct = Math.round((c.real/c.total)*100);
+                    var clr = pct >= 90 ? C.mint : pct >= 70 ? C.amber : C.coral;
+                    return (<span style={{fontSize:8,fontWeight:700,color:clr,marginRight:4,direction:"ltr"}}>
+                      {c.real}/{c.total}
+                    </span>);
+                  })()}
                   <span style={{fontSize:8,color:C.smoke}}>
 {(function(){
     var d = liveTime || new Date();
