@@ -155,10 +155,8 @@ const { setTab } = useNav();
   },[]);
 
   // ── استخدام commData ──
-  // الأولوية: fredComm (FRED حقيقي كامل) ← extCommData (AppShell) ← _localCommData (COMM)
-  var commData = (fredComm && fredComm.length) ? fredComm
-               : extCommData !== undefined ? extCommData
-               : _localCommData;
+  // FRED حقيقي فقط (حُذف extCommData الوهمي القديم من العرض). COMM فارغة = "لا بيانات".
+  var commData = (fredComm && fredComm.length) ? fredComm : _localCommData;
 
   var setCommData = extCommData !== undefined
     ? function(updater) {
