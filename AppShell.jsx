@@ -107,13 +107,8 @@ function Shell() {
 
   const wlSyms = React.useMemo(() => watchlist.map(w => w.sym), [watchlist]);
 
-  const COMM_DEFAULT = [
-    { sym: 'خام برنت', cat: 'نفط',    price: 68.93,  ch: -6.35, pct: -8.39, color: '#f59e0b' },
-    { sym: 'الذهب',    cat: 'معادن',  price: 2944,   ch: 32,    pct: 1.11,  color: '#f0c050' },
-    { sym: 'S&P 500',  cat: 'مؤشرات', price: 5570,   ch: -120,  pct: -2.10, color: '#4d9fff' },
-    { sym: 'الدولار',  cat: 'عملات',  price: 102.84, ch: -0.26, pct: -0.25, color: '#22d3ee' },
-  ];
-  const [commData, setCommData] = React.useState(COMM_DEFAULT);
+    // السلع الوهمية الثابتة حُذفت. المصدر الحقيقي الآن FRED (في MoreScreen + AnalysisScreen).
+  const [commData, setCommData] = React.useState([]);
 
   // ── Hooks الأساسية ──────────────────────────────────────────
   useLiveStockPrices();
