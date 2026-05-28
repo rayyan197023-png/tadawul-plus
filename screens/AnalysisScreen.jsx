@@ -472,6 +472,81 @@ const avgChange = (liveStocks && liveStocks.length > 0)
     mint:"#0aaa66",   coral:"#d93545",
     amber:C.amber,    teal:"#0596b0",  plasma:C.plasma,
   };
+  // ═══ PROBE مؤقّت: مصفوفة ارتباط L1–L10 على البيانات الحقيقية ═══
+  function runCorrProbe() {
+    var LKEYS = ['L1','L2','L3','L4','L5','L6','L7','L8','L9','L10'];
+    var rows = []; // كل صف = [L1..L10] لسهم واحد ببيانات حقيقية
+
+    liveStocks.forEach(function(stk){
+      var cached = ohlcvCache[stk.sym];
+      var isReal = cached && Array.isArray(cached) && cached.length >= 20 &&
+                   cached.every(function(b){ return b && isFinite(b.c) && isFinite(b.vol); });
+      if (!isReal) return; // حقيقي فقط -- لا genBars
+
+      var h;
+      try { h = stockHealth(stk, cached, liveMACRO); }
+      catch(e){ return; }
+      if (!h || !h.layers) return;
+
+      var row = LKEYS.map(function(k){ return h.layers[k]; });
+      if (row.some(function(v){ return !isFinite(v); })) return;
+      rows.push(row);
+    });
+
+    var N = rows.length;
+    if (N < 10) { console.log('[CORR] عيّنة صغيرة جداً:', N); return; }
+
+    // متوسط كل عمود
+    var means = LKEYS.map(function(_, j){
+      var s = 0; for (var i=0;i<N;i++) s += rows[i][j];
+      return s / N;
+    });
+    // انحراف معياري كل عمود
+    var stds = LKEYS.map(function(_, j){
+      var s = 0; for (var i=0;i<N;i++){ var d = rows[i][j]-means[j]; s += d*d; }
+      return Math.sqrt(s / N) || 1e-9;
+    });
+
+    // مصفوفة Pearson 10×10
+    var M = [];
+    for (var a=0;a<10;a++){
+      M[a] = [];
+      for (var b=0;b<10;b++){
+        var cov = 0;
+        for (var i2=0;i2<N;i2++){
+          cov += (rows[i2][a]-means[a]) * (rows[i2][b]-means[b]);
+        }
+        cov /= N;
+        M[a][b] = +(cov / (stds[a]*stds[b])).toFixed(3);
+      }
+    }
+
+    // طباعة المصفوفة
+    console.log('═══ CORR MATRIX (N=' + N + ' أسهم حقيقية) ═══');
+    console.log('      ' + LKEYS.map(function(k){ return k.padStart(6); }).join(''));
+    for (var r=0;r<10;r++){
+      console.log(LKEYS[r].padStart(4) + ': ' +
+        M[r].map(function(v){ return (v>=0?' ':'') + v.toFixed(2); }).map(function(s){ return s.padStart(6); }).join(''));
+    }
+
+    // أعلى الأزواج ارتباطاً (تكشف التكرار)
+    var pairs = [];
+    for (var x=0;x<10;x++){
+      for (var y=x+1;y<10;y++){
+        pairs.push({ pair: LKEYS[x]+'↔'+LKEYS[y], r: M[x][y], abs: Math.abs(M[x][y]) });
+      }
+    }
+    pairs.sort(function(p,q){ return q.abs - p.abs; });
+    console.log('═══ أعلى 8 أزواج ارتباطاً ═══');
+    pairs.slice(0,8).forEach(function(p){
+      console.log(p.pair + ': ' + (p.r>=0?'+':'') + p.r);
+    });
+
+    if (typeof window !== 'undefined') {
+      window.__corrMatrix = { keys: LKEYS, matrix: M, N: N, topPairs: pairs.slice(0,15) };
+    }
+    console.log('✓ محفوظة في window.__corrMatrix');
+  }
 
   return(
     <div style={{
