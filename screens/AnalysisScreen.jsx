@@ -715,6 +715,29 @@ const avgChange = (liveStocks && liveStocks.length > 0)
       {/* ══ خلفية الجسيمات -- Canvas مستقل ══ */}
       <ParticleCanvas/>
 
+      {/* 🕵️ Watcher: يلتقط أيّ كتابة في tdw_feedback_state */}
+      <script dangerouslySetInnerHTML={{__html:`
+        (function(){
+          if (window.__tdwWatcherInstalled) return;
+          window.__tdwWatcherInstalled = true;
+          window.__tdwWrites = [];
+          var origSet = localStorage.setItem.bind(localStorage);
+          localStorage.setItem = function(k, v){
+            if (k === 'tdw_feedback_state') {
+              var stack = (new Error()).stack || '';
+              window.__tdwWrites.push({
+                ts: Date.now(),
+                len: (v||'').length,
+                preview: (v||'').slice(0, 80),
+                stack: stack.split('\\n').slice(1, 6).join(' | ')
+              });
+              if (window.__tdwWrites.length > 20) window.__tdwWrites.shift();
+            }
+            return origSet(k, v);
+          };
+        })();
+      `}}/>
+
       {/* 🔬 PROBE مؤقّت -- زر تشخيص التعلّم */}
       <button
         onClick={function(){
