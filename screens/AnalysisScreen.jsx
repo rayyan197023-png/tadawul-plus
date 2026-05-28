@@ -322,7 +322,7 @@ const ohlcvCache = useOHLCVCache(syms, '3M');
       window.__tadawulCounts = { real: _realCount, fake: _fakeCount, total: result.length };
     }
     return result;
-    },[throttledSig, liveMACRO, ohlcvCache]); // ← throttled: recalc max every 5s not every 3s
+    },[throttledSig, liveMACRO]); // ← throttled: recalc max every 5s not every 3s
 
   // ✨ لوحة التحليل → AI Learning (المصدر 2)
   // عند انتهاء التحليل: قيّم التوصيات القديمة (7+ أيام) ثم احفظ "شراء قوي" الجديدة
