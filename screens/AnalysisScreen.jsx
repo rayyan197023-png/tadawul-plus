@@ -715,29 +715,63 @@ const avgChange = (liveStocks && liveStocks.length > 0)
       {/* ══ خلفية الجسيمات -- Canvas مستقل ══ */}
       <ParticleCanvas/>
 
-      {/* 🕵️ Watcher: يلتقط أيّ كتابة في tdw_feedback_state */}
+      {/* 🕵️ Watcher v2: ثلاثي الطبقات */}
       <script dangerouslySetInnerHTML={{__html:`
         (function(){
-          if (window.__tdwWatcherInstalled) return;
-          window.__tdwWatcherInstalled = true;
+          if (window.__tdwWatcherV2) return;
+          window.__tdwWatcherV2 = true;
           window.__tdwWrites = [];
-          var origSet = localStorage.setItem.bind(localStorage);
-          localStorage.setItem = function(k, v){
-            if (k === 'tdw_feedback_state') {
-              var stack = (new Error()).stack || '';
-              window.__tdwWrites.push({
-                ts: Date.now(),
-                len: (v||'').length,
-                preview: (v||'').slice(0, 80),
-                stack: stack.split('\\n').slice(1, 6).join(' | ')
-              });
-              if (window.__tdwWrites.length > 20) window.__tdwWrites.shift();
-            }
-            return origSet(k, v);
-          };
+          window.__tdwReads  = [];
+          var KEY = 'tdw_feedback_state';
+          var snapshot = '';
+          try { snapshot = localStorage.getItem(KEY) || ''; } catch(e){}
+          window.__tdwSnap = snapshot;
+
+          function log(kind, val){
+            var stack = (new Error()).stack || '';
+            window.__tdwWrites.push({
+              ts: Date.now(),
+              kind: kind,
+              len: (val||'').length,
+              preview: (val||'').slice(0, 100),
+              stack: stack.split('\\n').slice(2, 7).join(' | ')
+            });
+            if (window.__tdwWrites.length > 30) window.__tdwWrites.shift();
+          }
+
+          // (1) prototype-level setItem (يلتقط حتى لو استبدل أحدهم localStorage)
+          try {
+            var origSet = Storage.prototype.setItem;
+            Storage.prototype.setItem = function(k, v){
+              if (k === KEY) log('proto.setItem', v);
+              return origSet.apply(this, arguments);
+            };
+          } catch(e){ console.log('hook1 fail', e); }
+
+          // (2) instance-level setItem (احتياط)
+          try {
+            var instSet = localStorage.setItem.bind(localStorage);
+            Object.defineProperty(localStorage, 'setItem', {
+              configurable: true,
+              value: function(k, v){
+                if (k === KEY) log('instance.setItem', v);
+                return instSet(k, v);
+              }
+            });
+          } catch(e){ console.log('hook2 fail', e); }
+
+          // (3) polling fallback -- يلتقط الكتابة مهما تمّت
+          setInterval(function(){
+            try {
+              var curr = localStorage.getItem(KEY) || '';
+              if (curr !== window.__tdwSnap) {
+                log('POLL-DETECT', curr);
+                window.__tdwSnap = curr;
+              }
+            } catch(e){}
+          }, 1000);
         })();
       `}}/>
-
       {/* 🔬 PROBE مؤقّت -- زر تشخيص التعلّم */}
       <button
         onClick={function(){
