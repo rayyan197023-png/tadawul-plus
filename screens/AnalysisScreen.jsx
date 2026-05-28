@@ -549,6 +549,34 @@ const avgChange = (liveStocks && liveStocks.length > 0)
     console.log('✓ محفوظة في window.__corrMatrix');
   }
 
+    // ═══ PROBE مؤقّت: مصفوفة ارتباط L1–L10 (modal) ═══
+  function runCorrProbe() {
+    var LKEYS = ['L1','L2','L3','L4','L5','L6','L7','L8','L9','L10'];
+    var rows = [];
+    liveStocks.forEach(function(stk){
+      var cached = ohlcvCache[stk.sym];
+      var isReal = cached && Array.isArray(cached) && cached.length >= 20 &&
+                   cached.every(function(b){ return b && isFinite(b.c) && isFinite(b.vol); });
+      if (!isReal) return;
+      var h;
+      try { h = stockHealth(stk, cached, liveMACRO); } catch(e){ return; }
+      if (!h || !h.layers) return;
+      var row = LKEYS.map(function(k){ return h.layers[k]; });
+      if (row.some(function(v){ return !isFinite(v); })) return;
+      rows.push(row);
+    });
+    var N = rows.length;
+    if (N < 10) { setCorrResult({ error: 'عيّنة صغيرة جداً: ' + N + ' أسهم فقط. انتظر اكتمال البيانات.' }); return; }
+    var means = LKEYS.map(function(_, j){ var s=0; for(var i=0;i<N;i++) s+=rows[i][j]; return s/N; });
+    var stds = LKEYS.map(function(_, j){ var s=0; for(var i=0;i<N;i++){ var d=rows[i][j]-means[j]; s+=d*d; } return Math.sqrt(s/N)||1e-9; });
+    var M = [];
+    for (var a=0;a<10;a++){ M[a]=[]; for (var b=0;b<10;b++){ var cov=0; for(var i2=0;i2<N;i2++){ cov+=(rows[i2][a]-means[a])*(rows[i2][b]-means[b]); } cov/=N; M[a][b]=+(cov/(stds[a]*stds[b])).toFixed(2); } }
+    var pairs = [];
+    for (var x=0;x<10;x++){ for (var y=x+1;y<10;y++){ pairs.push({ pair:LKEYS[x]+'↔'+LKEYS[y], r:M[x][y], abs:Math.abs(M[x][y]) }); } }
+    pairs.sort(function(p,q){ return q.abs - p.abs; });
+    setCorrResult({ keys: LKEYS, matrix: M, N: N, topPairs: pairs.slice(0,8) });
+  }
+
   return(
     <div style={{
       maxWidth:430, margin:"0 auto",
