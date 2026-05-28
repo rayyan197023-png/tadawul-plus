@@ -4364,6 +4364,63 @@ function getTooltipKey(title) {
         );
       })()}
 
+    {corrResult && (
+      <div onClick={function(){ setCorrResult(null); }} style={{
+        position:"fixed",inset:0,zIndex:300,background:"rgba(6,8,15,.92)",
+        display:"flex",alignItems:"center",justifyContent:"center",padding:16,direction:"ltr",
+      }}>
+        <div onClick={function(e){ e.stopPropagation(); }} style={{
+          width:"100%",maxWidth:400,maxHeight:"85vh",overflowY:"auto",
+          background:"#0f1628",border:"1px solid #a78bfa55",borderRadius:16,padding:16,
+        }}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+            <span style={{fontSize:13,fontWeight:800,color:"#a78bfa"}}>مصفوفة الارتباط L1–L10</span>
+            <button onClick={function(){ setCorrResult(null); }} style={{
+              width:28,height:28,borderRadius:8,border:"1px solid #ffffff22",
+              background:"#ffffff11",color:"#fff",fontSize:14,cursor:"pointer",
+            }}>✕</button>
+          </div>
+          {corrResult.error ? (
+            <div style={{fontSize:12,color:"#f59e0b",direction:"rtl",textAlign:"center",padding:20}}>{corrResult.error}</div>
+          ) : (
+            <div>
+              <div style={{fontSize:10,color:"#90a4c8",marginBottom:10,direction:"rtl"}}>
+                N = {corrResult.N} سهم حقيقي
+              </div>
+              <div style={{overflowX:"auto",marginBottom:14}}>
+                <table style={{borderCollapse:"collapse",fontSize:9,fontFamily:"monospace"}}>
+                  <thead>
+                    <tr>
+                      <th style={{padding:"2px 4px",color:"#5a6a8a"}}></th>
+                      {corrResult.keys.map(function(k){ return <th key={k} style={{padding:"2px 4px",color:"#90a4c8"}}>{k}</th>; })}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {corrResult.matrix.map(function(row,ri){
+                      return (<tr key={ri}>
+                        <td style={{padding:"2px 4px",color:"#90a4c8",fontWeight:700}}>{corrResult.keys[ri]}</td>
+                        {row.map(function(v,ci){
+                          var a=Math.abs(v);
+                          var bg = ri===ci ? "#ffffff10" : a>=0.7 ? "#f0505044" : a>=0.5 ? "#f59e0b33" : a>=0.3 ? "#a78bfa22" : "transparent";
+                          return <td key={ci} style={{padding:"2px 4px",textAlign:"center",background:bg,color:v<0?"#ff8a8a":"#cfe"}}>{v.toFixed(2)}</td>;
+                        })}
+                      </tr>);
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <div style={{fontSize:11,fontWeight:700,color:"#a78bfa",marginBottom:6,direction:"rtl"}}>أعلى 8 أزواج ارتباطاً:</div>
+              {corrResult.topPairs.map(function(p,i){
+                return (<div key={i} style={{display:"flex",justifyContent:"space-between",fontSize:11,padding:"3px 0",borderBottom:"1px solid #ffffff0a"}}>
+                  <span style={{color:"#cfe",fontFamily:"monospace"}}>{p.pair}</span>
+                  <span style={{color:p.r<0?"#ff8a8a":"#7fd",fontWeight:700}}>{p.r>=0?"+":""}{p.r.toFixed(2)}</span>
+                </div>);
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    )}
     </div>
   );
 }
