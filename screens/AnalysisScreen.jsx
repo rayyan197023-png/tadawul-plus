@@ -821,6 +821,12 @@ const best3 = allData.length > 0
                       {c.real}/{c.total}
                     </span>);
                   })()}
+                  <button onClick={runCorrProbe} style={{
+                    padding:'2px 8px',fontSize:8,fontWeight:700,marginRight:4,
+                    background:'#a78bfa22',border:'1px solid #a78bfa55',
+                    borderRadius:6,color:'#a78bfa',cursor:'pointer',
+                    fontFamily:'Cairo,sans-serif',
+                  }}>قياس الارتباط</button>
                   <span style={{fontSize:8,color:C.smoke}}>
 {(function(){
     var d = liveTime || new Date();
