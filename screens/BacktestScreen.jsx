@@ -150,6 +150,14 @@ export default function BacktestScreen() {
         historicalData = await generateDataFromStockListReal(enrichedStocks, config.days, 15);
 
         if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
+          var debugInfo = 'تشخيص:\n' +
+            'الفئة: ' + config.category + '\n' +
+            'أسهم الفئة: ' + categoryStocks.length + '\n' +
+            'STOCKS_LIVE المحمّلة: ' + STOCKS.length + '\n' +
+            'أسهم بعد التصفية (p>0): ' + enrichedStocks.length + '\n' +
+            'historicalData ?: ' + (historicalData ? historicalData.length : 'null') + '\n' +
+            'أول يوم: ' + (historicalData && historicalData[0] ? JSON.stringify(historicalData[0]).slice(0,200) : 'لا يوجد');
+          alert(debugInfo);
           setResults({ error: 'لا توجد بيانات تاريخية كافية - تحقق من اتصال API' });
           setIsRunning(false);
           return;
