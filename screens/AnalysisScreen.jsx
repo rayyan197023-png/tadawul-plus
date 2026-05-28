@@ -762,11 +762,15 @@ const avgChange = (liveStocks && liveStocks.length > 0)
               '2) sessionStorage tdw_feedback_v2 (ABM):\n   ' + ssKeys.length + ' مفتاح\n   ' + (ssKeys.length ? ssKeys.slice(0,8).join(', ') : '(فارغ)') + '\n\n' +
               '3) pending_predictions: ' + pendN + ' سهم\n\n' +
               '4) stockHealth: ' + hTest + '\n\n' +
-              '5) بنية 2310:\n' + (function(){
+              '5) كتابات tdw_feedback_state:\n' + (function(){
                 try {
-                  var v = ls && ls['2310'] ? ls['2310'] : null;
-                  if (!v) return '(غير موجود)';
-                  return JSON.stringify(v).slice(0, 400);
+                  var w = window.__tdwWrites || [];
+                  if (!w.length) return '(لا كتابات منذ التحميل)';
+                  return w.map(function(x, i){
+                    return (i+1) + ') طول=' + x.len + '\n' +
+                           '   نص: ' + x.preview + '...\n' +
+                           '   من: ' + x.stack;
+                  }).join('\n\n');
                 } catch(e){ return 'خطأ: ' + e.message; }
               })()
             );
