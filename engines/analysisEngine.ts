@@ -3330,8 +3330,6 @@ function calc9Layers(stk: any, bars: any[]): any {
   // ✨ أُزيل bayesMult (العدّ المزدوج): L7 مضمّن أصلاً في baseScore
   // كطبقة موزونة، فحقنه هنا ثانيةً كان يُضخّم البايزي مرّتين.
   // الآن: الزخم فقط -- كل إشارة تُعَدّ مرّة واحدة.
-  // القديم (معلّق للتراجع):
-  // const momentumBayesFactor = _clamp(1.0 + momentumPersistRaw + (bayesMult-1.0)*0.5, 0.85, 1.10);
   const momentumBayesFactor = _clamp(
     1.0 + momentumPersistRaw,
     0.85, 1.10
