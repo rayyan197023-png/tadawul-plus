@@ -37,9 +37,13 @@ export function useOHLCVCache(syms = [], period = '3M') {
       }
     }
 
-    for (let i = 0; i < toFetch.length; i += 5) {
-      fetchBatch(toFetch.slice(i, i + 5));
-    }
+    // موجات متسلسلة: 5 سهم في كل موجة، انتظار اكتمالها قبل التالية
+    (async () => {
+      for (let i = 0; i < toFetch.length; i += 5) {
+        if (cancelled) break;
+        await fetchBatch(toFetch.slice(i, i + 5));
+      }
+    })();
 
     return () => { cancelled = true; };
   }, [syms.join(','), period]);
