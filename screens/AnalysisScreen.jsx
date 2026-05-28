@@ -738,7 +738,14 @@ const avgChange = (liveStocks && liveStocks.length > 0)
               '1) localStorage tdw_feedback_state:\n   ' + lsKeys.length + ' مفتاح\n   ' + (lsKeys.length ? lsKeys.slice(0,8).join(', ') : '(فارغ)') + '\n\n' +
               '2) sessionStorage tdw_feedback_v2 (ABM):\n   ' + ssKeys.length + ' مفتاح\n   ' + (ssKeys.length ? ssKeys.slice(0,8).join(', ') : '(فارغ)') + '\n\n' +
               '3) pending_predictions: ' + pendN + ' سهم\n\n' +
-              '4) stockHealth: ' + hTest
+              '4) stockHealth: ' + hTest + '\n\n' +
+              '5) بنية 2310:\n' + (function(){
+                try {
+                  var v = ls && ls['2310'] ? ls['2310'] : null;
+                  if (!v) return '(غير موجود)';
+                  return JSON.stringify(v).slice(0, 400);
+                } catch(e){ return 'خطأ: ' + e.message; }
+              })()
             );
           } catch(err) { alert('خطأ probe: ' + err.message); }
         }}
