@@ -3563,39 +3563,7 @@ var neut = normalizeProb(prob.neutral);
             {icon:"🔐",l:"الأمان والخصوصية",d:"إدارة الخصوصية"},
             {icon:"❓",l:"المساعدة والدعم",  d:"الأسئلة الشائعة"},
           ].map((item,i)=>(
-            <div key={item.l} className="card-enter" style={{animationDelay:`${i*.07}s`,marginBottom:8}}
-              onClick={item._probe ? function(){
-                try {
-                  var ls  = (function(){ try{ return JSON.parse(localStorage.getItem('tdw_feedback_state')||'null'); }catch(e){ return 'PARSE_ERR'; } })();
-                  var ss  = (function(){ try{ return JSON.parse(sessionStorage.getItem('tdw_feedback_v2')||'null'); }catch(e){ return 'PARSE_ERR'; } })();
-                  var lsKeys = ls && typeof ls==='object' ? Object.keys(ls) : [];
-                  var ssKeys = ss && typeof ss==='object' ? Object.keys(ss) : [];
-                  var pend = (function(){ try{ return JSON.parse(localStorage.getItem('tdw_pending_predictions')||'null'); }catch(e){ return null; } })();
-                  var pendN = pend && typeof pend==='object' ? Object.keys(pend).length : 0;
-                  // اختبار stockHealth الحقيقي على أول سهم
-                  var hTest = 'لم يُختبر';
-                  try {
-                    var d0 = (allData && allData[0]) ? allData[0] : null;
-                    if (d0 && d0.health && isFinite(d0.health.score)) {
-                      hTest = 'يعمل ✓ score=' + d0.health.score + ' fbApplied=' + (d0.health.conviction && d0.health.conviction.feedbackApplied);
-                    } else { hTest = 'health فارغ ✗'; }
-                  } catch(e){ hTest = 'خطأ: ' + e.message; }
-                  alert(
-                    '═══ تشخيص التعلّم ═══\n\n' +
-                    '① localStorage tdw_feedback_state:\n' +
-                    '   مفاتيح: ' + lsKeys.length + '\n' +
-                    '   ' + (lsKeys.length ? lsKeys.slice(0,8).join(', ') : '(فارغ)') + '\n\n' +
-                    '② sessionStorage tdw_feedback_v2 (ABM):\n' +
-                    '   مفاتيح: ' + ssKeys.length + '\n' +
-                    '   ' + (ssKeys.length ? ssKeys.slice(0,8).join(', ') : '(فارغ)') + '\n\n' +
-                    '③ tdw_pending_predictions: ' + pendN + ' سهم\n\n' +
-                    '④ stockHealth: ' + hTest
-                  );
-                } catch(err) {
-                  alert('خطأ probe: ' + err.message);
-                }
-              } : undefined}
-            >
+             <div key={item.l} className="card-enter" style={{animationDelay:`${i*.07}s`,marginBottom:8}}>
               <div style={{
                 background:`linear-gradient(135deg,${C.layer1},${C.layer2})`,
                 borderRadius:14,padding:"14px 16px",
