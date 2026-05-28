@@ -712,8 +712,45 @@ const avgChange = (liveStocks && liveStocks.length > 0)
         })}
       </div>
 
-      {/* ══ خلفية الجسيمات — Canvas مستقل ══ */}
+      {/* ══ خلفية الجسيمات -- Canvas مستقل ══ */}
       <ParticleCanvas/>
+
+      {/* 🔬 PROBE مؤقّت -- زر تشخيص التعلّم */}
+      <button
+        onClick={function(){
+          try {
+            var ls  = (function(){ try{ return JSON.parse(localStorage.getItem('tdw_feedback_state')||'null'); }catch(e){ return 'ERR'; } })();
+            var ss  = (function(){ try{ return JSON.parse(sessionStorage.getItem('tdw_feedback_v2')||'null'); }catch(e){ return 'ERR'; } })();
+            var lsKeys = ls && typeof ls==='object' ? Object.keys(ls) : [];
+            var ssKeys = ss && typeof ss==='object' ? Object.keys(ss) : [];
+            var pend = (function(){ try{ return JSON.parse(localStorage.getItem('tdw_pending_predictions')||'null'); }catch(e){ return null; } })();
+            var pendN = pend && typeof pend==='object' ? Object.keys(pend).length : 0;
+            var hTest = 'لم يُختبر';
+            try {
+              var d0 = (allData && allData.length) ? allData[0] : null;
+              if (d0 && d0.health && isFinite(d0.health.score)) {
+                var fb = d0.health.conviction ? d0.health.conviction.feedbackApplied : '?';
+                hTest = 'يعمل score=' + d0.health.score + ' fb=' + fb;
+              } else { hTest = 'health فارغ'; }
+            } catch(e){ hTest = 'خطأ: ' + e.message; }
+            alert(
+              'تشخيص التعلّم\n\n' +
+              '1) localStorage tdw_feedback_state:\n   ' + lsKeys.length + ' مفتاح\n   ' + (lsKeys.length ? lsKeys.slice(0,8).join(', ') : '(فارغ)') + '\n\n' +
+              '2) sessionStorage tdw_feedback_v2 (ABM):\n   ' + ssKeys.length + ' مفتاح\n   ' + (ssKeys.length ? ssKeys.slice(0,8).join(', ') : '(فارغ)') + '\n\n' +
+              '3) pending_predictions: ' + pendN + ' سهم\n\n' +
+              '4) stockHealth: ' + hTest
+            );
+          } catch(err) { alert('خطأ probe: ' + err.message); }
+        }}
+        style={{
+          position:"fixed", top:80, left:10, zIndex:9999,
+          background:"#f0c050", color:"#06080f",
+          border:"none", borderRadius:10, padding:"8px 12px",
+          fontSize:11, fontWeight:800, fontFamily:"Cairo,sans-serif",
+          boxShadow:"0 4px 16px rgba(0,0,0,.5)", cursor:"pointer",
+        }}>
+        🔬 فحص
+      </button>
 
       {/* ══════════════════════════════════
            الصفحة الرئيسية
