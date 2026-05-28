@@ -799,10 +799,10 @@ const avgChange = (liveStocks && liveStocks.length > 0)
               '5) كتابات tdw_feedback_state:\n' + (function(){
                 try {
                   var w = window.__tdwWrites || [];
-                  if (!w.length) return '(لا كتابات منذ التحميل)';
+                  if (!w.length) return '(لا كتابات)';
                   return w.map(function(x, i){
-                    return (i+1) + ') طول=' + x.len + '\n' +
-                           '   نص: ' + x.preview + '...\n' +
+                    return (i+1) + ') [' + x.kind + '] طول=' + x.len + '\n' +
+                           '   نص: ' + x.preview + '\n' +
                            '   من: ' + x.stack;
                   }).join('\n\n');
                 } catch(e){ return 'خطأ: ' + e.message; }
