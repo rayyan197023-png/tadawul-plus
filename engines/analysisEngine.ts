@@ -3328,13 +3328,17 @@ function calc9Layers(stk: any, bars: any[]): any {
                    : 0.80;
   // نطاق: [0.80, 1.10]
   
-  // ─── 5. Momentum + Bayes Factor (وزن 15%) ───
-  // الزخم + التحديث البايزي
+  // ─── 5. Momentum Factor (وزن 15%) ───
+  // ✨ أُزيل bayesMult (العدّ المزدوج): L7 مضمّن أصلاً في baseScore
+  // كطبقة موزونة، فحقنه هنا ثانيةً كان يُضخّم البايزي مرّتين.
+  // الآن: الزخم فقط -- كل إشارة تُعَدّ مرّة واحدة.
+  // القديم (معلّق للتراجع):
+  // const momentumBayesFactor = _clamp(1.0 + momentumPersistRaw + (bayesMult-1.0)*0.5, 0.85, 1.10);
   const momentumBayesFactor = _clamp(
-    1.0 + momentumPersistRaw + (bayesMult - 1.0) * 0.5,
+    1.0 + momentumPersistRaw,
     0.85, 1.10
   );
-  // نطاق: [0.85, 1.10]
+  // نطاق: [0.85, 1.10] -- الآن من الزخم فقط
   
   // ─── 🎯 COMBINED ADJUSTMENT (weighted average) ───
   const adjustmentFactor = _clamp(
