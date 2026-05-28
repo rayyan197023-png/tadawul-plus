@@ -782,14 +782,20 @@ const avgChange = (liveStocks && liveStocks.length > 0)
             var ssKeys = ss && typeof ss==='object' ? Object.keys(ss) : [];
             var pend = (function(){ try{ return JSON.parse(localStorage.getItem('tdw_pending_predictions')||'null'); }catch(e){ return null; } })();
             var pendN = pend && typeof pend==='object' ? Object.keys(pend).length : 0;
-            var hTest = 'لم يُختبر';
-            try {
-              var d0 = (allData && allData.length) ? allData[0] : null;
-              if (d0 && d0.health && isFinite(d0.health.score)) {
-                var fb = d0.health.conviction ? d0.health.conviction.feedbackApplied : '?';
-                hTest = 'يعمل score=' + d0.health.score + ' fb=' + fb;
-              } else { hTest = 'health فارغ'; }
-            } catch(e){ hTest = 'خطأ: ' + e.message; }
+                var hTest = 'لم يُختبر';
+              try {
+                var dTest = (allData||[]).find(function(d){ return d && d.stk && d.stk.sym === '1010'; });
+                if (dTest && dTest.health) {
+                  var fb1010 = dTest.health.conviction ? dTest.health.conviction.feedbackApplied : '?';
+                  var abm = dTest.health.abmInfo || {};
+                  hTest = '1010 score=' + dTest.health.score + ' fb=' + fb1010 + 
+                          ' abm.applied=' + (abm.applied||'?') +
+                          ' sampleSize=' + (abm.meta&&abm.meta.sampleSize||'لا meta');
+                } else {
+                  hTest = 'سهم 1010 غير موجود في allData';
+                }
+              } catch(e){ hTest = 'خطأ: ' + e.message; }
+
             alert(
               'تشخيص التعلّم\n\n' +
               '1) localStorage tdw_feedback_state:\n   ' + lsKeys.length + ' مفتاح\n   ' + (lsKeys.length ? lsKeys.slice(0,8).join(', ') : '(فارغ)') + '\n\n' +
