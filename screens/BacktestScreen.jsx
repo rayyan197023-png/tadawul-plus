@@ -167,7 +167,7 @@ export default function BacktestScreen() {
           'آخر تاريخ: ' + lastDate + '\n\n' +
           'عدد الأسهم: ' + (firstStock ? (historicalData[0].stocksData||[]).length : 0) + '\n' +
           'bars في أول سهم: ' + barsCount
-        );
+        ); 
 
         if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
           var debugInfo = 'تشخيص:\n' +
