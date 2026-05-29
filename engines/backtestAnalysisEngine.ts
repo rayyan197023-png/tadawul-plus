@@ -739,31 +739,291 @@ function calcMicrostructure(stk: any, bars: any[]): any {
 }
 
 // ════════════════════════════════════════════════════════════
-//  دالة الاختبار -- للتأكّد من نجاح المرحلة ٤
+//  دوال مساعدة لحساب الطبقات
+// ════════════════════════════════════════════════════════════
+
+function calcEMA(vs: number[], p: number): number {
+  if (!vs.length) return 0;
+  const k = 2 / (p + 1);
+  let e = vs[0];
+  for (let i = 1; i < vs.length; i++) e = vs[i] * k + e * (1 - k);
+  return e;
+}
+
+function calcStoch(bars: any[], kP: number = 14): number {
+  if (!bars || bars.length < kP) return 50;
+  const slice = bars.slice(-kP);
+  let highestHigh = -Infinity;
+  let lowestLow = Infinity;
+  for (const b of slice) {
+    const h = b.hi || b.high || b.c;
+    const l = b.lo || b.low || b.c;
+    if (h > highestHigh) highestHigh = h;
+    if (l < lowestLow) lowestLow = l;
+  }
+  const currentClose = bars[bars.length - 1].c;
+  const range = highestHigh - lowestLow;
+  if (range === 0) return 50;
+  const k = ((currentClose - lowestLow) / range) * 100;
+  return +Math.max(0, Math.min(100, k)).toFixed(2);
+}
+
+function calcSMA(bars: any[], period: number): number {
+  if (!bars || bars.length < period) return bars && bars.length > 0 ? bars[bars.length - 1].c : 0;
+  const slice = bars.slice(-period);
+  const sum = slice.reduce((s: number, b: any) => s + b.c, 0);
+  return +(sum / period).toFixed(4);
+}
+
+// نُسخ من Full functions في analysisEngine للاستخدام الداخلي
+function calcOrderBlocksFull(bars: any[], atr: number): any {
+  const obs: any[] = [];
+  const cur = bars[bars.length - 1].close || bars[bars.length - 1].c;
+  const n = bars.length;
+  const recentVolatility = bars.length >= 20
+    ? bars.slice(-20).reduce((s: number, b: any) => s + Math.abs(b.pct || 0), 0) / 20
+    : 1.5;
+  const atrMult = Math.max(1.2, Math.min(2.0, 1.5 * recentVolatility / 1.5));
+  for (let i = 1; i < n - 2; i++) {
+    const b = bars[i];
+    const bClose = b.close || b.c;
+    const bOpen = b.open || b.o;
+    if (bClose < bOpen) {
+      const imp = Math.max(
+        bars[i + 1] ? (bars[i + 1].close || bars[i + 1].c) - bClose : 0,
+        bars[i + 2] ? (bars[i + 2].close || bars[i + 2].c) - bClose : 0,
+        bars[i + 3] && i + 3 < n ? (bars[i + 3].close || bars[i + 3].c) - bClose : 0
+      );
+      if (imp >= atr * atrMult) {
+        const fresh = cur > b.lo, inOB = cur >= b.lo && cur <= b.hi;
+        const inRef = cur >= b.lo && cur <= (b.hi + b.lo) / 2;
+        const fvg = i + 2 < n && bars[i].hi < bars[i + 2].lo;
+        obs.push({ type: "bull", hi: b.hi, lo: b.lo, mid: (b.hi + b.lo) / 2, strength: +(imp / atr).toFixed(2), fresh, inOB, inRef, fvg });
+      }
+    }
+  }
+  const bulls = obs.filter((o: any) => o.type === "bull" && o.fresh).sort((a: any, b: any) => (b.strength + (b.fvg ? 2 : 0)) - (a.strength + (a.fvg ? 2 : 0)));
+  const best = bulls[0] || null;
+  const inBullOB = !!(best && best.inOB), inRef = !!(best && best.inRef), hasFVG = !!(best && best.fvg);
+  const strength = best ? best.strength : 0;
+  const baseScore = bulls.length > 0
+    ? Math.round(2 + 14 * Math.tanh(strength / 2.5) + (inRef ? 3 : inBullOB ? 1.5 : 0))
+    : 2;
+  const score = Math.round(Math.min(20, Math.max(2, baseScore + (hasFVG ? 2 : 0))));
+  return {
+    inBullOB, inRef, hasFVG,
+    bullCount: bulls.length,
+    score: Math.min(20, score),
+    label: inRef ? "منطقة شراء قوية ✓" : inBullOB && hasFVG ? "منطقة شراء مع فجوة" : inBullOB ? "داخل منطقة شراء" : bulls.length > 0 ? "منطقة شراء متاحة" : "لا منطقة شراء"
+  };
+}
+
+function calcLiqSweepFull(bars: any[], atr: number): any {
+  const cur = bars[bars.length - 1].close || bars[bars.length - 1].c;
+  const avgVol = bars.reduce((s: number, b: any) => s + (b.vol || 0), 0) / bars.length;
+  const sweeps: any[] = [];
+  const lb = Math.min(20, Math.max(10, Math.round(bars.length * 0.20)));
+  for (let i = lb; i < bars.length - 1; i++) {
+    const b = bars[i], win = bars.slice(i - lb, i);
+    const pH = Math.max(...win.map((x: any) => x.hi));
+    const pL = Math.min(...win.map((x: any) => x.lo));
+    const volOk = b.vol > avgVol * 1.5;
+    const nx = bars[i + 1];
+    const bClose = b.close || b.c;
+    if (b.hi > pH && bClose < pH && (b.hi - pH) >= atr * 0.5) {
+      const conf = nx && (nx.close || nx.c) < (nx.open || nx.o);
+      const eq = win.filter((x: any) => Math.abs(x.hi - pH) / pH < 0.0015).length >= 2;
+      sweeps.push({ type: "BSL", q: (volOk ? 1 : 0) + (eq ? 1 : 0) + (conf ? 1 : 0) });
+    }
+    if (b.lo < pL && bClose > pL && (pL - b.lo) >= atr * 0.5) {
+      const conf = nx && (nx.close || nx.c) > (nx.open || nx.o);
+      const eq = win.filter((x: any) => Math.abs(x.lo - pL) / pL < 0.0015).length >= 2;
+      sweeps.push({ type: "SSL", q: (volOk ? 1 : 0) + (eq ? 1 : 0) + (conf ? 1 : 0) });
+    }
+  }
+  const ssls = sweeps.filter((s: any) => s.type === "SSL");
+  const bsls = sweeps.filter((s: any) => s.type === "BSL");
+  const bestSSL = ssls[ssls.length - 1];
+  const recSSL = ssls.length > 0;
+  const q = bestSSL ? (bestSSL.q || 0) : 0;
+  let score = 3;
+  if (recSSL) {
+    score = Math.round(Math.min(20, Math.max(6, 6 + 10 * Math.tanh(q / 1.2) + Math.min(4, ssls.length * 0.8))));
+  } else if (ssls.length > 0) {
+    score = 5;
+  }
+  return {
+    recoveredSSL: recSSL,
+    sslCount: ssls.length,
+    bslCount: bsls.length,
+    sslQuality: q,
+    score: Math.min(20, score),
+    label: recSSL && q === 3 ? "اصطياد مثالي ✓✓✓" : recSSL && q === 2 ? "اصطياد قوي ✓✓" : recSSL ? "تعافٍ من الاصطياد" : ssls.length > 0 ? "اصطياد حديث" : "لا اصطياد"
+  };
+}
+
+function calcIVWAP(bars: any[]): any {
+  const cur = bars[bars.length - 1].close || bars[bars.length - 1].c;
+  const vwM = calcVWAP(bars.slice(-20));
+  const vwQ = calcVWAP(bars);
+  const bars60 = bars.slice(-Math.min(bars.length, 60));
+  const loIdx60 = bars60.reduce((mi: number, b: any, i: number) => b.lo < bars60[mi].lo ? i : mi, 0);
+  const avwap = calcVWAP(bars60.slice(loIdx60));
+  let sumVV = 0, sumV = 0;
+  for (const b of bars) {
+    const tp = (b.hi + b.lo + (b.close || b.c)) / 3;
+    sumVV += (b.vol || 0) * Math.pow(tp - vwQ, 2);
+    sumV += (b.vol || 0);
+  }
+  const std = sumV > 0 ? Math.sqrt(sumVV / sumV) : 0;
+  const b1Lo = vwQ - std, b2Lo = vwQ - 2 * std;
+  const aboveAVWAP = cur > avwap;
+  const belowB1 = cur < b1Lo, belowB2 = cur < b2Lo;
+  const vwapDev = std > 0 ? (cur - vwQ) / std : 0;
+  const above3 = [calcVWAP(bars.slice(-5)), vwM, vwQ].filter((v: number) => cur > v).length;
+  let score = 4;
+  if (belowB2 && aboveAVWAP) score = 20;
+  else if (belowB1 && aboveAVWAP) score = Math.round(14 + Math.tanh(-vwapDev) * 2);
+  else if (above3 === 3) score = Math.round(6 - Math.tanh(vwapDev) * 2);
+  else if (aboveAVWAP) score = Math.round(8 - Math.tanh(vwapDev));
+  else score = Math.round(Math.max(2, 8 - Math.abs(vwapDev) * 2));
+  return {
+    vwapMonth: +vwM.toFixed(2),
+    avwap: +avwap.toFixed(2),
+    vwapDev: std > 0 ? +((cur - vwQ) / std).toFixed(2) : 0,
+    aboveAVWAP, belowB1, belowB2, above3,
+    score: Math.min(20, score),
+    label: belowB2 && aboveAVWAP ? "تحت -2σ + فوق AVWAP ✓" : belowB1 ? "تحت VWAP -1σ" : above3 === 3 ? "فوق 3 VWAPs" : aboveAVWAP ? "فوق AVWAP" : "تحت AVWAP"
+  };
+}
+
+// ════════════════════════════════════════════════════════════
+//  Regime Detection و Dynamic Weighting
+// ════════════════════════════════════════════════════════════
+
+function detectMarketRegime(bars: any[], adxV: number, mktWtd: number, mktBreadth: number, atr: number, stk: any): any {
+  const n = bars.length || 1;
+  const atrPct = atr / (bars[n - 1].c || 1) * 100;
+  const ret5 = bars.length >= 5 ? bars.slice(-5).reduce((s: number, b: any) => s + (b.pct || 0), 0) / 5 : 0;
+  const recentAtrPct = bars.length >= 5
+    ? bars.slice(-5).reduce((s: number, b: any) => s + Math.abs(b.pct || 0), 0) / 5
+    : Math.abs(stk.ch || 0);
+  const historicAtrPct = bars.length >= 20
+    ? bars.slice(-20).reduce((s: number, b: any) => s + Math.abs(b.pct || 0), 0) / 20
+    : recentAtrPct;
+  const volSpike = historicAtrPct > 0 ? recentAtrPct / historicAtrPct : 1;
+  const isSideways = adxV < 20 && atrPct < 1.2;
+  const isVolatile = volSpike > 1.8 || atrPct > 2.5;
+  const avgVol = bars.reduce((s: number, b: any) => s + (b.vol || 0), 0) / n;
+  const vol5 = bars.length >= 5 ? bars.slice(-5).reduce((s: number, b: any) => s + (b.vol || 0), 0) / 5 : avgVol;
+  const volRatio = avgVol > 0 ? vol5 / avgVol : 1;
+  const isNewsdriven = MACRO.vix > 28 && volRatio > 1.6;
+  const isTrending = adxV > 28 && Math.abs(mktWtd) > 0.25;
+  const isBullish = isTrending && mktWtd > 0 && mktBreadth > 0.55;
+  const isBearish = isTrending && mktWtd < 0 && mktBreadth < 0.45;
+  let regime;
+  if (isVolatile) regime = "volatile";
+  else if (isNewsdriven) regime = "news-driven";
+  else if (isSideways) regime = "sideways";
+  else if (isBullish) regime = "bull";
+  else if (isBearish) regime = "bear";
+  else regime = "chop";
+  return { regime, atrPct: +atrPct.toFixed(2), volSpike: +volSpike.toFixed(2), ret5: +ret5.toFixed(3), volRatio: +volRatio.toFixed(2) };
+}
+
+function buildDynamicWeights(regime: string, sector: string): any {
+  const BASE: any = {
+    L9: 0.20, L1: 0.20, L5: 0.20,
+    L4: 0.15, L8: 0.15,
+    L7: 0.06, L6: 0.04, L2: 0.02, L3: 0.02
+  };
+  const DELTA: any = {
+    bull: { L5: +.05, L1: +.03, L4: +.02, L9: +.01, L8: -.02, L7: -.03, L6: -.02, L2: -.02, L3: -.02 },
+    bear: { L9: +.06, L7: +.03, L8: +.02, L1: +.01, L5: -.05, L4: -.03, L6: -.02, L2: -.01, L3: -.01 },
+    sideways: { L7: +.05, L8: +.04, L9: +.02, L1: -.03, L5: -.05, L4: -.02, L6: +.01, L2: -.01, L3: -.01 },
+    volatile: { L9: +.06, L8: +.04, L7: +.02, L5: -.05, L1: -.04, L4: -.02, L6: -.01, L2: 0, L3: 0 },
+    "news-driven": { L8: +.06, L9: +.03, L7: +.02, L5: -.04, L1: -.03, L4: -.02, L6: -.01, L2: -.01, L3: 0 },
+    chop: { L7: +.04, L8: +.03, L9: +.02, L5: -.03, L1: -.03, L4: -.02, L6: 0, L2: -.01, L3: 0 },
+  };
+  const SECTOR_D: any = {
+    "الطاقة": { L9: +.04, L8: +.03, L1: +.01, L5: -.03, L4: -.02, L7: -.02, L6: -.01 },
+    "المواد الأساسية": { L9: +.03, L8: +.03, L1: +.01, L5: -.02, L4: -.02, L7: -.02, L6: -.01 },
+    "البنوك": { L8: +.03, L7: +.03, L5: +.01, L9: -.02, L1: -.02, L4: -.01, L6: -.01, L2: -.01 },
+    "التطبيقات وخدمات التقنية": { L5: +.03, L1: +.03, L4: +.01, L9: -.02, L8: -.02, L7: -.01, L6: -.01, L2: -.01 },
+    "إنتاج الأغذية": { L8: +.03, L7: +.02, L9: +.01, L5: -.02, L1: -.02, L4: -.01, L6: -.01 },
+    "التأمين": { L8: +.03, L7: +.02, L9: +.01, L5: -.02, L1: -.02, L4: -.01, L6: -.01 },
+  };
+  const W: any = { ...BASE };
+  const rd = DELTA[regime] || DELTA.chop;
+  const sd = SECTOR_D[sector] || {};
+  ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'L9'].forEach(k => {
+    W[k] = (BASE[k] || 0) + (rd[k] || 0) * 0.70 + (sd[k] || 0) * 0.30;
+    W[k] = Math.max(0.01, W[k]);
+  });
+  const total = (Object.values(W) as number[]).reduce((s: number, v: number) => s + v, 0);
+  ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'L9'].forEach(k => {
+    W[k] = +(W[k] / total).toFixed(4);
+  });
+  return W;
+}
+
+function reduceCorrelation(layers: any): any {
+  const { L1, L2, L4, L5, L7, L9 } = layers;
+  const W_corr: any = { L1: 1, L2: 1, L3: 1, L4: 1, L5: 1, L6: 1, L7: 1, L8: 1, L9: 1 };
+  if (L1 !== undefined && L4 !== undefined && Math.abs(L1 - L4) < 15) W_corr.L4 = 0.75;
+  if (L5 !== undefined && L2 !== undefined && Math.abs(L5 - L2) < 15) W_corr.L2 = 0.70;
+  if (L9 !== undefined && L2 !== undefined) {
+    if ((L9 > 65 && L2 > 65) || (L9 < 40 && L2 < 40)) W_corr.L2 = Math.min(W_corr.L2, 0.65);
+  }
+  if (L1 !== undefined && L5 !== undefined && Math.abs(L1 - L5) < 12) W_corr.L5 = 0.90;
+  if (L7 !== undefined && L9 !== undefined) {
+    if ((L7 > 65 && L9 > 65) || (L7 < 40 && L9 < 40)) W_corr.L7 = 0.92;
+  }
+  return W_corr;
+}
+
+function calcConflictPenalty(layers: any, regime: string): any {
+  const { L1, L4, L5, L7, L9 } = layers;
+  const conflicts = [
+    { active: L1 > 75 && L5 < 30, severity: 3 },
+    { active: L9 > 75 && L1 < 30, severity: 3 },
+    { active: L5 > 75 && L9 < 30, severity: 2 },
+    { active: L7 > 75 && L9 < 35, severity: 2 },
+    { active: L4 > 70 && L1 < 30, severity: 1 },
+  ];
+  const active = conflicts.filter(c => c.active);
+  if (!active.length) return { penalty: 0, conflictCount: 0, details: [] as any[] };
+  let penalty = 0;
+  active.forEach((c, i) => { penalty += c.severity * 3 * (1 + i * 0.5); });
+  if (regime === "volatile") penalty *= 1.3;
+  if (regime === "news-driven") penalty *= 1.2;
+  return {
+    penalty: Math.round(_clamp(penalty, 0, 25)),
+    conflictCount: active.length,
+    details: [] as any[]
+  };
+}
+
+// ════════════════════════════════════════════════════════════
+//  دالة الاختبار -- للتأكّد من نجاح المرحلة ٥
 // ════════════════════════════════════════════════════════════
 
 export function testBacktestEngine(): string {
-  const testStk = {
-    sym: "1010", sec: "البنوك", p: 20,
-    pe: 12, roe: 14, debt: 0.3, mktCap: 30,
-    epsGrw: 8, ch: 0.5, sector_beta: 1.0
-  };
-  const testBars = Array(30).fill(0).map((_, i) => ({
+  const testBars = Array(60).fill(0).map((_, i) => ({
     o: 20 + i * 0.1, c: 20 + i * 0.1 + 0.05,
     hi: 20 + i * 0.1 + 0.2, lo: 20 + i * 0.1 - 0.1,
+    close: 20 + i * 0.1 + 0.05,
+    open: 20 + i * 0.1,
     vol: 1000000, pct: 0.5
   }));
-  const testAllStocks = [
-    { sym: "1010", sec: "البنوك", ch: 0.5, mktCap: 30, pe: 12 },
-    { sym: "2222", sec: "الطاقة", ch: 1.2, mktCap: 1800, pe: 14 },
-    { sym: "1120", sec: "البنوك", ch: 0.8, mktCap: 280, pe: 18 }
-  ];
   
-  const fm = calcFactorModel(testStk, testBars, testAllStocks);
-  const dcf = calcDCF(testStk);
-  const em = calcEarningsModel(testStk);
-  const eq = calcEarningsQuality(testStk);
-  const risk = calcRiskAttribution(testStk, testBars, testAllStocks);
+  const atr = 0.3;
+  const ob = calcOrderBlocksFull(testBars, atr);
+  const ls = calcLiqSweepFull(testBars, atr);
+  const vi = calcIVWAP(testBars);
+  const regime = detectMarketRegime(testBars, 25, 0.1, 0.5, atr, { c: 20, ch: 0.5 });
+  const w = buildDynamicWeights("bull", "البنوك");
+  const cr = reduceCorrelation({ L1: 60, L4: 55, L5: 50, L9: 65 });
   
-  return `✅ المرحلة ٤ ناجحة | FM=${fm.composite} | DCF=${dcf.dcfScore} | EM upside=${em.upside}% | EQ=${eq.composite} | Sharpe=${risk.sharpe}`;
+  return `✅ المرحلة ٥ ناجحة | OB=${ob.score} | LS=${ls.score} | VI=${vi.score} | regime=${regime.regime} | W.L1=${w.L1}`;
 }
