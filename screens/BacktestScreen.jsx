@@ -165,9 +165,42 @@ export default function BacktestScreen() {
             var midBarData = stkBars[Math.floor(stkBars.length/2)] || {};
             var pctNonZeroCount = stkBars.filter(function(b){ return typeof b.pct === 'number' && b.pct !== 0; }).length;
             
-            try {
-              var healthCheck = stockHealth(firstStockData, lastDayData.stocksData, {});
-              var layersCheck = (healthCheck && healthCheck.layers) || {};
+                          try {
+                var healthCheck = stockHealth(firstStockData, lastDayData.stocksData, {});
+                var layersCheck = (healthCheck && healthCheck.layers) || {};
+                
+                // 🔬 فحص technicalEngine مباشرة
+                var techCheck = '';
+                try {
+                  // استدعاء بسيط: نريد فقط حسابات RSI و OBV و CMF
+                  var bb = firstStockData.bars || [];
+                  var sample = bb.slice(-50);
+                  
+                  // تحقّق من تنوّع البارات
+                  var hSet = new Set(sample.map(function(b){ return b.h; }));
+                  var lSet = new Set(sample.map(function(b){ return b.l; }));
+                  var cSet = new Set(sample.map(function(b){ return b.c; }));
+                  
+                  techCheck += 'آخر 50 bar:\n';
+                  techCheck += '  h فريدة: ' + hSet.size + '\n';
+                  techCheck += '  l فريدة: ' + lSet.size + '\n';
+                  techCheck += '  c فريدة: ' + cSet.size + '\n';
+                  
+                  // عيّنة من 3 بارات
+                  var b1 = sample[0], b2 = sample[24], b3 = sample[49];
+                  techCheck += '\nعيّنة:\n';
+                  techCheck += '  bar[1]: h=' + (b1.h && b1.h.toFixed(2)) + ' l=' + (b1.l && b1.l.toFixed(2)) + ' c=' + (b1.c && b1.c.toFixed(2)) + '\n';
+                  techCheck += '  bar[25]: h=' + (b2.h && b2.h.toFixed(2)) + ' l=' + (b2.l && b2.l.toFixed(2)) + ' c=' + (b2.c && b2.c.toFixed(2)) + '\n';
+                  techCheck += '  bar[50]: h=' + (b3.h && b3.h.toFixed(2)) + ' l=' + (b3.l && b3.l.toFixed(2)) + ' c=' + (b3.c && b3.c.toFixed(2)) + '\n';
+                } catch(eT) {
+                  techCheck = 'فشل: ' + eT.message;
+                }
+                
+                var layerStr = '';
+                ['L1','L2','L3','L4','L5','L6','L7','L8','L9'].forEach(function(k){
+                  var v = layersCheck[k];
+                  layerStr += k + '=' + (typeof v === 'number' ? (isNaN(v) ? 'NaN' : v.toFixed(0)) : '?') + ' ';
+                });
               var layerStr = '';
               ['L1','L2','L3','L4','L5','L6','L7','L8','L9'].forEach(function(k){
                 var v = layersCheck[k];
