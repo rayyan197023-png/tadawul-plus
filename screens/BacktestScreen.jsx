@@ -148,10 +148,24 @@ export default function BacktestScreen() {
           return live ? { ...s, ...live } : s;
         }).filter(s => s.p > 0);
         
-        // Yahoo Finance دائماً (يدعم 1-10 سنوات بكامل البيانات)
-        historicalData = await generateDataFromYahoo(enrichedStocks.slice(0, 15), config.days);
+        // Yahoo Finance دائماً
+        var stocksToUse = enrichedStocks.slice(0, 15);
+        var symbolsList = stocksToUse.map(function(s) { return s.sym; }).join(',');
+        
+        historicalData = await generateDataFromYahoo(stocksToUse, config.days);
         
         if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
+          var debug = '🔬 فشل Yahoo:\n\n';
+          debug += 'الفئة: ' + config.category + '\n';
+          debug += 'أسهم الفئة: ' + categoryStocks.length + '\n';
+          debug += 'بعد p>0: ' + enrichedStocks.length + '\n';
+          debug += 'أُرسل لـ Yahoo: ' + stocksToUse.length + '\n';
+          debug += 'الرموز: ' + symbolsList + '\n\n';
+          debug += 'historicalData: ' + (historicalData ? 'مصفوفة طولها ' + historicalData.length : 'null/undefined') + '\n';
+          if (historicalData && historicalData[0]) {
+            debug += 'أول يوم stocksData: ' + (historicalData[0].stocksData ? historicalData[0].stocksData.length + ' أسهم' : 'لا يوجد');
+          }
+          alert(debug);
           setResults({ error: 'فشل جلب البيانات التاريخية من Yahoo' });
           setIsRunning(false);
           return;
