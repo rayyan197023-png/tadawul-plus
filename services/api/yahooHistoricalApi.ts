@@ -212,14 +212,12 @@ export async function generateDataFromYahoo(
   
   console.log(`[Yahoo] جلب ${stocksList.length} سهم لـ ${days} يوم`);
   
-  // جلب bars لكل الأسهم
   const symbols = stocksList.map(s => s.sym);
   const barsMap = await getYahooBarsBatch(symbols, days, 5);
   
-  // الأسهم التي نجحت
   const validStocks = stocksList.filter(s => {
-    const bars = barsMap[s.sym];
-    return bars && bars.length >= 30; // حدّ أدنى 30 يوم
+    const bars = barsMap[s.sym] || barsMap[s.sym.replace(/\.SR$/i, '')];
+    return bars && bars.length >= 30;
   });
   
   if (validStocks.length === 0) {
@@ -229,14 +227,12 @@ export async function generateDataFromYahoo(
   
   console.log(`[Yahoo] نجح ${validStocks.length}/${stocksList.length} سهم`);
   
-  // إيجاد التواريخ المشتركة (أقصر سهم يحدّد الطول)
   let minLength = Infinity;
   validStocks.forEach(s => {
-    const len = barsMap[s.sym].length;
-    if (len < minLength) minLength = len;
+    const bars = barsMap[s.sym] || barsMap[s.sym.replace(/\.SR$/i, '')] || [];
+    if (bars.length < minLength) minLength = bars.length;
   });
   
-  // بناء بنية historicalData
   const data: any[] = [];
   
   for (let i = 0; i < minLength; i++) {
@@ -244,19 +240,20 @@ export async function generateDataFromYahoo(
     const stocksData: any[] = [];
     let dayDate = '';
     
-        validStocks.forEach(stk => {
-      const bars = barsMap[stk.sym];
-      const offset = bars.length - minLength + i; // محاذاة من النهاية
+    validStocks.forEach(stk => {
+      const bars = barsMap[stk.sym] || barsMap[stk.sym.replace(/\.SR$/i, '')] || [];
+      const offset = bars.length - minLength + i;
       const bar = bars[offset];
       
       if (bar) {
         prices[stk.sym] = bar.c;
         if (!dayDate) dayDate = bar.date;
         
-        // 🆕 إدماج كل بيانات السهم من stk (PE, ROE, sector, etc)
-        // مع الـ bars التاريخية من Yahoo
-        // 🆕 قيم افتراضية شاملة للسوق السعودي
-        // تغطّي كل الحقول التي تحتاجها 9 طبقات stockHealth
+        const prevBar = offset > 0 ? bars[offset - 1] : null;
+        const dayPct = prevBar && prevBar.c > 0 
+          ? ((bar.c - prevBar.c) / prevBar.c) * 100 
+          : 0;
+        
         const dPE = stk.pe || 18;
         const dROE = stk.roe || 12;
         const dCap = stk.cap || (bar.c * 1e9);
@@ -266,44 +263,37 @@ export async function generateDataFromYahoo(
         const dEPS = stk.eps || (bar.c / dPE);
         const dBV = stk.bv || (bar.c / dPB);
         
-        // 🔧 إصلاح volume = 0 في آخر bar
-        // 🆕 إعادة حساب pct لكل bar
-        const slicedBars = bars.slice(0, offset + 1);
-        const enrichedBars = slicedBars.map(function(b, idx, arr) {
-          // إن كانت b.pct موجودة وصحيحة (من getYahooBars)، استعملها
-          // وإلا، احسبها من b.c والشمعة السابقة
+        const enrichedBars = bars.slice(0, offset + 1).map(function(b: any, idx: number, arr: any[]) {
           let pctVal = b.pct;
           if (typeof pctVal !== 'number' || pctVal === 0) {
             const prevC = idx > 0 ? arr[idx - 1].c : b.o;
             pctVal = prevC > 0 ? ((b.c - prevC) / prevC) * 100 : 0;
           }
-          // 🔧 fallback إضافي: إن ما زالت 0 أو NaN، استخدم متوسط آخر 5 شموع
           if (!pctVal || isNaN(pctVal)) {
             const recent5 = arr.slice(Math.max(0, idx - 5), idx);
-            const validPcts = recent5.filter(function(x) { 
+            const validPcts = recent5.filter(function(x: any) { 
               return typeof x.pct === 'number' && x.pct !== 0; 
             });
             pctVal = validPcts.length > 0 
-              ? validPcts.reduce(function(s, x) { return s + x.pct; }, 0) / validPcts.length 
-              : 0.5; // بقيمة محايدة صغيرة كأخير حلّ
+              ? validPcts.reduce(function(s: number, x: any) { return s + x.pct; }, 0) / validPcts.length 
+              : 0.5;
           }
           
-          // إصلاح volume = 0 في آخر bar
           let volFinal = b.v || b.vol || 0;
           if (idx === arr.length - 1 && (!volFinal || volFinal === 0)) {
-            const recentBars = arr.slice(Math.max(0, idx - 20), idx).filter(function(x) { return (x.v || x.vol) > 0; });
+            const recentBars = arr.slice(Math.max(0, idx - 20), idx).filter(function(x: any) { 
+              return (x.v || x.vol) > 0; 
+            });
             const avgV = recentBars.length > 0 
-              ? recentBars.reduce(function(s, x) { return s + (x.v || x.vol); }, 0) / recentBars.length 
+              ? recentBars.reduce(function(s: number, x: any) { return s + (x.v || x.vol); }, 0) / recentBars.length 
               : 1000000;
             volFinal = Math.round(avgV);
           }
           
-          // bar مُعزّز بالحقول الصحيحة
           return Object.assign({}, b, {
             v: volFinal,
             vol: volFinal,
             pct: +pctVal.toFixed(3),
-            // ضمان aliases المطلوبة من technicalEngine
             hi: b.h || b.hi || b.c,
             lo: b.l || b.lo || b.c,
             close: b.c,
@@ -313,19 +303,19 @@ export async function generateDataFromYahoo(
           });
         });
         
-        // 🆕 الحقول التقنية المطلوبة للمحرّك
-        const secValue = stk.sector || stk.sec || 'البنوك';
-        
-        stocksData.push({
-          ...stk,
+        const enrichedStock = Object.assign({}, stk, {
           sym: stk.sym,
           name: stk.name || stk.sym,
-          sector: secValue,
-          sec: secValue,    // 🆕 alias مطلوب (analysisEngine يبحث عن sec)
+          sector: stk.sector || stk.sec || 'البنوك',
+          sec: stk.sector || stk.sec || 'البنوك',
           bars: enrichedBars,
           currentPrice: bar.c,
           p: bar.c,
-          // L1 الأساسيات
+          ch: +dayPct.toFixed(3),
+          v: enrichedBars[enrichedBars.length-1]?.vol || 1000000,
+          avgV: 1000000,
+          avgVol: 1000000,
+          mktCap: dCap / 1e9,
           pe: dPE,
           roe: dROE,
           cap: dCap,
@@ -335,29 +325,35 @@ export async function generateDataFromYahoo(
           de: dDE,
           eps: dEPS,
           bv: dBV,
-          // L1 إضافيات
           revenue: stk.revenue || dCap * 0.5,
           revenueGrowth: stk.revenueGrowth || stk.rg || 8,
           profitMargin: stk.profitMargin || stk.pm || 15,
           netIncome: stk.netIncome || stk.ni || dCap * 0.08,
-          // L5 الجودة
           currentRatio: stk.currentRatio || stk.cr || 1.5,
           quickRatio: stk.quickRatio || stk.qr || 1.2,
           debtToAssets: stk.debtToAssets || stk.dta || 0.3,
           interestCoverage: stk.interestCoverage || stk.ic || 5,
           assetTurnover: stk.assetTurnover || stk.at || 0.7,
-          // L7 / L9 التقييم
           forwardPE: stk.forwardPE || stk.fpe || dPE * 0.95,
           pegRatio: stk.pegRatio || stk.peg || 1.5,
           growthEstimate: stk.growthEstimate || stk.ge || 10,
-          // L3 التدفّق
           fcf: stk.fcf || dCap * 0.06,
           fcfYield: stk.fcfYield || stk.fcfy || 5,
-          // معلومات إضافية
           beta: stk.beta || 1.0,
           shares: stk.shares || (dCap / bar.c),
           ev: stk.ev || dCap * 1.1,
+          oilCorr: stk.oilCorr || 0.3,
+          sector_beta: stk.sector_beta || 1.0,
+          hi: stk.hi || bar.c * 1.2,
+          lo: stk.lo || bar.c * 0.8,
+          w52h: stk.w52h || bar.c * 1.2,
+          w52l: stk.w52l || bar.c * 0.8,
+          rating: stk.rating || 60,
+          epsGrw: stk.epsGrw || 8,
+          debt: stk.debt || 0.3,
         });
+        
+        stocksData.push(enrichedStock);
       }
     });
     
@@ -370,4 +366,5 @@ export async function generateDataFromYahoo(
   
   return data;
 }
+
 
