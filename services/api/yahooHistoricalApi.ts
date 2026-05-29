@@ -265,15 +265,36 @@ export async function generateDataFromYahoo(
         const dBV = stk.bv || (bar.c / dPB);
         
         // 🔧 إصلاح volume = 0 في آخر bar
-        const enrichedBars = bars.slice(0, offset + 1).map(function(b, idx, arr) {
-          if (idx === arr.length - 1 && (!b.v || b.v === 0)) {
-            const recentBars = arr.slice(Math.max(0, idx - 20), idx).filter(function(x) { return x.v > 0; });
+        // 🆕 إعادة حساب pct لكل bar (لضمان pct ≠ 0)
+        const slicedBars = bars.slice(0, offset + 1);
+        const enrichedBars = slicedBars.map(function(b, idx, arr) {
+          // حساب pct من b.c والشمعة السابقة
+          const prevC = idx > 0 ? arr[idx - 1].c : b.o;
+          const pctVal = prevC > 0 ? ((b.c - prevC) / prevC) * 100 : 0;
+          
+          // إصلاح volume = 0 في آخر bar
+          let volFinal = b.v || b.vol || 0;
+          if (idx === arr.length - 1 && (!volFinal || volFinal === 0)) {
+            const recentBars = arr.slice(Math.max(0, idx - 20), idx).filter(function(x) { return (x.v || x.vol) > 0; });
             const avgV = recentBars.length > 0 
-              ? recentBars.reduce(function(s, x) { return s + x.v; }, 0) / recentBars.length 
+              ? recentBars.reduce(function(s, x) { return s + (x.v || x.vol); }, 0) / recentBars.length 
               : 1000000;
-            return Object.assign({}, b, { v: Math.round(avgV) });
+            volFinal = Math.round(avgV);
           }
-          return b;
+          
+          // bar مُعزّز بالحقول الصحيحة
+          return Object.assign({}, b, {
+            v: volFinal,
+            vol: volFinal,
+            pct: +pctVal.toFixed(3),
+            // ضمان aliases المطلوبة من technicalEngine
+            hi: b.h || b.hi || b.c,
+            lo: b.l || b.lo || b.c,
+            close: b.c,
+            open: b.o || b.c,
+            high: b.h || b.hi || b.c,
+            low: b.l || b.lo || b.c,
+          });
         });
         
         // 🆕 الحقول التقنية المطلوبة للمحرّك
