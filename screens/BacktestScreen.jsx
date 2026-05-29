@@ -190,7 +190,10 @@ export default function BacktestScreen() {
           return;
         }
         
-        strategy = createTadawulStrategy(stockHealth, { maxPositions: 10, maxPositionWeight: 0.15 });
+        strategy = createTadawulStrategy(function(stk, bars, allStocks) {
+          return backtestStockHealth(stk, bars, allStocks);
+        }, { maxPositions: 10, maxPositionWeight: 0.15 });
+        
         var marketBenchSymbols = historicalData[0].stocksData.slice(0, 10).map(function(s) { return s.sym; });
         benchmarkStrategy = createBuyAndHoldStrategy(marketBenchSymbols);
       }
