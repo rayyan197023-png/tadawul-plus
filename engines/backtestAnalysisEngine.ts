@@ -152,14 +152,203 @@ function _emptyHealthResult(): any {
 }
 
 // ════════════════════════════════════════════════════════════
-//  دالة الاختبار -- للتأكّد من نجاح المرحلة ٢
+//  دوال السوق والاقتصاد الكلي
+// ════════════════════════════════════════════════════════════
+
+/**
+ * Macro Score - النسخة المختصرة للرادار
+ */
+function calcMacroScore(stk: any): any {
+  const pe = stk.pe || 20;
+  const peScore = Math.max(0, Math.min(100, 100 - (pe - 15) * 2));
+  
+  const oilSens = OIL_SENS[stk.sec] || 0.5;
+  const oilDelta = (MACRO.oilPrice - MACRO.oilTarget) / MACRO.oilTarget;
+  const oilScore = Math.max(0, Math.min(100, 50 + oilSens * oilDelta * 80));
+  
+  const rateSens = RATE_SENS[stk.sec] || 0.3;
+  const realRate = MACRO.saudiRepoRate - MACRO.cpi;
+  const rateScore = Math.max(0, Math.min(100, 50 + rateSens * (realRate - 1.5) * 15));
+  
+  const vixScore = Math.max(0, Math.min(100, 100 - (MACRO.vix - 20) * 3));
+  const gdpScore = Math.max(0, Math.min(100, 50 + (MACRO.gdpGrowth - 2.5) * 15));
+  
+  const score = Math.round(
+    peScore * 0.40 + oilScore * 0.25 + rateScore * 0.15 +
+    vixScore * 0.10 + gdpScore * 0.10
+  );
+  
+  return {
+    score: Math.max(0, Math.min(100, score)),
+    components: {
+      pe: Math.round(peScore),
+      oil: Math.round(oilScore),
+      rate: Math.round(rateScore),
+      vix: Math.round(vixScore),
+      gdp: Math.round(gdpScore),
+    },
+  };
+}
+
+/**
+ * Macro Full - النسخة الكاملة للطبقات /20
+ */
+function calcMacroFull(stk: any): any {
+  const m = MACRO;
+  const oS = OIL_SENS[stk.sec] || 0.8;
+  const rS = RATE_SENS[stk.sec] || 0.3;
+  const oilDelta = (m.oilPrice - m.oilTarget) / m.oilTarget;
+  const oilScore = Math.round(Math.min(20, Math.max(0, 10 + 10 * Math.tanh(oilDelta * oS * 2))));
+  const rr = m.saudiRepoRate - m.cpi;
+  const rateBase = Math.round(10 + 8 * Math.tanh((rr - 1.5) / 1.5));
+  const rateScore = rS > 0
+    ? Math.min(20, Math.max(0, rateBase * rS / 1.5))
+    : Math.min(20, Math.max(0, 18 - rateBase));
+  const gdp = Math.round(8 + 10 * Math.tanh((m.gdpGrowth - 2.5) / 1.5));
+  const vix_s = Math.round(10 - 8 * Math.tanh((m.vix - 20) / 8));
+  const mktV_s = Math.round(10 - 6 * Math.tanh((m.tasiPE - 20) / 5));
+  const m2_s = Math.round(8 + 8 * Math.tanh((m.m2Growth - 5) / 3));
+  const score = Math.min(20, Math.max(2, Math.round(
+    oilScore * 0.25 + rateScore * 0.20 + gdp * 0.20 +
+    vix_s * 0.15 + mktV_s * 0.10 + m2_s * 0.10
+  )));
+  return {
+    score,
+    env: score >= 15 ? "إيجابي" : score >= 10 ? "محايد" : "سلبي",
+    label: "نفط " + m.oilPrice + "$ | فائدة " + m.saudiRepoRate + "% | مخاطرة " + m.vix,
+    oilScore: +oilScore.toFixed(1),
+    realRate: +rr.toFixed(2)
+  };
+}
+
+/**
+ * TASI Context - السياق السعودي
+ * 🔧 تعديل عن analysisEngine: يقبل allStocks مُمرّرة بدل STOCKS العامّة
+ */
+function calcTasiContext(stk: any, bars: any[], allStocks: any[] = []): any {
+  // حماية: لو allStocks فارغة، نُعيد قيم محايدة
+  if (!allStocks || allStocks.length === 0) {
+    return {
+      dominanceScore: 50, domDir: 0, domBullCount: 0, domBearCount: 0,
+      domRatio: 0.5, topN: 0,
+      tasiRegime: "DECOUPLE", oilRegimeScore: 55,
+      retailSentiment: 50, retailEuphoria: false, retailSpread: 0,
+      sessionBoost: 1.0, isSunday: false, isThursday: false, sundayPenalty: 0,
+      pifActive: false, pifBoost: 0,
+      tasiComposite: 50, tasiSignal: "بيئة محايدة"
+    };
+  }
+
+  // ① TASI Dominance Score
+  const topN = Math.min(10, Math.max(3, Math.round(allStocks.length * 0.10)));
+  const dominants = allStocks
+    .slice()
+    .sort((a: any, b: any) => (b.mktCap || 0) - (a.mktCap || 0))
+    .slice(0, topN);
+  const domBullCount = dominants.filter((x: any) => x.ch > 0.3).length;
+  const domBearCount = dominants.filter((x: any) => x.ch < -0.3).length;
+  const domRatio = domBullCount / topN;
+  const domDir = domRatio >= 0.70 ? 1
+              : domRatio >= 0.55 ? 0.5
+              : (1 - domRatio) >= 0.70 ? -1
+              : (1 - domRatio) >= 0.55 ? -0.5
+              : 0;
+  const dominanceScore = _clamp(Math.round(50 + domDir * 20), 0, 100);
+
+  // ② Oil-TASI Regime
+  const oilAboveTarget = MACRO.oilPrice > MACRO.oilTarget;
+  const tasiAvgCh = allStocks.reduce((s: number, x: any) => s + (x.ch || 0), 0) / allStocks.length;
+  const tasiBull = tasiAvgCh > 0.2;
+  let tasiRegime;
+  if (oilAboveTarget && tasiBull) tasiRegime = "RALLY";
+  else if (oilAboveTarget && !tasiBull) tasiRegime = "DIVERGE";
+  else if (!oilAboveTarget && tasiBull) tasiRegime = "DECOUPLE";
+  else tasiRegime = "CRASH";
+  const oilRegimeScore = tasiRegime === "RALLY" ? 80
+                       : tasiRegime === "DECOUPLE" ? 55
+                       : tasiRegime === "DIVERGE" ? 35
+                       : 20;
+
+  // ③ Retail Sentiment
+  const smallCaps = allStocks.filter((x: any) => (x.mktCap || 100) < 100);
+  const largeCaps = allStocks.filter((x: any) => (x.mktCap || 100) > 300);
+  const smallAvgCh = smallCaps.length
+    ? smallCaps.reduce((s: number, x: any) => s + (x.ch || 0), 0) / smallCaps.length
+    : tasiAvgCh;
+  const largeAvgCh = largeCaps.length
+    ? largeCaps.reduce((s: number, x: any) => s + (x.ch || 0), 0) / largeCaps.length
+    : tasiAvgCh;
+  const retailSpread = smallAvgCh - largeAvgCh;
+  const retailSentiment = _clamp(Math.round(50 + retailSpread * 12), 0, 100);
+  const retailEuphoria = retailSpread > 1.5;
+
+  // ④ Session Timing
+  const sessionDay = MACRO.sessionDay || "SUN";
+  const isSunday = sessionDay === "SUN";
+  const isThursday = sessionDay === "THU";
+  const sessionBoost = isSunday ? 1.20 : isThursday ? 1.10 : 1.0;
+  const sundayPenalty = isSunday ? 5 : 0;
+
+  // ⑤ PIF Activity
+  const pifActive = (MACRO.pifSectors || []).indexOf(stk.sec) !== -1;
+  const pifBoost = pifActive ? 8 : 0;
+
+  // المركّب
+  const tasiComposite = Math.round(
+    dominanceScore * 0.35 +
+    oilRegimeScore * 0.30 +
+    retailSentiment * 0.20 +
+    (100 - sundayPenalty) * 0.15
+  );
+
+  const tasiSignal = tasiComposite >= 72 ? "بيئة تاسي داعمة"
+                   : tasiComposite >= 52 ? "بيئة محايدة"
+                   : tasiComposite >= 35 ? "بيئة ضاغطة"
+                   : "بيئة خطرة";
+
+  return {
+    dominanceScore, domDir, domBullCount, domBearCount,
+    domRatio: +domRatio.toFixed(2), topN,
+    tasiRegime, oilRegimeScore,
+    retailSentiment, retailEuphoria, retailSpread: +retailSpread.toFixed(2),
+    sessionBoost, isSunday, isThursday, sundayPenalty,
+    pifActive, pifBoost,
+    tasiComposite, tasiSignal,
+  };
+}
+
+/**
+ * Macro Gate - تعديل النتيجة حسب البيئة الاقتصادية
+ */
+function applyMacroGate(rawScore: number, macroScore100: number): number {
+  let multiplier = 1.0;
+  if (macroScore100 < 25) multiplier = 0.82;
+  else if (macroScore100 < 40) multiplier = 0.91;
+  else if (macroScore100 > 75) multiplier = 1.06;
+  else if (macroScore100 > 60) multiplier = 1.03;
+  return _clamp(rawScore * multiplier, 0, 100);
+}
+
+// ════════════════════════════════════════════════════════════
+//  دالة الاختبار -- للتأكّد من نجاح المرحلة ٣
 // ════════════════════════════════════════════════════════════
 
 export function testBacktestEngine(): string {
-  const test1 = _clamp(150, 0, 100);
-  const test2 = _softmax3(80, 20, 5);
-  const test3 = _emptyHealthResult();
-  return `✅ المرحلة ٢ ناجحة | clamp=${test1} | softmax bull=${test2.bull}% | empty score=${test3.score}`;
+  // اختبار الدوال
+  const testStk = { sec: "البنوك", pe: 12 };
+  const mc1 = calcMacroScore(testStk);
+  const mc2 = calcMacroFull(testStk);
+  const tc = calcTasiContext(
+    testStk,
+    [] as any[],
+    [
+      { sym: "1010", sec: "البنوك", ch: 0.5, mktCap: 30 },
+      { sym: "2222", sec: "الطاقة", ch: 1.2, mktCap: 1800 }
+    ]
+  );
+  const mg = applyMacroGate(60, 80);
+  
+  return `✅ المرحلة ٣ ناجحة | macroScore=${mc1.score} | macroFull=${mc2.score}/20 | tasi=${tc.tasiRegime} | macroGate=${mg.toFixed(1)}`;
 }
 
 // ════════════════════════════════════════════════════════════
