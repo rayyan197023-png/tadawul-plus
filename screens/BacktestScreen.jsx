@@ -155,6 +155,41 @@ export default function BacktestScreen() {
         // intentionally before fetch        
         historicalData = await generateDataFromYahoo(stocksToUse, config.days);
         
+        // 🔬 فحص ما جاء من Yahoo
+        if (historicalData && historicalData.length > 0) {
+          var lastDayData = historicalData[historicalData.length - 1];
+          var firstStockData = lastDayData && lastDayData.stocksData && lastDayData.stocksData[0];
+          if (firstStockData) {
+            var stkBars = firstStockData.bars || [];
+            var lastBarData = stkBars[stkBars.length - 1] || {};
+            var midBarData = stkBars[Math.floor(stkBars.length/2)] || {};
+            var pctNonZeroCount = stkBars.filter(function(b){ return typeof b.pct === 'number' && b.pct !== 0; }).length;
+            
+            try {
+              var healthCheck = stockHealth(firstStockData, lastDayData.stocksData, {});
+              var layersCheck = (healthCheck && healthCheck.layers) || {};
+              var layerStr = '';
+              ['L1','L2','L3','L4','L5','L6','L7','L8','L9'].forEach(function(k){
+                var v = layersCheck[k];
+                layerStr += k + '=' + (typeof v === 'number' ? (isNaN(v) ? 'NaN' : v.toFixed(0)) : '?') + ' ';
+              });
+              
+              alert(
+                '🔬 فحص نهائي:\n\n' +
+                'سهم: ' + firstStockData.sym + '\n' +
+                'bars: ' + stkBars.length + '\n' +
+                'pct≠0: ' + pctNonZeroCount + ' من ' + stkBars.length + '\n\n' +
+                'وسط bar: pct=' + midBarData.pct + ' c=' + midBarData.c + '\n' +
+                'آخر bar: pct=' + lastBarData.pct + ' c=' + lastBarData.c + '\n\n' +
+                'score=' + (healthCheck ? healthCheck.score : 'فشل') + '\n' +
+                'layers: ' + layerStr
+              );
+            } catch(eHealth) {
+              alert('فشل stockHealth: ' + eHealth.message);
+            }
+          }
+        }
+        
         if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
           var debug = '🔬 فشل Yahoo:\n\n';
           debug += 'الفئة: ' + config.category + '\n';
