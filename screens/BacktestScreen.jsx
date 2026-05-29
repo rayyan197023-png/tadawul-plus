@@ -146,7 +146,8 @@ export default function BacktestScreen() {
         var enrichedStocks = categoryStocks.map(s => {
           var live = STOCKS.find(x => x.sym === s.sym);
           return live ? { ...s, ...live } : s;
-        }).filter(s => s.p > 0);
+        });
+        // ملاحظة: لا فلترة p>0 لأن Yahoo يجلب البيانات حسب الرمز
         
         // Yahoo Finance دائماً
         var stocksToUse = enrichedStocks.slice(0, 15);
