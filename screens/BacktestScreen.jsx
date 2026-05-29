@@ -148,6 +148,26 @@ export default function BacktestScreen() {
         }).filter(s => s.p > 0);
         
         historicalData = await generateDataFromStockListReal(enrichedStocks, config.days, 15);
+        
+        // 🔬 تشخيص: كم يوماً وصل فعلاً؟
+        var requestedDays = config.days;
+        var actualDays = historicalData ? historicalData.length : 0;
+        var coverage = requestedDays > 0 ? ((actualDays / requestedDays) * 100).toFixed(1) : '0';
+        var firstStock = (historicalData && historicalData[0] && historicalData[0].stocksData && historicalData[0].stocksData[0]) || null;
+        var barsCount = (firstStock && firstStock.bars) ? firstStock.bars.length : 0;
+        var firstDate = (historicalData && historicalData[0]) ? historicalData[0].date : 'لا يوجد';
+        var lastDate = (historicalData && historicalData[historicalData.length-1]) ? historicalData[historicalData.length-1].date : 'لا يوجد';
+        
+        alert(
+          '🔬 تشخيص sahmk:\n\n' +
+          'الفترة المطلوبة: ' + requestedDays + ' يوم\n' +
+          'الفترة المُسترجَعة: ' + actualDays + ' يوم\n' +
+          'التغطية: ' + coverage + '%\n\n' +
+          'أول تاريخ: ' + firstDate + '\n' +
+          'آخر تاريخ: ' + lastDate + '\n\n' +
+          'عدد الأسهم: ' + (firstStock ? (historicalData[0].stocksData||[]).length : 0) + '\n' +
+          'bars في أول سهم: ' + barsCount
+        );
 
         if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
           var debugInfo = 'تشخيص:\n' +
