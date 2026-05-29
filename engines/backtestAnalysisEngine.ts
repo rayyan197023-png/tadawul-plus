@@ -1455,7 +1455,299 @@ function calc9Layers(stk: any, bars: any[], allStocks: any[]): any {
 }
 
 // ════════════════════════════════════════════════════════════
-//  دالة الاختبار -- للتأكّد من نجاح المرحلة ٦
+//  Ensemble Voting
+// ════════════════════════════════════════════════════════════
+
+function ensembleVote(LA: number, LB: number, LC: number, regime: string, gates: number, layers: any): any {
+  const L1 = layers ? (layers.L1 || 50) : 50;
+  const L5 = layers ? (layers.L5 || 50) : 50;
+  const L9 = layers ? (layers.L9 || 50) : 50;
+  
+  function modelVote(score: number, buyThr: number, sellThr: number): number {
+    if (score >= buyThr) return 1;
+    if (score <= sellThr) return -1;
+    return 0;
+  }
+  
+  const techVote = modelVote(LA, 60, 40);
+  const fundVote = modelVote(LB, 62, 38);
+  const behavVote = modelVote(LC, 58, 42);
+  
+  const votes = [techVote, fundVote, behavVote];
+  const bullCount = votes.filter(v => v > 0).length;
+  const bearCount = votes.filter(v => v < 0).length;
+  const neutCount = votes.filter(v => v === 0).length;
+  
+  let wT, wF, wB;
+  switch (regime) {
+    case "bull": wT = 0.50; wF = 0.30; wB = 0.20; break;
+    case "bear": wT = 0.40; wF = 0.35; wB = 0.25; break;
+    case "sideways": wT = 0.30; wF = 0.45; wB = 0.25; break;
+    case "volatile": wT = 0.55; wF = 0.25; wB = 0.20; break;
+    case "news-driven": wT = 0.30; wF = 0.30; wB = 0.40; break;
+    default: wT = 0.45; wF = 0.30; wB = 0.25;
+  }
+  
+  const softT = _clamp((LA - 50) / 50, -1, 1);
+  const softF = _clamp((LB - 50) / 50, -1, 1);
+  const softB = _clamp((LC - 50) / 50, -1, 1);
+  const softBull = +(softT * wT + softF * wF + softB * wB).toFixed(3);
+  
+  let agreementBoost = 1.0;
+  if (bullCount === 3 || bearCount === 3) agreementBoost = 1.10;
+  else if (bullCount === 2 || bearCount === 2) agreementBoost = 1.03;
+  else if (neutCount >= 2) agreementBoost = 1.00;
+  else agreementBoost = 0.92;
+  
+  const techConsensus = L1 > 55 && L5 > 55 && L9 > 55 ? 1 : L1 < 45 && L5 < 45 && L9 < 45 ? -1 : 0;
+  
+  return {
+    bullCount, bearCount, neutCount,
+    softBull, techConsensus,
+    agreementBoost: +agreementBoost.toFixed(3),
+    ensembleSig: bullCount >= 2 ? "صعودي" : bearCount >= 2 ? "هبوطي" : "محايد"
+  };
+}
+
+// ════════════════════════════════════════════════════════════
+//  Feedback System - يكتب في نفس tdw_feedback_state
+// ════════════════════════════════════════════════════════════
+
+const FEEDBACK_STORE_KEY = 'tdw_feedback_state';
+
+function loadFeedbackState(): any {
+  try {
+    if (typeof localStorage === 'undefined') return null;
+    const raw = localStorage.getItem(FEEDBACK_STORE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) {
+    return null;
+  }
+}
+
+function saveFeedbackState(state: any): void {
+  try {
+    if (typeof localStorage === 'undefined') return;
+    if (!state || typeof state !== 'object') return;
+    localStorage.setItem(FEEDBACK_STORE_KEY, JSON.stringify(state));
+  } catch (e) {
+    // silent
+  }
+}
+
+/**
+ * recordFeedback - يسجّل نتيجة كل صفقة في tdw_feedback_state
+ * هذا ما يُغذّي ABM في analysisEngine للتعلّم
+ */
+export function recordFeedback(sym: string, signal: string, layers: any, actualOutcome: number, context?: any): void {
+  const state = loadFeedbackState() || {};
+  const now = Date.now();
+  
+  // Migration للبيانات القديمة
+  if (state[sym] && !state[sym].version) {
+    const old = state[sym];
+    state[sym] = {
+      version: 2,
+      longTerm: { totalEver: old.total || 0, correctEver: old.correct || 0 },
+      shortTerm: { recent: [] as any[], weightedAccuracy: old.total > 0 ? old.correct / old.total : 0.5 },
+      context: {
+        backtest: { total: old.total || 0, correct: old.correct || 0 },
+        live: { total: 0, correct: 0 },
+        bull: { total: 0, correct: 0 },
+        bear: { total: 0, correct: 0 },
+      },
+      layers: old.layers || {},
+      meta: { lastUpdate: now, firstUpdate: now }
+    };
+  }
+  
+  if (!state[sym]) {
+    state[sym] = {
+      version: 2,
+      longTerm: { totalEver: 0, correctEver: 0 },
+      shortTerm: { recent: [] as any[], weightedAccuracy: 0.5 },
+      context: {
+        backtest: { total: 0, correct: 0 },
+        live: { total: 0, correct: 0 },
+        bull: { total: 0, correct: 0 },
+        bear: { total: 0, correct: 0 },
+      },
+      layers: {},
+      meta: { lastUpdate: now, firstUpdate: now }
+    };
+  }
+  
+  const perf = state[sym];
+  const weight = Math.abs(actualOutcome);
+  const isCorrect = actualOutcome > 0;
+  
+  // Long-term
+  perf.longTerm.totalEver += weight;
+  if (isCorrect) perf.longTerm.correctEver += weight;
+  
+  // Short-term (آخر 30)
+  perf.shortTerm.recent.push({ timestamp: now, outcome: actualOutcome, signal, weight });
+  if (perf.shortTerm.recent.length > 30) perf.shortTerm.recent.shift();
+  
+  // Weighted accuracy (decay)
+  const decay = 0.92;
+  let weightedSum = 0, totalWeight = 0;
+  perf.shortTerm.recent.forEach((trade: any, i: number, arr: any[]) => {
+    const age = arr.length - 1 - i;
+    const w = Math.pow(decay, age) * trade.weight;
+    if (trade.outcome > 0) weightedSum += w;
+    totalWeight += w;
+  });
+  perf.shortTerm.weightedAccuracy = totalWeight > 0 ? weightedSum / totalWeight : 0.5;
+  
+  // Context tracking
+  const ctxType = context?.type === 'live' ? 'live' : 'backtest';
+  perf.context[ctxType].total += weight;
+  if (isCorrect) perf.context[ctxType].correct += weight;
+  
+  const marketRegime = context?.regime === 'bear' ? 'bear' : 'bull';
+  perf.context[marketRegime].total += weight;
+  if (isCorrect) perf.context[marketRegime].correct += weight;
+  
+  // Layer tracking
+  const lnames = ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'L9'];
+  lnames.forEach(k => {
+    if (layers[k] === undefined) return;
+    if (!perf.layers[k]) perf.layers[k] = { total: 0, correct: 0, recent: [] as any[] };
+    perf.layers[k].total += weight;
+    const layerDir = layers[k] > 55 ? 1 : layers[k] < 45 ? -1 : 0;
+    const signalDir = signal === 'شراء قوي' || signal === 'مراقبة' ? 1 : signal === 'تخفيف' ? -1 : 0;
+    const layerCorrect = (layerDir !== 0 && layerDir === signalDir && isCorrect) ||
+                         (layerDir !== 0 && layerDir !== signalDir && !isCorrect);
+    if (layerCorrect) perf.layers[k].correct += weight;
+    perf.layers[k].recent.push({ correct: layerCorrect, weight });
+    if (perf.layers[k].recent.length > 20) perf.layers[k].recent.shift();
+  });
+  
+  perf.meta.lastUpdate = now;
+  saveFeedbackState(state);
+}
+
+// ════════════════════════════════════════════════════════════
+//  stockHealth - الدالة الرئيسية المُصدَّرة
+// ════════════════════════════════════════════════════════════
+
+export function stockHealth(stk: any, bars: any[], allStocks?: any[]): any {
+  if (!stk || typeof stk !== 'object') return _emptyHealthResult();
+  if (!bars || !Array.isArray(bars) || bars.length < 5) return _emptyHealthResult();
+  
+  // إن لم تُمرر allStocks، نستعمل قائمة فيها السهم نفسه على الأقلّ
+  const stocks = (allStocks && allStocks.length > 0) ? allStocks : [stk];
+  
+  // STEP 1: المحرّكات الأساسية
+  const tech = calc9Layers(stk, bars, stocks);
+  const LA = tech.score;
+  const regime = tech.regime;
+  const layers = tech.layers;
+  
+  // STEP 2: المحرّك الأساسي LB
+  const fm = calcFactorModel(stk, bars, stocks);
+  const em = calcEarningsModel(stk);
+  const dcf = calcDCF(stk);
+  const eq = calcEarningsQuality(stk);
+  const dcfScore = Math.round(_clamp(100 / (1 + Math.exp(-0.06 * (dcf.upside - 5))), 10, 95));
+  const emScore = Math.round(_clamp(100 / (1 + Math.exp(-0.05 * (em.upside - 8))), 10, 95));
+  const fundConflict = (dcfScore > 70 && eq.composite < 40) ? 6 : (dcfScore < 40 && fm.composite > 70) ? 4 : 0;
+  const LB = _clamp(Math.round(dcfScore * 0.35 + fm.composite * 0.30 + emScore * 0.20 + eq.composite * 0.15 - fundConflict), 0, 100);
+  
+  // STEP 3: المحرّك السلوكي LC
+  const opt = calcBehavioralPressure(stk, bars);
+  const ins = calcInsiderTransactions(stk, bars);
+  const alt = calcAlternativeData(stk, bars, stocks);
+  const optScore = _clamp(Math.round(80 - (opt.pressureRatio - 0.7) * 60 + (opt.unusualActivity && opt.pressureRatio < 0.9 ? 10 : 0)), 0, 100);
+  
+  // Sector Rotation Score
+  const sectorStocks = stocks.filter((x: any) => x.sec === stk.sec);
+  const sectorAvgCh = sectorStocks.length > 0 ? sectorStocks.reduce((s: number, x: any) => s + (x.ch || 0), 0) / sectorStocks.length : 0;
+  const mktAvgCh = stocks.length > 0 ? stocks.reduce((s: number, x: any) => s + (x.ch || 0), 0) / stocks.length : 0;
+  const sectorRot = sectorAvgCh - mktAvgCh;
+  const sectorRotScore = _clamp(Math.round(50 + sectorRot * 15), 0, 100);
+  
+  const LC = Math.round(optScore * 0.30 + ins.score * 0.30 + alt.composite * 0.15 + 50 * 0.15 + sectorRotScore * 0.10);
+  
+  // STEP 4: المضاعفات الخارجية
+  const risk = calcRiskAttribution(stk, bars, stocks);
+  const inter = calcIntermarket(stk);
+  const micro = calcMicrostructure(stk, bars);
+  const riskMult = risk.sortino > 2.0 ? 1.07 : risk.sortino > 1.0 ? 1.03 : risk.sharpe > 0.5 ? 1.00 : risk.sharpe > 0 ? 0.96 : 0.89;
+  const finalMult = _clamp(riskMult * inter.multiplier * (micro ? micro.multiplier : 1.0), 0.70, 1.30);
+  
+  // STEP 5: Dynamic Weights
+  let wA, wB, wC;
+  switch (regime) {
+    case "bull": wA = 0.50; wB = 0.30; wC = 0.20; break;
+    case "bear": wA = 0.40; wB = 0.35; wC = 0.25; break;
+    case "sideways": wA = 0.30; wB = 0.45; wC = 0.25; break;
+    case "volatile": wA = 0.55; wB = 0.25; wC = 0.20; break;
+    case "news-driven": wA = 0.30; wB = 0.30; wC = 0.40; break;
+    default: wA = 0.45; wB = 0.30; wC = 0.25;
+  }
+  
+  // STEP 6: Ensemble Vote
+  const ensemble = ensembleVote(LA, LB, LC, regime, tech.gates ? tech.gates.passed : 0, layers);
+  
+  // STEP 7: Conviction
+  const baseConviction = LA * wA + LB * wB + LC * wC;
+  const lbLcGap = Math.abs(LB - LC);
+  const lbLcConflict = lbLcGap >= 25 ? Math.min(8, Math.round((lbLcGap - 20) / 3.5)) : 0;
+  const ensembleConflict = lbLcConflict + fundConflict;
+  
+  let ensembleQualityFactor = 1.0;
+  if (ensemble.bullCount === 3 || ensemble.bearCount === 3) ensembleQualityFactor *= 1.08;
+  else if (ensemble.bullCount === 2 || ensemble.bearCount === 2) ensembleQualityFactor *= 1.03;
+  else if (ensemble.neutCount >= 2) ensembleQualityFactor *= 0.95;
+  else ensembleQualityFactor *= 0.92;
+  
+  if (ensemble.techConsensus === 1) ensembleQualityFactor *= 1.03;
+  else if (ensemble.techConsensus === -1) ensembleQualityFactor *= 0.97;
+  
+  ensembleQualityFactor = _clamp(ensembleQualityFactor, 0.85, 1.15);
+  const conviction = _clamp(Math.round((baseConviction - ensembleConflict) * ensembleQualityFactor), 0, 100);
+  
+  // STEP 8: تجميع النتيجة
+  const merged: any = { ...tech };
+  
+  // إشارة نهائية بناءً على score
+  const score = merged.score;
+  let sig, sigC;
+  if (score >= 65 && tech.gates.passed >= 2) { sig = "شراء قوي"; sigC = "#10c97e"; }
+  else if (score >= 55 && tech.gates.passed >= 1) { sig = "مراقبة"; sigC = "#f59e0b"; }
+  else if (score >= 45) { sig = "محايد"; sigC = "#06b6d4"; }
+  else { sig = "تخفيف"; sigC = "#f04f5a"; }
+  
+  merged.sig = sig;
+  merged.sigC = sigC;
+  merged.convictionScore = conviction;
+  merged.confidence = conviction;
+  
+  // Conviction metadata
+  merged.conviction = {
+    LA, LB, LC, wA, wB, wC,
+    riskMult: +riskMult.toFixed(2),
+    finalMult: +finalMult.toFixed(3),
+    dcfScore, fmScore: fm.composite, emScore,
+    eqScore: eq.composite, eqGrade: eq.grade,
+    optScore, insScore: ins.score, altScore: alt.composite,
+    dcfUpside: dcf.upside, emUpside: em.upside,
+    fundConflict, lbLcConflict,
+    ensemble,
+    risk: { sharpe: risk.sharpe, sortino: risk.sortino, alpha: risk.alpha, volatility: risk.volatility },
+    inter: { multiplier: inter.multiplier, signal: inter.signal },
+    micro: micro ? { composite: micro.composite, ofi: micro.ofi } : null,
+    regime,
+  };
+  
+  return merged;
+}
+
+// ════════════════════════════════════════════════════════════
+//  دالة الاختبار النهائية -- للتأكّد من نجاح المرحلة ٧
 // ════════════════════════════════════════════════════════════
 
 export function testBacktestEngine(): string {
@@ -1481,8 +1773,8 @@ export function testBacktestEngine(): string {
     { sym: "7010", sec: "الإتصالات", ch: -0.3, mktCap: 110, pe: 14 }
   ];
   
-  const result = calc9Layers(testStk, testBars, testAllStocks);
+  const result = stockHealth(testStk, testBars, testAllStocks);
   const L = result.layers;
   
-  return `✅ المرحلة ٦ ناجحة | score=${result.score} | L1=${L.L1} L2=${L.L2} L3=${L.L3} L4=${L.L4} L5=${L.L5} L6=${L.L6} L7=${L.L7} L8=${L.L8} L9=${L.L9}`;
+  return `✅ المحرّك جاهز! | score=${result.score} | sig=${result.sig} | conviction=${result.convictionScore} | L1=${L.L1} L4=${L.L4} L5=${L.L5} L7=${L.L7} L9=${L.L9}`;
 }
