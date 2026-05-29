@@ -108,7 +108,7 @@ function AddStockForm({ STOCKS, setPort, setPortSheet, haptic, C }) {
     });
     setPortSheet(null);
   };
-  
+   
   return (
     <div style={{display:"flex",flexDirection:"column",gap:10}}>
       {/* اختيار السهم */}
