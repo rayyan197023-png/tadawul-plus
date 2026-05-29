@@ -162,19 +162,36 @@ export default function BacktestScreen() {
           if (firstStock) {
             try {
               var health = stockHealth(firstStock, lastDay.stocksData, {});
-              var diag2 = '🔬 تشخيص استراتيجية Yahoo:\n\n' +
-                'سهم: ' + firstStock.sym + ' (' + (firstStock.name||'?') + ')\n' +
-                'سعر: ' + firstStock.p + ' / ' + firstStock.currentPrice + '\n' +
-                'bars: ' + (firstStock.bars||[]).length + '\n\n' +
-                'بيانات السهم:\n' +
-                ' - sector: ' + (firstStock.sector||'لا') + '\n' +
-                ' - cap: ' + (firstStock.cap||'لا') + '\n' +
-                ' - pe: ' + (firstStock.pe||'لا') + '\n' +
-                ' - roe: ' + (firstStock.roe||'لا') + '\n\n' +
-                'stockHealth:\n' +
-                ' - score: ' + (health ? health.score : 'فشل') + '\n' +
-                ' - signal: ' + (health && health.signal ? health.signal.label : '?') + '\n' +
-                ' - conviction: ' + (health && health.conviction ? health.conviction.level : '?');
+              
+              // 🔬 تشخيص طبقة طبقة
+              var layers = (health && health.layers) || {};
+              var layerInfo = '';
+              ['L1','L2','L3','L4','L5','L6','L7','L8','L9'].forEach(function(k) {
+                var v = layers[k];
+                if (typeof v === 'number') {
+                  layerInfo += k + '=' + (isNaN(v) ? 'NaN' : v.toFixed(1)) + ' ';
+                } else if (v && typeof v === 'object') {
+                  layerInfo += k + '={' + (v.score != null ? v.score : '?') + '} ';
+                } else {
+                  layerInfo += k + '=' + v + ' ';
+                }
+              });
+              
+              // bar أوّل وأخير في bars
+              var bars = firstStock.bars || [];
+              var firstBar = bars[0] || {};
+              var lastBar = bars[bars.length-1] || {};
+              
+              var diag2 = '🔬 Yahoo Deep Debug:\n\n' +
+                'سهم: ' + firstStock.sym + '\n' +
+                'p: ' + firstStock.p + ', cp: ' + firstStock.currentPrice + '\n' +
+                'bars: ' + bars.length + '\n\n' +
+                'أول bar: o=' + firstBar.o + ' c=' + firstBar.c + ' v=' + firstBar.v + '\n' +
+                'آخر bar: o=' + lastBar.o + ' c=' + lastBar.c + ' v=' + lastBar.v + '\n\n' +
+                'PE=' + firstStock.pe + ' ROE=' + firstStock.roe + ' cap=' + 
+                  (firstStock.cap ? (firstStock.cap/1e9).toFixed(1)+'B' : 'لا') + '\n\n' +
+                'score: ' + (health ? health.score : 'فشل') + '\n' +
+                'layers: ' + layerInfo;
               alert(diag2);
             } catch(e) {
               alert('فشل stockHealth: ' + e.message);
