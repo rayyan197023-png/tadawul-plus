@@ -228,14 +228,35 @@ export async function generateDataFromYahoo(
         
         // 🆕 إدماج كل بيانات السهم من stk (PE, ROE, sector, etc)
         // مع الـ bars التاريخية من Yahoo
+                // 🆕 قيم افتراضية محايدة للسوق السعودي (متوسطات معقولة)
+        // تُستخدم لما Yahoo لا يوفّر الأساسيات (PE, ROE, cap)
+        const defaultPE = stk.pe || 18;        // متوسط PE في تاسي ~18
+        const defaultROE = stk.roe || 12;      // متوسط ROE ~12%
+        const defaultCap = stk.cap || (bar.c * 1000000000); // تقدير cap من السعر
+        const defaultDY = stk.dy || stk.div || 3.5;  // dividend yield متوسط
+        const defaultPB = stk.pb || 2.0;       // متوسط P/B
+        const defaultDE = stk.de || 0.5;       // debt-to-equity
+        const defaultEPS = stk.eps || (bar.c / defaultPE);  // EPS مشتق
+        const defaultBV = stk.bv || (bar.c / defaultPB);    // Book Value
+        
         stocksData.push({
-          ...stk,  // كل بيانات السهم الأصلية (PE, ROE, sector, name, إلخ)
+          ...stk,  // كل بيانات السهم الأصلية أوّلاً
           sym: stk.sym,
           name: stk.name || stk.sym,
           sector: stk.sector || stk.sec || '',
           bars: bars.slice(0, offset + 1),
           currentPrice: bar.c,
-          p: bar.c,  // 🆕 السعر الحالي للسهم (متطلّب stockHealth)
+          p: bar.c,
+          // 🆕 الأساسيات (افتراضية إن مفقودة)
+          pe: defaultPE,
+          roe: defaultROE,
+          cap: defaultCap,
+          dy: defaultDY,
+          div: defaultDY,
+          pb: defaultPB,
+          de: defaultDE,
+          eps: defaultEPS,
+          bv: defaultBV,
         });
       }
     });
