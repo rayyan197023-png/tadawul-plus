@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { stockHealth } from '../engines/analysisEngine';
+import { calcRSI, calcOBV, calcCMF, calcATR } from '../engines/technicalEngine';
 import { 
   backtest, 
   monteCarloSimulation, 
