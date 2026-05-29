@@ -192,7 +192,24 @@ export default function BacktestScreen() {
                   techCheck += '\nعيّنة:\n';
                   techCheck += '  bar[1]: h=' + (b1.h && b1.h.toFixed(2)) + ' l=' + (b1.l && b1.l.toFixed(2)) + ' c=' + (b1.c && b1.c.toFixed(2)) + '\n';
                   techCheck += '  bar[25]: h=' + (b2.h && b2.h.toFixed(2)) + ' l=' + (b2.l && b2.l.toFixed(2)) + ' c=' + (b2.c && b2.c.toFixed(2)) + '\n';
-                  techCheck += '  bar[50]: h=' + (b3.h && b3.h.toFixed(2)) + ' l=' + (b3.l && b3.l.toFixed(2)) + ' c=' + (b3.c && b3.c.toFixed(2)) + '\n';
+                                    techCheck += '  bar[50]: h=' + (b3.h && b3.h.toFixed(2)) + ' l=' + (b3.l && b3.l.toFixed(2)) + ' c=' + (b3.c && b3.c.toFixed(2)) + '\n';
+                  
+                  // 🔬 فحص مؤشّرات مباشرة
+                  try {
+                    var rsiVal = calcRSI(bb, 14);
+                    var atrVal = calcATR(bb, 14);
+                    var cmfVal = calcCMF(bb, 20);
+                    var obvData = calcOBV(bb);
+                    
+                    techCheck += '\nمؤشّرات:\n';
+                    techCheck += '  RSI=' + rsiVal + '\n';
+                    techCheck += '  ATR=' + (atrVal && atrVal.toFixed(3)) + '\n';
+                    techCheck += '  CMF=' + cmfVal + '\n';
+                    techCheck += '  OBV slope=' + (obvData && obvData.slope && obvData.slope.toFixed(0)) + '\n';
+                    techCheck += '  OBV z=' + (obvData && obvData.obvZ) + '\n';
+                  } catch(eInd) {
+                    techCheck += '\nفشل المؤشّرات: ' + eInd.message + '\n';
+                  }
                 } catch(eT) {
                   techCheck = 'فشل: ' + eT.message;
                 }
