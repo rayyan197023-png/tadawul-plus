@@ -47,10 +47,11 @@ export var STRATEGY_DEFAULTS = {
  * @param {Object} options - إعدادات اختيارية
  * @returns {Object} strategy object
  */
-export function createTadawulStrategy(healthFn: any, options?: any): any { 
+export function createTadawulStrategy(healthFn: any, options?: any, macroOverride?: any): any { 
   var config = Object.assign({}, STRATEGY_DEFAULTS, options || {});
   var lastRebalanceDay = 0;
   var marketRegime = 'bull'; // bull / bear / neutral
+  var _macroOverride = macroOverride || null;
 
   return {
     name: 'Tadawul Layers-9 Strategy',
