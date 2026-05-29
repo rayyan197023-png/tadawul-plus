@@ -210,6 +210,29 @@ export default function BacktestScreen() {
                   } catch(eInd) {
                     techCheck += '\nفشل المؤشّرات: ' + eInd.message + '\n';
                   }
+                  
+                  // 🔬 فحص analyzeStockRadar مباشرة
+                  try {
+                    var radarRes = analyzeStockRadar(firstStockData, bb);
+                    techCheck += '\nradar:\n';
+                    if (radarRes) {
+                      techCheck += '  score=' + radarRes.score + '\n';
+                      techCheck += '  radarTR=' + radarRes.radarTR + '\n';
+                      var radarKeys = Object.keys(radarRes).slice(0, 15).join(',');
+                      techCheck += '  مفاتيح: ' + radarKeys + '\n';
+                      // فحص NaN في الكائن
+                      var nanFields = [];
+                      Object.keys(radarRes).forEach(function(k) {
+                        var v = radarRes[k];
+                        if (typeof v === 'number' && isNaN(v)) nanFields.push(k);
+                      });
+                      techCheck += '  NaN fields: ' + (nanFields.length ? nanFields.join(',') : 'لا شيء') + '\n';
+                    } else {
+                      techCheck += '  radarRes = null/undefined\n';
+                    }
+                  } catch(eR) {
+                    techCheck += '\nفشل analyzeStockRadar: ' + eR.message + '\n';
+                  }
                 } catch(eT) {
                   techCheck = 'فشل: ' + eT.message;
                 }
