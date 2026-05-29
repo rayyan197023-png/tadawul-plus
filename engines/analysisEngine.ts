@@ -18,6 +18,18 @@
  */
 
 import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
+// 🆕 حارس عام: لو STOCKS فارغة، نستعمل قائمة افتراضية
+function _safeStocks(): any[] {
+  if (STOCKS && STOCKS.length > 0) return STOCKS;
+  // قائمة افتراضية بأسهم نموذجية (متوسط القطاع)
+  return [
+    { sym: '1010', sec: 'البنوك', ch: 0, mktCap: 30, pe: 12, roe: 14 },
+    { sym: '2222', sec: 'الطاقة', ch: 0, mktCap: 1800, pe: 14, roe: 18 },
+    { sym: '1120', sec: 'البنوك', ch: 0, mktCap: 280, pe: 18, roe: 20 },
+    { sym: '7010', sec: 'الإتصالات', ch: 0, mktCap: 110, pe: 14, roe: 15 },
+    { sym: '2010', sec: 'المواد الأساسية', ch: 0, mktCap: 220, pe: 16, roe: 12 },
+  ];
+}
 import { calcRSI, calcATR, calcVWAP, calcCMF, calcOBV, calcMACD, calcMarketStructure } from './technicalEngine';
 import { calcOrderBlocks, calcLiqSweep } from './radarEngine';
 
