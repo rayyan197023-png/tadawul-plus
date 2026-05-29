@@ -15,14 +15,23 @@
  */
 
 export interface YahooBar {
-  o: number;  // Open
-  h: number;  // High
-  l: number;  // Low
-  c: number;  // Close
-  v: number;  // Volume
-  date: string; // YYYY-MM-DD
+  // الحقول الأصلية
+  o: number;
+  h: number;
+  l: number;
+  c: number;
+  v: number;
+  date: string;
+  // ✨ aliases مطلوبة من technicalEngine + analysisEngine
+  hi?: number;
+  lo?: number;
+  vol?: number;
+  close?: number;
+  open?: number;
+  high?: number;
+  low?: number;
+  pct?: number;
 }
-
 /**
  * تحويل رمز سهم سعودي إلى صيغة Yahoo
  * مثال: "1010" → "1010.SR"
