@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { stockHealth, analyzeStockRadar } from '../engines/analysisEngine';
-import { calcRSI, calcOBV, calcCMF, calcATR } from '../engines/technicalEngine';
+import { stockHealth as backtestStockHealth } from '../engines/backtestAnalysisEngine';
 import { 
   backtest, 
   monteCarloSimulation, 
