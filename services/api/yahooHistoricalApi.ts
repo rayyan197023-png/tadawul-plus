@@ -217,7 +217,7 @@ export async function generateDataFromYahoo(
     const stocksData: any[] = [];
     let dayDate = '';
     
-    validStocks.forEach(stk => {
+        validStocks.forEach(stk => {
       const bars = barsMap[stk.sym];
       const offset = bars.length - minLength + i; // محاذاة من النهاية
       const bar = bars[offset];
@@ -226,12 +226,16 @@ export async function generateDataFromYahoo(
         prices[stk.sym] = bar.c;
         if (!dayDate) dayDate = bar.date;
         
+        // 🆕 إدماج كل بيانات السهم من stk (PE, ROE, sector, etc)
+        // مع الـ bars التاريخية من Yahoo
         stocksData.push({
+          ...stk,  // كل بيانات السهم الأصلية (PE, ROE, sector, name, إلخ)
           sym: stk.sym,
           name: stk.name || stk.sym,
-          sector: stk.sector || '',
+          sector: stk.sector || stk.sec || '',
           bars: bars.slice(0, offset + 1),
           currentPrice: bar.c,
+          p: bar.c,  // 🆕 السعر الحالي للسهم (متطلّب stockHealth)
         });
       }
     });
