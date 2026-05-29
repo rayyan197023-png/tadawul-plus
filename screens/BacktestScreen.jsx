@@ -174,13 +174,23 @@ export default function BacktestScreen() {
                 layerStr += k + '=' + (typeof v === 'number' ? (isNaN(v) ? 'NaN' : v.toFixed(0)) : '?') + ' ';
               });
               
+              // فحص محتوى آخر bar بالتفصيل
+              var barKeys = Object.keys(lastBarData).sort().join(',');
+              var barSample = '';
+              ['c','close','h','hi','high','l','lo','low','o','open','v','vol','pct','date'].forEach(function(k){
+                barSample += k + '=' + lastBarData[k] + ' ';
+              });
+              
+              // فحص محتوى السهم
+              var stkKeys = Object.keys(firstStockData).filter(function(k){ return k !== 'bars'; }).sort().join(',');
+              
               alert(
                 '🔬 فحص نهائي:\n\n' +
                 'سهم: ' + firstStockData.sym + '\n' +
                 'bars: ' + stkBars.length + '\n' +
                 'pct≠0: ' + pctNonZeroCount + ' من ' + stkBars.length + '\n\n' +
-                'وسط bar: pct=' + midBarData.pct + ' c=' + midBarData.c + '\n' +
-                'آخر bar: pct=' + lastBarData.pct + ' c=' + lastBarData.c + '\n\n' +
+                'آخر bar فيه:\n' + barSample + '\n\n' +
+                'حقول السهم:\n' + stkKeys + '\n\n' +
                 'score=' + (healthCheck ? healthCheck.score : 'فشل') + '\n' +
                 'layers: ' + layerStr
               );
