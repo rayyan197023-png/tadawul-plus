@@ -1662,11 +1662,15 @@ export function recordFeedback(sym: string, signal: string, layers: any, actualO
 //  stockHealth - الدالة الرئيسية المُصدَّرة
 // ════════════════════════════════════════════════════════════
 
-export function stockHealth(stk: any, bars: any[], allStocks?: any[]): any {
+export function stockHealth(stk: any, bars: any[], allStocks?: any[], macroOverride?: any): any {
   if (!stk || typeof stk !== 'object') return _emptyHealthResult();
   if (!bars || !Array.isArray(bars) || bars.length < 5) return _emptyHealthResult();
   
-  // إن لم تُمرر allStocks، نستعمل قائمة فيها السهم نفسه على الأقلّ
+  // 🆕 تطبيق macro override إن وُجد
+  const _macroPrevious = macroOverride ? setMacroOverride(macroOverride) : null;
+  
+  try {
+  // إن لم تُمرَّر allStocks، نستعمل قائمة فيها السهم نفسه على الأقلّ
   const stocks = (allStocks && allStocks.length > 0) ? allStocks : [stk];
   
   // STEP 1: المحرّكات الأساسية
