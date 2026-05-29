@@ -3629,7 +3629,7 @@ function calcPortfolioSharpe(allHealthData: any[]): any {
   };
 }
 
-function stockHealth(stk: any, bars: any[]): any {
+function stockHealth(stk: any, bars: any[], macroOverride?: any): any {
   // ✨ Validation - حماية من Edge Cases
   if (!stk || typeof stk !== 'object') {
     return _emptyHealthResult();
@@ -3638,13 +3638,17 @@ function stockHealth(stk: any, bars: any[]): any {
     return _emptyHealthResult();
   }
   
+  // 🆕 تطبيق macro override إن وُجد (من FRED أو commData أو الباك-تيست)
+  // كل الحسابات أدناه ستستعمل القيم الجديدة
+  const _macroPrevious = macroOverride ? setMacroOverride(macroOverride) : null;
+  
+  try {
   // ════════════════════════════════════════════════
   //  STEP 1: المحركات الأساسية الثلاثة (LA, LB, LC)
   // ════════════════════════════════════════════════
   
   // ── A) المحرك التقني
   var tech   = calc9Layers(stk, bars);
-
   var LA     = tech.score;
   var regime = tech.regime;
   var layers = tech.layers;
