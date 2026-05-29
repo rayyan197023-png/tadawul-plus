@@ -424,8 +424,10 @@ export default function BacktestScreen() {
           <div style={{ display: "flex", gap: 6 }}>
             {[
               { days: 60, label: '3 أشهر' },
-              { days: 126, label: '6 أشهر' },
               { days: 252, label: 'سنة' },
+              { days: 504, label: 'سنتان' },
+              { days: 1260, label: '5 سنوات' },
+              { days: 2520, label: '10 سنوات' },
             ].map(function(opt) {
               return (
                 <button
