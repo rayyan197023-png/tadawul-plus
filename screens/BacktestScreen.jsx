@@ -181,13 +181,34 @@ export default function BacktestScreen() {
               var bars = firstStock.bars || [];
               var firstBar = bars[0] || {};
               var lastBar = bars[bars.length-1] || {};
-               // فحص حقول bar
-              var sampleBar = firstStock.bars[firstStock.bars.length-1];
-              var barKeys = sampleBar ? Object.keys(sampleBar).sort().join(',') : 'فارغ';
-              var hasPct = sampleBar && typeof sampleBar.pct === 'number' && !isNaN(sampleBar.pct);
-              var hasHi = sampleBar && typeof sampleBar.hi === 'number';
-              var hasClose = sampleBar && typeof sampleBar.close === 'number';
-              alert('🔬 فحص bar:\n\nحقول: ' + barKeys + '\n\nhasPct: ' + hasPct + '\nhasHi: ' + hasHi + '\nhasClose: ' + hasClose + '\n\nقيم: pct=' + sampleBar.pct + ' hi=' + sampleBar.hi + ' close=' + sampleBar.close);
+
+              // فحص شامل لـ 3 شموع مختلفة
+              var bars = firstStock.bars || [];
+              var firstBar = bars[0] || {};
+              var midBar = bars[Math.floor(bars.length/2)] || {};
+              var lastBar = bars[bars.length-1] || {};
+              
+              var pctSum = 0, pctNonZero = 0, pctNaN = 0;
+              bars.forEach(function(b) {
+                if (typeof b.pct === 'number' && !isNaN(b.pct)) {
+                  if (b.pct !== 0) pctNonZero++;
+                  pctSum += Math.abs(b.pct);
+                } else {
+                  pctNaN++;
+                }
+              });
+              
+              var msg = '🔬 فحص شامل bars:\n\n';
+              msg += 'إجمالي bars: ' + bars.length + '\n';
+              msg += 'pct != 0: ' + pctNonZero + '\n';
+              msg += 'pct NaN: ' + pctNaN + '\n';
+              msg += 'متوسط |pct|: ' + (bars.length > 0 ? (pctSum/bars.length).toFixed(3) : 0) + '\n\n';
+              msg += 'أول bar: c=' + firstBar.c + ' pct=' + firstBar.pct + '\n';
+              msg += 'وسط bar: c=' + midBar.c + ' pct=' + midBar.pct + '\n';
+              msg += 'آخر bar: c=' + lastBar.c + ' pct=' + lastBar.pct + '\n\n';
+              msg += 'مصدر bars (أول bar keys):\n' + Object.keys(firstBar).sort().join(', ');
+              
+              alert(msg);
               
               var diag2 = '🔬 Yahoo Deep Debug:\n\n' +
                 'سهم: ' + firstStock.sym + '\n' +
