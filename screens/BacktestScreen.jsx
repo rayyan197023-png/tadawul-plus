@@ -119,10 +119,11 @@ export default function BacktestScreen() {
           return;
         }
         modeLabel = 'محفظتي الحالية';
-        historicalData = await generateDataFromPortfolioReal(positions, config.days);
+        // Yahoo Finance لكل أوضاع الباك-تيست
+        historicalData = await generateDataFromYahoo(positions, config.days);
         
-        if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData) {
-          setResults({ error: 'فشل جلب بيانات المحفظة التاريخية' });
+        if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
+          setResults({ error: 'فشل جلب بيانات المحفظة من Yahoo' });
           setIsRunning(false);
           return;
         }
