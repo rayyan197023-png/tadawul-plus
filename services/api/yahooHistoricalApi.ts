@@ -265,12 +265,26 @@ export async function generateDataFromYahoo(
         const dBV = stk.bv || (bar.c / dPB);
         
         // 🔧 إصلاح volume = 0 في آخر bar
-        // 🆕 إعادة حساب pct لكل bar (لضمان pct ≠ 0)
+        // 🆕 إعادة حساب pct لكل bar
         const slicedBars = bars.slice(0, offset + 1);
         const enrichedBars = slicedBars.map(function(b, idx, arr) {
-          // حساب pct من b.c والشمعة السابقة
-          const prevC = idx > 0 ? arr[idx - 1].c : b.o;
-          const pctVal = prevC > 0 ? ((b.c - prevC) / prevC) * 100 : 0;
+          // إن كانت b.pct موجودة وصحيحة (من getYahooBars)، استعملها
+          // وإلا، احسبها من b.c والشمعة السابقة
+          let pctVal = b.pct;
+          if (typeof pctVal !== 'number' || pctVal === 0) {
+            const prevC = idx > 0 ? arr[idx - 1].c : b.o;
+            pctVal = prevC > 0 ? ((b.c - prevC) / prevC) * 100 : 0;
+          }
+          // 🔧 fallback إضافي: إن ما زالت 0 أو NaN، استخدم متوسط آخر 5 شموع
+          if (!pctVal || isNaN(pctVal)) {
+            const recent5 = arr.slice(Math.max(0, idx - 5), idx);
+            const validPcts = recent5.filter(function(x) { 
+              return typeof x.pct === 'number' && x.pct !== 0; 
+            });
+            pctVal = validPcts.length > 0 
+              ? validPcts.reduce(function(s, x) { return s + x.pct; }, 0) / validPcts.length 
+              : 0.5; // بقيمة محايدة صغيرة كأخير حلّ
+          }
           
           // إصلاح volume = 0 في آخر bar
           let volFinal = b.v || b.vol || 0;
