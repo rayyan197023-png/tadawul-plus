@@ -1777,7 +1777,11 @@ export function stockHealth(stk: any, bars: any[], allStocks?: any[], macroOverr
   };
   
   return merged;
-}
+  
+  } finally {
+    if (_macroPrevious) restoreMacro(_macroPrevious);
+  }
+}  
 
 // ════════════════════════════════════════════════════════════
 //  دالة الاختبار النهائية -- للتأكّد من نجاح المرحلة ٧
