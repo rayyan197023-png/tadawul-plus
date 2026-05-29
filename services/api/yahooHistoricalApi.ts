@@ -260,11 +260,15 @@ export async function generateDataFromYahoo(
           return b;
         });
         
+        // 🆕 الحقول التقنية المطلوبة للمحرّك
+        const secValue = stk.sector || stk.sec || 'البنوك';
+        
         stocksData.push({
           ...stk,
           sym: stk.sym,
           name: stk.name || stk.sym,
-          sector: stk.sector || stk.sec || '',
+          sector: secValue,
+          sec: secValue,    // 🆕 alias مطلوب (analysisEngine يبحث عن sec)
           bars: enrichedBars,
           currentPrice: bar.c,
           p: bar.c,
