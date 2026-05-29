@@ -228,35 +228,70 @@ export async function generateDataFromYahoo(
         
         // 🆕 إدماج كل بيانات السهم من stk (PE, ROE, sector, etc)
         // مع الـ bars التاريخية من Yahoo
-                // 🆕 قيم افتراضية محايدة للسوق السعودي (متوسطات معقولة)
-        // تُستخدم لما Yahoo لا يوفّر الأساسيات (PE, ROE, cap)
-        const defaultPE = stk.pe || 18;        // متوسط PE في تاسي ~18
-        const defaultROE = stk.roe || 12;      // متوسط ROE ~12%
-        const defaultCap = stk.cap || (bar.c * 1000000000); // تقدير cap من السعر
-        const defaultDY = stk.dy || stk.div || 3.5;  // dividend yield متوسط
-        const defaultPB = stk.pb || 2.0;       // متوسط P/B
-        const defaultDE = stk.de || 0.5;       // debt-to-equity
-        const defaultEPS = stk.eps || (bar.c / defaultPE);  // EPS مشتق
-        const defaultBV = stk.bv || (bar.c / defaultPB);    // Book Value
+        // 🆕 قيم افتراضية شاملة للسوق السعودي
+        // تغطّي كل الحقول التي تحتاجها 9 طبقات stockHealth
+        const dPE = stk.pe || 18;
+        const dROE = stk.roe || 12;
+        const dCap = stk.cap || (bar.c * 1e9);
+        const dDY = stk.dy || stk.div || 3.5;
+        const dPB = stk.pb || 2.0;
+        const dDE = stk.de || 0.5;
+        const dEPS = stk.eps || (bar.c / dPE);
+        const dBV = stk.bv || (bar.c / dPB);
+        
+        // 🔧 إصلاح volume = 0 في آخر bar
+        const enrichedBars = bars.slice(0, offset + 1).map(function(b, idx, arr) {
+          if (idx === arr.length - 1 && (!b.v || b.v === 0)) {
+            const recentBars = arr.slice(Math.max(0, idx - 20), idx).filter(function(x) { return x.v > 0; });
+            const avgV = recentBars.length > 0 
+              ? recentBars.reduce(function(s, x) { return s + x.v; }, 0) / recentBars.length 
+              : 1000000;
+            return Object.assign({}, b, { v: Math.round(avgV) });
+          }
+          return b;
+        });
         
         stocksData.push({
-          ...stk,  // كل بيانات السهم الأصلية أوّلاً
+          ...stk,
           sym: stk.sym,
           name: stk.name || stk.sym,
           sector: stk.sector || stk.sec || '',
-          bars: bars.slice(0, offset + 1),
+          bars: enrichedBars,
           currentPrice: bar.c,
           p: bar.c,
-          // 🆕 الأساسيات (افتراضية إن مفقودة)
-          pe: defaultPE,
-          roe: defaultROE,
-          cap: defaultCap,
-          dy: defaultDY,
-          div: defaultDY,
-          pb: defaultPB,
-          de: defaultDE,
-          eps: defaultEPS,
-          bv: defaultBV,
+          // L1 الأساسيات
+          pe: dPE,
+          roe: dROE,
+          cap: dCap,
+          dy: dDY,
+          div: dDY,
+          pb: dPB,
+          de: dDE,
+          eps: dEPS,
+          bv: dBV,
+          // L1 إضافيات
+          revenue: stk.revenue || dCap * 0.5,
+          revenueGrowth: stk.revenueGrowth || stk.rg || 8,
+          profitMargin: stk.profitMargin || stk.pm || 15,
+          netIncome: stk.netIncome || stk.ni || dCap * 0.08,
+          // L5 الجودة
+          currentRatio: stk.currentRatio || stk.cr || 1.5,
+          quickRatio: stk.quickRatio || stk.qr || 1.2,
+          debtToAssets: stk.debtToAssets || stk.dta || 0.3,
+          interestCoverage: stk.interestCoverage || stk.ic || 5,
+          assetTurnover: stk.assetTurnover || stk.at || 0.7,
+          // L7 / L9 التقييم
+          forwardPE: stk.forwardPE || stk.fpe || dPE * 0.95,
+          pegRatio: stk.pegRatio || stk.peg || 1.5,
+          growthEstimate: stk.growthEstimate || stk.ge || 10,
+          // L3 التدفّق
+          fcf: stk.fcf || dCap * 0.06,
+          fcfYield: stk.fcfYield || stk.fcfy || 5,
+          // معلومات إضافية
+          beta: stk.beta || 1.0,
+          shares: stk.shares || (dCap / bar.c),
+          ev: stk.ev || dCap * 1.1,
+        });
         });
       }
     });
