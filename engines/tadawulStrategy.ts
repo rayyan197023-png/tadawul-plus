@@ -74,15 +74,15 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
       }
 
       // ③ تقييم كل سهم متاح
-      // 🆕 نُمرّر day.stocksData كـ allStocks للمحرّك الجديد
-      // المحرّك القديم سيتجاهل المعامل الثالث (backward compatible)
+      // 🆕 نُمرّر day.stocksData كـ allStocks + macroOverride للمحرّك الجديد
+      // المحرّك القديم سيتجاهل المعاملين الإضافيين (backward compatible)
       var stockScores: any[] = [];
       var allStocksForToday = day.stocksData || [];
       day.stocksData.forEach(function(stk: any) {
         if (!stk.bars || stk.bars.length < 30) return;
         
         try {
-          var health = healthFn(stk, stk.bars, allStocksForToday);
+          var health = healthFn(stk, stk.bars, allStocksForToday, _macroOverride);
           stockScores.push({
             sym: stk.sym,
             stk: stk,
