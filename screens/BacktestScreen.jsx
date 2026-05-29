@@ -130,7 +130,7 @@ export default function BacktestScreen() {
           return Object.assign({}, p, { weight: 1 / positions.length });
         });
         benchmarkStrategy = createPortfolioBuyAndHoldStrategy(equalWeight);
-          } else if (config.mode === 'analysis') {
+      } else if (config.mode === 'analysis') {
         var category = STOCK_CATEGORIES[config.category];
         var categoryStocks = getStocksByCategory(config.category);
         modeLabel = `${category.icon} ${category.name} (${categoryStocks.length} سهم)`;
@@ -145,192 +145,23 @@ export default function BacktestScreen() {
           var live = STOCKS.find(x => x.sym === s.sym);
           return live ? { ...s, ...live } : s;
         });
-        // ملاحظة: لا فلترة p>0 لأن Yahoo يجلب البيانات حسب الرمز
         
         // Yahoo Finance دائماً
-        var stocksToUse = enrichedStocks.slice(0, 15);
-        var symbolsList = stocksToUse.map(function(s) { return s.sym; }).join(',');
-
-        // 🔬 تشخيص مؤقّت -- يُحذف بعد التأكّد
-        // intentionally before fetch        
-        historicalData = await generateDataFromYahoo(stocksToUse, config.days);
-        
-        // 🔬 فحص ما جاء من Yahoo
-        if (historicalData && historicalData.length > 0) {
-          var lastDayData = historicalData[historicalData.length - 1];
-          var firstStockData = lastDayData && lastDayData.stocksData && lastDayData.stocksData[0];
-          if (firstStockData) {
-            var stkBars = firstStockData.bars || [];
-            var lastBarData = stkBars[stkBars.length - 1] || {};
-            var midBarData = stkBars[Math.floor(stkBars.length/2)] || {};
-            var pctNonZeroCount = stkBars.filter(function(b){ return typeof b.pct === 'number' && b.pct !== 0; }).length;
-            
-                          try {
-                var healthCheck = stockHealth(firstStockData, lastDayData.stocksData, {});
-                var layersCheck = (healthCheck && healthCheck.layers) || {};
-                
-                // 🔬 فحص technicalEngine مباشرة
-                var techCheck = '';
-                try {
-                  // استدعاء بسيط: نريد فقط حسابات RSI و OBV و CMF
-                  var bb = firstStockData.bars || [];
-                  var sample = bb.slice(-50);
-                  
-                  // تحقّق من تنوّع البارات
-                  var hSet = new Set(sample.map(function(b){ return b.h; }));
-                  var lSet = new Set(sample.map(function(b){ return b.l; }));
-                  var cSet = new Set(sample.map(function(b){ return b.c; }));
-                  
-                  techCheck += 'آخر 50 bar:\n';
-                  techCheck += '  h فريدة: ' + hSet.size + '\n';
-                  techCheck += '  l فريدة: ' + lSet.size + '\n';
-                  techCheck += '  c فريدة: ' + cSet.size + '\n';
-                  
-                  // عيّنة من 3 بارات
-                  var b1 = sample[0], b2 = sample[24], b3 = sample[49];
-                  techCheck += '\nعيّنة:\n';
-                  techCheck += '  bar[1]: h=' + (b1.h && b1.h.toFixed(2)) + ' l=' + (b1.l && b1.l.toFixed(2)) + ' c=' + (b1.c && b1.c.toFixed(2)) + '\n';
-                  techCheck += '  bar[25]: h=' + (b2.h && b2.h.toFixed(2)) + ' l=' + (b2.l && b2.l.toFixed(2)) + ' c=' + (b2.c && b2.c.toFixed(2)) + '\n';
-                                    techCheck += '  bar[50]: h=' + (b3.h && b3.h.toFixed(2)) + ' l=' + (b3.l && b3.l.toFixed(2)) + ' c=' + (b3.c && b3.c.toFixed(2)) + '\n';
-                  
-                  // 🔬 فحص مؤشّرات مباشرة
-                  try {
-                    var rsiVal = calcRSI(bb, 14);
-                    var atrVal = calcATR(bb, 14);
-                    var cmfVal = calcCMF(bb, 20);
-                    var obvData = calcOBV(bb);
-                    
-                    techCheck += '\nمؤشّرات:\n';
-                    techCheck += '  RSI=' + rsiVal + '\n';
-                    techCheck += '  ATR=' + (atrVal && atrVal.toFixed(3)) + '\n';
-                    techCheck += '  CMF=' + cmfVal + '\n';
-                    techCheck += '  OBV slope=' + (obvData && obvData.slope && obvData.slope.toFixed(0)) + '\n';
-                    techCheck += '  OBV z=' + (obvData && obvData.obvZ) + '\n';
-                  } catch(eInd) {
-                    techCheck += '\nفشل المؤشّرات: ' + eInd.message + '\n';
-                  }
-                  
-                  // 🔬 فحص analyzeStockRadar مباشرة
-                  try {
-                    var radarRes = analyzeStockRadar(firstStockData, bb);
-                    techCheck += '\nradar:\n';
-                    if (radarRes) {
-                      techCheck += '  total=' + radarRes.total + '\n';
-                      techCheck += '  atrPct=' + radarRes.atrPct + '\n';
-                      techCheck += '  scoreCol=' + radarRes.scoreCol + '\n';
-                      // cats هو حيث الطبقات
-                      if (radarRes.cats) {
-                        var catsKeys = Object.keys(radarRes.cats).join(',');
-                        techCheck += '  cats keys: ' + catsKeys + '\n';
-                        // اطبع كل cat
-                        Object.keys(radarRes.cats).forEach(function(ck){
-                          var cv = radarRes.cats[ck];
-                          if (typeof cv === 'number') {
-                            techCheck += '    ' + ck + '=' + cv + '\n';
-                          } else if (cv && typeof cv === 'object') {
-                            techCheck += '    ' + ck + '={' + Object.keys(cv).slice(0,3).join(',') + '}\n';
-                          }
-                        });
-                      }
-                      // mom & trend & liq -- نفس الشيء
-                      if (radarRes.trend) techCheck += '  trend=' + JSON.stringify(radarRes.trend).slice(0,80) + '\n';
-                      if (radarRes.mom) techCheck += '  mom=' + JSON.stringify(radarRes.mom).slice(0,80) + '\n';
-                      // فحص NaN في الكائن
-                      var nanFields = [];
-                      Object.keys(radarRes).forEach(function(k) {
-                        var v = radarRes[k];
-                        if (typeof v === 'number' && isNaN(v)) nanFields.push(k);
-                      });
-                      techCheck += '  NaN fields: ' + (nanFields.length ? nanFields.join(',') : 'لا شيء') + '\n';
-                    } else {
-                      techCheck += '  radarRes = null/undefined\n';
-                    }
-                    
-                    // 🔬 محاكاة L1/L5/L7/L9 -- نفهم ما تقرأه الطبقات
-                    techCheck += '\nحقول L1:\n';
-                    techCheck += '  roe=' + firstStockData.roe + '\n';
-                    techCheck += '  pe=' + firstStockData.pe + '\n';
-                    techCheck += '  pb=' + firstStockData.pb + '\n';
-                    techCheck += '  revenue=' + firstStockData.revenue + '\n';
-                    techCheck += '  revenueGrowth=' + firstStockData.revenueGrowth + '\n';
-                    techCheck += '  profitMargin=' + firstStockData.profitMargin + '\n';
-                    techCheck += '  netIncome=' + firstStockData.netIncome + '\n';
-                    
-                    techCheck += '\nحقول L5:\n';
-                    techCheck += '  currentRatio=' + firstStockData.currentRatio + '\n';
-                    techCheck += '  quickRatio=' + firstStockData.quickRatio + '\n';
-                    techCheck += '  debtToAssets=' + firstStockData.debtToAssets + '\n';
-                    techCheck += '  interestCoverage=' + firstStockData.interestCoverage + '\n';
-                    
-                    techCheck += '\nحقول L7:\n';
-                    techCheck += '  forwardPE=' + firstStockData.forwardPE + '\n';
-                    techCheck += '  pegRatio=' + firstStockData.pegRatio + '\n';
-                    techCheck += '  growthEstimate=' + firstStockData.growthEstimate + '\n';
-                    techCheck += '  fcfYield=' + firstStockData.fcfYield + '\n';
-                    
-                    techCheck += '\nحقول L9:\n';
-                    techCheck += '  epsGrw=' + firstStockData.epsGrw + '\n';
-                    techCheck += '  revenueGrowth=' + firstStockData.revenueGrowth + '\n';
-                  } catch(eR) {
-                    techCheck += '\nفشل analyzeStockRadar: ' + eR.message + '\n';
-                  }
-                } catch(eT) {
-                  techCheck = 'فشل: ' + eT.message;
-                }
-                
-                var layerStr = '';
-                ['L1','L2','L3','L4','L5','L6','L7','L8','L9'].forEach(function(k){
-                  var v = layersCheck[k];
-                  layerStr += k + '=' + (typeof v === 'number' ? (isNaN(v) ? 'NaN' : v.toFixed(0)) : '?') + ' ';
-                });
-              var layerStr = '';
-              ['L1','L2','L3','L4','L5','L6','L7','L8','L9'].forEach(function(k){
-                var v = layersCheck[k];
-                layerStr += k + '=' + (typeof v === 'number' ? (isNaN(v) ? 'NaN' : v.toFixed(0)) : '?') + ' ';
-              });
-              
-              // فحص محتوى آخر bar بالتفصيل
-              var barKeys = Object.keys(lastBarData).sort().join(',');
-              var barSample = '';
-              ['c','close','h','hi','high','l','lo','low','o','open','v','vol','pct','date'].forEach(function(k){
-                barSample += k + '=' + lastBarData[k] + ' ';
-              });
-              
-              // فحص محتوى السهم
-              var stkKeys = Object.keys(firstStockData).filter(function(k){ return k !== 'bars'; }).sort().join(',');
-              
-                alert(
-                  '🔬 فحص تقني عميق:\n\n' +
-                  'سهم: ' + firstStockData.sym + '\n' +
-                  'bars: ' + stkBars.length + '\n\n' +
-                  techCheck + '\n' +
-                  'score=' + (healthCheck ? healthCheck.score : 'فشل') + '\n' +
-                  'layers: ' + layerStr
-              );
-            } catch(eHealth) {
-              alert('فشل stockHealth: ' + eHealth.message);
-            }
-          }
-        }
+        historicalData = await generateDataFromYahoo(enrichedStocks.slice(0, 15), config.days);
         
         if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
-          var debug = '🔬 فشل Yahoo:\n\n';
-          debug += 'الفئة: ' + config.category + '\n';
-          debug += 'أسهم الفئة: ' + categoryStocks.length + '\n';
-          debug += 'بعد p>0: ' + enrichedStocks.length + '\n';
-          debug += 'أُرسل لـ Yahoo: ' + stocksToUse.length + '\n';
-          debug += 'الرموز: ' + symbolsList + '\n\n';
-          debug += 'historicalData: ' + (historicalData ? 'مصفوفة طولها ' + historicalData.length : 'null/undefined') + '\n';
-          if (historicalData && historicalData[0]) {
-            debug += 'أول يوم stocksData: ' + (historicalData[0].stocksData ? historicalData[0].stocksData.length + ' أسهم' : 'لا يوجد');
-          }
-          alert(debug);
           setResults({ error: 'فشل جلب البيانات التاريخية من Yahoo' });
           setIsRunning(false);
           return;
         }
         
-        strategy = createTadawulStrategy(stockHealth);
+        // 🆕 المحرّك الجديد المخصّص للباك-تيست
+        // wrapper يُمرّر allStocks لـ stockHealth
+        var backtestHealthWrapper = function(stk, bars, allStocks) {
+          return backtestStockHealth(stk, bars, allStocks);
+        };
+        
+        strategy = createTadawulStrategy(backtestHealthWrapper);
         var benchSymbols = historicalData[0].stocksData.slice(0, 5).map(function(s) { return s.sym; });
         benchmarkStrategy = createBuyAndHoldStrategy(benchSymbols);
       }
