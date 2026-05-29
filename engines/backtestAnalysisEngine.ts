@@ -51,11 +51,115 @@ const RATE_SENS: any = {
 };
 
 // ════════════════════════════════════════════════════════════
-//  دالة الاختبار -- للتأكّد من نجاح إنشاء الملف
+//  دوال مساعدة أساسية -- مطابقة لـ analysisEngine
+// ════════════════════════════════════════════════════════════
+
+/**
+ * Clamp value between min and max
+ */
+function _clamp(v: number, lo: number, hi: number): number {
+  return Math.min(hi, Math.max(lo, v));
+}
+
+/**
+ * Softmax 3-way - Mathematical Probability Distribution
+ * Returns probabilities that sum to exactly 100%
+ */
+function _softmax3(a: number, b: number, c: number): any {
+  a = typeof a === 'number' && !isNaN(a) ? a : 0;
+  b = typeof b === 'number' && !isNaN(b) ? b : 0;
+  c = typeof c === 'number' && !isNaN(c) ? c : 0;
+  
+  const maxVal = Math.max(a, b, c);
+  const T = 50;
+  
+  const ea = Math.exp(_clamp((a - maxVal) / T, -10, 0));
+  const eb = Math.exp(_clamp((b - maxVal) / T, -10, 0));
+  const ec = Math.exp(_clamp((c - maxVal) / T, -10, 0));
+  
+  const s = ea + eb + ec;
+  
+  if (s === 0 || !isFinite(s)) {
+    return { bull: 33, bear: 33, neutral: 34 };
+  }
+  
+  let bullProb = (ea / s) * 100;
+  let bearProb = (eb / s) * 100;
+  let neutralProb = (ec / s) * 100;
+  
+  let bull = Math.round(bullProb);
+  let bear = Math.round(bearProb);
+  let neutral = Math.round(neutralProb);
+  
+  const total = bull + bear + neutral;
+  if (total !== 100) {
+    const diff = 100 - total;
+    if (bull >= bear && bull >= neutral) bull += diff;
+    else if (bear >= bull && bear >= neutral) bear += diff;
+    else neutral += diff;
+  }
+  
+  return {
+    bull: Math.max(0, Math.min(100, bull)),
+    bear: Math.max(0, Math.min(100, bear)),
+    neutral: Math.max(0, Math.min(100, neutral))
+  };
+}
+
+/**
+ * نتيجة فارغة آمنة - عند فشل الفحوصات
+ */
+function _emptyHealthResult(): any {
+  return {
+    score: 50,
+    grade: "D",
+    sig: "محايد",
+    sigC: "#06b6d4",
+    regime: "chop",
+    weights: { L1: 0.11, L2: 0.11, L3: 0.11, L4: 0.11, L5: 0.11, L6: 0.11, L7: 0.11, L8: 0.11, L9: 0.12 },
+    probability: { bull: 33, bear: 33, neutral: 34 },
+    gates: {
+      g1: false, g2: false, g3: false,
+      passed: 0, all: false,
+      g1s: 50, g2s: 50, g3s: 50,
+      g1l: "بيانات غير كافية",
+      g2l: "بيانات غير كافية",
+      g3l: "بيانات غير كافية"
+    },
+    opp: {
+      matrix: "بيانات غير كافية",
+      color: "#6b7280",
+      priority: 0,
+      highLiq: false, highStr: false, highMom: false
+    },
+    layers: { L1: 50, L2: 50, L3: 50, L4: 50, L5: 50, L6: 50, L7: 50, L8: 50, L9: 50 },
+    extras: {
+      conflictCount: 0,
+      bayesMult: 1.0,
+      vr: 1.0,
+      kelly: 0,
+      adxV: 25,
+      adxBull: false,
+      rsiV: 50,
+      macdH: 0,
+      mktBreadth: 0.5,
+      mktMomentum: 0,
+      gateMultiplier: 0.5,
+      regimeData: { regime: "chop" },
+    },
+    tasiCtx: null as any,
+  };
+}
+
+// ════════════════════════════════════════════════════════════
+//  دالة الاختبار -- للتأكّد من نجاح المرحلة ٢
 // ════════════════════════════════════════════════════════════
 
 export function testBacktestEngine(): string {
-  return "✅ backtestAnalysisEngine جاهز للعمل";
+  const test1 = _clamp(150, 0, 100);
+  const test2 = _softmax3(80, 20, 5);
+  const test3 = _emptyHealthResult();
+  return `✅ المرحلة ٢ ناجحة | clamp=${test1} | softmax bull=${test2.bull}% | empty score=${test3.score}`;
 }
 
 // ════════════════════════════════════════════════════════════
