@@ -120,7 +120,31 @@ export async function getYahooBars(sym: string, days: number = 2520): Promise<Ya
       const prevClose = bars.length > 0 ? bars[bars.length - 1].c : c;
       const pctChange = prevClose > 0 ? ((c - prevClose) / prevClose) * 100 : 0;
       
-      // 🆕 BAR موحّد: كل الحقول المطلوبة من technicalEngine + analysisEngine
+      // 🆕 إصلاح OHLC للشموع غير المكتملة (h, l, o ناقصة من Yahoo للجلسة المفتوحة)
+      // إن كانت h و l و o = null أو غير معرّفة، نُولّدها من c + تقلّب سابق
+      let finalH = h;
+      let finalL = l;
+      let finalO = o;
+      
+      if (finalH == null || finalL == null || finalO == null || (finalH === c && finalL === c && finalO === c)) {
+        // نأخذ متوسط تقلّب آخر 10 بارات
+        const recent10 = bars.slice(Math.max(0, bars.length - 10));
+        let avgRange = 0;
+        let validCount = 0;
+        recent10.forEach(function(b: any) {
+          if (b.h && b.l && b.h !== b.l) {
+            avgRange += (b.h - b.l) / b.c;
+            validCount++;
+          }
+        });
+        avgRange = validCount > 0 ? avgRange / validCount : 0.015; // 1.5% افتراضي
+        
+        const halfRange = c * avgRange / 2;
+        finalH = c + halfRange;
+        finalL = c - halfRange;
+        finalO = prevClose; // الافتتاح غالباً قريب من إغلاق اليوم السابق
+      }
+      
       bars.push({
         // الحقول الأصلية
         o: o ?? c,
