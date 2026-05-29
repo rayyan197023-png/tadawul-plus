@@ -2788,18 +2788,20 @@ function calc9Layers(stk: any, bars: any[]): any {
   //  مدمج: RSC مرجّح بالقيمة السوقية + VWAP Score + أداء داخل القطاع
   // ════════════════════════════════════════
 
-// 🆕 حارس: لو STOCKS فارغة، استعمل allStocks المُمرّرة من stockHealth
-const stocksList = STOCKS.length > 0 ? STOCKS : ((bars as any).__allStocks || [stk]);
-const mktWtdSum = stocksList.reduce((s: number, x: any)=>s+(x.ch||0)*(x.mktCap||50),0);
-const mktWtdDiv = stocksList.reduce((s: number, x: any)=>s+(x.mktCap||50),0);
-const mktWtd = mktWtdDiv > 0 ?    mktWtdSum/mktWtdDiv : 0;
+  // 🆕 حارس آمن: لو STOCKS فارغة (أثناء الباك-تيست)، نُعيد 0 بدل NaN
+  const mktWtdSum = STOCKS.reduce((s, x) => s + (x.ch || 0) * ((x as any).mktCap || 50), 0);
+  const mktWtdDen = STOCKS.reduce((s, x) => s + ((x as any).mktCap || 50), 0);
+  const mktWtd = mktWtdDen > 0 ? mktWtdSum / mktWtdDen : 0;
 
-  const rscRaw = stk.ch - mktWtd;
-  const mktVar = STOCKS.reduce((s,x)=>s+Math.pow(x.ch-mktWtd,2),0)/STOCKS.length;
-  const rscZ   = mktVar>0?rscRaw/Math.sqrt(mktVar):0;
-  const rscScore = Math.round(Math.min(100,Math.max(0,50+rscZ*18)));
-  const vwapScore= Math.round(vi.score/20*100);
-
+  const rscRaw = (stk.ch || 0) - mktWtd;
+  
+  // 🆕 حارس لـ mktVar أيضاً
+  const mktVarSum = STOCKS.reduce((s, x) => s + Math.pow((x.ch || 0) - mktWtd, 2), 0);
+  const mktVar = STOCKS.length > 0 ? mktVarSum / STOCKS.length : 0;
+  
+  const rscZ = mktVar > 0 ? rscRaw / Math.sqrt(mktVar) : 0;
+  const rscScore = Math.round(Math.min(100, Math.max(0, 50 + rscZ * 18)));
+  const vwapScore = Math.round(vi.score / 20 * 100);
   // Sector Momentum — مقارنة السهم بأقرانه في نفس القطاع
   const sectorPeers = STOCKS.filter(function(x){ return x.sec===stk.sec && x.sym!==stk.sym; });
   const sectorAvgCh = sectorPeers.length>0
