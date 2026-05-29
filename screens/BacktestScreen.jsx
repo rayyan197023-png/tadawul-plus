@@ -148,7 +148,14 @@ export default function BacktestScreen() {
           return live ? { ...s, ...live } : s;
         }).filter(s => s.p > 0);
         
-        historicalData = await generateDataFromStockListReal(enrichedStocks, config.days, 15);
+        // 🆕 Smart Router: Yahoo للفترات الطويلة، sahmk للسنة وأقل
+        if (config.days > 252) {
+          // فترة أطول من سنة → Yahoo Finance (يدعم 10+ سنوات)
+          historicalData = await generateDataFromYahoo(enrichedStocks.slice(0, 15), config.days);
+        } else {
+          // سنة أو أقل → sahmk (الموجود يعمل)
+          historicalData = await generateDataFromStockListReal(enrichedStocks, config.days, 15);
+        }
         
         // 🔬 تشخيص: كم يوماً وصل فعلاً؟
         var requestedDays = config.days;
