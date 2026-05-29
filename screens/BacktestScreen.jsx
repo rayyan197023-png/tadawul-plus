@@ -108,7 +108,21 @@ export default function BacktestScreen() {
       var strategy;
       var benchmarkStrategy;
       var modeLabel;
-
+      
+      // 🆕 جلب FRED Macro لاستعماله طوال الباك-تيست
+      // (نفط حقيقي + VIX + معدل الفائدة)
+      var fredMacro = null;
+      try {
+        var fredRes = await fetch('/api/freddata');
+        if (fredRes.ok) {
+          var fredData = await fredRes.json();
+          if (fredData && (typeof fredData.oilPrice === 'number' || typeof fredData.vix === 'number')) {
+            fredMacro = fredData;
+          }
+        }
+      } catch(fredErr) {
+        // FRED غير متاح - نتابع بقيم MACRO الافتراضية
+      }
       if (config.mode === 'portfolio') {
         if (!hasPortfolio) {
           setResults({ error: 'المحفظة فارغة! أضف أسهماً أولاً.' });
