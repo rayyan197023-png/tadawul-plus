@@ -180,25 +180,21 @@ export default function BacktestScreen() {
       else if (config.mode === 'market') {
         modeLabel = 'السوق بالكامل (Sector Rotation)';
         
-        // 🆕 Smart Router للسوق
-           if (config.days > 252) {
-          // اختيار 30 سهم من قطاعات متنوّعة
-          var sectorMap = {};
-          STOCKS.forEach(function(stk) {
-            var sector = stk.sector || stk.sec || 'other';
-            if (!sectorMap[sector]) sectorMap[sector] = [];
-            sectorMap[sector].push(stk);
-          });
-          var selected = [];
-          Object.keys(sectorMap).forEach(function(sec) {
-            selected = selected.concat(sectorMap[sec].slice(0, 3));
-          });
-          if (selected.length > 30) selected = selected.slice(0, 30);
-          
-          historicalData = await generateDataFromYahoo(selected, config.days);
-        } else {
-          historicalData = await generateDataFromMarketReal(STOCKS, config.days);
-        }
+        // اختيار 30 سهم من قطاعات متنوّعة
+        var sectorMap = {};
+        STOCKS.forEach(function(stk) {
+          var sector = stk.sector || stk.sec || 'other';
+          if (!sectorMap[sector]) sectorMap[sector] = [];
+          sectorMap[sector].push(stk);
+        });
+        var selected = [];
+        Object.keys(sectorMap).forEach(function(sec) {
+          selected = selected.concat(sectorMap[sec].slice(0, 3));
+        });
+        if (selected.length > 30) selected = selected.slice(0, 30);
+        
+        // Yahoo Finance دائماً
+        historicalData = await generateDataFromYahoo(selected, config.days);
         
         if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
           setResults({ error: 'فشل توليد بيانات السوق' });
