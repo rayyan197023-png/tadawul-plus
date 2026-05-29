@@ -150,7 +150,9 @@ export default function BacktestScreen() {
         // Yahoo Finance دائماً
         var stocksToUse = enrichedStocks.slice(0, 15);
         var symbolsList = stocksToUse.map(function(s) { return s.sym; }).join(',');
-        
+
+        // 🔬 تشخيص مؤقّت -- يُحذف بعد التأكّد
+        // intentionally before fetch        
         historicalData = await generateDataFromYahoo(stocksToUse, config.days);
         
         if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
