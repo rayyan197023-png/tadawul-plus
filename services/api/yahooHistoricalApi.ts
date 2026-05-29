@@ -292,7 +292,6 @@ export async function generateDataFromYahoo(
           shares: stk.shares || (dCap / bar.c),
           ev: stk.ev || dCap * 1.1,
         });
-        });
       }
     });
     
