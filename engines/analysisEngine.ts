@@ -4413,6 +4413,11 @@ function stockHealth(stk: any, bars: any[], macroOverride?: any): any {
   };
 
   return merged;
+  
+  } finally {
+    // 🆕 إعادة MACRO لقيمته السابقة (مهم لتجنّب التسرّب بين الاستدعاءات)
+    if (_macroPrevious) restoreMacro(_macroPrevious);
+  }
 }
 
 
