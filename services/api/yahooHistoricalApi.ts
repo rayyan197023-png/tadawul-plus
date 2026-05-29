@@ -174,7 +174,9 @@ export async function getYahooBarsBatch(
     
     const promises = batch.map(async (sym) => {
       const bars = await getYahooBars(sym, days);
-      return { sym, bars };
+      // ✨ نُرجع الرمز الأصلي (بدون .SR) ليتطابق مع stocksList
+      const cleanSym = sym.replace(/\.SR$/i, '');
+      return { sym: cleanSym, bars };
     });
     
     const results = await Promise.all(promises);
