@@ -150,11 +150,38 @@ export default function BacktestScreen() {
         
         // 🆕 Smart Router: Yahoo للفترات الطويلة، sahmk للسنة وأقل
         if (config.days > 252) {
-          // فترة أطول من سنة → Yahoo Finance (يدعم 10+ سنوات)
           historicalData = await generateDataFromYahoo(enrichedStocks.slice(0, 15), config.days);
         } else {
-          // سنة أو أقل → sahmk (الموجود يعمل)
           historicalData = await generateDataFromStockListReal(enrichedStocks, config.days, 15);
+        }
+        
+        // 🔬 تشخيص عميق: ماذا تخرج stockHealth لأول سهم في آخر يوم؟
+        if (historicalData && historicalData.length > 0 && config.days > 252) {
+          var lastDay = historicalData[historicalData.length - 1];
+          var firstStock = lastDay && lastDay.stocksData && lastDay.stocksData[0];
+          if (firstStock) {
+            try {
+              var health = stockHealth(firstStock, lastDay.stocksData, {});
+              var diag2 = '🔬 تشخيص استراتيجية Yahoo:\n\n' +
+                'سهم: ' + firstStock.sym + ' (' + (firstStock.name||'?') + ')\n' +
+                'سعر: ' + firstStock.p + ' / ' + firstStock.currentPrice + '\n' +
+                'bars: ' + (firstStock.bars||[]).length + '\n\n' +
+                'بيانات السهم:\n' +
+                ' - sector: ' + (firstStock.sector||'لا') + '\n' +
+                ' - cap: ' + (firstStock.cap||'لا') + '\n' +
+                ' - pe: ' + (firstStock.pe||'لا') + '\n' +
+                ' - roe: ' + (firstStock.roe||'لا') + '\n\n' +
+                'stockHealth:\n' +
+                ' - score: ' + (health ? health.score : 'فشل') + '\n' +
+                ' - signal: ' + (health && health.signal ? health.signal.label : '?') + '\n' +
+                ' - conviction: ' + (health && health.conviction ? health.conviction.level : '?');
+              alert(diag2);
+            } catch(e) {
+              alert('فشل stockHealth: ' + e.message);
+            }
+          } else {
+            alert('فشل الوصول لـ firstStock');
+          }
         }
         
         // 🔬 تشخيص: كم يوماً وصل فعلاً؟
