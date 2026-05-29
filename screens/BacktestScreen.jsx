@@ -246,6 +246,32 @@ export default function BacktestScreen() {
                     } else {
                       techCheck += '  radarRes = null/undefined\n';
                     }
+                    
+                    // 🔬 محاكاة L1/L5/L7/L9 -- نفهم ما تقرأه الطبقات
+                    techCheck += '\nحقول L1:\n';
+                    techCheck += '  roe=' + firstStockData.roe + '\n';
+                    techCheck += '  pe=' + firstStockData.pe + '\n';
+                    techCheck += '  pb=' + firstStockData.pb + '\n';
+                    techCheck += '  revenue=' + firstStockData.revenue + '\n';
+                    techCheck += '  revenueGrowth=' + firstStockData.revenueGrowth + '\n';
+                    techCheck += '  profitMargin=' + firstStockData.profitMargin + '\n';
+                    techCheck += '  netIncome=' + firstStockData.netIncome + '\n';
+                    
+                    techCheck += '\nحقول L5:\n';
+                    techCheck += '  currentRatio=' + firstStockData.currentRatio + '\n';
+                    techCheck += '  quickRatio=' + firstStockData.quickRatio + '\n';
+                    techCheck += '  debtToAssets=' + firstStockData.debtToAssets + '\n';
+                    techCheck += '  interestCoverage=' + firstStockData.interestCoverage + '\n';
+                    
+                    techCheck += '\nحقول L7:\n';
+                    techCheck += '  forwardPE=' + firstStockData.forwardPE + '\n';
+                    techCheck += '  pegRatio=' + firstStockData.pegRatio + '\n';
+                    techCheck += '  growthEstimate=' + firstStockData.growthEstimate + '\n';
+                    techCheck += '  fcfYield=' + firstStockData.fcfYield + '\n';
+                    
+                    techCheck += '\nحقول L9:\n';
+                    techCheck += '  epsGrw=' + firstStockData.epsGrw + '\n';
+                    techCheck += '  revenueGrowth=' + firstStockData.revenueGrowth + '\n';
                   } catch(eR) {
                     techCheck += '\nفشل analyzeStockRadar: ' + eR.message + '\n';
                   }
