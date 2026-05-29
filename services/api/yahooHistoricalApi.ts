@@ -146,22 +146,19 @@ export async function getYahooBars(sym: string, days: number = 2520): Promise<Ya
       }
       
       bars.push({
-        // الحقول الأصلية
-        o: o ?? c,
-        h: h ?? c,
-        l: l ?? c,
+        o: finalO,
+        h: finalH,
+        l: finalL,
         c: c,
         v: v ?? 0,
         date: dateStr,
-        // ✨ aliases مطلوبة (technicalEngine يستخدم hi/lo/vol)
-        hi: h ?? c,
-        lo: l ?? c,
+        hi: finalH,
+        lo: finalL,
         vol: v ?? 0,
-        close: c,        // ✨ بعض الدوال تبحث عن close
-        open: o ?? c,
-        high: h ?? c,
-        low: l ?? c,
-        // ✨ pct مطلوب من calcMarketStructure + calc9Layers
+        close: c,
+        open: finalO,
+        high: finalH,
+        low: finalL,
         pct: +pctChange.toFixed(3),
       });
     }
