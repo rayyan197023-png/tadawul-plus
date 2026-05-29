@@ -107,22 +107,29 @@ export async function getYahooBars(sym: string, days: number = 2520): Promise<Ya
       const dateObj = new Date(ts * 1000);
       const dateStr = dateObj.toISOString().split('T')[0];
       
-            // 🆕 حساب pct (نسبة التغيّر اليومي) -- مطلوب لـ technicalEngine
+      // 🆕 حساب pct (نسبة التغيّر اليومي)
       const prevClose = bars.length > 0 ? bars[bars.length - 1].c : c;
       const pctChange = prevClose > 0 ? ((c - prevClose) / prevClose) * 100 : 0;
       
+      // 🆕 BAR موحّد: كل الحقول المطلوبة من technicalEngine + analysisEngine
       bars.push({
+        // الحقول الأصلية
         o: o ?? c,
         h: h ?? c,
         l: l ?? c,
-        hi: h ?? c,        // 🆕 alias للتوافق مع technicalEngine
-        lo: l ?? c,        // 🆕 alias للتوافق مع technicalEngine
         c: c,
-        close: c,          // 🆕 alias للتوافق
         v: v ?? 0,
-        vol: v ?? 0,       // 🆕 alias للتوافق (calcCMF يبحث عن vol)
-        pct: +pctChange.toFixed(3),  // 🆕 نسبة التغيّر
         date: dateStr,
+        // ✨ aliases مطلوبة (technicalEngine يستخدم hi/lo/vol)
+        hi: h ?? c,
+        lo: l ?? c,
+        vol: v ?? 0,
+        close: c,        // ✨ بعض الدوال تبحث عن close
+        open: o ?? c,
+        high: h ?? c,
+        low: l ?? c,
+        // ✨ pct مطلوب من calcMarketStructure + calc9Layers
+        pct: +pctChange.toFixed(3),
       });
     }
     
