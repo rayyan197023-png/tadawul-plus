@@ -23,7 +23,7 @@ import { calcOrderBlocks, calcLiqSweep } from './radarEngine';
 //  ثوابت أساسية -- نسخة من analysisEngine
 // ════════════════════════════════════════════════════════════
 
-const MACRO = {
+let MACRO = {
   oilPrice: 101.44, oilTarget: 80,
   saudiRepoRate: 4.25, cpi: 1.7,
   gdpGrowth: 4.6, tasiPE: 19.8,
@@ -34,6 +34,35 @@ const MACRO = {
   pifSectors: [] as any[],
   oilTasiRegime: "RALLY",
 };
+
+// 🆕 تطبيق macro override
+function setMacroOverride(override: any): any {
+  const previous = { ...MACRO };
+  if (override && typeof override === 'object') {
+    if (typeof override.oilPrice === 'number' && override.oilPrice > 0) MACRO.oilPrice = override.oilPrice;
+    if (typeof override.vix === 'number' && override.vix > 0) MACRO.vix = override.vix;
+    if (typeof override.saudiRepoRate === 'number') MACRO.saudiRepoRate = override.saudiRepoRate;
+    if (typeof override.cpi === 'number') MACRO.cpi = override.cpi;
+    if (typeof override.gdpGrowth === 'number') MACRO.gdpGrowth = override.gdpGrowth;
+    if (typeof override.tasiPE === 'number') MACRO.tasiPE = override.tasiPE;
+    if (typeof override.m2Growth === 'number') MACRO.m2Growth = override.m2Growth;
+    if (typeof override.sessionDay === 'string') MACRO.sessionDay = override.sessionDay;
+    if (Array.isArray(override.pifSectors)) MACRO.pifSectors = override.pifSectors;
+    if (typeof override.oilTasiRegime === 'string') MACRO.oilTasiRegime = override.oilTasiRegime;
+    if (typeof override.oilWarPremium === 'boolean') MACRO.oilWarPremium = override.oilWarPremium;
+    if (typeof override.retailRatio === 'number') MACRO.retailRatio = override.retailRatio;
+    if (typeof override.oilTarget === 'number') MACRO.oilTarget = override.oilTarget;
+  }
+  return previous;
+}
+
+function restoreMacro(previous: any): void {
+  if (previous && typeof previous === 'object') {
+    Object.keys(previous).forEach(k => {
+      (MACRO as any)[k] = previous[k];
+    });
+  }
+}
 
 const OIL_SENS: any = {
   "الطاقة": 1.8, "المواد الأساسية": 1.3, "السلع الرأسمالية": 1.1,
