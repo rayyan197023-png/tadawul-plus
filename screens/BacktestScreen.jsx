@@ -7,9 +7,6 @@ import {
   monteCarloSimulation, 
   compareWithBenchmark,
   createPortfolioBuyAndHoldStrategy,
-  generateDataFromPortfolioReal,
-  generateDataFromStockListReal,
-  generateDataFromMarketReal,
 } from '../engines/backtestEngine';
 import { generateDataFromYahoo } from '../services/api/yahooHistoricalApi';
 import { createTadawulStrategy, createBuyAndHoldStrategy } from '../engines/tadawulStrategy';
