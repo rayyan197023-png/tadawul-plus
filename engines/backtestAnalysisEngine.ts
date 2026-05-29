@@ -1005,25 +1005,484 @@ function calcConflictPenalty(layers: any, regime: string): any {
 }
 
 // ════════════════════════════════════════════════════════════
-//  دالة الاختبار -- للتأكّد من نجاح المرحلة ٥
+//  analyzeStockRadar - للرادار SMC
+// ════════════════════════════════════════════════════════════
+
+function analyzeStockRadar(stk: any, pastBars?: any[]): any {
+  const bars = (pastBars && pastBars.length >= 15)
+    ? pastBars.map((b: any) => {
+        const _c = b.c ?? b.close;
+        const _o = b.o ?? b.open ?? _c;
+        return { o: _o, open: _o, c: _c, close: _c, hi: b.hi, lo: b.lo, vol: b.vol, pct: b.pct };
+      })
+    : [];
+
+  if (bars.length < 15) {
+    return {
+      stk, total: 50, scoreCol: "#06b6d4", cats: [{ l: "بيانات غير كافية", c: "#6b7280" }],
+      target: stk.p, stop: stk.p, atrPct: 1.5,
+      ms: { score: 5 }, ob: { score: 2 }, ls: { score: 3 }, vi: { score: 4 }, mc: { score: 10 },
+      trend: { bull: false, maCount: 0, adxP: 25, score: 5 },
+      mom: { rsi: 50, macd: false, stoch: 50, oversold: false, overbought: false, score: 5 },
+      liq: { obv: "محايد", cmf: 0, rvNorm: 1, smDetected: false, score: 3 },
+      val: { peR: 1, ey: 8, vwapD: 0, score: 2 },
+      pfl: 50,
+      factors: [
+        { k: "ms", l: "هيكل السوق", max: 15, s: 5, c: "#a3e635" },
+        { k: "ob", l: "Order Blocks", max: 15, s: 2, c: "#22d3ee" },
+        { k: "ls", l: "Liquidity", max: 10, s: 3, c: "#fb923c" },
+        { k: "vi", l: "VWAP مؤسسي", max: 10, s: 4, c: "#4d9fff" },
+        { k: "tr", l: "الاتجاه", max: 15, s: 5, c: "#4d9fff" },
+        { k: "mo", l: "الزخم", max: 15, s: 5, c: "#1ee68a" },
+        { k: "lq", l: "السيولة", max: 10, s: 3, c: "#a78bfa" },
+        { k: "va", l: "التقييم", max: 5, s: 2, c: "#34d399" },
+        { k: "mc", l: "الاقتصاد كلي", max: 5, s: 2, c: "#f0c050" },
+      ],
+    };
+  }
+
+  const p = bars[bars.length - 1].close;
+  const hi52 = stk.hi || p * 1.2, lo52 = stk.lo || p * 0.8;
+  const range52 = hi52 - lo52;
+  const pfl = range52 > 0 ? (p - lo52) / range52 * 100 : 50;
+
+  const rsi = calcRSI(bars, 14);
+  const atr = calcATR(bars, 14);
+  const atrPct = p > 0 ? atr / p * 100 : 2;
+  const vwap = calcVWAP(bars);
+  const cmf = calcCMF(bars, 20);
+  const obv = calcOBV(bars);
+  const macd = calcMACD(bars);
+  const stoch = calcStoch(bars, 14);
+  const sma20 = calcSMA(bars, 20);
+  const sma50 = calcSMA(bars, 50);
+  const rvNorm = ((stk.v + (stk.avgVol || stk.v)) / 2) / (stk.avgVol || stk.v || 1);
+
+  const ms = calcMarketStructure(bars);
+  const ob = calcOrderBlocksFull(bars, atr);
+  const ls = calcLiqSweepFull(bars, atr);
+  const vi = calcIVWAP(bars);
+  const mc = calcMacroScore(stk);
+
+  const msScore = Math.min(15, Math.round(ms.score * 15 / 20));
+  const obScore = Math.min(15, Math.round(ob.score * 15 / 20));
+  const lsScore = Math.min(10, Math.round(ls.score * 10 / 20));
+  const viScore = Math.min(10, Math.round(vi.score * 10 / 20));
+
+  const aboveSMA20 = p > sma20, aboveSMA50 = p > sma50;
+  const ma200p = lo52 + range52 * 0.4;
+  const aboveMA200 = p > ma200p;
+  const maCount = (aboveSMA20 ? 1 : 0) + (aboveSMA50 ? 1 : 0) + (aboveMA200 ? 1 : 0);
+  let plusDM = 0, minusDM = 0, atrS = 0;
+  for (let i = 1; i < bars.length; i++) {
+    plusDM += Math.max(bars[i].hi - bars[i - 1].hi, 0);
+    minusDM += Math.max(bars[i - 1].lo - bars[i].lo, 0);
+    atrS += Math.max(bars[i].hi - bars[i].lo, Math.abs(bars[i].hi - bars[i - 1].close), Math.abs(bars[i].lo - bars[i - 1].close));
+  }
+  const atrAvg = atrS / (bars.length - 1) || 1;
+  const plusDI = plusDM / atrAvg * 100, minusDI = minusDM / atrAvg * 100;
+  const adxP = plusDI + minusDI > 0 ? Math.abs(plusDI - minusDI) / (plusDI + minusDI) * 100 : 25;
+  const trScore = Math.min(15,
+    (maCount === 3 ? 7 : maCount === 2 ? 5 : maCount === 1 ? 2 : 0) +
+    (rsi > 55 && rsi < 75 ? 5 : rsi > 50 ? 3 : rsi >= 75 ? 1 : 0) +
+    (adxP > 40 ? 3 : adxP > 25 ? 2 : 1));
+  const trendBull = maCount >= 2 && (stk.pct || 0) > 0;
+
+  const rsiMomScore = rsi < 30 ? 13 : rsi < 45 ? 11 : rsi < 60 ? 9 : rsi < 75 ? 5 : 2;
+  const moScore = Math.min(15,
+    rsiMomScore +
+    ((macd as any).bull && (macd as any).hist > 0 ? 4 : (macd as any).bull ? 2 : 0) +
+    (stoch < 20 ? 3 : stoch < 40 ? 1 : 0));
+  const oversold = rsi < 35, overbought = rsi > 70;
+
+  const obvS = (obv as any).signal === "تأكيد صعود" ? 4 : (obv as any).signal === "تباعد إيجابي" ? 3 : (obv as any).signal === "محايد" ? 1 : 0;
+  const cmfS = cmf > 0.15 ? 3 : cmf > 0.05 ? 2 : cmf > 0 ? 1 : 0;
+  const volS = rvNorm > 2 && (stk.pct || 0) > 0 ? 3 : rvNorm > 1.5 && (stk.pct || 0) > 0 ? 2 : rvNorm > 1.2 ? 1 : 0;
+  const lqScore = Math.min(10, obvS + cmfS + volS);
+  const smDetected = (rvNorm > 2 && (stk.pct || 0) > 0) || (rvNorm > 1.5 && cmf > 0.05);
+
+  const secPE = RADAR_SECTOR_PE[stk.sec] || 15.5;
+  const peR = stk.pe / secPE;
+  const ey = stk.pb > 0 ? stk.roe / stk.pb : stk.roe;
+  const vwapD2 = vwap > 0 ? (p - vwap) / vwap * 100 : 0;
+  const vaScore = Math.min(5,
+    (peR < 0.75 ? 2 : peR < 0.90 ? 1 : 0) +
+    (ey > 0.10 ? 2 : ey > 0.08 ? 1 : 0) +
+    (vwapD2 < -2 ? 1 : 0));
+
+  const mcScore = Math.min(5, Math.round(mc.score * 5 / 20));
+
+  const total = Math.min(100, Math.max(5, msScore + obScore + lsScore + viScore + trScore + moScore + lqScore + vaScore + mcScore));
+  const scoreCol = total >= 85 ? "#1ee68a" : total >= 70 ? "#4d9fff" : total >= 55 ? "#f0c050" : "#ff5f6a";
+
+  const cats: any[] = [];
+  if (ms.bosBull) cats.push({ l: "BOS صاعد", c: "#1ee68a" });
+  if (ob.inBullOB) cats.push({ l: "Order Block", c: "#22d3ee" });
+  if (ls.recoveredSSL) cats.push({ l: "SSL انتعاش", c: "#a3e635" });
+  if (smDetected) cats.push({ l: "سيولة مؤسسية", c: "#a78bfa" });
+  if (oversold) cats.push({ l: "تشبع بيع", c: "#f0c050" });
+  if (!cats.length) cats.push({ l: "مراقبة", c: "#8a90a8" });
+
+  const target = +(p + 2.5 * atr).toFixed(2);
+  const stop = +(p - 1.5 * atr).toFixed(2);
+
+  return {
+    stk, total, scoreCol, cats, target, stop, atrPct: +atrPct.toFixed(2),
+    ms, ob, ls, vi, mc,
+    trend: { bull: trendBull, maCount, adxP: +adxP.toFixed(0), score: trScore },
+    mom: { rsi, macd: (macd as any).bull, stoch, oversold, overbought, score: moScore },
+    liq: { obv: (obv as any).signal, cmf: +cmf.toFixed(3), rvNorm: +rvNorm.toFixed(2), smDetected, score: lqScore },
+    val: { peR: +peR.toFixed(2), ey: +(ey * 100).toFixed(1), vwapD: +vwapD2.toFixed(1), score: vaScore },
+    pfl: +pfl.toFixed(0),
+    factors: [
+      { k: "ms", l: "هيكل السوق", max: 15, s: msScore, c: "#a3e635" },
+      { k: "ob", l: "Order Blocks", max: 15, s: obScore, c: "#22d3ee" },
+      { k: "ls", l: "Liquidity", max: 10, s: lsScore, c: "#fb923c" },
+      { k: "vi", l: "VWAP مؤسسي", max: 10, s: viScore, c: "#4d9fff" },
+      { k: "tr", l: "الاتجاه", max: 15, s: trScore, c: "#4d9fff" },
+      { k: "mo", l: "الزخم", max: 15, s: moScore, c: "#1ee68a" },
+      { k: "lq", l: "السيولة", max: 10, s: lqScore, c: "#a78bfa" },
+      { k: "va", l: "التقييم", max: 5, s: vaScore, c: "#34d399" },
+      { k: "mc", l: "الاقتصاد كلي", max: 5, s: mcScore, c: "#f0c050" },
+    ],
+  };
+}
+
+// ════════════════════════════════════════════════════════════
+//  calc9Layers - الدالة الكبرى مع allStocks مُمرّرة
+// ════════════════════════════════════════════════════════════
+
+function calc9Layers(stk: any, bars: any[], allStocks: any[]): any {
+  if (!stk || typeof stk !== 'object') return _emptyHealthResult();
+  if (!bars || !Array.isArray(bars) || bars.length < 5) return _emptyHealthResult();
+  allStocks = allStocks || [];
+
+  const last5 = bars.slice(-5);
+  const last10 = bars.slice(-10);
+  const last20 = bars.slice(-20);
+
+  const rBars = bars.map((b: any) => ({
+    o: b.o || b.c, open: b.o || b.c,
+    hi: b.hi, high: b.hi,
+    lo: b.lo, low: b.lo,
+    c: b.c, close: b.c,
+    vol: b.vol, pct: b.pct
+  }));
+
+  const avgVol = bars.reduce((s: number, b: any) => s + (b.vol || 0), 0) / bars.length;
+  const vol5 = last5.reduce((s: number, b: any) => s + (b.vol || 0), 0) / 5;
+  const vr = vol5 / (avgVol || 1);
+
+  const atr = calcATR(rBars, 14) || stk.p * 0.015;
+  const rsiV = calcRSI(rBars, 14);
+  const cmf = calcCMF(rBars, 20);
+  const obv = calcOBV(rBars);
+  const ms = calcMarketStructure(rBars);
+  const ob = calcOrderBlocksFull(rBars, atr);
+  const ls = calcLiqSweepFull(rBars, atr);
+  const vi = calcIVWAP(rBars);
+  const mc = calcMacroFull(stk);
+  const tc_tasi = calcTasiContext(stk, bars, allStocks);
+
+  const radar = analyzeStockRadar(stk, rBars);
+  const radarMS = radar.factors.find((f: any) => f.k === "ms")?.s || 0;
+  const radarOB = radar.factors.find((f: any) => f.k === "ob")?.s || 0;
+  const radarLS = radar.factors.find((f: any) => f.k === "ls")?.s || 0;
+  const radarVI = radar.factors.find((f: any) => f.k === "vi")?.s || 0;
+  const radarTR = radar.factors.find((f: any) => f.k === "tr")?.s || 0;
+  const radarMO = radar.factors.find((f: any) => f.k === "mo")?.s || 0;
+  const radarLQ = radar.factors.find((f: any) => f.k === "lq")?.s || 0;
+  const radarVA = radar.factors.find((f: any) => f.k === "va")?.s || 0;
+  const radarMC = radar.factors.find((f: any) => f.k === "mc")?.s || 0;
+
+  const cls = rBars.map((b: any) => b.close);
+  const e12 = calcEMA(cls, 12), e26 = calcEMA(cls, 26);
+  const macdH = e12 - e26;
+  const macdBull = macdH > 0;
+
+  // ADX
+  const _adxP = 14;
+  let _smTR = 0, _smPDM = 0, _smMDM = 0;
+  for (let i = 1; i <= Math.min(_adxP, bars.length - 1); i++) {
+    const b = bars[i], pv = bars[i - 1];
+    _smTR += Math.max(b.hi - b.lo, Math.abs(b.hi - pv.c), Math.abs(b.lo - pv.c));
+    _smPDM += Math.max(0, b.hi - pv.hi);
+    _smMDM += Math.max(0, pv.lo - b.lo);
+  }
+  for (let i = _adxP + 1; i < bars.length; i++) {
+    const b = bars[i], pv = bars[i - 1];
+    _smTR = _smTR - _smTR / _adxP + Math.max(b.hi - b.lo, Math.abs(b.hi - pv.c), Math.abs(b.lo - pv.c));
+    _smPDM = _smPDM - _smPDM / _adxP + Math.max(0, b.hi - pv.hi);
+    _smMDM = _smMDM - _smMDM / _adxP + Math.max(0, pv.lo - b.lo);
+  }
+  const plusDI = _smTR > 0 ? _smPDM / _smTR * 100 : 0;
+  const minusDI = _smTR > 0 ? _smMDM / _smTR * 100 : 0;
+  const dx = plusDI + minusDI > 0 ? Math.abs(plusDI - minusDI) / (plusDI + minusDI) * 100 : 0;
+  const adxV = Math.round(Math.min(100, dx));
+  const adxBull = plusDI > minusDI;
+
+  // ═══ L1: هيكل السوق + Wyckoff + OB
+  const recentHigh = Math.max(...last10.map((b: any) => b.hi));
+  const recentLow = Math.min(...last10.map((b: any) => b.lo));
+  const range60Low = bars.length >= 60 ? Math.min(...bars.slice(-60).map((b: any) => b.lo)) : recentLow;
+  const range60High = bars.length >= 60 ? Math.max(...bars.slice(-60).map((b: any) => b.hi)) : recentHigh;
+  const spring = last5.some((b: any) => b.lo <= recentLow * 1.005 && b.c > b.o && b.vol > avgVol * 1.2);
+  const sos = last5.filter((b: any) => b.pct > 0.8 && b.vol > avgVol * 1.4).length >= 2;
+  const pricePos60 = (bars[bars.length - 1].c - range60Low) / (range60High - range60Low + 0.001);
+  let wyScore = Math.round(50 + 40 * Math.tanh((pricePos60 - 0.5) * 3));
+  let wyAdj = (spring && sos) ? +20 : sos ? +12 : spring ? +10 : 0;
+  wyScore = Math.min(95, Math.max(10, wyScore + wyAdj));
+  const msBonus = ms.bos && ms.bosBull ? 15 : ms.trend === "صاعد" ? 10 : 0;
+  const obBonus = ob.inRef ? 15 : ob.inBullOB ? 10 : ob.bullCount > 0 ? 5 : 0;
+  const radarL1Bonus = Math.round((radarMS / 15) * 8 + (radarOB / 15) * 6 + (radarLS / 10) * 4);
+  const L1 = Math.min(85, Math.max(0, Math.round(
+    wyScore * 0.38 + msBonus * (25 / 15) + obBonus * (20 / 15) + radarL1Bonus * 0.3
+  )));
+
+  // ═══ L2: Effort/Result + OBV
+  let harm = 0, div = 0;
+  last10.forEach((b: any) => {
+    const er = b.vol / avgVol, mv = Math.abs(b.pct || 0);
+    if (er > 1.3 && mv > 0.5) harm++;
+    else if (er > 1.4 && mv < 0.2) div++;
+  });
+  const obvBonus = obv.rising ? 10 : -5;
+  const radarL2Bonus = Math.round((radarMO / 15) * 20 - 10);
+  const L2 = Math.round(Math.min(100, Math.max(0, 50 + harm * 9 - div * 12 + obvBonus + radarL2Bonus * 0.25)));
+
+  // ═══ L3: Entropy
+  const last20pcts = last20.slice(1).map((b: any, i: number, arr: any[]) => {
+    const dir = b.c - last20[i].c > 0 ? 1 : -1;
+    const recencyW = 1 + i / arr.length;
+    return dir * Math.abs(b.pct || 0) * recencyW * ((b.vol || 1) / (avgVol || 1));
+  });
+  const totalAbsMag = last20pcts.reduce((s: number, p: number) => s + Math.abs(p), 0) || 1;
+  const pUpW = last20pcts.filter((p: number) => p > 0).reduce((s: number, p: number) => s + p, 0) / totalAbsMag;
+  const pDnW = Math.max(0.001, 1 - Math.max(0.001, pUpW));
+  const pUpC = Math.max(0.001, pUpW);
+  const entr = -(pUpC * Math.log2(pUpC) + pDnW * Math.log2(pDnW));
+  const dirSign = pUpW > 0.5 ? 1 : -1;
+  const L3 = Math.round(Math.min(100, Math.max(0, 50 + dirSign * (1 - entr) * 65)));
+
+  // ═══ L4: القوة النسبية مع allStocks
+  const mktWtdSum = allStocks.reduce((s: number, x: any) => s + (x.ch || 0) * (x.mktCap || 50), 0);
+  const mktWtdDen = allStocks.reduce((s: number, x: any) => s + (x.mktCap || 50), 0);
+  const mktWtd = mktWtdDen > 0 ? mktWtdSum / mktWtdDen : 0;
+  const rscRaw = (stk.ch || 0) - mktWtd;
+  const mktVarSum = allStocks.reduce((s: number, x: any) => s + Math.pow((x.ch || 0) - mktWtd, 2), 0);
+  const mktVar = allStocks.length > 0 ? mktVarSum / allStocks.length : 0;
+  const rscZ = mktVar > 0 ? rscRaw / Math.sqrt(mktVar) : 0;
+  const rscScore = Math.round(Math.min(100, Math.max(0, 50 + rscZ * 18)));
+  const vwapScore = Math.round(vi.score / 20 * 100);
+  const sectorPeers = allStocks.filter((x: any) => x.sec === stk.sec && x.sym !== stk.sym);
+  const sectorAvgCh = sectorPeers.length > 0
+    ? sectorPeers.reduce((s: number, x: any) => s + (x.ch || 0), 0) / sectorPeers.length
+    : mktWtd;
+  const sectorRel = (stk.ch || 0) - sectorAvgCh;
+  const sectorScore = Math.round(Math.min(100, Math.max(0, 50 + sectorRel * 8)));
+  const _L4raw = Math.round(_clamp(rscScore * 0.50 + vwapScore * 0.30 + sectorScore * 0.20 + tc_tasi.pifBoost, 0, 100));
+  const L4 = Math.min(100, Math.max(0, _L4raw + Math.round((radarVI / 10 * 100 - 50) * 0.2)));
+
+  // ═══ L5: RSI + MACD + ADX
+  let rsiScore;
+  if (rsiV < 30) rsiScore = Math.round(68 - (30 - rsiV) * 0.35);
+  else if (rsiV <= 50) rsiScore = Math.round(67 - (rsiV - 30) * 0.85 * (17 / 20));
+  else if (rsiV <= 75) rsiScore = Math.round(50 + (rsiV - 50) * 1.35 * (35 / 25));
+  else rsiScore = Math.round(85 - (rsiV - 75) * 1.50);
+  rsiScore = Math.min(90, Math.max(10, rsiScore));
+  const macdMag = Math.abs(macdH) / (bars[bars.length - 1].c * 0.001 + 0.001);
+  const macdScore = macdBull
+    ? Math.round(Math.min(90, 52 + 38 * Math.tanh(macdMag / 3)))
+    : Math.round(Math.max(12, 48 - 36 * Math.tanh(macdMag / 3)));
+  const adxScore = adxV > 25
+    ? (adxBull ? Math.round(50 + adxV * 0.40) : Math.round(50 - adxV * 0.35))
+    : Math.round(50 - (25 - adxV) * 1.2);
+  const _L5raw = Math.round(Math.min(100, Math.max(0, rsiScore * 0.40 + macdScore * 0.35 + adxScore * 0.25)));
+  const stochV = calcStoch(rBars, 14);
+  const sma20v = calcSMA(rBars, 20), sma50v = calcSMA(rBars, 50);
+  const smaBonus = (stk.p > sma20v && stk.p > sma50v) ? 4 : (stk.p > sma20v || stk.p > sma50v) ? 2 : -2;
+  const stochBonus = stochV < 20 ? 5 : stochV < 35 ? 3 : stochV > 80 ? -5 : 0;
+  const L5 = Math.min(100, Math.max(0, _L5raw + Math.round((radarTR / 15 * 100 - 50) * 0.2) + smaBonus + stochBonus));
+
+  // ═══ L6: Kelly + Macro
+  const kellyBars = bars.slice(-Math.min(bars.length, 100));
+  const wrRecent = bars.length >= 20 ? kellyBars.slice(-20).filter((b: any) => (b.pct || 0) > 0).length / Math.min(20, kellyBars.length) : 0.5;
+  const histWinRate = wrRecent;
+  const p_adj = Math.min(0.85, Math.max(0.15, histWinRate + (vr > 1.3 ? 0.10 : 0) + (mc.score > 14 ? 0.08 : 0)));
+  const wins_b = kellyBars.filter((b: any) => (b.pct || 0) > 0);
+  const losses_b = kellyBars.filter((b: any) => (b.pct || 0) <= 0);
+  const aW = wins_b.length ? wins_b.reduce((s: number, b: any) => s + (b.pct || 0), 0) / wins_b.length : 0.5;
+  const aL = losses_b.length ? Math.abs(losses_b.reduce((s: number, b: any) => s + (b.pct || 0), 0) / losses_b.length) : 0.5;
+  const b_ratio = aL > 0 ? aW / aL : 1;
+  const kelly = Math.max(0, p_adj - (1 - p_adj) / b_ratio);
+  const kellyScore = Math.round(Math.min(100, kelly * 200));
+  const macroBonus = Math.round(mc.score / 20 * 5);
+  const _L6raw = Math.min(100, Math.round(kellyScore * 0.92 + macroBonus));
+  const L6 = Math.min(100, Math.max(0, _L6raw + Math.round((radarVA / 5 * 100 - 50) * 0.25)));
+
+  // ═══ L7: Bayesian
+  const _consMean = (L1 + L4 + L5) / 3;
+  const _consStd = Math.sqrt(((L1 - _consMean) ** 2 + (L4 - _consMean) ** 2 + (L5 - _consMean) ** 2) / 3);
+  const _consistency = Math.max(0, 1 - _consStd / 40);
+  const _consDir = _consMean >= 50 ? 1 : 0.55;
+  const priorRaw = 0.30 + _consistency * 0.45 * _consDir;
+  const prior = Math.min(0.75, Math.max(0.08, priorRaw));
+  const cmfFactor = cmf > 0.15 ? 0.92 : cmf > 0.05 ? 0.78 : cmf > 0 ? 0.62 : 0.42;
+  const obvFactor = obv.rising && obv.obvZ > 0.5 ? 0.88 : obv.rising ? 0.75 : 0.55;
+  const priceMom10 = bars.length >= 10 ? (bars[bars.length - 1].c - bars[bars.length - 10].c) / bars[bars.length - 10].c : 0;
+  const priceMomFactor = priceMom10 > 0.03 ? 0.85 : priceMom10 > 0 ? 0.65 : 0.40;
+  const likel = Math.min(0.92, Math.max(0.08, cmfFactor * 0.30 + obvFactor * 0.30 + priceMomFactor * 0.40));
+  const post = (prior * likel) / (prior * likel + (1 - prior) * (1 - likel));
+  const _L7bayesRaw = Math.round(post * 100);
+  const L7 = Math.min(100, Math.max(0, _L7bayesRaw + Math.round((radarMC / 5 * 100 - 50) * 0.25)));
+  const bayesMult = Math.min(1.07, Math.max(0.93, 0.93 + post * 0.14));
+
+  // ═══ L8: Fundamentals
+  const w52h = stk.w52h || stk.hi || (stk.p * 1.2);
+  const w52l = stk.w52l || stk.lo || (stk.p * 0.8);
+  const pricePos = w52h > w52l ? Math.round((stk.p - w52l) / (w52h - w52l) * 100) : 50;
+  const pbRatio = stk.bookValue && stk.bookValue > 0 ? stk.p / stk.bookValue : 2.0;
+  const valScore = Math.round(Math.min(90, Math.max(10,
+    50 - 28 * Math.tanh(((stk.pe || 18) - 18) / 15) - 10 * Math.tanh((pbRatio - 2) / 2)
+  )));
+  const _L8raw = Math.round(
+    (valScore / 100) * 45 +
+    ((stk.rating || 60) / 100) * 30 +
+    ((100 - pricePos) / 100) * 15 +
+    (0.10 * MACRO.oilPrice / 100) * 10
+  );
+  const L8 = Math.min(100, Math.max(0, _L8raw + Math.round((radarLQ / 10 * 100 - 50) * 0.2)));
+
+  // ═══ L9: السيولة الذكية
+  const cmfScore = Math.round(50 + 45 * Math.tanh(cmf * 8));
+  const obvMoment = bars.length >= 10 ? (bars[bars.length - 1].c - bars[bars.length - 10].c) / bars[bars.length - 10].c : 0;
+  const obvScore = Math.round(50 + 40 * Math.tanh((obv.rising ? 1 : -1) * (0.4 + Math.abs(obvMoment) * 4)));
+  const volScore = Math.round(50 + 40 * Math.tanh((vr - 1) * 1.8));
+  const ret5dir = bars.length >= 5 ? bars.slice(-5).reduce((s: number, b: any) => s + (b.pct || 0), 0) / 5 : (stk.ch || 0);
+  const dirScore = Math.round(50 + 35 * Math.tanh(ret5dir * 0.6));
+  const vwapDevScore = Math.round(50 - 25 * Math.tanh((vi.vwapDev || 0) * 0.8));
+  const smartMoney = Math.round(cmfScore * 0.26 + obvScore * 0.24 + volScore * 0.22 + dirScore * 0.16 + vwapDevScore * 0.12);
+  const L9 = Math.min(100, Math.max(0, smartMoney));
+
+  // ═══ Regime + Weights + Conflicts
+  const mktBreadth = allStocks.length > 0 ? allStocks.filter((x: any) => (x.ch || 0) > 0).length / allStocks.length : 0.5;
+  const regimeData = detectMarketRegime(bars, adxV, mktWtd, mktBreadth, atr, stk);
+  const regime = regimeData.regime;
+  const W = buildDynamicWeights(regime, stk.sec);
+  const corrFactors = reduceCorrelation({ L1, L2, L4, L5, L7, L9 });
+  const WC: any = {};
+  ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'L9'].forEach(k => {
+    WC[k] = W[k] * (corrFactors[k] || 1);
+  });
+  const wcTotal = (Object.values(WC) as number[]).reduce((s: number, v: number) => s + v, 0);
+  ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'L9'].forEach(k => {
+    WC[k] = +(WC[k] / wcTotal).toFixed(4);
+  });
+
+  // Gates
+  const gate1 = L9 >= 55;
+  const gate2 = L1 >= 50;
+  const gate3Score = Math.round((L4 + L5) / 2);
+  const gate3 = gate3Score >= 50;
+  const gatesPassed = [gate1, gate2, gate3].filter(Boolean).length;
+  const allGates = gatesPassed === 3;
+
+  // Opportunity Matrix
+  const hLiq = gate1 && L9 >= 65;
+  const hStr = gate2 && L1 >= 60;
+  const hMom = gate3 && gate3Score >= 55;
+  let oppMatrix, oppPriority;
+  if (hLiq && hStr && hMom) { oppMatrix = "فرصة قصوى"; oppPriority = 4; }
+  else if (hLiq && hStr) { oppMatrix = "فرصة مكتملة"; oppPriority = 3; }
+  else if (hLiq && hMom) { oppMatrix = "اختراق محتمل"; oppPriority = 3; }
+  else if (hStr && hMom) { oppMatrix = "صعود مؤكد"; oppPriority = 3; }
+  else if (gatesPassed >= 1) { oppMatrix = "مراقبة"; oppPriority = 1; }
+  else { oppMatrix = "لا فرصة"; oppPriority = 0; }
+
+  const conflictData = calcConflictPenalty({ L1, L4, L5, L7, L9 }, regime);
+  const conflictCount = conflictData.conflictCount;
+
+  // Base Score
+  const baseScore = _clamp(Math.round(
+    L9 * WC.L9 + L1 * WC.L1 + L5 * WC.L5 + L4 * WC.L4 +
+    L8 * WC.L8 + L7 * WC.L7 + L6 * WC.L6 + L2 * WC.L2 + L3 * WC.L3
+  ), 0, 100);
+
+  // Adjustment Factor
+  const conflictFactor = 1.0 - _clamp(conflictCount * 0.05, 0, 0.20);
+  const macroScore100 = mc.score * 5;
+  const macroFactor = macroScore100 < 25 ? 0.85 : macroScore100 < 40 ? 0.92 : macroScore100 > 75 ? 1.08 : macroScore100 > 60 ? 1.04 : 1.0;
+  const tasiFactor = tc_tasi.tasiRegime === "CRASH" ? 0.88 : tc_tasi.tasiRegime === "DIVERGE" ? 0.94 : tc_tasi.tasiRegime === "RALLY" ? 1.06 : 1.0;
+  const gateFactor = gatesPassed === 3 ? 1.10 : gatesPassed === 2 ? 1.00 : gatesPassed === 1 ? 0.90 : 0.80;
+  const momentumBayesFactor = _clamp(1.0, 0.85, 1.10);
+  const adjustmentFactor = _clamp(
+    conflictFactor * 0.25 + macroFactor * 0.20 + tasiFactor * 0.20 + gateFactor * 0.20 + momentumBayesFactor * 0.15,
+    0.70, 1.15
+  );
+
+  const score = _clamp(Math.round(baseScore * adjustmentFactor), 0, 100);
+  const grade = score >= 85 ? "S" : score >= 75 ? "A" : score >= 65 ? "B" : score >= 55 ? "C" : score >= 45 ? "D" : "F";
+  const prob = _softmax3(score - 50, 50 - score, 5);
+  const sig = score >= 65 && gatesPassed >= 2 ? "شراء قوي" : score >= 55 && gatesPassed >= 2 ? "مراقبة" : score >= 45 ? "محايد" : "تخفيف";
+
+  return {
+    score, grade, sig, sigC: "#06b6d4", regime,
+    weights: WC,
+    probability: prob,
+    gates: { g1: gate1, g2: gate2, g3: gate3, passed: gatesPassed, all: allGates, g1s: L9, g2s: L1, g3s: gate3Score, g1l: "", g2l: ms.label, g3l: adxBull ? "زخم صاعد" : "زخم ضعيف" },
+    opp: { matrix: oppMatrix, priority: oppPriority, highLiq: hLiq, highStr: hStr, highMom: hMom },
+    tasiCtx: tc_tasi,
+    layers: { L1, L2, L3, L4, L5, L6, L7, L8, L9 },
+    extras: {
+      conflictCount, bayesMult, vr: +vr.toFixed(2),
+      kelly: +kelly.toFixed(3), adxV, adxBull, rsiV,
+      macdH: +macdH.toFixed(3),
+      mktBreadth: +mktBreadth.toFixed(2),
+      mktMomentum: +mktWtd.toFixed(2),
+      gateMultiplier: gatesPassed / 3,
+      regimeData, baseScore,
+      adjustmentFactor: +adjustmentFactor.toFixed(3),
+      macroScore100, pricePos, valScore,
+      cmf: +cmf.toFixed(3),
+      obvRising: obv.rising,
+      msLabel: ms.label, bosBull: ms.bosBull,
+      obLabel: ob.label, inBullOB: ob.inBullOB,
+      sslLabel: ls.label, recoveredSSL: ls.recoveredSSL,
+      vwapDev: vi.vwapDev, belowB1: vi.belowB1, belowB2: vi.belowB2,
+      macroEnv: mc.env, macroScore: mc.score,
+    }
+  };
+}
+
+// ════════════════════════════════════════════════════════════
+//  دالة الاختبار -- للتأكّد من نجاح المرحلة ٦
 // ════════════════════════════════════════════════════════════
 
 export function testBacktestEngine(): string {
+  const testStk = {
+    sym: "1010", sec: "البنوك", p: 20,
+    pe: 12, roe: 14, debt: 0.3, mktCap: 30,
+    epsGrw: 8, ch: 0.5, sector_beta: 1.0,
+    hi: 25, lo: 15, rating: 60,
+    avgVol: 1000000, v: 1100000
+  };
   const testBars = Array(60).fill(0).map((_, i) => ({
-    o: 20 + i * 0.1, c: 20 + i * 0.1 + 0.05,
-    hi: 20 + i * 0.1 + 0.2, lo: 20 + i * 0.1 - 0.1,
-    close: 20 + i * 0.1 + 0.05,
-    open: 20 + i * 0.1,
-    vol: 1000000, pct: 0.5
+    o: 20 + i * 0.05 + Math.sin(i / 5) * 0.3,
+    c: 20 + i * 0.05 + Math.sin(i / 5) * 0.3 + 0.05,
+    hi: 20 + i * 0.05 + Math.sin(i / 5) * 0.3 + 0.25,
+    lo: 20 + i * 0.05 + Math.sin(i / 5) * 0.3 - 0.15,
+    vol: 1000000 + Math.random() * 500000,
+    pct: 0.3 + Math.sin(i / 3) * 0.5
   }));
+  const testAllStocks = [
+    { sym: "1010", sec: "البنوك", ch: 0.5, mktCap: 30, pe: 12 },
+    { sym: "2222", sec: "الطاقة", ch: 1.2, mktCap: 1800, pe: 14 },
+    { sym: "1120", sec: "البنوك", ch: 0.8, mktCap: 280, pe: 18 },
+    { sym: "7010", sec: "الإتصالات", ch: -0.3, mktCap: 110, pe: 14 }
+  ];
   
-  const atr = 0.3;
-  const ob = calcOrderBlocksFull(testBars, atr);
-  const ls = calcLiqSweepFull(testBars, atr);
-  const vi = calcIVWAP(testBars);
-  const regime = detectMarketRegime(testBars, 25, 0.1, 0.5, atr, { c: 20, ch: 0.5 });
-  const w = buildDynamicWeights("bull", "البنوك");
-  const cr = reduceCorrelation({ L1: 60, L4: 55, L5: 50, L9: 65 });
+  const result = calc9Layers(testStk, testBars, testAllStocks);
+  const L = result.layers;
   
-  return `✅ المرحلة ٥ ناجحة | OB=${ob.score} | LS=${ls.score} | VI=${vi.score} | regime=${regime.regime} | W.L1=${w.L1}`;
+  return `✅ المرحلة ٦ ناجحة | score=${result.score} | L1=${L.L1} L2=${L.L2} L3=${L.L3} L4=${L.L4} L5=${L.L5} L6=${L.L6} L7=${L.L7} L8=${L.L8} L9=${L.L9}`;
 }
