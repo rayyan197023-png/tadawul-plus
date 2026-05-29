@@ -181,6 +181,13 @@ export default function BacktestScreen() {
               var bars = firstStock.bars || [];
               var firstBar = bars[0] || {};
               var lastBar = bars[bars.length-1] || {};
+               // فحص حقول bar
+              var sampleBar = firstStock.bars[firstStock.bars.length-1];
+              var barKeys = sampleBar ? Object.keys(sampleBar).sort().join(',') : 'فارغ';
+              var hasPct = sampleBar && typeof sampleBar.pct === 'number' && !isNaN(sampleBar.pct);
+              var hasHi = sampleBar && typeof sampleBar.hi === 'number';
+              var hasClose = sampleBar && typeof sampleBar.close === 'number';
+              alert('🔬 فحص bar:\n\nحقول: ' + barKeys + '\n\nhasPct: ' + hasPct + '\nhasHi: ' + hasHi + '\nhasClose: ' + hasClose + '\n\nقيم: pct=' + sampleBar.pct + ' hi=' + sampleBar.hi + ' close=' + sampleBar.close);
               
               var diag2 = '🔬 Yahoo Deep Debug:\n\n' +
                 'سهم: ' + firstStock.sym + '\n' +
