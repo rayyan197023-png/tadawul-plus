@@ -11,6 +11,7 @@ import {
   generateDataFromStockListReal,
   generateDataFromMarketReal,
 } from '../engines/backtestEngine';
+import { generateDataFromYahoo } from '../services/api/yahooHistoricalApi';
 import { createTadawulStrategy, createBuyAndHoldStrategy } from '../engines/tadawulStrategy';
 import EquityCurveChart from '../components/charts/EquityCurveChart';
 import BacktestResultsCard from '../components/charts/BacktestResultsCard';
