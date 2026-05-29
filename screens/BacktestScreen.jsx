@@ -170,12 +170,13 @@ export default function BacktestScreen() {
         }
         
         // 🆕 المحرّك الجديد المخصّص للباك-تيست
-        // wrapper يُمرّر allStocks لـ stockHealth
-        var backtestHealthWrapper = function(stk, bars, allStocks) {
-          return backtestStockHealth(stk, bars, allStocks);
+        // wrapper يُمرّر allStocks + macroOverride لـ stockHealth
+        var backtestHealthWrapper = function(stk, bars, allStocks, macro) {
+          return backtestStockHealth(stk, bars, allStocks, macro);
         };
         
-        strategy = createTadawulStrategy(backtestHealthWrapper);
+        // 🆕 نُمرّر fredMacro للاستراتيجية لتُمرّره للمحرّك
+        strategy = createTadawulStrategy(backtestHealthWrapper, null, fredMacro);
         var benchSymbols = historicalData[0].stocksData.slice(0, 5).map(function(s) { return s.sym; });
         benchmarkStrategy = createBuyAndHoldStrategy(benchSymbols);
       }
