@@ -2557,18 +2557,22 @@ function calc9Layers(stk: any, bars: any[]): any {
 
 
    // ✨ تحويل bars - يدعم both formats (b.c لـ technicalEngine + b.close للقديمة)
-  const rBars = bars.map(function(b){
+const rBars = bars.map(function(b: any){
+    // 🆕 ضمان كل الحقول رقمية مع fallback
+    const _c = typeof b.c === 'number' ? b.c : (typeof b.close === 'number' ? b.close : 0);
+    const _h = typeof b.hi === 'number' ? b.hi : (typeof b.high === 'number' ? b.high : _c);
+    const _l = typeof b.lo === 'number' ? b.lo : (typeof b.low === 'number' ? b.low : _c);
+    const _o = typeof b.o === 'number' ? b.o : (typeof b.open === 'number' ? b.open : _c);
+    const _v = typeof b.vol === 'number' ? b.vol : (typeof b.v === 'number' ? b.v : 0);
+    const _p = typeof b.pct === 'number' ? b.pct : 0;
+    
     return {
-      o: b.o || b.c,        // open
-      open: b.o || b.c,     // open (للقديمة)
-      hi: b.hi,             // high
-      high: b.hi,           // high (للقديمة)
-      lo: b.lo,             // low
-      low: b.lo,            // low (للقديمة)
-      c: b.c,               // close (للجديدة)
-      close: b.c,           // close (للقديمة)
-      vol: b.vol,
-      pct: b.pct
+      o: _o, open: _o,
+      hi: _h, high: _h,
+      lo: _l, low: _l,
+      c: _c, close: _c,
+      vol: _v, v: _v,
+      pct: _p
     };
   });
 
