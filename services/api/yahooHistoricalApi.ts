@@ -249,3 +249,4 @@ export async function generateDataFromYahoo(
   
   return data;
 }
+
