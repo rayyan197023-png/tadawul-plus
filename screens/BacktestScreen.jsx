@@ -149,11 +149,8 @@ export default function BacktestScreen() {
         }).filter(s => s.p > 0);
         
         // 🆕 Smart Router: Yahoo للفترات الطويلة، sahmk للسنة وأقل
-        if (config.days > 252) {
-          historicalData = await generateDataFromYahoo(enrichedStocks.slice(0, 15), config.days);
-        } else {
-          historicalData = await generateDataFromStockListReal(enrichedStocks, config.days, 15);
-        }
+        // مؤقّت: استعمل Yahoo لكل الفترات (sahmk استُنفد)
+        historicalData = await generateDataFromYahoo(enrichedStocks.slice(0, 15), config.days);
         
         // 🔬 تشخيص عميق: ماذا تخرج stockHealth لأول سهم في آخر يوم؟
         if (historicalData && historicalData.length > 0 && config.days > 252) {
