@@ -132,7 +132,7 @@ export default function BacktestScreen() {
           return Object.assign({}, p, { weight: 1 / positions.length });
         });
         benchmarkStrategy = createPortfolioBuyAndHoldStrategy(equalWeight);
-      } else if (config.mode === 'analysis') {
+          } else if (config.mode === 'analysis') {
         var category = STOCK_CATEGORIES[config.category];
         var categoryStocks = getStocksByCategory(config.category);
         modeLabel = `${category.icon} ${category.name} (${categoryStocks.length} سهم)`;
@@ -148,114 +148,11 @@ export default function BacktestScreen() {
           return live ? { ...s, ...live } : s;
         }).filter(s => s.p > 0);
         
-        // 🆕 Smart Router: Yahoo للفترات الطويلة، sahmk للسنة وأقل
-        // مؤقّت: استعمل Yahoo لكل الفترات (sahmk استُنفد)
+        // Yahoo Finance دائماً (يدعم 1-10 سنوات بكامل البيانات)
         historicalData = await generateDataFromYahoo(enrichedStocks.slice(0, 15), config.days);
         
-        // 🔬 تشخيص عميق: ماذا تخرج stockHealth لأول سهم في آخر يوم؟
-        if (historicalData && historicalData.length > 0 && config.days > 252) {
-          var lastDay = historicalData[historicalData.length - 1];
-          var firstStock = lastDay && lastDay.stocksData && lastDay.stocksData[0];
-          if (firstStock) {
-            try {
-              var health = stockHealth(firstStock, lastDay.stocksData, {});
-              
-              // 🔬 تشخيص طبقة طبقة
-              var layers = (health && health.layers) || {};
-              var layerInfo = '';
-              ['L1','L2','L3','L4','L5','L6','L7','L8','L9'].forEach(function(k) {
-                var v = layers[k];
-                if (typeof v === 'number') {
-                  layerInfo += k + '=' + (isNaN(v) ? 'NaN' : v.toFixed(1)) + ' ';
-                } else if (v && typeof v === 'object') {
-                  layerInfo += k + '={' + (v.score != null ? v.score : '?') + '} ';
-                } else {
-                  layerInfo += k + '=' + v + ' ';
-                }
-              });
-              
-              // bar أوّل وأخير في bars
-              var bars = firstStock.bars || [];
-              var firstBar = bars[0] || {};
-              var lastBar = bars[bars.length-1] || {};
-
-              // فحص شامل لـ 3 شموع مختلفة
-              var bars = firstStock.bars || [];
-              var firstBar = bars[0] || {};
-              var midBar = bars[Math.floor(bars.length/2)] || {};
-              var lastBar = bars[bars.length-1] || {};
-              
-              var pctSum = 0, pctNonZero = 0, pctNaN = 0;
-              bars.forEach(function(b) {
-                if (typeof b.pct === 'number' && !isNaN(b.pct)) {
-                  if (b.pct !== 0) pctNonZero++;
-                  pctSum += Math.abs(b.pct);
-                } else {
-                  pctNaN++;
-                }
-              });
-              
-              var msg = '🔬 فحص شامل bars:\n\n';
-              msg += 'إجمالي bars: ' + bars.length + '\n';
-              msg += 'pct != 0: ' + pctNonZero + '\n';
-              msg += 'pct NaN: ' + pctNaN + '\n';
-              msg += 'متوسط |pct|: ' + (bars.length > 0 ? (pctSum/bars.length).toFixed(3) : 0) + '\n\n';
-              msg += 'أول bar: c=' + firstBar.c + ' pct=' + firstBar.pct + '\n';
-              msg += 'وسط bar: c=' + midBar.c + ' pct=' + midBar.pct + '\n';
-              msg += 'آخر bar: c=' + lastBar.c + ' pct=' + lastBar.pct + '\n\n';
-              msg += 'مصدر bars (أول bar keys):\n' + Object.keys(firstBar).sort().join(', ');
-              
-              alert(msg);
-              
-              var diag2 = '🔬 Yahoo Deep Debug:\n\n' +
-                'سهم: ' + firstStock.sym + '\n' +
-                'p: ' + firstStock.p + ', cp: ' + firstStock.currentPrice + '\n' +
-                'bars: ' + bars.length + '\n\n' +
-                'أول bar: o=' + firstBar.o + ' c=' + firstBar.c + ' v=' + firstBar.v + '\n' +
-                'آخر bar: o=' + lastBar.o + ' c=' + lastBar.c + ' v=' + lastBar.v + '\n\n' +
-                'PE=' + firstStock.pe + ' ROE=' + firstStock.roe + ' cap=' + 
-                  (firstStock.cap ? (firstStock.cap/1e9).toFixed(1)+'B' : 'لا') + '\n\n' +
-                'score: ' + (health ? health.score : 'فشل') + '\n' +
-                'layers: ' + layerInfo;
-              alert(diag2);
-            } catch(e) {
-              alert('فشل stockHealth: ' + e.message);
-            }
-          } else {
-            alert('فشل الوصول لـ firstStock');
-          }
-        }
-        
-        // 🔬 تشخيص: كم يوماً وصل فعلاً؟
-        var requestedDays = config.days;
-        var actualDays = historicalData ? historicalData.length : 0;
-        var coverage = requestedDays > 0 ? ((actualDays / requestedDays) * 100).toFixed(1) : '0';
-        var firstStock = (historicalData && historicalData[0] && historicalData[0].stocksData && historicalData[0].stocksData[0]) || null;
-        var barsCount = (firstStock && firstStock.bars) ? firstStock.bars.length : 0;
-        var firstDate = (historicalData && historicalData[0]) ? historicalData[0].date : 'لا يوجد';
-        var lastDate = (historicalData && historicalData[historicalData.length-1]) ? historicalData[historicalData.length-1].date : 'لا يوجد';
-        
-        alert(
-          '🔬 تشخيص sahmk:\n\n' +
-          'الفترة المطلوبة: ' + requestedDays + ' يوم\n' +
-          'الفترة المُسترجَعة: ' + actualDays + ' يوم\n' +
-          'التغطية: ' + coverage + '%\n\n' +
-          'أول تاريخ: ' + firstDate + '\n' +
-          'آخر تاريخ: ' + lastDate + '\n\n' +
-          'عدد الأسهم: ' + (firstStock ? (historicalData[0].stocksData||[]).length : 0) + '\n' +
-          'bars في أول سهم: ' + barsCount
-        ); 
-
         if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
-          var debugInfo = 'تشخيص:\n' +
-            'الفئة: ' + config.category + '\n' +
-            'أسهم الفئة: ' + categoryStocks.length + '\n' +
-            'STOCKS_LIVE المحمّلة: ' + STOCKS.length + '\n' +
-            'أسهم بعد التصفية (p>0): ' + enrichedStocks.length + '\n' +
-            'historicalData ?: ' + (historicalData ? historicalData.length : 'null') + '\n' +
-            'أول يوم: ' + (historicalData && historicalData[0] ? JSON.stringify(historicalData[0]).slice(0,200) : 'لا يوجد');
-          alert(debugInfo);
-          setResults({ error: 'لا توجد بيانات تاريخية كافية - تحقق من اتصال API' });
+          setResults({ error: 'فشل جلب البيانات التاريخية من Yahoo' });
           setIsRunning(false);
           return;
         }
