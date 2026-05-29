@@ -216,10 +216,26 @@ export default function BacktestScreen() {
                     var radarRes = analyzeStockRadar(firstStockData, bb);
                     techCheck += '\nradar:\n';
                     if (radarRes) {
-                      techCheck += '  score=' + radarRes.score + '\n';
-                      techCheck += '  radarTR=' + radarRes.radarTR + '\n';
-                      var radarKeys = Object.keys(radarRes).slice(0, 15).join(',');
-                      techCheck += '  مفاتيح: ' + radarKeys + '\n';
+                      techCheck += '  total=' + radarRes.total + '\n';
+                      techCheck += '  atrPct=' + radarRes.atrPct + '\n';
+                      techCheck += '  scoreCol=' + radarRes.scoreCol + '\n';
+                      // cats هو حيث الطبقات
+                      if (radarRes.cats) {
+                        var catsKeys = Object.keys(radarRes.cats).join(',');
+                        techCheck += '  cats keys: ' + catsKeys + '\n';
+                        // اطبع كل cat
+                        Object.keys(radarRes.cats).forEach(function(ck){
+                          var cv = radarRes.cats[ck];
+                          if (typeof cv === 'number') {
+                            techCheck += '    ' + ck + '=' + cv + '\n';
+                          } else if (cv && typeof cv === 'object') {
+                            techCheck += '    ' + ck + '={' + Object.keys(cv).slice(0,3).join(',') + '}\n';
+                          }
+                        });
+                      }
+                      // mom & trend & liq -- نفس الشيء
+                      if (radarRes.trend) techCheck += '  trend=' + JSON.stringify(radarRes.trend).slice(0,80) + '\n';
+                      if (radarRes.mom) techCheck += '  mom=' + JSON.stringify(radarRes.mom).slice(0,80) + '\n';
                       // فحص NaN في الكائن
                       var nanFields = [];
                       Object.keys(radarRes).forEach(function(k) {
