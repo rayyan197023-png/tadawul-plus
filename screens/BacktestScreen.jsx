@@ -790,6 +790,8 @@ export default function BacktestScreen() {
           </div>
         </div>
       )}
+      </>
+      )}
     </div>
   );
 }
