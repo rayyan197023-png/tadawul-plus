@@ -359,18 +359,130 @@ export default function BacktestScreen() {
     }
   }
   
+    // ════════════════════════════════════════════════════════════
+  // 🆕 تطبيق الفائز آلياً مع Walk-Forward AI Learning Rebuild
   // ════════════════════════════════════════════════════════════
-  // 🆕 تطبيق الفائز على التحليل الحيّ
-  // ════════════════════════════════════════════════════════════
-  function handleApplyWinner(winner) {
+  async function handleApplyWinner(winnerData) {
     try {
-      localStorage.setItem('tdw_winning_strategy', JSON.stringify({
-        weights: winner.weights,
-        params: winner.params,
-        targetType: winner.targetType,
-        appliedAt: Date.now(),
-      }));
-    } catch (e) {}
+      // ① استخراج البيانات من winnerData
+      // قد تأتي بصيغة { strategy, testFitness } من StrategyLabTab
+      // أو بصيغة Strategy مباشرة (للتوافق مع النسخة القديمة)
+      var strategy = winnerData.strategy || winnerData;
+      var testResult = winnerData.testFitness || null;
+      
+      // ② بناء WinnerMetrics
+      var metrics = {
+        cagr: 0,
+        alpha: 0,
+        maxDD: 0,
+        sortino: 0,
+        winRate: 0,
+        closedTrades: 0,
+        testFitness: 0,
+        overfitting: 0,
+      };
+      
+      if (testResult && testResult.metrics) {
+        var m = testResult.metrics;
+        metrics.cagr = m.cagr || 0;
+        metrics.alpha = m.alpha || 0;
+        metrics.maxDD = m.maxDD || 0;
+        metrics.sortino = m.sortino || 0;
+        metrics.winRate = m.winRate || 0;
+        metrics.closedTrades = m.closedTrades || 0;
+        metrics.testFitness = testResult.fitness || 0;
+      } else if (strategy.backtestResult && strategy.backtestResult.metrics) {
+        // fallback من Train metrics
+        var bm = strategy.backtestResult.metrics;
+        metrics.cagr = bm.cagr || 0;
+        metrics.alpha = bm.alpha || 0;
+        metrics.maxDD = bm.maxDD || 0;
+        metrics.sortino = bm.sortino || 0;
+        metrics.winRate = bm.winRate || 0;
+        metrics.closedTrades = bm.closedTrades || 0;
+        metrics.testFitness = strategy.fitness || 0;
+      }
+      
+      // overfitting يأتي من winnerData إن كان موجوداً
+      if (typeof winnerData.overfittingScore === 'number') {
+        metrics.overfitting = winnerData.overfittingScore;
+      }
+      
+      // ③ تجهيز Walk-Forward callback
+      var walkForwardCallback = null;
+      
+      if (labHistoricalData && labHistoricalData.length > 0) {
+        walkForwardCallback = async function() {
+          try {
+            // إعادة تشغيل الباك-تيست بأوزان Winner على البيانات التاريخية
+            // الباك-تيست يعمل شمعة-شمعة بدون lookahead بالفعل
+            var rebuildResult = await runBacktestForLab(strategy, labHistoricalData);
+            
+            if (!rebuildResult) {
+              console.warn('[WalkForward] Backtest returned null');
+              return false;
+            }
+            
+            // الباك-تيست يكتب آلياً في AI Learning عبر backtestAnalysisEngine
+            // (لأنّ stockHealth يستدعي recordFeedback داخلياً)
+            console.log('[WalkForward] Rebuild complete:', rebuildResult);
+            return true;
+          } catch (e) {
+            console.error('[WalkForward] Error:', e);
+            return false;
+          }
+        };
+      }
+      
+      // ④ استدعاء winnerManager
+      var evaluation = await evaluateAndApplyWinner(
+        strategy,
+        metrics,
+        walkForwardCallback
+      );
+      
+      // ⑤ عرض النتيجة للمستخدم
+      if (evaluation.applied) {
+        var successMsg = '🏆 تم تطبيق Winner جديد!\n\n';
+        successMsg += '📊 Score الجديد: ' + evaluation.newScore + '\n';
+        if (evaluation.oldScore !== null) {
+          successMsg += '📊 Score السابق: ' + evaluation.oldScore + '\n';
+          successMsg += '📈 التحسّن: ' + (evaluation.newScore - evaluation.oldScore).toFixed(2) + '\n';
+        } else {
+          successMsg += '📊 أوّل Winner يُحفظ\n';
+        }
+        successMsg += '\n✅ ' + evaluation.reason + '\n';
+        successMsg += '\n💡 سيُطبَّق على التحليل الحيّ تلقائياً.';
+        
+        try { alert(successMsg); } catch(_) {}
+      } else {
+        // فشل التطبيق
+        var failMsg = '⚠ Winner جديد لم يُطبَّق\n\n';
+        failMsg += '📝 السبب: ' + evaluation.reason + '\n\n';
+        
+        if (evaluation.failedGates && evaluation.failedGates.length > 0) {
+          failMsg += '❌ الشروط الفاشلة:\n';
+          evaluation.failedGates.forEach(function(g) {
+            failMsg += '  • ' + g + '\n';
+          });
+        }
+        
+        if (evaluation.oldScore !== null) {
+          failMsg += '\n📊 Score الجديد: ' + evaluation.newScore + '\n';
+          failMsg += '📊 Score الحالي: ' + evaluation.oldScore + '\n';
+        }
+        
+        failMsg += '\n💾 حُفِظ في الأرشيف للمقارنة.';
+        
+        try { alert(failMsg); } catch(_) {}
+      }
+      
+    } catch (e) {
+      console.error('[handleApplyWinner] Error:', e);
+      try {
+        alert('⚠ خطأ في تطبيق Winner:\n' + (e.message || 'غير معروف'));
+      } catch(_) {}
+    }
   }
 
   return (
