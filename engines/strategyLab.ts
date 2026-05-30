@@ -507,14 +507,27 @@ export async function runStrategyLab(
   const top3 = rankByFitness(allTrained).slice(0, 3);
   
   if (top3.length === 0) {
-    // 🆕 احفظ كل الأخطاء التفصيلية للتشخيص
+    // 🆕 احفظ كل الأخطاء التفصيلية + الإحصاءات للتشخيص
     const allErrors = ['لا توجد استراتيجيات صالحة بعد التدريب'];
+    
+    // إحصاء fitness الاستراتيجيات
+    const allWithFitness = trainResults.flatMap(g => g.population).filter(s => s.fitness !== undefined);
+    const aboveMinus100 = allWithFitness.filter(s => (s.fitness || -999) > -100).length;
+    const aboveMinus50 = allWithFitness.filter(s => (s.fitness || -999) > -50).length;
+    const above0 = allWithFitness.filter(s => (s.fitness || -999) > 0).length;
+    
+    allErrors.push(`📊 الباك-تيستات الناجحة: ${totalBacktests}`);
+    allErrors.push(`📊 الاستراتيجيات المُختبرة: ${allWithFitness.length}`);
+    allErrors.push(`📊 fitness > -100: ${aboveMinus100}`);
+    allErrors.push(`📊 fitness > -50: ${aboveMinus50}`);
+    allErrors.push(`📊 fitness > 0: ${above0}`);
+    
     if (errors.length > 0) {
-      allErrors.push(`عدد الأخطاء الفعلية: ${errors.length}`);
-      // أوّل 5 أخطاء فقط
-      errors.slice(0, 5).forEach(e => allErrors.push(e));
+      allErrors.push(`⚠ أخطاء فعلية: ${errors.length}`);
+      errors.slice(0, 3).forEach(e => allErrors.push(e));
     }
-    return createFailedResult(config, startedAt, allErrors);
+    
+    return createFailedResult(config, startedAt, allErrors, totalBacktests, trainResults);
   }
   
   // ───────────────────────────────────────
