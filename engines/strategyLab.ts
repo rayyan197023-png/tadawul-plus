@@ -143,14 +143,14 @@ export type BacktestFunction = (
  * إعدادات افتراضية لكل وضع
  */
 export const MODE_CONFIGS: Record<LabMode, Omit<LabConfig, 'targetType'>> = {
-  quick: {
+    quick: {
     mode: 'quick',
     generations: 3,
     populationSize: 12,
     eliteCount: 3,
     mutationRate: 0.15,
     trainPct: 0.6,
-    minTradesRequired: 3,      // 🆕 خُفّض من 15 إلى 3
+    minTradesRequired: 2,      // 🆕 خُفّض ليُتيح أيّ نشاط
     abortOnError: false,
   },
   deep: {
