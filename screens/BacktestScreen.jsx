@@ -87,7 +87,7 @@ export default function BacktestScreen() {
   var haptic = useHaptic();
   var positions = [];
   
-  var [config, setConfig] = useState({
+var [config, setConfig] = useState({
     mode: 'analysis',
     category: 'leaders',
     initialCapital: 100000,
@@ -95,6 +95,7 @@ export default function BacktestScreen() {
     includeCosts: true,
     runMonteCarlo: true,
     monteCarloIterations: 5000,
+    useWinner: true,  // 🆕 استعمال Winner المُطبَّق
   });
 
   var [isRunning, setIsRunning] = useState(false);
