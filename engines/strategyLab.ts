@@ -489,6 +489,12 @@ export async function runStrategyLab(
       errors: genErrors,
       durationMs: Date.now() - genStart,
     });
+    
+    } catch (outerErr: any) {
+      // 🐛 خطأ خارجيّ في الجيل
+      totalErrors++;
+      errors.push(`OUTER Gen ${gen}: ${outerErr.message || 'unknown'} | stack: ${(outerErr.stack || '').slice(0, 200)}`);
+    }
   }
   
   // ───────────────────────────────────────
