@@ -28,6 +28,7 @@ import {
   generateLabReport,
   MODE_CONFIGS,
 } from '../engines/strategyLab';
+import { generateAnchorFromAILearning, getAILearningStats } from '../engines/aiLearningWeights';
 import { getTierInfo } from '../engines/strategyFitness';
 import { getTypeIcon, getTypeArabic, getTypeColor, getTypeDescription } from '../engines/stockClassifier';
 
