@@ -1835,6 +1835,8 @@ export function stockHealth(stk: any, bars: any[], allStocks?: any[], macroOverr
   
   } finally {
     if (_macroPrevious) restoreMacro(_macroPrevious);
+    // 🆕 استرجاع الأوزان
+    if (_weightsPrevious !== undefined) restoreWeights(_weightsPrevious);
   }
 }  
 
