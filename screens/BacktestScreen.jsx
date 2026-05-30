@@ -200,7 +200,7 @@ var [config, setConfig] = useState({
         };
         
         // 🆕 نُمرّر fredMacro للاستراتيجية لتُمرّره للمحرّك
-        strategy = createTadawulStrategy(backtestHealthWrapper, null, fredMacro, activeWinnerWeights);
+        strategy = createTadawulStrategy(backtestHealthWrapper, activeWinnerParams, fredMacro, activeWinnerWeights);
         var benchSymbols = historicalData[0].stocksData.slice(0, 5).map(function(s) { return s.sym; });
         benchmarkStrategy = createBuyAndHoldStrategy(benchSymbols);
       }
