@@ -137,8 +137,9 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
       day.stocksData.forEach(function(stk: any) {
         if (!stk.bars || stk.bars.length < 30) return;
         
-        try {
-          var health = healthFn(stk, stk.bars, allStocksForToday, _macroOverride);
+                try {
+          // 🆕 نُمرّر weightsOverride للمحرّك (Strategy Lab)
+          var health = healthFn(stk, stk.bars, allStocksForToday, _macroOverride, _weightsOverride);
           stockScores.push({
             sym: stk.sym,
             stk: stk,
