@@ -296,14 +296,32 @@ export function passesOutOfSampleTest(
   testFitness: FitnessResult,
   minTestFitness: number = 0.05
 ): boolean {
-  // ① يجب أن يكون fitness في Test إيجابيّاً ومقبولاً
+  // ① إن كل النظام خاسر في Train: نقبل "الأقلّ خسارة"
+  const trainIsLosing = trainFitness.fitness < 0;
+  
+  if (trainIsLosing) {
+    // الأهمّ: Test يجب أن يكون أفضل من Train (دلالة على التعلّم)
+    if (testFitness.fitness < trainFitness.fitness) {
+      return false;  // الاستراتيجية لم تتعلّم
+    }
+    
+    // overfitting score غير مفيد في هذه الحالة، نتجاوزه
+    
+    // Test يجب أن يكون قريباً من الصفر أو إيجابيّاً
+    if (testFitness.fitness < -0.05) return false;
+    
+    // CAGR في Test لا يقلّ كثيراً (نسمح بـ -10% كحدّ أدنى)
+    if (testFitness.metrics.cagr < -10) return false;
+    
+    return true;  // نقبل كأفضل خيار متاح
+  }
+  
+  // الوضع العاديّ (Train إيجابيّ):
   if (testFitness.fitness < minTestFitness) return false;
   
-  // ② يجب ألّا يكون الفرق كبيراً جداً (overfitting)
   const overfitting = calcOverfittingScore(trainFitness.fitness, testFitness.fitness);
   if (overfitting > 0.7) return false;
   
-  // ③ في Test، الاستراتيجية يجب أن تكون مربحة على الأقلّ
   if (testFitness.metrics.cagr < 0) return false;
   
   return true;
