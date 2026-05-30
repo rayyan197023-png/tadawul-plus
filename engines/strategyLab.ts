@@ -410,9 +410,9 @@ export async function runStrategyLab(
     const genStart = Date.now();
     
     // ① توليد الجيل
-    try {
+        try {
     if (gen === 0) {
-      currentPopulation = generatePopulation(config.targetType, config.populationSize, 0);
+      currentPopulation = generatePopulation(config.targetType, config.populationSize, 0, anchorWeights);
     } else {
       currentPopulation = createNextGeneration(
         currentPopulation,
