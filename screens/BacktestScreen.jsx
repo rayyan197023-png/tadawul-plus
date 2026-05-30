@@ -409,7 +409,73 @@ export default function BacktestScreen() {
           مختبر الاستراتيجيات
         </div>
       </div>
-
+      
+      {/* 🆕 تبويبات: Backtest عاديّ vs Strategy Lab */}
+      <div style={{
+        display: "flex",
+        gap: 8,
+        marginBottom: 12,
+        padding: 4,
+        background: C.layer1,
+        borderRadius: 12,
+        border: "1px solid " + C.line + "33",
+      }}>
+        <button
+          onClick={function() { haptic.tap(); setActiveTab('run'); }}
+          style={{
+            flex: 1,
+            padding: "10px 8px",
+            background: activeTab === 'run'
+              ? "linear-gradient(135deg," + C.gold + "," + C.goldL + ")"
+              : "transparent",
+            border: "none",
+            borderRadius: 8,
+            color: activeTab === 'run' ? C.ink : C.smoke,
+            fontSize: 12,
+            fontWeight: 900,
+            cursor: "pointer",
+            fontFamily: "Cairo, sans-serif",
+            transition: "all 0.2s",
+          }}
+        >
+          🧪 Backtest
+        </button>
+        <button
+          onClick={function() { haptic.tap(); setActiveTab('lab'); }}
+          style={{
+            flex: 1,
+            padding: "10px 8px",
+            background: activeTab === 'lab'
+              ? "linear-gradient(135deg," + C.mint + "," + C.teal + ")"
+              : "transparent",
+            border: "none",
+            borderRadius: 8,
+            color: activeTab === 'lab' ? C.ink : C.smoke,
+            fontSize: 12,
+            fontWeight: 900,
+            cursor: "pointer",
+            fontFamily: "Cairo, sans-serif",
+            transition: "all 0.2s",
+          }}
+        >
+          🧬 Strategy Lab
+        </button>
+      </div>
+      
+      {/* ═══ Strategy Lab Tab ═══ */}
+      {activeTab === 'lab' && (
+        <StrategyLabTab
+          C={C}
+          runBacktest={runBacktestForLab}
+          historicalData={labHistoricalData}
+          dataInfo={labDataInfo}
+          onApplyWinner={handleApplyWinner}
+        />
+      )}
+      
+      {/* ═══ Backtest Tab ═══ */}
+      {activeTab === 'run' && (
+      <>
       <div style={{
         background: "linear-gradient(145deg," + C.layer1 + "," + C.layer2 + ")",
         borderRadius: 14,
