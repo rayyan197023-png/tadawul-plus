@@ -134,19 +134,48 @@ var [config, setConfig] = useState({
       // 🆕 قراءة Winner المُطبَّق (إن وُجد وكان الخيار مُفعَّلاً)
       var activeWinnerWeights = null;
       var activeWinnerParams = null;
+      
+      // 🐛 DIAGNOSTIC
+      try {
+        var dbg = '🔍 BACKTEST DIAGNOSTIC:\n\n';
+        dbg += 'config.useWinner: ' + config.useWinner + '\n';
+        var winInLS = loadCurrentWinner();
+        dbg += 'Winner in localStorage: ' + (winInLS ? 'YES (Score: ' + winInLS.score + ')' : 'NO') + '\n';
+        dbg += 'Mode: ' + config.mode + '\n';
+        dbg += 'Category: ' + config.category + '\n';
+        alert(dbg);
+      } catch(_) {}
+      
       if (config.useWinner) {
         try {
           var currentWinner = loadCurrentWinner();
           if (currentWinner && currentWinner.weights) {
             activeWinnerWeights = currentWinner.weights;
             activeWinnerParams = currentWinner.params || null;
-            console.log('[Backtest] Using applied Winner (Score: ' + currentWinner.score + ')');
-            console.log('[Backtest] Winner params:', activeWinnerParams);
+            try {
+              alert('✅ Winner LOADED:\n\nScore: ' + currentWinner.score + 
+                    '\nWeights: L1=' + currentWinner.weights.L1 + 
+                    ', L9=' + currentWinner.weights.L9 +
+                    '\nParams: ' + JSON.stringify(activeWinnerParams).substring(0, 200));
+            } catch(_) {}
+          } else {
+            try { alert('⚠ Winner exists but missing weights'); } catch(_) {}
           }
         } catch(e) {
-          console.warn('[Backtest] Failed to load Winner:', e);
+          try { alert('❌ Failed to load Winner: ' + e.message); } catch(_) {}
         }
+      } else {
+        try { alert('❌ useWinner is FALSE - skipping Winner load'); } catch(_) {}
       }
+      
+      // 🐛 قبل تمرير weightsOverride - تأكيد القيمة
+      try {
+        alert('📊 About to backtest with:\n\nactiveWinnerWeights: ' + 
+              (activeWinnerWeights ? 'LOADED' : 'NULL') +
+              '\nactiveWinnerParams: ' +
+              (activeWinnerParams ? 'LOADED' : 'NULL'));
+      } catch(_) {}
+
       if (config.mode === 'portfolio') {
         if (!hasPortfolio) {
           setResults({ error: 'المحفظة فارغة! أضف أسهماً أولاً.' });
