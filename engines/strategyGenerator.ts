@@ -300,22 +300,50 @@ export function normalizeWeights(weights: StrategyWeights): StrategyWeights {
  */
 export function generateRandomStrategy(
   targetType: Exclude<StockType, 'excluded'>,
-  generation: number = 0
+  generation: number = 0,
+  anchorWeights?: StrategyWeights
 ): Strategy {
   const ranges = TYPE_RANGES[targetType];
   
-  // ① توليد أوزان عشوائية
-  const rawWeights: StrategyWeights = {
-    L1: randomInRange(ranges.weights.L1),
-    L2: randomInRange(ranges.weights.L2),
-    L3: randomInRange(ranges.weights.L3),
-    L4: randomInRange(ranges.weights.L4),
-    L5: randomInRange(ranges.weights.L5),
-    L6: randomInRange(ranges.weights.L6),
-    L7: randomInRange(ranges.weights.L7),
-    L8: randomInRange(ranges.weights.L8),
-    L9: randomInRange(ranges.weights.L9),
-  };
+  // 🆕 30% احتمال للبدء من Anchor (مع طفرة ±25%)
+  const useAnchor = anchorWeights && Math.random() < 0.30;
+  
+  let rawWeights: StrategyWeights;
+  
+  if (useAnchor && anchorWeights) {
+    // طفرة الـ Anchor بنسبة ±25% لكل وزن
+    rawWeights = {
+      L1: anchorWeights.L1 * (1 + (Math.random() - 0.5) * 0.5),
+      L2: anchorWeights.L2 * (1 + (Math.random() - 0.5) * 0.5),
+      L3: anchorWeights.L3 * (1 + (Math.random() - 0.5) * 0.5),
+      L4: anchorWeights.L4 * (1 + (Math.random() - 0.5) * 0.5),
+      L5: anchorWeights.L5 * (1 + (Math.random() - 0.5) * 0.5),
+      L6: anchorWeights.L6 * (1 + (Math.random() - 0.5) * 0.5),
+      L7: anchorWeights.L7 * (1 + (Math.random() - 0.5) * 0.5),
+      L8: anchorWeights.L8 * (1 + (Math.random() - 0.5) * 0.5),
+      L9: anchorWeights.L9 * (1 + (Math.random() - 0.5) * 0.5),
+    };
+    
+    // التأكّد من البقاء داخل النطاقات
+    const keys: (keyof StrategyWeights)[] = ['L1','L2','L3','L4','L5','L6','L7','L8','L9'];
+    keys.forEach(k => {
+      const range = ranges.weights[k];
+      rawWeights[k] = Math.max(range.min, Math.min(range.max, rawWeights[k]));
+    });
+  } else {
+    // ① توليد أوزان عشوائية (السلوك الأصلي)
+    rawWeights = {
+      L1: randomInRange(ranges.weights.L1),
+      L2: randomInRange(ranges.weights.L2),
+      L3: randomInRange(ranges.weights.L3),
+      L4: randomInRange(ranges.weights.L4),
+      L5: randomInRange(ranges.weights.L5),
+      L6: randomInRange(ranges.weights.L6),
+      L7: randomInRange(ranges.weights.L7),
+      L8: randomInRange(ranges.weights.L8),
+      L9: randomInRange(ranges.weights.L9),
+    };
+  }
   
   // ② تطبيع الأوزان
   const weights = normalizeWeights(rawWeights);
