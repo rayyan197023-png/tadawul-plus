@@ -229,7 +229,7 @@ var [config, setConfig] = useState({
         
         strategy = createTadawulStrategy(function(stk, bars, allStocks, macro) {
           return backtestStockHealth(stk, bars, allStocks, macro);
-        }, { maxPositions: 10, maxPositionWeight: 0.15 }, fredMacro);
+        }, { maxPositions: 10, maxPositionWeight: 0.15 }, fredMacro, activeWinnerWeights);
         
         var marketBenchSymbols = historicalData[0].stocksData.slice(0, 10).map(function(s) { return s.sym; });
         benchmarkStrategy = createBuyAndHoldStrategy(marketBenchSymbols);
