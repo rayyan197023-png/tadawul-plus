@@ -148,9 +148,9 @@ export const MODE_CONFIGS: Record<LabMode, Omit<LabConfig, 'targetType'>> = {
     generations: 3,
     populationSize: 12,
     eliteCount: 3,
-    mutationRate: 0.15,           // أعلى للاكتشاف السريع
+    mutationRate: 0.15,
     trainPct: 0.6,
-    minTradesRequired: 15,
+    minTradesRequired: 3,      // 🆕 خُفّض من 15 إلى 3
     abortOnError: false,
   },
   deep: {
