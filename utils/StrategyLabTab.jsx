@@ -947,6 +947,21 @@ export default function StrategyLabTab({
     
     const config = createLabConfig(mode, targetType);
     
+    // 🆕 قراءة Anchor Weights من AI Learning
+    let anchorWeights = null;
+    try {
+      anchorWeights = generateAnchorFromAILearning();
+      if (anchorWeights) {
+        const stats = getAILearningStats();
+        console.log('[Lab] Using AI Learning anchor:', anchorWeights);
+        console.log('[Lab] AI Learning stats:', stats);
+      } else {
+        console.log('[Lab] No anchor available (insufficient AI Learning data)');
+      }
+    } catch (e) {
+      console.warn('[Lab] Anchor read failed:', e);
+    }
+    
     try {
       const labResult = await runStrategyLab(
         config,
@@ -955,7 +970,8 @@ export default function StrategyLabTab({
         (prog) => {
           if (cancelRef.current) return;
           setProgress(prog);
-        }
+        },
+        anchorWeights
       );
       
       if (!cancelRef.current) {
