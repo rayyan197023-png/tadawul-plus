@@ -317,20 +317,6 @@ export default function BacktestScreen() {
         includeCosts: true,
       });
       
-      // 🐛 تشخيص: عرض تفاصيل أوّل باك-تيست
-      if (!window._labDebugShown) {
-        window._labDebugShown = true;
-        var debugInfo = '';
-        debugInfo += 'success: ' + (result ? result.success : 'NO RESULT') + '\n';
-        debugInfo += 'has metrics: ' + (result && result.metrics ? 'YES' : 'NO') + '\n';
-        
-        // كل المفاتيح في result
-        if (result) {
-          debugInfo += '\nresult keys: ' + Object.keys(result).join(', ') + '\n';
-        }
-        
-        // 🆕 performance keys
-        if (result && result.performance) {
           debugInfo += '\nperformance keys: ' + Object.keys(result.performance).join(', ') + '\n';
           // قيم
           var p = result.performance;
