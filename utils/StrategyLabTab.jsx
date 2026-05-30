@@ -975,11 +975,11 @@ export default function StrategyLabTab({
   }, []);
   
   // ═══ تطبيق الفائز ═══
-  const handleApplyWinner = useCallback((winner) => {
+  const handleApplyWinner = useCallback((winnerPackage) => {
     if (onApplyWinner) {
-      onApplyWinner(winner);
+      onApplyWinner(winnerPackage);
     }
-    alert('✅ تمّ تطبيق الاستراتيجية الفائزة على التحليل الحيّ');
+    // alert يُعرض من BacktestScreen.handleApplyWinner مع تفاصيل أكثر
   }, [onApplyWinner]);
   
   // ═══ إعادة المحاولة ═══
