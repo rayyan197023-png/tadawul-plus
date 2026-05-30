@@ -329,21 +329,37 @@ export default function BacktestScreen() {
           debugInfo += '\nresult keys: ' + Object.keys(result).join(', ') + '\n';
         }
         
-        // كل المفاتيح في result.metrics
-        if (result && result.metrics) {
-          debugInfo += '\nmetrics keys: ' + Object.keys(result.metrics).join(', ') + '\n';
-          // قيم محتملة للصفقات
-          debugInfo += '\nمعلومات الصفقات:\n';
-          debugInfo += '  totalTrades: ' + result.metrics.totalTrades + '\n';
-          debugInfo += '  closedTrades: ' + result.metrics.closedTrades + '\n';
-          debugInfo += '  winningTrades: ' + result.metrics.winningTrades + '\n';
-          debugInfo += '  losingTrades: ' + result.metrics.losingTrades + '\n';
-          debugInfo += '  trades: ' + (result.metrics.trades ? 'array(' + result.metrics.trades.length + ')' : 'undef') + '\n';
+        // 🆕 performance keys
+        if (result && result.performance) {
+          debugInfo += '\nperformance keys: ' + Object.keys(result.performance).join(', ') + '\n';
+          // قيم
+          var p = result.performance;
+          debugInfo += '  annualReturn: ' + p.annualReturn + '\n';
+          debugInfo += '  totalReturn: ' + p.totalReturn + '\n';
+          debugInfo += '  sharpe: ' + p.sharpe + '\n';
+          debugInfo += '  sortino: ' + p.sortino + '\n';
+          debugInfo += '  maxDrawdown: ' + p.maxDrawdown + '\n';
+          debugInfo += '  winRate: ' + p.winRate + '\n';
         }
         
-        // إن trades مباشرة على result
+        // 🆕 summary keys
+        if (result && result.summary) {
+          debugInfo += '\nsummary keys: ' + Object.keys(result.summary).join(', ') + '\n';
+          var s = result.summary;
+          debugInfo += '  totalTrades: ' + s.totalTrades + '\n';
+          debugInfo += '  winningTrades: ' + s.winningTrades + '\n';
+          debugInfo += '  losingTrades: ' + s.losingTrades + '\n';
+          debugInfo += '  winRate: ' + s.winRate + '\n';
+        }
+        
+        // 🆕 tradeCount + trades
+        debugInfo += '\ntradeCount: ' + result.tradeCount + '\n';
         if (result && result.trades) {
-          debugInfo += '\nresult.trades: array(' + result.trades.length + ')\n';
+          debugInfo += 'result.trades: array(' + result.trades.length + ')\n';
+          // أوّل صفقة
+          if (result.trades[0]) {
+            debugInfo += 'first trade: ' + JSON.stringify(result.trades[0]).slice(0, 200) + '\n';
+          }
         }
         
         debugInfo += '\ndata.length: ' + historicalData.length + '\n';
