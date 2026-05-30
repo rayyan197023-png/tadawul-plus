@@ -17,7 +17,7 @@ import { STOCKS_LIVE as STOCKS, STOCK_CATEGORIES, getStocksByCategory } from '..
 import { useNav } from '../store';
 import Tooltip from '../components/Tooltip';
 import { useHaptic } from '../hooks/useHaptic';
-import StrategyLabTab from './StrategyLabTab';
+import StrategyLabTab from '../utils/StrategyLabTab';
 var C = {
   ink: "#06080f", deep: "#090c16", void: "#0c1020",
   layer1: "#141d2b", layer2: "#1e2d42",
