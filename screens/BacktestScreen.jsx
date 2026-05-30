@@ -391,12 +391,6 @@ export default function BacktestScreen() {
         alpha: comparison ? (comparison.alphaAnnual || comparison.alpha || 0) : 0,
       };
     } catch (e) {
-      // 🐛 تشخيص: إظهار الخطأ مباشرة
-      var errMsg = (e && e.message) ? e.message : String(e);
-      var errStack = (e && e.stack) ? String(e.stack).slice(0, 300) : 'no stack';
-      try {
-        alert('🐛 LAB ERROR:\n\n' + errMsg + '\n\nSTACK:\n' + errStack);
-      } catch(_) {}
       console.error('[runBacktestForLab]', e);
       return null;
     }
