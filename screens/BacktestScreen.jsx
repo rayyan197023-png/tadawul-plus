@@ -832,6 +832,25 @@ var [config, setConfig] = useState({
               <Tooltip termKey="Monte Carlo" size="small"/>
             </span>
           </label>
+          
+          <label style={{
+            display: "flex", alignItems: "center", gap: 8,
+            padding: "6px 8px", 
+            background: C.mint + "12", 
+            borderRadius: 6, 
+            cursor: "pointer",
+            border: "1px solid " + C.mint + "33",
+          }}>
+            <input
+              type="checkbox"
+              checked={config.useWinner}
+              onChange={function(e) { setConfig(Object.assign({}, config, { useWinner: e.target.checked })); }}
+              style={{ cursor: "pointer" }}
+            />
+            <span style={{ fontSize: 11, color: C.mint, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 4 }}>
+              🏆 استعمل Winner المُطبَّق
+            </span>
+          </label>
         </div>
 
         <button
