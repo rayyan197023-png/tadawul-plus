@@ -317,45 +317,6 @@ export default function BacktestScreen() {
         includeCosts: true,
       });
       
-          debugInfo += '\nperformance keys: ' + Object.keys(result.performance).join(', ') + '\n';
-          // قيم
-          var p = result.performance;
-          debugInfo += '  annualReturn: ' + p.annualReturn + '\n';
-          debugInfo += '  totalReturn: ' + p.totalReturn + '\n';
-          debugInfo += '  sharpe: ' + p.sharpe + '\n';
-          debugInfo += '  sortino: ' + p.sortino + '\n';
-          debugInfo += '  maxDrawdown: ' + p.maxDrawdown + '\n';
-          debugInfo += '  winRate: ' + p.winRate + '\n';
-        }
-        
-        // 🆕 summary keys
-        if (result && result.summary) {
-          debugInfo += '\nsummary keys: ' + Object.keys(result.summary).join(', ') + '\n';
-          var s = result.summary;
-          debugInfo += '  totalTrades: ' + s.totalTrades + '\n';
-          debugInfo += '  winningTrades: ' + s.winningTrades + '\n';
-          debugInfo += '  losingTrades: ' + s.losingTrades + '\n';
-          debugInfo += '  winRate: ' + s.winRate + '\n';
-        }
-        
-        // 🆕 tradeCount + trades
-        debugInfo += '\ntradeCount: ' + result.tradeCount + '\n';
-        if (result && result.trades) {
-          debugInfo += 'result.trades: array(' + result.trades.length + ')\n';
-          // أوّل صفقة
-          if (result.trades[0]) {
-            debugInfo += 'first trade: ' + JSON.stringify(result.trades[0]).slice(0, 200) + '\n';
-          }
-        }
-        
-        debugInfo += '\ndata.length: ' + historicalData.length + '\n';
-        debugInfo += 'strategy.params: ' + JSON.stringify(strategy.params) + '\n';
-        
-        try {
-          alert('🐛 DEBUG v2:\n\n' + debugInfo);
-        } catch(_) {}
-      }
-      
       if (!result || !result.success) return null;
       
       // benchmark (للـ Alpha)
