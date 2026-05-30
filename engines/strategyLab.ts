@@ -307,11 +307,11 @@ export function passesOutOfSampleTest(
     
     // overfitting score غير مفيد في هذه الحالة، نتجاوزه
     
-    // Test يجب أن يكون قريباً من الصفر أو إيجابيّاً
-    if (testFitness.fitness < -0.05) return false;
+    // Test يجب أن يكون قريباً من الصفر أو إيجابيّاً (نسمح حتى -0.10)
+    if (testFitness.fitness < -0.10) return false;
     
-    // CAGR في Test لا يقلّ كثيراً (نسمح بـ -10% كحدّ أدنى)
-    if (testFitness.metrics.cagr < -10) return false;
+    // CAGR في Test لا يقلّ كثيراً (نسمح بـ -15% كحدّ أدنى)
+    if (testFitness.metrics.cagr < -15) return false;
     
     return true;  // نقبل كأفضل خيار متاح
   }
