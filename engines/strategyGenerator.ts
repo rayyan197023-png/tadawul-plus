@@ -380,11 +380,12 @@ export function generateRandomStrategy(
 export function generatePopulation(
   targetType: Exclude<StockType, 'excluded'>,
   count: number = 20,
-  generation: number = 0
+  generation: number = 0,
+  anchorWeights?: StrategyWeights
 ): Strategy[] {
   const population: Strategy[] = [];
   for (let i = 0; i < count; i++) {
-    population.push(generateRandomStrategy(targetType, generation));
+    population.push(generateRandomStrategy(targetType, generation, anchorWeights));
   }
   return population;
 }
