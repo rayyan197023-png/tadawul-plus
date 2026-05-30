@@ -64,6 +64,41 @@ function restoreMacro(previous: any): void {
   }
 }
 
+// ════════════════════════════════════════════════════════════
+//  🆕 WEIGHTS OVERRIDE - دعم Strategy Lab
+// ════════════════════════════════════════════════════════════
+
+let WEIGHTS_OVERRIDE: any = null;
+
+function setWeightsOverride(override: any): any {
+  const previous = WEIGHTS_OVERRIDE;
+  if (override && typeof override === 'object') {
+    // تطبيع الأوزان للتأكّد أنّها صالحة
+    const keys = ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'L9'];
+    let total = 0;
+    const normalized: any = {};
+    
+    keys.forEach(k => {
+      const v = typeof override[k] === 'number' ? override[k] : 0.111;
+      normalized[k] = Math.max(0.01, v);
+      total += normalized[k];
+    });
+    
+    // تطبيع لمجموع = 1.00
+    if (total > 0) {
+      keys.forEach(k => {
+        normalized[k] = normalized[k] / total;
+      });
+      WEIGHTS_OVERRIDE = normalized;
+    }
+  }
+  return previous;
+}
+
+function restoreWeights(previous: any): void {
+  WEIGHTS_OVERRIDE = previous !== undefined ? previous : null;
+}
+
 const OIL_SENS: any = {
   "الطاقة": 1.8, "المواد الأساسية": 1.3, "السلع الرأسمالية": 1.1,
   "المرافق العامة": 0.7, "البنوك": 0.9, "الخدمات المالية": 0.5,
