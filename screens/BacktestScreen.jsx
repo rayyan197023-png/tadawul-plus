@@ -18,7 +18,7 @@ import { useNav } from '../store';
 import Tooltip from '../components/Tooltip';
 import { useHaptic } from '../hooks/useHaptic';
 import StrategyLabTab from '../utils/StrategyLabTab';
-import { evaluateAndApplyWinner } from '../engines/winnerManager';
+import { evaluateAndApplyWinner, loadCurrentWinner } from '../engines/winnerManager';
 import { backtestStockHealth as recordFeedbackEngine } from '../engines/backtestAnalysisEngine';
 import { loadCurrentWinner } from '../engines/winnerManager';
 var C = {
