@@ -1714,14 +1714,17 @@ export function recordFeedback(sym: string, signal: string, layers: any, actualO
 //  stockHealth - الدالة الرئيسية المُصدَّرة
 // ════════════════════════════════════════════════════════════
 
-export function stockHealth(stk: any, bars: any[], allStocks?: any[], macroOverride?: any): any {
+export function stockHealth(stk: any, bars: any[], allStocks?: any[], macroOverride?: any, weightsOverride?: any): any {
   if (!stk || typeof stk !== 'object') return _emptyHealthResult();
   if (!bars || !Array.isArray(bars) || bars.length < 5) return _emptyHealthResult();
   
   // 🆕 تطبيق macro override إن وُجد
   const _macroPrevious = macroOverride ? setMacroOverride(macroOverride) : null;
+  // 🆕 تطبيق weights override إن وُجد (Strategy Lab)
+  const _weightsPrevious = weightsOverride ? setWeightsOverride(weightsOverride) : undefined;
   
   try {
+
   // إن لم تُمرَّر allStocks، نستعمل قائمة فيها السهم نفسه على الأقلّ
   const stocks = (allStocks && allStocks.length > 0) ? allStocks : [stk];
   
