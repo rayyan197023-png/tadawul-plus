@@ -462,9 +462,8 @@ export default function BacktestScreen() {
       }
       
       // overfitting يأتي من winnerData إن كان موجوداً
-      if (typeof winnerData.overfittingScore === 'number') {
-        metrics.overfitting = winnerData.overfittingScore;
-      }
+      metrics.overfitting = overfittingScore;
+
       
       // ③ تجهيز Walk-Forward callback
       var walkForwardCallback = null;
