@@ -95,21 +95,21 @@ interface TypeRanges {
  */
 const LEADER_RANGES: TypeRanges = {
   weights: {
-    L1: { min: 0.15, max: 0.25 },   // هيكل مهمّ
+    L1: { min: 0.15, max: 0.25 },
     L2: { min: 0.02, max: 0.08 },
     L3: { min: 0.01, max: 0.05 },
-    L4: { min: 0.10, max: 0.20 },   // قوّة نسبية مهمّة
+    L4: { min: 0.10, max: 0.20 },
     L5: { min: 0.10, max: 0.20 },
     L6: { min: 0.03, max: 0.10 },
     L7: { min: 0.03, max: 0.10 },
-    L8: { min: 0.10, max: 0.20 },   // Fundamentals مهمّ للقياديّة
+    L8: { min: 0.10, max: 0.20 },
     L9: { min: 0.10, max: 0.20 },
   },
-  buyThreshold: { min: 65, max: 78 },
+  buyThreshold: { min: 55, max: 70 },   // 🆕 أخفض ليُتيح صفقات
   sellThreshold: { min: 35, max: 48 },
-  stopLossPct: { min: 0.05, max: 0.10 },     // 5-10% (ضيّق)
-  takeProfitPct: { min: 0.10, max: 0.25 },   // 10-25%
-  maxHoldDays: { min: 60, max: 180 },         // طويل المدى
+  stopLossPct: { min: 0.05, max: 0.12 }, // 🆕 أوسع قليلاً
+  takeProfitPct: { min: 0.10, max: 0.30 },
+  maxHoldDays: { min: 30, max: 180 },   // 🆕 أقصر للحدّ الأدنى
   maxPositions: { min: 5, max: 10 },
   maxPositionPct: { min: 0.08, max: 0.15 },
 };
