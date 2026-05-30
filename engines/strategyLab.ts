@@ -349,7 +349,8 @@ export async function runStrategyLab(
   config: LabConfig,
   historicalData: any[],
   runBacktest: BacktestFunction,
-  onProgress?: (progress: LabProgress) => void
+  onProgress?: (progress: LabProgress) => void,
+  anchorWeights?: any
 ): Promise<LabResult> {
   const startedAt = Date.now();
   const errors: string[] = [];
