@@ -47,11 +47,67 @@ export var STRATEGY_DEFAULTS = {
  * @param {Object} options - إعدادات اختيارية
  * @returns {Object} strategy object
  */
-export function createTadawulStrategy(healthFn: any, options?: any, macroOverride?: any): any { 
-  var config = Object.assign({}, STRATEGY_DEFAULTS, options || {});
+export function createTadawulStrategy(healthFn: any, options?: any, macroOverride?: any, weightsOverride?: any): any { 
+  // 🆕 تطبيع المعاملات من Strategy Lab (إن جاءت بأسماء مختلفة)
+  var normalizedOptions = options || {};
+  if (options) {
+    var mapped: any = {};
+    
+    // buyThreshold → buyScoreThreshold
+    if (typeof options.buyThreshold === 'number') {
+      mapped.buyScoreThreshold = options.buyThreshold;
+    }
+    if (typeof options.buyScoreThreshold === 'number') {
+      mapped.buyScoreThreshold = options.buyScoreThreshold;
+    }
+    
+    // sellThreshold → sellScoreThreshold
+    if (typeof options.sellThreshold === 'number') {
+      mapped.sellScoreThreshold = options.sellThreshold;
+    }
+    if (typeof options.sellScoreThreshold === 'number') {
+      mapped.sellScoreThreshold = options.sellScoreThreshold;
+    }
+    
+    // stopLossPct: Strategy تُمرّر موجباً (0.10) لكن config يحتاجها سالبة (-0.10)
+    if (typeof options.stopLossPct === 'number') {
+      var sl = options.stopLossPct;
+      mapped.stopLossPct = sl > 0 ? -sl : sl;
+    }
+    
+    // takeProfitPct
+    if (typeof options.takeProfitPct === 'number') {
+      mapped.takeProfitPct = options.takeProfitPct;
+    }
+    
+    // maxHoldDays
+    if (typeof options.maxHoldDays === 'number') {
+      mapped.maxHoldDays = options.maxHoldDays;
+    }
+    
+    // maxPositions
+    if (typeof options.maxPositions === 'number') {
+      mapped.maxPositions = options.maxPositions;
+    }
+    
+    // maxPositionPct → maxPositionWeight (Strategy Lab uses maxPositionPct)
+    if (typeof options.maxPositionPct === 'number') {
+      mapped.maxPositionWeight = options.maxPositionPct;
+    }
+    if (typeof options.maxPositionWeight === 'number') {
+      mapped.maxPositionWeight = options.maxPositionWeight;
+    }
+    
+    // ندمج المُطابق مع options الأصلية
+    normalizedOptions = Object.assign({}, options, mapped);
+  }
+  
+  var config = Object.assign({}, STRATEGY_DEFAULTS, normalizedOptions);
   var lastRebalanceDay = 0;
   var marketRegime = 'bull'; // bull / bear / neutral
   var _macroOverride = macroOverride || null;
+  // 🆕 weights override لـ Strategy Lab
+  var _weightsOverride = weightsOverride || null;
 
   return {
     name: 'Tadawul Layers-9 Strategy',
