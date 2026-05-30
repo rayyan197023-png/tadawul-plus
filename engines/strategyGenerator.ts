@@ -157,11 +157,11 @@ const SPECULATIVE_RANGES: TypeRanges = {
     L8: { min: 0.05, max: 0.12 },
     L9: { min: 0.15, max: 0.25 },   // السيولة الأهمّ
   },
-  buyThreshold: { min: 60, max: 73 },
+  buyThreshold: { min: 50, max: 65 },   // 🆕
   sellThreshold: { min: 40, max: 52 },
   stopLossPct: { min: 0.08, max: 0.15 },
   takeProfitPct: { min: 0.15, max: 0.40 },
-  maxHoldDays: { min: 15, max: 60 },          // أقصر
+  maxHoldDays: { min: 10, max: 60 },    // 🆕
   maxPositions: { min: 4, max: 10 },
   maxPositionPct: { min: 0.08, max: 0.15 },
 };
