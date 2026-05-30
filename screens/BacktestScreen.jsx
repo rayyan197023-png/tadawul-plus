@@ -385,23 +385,23 @@ export default function BacktestScreen() {
         comparison = compareWithBenchmark(result, benchmark);
       }
       
-      // إرجاع BacktestMetrics
-      var m = result.metrics || {};
+      // إرجاع BacktestMetrics (نقرأ من result.performance -- البنية الصحيحة)
+      var p = result.performance || {};
       return {
-        annualReturn: typeof m.annualReturn === 'number' ? m.annualReturn : 0,
-        totalReturn: typeof m.totalReturn === 'number' ? m.totalReturn : 0,
-        sharpe: typeof m.sharpe === 'number' ? m.sharpe : 0,
-        sortino: typeof m.sortino === 'number' ? m.sortino : 0,
-        maxDrawdown: typeof m.maxDrawdown === 'number' ? m.maxDrawdown : 0,
-        winRate: typeof m.winRate === 'number' ? m.winRate : 0,
-        totalTrades: typeof m.totalTrades === 'number' ? m.totalTrades : 0,
-        closedTrades: typeof m.closedTrades === 'number' ? m.closedTrades : (m.winningTrades || 0) + (m.losingTrades || 0),
-        winningTrades: typeof m.winningTrades === 'number' ? m.winningTrades : 0,
-        losingTrades: typeof m.losingTrades === 'number' ? m.losingTrades : 0,
-        avgWin: typeof m.avgWin === 'number' ? m.avgWin : 0,
-        avgLoss: typeof m.avgLoss === 'number' ? m.avgLoss : 0,
-        profitFactor: typeof m.profitFactor === 'number' ? m.profitFactor : 0,
-        volatility: typeof m.volatility === 'number' ? m.volatility : 0,
+        annualReturn: typeof p.annualReturn === 'number' ? p.annualReturn : 0,
+        totalReturn: typeof p.totalReturn === 'number' ? p.totalReturn : 0,
+        sharpe: typeof p.sharpe === 'number' ? p.sharpe : 0,
+        sortino: typeof p.sortino === 'number' ? p.sortino : 0,
+        maxDrawdown: typeof p.maxDrawdown === 'number' ? p.maxDrawdown : 0,
+        winRate: typeof p.winRate === 'number' ? p.winRate : 0,
+        totalTrades: typeof p.totalTrades === 'number' ? p.totalTrades : (result.tradeCount || 0),
+        closedTrades: typeof p.closedTrades === 'number' ? p.closedTrades : (p.winningTrades || 0) + (p.losingTrades || 0),
+        winningTrades: typeof p.winningTrades === 'number' ? p.winningTrades : 0,
+        losingTrades: typeof p.losingTrades === 'number' ? p.losingTrades : 0,
+        avgWin: typeof p.avgWin === 'number' ? p.avgWin : 0,
+        avgLoss: typeof p.avgLoss === 'number' ? p.avgLoss : 0,
+        profitFactor: typeof p.profitFactor === 'number' ? p.profitFactor : 0,
+        volatility: typeof p.volatility === 'number' ? p.volatility : 0,
         alpha: comparison ? (comparison.alphaAnnual || comparison.alpha || 0) : 0,
       };
     } catch (e) {
