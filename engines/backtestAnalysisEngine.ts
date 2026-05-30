@@ -996,6 +996,23 @@ function detectMarketRegime(bars: any[], adxV: number, mktWtd: number, mktBreadt
 }
 
 function buildDynamicWeights(regime: string, sector: string): any {
+  // 🆕 إن وُجد override من Strategy Lab، نستعمله مباشرة
+  if (WEIGHTS_OVERRIDE) {
+    const w: any = {};
+    const keys = ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'L9'];
+    let total = 0;
+    keys.forEach(k => {
+      w[k] = WEIGHTS_OVERRIDE[k] || 0.111;
+      total += w[k];
+    });
+    if (total > 0) {
+      keys.forEach(k => {
+        w[k] = +(w[k] / total).toFixed(4);
+      });
+    }
+    return w;
+  }
+  
   const BASE: any = {
     L9: 0.20, L1: 0.20, L5: 0.20,
     L4: 0.15, L8: 0.15,
