@@ -182,13 +182,13 @@ const EXPLOSIVE_RANGES: TypeRanges = {
     L8: { min: 0.02, max: 0.08 },   // Fundamentals أقلّ أهمية
     L9: { min: 0.20, max: 0.35 },   // السيولة كل شيء
   },
-  buyThreshold: { min: 58, max: 72 },         // أكثر مرونة
+  buyThreshold: { min: 48, max: 65 },   // 🆕
   sellThreshold: { min: 42, max: 55 },
-  stopLossPct: { min: 0.12, max: 0.25 },     // واسع جداً
-  takeProfitPct: { min: 0.30, max: 0.80 },   // أهداف كبيرة جداً
-  maxHoldDays: { min: 10, max: 45 },          // قصير جداً
+  stopLossPct: { min: 0.12, max: 0.25 },
+  takeProfitPct: { min: 0.30, max: 0.80 },
+  maxHoldDays: { min: 7, max: 45 },     // 🆕
   maxPositions: { min: 3, max: 8 },
-  maxPositionPct: { min: 0.05, max: 0.12 },  // حجم أصغر (مخاطرة أعلى)
+  maxPositionPct: { min: 0.05, max: 0.12 },
 };
 
 /**
