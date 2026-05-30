@@ -207,11 +207,11 @@ const MIDCAP_RANGES: TypeRanges = {
     L8: { min: 0.06, max: 0.15 },
     L9: { min: 0.12, max: 0.22 },
   },
-  buyThreshold: { min: 62, max: 75 },
+  buyThreshold: { min: 52, max: 68 },   // 🆕
   sellThreshold: { min: 38, max: 50 },
   stopLossPct: { min: 0.07, max: 0.13 },
   takeProfitPct: { min: 0.15, max: 0.35 },
-  maxHoldDays: { min: 30, max: 100 },
+  maxHoldDays: { min: 15, max: 100 },   // 🆕
   maxPositions: { min: 4, max: 10 },
   maxPositionPct: { min: 0.08, max: 0.15 },
 };
