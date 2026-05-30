@@ -317,6 +317,24 @@ export default function BacktestScreen() {
         includeCosts: true,
       });
       
+      // 🐛 تشخيص: عرض تفاصيل أوّل باك-تيست
+      if (!window._labDebugShown) {
+        window._labDebugShown = true;
+        var debugInfo = '';
+        debugInfo += 'success: ' + (result ? result.success : 'NO RESULT') + '\n';
+        if (result && result.metrics) {
+          debugInfo += 'totalTrades: ' + result.metrics.totalTrades + '\n';
+          debugInfo += 'closedTrades: ' + result.metrics.closedTrades + '\n';
+          debugInfo += 'winRate: ' + result.metrics.winRate + '\n';
+          debugInfo += 'annualReturn: ' + result.metrics.annualReturn + '\n';
+        }
+        debugInfo += 'data.length: ' + historicalData.length + '\n';
+        debugInfo += 'strategy.params: ' + JSON.stringify(strategy.params) + '\n';
+        try {
+          alert('🐛 FIRST BACKTEST DEBUG:\n\n' + debugInfo);
+        } catch(_) {}
+      }
+      
       if (!result || !result.success) return null;
       
       // benchmark (للـ Alpha)
