@@ -131,11 +131,11 @@ const GROWTH_RANGES: TypeRanges = {
     L8: { min: 0.08, max: 0.18 },
     L9: { min: 0.10, max: 0.20 },
   },
-  buyThreshold: { min: 62, max: 75 },
+    buyThreshold: { min: 52, max: 68 },   // 🆕
   sellThreshold: { min: 38, max: 50 },
   stopLossPct: { min: 0.08, max: 0.15 },
-  takeProfitPct: { min: 0.20, max: 0.50 },   // أهداف أكبر
-  maxHoldDays: { min: 30, max: 120 },
+  takeProfitPct: { min: 0.20, max: 0.50 },
+  maxHoldDays: { min: 20, max: 120 },   // 🆕
   maxPositions: { min: 4, max: 8 },
   maxPositionPct: { min: 0.10, max: 0.18 },
 };
