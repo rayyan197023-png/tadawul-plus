@@ -593,7 +593,11 @@ function ResultsPhase({ C, result, onApply, onRestart }) {
       <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
         {hasWinner && (
           <button
-            onClick={() => onApply(result.winner)}
+            onClick={() => onApply({
+              winner: result.winner,
+              winnerFitness: result.winnerFitness,
+              testResults: result.testResults,
+            })}
             style={{
               flex: 1,
               padding: '12px',
