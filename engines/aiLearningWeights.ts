@@ -193,12 +193,25 @@ export function generateAnchorFromAILearning(): StrategyWeights | null {
     (s: number, lay: any) => s + (lay.total || 0), 
     0
   );
+  const totalCorrect = Object.values(stats).reduce(
+    (s: number, lay: any) => s + (lay.correct || 0),
+    0
+  );
   
   if (totalTrades < MIN_TRADES_FOR_RELIABILITY * 5) {
     // أقلّ من 100 صفقة → لا نثق بعد
     return null;
   }
   
+  // 🆕 شرط الدقّة: لا نستعمل Anchor إلا إن كانت الدقّة الإجمالية ≥ 40%
+  // السبب العلميّ: Anchor من بيانات ضعيفة يُضلّل بدل أن يُساعد
+  const overallAccuracy = totalTrades > 0 ? totalCorrect / totalTrades : 0;
+  if (overallAccuracy < 0.40) {
+    console.log('[Anchor] Disabled: accuracy ' + (overallAccuracy * 100).toFixed(1) + '% < 40% threshold');
+    return null;
+  }
+  
+  console.log('[Anchor] Enabled: accuracy ' + (overallAccuracy * 100).toFixed(1) + '%');
   const weights = statsToWeights(stats);
   
   return weights;
