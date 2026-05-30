@@ -254,6 +254,15 @@ export default function BacktestScreen() {
         monteCarlo: monteCarloResult,
         modeLabel: modeLabel,
       });
+      
+      // 🆕 حفظ البيانات لاستعمالها في Strategy Lab
+      if (historicalData && historicalData.length > 0) {
+        setLabHistoricalData(historicalData);
+        setLabDataInfo({
+          years: +(config.days / 252).toFixed(1),
+          days: historicalData.length,
+        });
+      }
     } catch (err) {
       console.error('Backtest error:', err);
       setResults({ error: err.message || 'حدث خطأ أثناء التشغيل' });
