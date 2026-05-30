@@ -4705,6 +4705,91 @@ function calcConfidenceThreshold(score: number, layers: any, ensemble: any, conf
    مبدأ: الطبقات التي أثبتت دقتها تحصل على وزن أعلى
    التخزين: sessionStorage (مؤقت، يُصفَّر بكل جلسة)
 ══════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   ⭐ Strategy Lab Winner Integration -- مزج 70/30
+   ─────────────────────────────────────────────────────────────
+   عندما يُكتشف Winner من Strategy Lab، نمزج أوزانه مع الأوزان
+   الأصلية لـ analysisEngine بنسبة 70% فائز + 30% أصلي.
+   
+   هذا يحقّق:
+   ✓ منع الانهيار المفاجئ إن كان الفائز سيئاً
+   ✓ الانتقال التدريجي بدل القفزات
+   ✓ التوافق مع AI Learning (يأتي بعد هذا الـ blend)
+══════════════════════════════════════════════════════════════ */
+
+const WINNER_STORE_KEY = 'tdw_winning_strategy';
+const WINNER_BLEND_RATIO = 0.70;  // 70% فائز، 30% أصلي
+
+/**
+ * 🏆 تحميل Winner من localStorage
+ * يُرجع null إن لم يوجد فائز محفوظ.
+ */
+function loadWinnerStrategy(): any {
+  try {
+    if (typeof localStorage === 'undefined') return null;
+    const raw = localStorage.getItem(WINNER_STORE_KEY);
+    if (!raw) return null;
+    const winner = JSON.parse(raw);
+    
+    // التحقّق من البنية
+    if (!winner || !winner.weights) return null;
+    
+    const w = winner.weights;
+    // يجب أن تحوي L1-L9
+    if (typeof w.L1 !== 'number' || typeof w.L9 !== 'number') return null;
+    
+    return winner;
+  } catch (e) {
+    console.warn('[Winner] Load failed:', e);
+    return null;
+  }
+}
+
+/**
+ * 🎯 تطبيق أوزان Winner على WC بمزج 70/30
+ * 
+ * @param WC - الأوزان الأصلية (بعد Correlation Reduction)
+ * @param winner - كائن Winner من localStorage
+ * @returns WC جديد مع المزج
+ */
+function applyWinnerWeights(WC: any, winner: any): any {
+  if (!winner || !winner.weights) return WC;
+  
+  const wWinner = winner.weights;
+  const result: any = {};
+  const keys = ['L1','L2','L3','L4','L5','L6','L7','L8','L9'];
+  
+  // مزج 70% فائز + 30% أصلي
+  keys.forEach(k => {
+    const winnerW = typeof wWinner[k] === 'number' ? wWinner[k] : (WC[k] || 0.11);
+    const originalW = WC[k] || 0.11;
+    result[k] = WINNER_BLEND_RATIO * winnerW + (1 - WINNER_BLEND_RATIO) * originalW;
+  });
+  
+  // إعادة التطبيع لـ Σ = 1
+  const total = keys.reduce((s, k) => s + result[k], 0);
+  if (total > 0) {
+    keys.forEach(k => {
+      result[k] = +(result[k] / total).toFixed(4);
+    });
+  }
+  
+  // L10 (إن كان موجوداً) يبقى كما هو
+  if (WC.L10 !== undefined) {
+    result.L10 = WC.L10;
+  }
+  
+  // إضافة meta للتشخيص
+  (result as any).__winnerMeta = {
+    applied: true,
+    winnerId: winner.targetType || 'unknown',
+    appliedAt: winner.appliedAt || null,
+    blendRatio: WINNER_BLEND_RATIO,
+  };
+  
+  return result;
+}
+
 const FEEDBACK_STORE_KEY = 'tdw_feedback_state';
 
 /**
