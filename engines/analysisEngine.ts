@@ -5089,9 +5089,16 @@ function recordFeedback(sym: string, signal: any, layers: any, actualOutcome: an
 
 /* ══ applyFeedbackToWeights: تطبيق الضبط التكيّفي مع ABM ══ */
 function applyFeedbackToWeights(WC: any, sym: string, currentRegime?: string): any {
+  // ⭐ STEP 0: تطبيق Winner من Strategy Lab أوّلاً (إن وُجد)
+  const winner = loadWinnerStrategy();
+  if (winner) {
+    WC = applyWinnerWeights(WC, winner);
+  }
+  
+  // STEP 1: AI Learning يأتي فوق الـ blend
   const adj = getAdaptiveWeightAdjustment(sym, currentRegime);
 
-  if (!adj) return WC; // لا تاريخ كافٍ → الأوزان كما هي
+  if (!adj) return WC; // لا تاريخ كافٍ → نُرجع WC (الذي قد يحوي blend الفائز)
   
   const result = { ...WC };
   const keys = Object.keys(result);
