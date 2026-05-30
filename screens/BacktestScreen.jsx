@@ -270,6 +270,106 @@ export default function BacktestScreen() {
       setIsRunning(false);
     }
   }
+  
+  // ════════════════════════════════════════════════════════════
+  // 🆕 runBacktestForLab - دالة باك-تيست خاصّة بـ Strategy Lab
+  // تأخذ Strategy + Data وتُرجع BacktestMetrics
+  // ════════════════════════════════════════════════════════════
+  async function runBacktestForLab(strategy, historicalData) {
+    try {
+      // جلب FRED Macro
+      var fredMacro = null;
+      try {
+        var fredRes = await fetch('/api/freddata');
+        if (fredRes.ok) {
+          var fredData = await fredRes.json();
+          if (fredData && (typeof fredData.oilPrice === 'number' || typeof fredData.vix === 'number')) {
+            fredMacro = fredData;
+          }
+        }
+      } catch(e) {}
+      
+      // wrapper للمحرّك
+      var wrapper = function(stk, bars, allStocks, macro, weightsOv) {
+        return backtestStockHealth(stk, bars, allStocks, macro, weightsOv);
+      };
+      
+      // خريطة المعاملات من Strategy
+      var options = {
+        buyThreshold: strategy.params.buyThreshold,
+        sellThreshold: strategy.params.sellThreshold,
+        stopLossPct: strategy.params.stopLossPct,
+        takeProfitPct: strategy.params.takeProfitPct,
+        maxHoldDays: strategy.params.maxHoldDays,
+        maxPositions: strategy.params.maxPositions,
+        maxPositionPct: strategy.params.maxPositionPct,
+      };
+      
+      // أوزان Strategy
+      var weightsOverride = strategy.weights;
+      
+      // إنشاء استراتيجية مع المعاملات + الأوزان
+      var labStrategy = createTadawulStrategy(wrapper, options, fredMacro, weightsOverride);
+      
+      // تشغيل الباك-تيست
+      var result = backtest(labStrategy, historicalData, {
+        initialCapital: 100000,
+        includeCosts: true,
+      });
+      
+      if (!result || !result.success) return null;
+      
+      // benchmark (للـ Alpha)
+      var benchSymbols = historicalData[0].stocksData.slice(0, 5).map(function(s) { return s.sym; });
+      var benchmark = backtest(
+        createBuyAndHoldStrategy(benchSymbols),
+        historicalData,
+        { initialCapital: 100000, includeCosts: true }
+      );
+      
+      var comparison = null;
+      if (result.success && benchmark.success) {
+        comparison = compareWithBenchmark(result, benchmark);
+      }
+      
+      // إرجاع BacktestMetrics
+      var m = result.metrics || {};
+      return {
+        annualReturn: typeof m.annualReturn === 'number' ? m.annualReturn : 0,
+        totalReturn: typeof m.totalReturn === 'number' ? m.totalReturn : 0,
+        sharpe: typeof m.sharpe === 'number' ? m.sharpe : 0,
+        sortino: typeof m.sortino === 'number' ? m.sortino : 0,
+        maxDrawdown: typeof m.maxDrawdown === 'number' ? m.maxDrawdown : 0,
+        winRate: typeof m.winRate === 'number' ? m.winRate : 0,
+        totalTrades: typeof m.totalTrades === 'number' ? m.totalTrades : 0,
+        closedTrades: typeof m.closedTrades === 'number' ? m.closedTrades : (m.winningTrades || 0) + (m.losingTrades || 0),
+        winningTrades: typeof m.winningTrades === 'number' ? m.winningTrades : 0,
+        losingTrades: typeof m.losingTrades === 'number' ? m.losingTrades : 0,
+        avgWin: typeof m.avgWin === 'number' ? m.avgWin : 0,
+        avgLoss: typeof m.avgLoss === 'number' ? m.avgLoss : 0,
+        profitFactor: typeof m.profitFactor === 'number' ? m.profitFactor : 0,
+        volatility: typeof m.volatility === 'number' ? m.volatility : 0,
+        alpha: comparison ? (comparison.alphaAnnual || comparison.alpha || 0) : 0,
+      };
+    } catch (e) {
+      console.error('[runBacktestForLab]', e);
+      return null;
+    }
+  }
+  
+  // ════════════════════════════════════════════════════════════
+  // 🆕 تطبيق الفائز على التحليل الحيّ
+  // ════════════════════════════════════════════════════════════
+  function handleApplyWinner(winner) {
+    try {
+      localStorage.setItem('tdw_winning_strategy', JSON.stringify({
+        weights: winner.weights,
+        params: winner.params,
+        targetType: winner.targetType,
+        appliedAt: Date.now(),
+      }));
+    } catch (e) {}
+  }
 
   return (
     <div style={{
