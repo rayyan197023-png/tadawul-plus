@@ -680,16 +680,18 @@ function estimateRemainingTime(
 function createFailedResult(
   config: LabConfig,
   startedAt: number,
-  errors: string[]
+  errors: string[],
+  totalBacktests: number = 0,
+  trainResults: GenerationResult[] = []
 ): LabResult {
   return {
     success: false,
     config,
-    trainResults: [],
+    trainResults,
     testResults: [],
     winner: null,
     winnerFitness: null,
-    totalBacktests: 0,
+    totalBacktests,
     totalErrors: errors.length,
     totalDurationMs: Date.now() - startedAt,
     startedAt,
