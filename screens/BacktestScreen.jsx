@@ -412,11 +412,22 @@ export default function BacktestScreen() {
       }
       
       // ① استخراج البيانات من winnerData
-      // قد تأتي بصيغة { strategy, testFitness } من StrategyLabTab
-      // أو بصيغة Strategy مباشرة (للتوافق مع النسخة القديمة)
-      var strategy = winnerData.strategy || winnerData;
-      var testResult = winnerData.testFitness || null;
+      // الصيغة الجديدة: { winner, winnerFitness, testResults }
+      var strategy = winnerData.winner || winnerData.strategy || winnerData;
+      var testResult = winnerData.winnerFitness || winnerData.testFitness || null;
       
+      // 🆕 استخراج overfitting من testResults
+      var overfittingScore = 0;
+      if (winnerData.testResults && winnerData.testResults.length > 0) {
+        // ابحث عن testResult المُطابق للـ winner
+        var matched = winnerData.testResults.find(function(t) {
+          return t.strategy && t.strategy.id === strategy.id;
+        });
+        if (matched && typeof matched.overfittingScore === 'number') {
+          overfittingScore = matched.overfittingScore;
+        }
+      }
+     
       // ② بناء WinnerMetrics
       var metrics = {
         cagr: 0,
