@@ -364,6 +364,33 @@ export default function BacktestScreen() {
   // ════════════════════════════════════════════════════════════
   async function handleApplyWinner(winnerData) {
     try {
+      // 🐛 DIAGNOSTIC: عرض بنية winnerData كاملة
+      try {
+        var debugInfo = '🔍 WINNER DATA STRUCTURE:\n\n';
+        debugInfo += 'keys: ' + Object.keys(winnerData || {}).join(', ') + '\n\n';
+        
+        if (winnerData && winnerData.strategy) {
+          debugInfo += 'strategy keys: ' + Object.keys(winnerData.strategy).join(', ') + '\n\n';
+        }
+        
+        if (winnerData && winnerData.testFitness) {
+          debugInfo += 'testFitness keys: ' + Object.keys(winnerData.testFitness).join(', ') + '\n';
+          debugInfo += 'testFitness.fitness: ' + winnerData.testFitness.fitness + '\n';
+          
+          if (winnerData.testFitness.metrics) {
+            debugInfo += '\ntestFitness.metrics keys: ' + Object.keys(winnerData.testFitness.metrics).join(', ') + '\n';
+            var tm = winnerData.testFitness.metrics;
+            debugInfo += 'cagr: ' + tm.cagr + '\n';
+            debugInfo += 'alpha: ' + tm.alpha + '\n';
+            debugInfo += 'maxDD: ' + tm.maxDD + '\n';
+            debugInfo += 'winRate: ' + tm.winRate + '\n';
+            debugInfo += 'closedTrades: ' + tm.closedTrades + '\n';
+          }
+        }
+        
+        alert(debugInfo);
+      } catch(_) {}
+      
       // ① استخراج البيانات من winnerData
       // قد تأتي بصيغة { strategy, testFitness } من StrategyLabTab
       // أو بصيغة Strategy مباشرة (للتوافق مع النسخة القديمة)
