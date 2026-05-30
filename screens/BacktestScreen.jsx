@@ -132,6 +132,19 @@ var [config, setConfig] = useState({
       } catch(fredErr) {
         // FRED غير متاح - نتابع بقيم MACRO الافتراضية
       }
+        // 🆕 قراءة Winner المُطبَّق (إن وُجد وكان الخيار مُفعَّلاً)
+      var activeWinnerWeights = null;
+      if (config.useWinner) {
+        try {
+          var currentWinner = loadCurrentWinner();
+          if (currentWinner && currentWinner.weights) {
+            activeWinnerWeights = currentWinner.weights;
+            console.log('[Backtest] Using applied Winner (Score: ' + currentWinner.score + ')');
+          }
+        } catch(e) {
+          console.warn('[Backtest] Failed to load Winner:', e);
+        }
+      }    
       if (config.mode === 'portfolio') {
         if (!hasPortfolio) {
           setResults({ error: 'المحفظة فارغة! أضف أسهماً أولاً.' });
