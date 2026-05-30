@@ -553,6 +553,42 @@ function ResultsPhase({ C, result, onApply, onRestart }) {
         </div>
       )}
       
+      {/* ═══ 🆕 الأخطاء (للتشخيص) ═══ */}
+      {result.errors && result.errors.length > 0 && (
+        <div style={{
+          background: 'rgba(240,79,90,0.10)',
+          border: '1px solid rgba(240,79,90,0.30)',
+          borderRadius: 12,
+          padding: '10px 14px',
+          marginTop: 14,
+          marginBottom: 14,
+        }}>
+          <div style={{ fontSize: 10, color: '#f04f5a', fontWeight: 700, marginBottom: 6 }}>
+            🐛 الأخطاء (للتشخيص):
+          </div>
+          {result.errors.slice(0, 5).map((e, i) => (
+            <div key={i} style={{
+              fontSize: 9,
+              color: '#ffb0b6',
+              marginBottom: 4,
+              lineHeight: 1.5,
+              fontFamily: 'monospace',
+              background: 'rgba(0,0,0,0.2)',
+              padding: '4px 6px',
+              borderRadius: 4,
+              wordBreak: 'break-word',
+            }}>
+              {e}
+            </div>
+          ))}
+          {result.errors.length > 5 && (
+            <div style={{ fontSize: 9, color: '#90a4c8', marginTop: 4 }}>
+              ... و {result.errors.length - 5} أخطاء أخرى
+            </div>
+          )}
+        </div>
+      )}
+      
       {/* ═══ الأزرار ═══ */}
       <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
         {hasWinner && (
