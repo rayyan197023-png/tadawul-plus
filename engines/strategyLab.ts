@@ -500,9 +500,14 @@ export async function runStrategyLab(
   const top3 = rankByFitness(allTrained).slice(0, 3);
   
   if (top3.length === 0) {
-    return createFailedResult(config, startedAt, [
-      'لا توجد استراتيجيات صالحة بعد التدريب'
-    ]);
+    // 🆕 احفظ كل الأخطاء التفصيلية للتشخيص
+    const allErrors = ['لا توجد استراتيجيات صالحة بعد التدريب'];
+    if (errors.length > 0) {
+      allErrors.push(`عدد الأخطاء الفعلية: ${errors.length}`);
+      // أوّل 5 أخطاء فقط
+      errors.slice(0, 5).forEach(e => allErrors.push(e));
+    }
+    return createFailedResult(config, startedAt, allErrors);
   }
   
   // ───────────────────────────────────────
