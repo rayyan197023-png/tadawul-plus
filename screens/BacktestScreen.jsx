@@ -364,10 +364,52 @@ export default function BacktestScreen() {
   // ════════════════════════════════════════════════════════════
   async function handleApplyWinner(winnerData) {
     try {
-      // 🐛 DIAGNOSTIC: عرض بنية winnerData كاملة
+      // 🐛 DIAGNOSTIC v3: عرض backtestResult بدقّة
       try {
-        var debugInfo = '🔍 WINNER DATA STRUCTURE:\n\n';
-        debugInfo += 'keys: ' + Object.keys(winnerData || {}).join(', ') + '\n\n';
+        var debugInfo = '🔍 DEEP STRUCTURE:\n\n';
+        debugInfo += 'fitness=' + winnerData.fitness + '\n\n';
+        
+        if (winnerData.backtestResult) {
+          debugInfo += 'bR keys: ' + Object.keys(winnerData.backtestResult).join(', ') + '\n\n';
+          
+          if (winnerData.backtestResult.fitness) {
+            debugInfo += 'bR.fitness keys: ' + Object.keys(winnerData.backtestResult.fitness).join(', ') + '\n';
+            var bf = winnerData.backtestResult.fitness;
+            debugInfo += '  fitness=' + bf.fitness + '\n';
+            debugInfo += '  tier=' + bf.tier + '\n\n';
+            
+            if (bf.metrics) {
+              debugInfo += 'bR.fitness.metrics keys: ' + Object.keys(bf.metrics).join(', ') + '\n';
+              var bfm = bf.metrics;
+              debugInfo += '  cagr=' + bfm.cagr + '\n';
+              debugInfo += '  annualReturn=' + bfm.annualReturn + '\n';
+              debugInfo += '  alpha=' + bfm.alpha + '\n';
+              debugInfo += '  maxDD=' + bfm.maxDD + '\n';
+              debugInfo += '  maxDrawdown=' + bfm.maxDrawdown + '\n';
+              debugInfo += '  winRate=' + bfm.winRate + '\n';
+              debugInfo += '  closedTrades=' + bfm.closedTrades + '\n';
+              debugInfo += '  totalTrades=' + bfm.totalTrades + '\n';
+              debugInfo += '  sortino=' + bfm.sortino + '\n';
+            }
+          }
+          
+          if (winnerData.backtestResult.metrics) {
+            debugInfo += '\nbR.metrics keys: ' + Object.keys(winnerData.backtestResult.metrics).join(', ') + '\n';
+            var bm = winnerData.backtestResult.metrics;
+            debugInfo += '  cagr=' + bm.cagr + '\n';
+            debugInfo += '  alpha=' + bm.alpha + '\n';
+            debugInfo += '  maxDD=' + bm.maxDD + '\n';
+            debugInfo += '  winRate=' + bm.winRate + '\n';
+            debugInfo += '  closedTrades=' + bm.closedTrades + '\n';
+          }
+        } else {
+          debugInfo += 'NO backtestResult!\n';
+        }
+        
+        alert(debugInfo);
+      } catch(e) {
+        try { alert('DBG ERR: ' + (e.message || e)); } catch(_) {}
+      }
         
         if (winnerData && winnerData.strategy) {
           debugInfo += 'strategy keys: ' + Object.keys(winnerData.strategy).join(', ') + '\n\n';
