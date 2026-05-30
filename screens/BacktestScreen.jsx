@@ -96,6 +96,11 @@ export default function BacktestScreen() {
 
   var [isRunning, setIsRunning] = useState(false);
   var [results, setResults] = useState(null);
+  
+  // 🆕 Strategy Lab state
+  var [activeTab, setActiveTab] = useState('run'); // 'run' | 'lab'
+  var [labHistoricalData, setLabHistoricalData] = useState(null);
+  var [labDataInfo, setLabDataInfo] = useState(null);
 
   var hasPortfolio = positions && positions.length > 0;
 
