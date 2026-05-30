@@ -410,28 +410,6 @@ export default function BacktestScreen() {
       } catch(e) {
         try { alert('DBG ERR: ' + (e.message || e)); } catch(_) {}
       }
-        
-        if (winnerData && winnerData.strategy) {
-          debugInfo += 'strategy keys: ' + Object.keys(winnerData.strategy).join(', ') + '\n\n';
-        }
-        
-        if (winnerData && winnerData.testFitness) {
-          debugInfo += 'testFitness keys: ' + Object.keys(winnerData.testFitness).join(', ') + '\n';
-          debugInfo += 'testFitness.fitness: ' + winnerData.testFitness.fitness + '\n';
-          
-          if (winnerData.testFitness.metrics) {
-            debugInfo += '\ntestFitness.metrics keys: ' + Object.keys(winnerData.testFitness.metrics).join(', ') + '\n';
-            var tm = winnerData.testFitness.metrics;
-            debugInfo += 'cagr: ' + tm.cagr + '\n';
-            debugInfo += 'alpha: ' + tm.alpha + '\n';
-            debugInfo += 'maxDD: ' + tm.maxDD + '\n';
-            debugInfo += 'winRate: ' + tm.winRate + '\n';
-            debugInfo += 'closedTrades: ' + tm.closedTrades + '\n';
-          }
-        }
-        
-        alert(debugInfo);
-      } catch(_) {}
       
       // ① استخراج البيانات من winnerData
       // قد تأتي بصيغة { strategy, testFitness } من StrategyLabTab
