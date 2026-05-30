@@ -322,16 +322,35 @@ export default function BacktestScreen() {
         window._labDebugShown = true;
         var debugInfo = '';
         debugInfo += 'success: ' + (result ? result.success : 'NO RESULT') + '\n';
-        if (result && result.metrics) {
-          debugInfo += 'totalTrades: ' + result.metrics.totalTrades + '\n';
-          debugInfo += 'closedTrades: ' + result.metrics.closedTrades + '\n';
-          debugInfo += 'winRate: ' + result.metrics.winRate + '\n';
-          debugInfo += 'annualReturn: ' + result.metrics.annualReturn + '\n';
+        debugInfo += 'has metrics: ' + (result && result.metrics ? 'YES' : 'NO') + '\n';
+        
+        // كل المفاتيح في result
+        if (result) {
+          debugInfo += '\nresult keys: ' + Object.keys(result).join(', ') + '\n';
         }
-        debugInfo += 'data.length: ' + historicalData.length + '\n';
+        
+        // كل المفاتيح في result.metrics
+        if (result && result.metrics) {
+          debugInfo += '\nmetrics keys: ' + Object.keys(result.metrics).join(', ') + '\n';
+          // قيم محتملة للصفقات
+          debugInfo += '\nمعلومات الصفقات:\n';
+          debugInfo += '  totalTrades: ' + result.metrics.totalTrades + '\n';
+          debugInfo += '  closedTrades: ' + result.metrics.closedTrades + '\n';
+          debugInfo += '  winningTrades: ' + result.metrics.winningTrades + '\n';
+          debugInfo += '  losingTrades: ' + result.metrics.losingTrades + '\n';
+          debugInfo += '  trades: ' + (result.metrics.trades ? 'array(' + result.metrics.trades.length + ')' : 'undef') + '\n';
+        }
+        
+        // إن trades مباشرة على result
+        if (result && result.trades) {
+          debugInfo += '\nresult.trades: array(' + result.trades.length + ')\n';
+        }
+        
+        debugInfo += '\ndata.length: ' + historicalData.length + '\n';
         debugInfo += 'strategy.params: ' + JSON.stringify(strategy.params) + '\n';
+        
         try {
-          alert('🐛 FIRST BACKTEST DEBUG:\n\n' + debugInfo);
+          alert('🐛 DEBUG v2:\n\n' + debugInfo);
         } catch(_) {}
       }
       
