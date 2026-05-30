@@ -153,7 +153,7 @@ export const MODE_CONFIGS: Record<LabMode, Omit<LabConfig, 'targetType'>> = {
     minTradesRequired: 2,      // 🆕 خُفّض ليُتيح أيّ نشاط
     abortOnError: false,
   },
-  deep: {
+  deep: { 
     mode: 'deep',
     generations: 5,
     populationSize: 20,
