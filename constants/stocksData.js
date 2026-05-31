@@ -430,6 +430,12 @@ export const STOCK_CATEGORIES = {
 export function getStocksByCategory(categoryId) {
   const category = STOCK_CATEGORIES[categoryId];
   if (!category) return [];
+  
+  // الفئة المتنوّعة تستعمل buildDiverseUniverse
+  if (categoryId === 'diverse') {
+    return buildDiverseUniverse();
+  }
+  
   return STOCKS.filter(category.filter);
 }
 
