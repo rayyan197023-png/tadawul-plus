@@ -1,22 +1,110 @@
 'use client';
 /**
  * @module tadawulStrategy
- * @description استراتيجية الطبقات التسع للتداول
+ * @description استراتيجية الطبقات التسع للتداول مع Adaptive Personality
  * 
  * المنهجية:
  * ① تحليل الطبقات التسع لكل سهم
- * ② اختيار الأسهم ذات Health Score > 70
- * ③ إدارة المخاطر (Stop Loss, Take Profit)
- * ④ Rebalancing دوري
- * ⑤ تنويع تلقائي (max 20% per stock)
+ * ② كشف شخصيّة السهم (Adaptive)
+ * ③ تكييف params لكل سهم حسب شخصيّته
+ * ④ اختيار الأسهم ذات Health Score > threshold
+ * ⑤ إدارة المخاطر المُكيَّفة
  * 
  * @author تداول+
- * @version 1.0
+ * @version 2.0 (Adaptive)
  */
 
+import { detectStockPersonality } from './stockPersonality';
+
+// ════════════════════════════════════════════════════════════
+//  🆕 ADAPTIVE PARAMS MULTIPLIERS
+// ════════════════════════════════════════════════════════════
+
 /**
- * إعدادات الاستراتيجية
+ * مُضاعفات تكييف الـ params حسب الشخصيّة
+ * المرجع العلميّ:
+ *  - LEADER:      Low-Vol anomaly (Blitz 2014)
+ *  - VALUE:       Fama-French HML (1992)
+ *  - DIVIDEND:    Income investing
+ *  - TURNAROUND:  Earnings momentum (Bernard 1989)
+ *  - SPECULATIVE: Lottery preferences (Kumar 2009)
  */
+const PERSONALITY_ADJUSTMENTS = {
+  LEADER: {
+    buyThresholdDelta: +3,      // أكثر تحفّظاً
+    stopLossMultiplier: 1.3,    // stop واسع
+    takeProfitMultiplier: 0.7,  // أهداف معقولة
+    maxHoldMultiplier: 1.5,     // صبر أطول
+    label: '🏛 قيادي - استثمار طويل',
+  },
+  GROWTH: {
+    buyThresholdDelta: 0,
+    stopLossMultiplier: 1.0,
+    takeProfitMultiplier: 1.2,
+    maxHoldMultiplier: 1.0,
+    label: '🚀 نموّ - متابعة momentum',
+  },
+  VALUE: {
+    buyThresholdDelta: -3,      // أسهل دخولاً
+    stopLossMultiplier: 1.5,    // stop واسع جداً
+    takeProfitMultiplier: 0.8,
+    maxHoldMultiplier: 2.0,     // صبر طويل جداً (mean-reversion)
+    label: '💎 قيمة - mean-reversion',
+  },
+  DIVIDEND: {
+    buyThresholdDelta: +2,
+    stopLossMultiplier: 1.4,
+    takeProfitMultiplier: 0.5,  // هدف صغير
+    maxHoldMultiplier: 2.5,     // للتوزيعات
+    label: '💰 موزّع - جمع التوزيعات',
+  },
+  TURNAROUND: {
+    buyThresholdDelta: -2,
+    stopLossMultiplier: 0.8,    // stop ضيّق
+    takeProfitMultiplier: 1.5,  // طموح عالٍ
+    maxHoldMultiplier: 1.2,
+    label: '🔄 متحوّل - حذر مع طموح',
+  },
+  SPECULATIVE: {
+    buyThresholdDelta: +5,      // انتقائيّة شديدة
+    stopLossMultiplier: 0.7,    // stop ضيّق جداً
+    takeProfitMultiplier: 1.5,  // أهداف كبيرة
+    maxHoldMultiplier: 0.5,     // خروج سريع
+    label: '⚡ مضاربي - دخول/خروج سريع',
+  },
+  AVOID: {
+    buyThresholdDelta: 999,     // لا يشتري أبداً
+    stopLossMultiplier: 1.0,
+    takeProfitMultiplier: 1.0,
+    maxHoldMultiplier: 1.0,
+    label: '⛔ يُتجنّب',
+  },
+  NEUTRAL: {
+    buyThresholdDelta: 0,
+    stopLossMultiplier: 1.0,
+    takeProfitMultiplier: 1.0,
+    maxHoldMultiplier: 1.0,
+    label: '➖ محايد - params افتراضيّة',
+  },
+};
+
+/**
+ * تكييف params حسب الشخصيّة
+ */
+function adaptParamsToPersonality(baseConfig, personality) {
+  const adj = PERSONALITY_ADJUSTMENTS[personality] || PERSONALITY_ADJUSTMENTS.NEUTRAL;
+  
+  return {
+    buyScoreThreshold: baseConfig.buyScoreThreshold + adj.buyThresholdDelta,
+    sellScoreThreshold: baseConfig.sellScoreThreshold,
+    stopLossPct: baseConfig.stopLossPct * adj.stopLossMultiplier,
+    takeProfitPct: baseConfig.takeProfitPct * adj.takeProfitMultiplier,
+    maxHoldDays: Math.round(baseConfig.maxHoldDays * adj.maxHoldMultiplier),
+    personality,
+    personalityLabel: adj.label,
+  };
+}
+
 export var STRATEGY_DEFAULTS = {
   // معايير الشراء - معايرة علمية متطابقة مع التحليل الاحترافي
   buyScoreThreshold: 65,       // Health Score >= 65 للشراء (كان 70)
