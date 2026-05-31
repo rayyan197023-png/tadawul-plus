@@ -44,7 +44,7 @@ async function fetchSeries(seriesId: string, limit: number): Promise<number[]> {
   const vals: number[] = [];
   for (const o of obs) {
     const v = parseFloat(o?.value);
-    if (!isNaN(v) && v > 0) vals.push(v);
+if (!isNaN(v)) vals.push(v);
   }
   return vals.reverse();
 }
