@@ -240,8 +240,9 @@ export default function BacktestScreen() {
           return live ? { ...s, ...live } : s;
         });
         
-        // Yahoo Finance دائماً
-        historicalData = await generateDataFromYahoo(enrichedStocks.slice(0, 15), config.days);
+        // 🆕 ٥٠ سهم للـ Diverse Universe، ١٥ للفئات الأخرى
+        var sampleSize = config.category === 'diverse' ? 50 : 15;
+        historicalData = await generateDataFromYahoo(enrichedStocks.slice(0, sampleSize), config.days);
         
         if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
           setResults({ error: 'فشل جلب البيانات التاريخية من Yahoo' });
