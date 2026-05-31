@@ -106,7 +106,7 @@ function SetupPhase({ C, onStart, isReady, dataInfo }) {
       {/* ═══ اختيار الوضع ═══ */}
       <div style={{ marginBottom: 16 }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: C.snow, marginBottom: 8 }}>
-          ② اختر وضع التشغيل:
+          ① اختر وضع التشغيل:
         </div>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
