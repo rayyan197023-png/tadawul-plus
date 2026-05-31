@@ -200,28 +200,7 @@ export default function BacktestScreen() {
               (activeWinnerParams ? 'LOADED' : 'NULL'));
       } catch(_) {}
 
-      if (config.mode === 'portfolio') {
-        if (!hasPortfolio) {
-          setResults({ error: 'المحفظة فارغة! أضف أسهماً أولاً.' });
-          setIsRunning(false);
-          return;
-        }
-        modeLabel = 'محفظتي الحالية';
-        // Yahoo Finance لكل أوضاع الباك-تيست
-        historicalData = await generateDataFromYahoo(positions, config.days);
-        
-        if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
-          setResults({ error: 'فشل جلب بيانات المحفظة من Yahoo' });
-          setIsRunning(false);
-          return;
-        }
-        
-        strategy = createPortfolioBuyAndHoldStrategy(positions);
-        var equalWeight = positions.map(function(p) {
-          return Object.assign({}, p, { weight: 1 / positions.length });
-        });
-        benchmarkStrategy = createPortfolioBuyAndHoldStrategy(equalWeight);
-      } else if (config.mode === 'analysis') {
+      if (config.mode === 'analysis') {
         var category = STOCK_CATEGORIES[config.category];
         var categoryStocks = getStocksByCategory(config.category);
         modeLabel = `${category.icon} ${category.name} (${categoryStocks.length} سهم)`;
