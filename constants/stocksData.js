@@ -314,7 +314,72 @@ export const STOCKS_MAP = Object.fromEntries(STOCKS.map(s => [s.sym, s]));
 // 🎯 STOCK CATEGORIES -- فئات ذكية للتصفية
 // ═══════════════════════════════════════════════════════════
 
+// ═══════════════════════════════════════════════════════════
+// 🌍 DIVERSE UNIVERSE BUILDER - بناء universe متنوّع
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * يبني universe متنوّع من ٥٠ سهم:
+ * - ١٠ قياديّة (rating ≥ 75)
+ * - ١٠ عالية الجودة (rating 70-74)
+ * - ١٠ متوسّطة (rating 65-69)
+ * - ١٠ نموّ محتمل (rating 60-64)
+ * - ١٠ مرتبطة بالنفط (تنوّع إضافيّ)
+ * 
+ * @param {number} seed - بذرة عشوائية (اختياريّة)
+ * @returns {Array} - مصفوفة من ٥٠ سهم
+ */
+export function buildDiverseUniverse(seed) {
+  // فرز الأسهم حسب التقييم
+  const leaders = STOCKS.filter(s => s.rating >= 75);
+  const quality = STOCKS.filter(s => s.rating >= 70 && s.rating < 75);
+  const medium = STOCKS.filter(s => s.rating >= 65 && s.rating < 70);
+  const growth = STOCKS.filter(s => s.rating >= 60 && s.rating < 65);
+  const oilLinked = STOCKS.filter(s => (s.oilCorr || 0) >= 0.55);
+  
+  // دالّة عشوائيّة بسيطة
+  function pickRandom(arr, count) {
+    const shuffled = [...arr].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, count);
+  }
+  
+  const selected = [
+    ...pickRandom(leaders, 10),
+    ...pickRandom(quality, 10),
+    ...pickRandom(medium, 10),
+    ...pickRandom(growth, 10),
+    ...pickRandom(oilLinked, 10),
+  ];
+  
+  // إزالة المكرّرات (لأنّ oilLinked قد يحوي أسهماً من الفئات السابقة)
+  const seen = new Set();
+  const unique = selected.filter(s => {
+    if (seen.has(s.sym)) return false;
+    seen.add(s.sym);
+    return true;
+  });
+  
+  // إن أقلّ من ٥٠، نُكمل من بقيّة STOCKS
+  if (unique.length < 50) {
+    const remaining = STOCKS.filter(s => !seen.has(s.sym));
+    const fill = pickRandom(remaining, 50 - unique.length);
+    return [...unique, ...fill];
+  }
+  
+  // إن أكثر من ٥٠، نأخذ أوّل ٥٠
+  return unique.slice(0, 50);
+}
+
 export const STOCK_CATEGORIES = {
+  diverse: {
+    id: 'diverse',
+    name: 'السوق المتنوّع',
+    icon: '🌍',
+    description: '٥٠ سهم متنوّعة (يتغير كل تشغيل)',
+    color: '#10b981',
+    filter: null, // سيستعمل buildDiverseUniverse بدل filter
+  },
+  
   leaders: {
     id: 'leaders',
     name: 'القيادية',
