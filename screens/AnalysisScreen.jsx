@@ -986,6 +986,130 @@ const best3 = allData.length > 0
               </div>
             </div>
           </div>
+ {/* ══ 🔍 شريط البحث ══ */}
+{searchOpen && (
+  <div style={{
+    margin:"10px 16px 0",
+    background:"linear-gradient(135deg," + C.layer1 + "," + C.layer2 + ")",
+    borderRadius:14,
+    border:"1px solid " + C.gold + "33",
+    overflow:"hidden",
+    animation:"expandDown .35s ease both",
+  }}>
+    <div style={{padding:"10px 12px",display:"flex",alignItems:"center",gap:8}}>
+      <span style={{fontSize:16,color:C.gold}}>🔍</span>
+      <input
+        type="search"
+        value={searchQuery}
+        onChange={function(e){ setSearchQuery(e.target.value); }}
+        placeholder="ابحث (الاسم، الرمز 2130، القطاع...)"
+        autoFocus
+        style={{
+          flex:1,
+          background:"transparent",
+          border:"none",
+          outline:"none",
+          color:C.snow,
+          fontSize:13,
+          fontWeight:600,
+          fontFamily:"Cairo,sans-serif",
+          textAlign:"right",
+          direction:"rtl",
+        }}
+      />
+      {searchQuery && (
+        <button
+          onClick={function(){ haptic.tap(); setSearchQuery(""); }}
+          style={{
+            background:"transparent",
+            border:"none",
+            color:C.smoke,
+            cursor:"pointer",
+            padding:4,
+            fontSize:16,
+          }}>
+          ✕
+        </button>
+      )}
+    </div>
+    
+    {/* نتائج البحث */}
+    {searchQuery && (
+      <div style={{
+        borderTop:"1px solid " + C.line,
+        maxHeight:320,
+        overflowY:"auto",
+        padding:"6px 8px",
+      }}>
+        <div style={{
+          fontSize:9,
+          color:C.smoke,
+          fontWeight:700,
+          padding:"4px 6px",
+        }}>
+          {searchResults.length === 0 
+            ? "لا توجد نتائج" 
+            : "وجدت " + searchResults.length + " نتيجة"}
+        </div>
+        {searchResults.map(function(d){
+          return (
+            <div
+              key={d.stk.sym}
+              onClick={function(){
+                haptic.success();
+                setSel(d.stk.sym);
+                setSearchOpen(false);
+                setSearchQuery("");
+                // scroll للسهم
+                setTimeout(function(){
+                  var el = document.getElementById("stock-" + d.stk.sym);
+                  if (el) el.scrollIntoView({behavior:"smooth",block:"center"});
+                }, 100);
+              }}
+              style={{
+                display:"flex",
+                alignItems:"center",
+                justifyContent:"space-between",
+                padding:"8px 10px",
+                margin:"3px 0",
+                background:C.layer2,
+                borderRadius:8,
+                cursor:"pointer",
+                border:"1px solid " + d.health.sigC + "33",
+                transition:"all .15s ease",
+              }}>
+              <div style={{flex:1}}>
+                <div style={{fontSize:12,fontWeight:800,color:C.snow}}>{d.stk.name}</div>
+                <div style={{fontSize:9,color:C.smoke,marginTop:2}}>
+                  {d.stk.sym} · {d.stk.sec}
+                </div>
+              </div>
+              <div style={{textAlign:"left",marginLeft:8}}>
+                <div style={{
+                  fontSize:13,
+                  fontWeight:900,
+                  color:d.health.sigC,
+                  direction:"ltr",
+                }}>
+                  {d.stk.p.toFixed(2)}
+                </div>
+                <div style={{
+                  fontSize:8,
+                  fontWeight:700,
+                  color:d.health.sigC,
+                  marginTop:2,
+                }}>
+                  {d.health.score} · {d.health.sig}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    )}
+  </div>
+)}
+
 
           {/* ══ Skeleton Loading — أثناء التحليل ══ */}
           {loading&&(
