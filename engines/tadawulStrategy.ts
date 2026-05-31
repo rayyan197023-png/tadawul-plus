@@ -330,12 +330,22 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
             var availableValue = Math.min(targetValue, state.cash * 0.9);
             
             if (availableValue >= config.minPositionValue) {
+              // 🆕 إرفاق معلومات الشخصيّة بالـ signal
+              var stockPersonality = stock.personality || 'NEUTRAL';
+              var stockAdapted = adaptParamsToPersonality(config, stockPersonality);
+              
               signals.push({
                 action: 'buy',
                 sym: stock.sym,
                 value: availableValue,
-                reason: 'Score=' + stock.score + '/' + config.buyScoreThreshold,
-                layers: stock.health?.layers || null,  // ✨ AI Learning: pass actual layers
+                reason: 'Score=' + stock.score + '/' + stockAdapted.buyScoreThreshold + ' [' + stockPersonality + ']',
+                layers: stock.health?.layers || null,
+                personality: stockPersonality,
+                adaptedParams: {
+                  stopLoss: stockAdapted.stopLossPct,
+                  takeProfit: stockAdapted.takeProfitPct,
+                  maxHold: stockAdapted.maxHoldDays,
+                },
               });
             }
           });
