@@ -91,8 +91,8 @@ const PERSONALITY_ADJUSTMENTS = {
 /**
  * تكييف params حسب الشخصيّة
  */
-function adaptParamsToPersonality(baseConfig, personality) {
-  const adj = PERSONALITY_ADJUSTMENTS[personality] || PERSONALITY_ADJUSTMENTS.NEUTRAL;
+function adaptParamsToPersonality(baseConfig: any, personality: string): any {
+  const adj = (PERSONALITY_ADJUSTMENTS as any)[personality] || PERSONALITY_ADJUSTMENTS.NEUTRAL;
   
   return {
     buyScoreThreshold: baseConfig.buyScoreThreshold + adj.buyThresholdDelta,
