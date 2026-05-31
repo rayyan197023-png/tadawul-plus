@@ -135,16 +135,43 @@ var [config, setConfig] = useState({
       var activeWinnerWeights = null;
       var activeWinnerParams = null;
       
-      // 🐛 DIAGNOSTIC
+      // 🐛 DIAGNOSTIC v2 - فحص localStorage مباشرة
       try {
-        var dbg = '🔍 BACKTEST DIAGNOSTIC:\n\n';
-        dbg += 'config.useWinner: ' + config.useWinner + '\n';
+        var dbg = '🔍 BACKTEST DIAGNOSTIC v2:\n\n';
+        dbg += 'config.useWinner: ' + config.useWinner + '\n\n';
+        
+        // فحص مباشر من localStorage
+        var rawWinner = null;
+        try { rawWinner = localStorage.getItem('tdw_winning_strategy'); } catch(e) {}
+        dbg += 'Raw localStorage["tdw_winning_strategy"]: ' + (rawWinner ? 'EXISTS (' + rawWinner.length + ' chars)' : 'NULL') + '\n\n';
+        
+        if (rawWinner) {
+          try {
+            var parsedWinner = JSON.parse(rawWinner);
+            dbg += 'Parsed keys: ' + Object.keys(parsedWinner).join(', ') + '\n';
+            dbg += 'Has weights: ' + !!parsedWinner.weights + '\n';
+            dbg += 'Has params: ' + !!parsedWinner.params + '\n';
+            dbg += 'Score: ' + parsedWinner.score + '\n';
+            if (parsedWinner.weights) {
+              dbg += 'L1=' + parsedWinner.weights.L1 + ', L9=' + parsedWinner.weights.L9 + '\n';
+            }
+          } catch(e) {
+            dbg += 'Parse error: ' + e.message + '\n';
+          }
+        }
+        
+        dbg += '\n--- loadCurrentWinner() result ---\n';
         var winInLS = loadCurrentWinner();
-        dbg += 'Winner in localStorage: ' + (winInLS ? 'YES (Score: ' + winInLS.score + ')' : 'NO') + '\n';
-        dbg += 'Mode: ' + config.mode + '\n';
-        dbg += 'Category: ' + config.category + '\n';
+        dbg += 'Result: ' + (winInLS ? 'OBJECT' : 'NULL/undefined') + '\n';
+        if (winInLS) {
+          dbg += 'Score: ' + winInLS.score + '\n';
+          dbg += 'Has weights: ' + !!winInLS.weights + '\n';
+        }
+        
         alert(dbg);
-      } catch(_) {}
+      } catch(e) {
+        try { alert('DIAGNOSTIC ERROR: ' + e.message); } catch(_) {}
+      }
       
       if (config.useWinner) {
         try {
