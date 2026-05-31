@@ -127,6 +127,75 @@ useEffect(function(){
   var CACHE_HOURS = 24;
   
   function processFred(d){
+useEffect(function(){
+  var CACHE_KEY = 'tdw_fred_cache';
+  var CACHE_HOURS = 24;
+  
+  function processFred(d){
+    if(!d) return;
+    var items = [];
+    function buildItem(hist, price, name, sym, cat, color, fact){
+      if(!Array.isArray(hist) || hist.length < 2 || typeof price !== 'number') return null;
+      var prev = hist[hist.length-2];
+      var pct = prev ? ((price - prev)/prev*100) : 0;
+      var hi = Math.max.apply(null, hist);
+      var lo = Math.min.apply(null, hist);
+      return {
+        sym: name, cat: cat, color: color,
+        price: Math.round(price*100)/100,
+        pct: Math.round(pct*100)/100,
+        open: Math.round(prev*100)/100,
+        hi: Math.round(hi*100)/100,
+        lo: Math.round(lo*100)/100,
+        ch: Math.round((price-prev)*100)/100,
+        lo52: Math.round(lo*100)/100,
+        hi52: Math.round(hi*100)/100,
+        fact: fact,
+        history: hist,
+      };
+    }
+    var defs = [
+      {k:'oil',    name:'خام WTI',          cat:'نفط',     color:C.gold,    fact:'نفط غربي تكساس · نطاق آخر 40 يوم · FRED'},
+      {k:'brent',  name:'خام برنت',         cat:'نفط',     color:C.goldL,   fact:'النفط المرجعي العالمي · نطاق آخر 40 يوم · FRED'},
+      {k:'natgas', name:'الغاز الطبيعي',    cat:'طاقة',    color:C.amber,   fact:'غاز هنري هَب · $/MMBtu · FRED'},
+      {k:'vix',    name:'مؤشر الخوف VIX',   cat:'مؤشرات',  color:C.electric,fact:'تقلّب السوق الأمريكي · أقل = استقرار · FRED'},
+      {k:'sp500',  name:'ستاندرد آند بورز 500',cat:'مؤشرات',color:C.mint,  fact:'أكبر 500 شركة أمريكية · FRED'},
+      {k:'nasdaq', name:'ناسداك المركّب',   cat:'مؤشرات',  color:C.plasma,  fact:'مؤشر التقنية الأمريكي · FRED'},
+      {k:'dow',    name:'داو جونز',         cat:'مؤشرات',  color:C.teal,    fact:'30 شركة صناعية كبرى · FRED'},
+      {k:'dxy',    name:'مؤشر الدولار',     cat:'عملات',   color:C.coral,   fact:'قوة الدولار مرجّحاً تجارياً · FRED'},
+      {k:'fedrate',name:'الفائدة الفيدرالية',cat:'فائدة',  color:C.electric,fact:'سعر الفائدة الأمريكي اليومي % · FRED'},
+      {k:'t10',    name:'سندات 10 سنوات',   cat:'سندات',   color:C.smoke,   fact:'عائد السندات الأمريكية 10 سنوات % · FRED'},
+    ];
+    defs.forEach(function(def){
+      var it = buildItem(d[def.k+'History'], d[def.k+'Price'], def.name, def.k, def.cat, def.color, def.fact);
+      if(it) items.push(it);
+    });
+    if(items.length) setFredComm(items);
+  }
+  
+  try {
+    var cached = localStorage.getItem(CACHE_KEY);
+    if(cached) {
+      var parsed = JSON.parse(cached);
+      var ageHours = (Date.now() - parsed.savedAt) / (1000 * 60 * 60);
+      if(ageHours < CACHE_HOURS) {
+        processFred(parsed.data);
+        return;
+      }
+    }
+  } catch(e) {}
+  
+  fetch('/api/freddata').then(function(r){return r.ok?r.json():null;}).then(function(d){
+    if(!d) return;
+    processFred(d);
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({
+        data: d,
+        savedAt: Date.now(),
+      }));
+    } catch(e){}
+  }).catch(function(){});
+},[]);
 
   // ── استخدام commData ──
   // FRED حقيقي فقط (حُذف extCommData الوهمي القديم من العرض). COMM فارغة = "لا بيانات".
