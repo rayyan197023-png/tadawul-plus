@@ -7,6 +7,7 @@ const FRED_BASE = 'https://api.stlouisfed.org/fred/series/observations';
 const FRED_KEY  = process.env.FRED_API_KEY ?? '';
 
 const SERIES: Record<string, string> = {
+  // ── الأسواق العالمية (موجودة) ──
   oil:    'DCOILWTICO',
   brent:  'DCOILBRENTEU',
   natgas: 'DHHNGSP',
@@ -17,6 +18,20 @@ const SERIES: Record<string, string> = {
   dxy:    'DTWEXBGS',
   fedrate:'DFF',
   t10:    'DGS10',
+  
+  // ── 🇺🇸 الاقتصاد الأمريكي (5 جديدة) ──
+  cpi:       'CPIAUCSL',     // CPI - مؤشر أسعار المستهلك
+  coreCpi:   'CPILFESL',     // Core CPI - بدون طعام/طاقة
+  payrolls:  'PAYEMS',       // Non-Farm Payrolls
+  unrate:    'UNRATE',       // معدّل البطالة
+  yieldGap:  'T10Y2Y',       // منحنى العائد (10y - 2y)
+  
+  // ── 🇸🇦 الاقتصاد السعودي (5 جديدة) ──
+  saudiGdp:      'MKTGDPSAA646NWDB',  // GDP السعوديّ
+  saudiCpi:      'CPALTT01SAM659N',   // التضخّم السعوديّ
+  saudiReserves: 'TRESEGSAM194N',     // الاحتياطيّات النقديّة
+  dubaiOil:      'POILDUBUSDM',       // نفط دبي (مرجع)
+  saudiRate:     'IRSTCI01SAM156N',   // الفائدة السعوديّة
 };
 
 async function fetchSeries(seriesId: string, limit: number): Promise<number[]> {
