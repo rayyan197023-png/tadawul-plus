@@ -294,8 +294,22 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
       if (slotsAvailable > 0 && state.cash > config.minPositionValue) {
         var topStocks = stockScores
           .filter(function(s) {
-            // شرط Health Score
-            if (s.score < config.buyScoreThreshold) return false;
+            // 🆕 كشف شخصيّة السهم
+            var personality: any = 'NEUTRAL';
+            try {
+              var personalityResult = detectStockPersonality(s.stk, s.stk.bars);
+              personality = personalityResult.personality;
+              s.personality = personality;  // حفظ للاستعمال لاحقاً
+            } catch (e) {}
+            
+            // 🆕 رفض AVOID تماماً
+            if (personality === 'AVOID') return false;
+            
+            // 🆕 تكييف buyThreshold حسب الشخصيّة
+            var adaptedConfig = adaptParamsToPersonality(config, personality);
+            
+            // شرط Health Score المُكيَّف
+            if (s.score < adaptedConfig.buyScoreThreshold) return false;
             // ليس مملوكاً بالفعل
             if (state.positions[s.sym]) return false;
             // له سعر صالح
