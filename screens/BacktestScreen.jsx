@@ -708,19 +708,6 @@ export default function BacktestScreen() {
         </div>
 
         <ModeCard
-          icon="💼"
-          title="محفظتي الحالية"
-          description={hasPortfolio ? "اختبار محفظتك الفعلية (" + positions.length + " أسهم)" : "⚠️ المحفظة فارغة -- أضف أسهماً أولاً"}
-          question="كيف كانت محفظتي ستؤدي تاريخياً؟"
-          color={C.mint}
-          active={config.mode === 'portfolio'}
-          onClick={function() { 
-            haptic.tap();
-            if (hasPortfolio) setConfig(Object.assign({}, config, { mode: 'portfolio' }));  
-          }}
-        />
-
-        <ModeCard
           icon="🔍"
           title="قائمة التحليل"
           description="استراتيجية الطبقات التسع - اختر فئة الأسهم"
