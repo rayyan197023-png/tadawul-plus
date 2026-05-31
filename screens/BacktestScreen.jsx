@@ -734,56 +734,36 @@ export default function BacktestScreen() {
           <div style={{
             marginBottom: 10,
             padding: '10px 12px',
-            background: C.void + "55",
+            background: "linear-gradient(135deg, #10b98115, #10b98105)",
             borderRadius: 10,
-            border: "1px solid " + C.gold + "33",
+            border: "1px solid #10b98144",
           }}>
-            <div style={{ fontSize: 10, color: C.gold, fontWeight: 800, marginBottom: 8, letterSpacing: "0.5px" }}>
-              🎯 اختر فئة الأسهم
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+              <span style={{ fontSize: 20 }}>🌍</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 12, fontWeight: 800, color: "#10b981", marginBottom: 2 }}>
+                  السوق المتنوّع
+                </div>
+                <div style={{ fontSize: 9, color: C.smoke, lineHeight: 1.4 }}>
+                  ٥٠ سهم متنوّعة من كل القطاعات • يتغيّر في كل تشغيل
+                </div>
+              </div>
+              <span style={{ fontSize: 16, color: "#10b981" }}>✓</span>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
-              {Object.values(STOCK_CATEGORIES).map(function(cat) {
-                var count = getStocksByCategory(cat.id).length;
-                var isActive = config.category === cat.id;
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={function() {
-                      haptic.tap();
-                      setConfig(Object.assign({}, config, { category: cat.id }));
-                    }}
-                    style={{
-                      padding: "8px 6px",
-                      background: isActive ? cat.color + "22" : C.void,
-                      border: "1.5px solid " + (isActive ? cat.color : C.line + "44"),
-                      borderRadius: 8,
-                      cursor: "pointer",
-                      textAlign: "right",
-                      fontFamily: "Cairo, sans-serif",
-                    }}
-                  >
-                    <div style={{
-                      fontSize: 11,
-                      fontWeight: 800,
-                      color: isActive ? cat.color : C.snow,
-                      marginBottom: 2,
-                    }}>
-                      {cat.icon} {cat.name}
-                    </div>
-                    <div style={{
-                      fontSize: 8,
-                      color: C.smoke,
-                      fontWeight: 500,
-                    }}>
-                      {count} سهم • {cat.description}
-                    </div>
-                  </button>
-                );
-              })}
+            <div style={{
+              fontSize: 9,
+              color: C.smoke,
+              fontStyle: "italic",
+              padding: "4px 8px",
+              background: "rgba(16,185,129,0.08)",
+              borderRadius: 6,
+              borderRight: "2px solid #10b981",
+            }}>
+              💡 universe متنوّع يُتيح للنظام اكتشاف استراتيجيّة عامّة تعمل على كل أنواع الأسهم
             </div>
           </div>
         )}
-
+        
         <ModeCard
           icon="🌐"
           title="السوق بالكامل"
