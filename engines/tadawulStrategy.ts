@@ -243,17 +243,28 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
       // ترتيب تنازلي حسب Score
       stockScores.sort(function(a: any, b: any) { return b.score - a.score; });
 
-      // ④ إشارات البيع (قبل الشراء)
+      // ④ إشارات البيع (قبل الشراء) - مع تكييف Adaptive
       Object.keys(state.positions).forEach(function(sym) {
         var pos = state.positions[sym];
         var currentPrice = day.prices[sym];
         if (!currentPrice) return;
 
         var currentScore = null;
+        var currentPersonality: any = 'NEUTRAL';
         var stockData = stockScores.find(function(s: any) { return s.sym === sym; });
-        if (stockData) currentScore = stockData.score;
+        if (stockData) {
+          currentScore = stockData.score;
+          // 🆕 كشف الشخصيّة
+          try {
+            var personalityResult = detectStockPersonality(stockData.stk, stockData.stk.bars);
+            currentPersonality = personalityResult.personality;
+          } catch (e) {}
+        }
+        
+        // 🆕 تكييف config حسب الشخصيّة
+        var adaptedConfig = adaptParamsToPersonality(config, currentPersonality);
 
-        var sellReason = shouldSell(pos, currentPrice, currentScore, day.date, dayIndex, config);
+        var sellReason = shouldSell(pos, currentPrice, currentScore, day.date, dayIndex, adaptedConfig);
         
         if (sellReason) {
           signals.push({
@@ -261,6 +272,7 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
             sym: sym,
             shares: pos.shares,
             reason: sellReason,
+            personality: currentPersonality,
           });
         }
       });
