@@ -238,6 +238,8 @@ function AnalysisScreenInner({ commData: extCommData } = {}) {
   const [flashCard,   setFlashCard]   = useState(null);
   const [loading,     setLoading]     = useState(true);
   const [darkMode,    setDarkMode]    = useState(true);
+  const [searchOpen, setSearchOpen] = useState(false);
+const [searchQuery, setSearchQuery] = useState("");
   // ── محفظة المستخدم ──
   const [port,        setPort]        = useState([]); // [{sym, qty, avgCost}]
   const [portSheet,   setPortSheet]   = useState(null); // "add" | sym
