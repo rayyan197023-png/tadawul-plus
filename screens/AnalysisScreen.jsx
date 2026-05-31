@@ -943,8 +943,26 @@ const best3 = allData.length > 0
                     {tasiPct>=0?"▲":"▼"} {Math.abs(tasiPct).toFixed(2)}%
                   </div>
                 </div>
-                {/* أزرار الإعدادات — 44px touch target (Apple HIG) */}
-                <div style={{display:"flex",gap:6,alignItems:"center"}}>
+{/* أزرار الإعدادات -- 44px touch target (Apple HIG) */}
+<div style={{display:"flex",gap:6,alignItems:"center"}}>
+  {/* 🔍 زرّ البحث */}
+  <button
+    onClick={function(){ haptic.tap(); setSearchOpen(function(s){ return !s; }); }}
+    style={{
+      width:44,height:44,borderRadius:12,cursor:"pointer",
+      background: searchOpen 
+        ? "linear-gradient(135deg," + C.gold + "33," + C.gold + "11)"
+        : "linear-gradient(135deg," + C.layer3 + "," + C.edge + ")",
+      border:"1px solid " + (searchOpen ? C.gold + "66" : C.line),
+      display:"flex",alignItems:"center",justifyContent:"center",
+      fontSize:18,
+      boxShadow: searchOpen 
+        ? "0 0 12px " + C.gold + "44, 0 2px 10px rgba(0,0,0,.25)"
+        : "0 2px 10px rgba(0,0,0,.25)",
+      transition: "all .25s ease",
+    }}>
+    🔍
+  </button>
                   {/* Dark/Light Mode */}
                                     <button
                     onClick={function(){ haptic.toggle(); setDarkMode(function(d){ return !d; }); }}
