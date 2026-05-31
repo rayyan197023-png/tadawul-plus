@@ -787,59 +787,6 @@ const avgChange = (liveStocks && liveStocks.length > 0)
           }, 1000);
         })();
       `}}/>
-      {/* 🔬 PROBE مؤقّت -- زر تشخيص التعلّم */}
-      <button
-        onClick={function(){
-          try {
-            var ls  = (function(){ try{ return JSON.parse(localStorage.getItem('tdw_feedback_state')||'null'); }catch(e){ return 'ERR'; } })();
-            var ss  = (function(){ try{ return JSON.parse(sessionStorage.getItem('tdw_feedback_v2')||'null'); }catch(e){ return 'ERR'; } })();
-            var lsKeys = ls && typeof ls==='object' ? Object.keys(ls) : [];
-            var ssKeys = ss && typeof ss==='object' ? Object.keys(ss) : [];
-            var pend = (function(){ try{ return JSON.parse(localStorage.getItem('tdw_pending_predictions')||'null'); }catch(e){ return null; } })();
-            var pendN = pend && typeof pend==='object' ? Object.keys(pend).length : 0;
-                var hTest = 'لم يُختبر';
-              try {
-                var dTest = (allData||[]).find(function(d){ return d && d.stk && d.stk.sym === '1010'; });
-                if (dTest && dTest.health) {
-                  var fb1010 = dTest.health.conviction ? dTest.health.conviction.feedbackApplied : '?';
-                  var abm = dTest.health.abmInfo || {};
-                  hTest = '1010 score=' + dTest.health.score + ' fb=' + fb1010 + 
-                          ' abm.applied=' + (abm.applied||'?') +
-                          ' sampleSize=' + (abm.meta&&abm.meta.sampleSize||'لا meta');
-                } else {
-                  hTest = 'سهم 1010 غير موجود في allData';
-                }
-              } catch(e){ hTest = 'خطأ: ' + e.message; }
-
-            alert(
-              'تشخيص التعلّم\n\n' +
-              '1) localStorage tdw_feedback_state:\n   ' + lsKeys.length + ' مفتاح\n   ' + (lsKeys.length ? lsKeys.slice(0,8).join(', ') : '(فارغ)') + '\n\n' +
-              '2) sessionStorage tdw_feedback_v2 (ABM):\n   ' + ssKeys.length + ' مفتاح\n   ' + (ssKeys.length ? ssKeys.slice(0,8).join(', ') : '(فارغ)') + '\n\n' +
-              '3) pending_predictions: ' + pendN + ' سهم\n\n' +
-              '4) stockHealth: ' + hTest + '\n\n' +
-              '5) كتابات tdw_feedback_state:\n' + (function(){
-                try {
-                  var w = window.__tdwWrites || [];
-                  if (!w.length) return '(لا كتابات)';
-                  return w.map(function(x, i){
-                    return (i+1) + ') [' + x.kind + '] طول=' + x.len + '\n' +
-                           '   نص: ' + x.preview + '\n' +
-                           '   من: ' + x.stack;
-                  }).join('\n\n');
-                } catch(e){ return 'خطأ: ' + e.message; }
-              })()
-            );
-          } catch(err) { alert('خطأ probe: ' + err.message); }
-        }}
-        style={{
-          position:"fixed", top:80, left:10, zIndex:9999,
-          background:"#f0c050", color:"#06080f",
-          border:"none", borderRadius:10, padding:"8px 12px",
-          fontSize:11, fontWeight:800, fontFamily:"Cairo,sans-serif",
-          boxShadow:"0 4px 16px rgba(0,0,0,.5)", cursor:"pointer",
-        }}>
-        🔬 فحص
-      </button>
 
       {/* ══════════════════════════════════
            الصفحة الرئيسية
