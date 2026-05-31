@@ -86,9 +86,9 @@ export default function BacktestScreen() {
   var haptic = useHaptic();
   var positions = [];
   
-var [config, setConfig] = useState({
+  var [config, setConfig] = useState({
     mode: 'analysis',
-    category: 'leaders',
+    category: 'diverse',  // 🆕 الافتراضيّ: السوق المتنوّع ٥٠ سهم
     initialCapital: 100000,
     days: 252,
     includeCosts: true,
