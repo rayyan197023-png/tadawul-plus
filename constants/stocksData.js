@@ -375,54 +375,9 @@ export const STOCK_CATEGORIES = {
     id: 'diverse',
     name: 'السوق المتنوّع',
     icon: '🌍',
-    description: '٥٠ سهم متنوّعة (يتغير كل تشغيل)',
+    description: '٥٠ سهم متنوّعة (يتغيّر كل تشغيل)',
     color: '#10b981',
-    filter: null, // سيستعمل buildDiverseUniverse بدل filter
-  },
-  
-  leaders: {
-    id: 'leaders',
-    name: 'القيادية',
-    icon: '🏆',
-    description: 'كبار السوق - تقييم عالي (75+)',
-    color: '#f0c050',
-    filter: (s) => s.rating >= 75,
-  },
-  
-  highQuality: {
-    id: 'highQuality',
-    name: 'عالية الجودة',
-    icon: '⚡',
-    description: 'أسهم قوية (تقييم 70-74)',
-    color: '#22d3ee',
-    filter: (s) => s.rating >= 70 && s.rating < 75,
-  },
-  
-  oilLinked: {
-    id: 'oilLinked',
-    name: 'مرتبطة بالنفط',
-    icon: '💎',
-    description: 'أسهم تتأثر بأسعار النفط',
-    color: '#fbbf24',
-    filter: (s) => (s.oilCorr || 0) >= 0.55,
-  },
-  
-  healthcare: {
-    id: 'healthcare',
-    name: 'الرعاية الصحية',
-    icon: '🏥',
-    description: 'قطاع دفاعي مستقر',
-    color: '#f472b6',
-    filter: (s) => s.sectorId === 'healthcare',
-  },
-  
-  banks: {
-    id: 'banks',
-    name: 'البنوك',
-    icon: '🏦',
-    description: 'القطاع المصرفي الكامل',
-    color: '#4d9fff',
-    filter: (s) => s.sectorId === 'banks',
+    filter: null,
   },
 };
 
