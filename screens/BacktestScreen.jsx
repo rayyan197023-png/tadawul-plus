@@ -84,7 +84,6 @@ function ModeCard(props) {
 export default function BacktestScreen() {
   var nav = useNav();
   var haptic = useHaptic();
-  var positions = [];
   
   var [config, setConfig] = useState({
     mode: 'analysis',
@@ -104,8 +103,6 @@ export default function BacktestScreen() {
   var [activeTab, setActiveTab] = useState('run'); // 'run' | 'lab'
   var [labHistoricalData, setLabHistoricalData] = useState(null);
   var [labDataInfo, setLabDataInfo] = useState(null);
-
-  var hasPortfolio = positions && positions.length > 0;
 
   async function runBacktest() {
     setIsRunning(true);
