@@ -881,7 +881,7 @@ export default function BacktestScreen() {
 
         <button
           onClick={() => { haptic.strong(); runBacktest(); }}
-          disabled={isRunning || (config.mode === 'portfolio' && !hasPortfolio)}
+disabled={isRunning}
           style={{
             width: "100%", padding: "12px",
             background: isRunning || (config.mode === 'portfolio' && !hasPortfolio)
