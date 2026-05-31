@@ -1564,11 +1564,12 @@ const rankUp=stk.ch>0;
               const isRare=health.score>=75;    // كان 85 - فرصة استثنائية
               const isFlashing = flashCard === stk.sym;
               const level = cardLevel[stk.sym] || 1; // 1=مبسط 2=كامل
-              return(
-                                <div key={stk.sym}
-                  className="card-enter"
-                  style={{animationDelay:`${idx*.07}s`}}
-                  onClick={function(){
+return(
+  <div key={stk.sym}
+    id={"stock-" + stk.sym}
+    className="card-enter"
+    style={{animationDelay:`${idx*.07}s`}}
+    onClick={function(){
     haptic.tap();
     // Micro-feedback -- وميض لحظي
     setFlashCard(stk.sym);
