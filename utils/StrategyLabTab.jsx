@@ -37,13 +37,14 @@ import { getTypeIcon, getTypeArabic, getTypeColor, getTypeDescription } from '..
 // ════════════════════════════════════════════════════════════
 
 function SetupPhase({ C, onStart, isReady, dataInfo }) {
-  const [targetType, setTargetType] = useState('leader');
   const [mode, setMode] = useState('quick');
+  
+  // 🆕 targetType ثابت = 'leader' (للتوافق مع الكود)
+  // لكنّ الـ Universe الفعليّ يأتي من Backtest (٥٠ سهم متنوّعة)
+  const targetType = 'leader';
   
   const yearsOfData = dataInfo?.years || 4;
   const estimate = estimateDuration(mode, yearsOfData);
-  
-  const TYPES = ['leader', 'growth', 'speculative', 'explosive', 'mid-cap'];
   
   return (
     <div style={{ padding: '16px' }}>
