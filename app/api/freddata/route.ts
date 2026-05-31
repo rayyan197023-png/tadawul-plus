@@ -43,10 +43,21 @@ export async function GET(_req: NextRequest) {
   const staleAge = 86400;
 
   try {
-    const keys = Object.keys(SERIES);
-    const results = await Promise.all(
-      keys.map(function(k){ return fetchSeries(SERIES[k], 40); })
-    );
+const keys = Object.keys(SERIES);
+const results: number[][] = [];
+
+// Sequential fetching with delay to avoid FRED rate limiting
+for (const k of keys) {
+  try {
+    const data = await fetchSeries(SERIES[k], 40);
+    results.push(data);
+  } catch (e) {
+    console.error(`FRED ${k} failed:`, e);
+    results.push([]);
+  }
+  // 100ms delay between requests
+  await new Promise(resolve => setTimeout(resolve, 100));
+}
 
     const out: Record<string, any> = {};
     var anyOk = false;
