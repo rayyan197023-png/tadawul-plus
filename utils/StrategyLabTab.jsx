@@ -69,56 +69,37 @@ function SetupPhase({ C, onStart, isReady, dataInfo }) {
         </div>
       </div>
       
-      {/* ═══ اختيار الفئة ═══ */}
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: C.snow, marginBottom: 8 }}>
-          ① اختر فئة الأسهم المستهدفة:
+      {/* ═══ 🆕 معلومة عن Universe ═══ */}
+      <div style={{
+        marginBottom: 16,
+        padding: '12px 14px',
+        background: `linear-gradient(135deg, #10b98115, #10b98105)`,
+        border: `1px solid #10b98144`,
+        borderRadius: 12,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+          <span style={{ fontSize: 24 }}>🌍</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#10b981', marginBottom: 2 }}>
+              السوق المتنوّع -- ٥٠ سهم
+            </div>
+            <div style={{ fontSize: 9, color: C.smoke, lineHeight: 1.4 }}>
+              يستعمل نفس بيانات الباك-تيست (يتنوّع في كل تشغيل)
+            </div>
+          </div>
         </div>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {TYPES.map(type => {
-            const isSelected = targetType === type;
-            const typeColor = getTypeColor(type);
-            
-            return (
-              <button
-                key={type}
-                onClick={() => setTargetType(type)}
-                style={{
-                  background: isSelected
-                    ? `linear-gradient(135deg, ${typeColor}22, ${typeColor}08)`
-                    : C.layer2,
-                  border: `1px solid ${isSelected ? typeColor + '66' : C.line}`,
-                  borderRadius: 12,
-                  padding: '10px 14px',
-                  cursor: 'pointer',
-                  textAlign: 'right',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                <span style={{ fontSize: 20 }}>{getTypeIcon(type)}</span>
-                <div style={{ flex: 1 }}>
-                  <div style={{
-                    fontSize: 13,
-                    fontWeight: 800,
-                    color: isSelected ? typeColor : C.snow,
-                    marginBottom: 2,
-                  }}>
-                    {getTypeArabic(type)}
-                  </div>
-                  <div style={{ fontSize: 9, color: C.smoke, lineHeight: 1.4 }}>
-                    {getTypeDescription(type)}
-                  </div>
-                </div>
-                {isSelected && (
-                  <span style={{ fontSize: 16, color: typeColor }}>✓</span>
-                )}
-              </button>
-            );
-          })}
+        <div style={{
+          fontSize: 9,
+          color: C.mist,
+          fontStyle: 'italic',
+          padding: '6px 10px',
+          background: 'rgba(16,185,129,0.08)',
+          borderRadius: 6,
+          borderRight: '2px solid #10b981',
+          lineHeight: 1.5,
+        }}>
+          💡 المختبر يكتشف Winner عامّ يعمل على ٧ شخصيّات مختلفة من الأسهم
+          (LEADER / GROWTH / VALUE / DIVIDEND / TURNAROUND / SPECULATIVE / AVOID)
         </div>
       </div>
       
