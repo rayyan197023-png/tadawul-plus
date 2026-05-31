@@ -420,6 +420,19 @@ const ohlcvCache = useOHLCVCache(syms, '3M');
 
   // ✨ Performance: حساب الأعداد مرة واحدة بدل تكرار filters
   // 🎯 معايرة علمية: العتبات معدّلة لتعكس التوزيع الفعلي للـ scores
+  // 🔍 نتائج البحث
+const searchResults = useMemo(() => {
+  if (!searchQuery.trim() || !allData) return [];
+  const q = searchQuery.trim().toLowerCase();
+  return allData.filter(d => {
+    if (!d || !d.stk) return false;
+    const sym = String(d.stk.sym).toLowerCase();
+    const name = (d.stk.name || '').toLowerCase();
+    const sec = (d.stk.sec || '').toLowerCase();
+    return sym.includes(q) || name.includes(q) || sec.includes(q);
+  }).slice(0, 20); // أوّل 20 نتيجة
+}, [allData, searchQuery]);
+
   const signalCounts = useMemo(() => {
     if (!allData || !Array.isArray(allData) || allData.length === 0) {
       return { buy: 0, watch: 0, neutral: 0, reduce: 0, total: 0 };
