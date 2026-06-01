@@ -10048,9 +10048,6 @@ let _l2Data = { bids:[], asks:[], lastPrice:0, spread:0 };
 let _l2Timer = null;
 let _l2WS = null;
 
-// تم تعطيل توليد بيانات دفتر الأوامر الوهمية — سهمك لا يوفّر Level 2
-// تُستبدل هذه الدالة ببيانات حقيقية عند توفّر API دفتر أوامر
-function _generateL2Mock(){ return null; }
 
 // Connect to real API (call this with your token)
 function connectL2API(endpoint, apiKey){
