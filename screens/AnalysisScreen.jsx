@@ -1509,6 +1509,7 @@ const rankUp=stk.ch>0;
 return(
   <div key={stk.sym}
     id={"stock-" + stk.sym}
+    data-stock-card
     className="card-enter"
     style={{animationDelay:`${idx*.07}s`}}
     onClick={function(){
