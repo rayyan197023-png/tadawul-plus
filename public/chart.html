@@ -6903,6 +6903,16 @@ cv.addEventListener('mousemove', e => {
 
 cv.addEventListener('mouseup', e => {
  if(_endPanelDrag()) return;
+cv.addEventListener('mouseup', e => {
+ if(_endPanelDrag()) return;
+
+ // تحديث الإحداثيات مرّة واحدة بعد السحب فقط
+ if((drMode==='drag'||drMode==='resize')&&drSelId!=null){
+  const _dg=state.drawings.find(d=>d.id===drSelId);
+  if(_dg&&typeof _enrichDrawing==='function')_enrichDrawing(_dg);
+ }
+ 
+ if(drMode==='draw'&&state.live){
 
  if(drMode==='draw'&&state.live){
  const pt=getPt(e);
