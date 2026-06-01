@@ -7828,7 +7828,6 @@ async function loadStk(){
   // ── API path ──────────────────────────────────────────────────
   if(API_CONFIG.enabled && API_CONFIG.endpoints.candles){
     try{
-      alert('1-دخلت | range='+state.range+' | RANGE_DAYS='+(typeof RANGE_DAYS!=='undefined'?RANGE_DAYS[state.range]:'غير معرّف'));
       const tf=API_CONFIG.tfMap[state.per]||state.per;
       const _rangeDays=RANGE_DAYS[state.range]||365;
             const raw=await API_CONFIG.fetch('candles',{
