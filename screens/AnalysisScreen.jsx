@@ -527,7 +527,7 @@ async function shareStockCard(cardElement, stockSym, stockName, price, change) {
 }
     
     try {
-      var canvas = await window.html2canvas(cardElement, {
+      var canvas = await html2canvap(cardElement, {
         backgroundColor: '#0a0e1a',
         scale: 2,
         useCORS: true,
