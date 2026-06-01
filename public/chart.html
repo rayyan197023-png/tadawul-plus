@@ -7053,13 +7053,10 @@ cv.addEventListener('touchstart',e=>{
  if(hit.act==='dupe'){drSelId=CM.selId;dDupe();return;}
  if(hit.act==='del'){drSelId=CM.selId;dDel();return;}
             if(hit.act==='lock'){
-              const _ld=state.drawings.find(d=>d.id===CM.selId);
-              if(_ld){_ld._locked=!_ld._locked;render();}return;
-            }
-            if(hit.act==='lock'){
               const ld=state.drawings.find(d=>d.id===CM.selId);
               if(ld){ld._locked=!ld._locked;render();}return;
             }
+
  if(hit.act==='color_pick'){drSelId=CM.selId;const d=state.drawings.find(d=>d.id===CM.selId);if(d){d.color=hit.col;state.drawColor=hit.col;saveDrawings();}CM.colorOpen=false;render();return;}
  return;
  }
