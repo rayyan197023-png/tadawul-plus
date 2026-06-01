@@ -497,11 +497,33 @@ const avgChange = (liveStocks && liveStocks.length > 0)
     amber:C.amber,    teal:"#0596b0",  plasma:C.plasma,
   };
     // ── دالة مشاركة بطاقة السهم كصورة ──
-  async function shareStockCard(cardElement, stockSym, stockName, price, change) {
-    if(!window.html2canvas) {
-      alert('جارٍ تحميل المكتبة، حاول مرّة أخرى');
-      return;
-    }
+async function shareStockCard(cardElement, stockSym, stockName, price, change) {
+  // تحميل html2canvas ديناميكياً إن لم يكن موجوداً
+  if(!window.html2canvas) {
+    await new Promise(function(resolve, reject){
+      var existingScript = document.querySelector('script[src*="html2canvas"]');
+      if(existingScript) {
+        // الـ script موجود لكن لم يكتمل تحميله بعد
+        existingScript.addEventListener('load', resolve);
+        existingScript.addEventListener('error', reject);
+        // مهلة 5 ثواني
+        setTimeout(reject, 5000);
+        return;
+      }
+      var script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    }).catch(function(){
+      alert('فشل تحميل المكتبة. تأكد من الاتصال بالإنترنت.');
+    });
+  }
+  
+  if(!window.html2canvas) {
+    alert('المكتبة لم تُحمَّل. حاول إعادة تحميل الصفحة.');
+    return;
+  }
     
     try {
       var canvas = await window.html2canvas(cardElement, {
