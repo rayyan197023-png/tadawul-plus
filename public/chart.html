@@ -7372,10 +7372,12 @@ cv.addEventListener('touchmove',e=>{
 if(drMode==='drag'&&drSelId!=null&&drDragP1){const d=state.drawings.find(d=>d.id===drSelId);if(d){const dx=pt.x-drX0,dy=pt.y-drY0;d.p1={x:drDragP1.x+dx,y:drDragP1.y+dy};if(d.p2&&drDragP2)d.p2={x:drDragP2.x+dx,y:drDragP2.y+dy};if(d.pts&&drDragPts)d.pts=drDragPts.map(p=>({x:p.x+dx,y:p.y+dy}));render();}return;}
 
  if(drMode==='pan'){
+  alert('2-PAN _chActive='+_chActive+' visible='+state.visible);
   // Cancel crosshair timer if panning started
   if(_chLongTimer&&!_chActive){clearTimeout(_chLongTimer);_chLongTimer=null;}
   doPan(e.touches[0].clientX-drag.x0);drag.moved=true;render();
  }
+
  // Update crosshair — only when long-press activated
  if(_chActive&&e.touches.length===1&&drawPhase===0&&!isPatternTool(state.tool)){
   const cpx=pt.x, cpy=pt.y;
