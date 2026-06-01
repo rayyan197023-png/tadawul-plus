@@ -496,6 +496,50 @@ const avgChange = (liveStocks && liveStocks.length > 0)
     mint:"#0aaa66",   coral:"#d93545",
     amber:C.amber,    teal:"#0596b0",  plasma:C.plasma,
   };
+    // ── دالة مشاركة بطاقة السهم كصورة ──
+  async function shareStockCard(cardElement, stockSym, stockName, price, change) {
+    if(!window.html2canvas) {
+      alert('جارٍ تحميل المكتبة، حاول مرّة أخرى');
+      return;
+    }
+    
+    try {
+      var canvas = await window.html2canvas(cardElement, {
+        backgroundColor: '#0a0e1a',
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+      
+      canvas.toBlob(async function(blob) {
+        if(!blob) return;
+        
+        var file = new File([blob], stockSym + '.png', { type: 'image/png' });
+        var shareData = {
+          files: [file],
+          title: stockName + ' - تداول+',
+          text: stockName + '\n' + price + ' ر.س (' + (change >= 0 ? '+' : '') + change + '%)',
+        };
+        
+        if(navigator.canShare && navigator.canShare(shareData)) {
+          await navigator.share(shareData);
+        } else {
+          // Fallback: حفظ الصورة
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = stockSym + '.png';
+          a.click();
+          URL.revokeObjectURL(url);
+        }
+      }, 'image/png');
+      
+    } catch(e) {
+      console.error('Share failed:', e);
+      alert('فشل المشاركة. حاول مرّة أخرى.');
+    }
+  }
+
   // ═══ PROBE مؤقّت: مصفوفة ارتباط L1–L10 على البيانات الحقيقية ═══
   function runCorrProbe() {
     var LKEYS = ['L1','L2','L3','L4','L5','L6','L7','L8','L9','L10'];
