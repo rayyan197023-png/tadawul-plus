@@ -765,10 +765,11 @@ function MacroTab(props) {
       if(cached) {
         var parsed = JSON.parse(cached);
         var ageHours = (Date.now() - parsed.savedAt) / (1000*60*60);
-        if(ageHours < CACHE_HOURS) {
-          processFred(parsed.data);
-          return;
-        }
+if(ageHours < CACHE_HOURS) {
+  processFred(parsed.data);
+  // إذا كان عندنا أقلّ من 9 مؤشّرات، اجلب جديداً
+  if(macroData.length >= 9) return;
+}
       }
     } catch(e){}
     
