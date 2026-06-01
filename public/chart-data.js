@@ -179,7 +179,7 @@ const DRAW_CATS=[
  {id:'angfan', l:'مروحة زاوية', icon:''},
  ]
  },
- {
+  {
  id:'patterns', title:'الأنماط',
  tools:[
  {id:'xabcd', l:'نمط XABCD', icon:'X'},
@@ -187,6 +187,8 @@ const DRAW_CATS=[
  {id:'hs', l:'رأس وكتفين', icon:'⊓'},
  {id:'elliott', l:'موجة إليوت', icon:''},
  {id:'cypher', l:'نمط Cypher', icon:''},
+ {id:'pitchfork', l:'شوكة أندروز', icon:'⫯'},
+ {id:'schiff', l:'شوكة Schiff', icon:'⫰'},
  ]
  },
 
