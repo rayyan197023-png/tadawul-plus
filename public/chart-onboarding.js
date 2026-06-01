@@ -121,8 +121,11 @@ function _showObStep(){
    <div style="font-size:12px;color:#6080a0;font-family:Cairo,sans-serif;line-height:1.7;margin-bottom:16px">${step.body}</div>
    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
     <button onclick="_endOnboarding()" style="background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#4a6080;font-size:11px;font-family:Cairo,sans-serif;padding:7px 14px;cursor:pointer">تخطي</button>
-    <div style="display:flex;gap:5px">
-     ${ONBOARDING_STEPS.map((_,i)=>`<div style="width:6px;height:6px;border-radius:50%;background:${i===_obStep?'#3b9eff':'rgba(59,158,255,0.25)'}"></div>`).join('')}
+    <div style="display:flex;align-items:center;gap:6px">
+     ${_obStep>0?`<button onclick="_prevObStep()" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#7090b0;font-size:11px;font-family:Cairo,sans-serif;padding:7px 12px;cursor:pointer">‹ السابق</button>`:''}
+     <div style="display:flex;gap:5px">
+      ${ONBOARDING_STEPS.map((_,i)=>`<div style="width:6px;height:6px;border-radius:50%;background:${i===_obStep?'#3b9eff':'rgba(59,158,255,0.25)'}"></div>`).join('')}
+     </div>
     </div>
     <button onclick="_nextObStep()" style="background:linear-gradient(135deg,#1a3a6e,#0d2248);border:1.5px solid rgba(59,158,255,0.5);border-radius:8px;color:#3b9eff;font-size:12px;font-weight:700;font-family:Cairo,sans-serif;padding:7px 16px;cursor:pointer">${_obStep===ONBOARDING_STEPS.length-1?'ابدأ!':'التالي'}</button>
    </div>
