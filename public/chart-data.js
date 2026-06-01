@@ -82,6 +82,10 @@ const IND_DEFAULTS = {
  PSAR:  {period:0,  color:'#f0abfc'},
  SUPERTREND:{period:10, color:'#4ade80'},
  EMA_RIBBON:{period:0, color:'#6366f1'},
+ PIVOT:    {period:0,  color:'#f59e0b'},  // Pivot Points (period=0 → daily auto)
+ HTF_EMA:  {period:50, color:'#f472b6'},  // Higher Timeframe EMA
+ VP:       {period:50, color:'#22d3ee'},  // Volume Profile lookback bars
+ ICHIMOKU: {period:0,  color:'#34d399'},  // Ichimoku (fixed 9/26/52)
 };
 
  const TF_MINS={'1m':1,'5m':5,'15m':15,'30m':30,'1H':60,'4H':240,'1D':1440,'1W':10080,'1M':43200};
