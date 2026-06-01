@@ -1,5 +1,4 @@
 'use client';
-import Script from 'next/script';
 /**
  * @module screens/AnalysisScreen
  * @description لوحة التحليل الاحترافي — تداول+
