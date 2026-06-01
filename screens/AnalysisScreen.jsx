@@ -1834,9 +1834,38 @@ return(
                         );
                       })()}
 
-                      {/* خط القصة — سعر + حجم + إشارة */}
-                      <div style={{marginTop:10,opacity:1}}>
-                        <StoryChart bars={bars} color={priceColor} score={health.score} h={52}/>
+                      {/* خط القصة -- سعر + حجم + إشارة + زر الكاميرا */}
+                      <div style={{marginTop:10,opacity:1,display:"flex",alignItems:"center",gap:8}}>
+                        {/* زرّ الكاميرا -- يسار الرسم البياني */}
+                        <button
+                          onClick={function(e){
+                            e.stopPropagation();
+                            haptic.tap();
+                            var card = e.currentTarget.closest('[data-stock-card]');
+                            shareStockCard(card, stk.sym, stk.name, stk.p.toFixed(2), stk.ch.toFixed(2));
+                          }}
+                          style={{
+                            width:36,height:36,
+                            borderRadius:10,
+                            background:"linear-gradient(135deg," + C.electric + "22," + C.electric + "11)",
+                            border:"1px solid " + C.electric + "44",
+                            display:"flex",alignItems:"center",justifyContent:"center",
+                            cursor:"pointer",
+                            boxShadow:"0 2px 8px " + C.electric + "22",
+                            flexShrink:0,
+                          }}
+                        >
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <rect x="3" y="7" width="18" height="13" rx="2" stroke={C.electric} strokeWidth="2"/>
+                            <path d="M8 7L9.5 5h5L16 7" stroke={C.electric} strokeWidth="2" strokeLinejoin="round"/>
+                            <circle cx="12" cy="13" r="3.5" stroke={C.electric} strokeWidth="2"/>
+                          </svg>
+                        </button>
+                        
+                        {/* الرسم البياني */}
+                        <div style={{flex:1,minWidth:0}}>
+                          <StoryChart bars={bars} color={priceColor} score={health.score} h={52}/>
+                        </div>
                       </div>
 
                       {/* ══ بطاقة القرار الثنائية — Kahneman ══
