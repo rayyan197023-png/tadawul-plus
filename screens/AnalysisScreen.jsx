@@ -491,6 +491,40 @@ const avgChange = (liveStocks && liveStocks.length > 0)
   };
     // ── دالة مشاركة بطاقة السهم كصورة ──
 async function shareStockCard(cardElement, stockSym, stockName, price, change) {
+  try {
+    var canvas = await html2canvas(cardElement, {
+      backgroundColor: '#0a0e1a',
+      scale: 2,
+      useCORS: true,
+      logging: false,
+    });
+    
+    canvas.toBlob(async function(blob) {
+      if(!blob) return;
+      
+      var file = new File([blob], stockSym + '.png', { type: 'image/png' });
+      var shareData = {
+        files: [file],
+        title: stockName + ' - تداول+',
+        text: stockName + '\n' + price + ' ر.س (' + (change >= 0 ? '+' : '') + change + '%)',
+      };
+      
+      if(navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+      } else {
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = stockSym + '.png';
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    }, 'image/png');
+  } catch(e) {
+    console.error('Share failed:', e);
+    alert('فشل المشاركة. حاول مرّة أخرى.');
+  }
+}
   // تحميل html2canvas ديناميكياً إن لم يكن موجوداً
   if(!window.html2canvas) {
     await new Promise(function(resolve, reject){
