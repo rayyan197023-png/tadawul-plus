@@ -87,8 +87,38 @@ await new Promise(resolve => setTimeout(resolve, 300));
       }
     });
 
-    out.oilPrice = out.oilPrice ?? null;
-    out.vix      = out.vixPrice ?? null;
+// 🆕 احفظ قيم احتياطية معروفة (آخر مرّة عملت)
+const FALLBACK_VALUES: Record<string, number> = {
+  oilPrice: 97.5,
+  brentPrice: 102.75,
+  natgasPrice: 3.10,
+  vixPrice: 15.74,
+  sp500Price: 7580.06,
+  nasdaqPrice: 26972.62,
+  dowPrice: 51032.46,
+  dxyPrice: 119.28,
+  fedratePrice: 3.62,
+  t10Price: 4.45,
+  cpiPrice: 332.40,
+  coreCpiPrice: 335.42,
+  payrollsPrice: 158736,
+  unratePrice: 4.3,
+  yieldGapPrice: 0.47,
+  saudiGdpPrice: 1239804533333.33,
+  saudiCpiPrice: 117.28,
+  saudiInflationPrice: 2.33,
+  saudiReservesPrice: 365830.33,
+};
+
+// تطبيق fallback على القيم null
+Object.keys(FALLBACK_VALUES).forEach(function(k){
+  if(out[k] === null) {
+    out[k] = FALLBACK_VALUES[k];
+  }
+});
+
+out.oilPrice = out.oilPrice ?? null;
+out.vix      = out.vixPrice ?? null;
 
     if (!anyOk) {
       return new NextResponse(
