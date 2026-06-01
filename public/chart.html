@@ -10601,9 +10601,7 @@ document.fonts.ready.then(()=>{[0,100,300].forEach(t=>setTimeout(sizeChart,t));}
 // ═══ AI DRAW ON CHART ═══
 let _aiDrawMode=null;
 let _shariahFilter=false; // فلتر الامتثال الشرعي
-let _pivotTypeCycle=['traditional','fibonacci','camarilla']; // 'scalper' or 'investor'
 let _aiAnnotations=[]; // {type, price, price2, label, color, idx1, idx2}
-
 function applyAIDrawingsToChart(){
   // Show mode selector modal
   const modal=document.createElement('div');
