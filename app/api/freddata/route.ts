@@ -26,12 +26,11 @@ const SERIES: Record<string, string> = {
   unrate:    'UNRATE',       // معدّل البطالة
   yieldGap:  'T10Y2Y',       // منحنى العائد (10y - 2y)
   
-  // ── 🇸🇦 الاقتصاد السعودي (5 جديدة) ──
-  saudiGdp:      'MKTGDPSAA646NWDB',  // GDP السعوديّ
-  saudiCpi:      'CPALTT01SAM659N',   // التضخّم السعوديّ
-  saudiReserves: 'TRESEGSAM194N',     // الاحتياطيّات النقديّة
-  dubaiOil:      'POILDUBUSDM',       // نفط دبي (مرجع)
-  saudiRate:     'IRSTCI01SAM156N',   // الفائدة السعوديّة
+  // ── 🇸🇦 الاقتصاد السعودي ──
+  saudiGdp:      'MKTGDPSAA646NWDB',     // GDP السعوديّ (سنويّ)
+  saudiCpi:      'SAUCPALTT01IXOBM',     // ✨ التضخّم الشهريّ (الصحيح!)
+  saudiInflation:'SAUCPALTT01GYM',       // ✨ معدّل التضخّم السنويّ
+  saudiReserves: 'TRESEGSAM194N',        // الاحتياطيّات (موجودة ✅)
 };
 
 async function fetchSeries(seriesId: string, limit: number): Promise<number[]> {
