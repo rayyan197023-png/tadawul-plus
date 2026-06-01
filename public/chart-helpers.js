@@ -218,10 +218,16 @@ const API_CONFIG = {
 }
 
 // ── Zoom Controls ────────────────────────────────────
+// Initialize default pivot type if not set
+if(typeof state!=='undefined'&&!state.pivotType){
+  state.pivotType='traditional';
+}
+
 function cyclePivotType(){
   const types=['traditional','fibonacci','camarilla'];
   const cur=types.indexOf(state.pivotType||'traditional');
   state.pivotType=types[(cur+1)%types.length];
+  saveSettings&&saveSettings();
   const lbl={'traditional':'تقليدي','fibonacci':'فيبوناتشي','camarilla':'كامارا'};
   const t=document.getElementById('toast');
   if(t){t.textContent='Pivot Points: '+lbl[state.pivotType];t.style.display='block';t.style.opacity='1';setTimeout(()=>t.style.opacity='0',2000);}
