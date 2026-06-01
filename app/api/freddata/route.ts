@@ -70,7 +70,7 @@ for (const k of keys) {
     results.push([]);
   }
   // 100ms delay between requests
-  await new Promise(resolve => setTimeout(resolve, 100));
+await new Promise(resolve => setTimeout(resolve, 250));
 }
 
     const out: Record<string, any> = {};
