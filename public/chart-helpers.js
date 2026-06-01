@@ -198,23 +198,14 @@ const API_CONFIG = {
       if(!r.ok) throw new Error('HTTP '+r.status);
       const data = await r.json();
       
-      if(type === 'candles') {
-        return data.bars || data.data || data.ohlcv || data;
-      } 
-      // Unwrap sahmk response shapes
-      if(type === 'candles') {
-        return data.bars || data.data || data.ohlcv || data;
-      }
-      if(type === 'ticker') {
-        return data.quote || data.data || data;
-      }
-            if(type === 'stocks') {
-        return data.results || data.companies || data.data || data;
-      }
-      if(type === 'info') {
-        return data.company || data.data || data;
-      }
-      return data;
+            // Unwrap sahmk response shapes by endpoint type
+      const unwrap = {
+        candles: d => d.bars || d.data || d.ohlcv || d,
+        ticker:  d => d.quote || d.data || d,
+        stocks:  d => d.results || d.companies || d.data || d,
+        info:    d => d.company || d.data || d,
+      };
+      return (unwrap[type] || (d => d))(data);
     } catch(e) {
       console.warn('[sahmk API]', type, e.message);
       return null;
