@@ -717,13 +717,77 @@ function CalendarTab(props) {
 
 function MacroTab(props) {
   var tp=props.p?props.p:props;
-  var sub=tp.sub, setSub=tp.setSub;
-  var macroFilter=tp.macroFilter||"all", setMacroFilter=tp.setMacroFilter||function(){};
-  var stocksLive=tp.stocksLive||[];
   var BOX=tp.BOX, SHD=tp.SHD;
-  var filters=[{k:"all",l:"الكل"},{k:"growth",l:"النمو"},{k:"inflation",l:"التضخم"},{k:"market",l:"السوق"}];
-  var catMap={gdp:"growth",pmi:"growth",trade:"growth",cpi:"inflation",rate:"inflation",unemp:"growth",oil:"market",tadawul:"market"};
-  var filtered=macroFilter==="all"?MACRO:MACRO.filter(function(m){return catMap[m.id]===macroFilter;});
+  var macroFilter=tp.macroFilter||"all", setMacroFilter=tp.setMacroFilter||function(){};
+
+  var [macroData, setMacroData] = useState([]);
+  var [loading, setLoading] = useState(true);
+
+  useEffect(function(){
+    var CACHE_KEY = 'tdw_fred_macro_cache';
+    var CACHE_HOURS = 168; // 7 أيام
+    
+    function processFred(d){
+      if(!d) return;
+      var items = [];
+      function build(key, label, period, desc, unit, color, cat){
+        var hist = d[key+'History'];
+        var val = d[key+'Price'];
+        if(!Array.isArray(hist) || hist.length < 2 || typeof val !== 'number') return;
+        var prev = hist[hist.length-2];
+        items.push({
+          id: key, label: label, val: Math.round(val*100)/100,
+          prev: Math.round(prev*100)/100,
+          unit: unit, period: period, desc: desc, color: color, cat: cat,
+          trend: hist.slice(-5),
+        });
+      }
+      
+      // 🇸🇦 السعوديّة
+      build('saudiGdp', 'الناتج المحلي السعودي', 'سنوي', 'GDP السعوديّ بالدولار', 'مليار $', '#10c97e', 'saudi');
+      build('saudiCpi', 'مؤشّر الأسعار السعودي', 'شهري', 'CPI السعودي', '', '#22d3ee', 'saudi');
+      build('saudiInflation', 'التضخّم السعودي', 'شهري', 'معدّل التضخّم السنوي', '%', '#f59e0b', 'saudi');
+      build('saudiReserves', 'الاحتياطيات النقدية', 'شهري', 'احتياطيّات ساما', 'مليون $', '#d4a843', 'saudi');
+      
+      // 🇺🇸 العالميّة المؤثّرة
+      build('cpi', 'CPI الأمريكي', 'شهري', 'مؤشّر أسعار المستهلك', '', '#f04f5a', 'us');
+      build('coreCpi', 'Core CPI', 'شهري', 'CPI بدون طعام/طاقة', '', '#f04f5a', 'us');
+      build('payrolls', 'الوظائف الأمريكية', 'شهري', 'Non-Farm Payrolls', 'ألف', '#10c97e', 'us');
+      build('unrate', 'البطالة الأمريكية', 'شهري', 'معدّل البطالة %', '%', '#f59e0b', 'us');
+      build('yieldGap', 'منحنى العائد', 'يومي', '10y - 2y · إشارة ركود', '%', '#06b6d4', 'us');
+      
+      setMacroData(items);
+      setLoading(false);
+    }
+    
+    try {
+      var cached = localStorage.getItem(CACHE_KEY);
+      if(cached) {
+        var parsed = JSON.parse(cached);
+        var ageHours = (Date.now() - parsed.savedAt) / (1000*60*60);
+        if(ageHours < CACHE_HOURS) {
+          processFred(parsed.data);
+          return;
+        }
+      }
+    } catch(e){}
+    
+    fetch('/api/freddata').then(function(r){return r.ok?r.json():null;}).then(function(d){
+      if(!d) { setLoading(false); return; }
+      processFred(d);
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ data: d, savedAt: Date.now() }));
+      } catch(e){}
+    }).catch(function(){ setLoading(false); });
+  }, []);
+
+  var filters=[
+    {k:"all", l:"الكل"},
+    {k:"saudi", l:"🇸🇦 السعودية"},
+    {k:"us", l:"🇺🇸 العالميّة"},
+  ];
+  var filtered = macroFilter==="all" ? macroData : macroData.filter(function(m){return m.cat===macroFilter;});
+
   return(
     <div style={{position:"relative",zIndex:1}}>
       <div style={{padding:"10px 16px 6px",display:"flex",gap:6,overflowX:"auto",borderBottom:"1px solid "+C.line}}>
@@ -734,20 +798,24 @@ function MacroTab(props) {
           </button>
         );})}
       </div>
+      {loading && (
+        <div style={{padding:"40px 20px",textAlign:"center",color:C.smoke,fontSize:12}}>
+          جارٍ تحميل البيانات من FRED...
+        </div>
+      )}
       <div style={{padding:"12px 16px",display:"flex",flexDirection:"column",gap:10}}>
         {filtered.map(function(m){
-          var isUp=m.val>=m.prev;
-          var changePct=m.prev!==0?((m.val-m.prev)/Math.abs(m.prev)*100).toFixed(1):0;
-          var barW=Math.min(100,Math.abs(m.val/Math.max(m.val,m.prev))*100);
+          var isUp = m.val>=m.prev;
+          var changePct = m.prev!==0 ? ((m.val-m.prev)/Math.abs(m.prev)*100).toFixed(2) : 0;
           return(
             <div key={m.id} className="card-enter" style={{background:BOX,borderRadius:16,padding:"14px 16px",border:"1px solid "+m.color+"22",boxShadow:SHD,position:"relative",overflow:"hidden"}}>
               <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,transparent,"+m.color+",transparent)"}}/>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
                 <div style={{textAlign:"left"}}>
-                  <div className="num-lg" style={{fontSize:22,fontWeight:900,color:m.color}}>{m.val}<span style={{fontSize:11,color:C.smoke,marginRight:3}}> {m.unit}</span></div>
+                  <div className="num-lg" style={{fontSize:20,fontWeight:900,color:m.color,direction:"ltr"}}>{m.val.toLocaleString()}<span style={{fontSize:10,color:C.smoke,marginRight:3}}> {m.unit}</span></div>
                   <div style={{display:"flex",alignItems:"center",gap:4,marginTop:2}}>
                     <span style={{fontSize:10,color:isUp?C.mint:C.coral,fontWeight:700}}>{isUp?"+":""}{changePct}%</span>
-                    <span style={{fontSize:9,color:C.smoke}}>السابق: {m.prev}</span>
+                    <span style={{fontSize:9,color:C.smoke}}>السابق: {m.prev.toLocaleString()}</span>
                   </div>
                 </div>
                 <div style={{textAlign:"right"}}>
@@ -758,26 +826,15 @@ function MacroTab(props) {
                   </div>
                 </div>
               </div>
-              <div style={{marginTop:8}}>
-                <div style={{display:"flex",alignItems:"center",gap:8}}>
-                  <div style={{flex:1}}>
-                    <MiniLine data={m.trend} color={m.color} w={120} h={28}/>
-                  </div>
-                  <div style={{display:"flex",gap:2,alignItems:"flex-end",height:28}}>
-                    {(function(){
-                      var mx2=Math.max.apply(null,m.trend.map(function(v){return Math.abs(v);}));
-                      return m.trend.map(function(v,ti){
-                        var h=Math.max(3,(Math.abs(v)/(mx2||1))*24);
-                        var isLast=ti===m.trend.length-1;
-                        return(<div key={ti} style={{width:6,height:h,borderRadius:2,background:isLast?m.color:m.color+"55",transition:"height .4s ease",boxShadow:isLast?"0 0 6px "+m.color+"88":"none"}}/>);
-                      });
-                    }())}
-                  </div>
-                </div>
-                <div style={{display:"flex",justifyContent:"space-between",marginTop:3}}>
-                  <span style={{fontSize:7,color:C.ash}}>4 فترات سابقة</span>
-                  <span style={{fontSize:7,color:m.color,fontWeight:700}}>الآن</span>
-                </div>
+              <div style={{display:"flex",gap:2,alignItems:"flex-end",height:28,marginTop:8}}>
+                {(function(){
+                  var mx=Math.max.apply(null,m.trend.map(function(v){return Math.abs(v);}));
+                  return m.trend.map(function(v,ti){
+                    var h=Math.max(3,(Math.abs(v)/(mx||1))*24);
+                    var isLast=ti===m.trend.length-1;
+                    return(<div key={ti} style={{flex:1,height:h,borderRadius:2,background:isLast?m.color:m.color+"55",boxShadow:isLast?"0 0 6px "+m.color+"88":"none"}}/>);
+                  });
+                })()}
               </div>
             </div>
           );
