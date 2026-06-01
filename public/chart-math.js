@@ -29,7 +29,7 @@ const bb=(c,n=20,k=2)=>{const ma=sma(c,n);return c.map((_,i)=>{if(ma[i]==null)re
 const stoch=(h,l,c,n=14)=>c.map((_,i)=>{if(i<n-1)return null;const hh=Math.max(...h.slice(i-n+1,i+1)),ll=Math.min(...l.slice(i-n+1,i+1));return hh===ll?50:((c[i]-ll)/(hh-ll))*100;});
 const atr=(data,n=14)=>{const tr=data.map((d,i)=>i===0?d.hi-d.lo:Math.max(d.hi-d.lo,Math.abs(d.hi-data[i-1].c),Math.abs(d.lo-data[i-1].c)));return sma(tr,n);};
 const obv=(c,v)=>{let o=[0];for(let i=1;i<c.length;i++)o.push(o[i-1]+(c[i]>c[i-1]?v[i]:c[i]<c[i-1]?-v[i]:0));return o;};
-const vwap=(h,l,c2,v,candles)=>{let ct=0,cv=0,ct2=0;return c2.map((_,i)=>{const tp=(h[i]+l[i]+c2[i])/3;ct+=tp*v[i];cv+=v[i];ct2+=tp*tp*v[i];const vw=cv?ct/cv:null;if(vw==null)return null;const variance=(ct2/cv)-(vw*vw);const std=Math.sqrt(Math.max(0,variance));return{v:vw,u1:vw+std,u2:vw+2*std,d1:vw-std,d2:vw-2*std};});};
+const vwap=(h,l,c2,v,candles)=>{let ct=0,cVol=0,ct2=0;return c2.map((_,i)=>{const tp=(h[i]+l[i]+c2[i])/3;ct+=tp*v[i];cVol+=v[i];ct2+=tp*tp*v[i];const vw=cVol?ct/cVol:null;if(vw==null)return null;const variance=(ct2/cVol)-(vw*vw);const std=Math.sqrt(Math.max(0,variance));return{v:vw,u1:vw+std,u2:vw+2*std,d1:vw-std,d2:vw-2*std};});};
 const vwap_d=(h,l,c2,v,candles)=>{let ct=0,cv=0,ct2=0,prevD=null;return c2.map((_,i)=>{const t=candles&&candles[i]?new Date(candles[i].t):null;const ds=t?t.toDateString():null;if(ds&&ds!==prevD){ct=0;cv=0;ct2=0;prevD=ds;}const tp=(h[i]+l[i]+c2[i])/3;ct+=tp*v[i];cv+=v[i];ct2+=tp*tp*v[i];const vw=cv?ct/cv:null;if(vw==null)return null;const variance=(ct2/cv)-(vw*vw);const std=Math.sqrt(Math.max(0,variance));return{v:vw,u1:vw+std,u2:vw+2*std,d1:vw-std,d2:vw-2*std};});};
 const adx=(h,l,c,n=14)=>{
   // Wilder's ADX -- proper RMA with correct array alignment
