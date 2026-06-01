@@ -7976,11 +7976,6 @@ async function loadStockList(){
       p:    0, ch:0, pct:0, // الأسعار تأتي عند فتح السهم عبر loadStk
     }))
     .filter(s=>s.sym);
-      // ── تشخيص مؤقّت: عرض عناصر فيها "ريت" أو "حقوق" ──
-  const samples=raw.filter(s=>{
-   const nm=(s.name_ar||'')+' '+(s.name_en||'');
-   return /ريت|حقوق|reit|right/i.test(nm) || (s.market&&s.market!=='TASI');
-  }).slice(0,6);
   if(normalized.length > 0){ 
     // Merge with STOCKS array (API takes priority)
     normalized.forEach(ns=>{
