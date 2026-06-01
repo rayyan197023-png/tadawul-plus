@@ -8,11 +8,9 @@
 function normalizeCandles(rawData){
   if(!Array.isArray(rawData)||!rawData.length)return [];
   const sample=rawData[0];
-  // Detect format by field names
-  const isYahoo   = 'adjclose' in sample||'Adj Close' in sample;
+  // Detect format by field names (Generic handles Yahoo/Tadawul/sahmk via field aliases)
   const isAlphaV  = '1. open' in sample;
   const isBinance = Array.isArray(sample); // Binance returns arrays
-  const isTadawul = 'lastTradedPrice' in sample||'close' in sample;
   
   return rawData.map((d,i)=>{
     let o,hi,lo,c,v,t;
