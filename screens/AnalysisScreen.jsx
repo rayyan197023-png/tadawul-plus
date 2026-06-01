@@ -198,15 +198,7 @@ function AnalysisScreenInner({ commData: extCommData } = {}) {
     }).catch(function(){});
   },[]);
 
-  // ── تحميل html2canvas للمشاركة كصورة ──
-  useEffect(function(){
-    if(window.html2canvas) return;
-    var script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-    script.async = true;
-    document.head.appendChild(script);
-  },[]);
-
+  
   // ── تحديث MACRO من الأسعار الحية (commData من AppShell) ──────────
   // هذا يجعل محرك 9 الطبقات يعمل بأسعار نفط/ذهب/دولار حقيقية
   const liveMACRO = React.useMemo(function() {
