@@ -179,7 +179,7 @@ const DRAW_CATS=[
  {id:'angfan', l:'مروحة زاوية', icon:''},
  ]
  },
-  {
+   {
  id:'patterns', title:'الأنماط',
  tools:[
  {id:'xabcd', l:'نمط XABCD', icon:'X'},
