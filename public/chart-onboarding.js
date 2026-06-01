@@ -38,8 +38,29 @@ const ONBOARDING_STEPS = [
 
 let _obStep = 0;
 
+// حقن @keyframes للـ pulse animation (مرّة واحدة فقط)
+function _injectObStyles(){
+ if(document.getElementById('ob-styles'))return;
+ const style=document.createElement('style');
+ style.id='ob-styles';
+ style.textContent=`
+  @keyframes obPulse {
+   0%   { box-shadow: 0 0 0 4px rgba(59,158,255,0.25), 0 0 20px rgba(59,158,255,0.4); }
+   50%  { box-shadow: 0 0 0 8px rgba(59,158,255,0.15), 0 0 30px rgba(59,158,255,0.6); }
+   100% { box-shadow: 0 0 0 4px rgba(59,158,255,0.25), 0 0 20px rgba(59,158,255,0.4); }
+  }
+ `;
+ document.head.appendChild(style);
+}
+
 function startOnboarding(){
  if(localStorage.getItem(ONBOARDING_KEY)) return;
+ // انتظر تحميل البيانات قبل البدء
+ if(typeof chartReady!=='undefined'&&!chartReady){
+  setTimeout(startOnboarding, 500);
+  return;
+ }
+ _injectObStyles();
  _obStep = 0;
  _showObStep();
 }
