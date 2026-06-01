@@ -7,7 +7,6 @@
 const sma=(d,n)=>d.map((_,i)=>i<n-1?null:d.slice(i-n+1,i+1).reduce((a,b)=>a+b,0)/n);
  
 const ema=(d,n)=>{const k=2/(n+1);const e=[];d.forEach((v,i)=>{if(i<n-1)e.push(null);else if(i===n-1)e.push(d.slice(0,n).reduce((a,b)=>a+b,0)/n);else e.push(v*k+e[i-1]*(1-k));});return e;}
-const _ema2=(d,n)=>{const k=2/(n+1);let pv=null;return d.map(v=>{pv=pv==null?(v||0):(v||0)*k+pv*(1-k);return pv;});};;
 const rsi=(c,n=14)=>{
   // Wilder's smoothing (RMA) -- standard RSI (Welles Wilder 1978)
   const r=[];let ag=0,al=0,seeded=false;
