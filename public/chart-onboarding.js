@@ -141,6 +141,12 @@ function _nextObStep(){
  else _showObStep();
 }
 
+function _prevObStep(){
+ if(_obStep<=0)return;
+ _obStep--;
+ _showObStep();
+}
+
 function _endOnboarding(){
  const old = document.getElementById('ob-overlay');
  if(old){ old.style.opacity='0'; old.style.transition='opacity 0.3s'; setTimeout(()=>old.remove(),300); }
