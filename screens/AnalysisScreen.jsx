@@ -653,6 +653,10 @@ async function shareStockCard(cardElement, stockSym, stockName, price, change) {
     }}
     className="tadawul-root"
     >
+    <Script
+      src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+      strategy="afterInteractive"
+    />
 
       {/* ══ CSS الأساسي ══ */}
       <style>{`
