@@ -724,7 +724,7 @@ function MacroTab(props) {
   var [loading, setLoading] = useState(true);
 
   useEffect(function(){
-    var CACHE_KEY = 'tdw_fred_macro_cache';
+var CACHE_KEY = 'tdw_fred_macro_cache_v2';
     var CACHE_HOURS = 168; // 7 أيام
     
     function processFred(d){
