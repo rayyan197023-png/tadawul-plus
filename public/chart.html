@@ -7288,6 +7288,7 @@ cv.addEventListener('touchmove',e=>{
  }
  // Y-AXIS DRAG 
  if(yDrag.active){
+ alert('3-Y_DRAG _chActive='+_chActive+' yScale='+yScale.toFixed(2));
  if(e.touches.length===0){yDrag.active=false;return;}
  const dy=yDrag.y0-e.touches[0].clientY; // up=positive
  yScale=Math.max(0.1,Math.min(10,yDrag.scale0*Math.pow(1.005,dy)));
