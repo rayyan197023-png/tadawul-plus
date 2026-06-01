@@ -7718,13 +7718,6 @@ function openSheet(id){
    ar.style.display='block';
    at.textContent=((state._alertType||'above')==='above'?'▲ اختراق صعود فوق ':'▼ هبوط تحت ')+state.alert.toFixed(2)+' ر.س';
  } else if(ar){ ar.style.display='none'; }
- // Update active alert display (new UI)
- const _aar=document.getElementById('alert-active-row');
- const _aat=document.getElementById('alert-active-text');
- if(state.alert!=null&&_aar&&_aat){
-   _aar.style.display='block';
-   _aat.textContent=((state._alertType||'above')==='above'?'▲ اختراق صعود فوق ':'▼ هبوط تحت ')+state.alert.toFixed(2)+' ر.س';
- } else if(_aar){ _aar.style.display='none'; }
  }
  document.getElementById('sbg').classList.add('show');
  document.getElementById('sheet-'+id).classList.add('show');
