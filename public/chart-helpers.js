@@ -2,13 +2,6 @@
 // chart-helpers.js -- Helper Functions
 // ═══════════════════════════════════════════════
 
-// CANDLE GENERATOR -- REMOVED
-// تم حذف مولّد الشموع الوهمية. الشارت يعتمد بيانات سهمك الحقيقية فقط.
-// عند فشل الـ API يُعرض state.dataError وتُحفظ آخر شموع ناجحة.
-function genCandles(){
-  return null; // لا بيانات وهمية -- المتصل يتعامل مع null
-}
-
 // ── Candle Normalizer for API integration ────────────────────────
 // Call this when loading candles from any external API
 // Handles: Tadawul API, Alpha Vantage, Binance, Yahoo Finance formats
