@@ -110,8 +110,24 @@ function _showObStep(){
 
  if(!isCenter){
   const el = step.target ? document.getElementById(step.target) : null;
-  const r = el ? el.getBoundingClientRect() : {bottom: 80};
-  card.style.top = (r.bottom + 16) + 'px';
+  const r = el ? el.getBoundingClientRect() : {bottom: 80, left: 0, right: 0};
+  // الموضع العمودي: إن لم يكفِ المكان أسفل، اعرض فوق
+  const cardH = 240; // تقدير تقريبي
+  const cardW = 280; // عرض الـ card
+  const vh = window.innerHeight;
+  const vw = window.innerWidth;
+  let topPos = r.bottom + 16;
+  // إذا كان لا يكفي المساحة أسفل → اعرض فوق
+  if(topPos + cardH > vh - 16){
+   topPos = Math.max(16, r.top - cardH - 16);
+  }
+  card.style.top = topPos + 'px';
+  // التوسيط الأفقي مع clamping داخل الشاشة
+  const tgtCenter = el ? (r.left + r.right) / 2 : vw / 2;
+  let leftPos = tgtCenter - cardW / 2;
+  leftPos = Math.max(8, Math.min(vw - cardW - 8, leftPos));
+  card.style.left = leftPos + 'px';
+  card.style.transform = 'none'; // إلغاء translateX(-50%) الموجودة في الـ cssText
  }
 
  card.innerHTML = `
