@@ -314,7 +314,7 @@ function _renderDivOnPanel(ctx,indArr,priceArr,indColor,tyS,tx,top,ph,start,end,
     });
     // Label
     const mx=(x1+x2)/2, labelY=Math.min(iy1,iy2)-10;
-    const lbl=dv.type==='bull'?'↑ تباعد إيجابي':'↓ تباعد سلبي';
+    const lbl=dv.type==='bullish'?'↑ تباعد إيجابي':'↓ تباعد سلبي';
     ctx.font='bold 7px Cairo,sans-serif';
     const tw=ctx.measureText(lbl).width+10;
     ctx.fillStyle=clr+'30';ctx.strokeStyle=clr+'70';ctx.lineWidth=0.7;
