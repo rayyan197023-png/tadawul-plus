@@ -36,6 +36,7 @@ import {
 import { savePredictions, evaluatePredictions } from '../engines/predictionTracker';
 import Tooltip from '../components/Tooltip';
 import { useHaptic } from '../hooks/useHaptic';
+import html2canvas from 'html2canvas';
 
 // ══ Error Boundary ══
 class AnalysisErrorBoundary extends React.Component {
