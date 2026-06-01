@@ -55,7 +55,11 @@ function dHandles(dr){
  return dr.pts.map((p,i)=>({x:p.x,y:p.y,i}));
  }
  if(!dr.p2) return[{x:dr.p1.x,y:dr.p1.y,i:0}];
- if(dr.tool==='hline') return[{x:80,y:dr.p1.y,i:0},{x:220,y:dr.p1.y,i:1}];
+ if(dr.tool==='hline'){
+  // Handles responsive: 15% و 60% من عرض الرسم (بدل قيم ثابتة)
+  const W=(cv&&cv.offsetWidth)?cv.offsetWidth-38:300;
+  return[{x:Math.max(40,W*0.15),y:dr.p1.y,i:0},{x:Math.max(120,W*0.60),y:dr.p1.y,i:1}];
+ }
  if(['eqchan','regchan','stddev'].includes(dr.tool)){
  const dx=dr.p2.x-dr.p1.x, dy=dr.p2.y-dr.p1.y;
  const len=Math.sqrt(dx*dx+dy*dy)||1;
