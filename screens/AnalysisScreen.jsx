@@ -492,42 +492,116 @@ const avgChange = (liveStocks && liveStocks.length > 0)
     // ── دالة مشاركة بطاقة السهم كصورة ──
 async function shareStockCard(cardElement, stockSym, stockName, price, change) {
   try {
-var canvas = await html2canvas(cardElement, {
-  backgroundColor: '#0a0e1a',
-  scale: 1,
-  useCORS: false,
-  logging: false,
-  allowTaint: true,
-  foreignObjectRendering: false,
-  removeContainer: true,
-});
+    // إنشاء canvas يدوي
+    var canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1080;
+    var ctx = canvas.getContext('2d');
     
+    // خلفية متدرّجة
+    var grad = ctx.createLinearGradient(0, 0, 0, 1080);
+    grad.addColorStop(0, '#0a0e1a');
+    grad.addColorStop(1, '#1a2332');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 1080, 1080);
+    
+    // إطار ذهبيّ علوي
+    ctx.fillStyle = '#d4a843';
+    ctx.fillRect(0, 0, 1080, 8);
+    
+    // نصّ "تداول+"
+    ctx.fillStyle = '#d4a843';
+    ctx.font = 'bold 32px Cairo, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.direction = 'rtl';
+    ctx.fillText('TADAWUL+', 1040, 90);
+    
+    // اسم السهم
+    ctx.fillStyle = '#f0f6ff';
+    ctx.font = 'bold 72px Cairo, sans-serif';
+    ctx.fillText(stockName, 1040, 220);
+    
+    // الرمز
+    ctx.fillStyle = '#90a4c8';
+    ctx.font = '36px Cairo, sans-serif';
+    ctx.fillText(stockSym, 1040, 280);
+    
+    // السعر (كبير)
+    ctx.fillStyle = '#f0f6ff';
+    ctx.font = 'bold 180px IBM Plex Mono, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(price, 540, 530);
+    
+    // ر.س
+    ctx.fillStyle = '#90a4c8';
+    ctx.font = '40px Cairo, sans-serif';
+    ctx.fillText('ر.س', 540, 590);
+    
+    // التغيّر
+    var isUp = change >= 0;
+    var changeColor = isUp ? '#10c97e' : '#f04f5a';
+    ctx.fillStyle = changeColor;
+    ctx.font = 'bold 84px IBM Plex Mono, monospace';
+    ctx.fillText((isUp ? '+' : '') + change + '%', 540, 720);
+    
+    // خط فاصل
+    ctx.strokeStyle = '#1f2940';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(80, 850);
+    ctx.lineTo(1000, 850);
+    ctx.stroke();
+    
+    // الموقع
+    ctx.fillStyle = '#90a4c8';
+    ctx.font = '32px Cairo, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('tadawul-plus.vercel.app', 540, 950);
+    
+    // التاريخ
+    var now = new Date();
+    var dateStr = now.getDate() + '/' + (now.getMonth() + 1) + '/' + now.getFullYear();
+    ctx.font = '24px Cairo, sans-serif';
+    ctx.fillStyle = '#6a7a9a';
+    ctx.fillText(dateStr, 540, 1000);
+    
+    // تحويل لصورة
     canvas.toBlob(async function(blob) {
-      if(!blob) return;
+      if(!blob) {
+        alert('فشل إنشاء الصورة');
+        return;
+      }
       
       var file = new File([blob], stockSym + '.png', { type: 'image/png' });
-      var shareData = {
-        files: [file],
-        title: stockName + ' - تداول+',
-        text: stockName + '\n' + price + ' ر.س (' + (change >= 0 ? '+' : '') + change + '%)',
-      };
       
-      if(navigator.canShare && navigator.canShare(shareData)) {
-        await navigator.share(shareData);
-      } else {
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = stockSym + '.png';
-        a.click();
-        URL.revokeObjectURL(url);
+      try {
+        if(navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: stockName + ' - تداول+',
+          });
+        } else {
+          // Fallback: تحميل الصورة
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = stockSym + '.png';
+          a.click();
+          URL.revokeObjectURL(url);
+        }
+      } catch(shareErr) {
+        if(shareErr.name !== 'AbortError') {
+          console.error('Share failed:', shareErr);
+        }
       }
     }, 'image/png');
+    
   } catch(e) {
-    console.error('Share failed:', e);
-    alert('فشل المشاركة. حاول مرّة أخرى.');
+    console.error('Canvas error:', e);
+    alert('فشل المشاركة');
   }
 }
+
 
   // ═══ PROBE مؤقّت: مصفوفة ارتباط L1–L10 على البيانات الحقيقية ═══
   function runCorrProbe() {
