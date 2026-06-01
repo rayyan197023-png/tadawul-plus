@@ -492,12 +492,15 @@ const avgChange = (liveStocks && liveStocks.length > 0)
     // ── دالة مشاركة بطاقة السهم كصورة ──
 async function shareStockCard(cardElement, stockSym, stockName, price, change) {
   try {
-    var canvas = await html2canvas(cardElement, {
-      backgroundColor: '#0a0e1a',
-      scale: 2,
-      useCORS: true,
-      logging: false,
-    });
+var canvas = await html2canvas(cardElement, {
+  backgroundColor: '#0a0e1a',
+  scale: 1,
+  useCORS: false,
+  logging: false,
+  allowTaint: true,
+  foreignObjectRendering: false,
+  removeContainer: true,
+});
     
     canvas.toBlob(async function(blob) {
       if(!blob) return;
