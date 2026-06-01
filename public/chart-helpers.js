@@ -294,7 +294,6 @@ function _renderDivOnPanel(ctx,indArr,priceArr,indColor,tyS,tx,top,ph,start,end,
   vis.slice(-3).forEach(dv=>{
     const x1=tx(dv.i1),x2=tx(dv.i2);
     const iy1=tyS(dv.ii1,mn2,mx2), iy2=tyS(dv.ii2,mn2,mx2);
-    const py1=tyS(dv.pi1,mn2,mx2), py2=tyS(dv.pi2,mn2,mx2);
     const clr=dv.color;
     // Shaded area on indicator
     ctx.fillStyle=clr+'18';
