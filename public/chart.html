@@ -7218,11 +7218,12 @@ cv.addEventListener('touchstart',e=>{
  _chActive=false;
  deselectDrawing();drMode='pan';drag.x0=e.touches[0].clientX;drag.off0=state.offset;drag.moved=false;
  const _chPt=pt;
- _chLongTimer=setTimeout(()=>{
+_chLongTimer=setTimeout(()=>{
   _chLongTimer=null;
   // Only activate if still panning (not drawing)
   if(drMode!=='pan'&&drMode!==null) return;
   _chActive=true;
+  drMode=null; // clear pan mode so render() doesn't show pan effects
   const _touches=cv._lastTouchPos;
   if(_touches){
    const CW2=(cv.offsetWidth||390)-38;
