@@ -7242,11 +7242,18 @@ cv.addEventListener('touchstart',e=>{
 
 cv.addEventListener('touchmove',e=>{
  if(menuDrag.active)return; // let document handler move the toolbar
- // DEBUG: show key state in title bar
- if(_chActive){
-  const _dbg='ACT='+_chActive+' VIS='+state.visible+' OFF='+state.offset+' yS='+yScale.toFixed(2)+' T='+e.touches.length+' DM='+drMode;
-  document.title=_dbg;
+ // DEBUG: show key state in floating overlay
+ if(!window._dbgBox){
+  const _b=document.createElement('div');
+  _b.id='_dbgBox';
+  _b.style.cssText='position:fixed;top:60px;left:8px;right:8px;background:rgba(255,0,0,0.85);color:#fff;font-family:monospace;font-size:11px;padding:6px 8px;border-radius:6px;z-index:99999;pointer-events:none;word-break:break-all';
+  document.body.appendChild(_b);
+  window._dbgBox=_b;
  }
+ if(_chActive){
+  window._dbgBox.textContent='ACT='+_chActive+' VIS='+state.visible+' OFF='+state.offset+' yS='+yScale.toFixed(2)+' T='+e.touches.length+' DM='+drMode;
+ }
+
  // ── Crosshair active: ONLY update crosshair, block all other actions ──
  if(_chActive&&e.touches.length===1){
   e.preventDefault();
