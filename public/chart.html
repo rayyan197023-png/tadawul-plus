@@ -7223,7 +7223,6 @@ cv.addEventListener('touchstart',e=>{
   // Only activate if still panning (not drawing)
   if(drMode!=='pan'&&drMode!==null) return;
   _chActive=true;
-  alert('5-CHACTIVE_START visible='+state.visible+' yScale='+yScale.toFixed(2)+' drMode='+drMode);
   const _touches=cv._lastTouchPos;
   if(_touches){
    const CW2=(cv.offsetWidth||390)-38;
