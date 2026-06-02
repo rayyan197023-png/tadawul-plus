@@ -7242,6 +7242,11 @@ cv.addEventListener('touchstart',e=>{
 
 cv.addEventListener('touchmove',e=>{
  if(menuDrag.active)return; // let document handler move the toolbar
+ // DEBUG: show key state in title bar
+ if(_chActive){
+  const _dbg='ACT='+_chActive+' VIS='+state.visible+' OFF='+state.offset+' yS='+yScale.toFixed(2)+' T='+e.touches.length+' DM='+drMode;
+  document.title=_dbg;
+ }
  // ── Crosshair active: ONLY update crosshair, block all other actions ──
  if(_chActive&&e.touches.length===1){
   e.preventDefault();
