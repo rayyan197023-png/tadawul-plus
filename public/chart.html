@@ -6823,6 +6823,17 @@ function cancelDrawing() {
  patPts=[];patTool=null;updateDrawBtn();render();
 }
 
+// Prevent Safari iOS double-tap zoom and gesture zoom
+document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
+document.addEventListener('gesturechange',e=>e.preventDefault(),{passive:false});
+document.addEventListener('gestureend',e=>e.preventDefault(),{passive:false});
+let _lastTouchEnd=0;
+document.addEventListener('touchend',e=>{
+ const now=Date.now();
+ if(now-_lastTouchEnd<=300){e.preventDefault();}
+ _lastTouchEnd=now;
+},{passive:false});
+
 // MOUSE 
 cv.addEventListener('mousedown', e => {
  if(e.button===2){e.preventDefault();const hi=dFind(...Object.values(getPt(e)));if(hi>=0){drSelId=state.drawings[hi].id;showDCtx(getPt(e).x,getPt(e).y);}return;}
