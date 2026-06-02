@@ -7330,7 +7330,6 @@ cv.addEventListener('touchmove',e=>{
  }
 
  if(e.touches.length===2||drMode==='pinch'){
- alert('1-PINCH touches='+e.touches.length+' drMode='+drMode+' _chActive='+_chActive);
  if(e.touches.length<2)return;
  const d=getTD(e);
  if(drag.d0>0)state.visible=Math.min(state.allCandles.length,Math.max(6,Math.round(drag.v0*drag.d0/Math.max(d,1))));
