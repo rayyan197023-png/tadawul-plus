@@ -6789,8 +6789,8 @@ cv.addEventListener('dragstart',e=>e.preventDefault(),{passive:false});
  
 // MOUSE 
 cv.addEventListener('mousedown', e => {
- if(e.button===2){e.preventDefault();const hi=dFind(...Object.values(getPt(e)));if(hi>=0){drSelId=state.drawings[hi].id;showDCtx(getPt(e).x,getPt(e).y);}return;}
- closeMenus();hideDCtx();
+ if(e.button===2){e.preventDefault();const hi=dFind(...Object.values(getPt(e)));if(hi>=0){drSelId=state.drawings[hi].id;}return;}
+ closeMenus();
  const pt = getPt(e);
 
  // Drawing mode
