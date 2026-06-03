@@ -7347,8 +7347,10 @@ if(drMode==='drag'&&drSelId!=null&&drDragP1){const d=state.drawings.find(d=>d.id
 
  if(drMode==='pan'){
   // Cancel crosshair timer if panning started
-  if(_chLongTimer&&!_chActive){clearTimeout(_chLongTimer);_chLongTimer=null;}
+  if(_chLongTimer){clearTimeout(_chLongTimer);_chLongTimer=null;}
+  _chActive=false; // make sure crosshair doesn't activate during pan
   doPan(e.touches[0].clientX-drag.x0);drag.moved=true;render();
+  return; // ⚠️ critical: block subsequent logic
  }
 
  // Update crosshair — only when long-press activated
