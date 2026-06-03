@@ -3949,68 +3949,7 @@ function render(){
   });
   ctx.restore();
  }
- // ── Volume Profile (VPVR) ──────────────────────────────────
- if(state.inds.includes('VP')&&sub.length>0){
-  const VP_BARS=24; // number of price levels
-  const VP_W=Math.min(80,CW*0.12); // width of profile on right side
-  const priceHi=Math.max(...sub.map(d=>d.hi));
-  const priceLo=Math.min(...sub.map(d=>d.lo));
-  const priceRng=priceHi-priceLo||0.001;
-  const bucketSz=priceRng/VP_BARS;
-  // Build volume buckets
-  const buckets=new Array(VP_BARS).fill(0);
-  const buyBuckets=new Array(VP_BARS).fill(0);
-  sub.forEach(d=>{
-   const mid=(d.hi+d.lo)/2;
-   const bi=Math.min(VP_BARS-1,Math.max(0,Math.floor((mid-priceLo)/bucketSz)));
-   buckets[bi]+=d.v;
-   // Approx buy volume (CLV)
-   const buyRatio=(d.c-d.lo)/(d.hi-d.lo||0.001);
-   buyBuckets[bi]+=d.v*buyRatio;
-  });
-  const maxVol=Math.max(...buckets,1);
-  // Find Point of Control (POC) — highest volume level
-  const pocIdx=buckets.indexOf(maxVol);
-  // Value Area (70% of total volume)
-  const totalVol=buckets.reduce((a,b)=>a+b,0);
-  let vaVol=0,vaLow=pocIdx,vaHigh=pocIdx;
-  while(vaVol<totalVol*0.7){
-   const upVol=vaHigh+1<VP_BARS?buckets[vaHigh+1]:0;
-   const dnVol=vaLow-1>=0?buckets[vaLow-1]:0;
-   if(upVol>=dnVol&&vaHigh+1<VP_BARS){vaHigh++;vaVol+=upVol;}
-   else if(dnVol>0&&vaLow-1>=0){vaLow--;vaVol+=dnVol;}
-   else break;
-  }
-  ctx.save();
-  for(let i=0;i<VP_BARS;i++){
-   const barH=Math.max(1,(cH/VP_BARS)-0.5);
-   const barY=ty(priceLo+(i+1)*bucketSz);
-   const barW=(buckets[i]/maxVol)*VP_W;
-   const buyW=(buyBuckets[i]/buckets[i]||0)*barW;
-   const isVA=i>=vaLow&&i<=vaHigh;
-   const isPOC=i===pocIdx;
-   // Buy portion (green)
-   ctx.fillStyle=isPOC?'rgba(251,191,36,0.5)':isVA?'rgba(34,197,94,0.35)':'rgba(34,197,94,0.2)';
-   ctx.fillRect(CW-VP_W,barY,buyW,barH);
-   // Sell portion (red)
-   ctx.fillStyle=isPOC?'rgba(251,191,36,0.35)':isVA?'rgba(239,68,68,0.25)':'rgba(239,68,68,0.15)';
-   ctx.fillRect(CW-VP_W+buyW,barY,barW-buyW,barH);
-   // POC line
-   if(isPOC){
-    ctx.strokeStyle='rgba(251,191,36,0.9)';ctx.lineWidth=1;ctx.setLineDash([]);
-    ctx.beginPath();ctx.moveTo(0,barY);ctx.lineTo(CW-VP_W,barY);ctx.stroke();
-    ctx.fillStyle='rgba(251,191,36,0.9)';ctx.font='bold 7px monospace';ctx.textAlign='right';ctx.textBaseline='middle';
-    ctx.fillText('POC',CW-VP_W-2,barY);ctx.textBaseline='alphabetic';
-   }
-  }
-  // Value Area label
-  ctx.fillStyle='rgba(34,197,94,0.7)';ctx.font='6px monospace';ctx.textAlign='right';ctx.textBaseline='middle';
-  ctx.fillText('VAH',CW-VP_W-2,ty(priceLo+(vaHigh+1)*bucketSz));
-  ctx.fillStyle='rgba(239,68,68,0.7)';
-  ctx.fillText('VAL',CW-VP_W-2,ty(priceLo+vaLow*bucketSz));
-  ctx.textBaseline='alphabetic';
-  ctx.restore();
- }
+ // Volume Profile is rendered by the VP block above (TPO method)
 
  // Keltner Channel 
  if(hasInd('KC')){
