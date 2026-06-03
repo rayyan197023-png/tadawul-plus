@@ -6823,16 +6823,22 @@ function cancelDrawing() {
  patPts=[];patTool=null;updateDrawBtn();render();
 }
 
-// Prevent Safari iOS double-tap zoom and gesture zoom
-document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
-document.addEventListener('gesturechange',e=>e.preventDefault(),{passive:false});
-document.addEventListener('gestureend',e=>e.preventDefault(),{passive:false});
+// Prevent Safari iOS browser zoom (gestures + double-tap + canvas)
+['gesturestart','gesturechange','gestureend'].forEach(ev=>{
+ document.addEventListener(ev,e=>e.preventDefault(),{passive:false});
+ cv.addEventListener(ev,e=>e.preventDefault(),{passive:false});
+});
 let _lastTouchEnd=0;
 document.addEventListener('touchend',e=>{
  const now=Date.now();
  if(now-_lastTouchEnd<=300){e.preventDefault();}
  _lastTouchEnd=now;
 },{passive:false});
+// Force CSS to prevent zoom on canvas
+cv.style.touchAction='none';
+cv.style.webkitUserSelect='none';
+cv.style.userSelect='none';
+document.documentElement.style.touchAction='manipulation';
 
 // MOUSE 
 cv.addEventListener('mousedown', e => {
