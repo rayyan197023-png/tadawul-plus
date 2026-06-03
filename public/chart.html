@@ -7512,11 +7512,20 @@ cv.addEventListener('touchend',e=>{
  return;
  }
 
+ // Save new coords after drag/resize before clearing drMode
+ if((drMode==='drag'||drMode==='resize')&&drSelId!=null){
+  const _df=state.drawings.find(d=>d.id===drSelId);
+  if(_df&&typeof _enrichDrawing==='function'){
+   _enrichDrawing(_df);
+   saveDrawings();
+  }
+ }
  if(_chLongTimer){clearTimeout(_chLongTimer);_chLongTimer=null;}
  _chActive=false;
  crosshair={x:-1,y:-1,ci:-1};
  drMode=null;drDragP1=null;drDragPts=null;render();
 },{passive:false});
+
 
 // MENUS
 // 
