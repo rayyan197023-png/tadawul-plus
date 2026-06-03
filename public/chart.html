@@ -2463,7 +2463,18 @@ function render(){
    ind[k]=o;
   } else ind[k]=v;
  }
- if(ind.ichi)ind.ichi={tenkan:_slc(_cr.ichi?.tenkan),kijun:_slc(_cr.ichi?.kijun),senkouA:_slc(_cr.ichi?.senkouA),senkouB:_slc(_cr.ichi?.senkouB),chikou:_cr.ichi?.chikou?_cr.ichi.chikou.slice(start,end):null};
+  if(ind.ichi){
+  // Senkou A/B include 26 future bars (indices end..end+25 in full array)
+  const _futEnd=Math.min(_cr.ichi?.senkouA?.length||end,end+26);
+  ind.ichi={
+   tenkan:_slc(_cr.ichi?.tenkan),
+   kijun:_slc(_cr.ichi?.kijun),
+   senkouA:_cr.ichi?.senkouA?_cr.ichi.senkouA.slice(start,_futEnd):null,
+   senkouB:_cr.ichi?.senkouB?_cr.ichi.senkouB.slice(start,_futEnd):null,
+   chikou:_cr.ichi?.chikou?_cr.ichi.chikou.slice(start,end):null,
+   _futureBars:_futEnd-end
+  };
+ }
  let mcd=_indCache.mcd?{macd:_slc(_indCache.mcd.macd),signal:_slc(_indCache.mcd.signal),hist:_slc(_indCache.mcd.hist)}:null;
  if(activeStrategy==='TRIPLE_SCR')ind.strMACD=mcd;
  let stochD=_indCache.stochD?_slc(_indCache.stochD):null;
