@@ -2823,9 +2823,9 @@ function render(){
   }
  });
 
- // Volume Profile (Fixed: distributes volume across Hi-Lo range per candle)
+ // Volume Profile (TPO method: distributes volume across Hi-Lo range per candle)
  if(hasInd('VP')&&sub.length>0){
-  const VP_W=Math.round(CW*0.08);
+  const VP_W=Math.min(80,Math.round(CW*0.10));
   const VP_X=CW-VP_W-1;
   const BINS=40;
   const priceRange=mx-mn||0.01;
