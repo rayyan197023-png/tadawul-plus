@@ -123,26 +123,17 @@ const calcDPO=(d,n=20)=>{const m=sma(d,n);const shift=Math.floor(n/2)+1;return d
 const calcSupertrend=(h,l,c2,n=10,m=3)=>{const atr2=calcATR_data(h.map((_,i)=>({hi:h[i],lo:l[i],c:c2[i]})),n);let dir=1,up=null,dn=null;return c2.map((v,i)=>{if(atr2[i]==null)return null;const mid=(h[i]+l[i])/2,nu=mid-m*atr2[i],nd=mid+m*atr2[i];if(i===0){up=nu;dn=nd;return{val:dn,bull:false};}const pu=up,pd=dn;up=nu>pu||c2[i-1]<pu?nu:pu;dn=nd<pd||c2[i-1]>pd?nd:pd;if(dir===1&&v<up)dir=-1;else if(dir===-1&&v>dn)dir=1;return{val:dir===1?up:dn,bull:dir===1};});};
 // PSAR
 const calcPSAR=(h,l,step=0.02,maxA=0.2)=>{if(h.length<2)return h.map(()=>null);let bull=true,af=step,ep=h[0],sar=l[0];return h.map((_,i)=>{if(i===0)return{val:sar,bull};let ns=sar+af*(ep-sar);if(bull){ns=Math.min(ns,l[i-1],i>1?l[i-2]:l[i-1]);}else{ns=Math.max(ns,h[i-1],i>1?h[i-2]:h[i-1]);}if(bull&&l[i]<ns){bull=false;ns=ep;ep=l[i];af=step;}else if(!bull&&h[i]>ns){bull=true;ns=ep;ep=h[i];af=step;}else{if(bull&&h[i]>ep){ep=h[i];af=Math.min(af+step,maxA);}else if(!bull&&l[i]<ep){ep=l[i];af=Math.min(af+step,maxA);}}sar=ns;return{val:sar,bull};});};
-// Ichimoku -- Senkou A/B shifted 26 forward (future projection), Chikou shifted 26 backward
+
+// Ichimoku -- Tenkan/Kijun current, Senkou A/B raw (will be drawn shifted +26 in chart), Chikou raw (shifted -26 in chart)
 const calcIchi=(h,l,c2)=>{
  const n=h.length;
  const mid=(per,i)=>{if(i<per-1)return null;return(Math.max(...h.slice(i-per+1,i+1))+Math.min(...l.slice(i-per+1,i+1)))/2;};
  const tenkan=h.map((_,i)=>mid(9,i));
  const kijun=h.map((_,i)=>mid(26,i));
- // Senkou A & B extend 26 candles into the future (cloud)
- // Array length = n + 26, indices 0..n-1 mirror current bars, n..n+25 are future projection
- const senkouA=new Array(n+26).fill(null);
- const senkouB=new Array(n+26).fill(null);
- tenkan.forEach((t,i)=>{
-  if(t==null||kijun[i]==null)return;
-  senkouA[i+26]=(t+kijun[i])/2;
- });
- h.forEach((_,i)=>{
-  const v=mid(52,i);
-  if(v==null)return;
-  senkouB[i+26]=v;
- });
- // Chikou = close shifted 26 BACK (drawn at i-26 from current i)
+ // Senkou A = (Tenkan + Kijun) / 2 -- raw values, drawn shifted +26 in chart
+ const senkouA=tenkan.map((t,i)=>(t!=null&&kijun[i]!=null)?(t+kijun[i])/2:null);
+ // Senkou B = mid(52) -- raw values, drawn shifted +26 in chart
+ const senkouB=h.map((_,i)=>mid(52,i));
  const chikou=c2?c2.slice():null;
  return{tenkan,kijun,senkouA,senkouB,chikou};
 };
