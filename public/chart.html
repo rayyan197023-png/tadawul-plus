@@ -7969,7 +7969,6 @@ function runBacktest(stratId){
     const stTrend=['SUPERTREND'].includes(stratId)?_supertrend(hl,ll,sl,10,3):null;
     const psarTrend=['PSAR_STR'].includes(stratId)?_psar(hl,ll):null;
     const macdData=['MACD_STR'].includes(stratId)?_macd(sl,12,26,9):null;
-    const adxData=['ROB_ADX'].includes(stratId)?_adxFn(hl,ll,sl):null;
 
     for(let i=2;i<L-1;i++){
       let buy=false,sell=false;
