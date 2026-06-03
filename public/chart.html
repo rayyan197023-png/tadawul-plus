@@ -2518,15 +2518,20 @@ function render(){
       d.p1={x:0,y:y1};d.p2={x:CW,y:y2};}
      return;
     }
-    const p1pr=d._p1price??d._p1_price;
-    const p1gi=d._p1idx??d._p1_idx;
-    if(p1pr!=null&&p1gi!=null){
-     d.p1={x:tx(p1gi-start),y:ty(p1pr)};
-    }
-    const p2pr=d._p2price??d._p2_price;
-    const p2gi=d._p2idx??d._p2_idx;
-    if(p2pr!=null&&p2gi!=null){
-     d.p2={x:tx(p2gi-start),y:ty(p2pr)};
+   // Skip recalc during active drag/resize — use current pixel coords directly
+    if(drSelId===d.id&&(drMode==='drag'||drMode==='resize')){
+     // keep d.p1 and d.p2 as-is (they're being modified by touch handler)
+    } else {
+     const p1pr=d._p1price??d._p1_price;
+     const p1gi=d._p1idx??d._p1_idx;
+     if(p1pr!=null&&p1gi!=null){
+      d.p1={x:tx(p1gi-start),y:ty(p1pr)};
+     }
+     const p2pr=d._p2price??d._p2_price;
+     const p2gi=d._p2idx??d._p2_idx;
+     if(p2pr!=null&&p2gi!=null){
+      d.p2={x:tx(p2gi-start),y:ty(p2pr)};
+     }
     }
    }catch(e){}
   });
