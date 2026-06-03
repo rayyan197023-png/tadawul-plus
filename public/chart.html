@@ -6439,7 +6439,7 @@ function render(){
 }
   
 function renderCrosshair(){
- if(!_offValid||!_offCv||!_offCtx)return; // ⚠️ DIAGNOSTIC: do nothing instea of full render
+ if(!_offValid||!_offCv||!_offCtx)return render(); // fallback to full render
 
  const W=cv.offsetWidth||window.innerWidth;
  const H=cv.offsetHeight||400;
