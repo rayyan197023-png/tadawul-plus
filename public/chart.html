@@ -8081,8 +8081,6 @@ function runBacktest(stratId){
     return trades;
   };
 
-  // Simple ADX helper for ROB_ADX backtest
-  function _adxFn(h,l,c,p=14){return _atr(h,l,c,p);} // simplified
 
   // Walk-forward
   const allOOSTrades=[];let wfConsistency=0;
