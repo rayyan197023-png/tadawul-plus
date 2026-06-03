@@ -6895,8 +6895,9 @@ cv.addEventListener('click', e => {
 },{passive:true});
 
 cv.addEventListener('mouseleave',()=>{if(drMode==='pan')drMode=null;render();});
-cv.addEventListener('dblclick',e=>{const pt=getPt(e);const hi=dFind(pt.x,pt.y);if(hi>=0)showDCtx(pt.x,pt.y);else{drSelId=null;render();}});
-cv.addEventListener('contextmenu',e=>{e.preventDefault();const pt=getPt(e);const hi=dFind(pt.x,pt.y);if(hi>=0){drSelId=state.drawings[hi].id;showDCtx(pt.x,pt.y);}});
+cv.addEventListener('dblclick',e=>{const pt=getPt(e);const hi=dFind(pt.x,pt.y);if(hi<0){drSelId=null;render();}});
+cv.addEventListener('contextmenu',e=>{e.preventDefault();const pt=getPt(e);const hi=dFind(pt.x,pt.y);if(hi>=0){drSelId=state.drawings[hi].id;render();}});
+
 cv.addEventListener('wheel',e=>{e.preventDefault();state.visible=Math.min(state.allCandles.length,Math.max(6,state.visible+Math.round(e.deltaY/30)));render();},{passive:false});
 
 document.addEventListener('keydown',e=>{
