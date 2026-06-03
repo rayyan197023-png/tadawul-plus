@@ -38,8 +38,48 @@ export async function GET(req: NextRequest) {
     financials:   86400,   // 24 ساعة (البيانات المالية)
     dividends:    86400,   // 24 ساعة (التوزيعات)
   };
-  
-  const maxAge = cacheDuration[endpoint] ?? 60;
+
+  // ─────────────────────────────────────────────
+  // الكشف عن حالة السوق السعودي (KSA timezone UTC+3)
+  // أيام التداول: الأحد إلى الخميس (0-4 في getDay)
+  // نشاط السوق: 09:30 - 15:30 (شامل المزادات)
+  // ─────────────────────────────────────────────
+  function getMarketStatus() {
+    const now = new Date();
+    // تحويل لتوقيت الرياض (UTC+3)
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const ksa = new Date(utc + (3 * 3600000));
+    const day = ksa.getDay(); // 0=أحد، 4=خميس، 5=جمعة، 6=سبت
+    const hour = ksa.getHours();
+    const min = ksa.getMinutes();
+    const timeInMin = hour * 60 + min;
+    const isWeekday = day >= 0 && day <= 4; // الأحد-الخميس
+    const isMarketHours = timeInMin >= 570 && timeInMin <= 930; // 09:30-15:30
+    const isOpen = isWeekday && isMarketHours;
+    // حساب الوقت حتى افتتاح السوق التالي بالثواني
+    let secondsUntilOpen = 0;
+    if (!isOpen) {
+      const next = new Date(ksa);
+      next.setHours(9, 30, 0, 0);
+      // إذا تجاوزنا 09:30 اليوم → اليوم التالي
+      if (timeInMin >= 570) next.setDate(next.getDate() + 1);
+      // تخطّي الجمعة والسبت
+      while (next.getDay() === 5 || next.getDay() === 6) {
+        next.setDate(next.getDate() + 1);
+      }
+      secondsUntilOpen = Math.floor((next.getTime() - ksa.getTime()) / 1000);
+    }
+    return { isOpen, secondsUntilOpen };
+  }
+
+  const marketStatus = getMarketStatus();
+  let maxAge = cacheDuration[endpoint] ?? 60;
+  // إذا السوق مُغلق، أطل الـ cache حتى الافتتاح (للأسعار اللحظية فقط)
+  // البيانات الأساسية (companies, sectors...) تَستخدم cache الطبيعي
+  const liveEndpoints = ['tasi','quote','quotes','prices','gainers','losers','volume','ohlcv'];
+  if (!marketStatus.isOpen && liveEndpoints.includes(endpoint)) {
+    maxAge = Math.max(maxAge, marketStatus.secondsUntilOpen);
+  }
   const staleAge = maxAge * 5; // مدة stale-while-revalidate
 
   const headers = {
