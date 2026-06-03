@@ -2429,7 +2429,7 @@ function render(){
  mfi: _fi(hasInd('MFI') ?calcMFI(allH,allL,allC,allV,getIS('MFI').period||14):null),
  cmf: _fi(hasInd('CMF') ?calcCMF(allH,allL,allC,allV):null),
  };
-   if(_r.ichi)_r.ichi={tenkan:_r.ichi.tenkan,kijun:_r.ichi.kijun,senkouA:_r.ichi.senkouA,senkouB:_r.ichi.senkouB,chikou:_r.ichi.chikou,_futureBars:26};
+    if(_r.ichi)_r.ichi={tenkan:_r.ichi.tenkan,kijun:_r.ichi.kijun,senkouA:_r.ichi.senkouA,senkouB:_r.ichi.senkouB,chikou:_r.ichi.chikou};
 
   // Compute MACD and Stoch (also cached)
   let _mcd=null;
