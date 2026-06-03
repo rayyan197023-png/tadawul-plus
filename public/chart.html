@@ -6746,31 +6746,33 @@ function updateP2(pt) {
 
 function _enrichDrawing(d){
   // Store price-based coordinates for persistence across sessions
-  // Called after adding any drawing to state.drawings
   try{
     const all=state.allCandles;
     const n=all.length;
     if(!n)return;
-    const vis=state.visible,off=state.offset;
-    const start=n-vis-off,end2=n-off;
-    const W=cv.offsetWidth-38||352;
-    const drawW=W-8;
-    const bw=Math.max(1.5,(W/Math.max(1,vis))*0.72);
+    // Use SAME bounds calculation as render()
+    const b=chartBounds();
+    const start=Math.max(0,n-state.visible-state.offset);
+    const end2=n-state.offset;
     const _subLen=end2-start;
-    // px → candle index
+    const sub=all.slice(start,end2);
+    if(!sub.length)return;
+    const W=b.CW;
+    const bw=Math.max(1.5,(W/Math.max(1,state.visible))*0.72);
+    const drawW=W-bw*2-16;
+    // px → candle index (SAME as render's tx inverse)
     const px2idx=(px)=>Math.round((px-bw)/Math.max(0.1,drawW/Math.max(1,_subLen-1)));
-    // py → price (approximate linear)
-    const ch=cv.offsetHeight-22-3-Math.round((cv.offsetHeight-22-3)*0.11)||500;
-    const cTop=12;
-    const allVisible=all.slice(start,end2);
-    if(!allVisible.length)return;
-    const pp=allVisible.flatMap(c=>[c.hi,c.lo]);
+    // px → price (SAME as render's ty inverse, with yScale)
+    const pp=sub.flatMap(c=>[c.hi,c.lo]);
     const rawMn=Math.min(...pp),rawMx=Math.max(...pp);
     const pad=(rawMx-rawMn)*0.06;
-    const mn=rawMn-pad,rng=(rawMx-rawMn+pad*2)||1;
-    const cH=ch-cTop-3;
-    const cBot=cTop+cH;
-    const py2price=(py)=>mn+((cBot-py)/cH)*rng;
+    const mid=(rawMn+rawMx)/2;
+    const halfRng=((rawMx-rawMn)*0.5+pad)/Math.max(0.1,yScale);
+    const mn=mid-halfRng;
+    const mx=mid+halfRng;
+    const rng=mx-mn||1;
+    const cH=b.cBot-b.cTop;
+    const py2price=(py)=>mn+((b.cBot-py)/cH)*rng;
     if(d.p1){
       const ci=Math.max(0,Math.min(_subLen-1,px2idx(d.p1.x)));
       d._p1_price=py2price(d.p1.y);
@@ -6783,6 +6785,7 @@ function _enrichDrawing(d){
     }
   }catch(e){}
 }
+
 function finishDrawing(pt) {
  // Pattern tool: add point
  if((isPatternTool(state.tool))&&state.live){
