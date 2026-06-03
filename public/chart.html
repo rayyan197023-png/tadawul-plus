@@ -2674,28 +2674,42 @@ function render(){
   ctx.stroke();
  }
 
- // Ichimoku Cloud
+ // Ichimoku Cloud — Senkou A/B extend into future (right of last candle)
  if(ind.ichi&&ind.ichi.tenkan){
   const ich=ind.ichi;
+  // Custom tx for senkou (includes future bars beyond visible candles)
+  // n = visible candles, ich.senkouA.length can be n + futureBars (26)
+  const _futBars=ich._futureBars||0;
+  const _totalSlots=n+_futBars;
+  const _txF=i=>bw+(_totalSlots<=1?drawW/2:(i/(_totalSlots-1))*(drawW-bw));
   // Cloud fill
   if(ich.senkouA&&ich.senkouB){
    ctx.beginPath();let fs=true;
-   ich.senkouA.forEach((v,i)=>{if(v==null)return;fs?(ctx.moveTo(tx(i),ty(v)),fs=false):ctx.lineTo(tx(i),ty(v));});
+   ich.senkouA.forEach((v,i)=>{if(v==null)return;fs?(ctx.moveTo(_txF(i),ty(v)),fs=false):ctx.lineTo(_txF(i),ty(v));});
    const lastA=ich.senkouA.filter(v=>v!=null).pop();
    const lastB=ich.senkouB.filter(v=>v!=null).pop();
-   for(let i=ich.senkouB.length-1;i>=0;i--){if(ich.senkouB[i]!=null)ctx.lineTo(tx(i),ty(ich.senkouB[i]));}
+   for(let i=ich.senkouB.length-1;i>=0;i--){if(ich.senkouB[i]!=null)ctx.lineTo(_txF(i),ty(ich.senkouB[i]));}
    ctx.closePath();
    ctx.fillStyle=(lastA>lastB)?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)';
    ctx.fill();
   }
-  // Lines: tenkan, kijun, senkouA, senkouB
-  [[ich.tenkan,'#38bdf8',1.2,[]],[ich.kijun,'#ef4444',1.4,[]],[ich.senkouA,'#22c55e',0.8,[]],[ich.senkouB,'#ef4444',0.7,[]]].forEach(([arr,clr,lw,dash])=>{
+  // Lines: tenkan + kijun use normal tx (current bars only)
+  [[ich.tenkan,'#38bdf8',1.2,[]],[ich.kijun,'#ef4444',1.4,[]]].forEach(([arr,clr,lw,dash])=>{
    if(!arr)return;
    ctx.strokeStyle=clr;ctx.lineWidth=lw;ctx.setLineDash(dash);
    ctx.beginPath();let f=true;
    arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),ty(v)),f=false):ctx.lineTo(tx(i),ty(v));});
    ctx.stroke();ctx.setLineDash([]);
   });
+  // Senkou A & B lines use _txF (extends to future)
+  [[ich.senkouA,'#22c55e',0.8,[]],[ich.senkouB,'#ef4444',0.7,[]]].forEach(([arr,clr,lw,dash])=>{
+   if(!arr)return;
+   ctx.strokeStyle=clr;ctx.lineWidth=lw;ctx.setLineDash(dash);
+   ctx.beginPath();let f=true;
+   arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(_txF(i),ty(v)),f=false):ctx.lineTo(_txF(i),ty(v));});
+   ctx.stroke();ctx.setLineDash([]);
+  });
+
   // Chikou (lagging 26 periods back)
   if(ich.chikou){
    ctx.strokeStyle='#a78bfa';ctx.lineWidth=1;ctx.setLineDash([]);
