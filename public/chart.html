@@ -2664,26 +2664,25 @@ function render(){
   ctx.stroke();
  }
 
- // Ichimoku Cloud — Senkou A/B extend into future (right of last candle)
+ // Ichimoku Cloud — Senkou A/B shifted +26 forward (projection)
  if(ind.ichi&&ind.ichi.tenkan){
   const ich=ind.ichi;
-  // Custom tx for senkou (includes future bars beyond visible candles)
-  // n = visible candles, ich.senkouA.length can be n + futureBars (26)
-  const _futBars=ich._futureBars||0;
-  const _totalSlots=n+_futBars;
+  const SHIFT=26; // Senkou A/B are drawn 26 bars to the right
+  // Extended tx that includes 26 future positions beyond visible candles
+  const _totalSlots=n+SHIFT;
   const _txF=i=>bw+(_totalSlots<=1?drawW/2:(i/(_totalSlots-1))*(drawW-bw));
-  // Cloud fill
+  // Cloud fill — each senkou value at index i is drawn at position i+26
   if(ich.senkouA&&ich.senkouB){
    ctx.beginPath();let fs=true;
-   ich.senkouA.forEach((v,i)=>{if(v==null)return;fs?(ctx.moveTo(_txF(i),ty(v)),fs=false):ctx.lineTo(_txF(i),ty(v));});
+   ich.senkouA.forEach((v,i)=>{if(v==null)return;fs?(ctx.moveTo(_txF(i+SHIFT),ty(v)),fs=false):ctx.lineTo(_txF(i+SHIFT),ty(v));});
    const lastA=ich.senkouA.filter(v=>v!=null).pop();
    const lastB=ich.senkouB.filter(v=>v!=null).pop();
-   for(let i=ich.senkouB.length-1;i>=0;i--){if(ich.senkouB[i]!=null)ctx.lineTo(_txF(i),ty(ich.senkouB[i]));}
+   for(let i=ich.senkouB.length-1;i>=0;i--){if(ich.senkouB[i]!=null)ctx.lineTo(_txF(i+SHIFT),ty(ich.senkouB[i]));}
    ctx.closePath();
    ctx.fillStyle=(lastA>lastB)?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)';
    ctx.fill();
   }
-  // Lines: tenkan + kijun use normal tx (current bars only)
+  // Tenkan + Kijun: current bars only, normal tx
   [[ich.tenkan,'#38bdf8',1.2,[]],[ich.kijun,'#ef4444',1.4,[]]].forEach(([arr,clr,lw,dash])=>{
    if(!arr)return;
    ctx.strokeStyle=clr;ctx.lineWidth=lw;ctx.setLineDash(dash);
@@ -2691,14 +2690,15 @@ function render(){
    arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),ty(v)),f=false):ctx.lineTo(tx(i),ty(v));});
    ctx.stroke();ctx.setLineDash([]);
   });
-  // Senkou A & B lines use _txF (extends to future)
+  // Senkou A & B lines: shifted +26 (projection into future)
   [[ich.senkouA,'#22c55e',0.8,[]],[ich.senkouB,'#ef4444',0.7,[]]].forEach(([arr,clr,lw,dash])=>{
    if(!arr)return;
    ctx.strokeStyle=clr;ctx.lineWidth=lw;ctx.setLineDash(dash);
    ctx.beginPath();let f=true;
-   arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(_txF(i),ty(v)),f=false):ctx.lineTo(_txF(i),ty(v));});
+   arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(_txF(i+SHIFT),ty(v)),f=false):ctx.lineTo(_txF(i+SHIFT),ty(v));});
    ctx.stroke();ctx.setLineDash([]);
   });
+
 
   // Chikou (lagging 26 periods back)
   if(ich.chikou){
