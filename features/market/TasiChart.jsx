@@ -227,9 +227,26 @@ const dayChgVal = +chgVal.toFixed(2);
 
         {/* Live status + breadth pills */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 5 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <div style={{ width: 7, height: 7, borderRadius: '50%', background: isUpToday ? C.positive : C.negative, boxShadow: `0 0 7px ${isUpToday ? C.positive : C.negative}`, animation: 'homeScreenPulse 2s infinite' }} />
-            <span style={{ fontSize: 9, color: isUpToday ? C.positive : C.negative, fontWeight: 600 }}>مباشر</span>
+          {(() => {
+            // فحص حالة السوق السعودي (KSA UTC+3)
+            // التداول: الأحد (0) - الخميس (4) من 09:30 إلى 15:30
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const ksa = new Date(utc + 3 * 3600000);
+            const day = ksa.getDay();
+            const timeInMin = ksa.getHours() * 60 + ksa.getMinutes();
+            const isWeekday = day >= 0 && day <= 4;
+            const isMarketHours = timeInMin >= 570 && timeInMin <= 930;
+            const isOpen = isWeekday && isMarketHours;
+            const statusColor = isOpen ? C.positive : C.negative;
+            const statusLabel = isOpen ? 'مباشر' : 'مغلق';
+            return (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ width: 7, height: 7, borderRadius: '50%', background: statusColor, boxShadow: `0 0 7px ${statusColor}`, animation: isOpen ? 'homeScreenPulse 2s infinite' : 'none' }} />
+                <span style={{ fontSize: 9, color: statusColor, fontWeight: 600 }}>{statusLabel}</span>
+              </div>
+            );
+          })()}
           </div>
           {[{ l:advancing||'--', sl:'صاعد', c: C.positive }, { l:declining||'--', sl:'هابط', c: C.negative }, { l:unchanged||'--', sl:'ثابت', c: C.textSecondary }].map((s, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 3, background: 'rgba(255,255,255,.06)', borderRadius: 16, padding: '2px 8px', border: '1px solid rgba(255,255,255,.05)' }}>
