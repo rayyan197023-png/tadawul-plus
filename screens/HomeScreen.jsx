@@ -6,7 +6,7 @@ import { useHaptic }          from '../hooks/useHaptic';
 import { usePullToRefresh }   from '../hooks/usePullToRefresh';
 import config from '../constants/config';
 import { useMarketBridge } from '../hooks/useMarketBridge';
-import { useOHLCVCache } from '../src/hooks/useOHLCVCache';
+import { useOHLCVCache } from '../hooks/useOHLCVCache';
 
 /* ─── Design tokens ─── */
 const BG    = "#06080f";
