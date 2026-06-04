@@ -135,15 +135,14 @@ export async function GET(req: NextRequest) {
         if (!res.ok) {
       const text = await res.text();
       
-      // عند rate limit (429)، نحفظ الخطأ لـ 5 دقائق لتجنب طلبات متتالية
-      const errorCacheDuration = res.status === 429 ? 300 : 10;
-      
+      // لا نحفظ الأخطاء أبداً - فقط نسمح للمُتصفّح بإعادة المحاولة
+      // 429 يُحلّ بـ retry في الـ client بدلاً من إغلاق الـ cache
       return new NextResponse(
         JSON.stringify({ error: `sahmk error ${res.status}`, detail: text }),
         {
           status: res.status,
           headers: {
-            'Cache-Control': `public, s-maxage=${errorCacheDuration}`,
+            'Cache-Control': 'no-store, no-cache, must-revalidate',
             'Content-Type': 'application/json; charset=utf-8',
           },
         }
