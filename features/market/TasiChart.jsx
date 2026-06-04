@@ -146,7 +146,7 @@ const totalVol   = tasiLive?.total_volume ?? 0;
   const color   = isUpToday ? C.positive : C.negative;
   const bgFrom  = isUpToday ? '#071c10' : '#180808';
   const bgTo    = isUpToday ? '#040e08' : '#0e0404';
-  const borderC = isUpToday ? 'rgba(30,230,138,0.2)' : 'rgba(255,95,106,0.2)';
+  const borderC = isUpToday ? 'rgba(30,230,138,0.2)' : 'rgba(255,95,106,0.2)'; 
 
   // ── Crosshair
   const cfg = PERIOD_CFG[period] ?? PERIOD_CFG['يوم'];
