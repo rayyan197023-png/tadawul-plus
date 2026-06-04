@@ -6910,16 +6910,9 @@ document.addEventListener('keydown',e=>{
  if((e.ctrlKey||e.metaKey)&&(e.key==='y'||e.key==='Z')){redoDraw();e.preventDefault();}
 });
 
-// DEBUG: listen on document to verify iOS sends touchstart at all
-document.addEventListener('touchstart',e=>{
- if(window._panDbg)window._panDbg.textContent='DOC-TS T='+e.touches.length+' target='+(e.target?.tagName||'?');
-},{passive:true,capture:true});
-
 // TOUCH 
 cv.addEventListener('touchstart',e=>{
 
- if(window._panDbg)window._panDbg.textContent='TS-1 OK';
- try{
 
  // ── Wave dot tap: HIGHEST priority ─────────────────
  if(e.touches.length===1){
