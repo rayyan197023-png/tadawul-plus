@@ -71,8 +71,8 @@ const todayPtsRef = useRef([]);
 }
       } catch(e) {}
     };
-    fetchTasi();
-    const t = setInterval(fetchTasi, 20000);
+fetchTasi();
+    const t = setInterval(fetchTasi, 60000); // كل دقيقة بدل كل 20 ثانية
     return () => clearInterval(t);
   }, []);
 
