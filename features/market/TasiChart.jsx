@@ -86,23 +86,6 @@ fetchTasi();
       try {
         const r = await fetch(`/api/sahmkdata?endpoint=ohlcv&sym=TASI&period=${sahmkPeriod}`);
         const j = await r.json();
-        // DEBUG overlay
-        if (typeof window !== 'undefined' && !window._tasiDbg) {
-          window._tasiDbg = true;
-          var dbg = document.createElement('div');
-          dbg.style.cssText = 'position:fixed;top:8px;left:8px;right:8px;background:rgba(255,140,0,0.95);color:#000;font:11px monospace;padding:8px;border-radius:6px;z-index:99999;word-break:break-all;line-height:1.4;max-height:200px;overflow:auto';
-          var info = 'TASI '+sahmkPeriod+' | ';
-          if (!j) info += 'NO_RESPONSE';
-          else {
-            info += 'keys=['+Object.keys(j).join(',')+'] | ';
-            if (j.data) info += 'data.len='+(Array.isArray(j.data)?j.data.length:'NOT_ARRAY');
-            else if (j.bars) info += 'bars.len='+j.bars.length;
-            else if (j.error) info += 'ERR='+j.error;
-            else info += 'sample='+JSON.stringify(j).slice(0,200);
-          }
-          dbg.textContent = info;
-          document.body.appendChild(dbg);
-        }
         if (j?.data?.length > 0) {
           setOhlcvData(prev => ({
             ...prev,
