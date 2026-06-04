@@ -306,6 +306,12 @@ const result = liveStocks.map(stk=>{
       var cached = ohlcvCache[stk.sym];
       var bars;
       var isRealData = false;
+      // DEBUG
+      if (typeof window !== 'undefined' && !window._debugged) {
+        window._debugged = true;
+        console.log('DEBUG cache sample:', stk.sym, cached);
+        if (cached && cached.length) console.log('First bar:', cached[0]);
+      }
       if (cached && Array.isArray(cached) && cached.length >= 20 &&
           cached.every(b => b && isFinite(b.c) && isFinite(b.vol))) {
         bars = cached;
