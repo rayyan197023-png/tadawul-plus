@@ -247,8 +247,8 @@ const dayChgVal = +chgVal.toFixed(2);
               </div>
             );
           })()}
-          </div>
           {[{ l:advancing||'--', sl:'صاعد', c: C.positive }, { l:declining||'--', sl:'هابط', c: C.negative }, { l:unchanged||'--', sl:'ثابت', c: C.textSecondary }].map((s, i) => (
+
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 3, background: 'rgba(255,255,255,.06)', borderRadius: 16, padding: '2px 8px', border: '1px solid rgba(255,255,255,.05)' }}>
               <div style={{ width: 5, height: 5, borderRadius: '50%', background: s.c }} />
               <span style={{ fontSize: 10, color: s.c, fontWeight: 700 }}>{s.l}</span>
