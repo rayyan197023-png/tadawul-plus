@@ -301,14 +301,19 @@ const ohlcvCache = useOHLCVCache(syms, '3M');
     // ✨ تمرير liveMACRO كـ parameter بدلاً من تعديل MACRO global
     // 🔍 مؤقّت: عدّ الأسهم الحقيقية vs الملفّقة (يُحذف بعد القياس)
     var _realCount = 0, _fakeCount = 0;
-    const result = liveStocks.map(stk=>{ 
+const result = liveStocks.map(stk=>{ 
       // ✨ تحقق من صحة bars من الكاش - إن كانت ناقصة/فاسدة، استخدم genBars
       var cached = ohlcvCache[stk.sym];
       var bars;
+      var isRealData = false;
       if (cached && Array.isArray(cached) && cached.length >= 20 &&
           cached.every(b => b && isFinite(b.c) && isFinite(b.vol))) {
         bars = cached;
+        isRealData = true;
         _realCount++;
+      } else {
+        bars = genBars(stk);
+        _fakeCount++;
       } else {
         bars = genBars(stk);
         _fakeCount++;
