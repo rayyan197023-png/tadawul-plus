@@ -141,10 +141,12 @@ const totalVol   = tasiLive?.total_volume ?? 0;
   const periodChg= +((lastPt - firstPt) / firstPt * 100).toFixed(2);
   const periodUp = periodChg >= 0;
 
-  const color   = periodUp ? C.positive : C.negative;
-  const bgFrom  = periodUp ? '#071c10' : '#180808';
-  const bgTo    = periodUp ? '#040e08' : '#0e0404';
-  const borderC = periodUp ? 'rgba(30,230,138,0.2)' : 'rgba(255,95,106,0.2)';
+  // Container color follows actual day direction (chgP), not period change
+  // periodUp would be misleading when only 1 data point exists (=0 → false-green)
+  const color   = isUpToday ? C.positive : C.negative;
+  const bgFrom  = isUpToday ? '#071c10' : '#180808';
+  const bgTo    = isUpToday ? '#040e08' : '#0e0404';
+  const borderC = isUpToday ? 'rgba(30,230,138,0.2)' : 'rgba(255,95,106,0.2)';
 
   // ── Crosshair
   const cfg = PERIOD_CFG[period] ?? PERIOD_CFG['يوم'];
