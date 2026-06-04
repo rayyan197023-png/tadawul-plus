@@ -7208,11 +7208,11 @@ _chLongTimer=setTimeout(()=>{
   }
  },500);
  }
-  render();
- }catch(_err){if(window._panDbg)window._panDbg.textContent='TS-ERROR: '+_err.message;}
+ render();
 },{passive:false});
 
 cv.addEventListener('touchmove',e=>{
+
  if(menuDrag.active)return; // let document handler move the toolbar
 
  
