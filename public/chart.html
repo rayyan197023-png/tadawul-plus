@@ -7194,7 +7194,6 @@ cv.addEventListener('touchstart',e=>{
  if(_chLongTimer){clearTimeout(_chLongTimer);_chLongTimer=null;}
  _chActive=false;
  deselectDrawing();drMode='pan';drag.x0=e.touches[0].clientX;drag.off0=state.offset;drag.moved=false;
- if(window._panDbg)window._panDbg.textContent='TS-PAN-SET | DM='+drMode+' x0='+drag.x0;
  const _chPt=pt;
 _chLongTimer=setTimeout(()=>{
   _chLongTimer=null;
