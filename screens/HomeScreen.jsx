@@ -1359,11 +1359,32 @@ function HomeContent({idx, chgP, market, liveStocks=[], isLoadingH=false, isRefr
   const [showPeriodMenu,setShowPeriodMenu]=useState(false);
   const [proMode,setPro]=useState(true);
 
-  const byUp=[...liveStocks].sort((a,b)=>b.pct-a.pct);
-  const byDn=[...liveStocks].sort((a,b)=>a.pct-b.pct);
-  const byVol=[...liveStocks].sort((a,b)=>b.v-a.v);
-  const lists=[byUp,byDn,byVol];
+  // ✨ جلب OHLCV لحساب التغيّر حسب الفترة
+  const syms = useMemo(()=>liveStocks.map(s=>s.sym),[liveStocks]);
+  const ohlcvCache = useOHLCVCache(syms, period === "سنوي" ? "1Y" : "3M");
 
+  // أيام كل فترة
+  const periodDays = period==="يومي"?1 : period==="أسبوعي"?5 : period==="شهري"?22 : 252;
+
+  // إعادة حساب pct/vol لكل سهم حسب الفترة
+  const periodStocks = useMemo(()=>liveStocks.map(s=>{
+    if (period === "يومي") return s; // اليومي يُستخدم s.pct و s.v مباشرة
+    const bars = ohlcvCache[s.sym];
+    if (!bars || !Array.isArray(bars) || bars.length < 2) return s; // فولباك
+    const slice = bars.slice(-periodDays);
+    if (slice.length < 2) return s;
+    const firstClose = slice[0].c;
+    const lastClose = slice[slice.length-1].c;
+    if (!firstClose || !lastClose) return s;
+    const pPct = ((lastClose - firstClose) / firstClose) * 100;
+    const pVol = slice.reduce((sum,b)=>sum+(b.vol||0),0);
+    return { ...s, pct: pPct, v: pVol };
+  }),[liveStocks, ohlcvCache, period, periodDays]);
+
+  const byUp=[...periodStocks].sort((a,b)=>b.pct-a.pct);
+  const byDn=[...periodStocks].sort((a,b)=>a.pct-b.pct);
+  const byVol=[...periodStocks].sort((a,b)=>b.v-a.v);
+  const lists=[byUp,byDn,byVol];
   return(
     <div style={{paddingBottom:30,animation:"fadeUp .28s ease both"}}>
       <TasiChart market={market}/>
