@@ -1650,7 +1650,7 @@ const best = allData.length > 0
 
           {/* ─── قائمة الأسهم ─── */}
           <div style={{padding:"0 16px",display:"flex",flexDirection:"column",gap:10}}>
-            {filtered.map(({stk,bars,health},idx)=>{
+{filtered.map(({stk,bars,health,isRealData},idx)=>{
               const up=stk.ch>=0;
               const priceColor=up?C.mint:C.coral;
               const selected=sel===stk.sym;
