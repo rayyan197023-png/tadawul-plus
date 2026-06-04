@@ -7222,17 +7222,8 @@ _chLongTimer=setTimeout(()=>{
 },{passive:false});
 
 cv.addEventListener('touchmove',e=>{
-
  if(menuDrag.active)return; // let document handler move the toolbar
- // DEBUG: log critical state
- if(!window._panDbg){
-  const _b=document.createElement('div');
-  _b.id='_panDbg';
-  _b.style.cssText='position:fixed;top:60px;left:8px;right:8px;background:rgba(255,165,0,0.9);color:#000;font-family:monospace;font-size:10px;padding:6px 8px;border-radius:6px;z-index:99999;pointer-events:none;line-height:1.3';
-  document.body.appendChild(_b);
-  window._panDbg=_b;
- } 
- window._panDbg.textContent='DM='+drMode+' T='+e.touches.length+' tool='+(state.tool||'-')+' phase='+drawPhase+' OFF='+state.offset+' ACT='+_chActive;
+
  
  // ── Crosshair active: ONLY update crosshair, block all other actions ──
  if(_chActive&&e.touches.length===1){
