@@ -2019,8 +2019,27 @@ return(
                         </button>
                         
                         {/* الرسم البياني */}
-                        <div style={{flex:1,minWidth:0}}>
+                        <div style={{flex:1,minWidth:0,position:"relative"}}>
                           <StoryChart bars={bars} color={priceColor} score={health.score} h={52}/>
+                          {/* علامة مصدر البيانات */}
+                          <div style={{
+                            position:"absolute",top:2,left:2,
+                            display:"flex",alignItems:"center",gap:3,
+                            background: isRealData ? "rgba(16,201,126,.15)" : "rgba(245,158,11,.15)",
+                            border:"1px solid " + (isRealData ? "rgba(16,201,126,.3)" : "rgba(245,158,11,.3)"),
+                            borderRadius:5,padding:"1px 5px",
+                          }}>
+                            <div style={{
+                              width:5,height:5,borderRadius:"50%",
+                              background:isRealData?C.mint:C.amber,
+                            }}/>
+                            <span style={{
+                              fontSize:7,fontWeight:700,
+                              color:isRealData?C.mint:C.amber,
+                            }}>
+                              {isRealData ? "حقيقي" : "تجريبي"}
+                            </span>
+                          </div>
                         </div>
                       </div>
 
