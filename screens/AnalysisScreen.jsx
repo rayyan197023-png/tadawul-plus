@@ -314,9 +314,6 @@ const result = liveStocks.map(stk=>{
       } else {
         bars = genBars(stk);
         _fakeCount++;
-      } else {
-        bars = genBars(stk);
-        _fakeCount++;
       }
 
       // مرّر liveMACRO إلى stockHealth
