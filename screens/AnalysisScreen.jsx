@@ -325,7 +325,7 @@ const result = liveStocks.map(stk=>{
       if (!h || !isFinite(h.score)) {
         h = stockHealth(stk, genBars(stk), liveMACRO);
       }
-      return {stk, bars, health:h}; 
+return {stk, bars, health:h, isRealData}; 
     });
     if (typeof window !== 'undefined') {
       window.__tadawulCounts = { real: _realCount, fake: _fakeCount, total: result.length };
