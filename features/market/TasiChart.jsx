@@ -82,10 +82,16 @@ fetchTasi();
     const sahmkPeriod = periodMap[period];
     if (!sahmkPeriod) return;
     if (ohlcvData[period]) return;
-    const fetchOHLCV = async () => {
+const fetchOHLCV = async (retryCount = 0) => {
       try {
         const r = await fetch(`/api/sahmkdata?endpoint=ohlcv&sym=TASI&period=${sahmkPeriod}`);
         const j = await r.json();
+        // إذا 429، انتظر وأعد المحاولة
+        if (j?.error && j.error.includes('429') && retryCount < 3) {
+          const waitMs = 5000 * Math.pow(2, retryCount); // 5s, 10s, 20s
+          setTimeout(() => fetchOHLCV(retryCount + 1), waitMs);
+          return;
+        }
         if (j?.data?.length > 0) {
           setOhlcvData(prev => ({
             ...prev,
