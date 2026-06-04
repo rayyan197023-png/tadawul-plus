@@ -6912,7 +6912,8 @@ document.addEventListener('keydown',e=>{
 
 // TOUCH 
 cv.addEventListener('touchstart',e=>{
- if(window._panDbg)window._panDbg.textContent='TS-start | T='+e.touches.length+' tool='+(state.tool||'-');
+ if(window._panDbg)window._panDbg.textContent='TS-1';
+ setTimeout(()=>{if(window._panDbg)window._panDbg.textContent+=' →end DM='+drMode;},10);
 
  // ── Wave dot tap: HIGHEST priority ─────────────────
  if(e.touches.length===1){
