@@ -306,11 +306,24 @@ const result = liveStocks.map(stk=>{
       var cached = ohlcvCache[stk.sym];
       var bars;
       var isRealData = false;
-      // DEBUG
-      if (typeof window !== 'undefined' && !window._debugged) {
-        window._debugged = true;
-        console.log('DEBUG cache sample:', stk.sym, cached);
-        if (cached && cached.length) console.log('First bar:', cached[0]);
+      // DEBUG overlay
+      if (typeof window !== 'undefined' && !window._debugDone && stk.sym === '2010') {
+        window._debugDone = true;
+        var dbgInfo = 'sym='+stk.sym+' | ';
+        if (!cached) dbgInfo += 'cached=NULL';
+        else if (!Array.isArray(cached)) dbgInfo += 'NOT_ARRAY type='+typeof cached;
+        else if (cached.length === 0) dbgInfo += 'EMPTY_ARRAY';
+        else {
+          dbgInfo += 'len='+cached.length+' | ';
+          var first = cached[0];
+          if (!first) dbgInfo += 'first=NULL';
+          else dbgInfo += 'first={c:'+first.c+',vol:'+first.vol+',o:'+first.o+',t:'+(first.t?'OK':'NULL')+'}';
+          dbgInfo += ' | allValid='+cached.every(b => b && isFinite(b.c) && isFinite(b.vol));
+        }
+        var dbg = document.createElement('div');
+        dbg.style.cssText = 'position:fixed;top:8px;left:8px;right:8px;background:rgba(255,140,0,0.95);color:#000;font:11px monospace;padding:8px;border-radius:6px;z-index:99999;word-break:break-all;line-height:1.4';
+        dbg.textContent = dbgInfo;
+        document.body.appendChild(dbg);
       }
       if (cached && Array.isArray(cached) && cached.length >= 20 &&
           cached.every(b => b && isFinite(b.c) && isFinite(b.vol))) {
