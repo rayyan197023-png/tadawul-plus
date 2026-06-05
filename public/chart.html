@@ -2178,7 +2178,7 @@ function showCompareModal(){
    <svg viewBox="0 0 20 20" fill="none" width="18" height="18"><polyline points="2,14 6,7 10,10 14,4 18,6" stroke="#f59e0b" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><polyline points="2,16 6,12 10,14 14,9 18,11" stroke="#3b9eff" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3,2"/></svg>
   </div>
   <div style="font-size:10px;color:#4a6080;font-family:Cairo,sans-serif;margin-bottom:10px;text-align:right">اختر سهماً للمقارنة (خط منقط أصفر)</div>
-  <div id="cmp-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;max-height:55vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-left:4px"></div>
+  <div id="cmp-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-left:4px;touch-action:pan-y"></div>
 
   ${showCompare?'<button id="cmp-remove" style="width:100%;padding:10px;background:rgba(239,68,68,0.08);border:1.5px solid rgba(239,68,68,0.3);border-radius:12px;color:#ef4444;font-family:Cairo,sans-serif;font-size:12px;cursor:pointer">إزالة المقارنة</button>':''}
  `;
