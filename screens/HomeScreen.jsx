@@ -801,7 +801,7 @@ function AdvancedSection({liveStocks=[]}) {
    LIQUIDITY PANEL -- خريطة السيولة الذكية الكاملة
    4 تبويبات: الخريطة | القائمة الذكية | القطاعات | DNA السيولة
 ══════════════════════════════════════════════════════ */
-function LiquidityMapPanel({stocks=[], allStocks=[]}) {
+function LiquidityMapPanel({stocks=[], allStocks=[], ohlcvCache={}}) {
   const {openStock} = useNav();
   const [view, setView]             = useState("map");
   const [scanning, setScan]         = useState(false);
