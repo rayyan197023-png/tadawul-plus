@@ -8531,6 +8531,23 @@ function clearDrawings(){_hist();state.drawings=[];drSelId=null;state.tool=null;
 
 // AI
 // 
+function clearAIDrawings(){
+  state.drawings = state.drawings.filter(d => !d._ai);
+  saveDrawings();
+  _updateUndoButtons();
+  render();
+  // إغلاق الـ modal إن كان مفتوحاً
+  const aip = document.getElementById('aip');
+  if(aip) aip.classList.remove('show');
+  // Toast تأكيد
+  const toast=document.getElementById('toast');
+  if(toast){
+    toast.textContent='تم مسح رسومات AI من الشارت';
+    toast.style.opacity='1';
+    setTimeout(()=>toast.style.opacity='0',2500);
+  }
+}
+
 function showAI(){
   const s=state.stk;
   document.getElementById('ai-title').textContent='التحليل الفني الشامل — '+s.name;
