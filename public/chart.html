@@ -11255,13 +11255,13 @@ function _buildAndDrawAIAnnotations(mode){
   _updateUndoButtons();
   render();
 
-  // Toast
+  // Toast مع زرّ مسح
   const toast=document.getElementById('toast');
   if(toast){
     const cnt=state.drawings.filter(d=>d._ai).length;
-    toast.textContent='تم رسم '+cnt+' مستوى على الشارت';
+    toast.innerHTML='<span>تم رسم '+cnt+' مستوى على الشارت</span><button onclick="clearAIDrawings()" style="margin-right:10px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);border-radius:8px;padding:4px 10px;color:#ef4444;font-family:Cairo,sans-serif;font-size:11px;font-weight:700;cursor:pointer">🗑 مسح</button>';
     toast.style.opacity='1';
-    setTimeout(()=>toast.style.opacity='0',3000);
+    setTimeout(()=>toast.style.opacity='0',6000);
   }
 }
 
