@@ -1417,9 +1417,9 @@ function HomeContent({idx, chgP, market, liveStocks=[], isLoadingH=false, isRefr
 
 // ✨ استبعاد الأسهم بدون بيانات فترة صالحة
 const validStocks = period === "يومي" ? periodStocks : periodStocks.filter(s=>!s._invalid);
-const byUp=[...validStocks].sort((a,b)=>b.pct-a.pct);
-const byDn=[...validStocks].sort((a,b)=>a.pct-b.pct);
-const byVol=[...validStocks].sort((a,b)=>b.v-a.v);
+  const byUp=[...validStocks].sort((a,b)=>b.pct-a.pct);
+  const byDn=[...validStocks].sort((a,b)=>a.pct-b.pct);
+  const byVol=[...validStocks].sort((a,b)=>b.v-a.v);
   const lists=[byUp,byDn,byVol];
   return(
     <div style={{paddingBottom:30,animation:"fadeUp .28s ease both"}}>
