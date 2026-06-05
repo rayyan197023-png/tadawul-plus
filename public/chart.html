@@ -8557,6 +8557,35 @@ function showAI(){
   document.getElementById('ai-foot').style.display='none';
   document.getElementById('aip').classList.add('show');
 
+  // ✨ زرّ "مسح الرسومات" داخل الـ modal (يَظهر فقط عند وجود رسومات AI)
+  setTimeout(function(){
+    const _aipModal=document.getElementById('aip');
+    if(!_aipModal)return;
+    // إزالة زرّ قديم إن وُجد
+    const _oldBtn=_aipModal.querySelector('.ai-clear-btn');
+    if(_oldBtn)_oldBtn.remove();
+    // فحص: هل توجد رسومات AI على الشارت؟
+    const _aiCount=state.drawings.filter(d=>d._ai).length;
+    if(_aiCount===0)return; // لا تَعرض الزرّ إن لم يَكن هناك رسومات
+    // إنشاء الزرّ
+    const _clrBtn=document.createElement('button');
+    _clrBtn.className='ai-clear-btn';
+    _clrBtn.style.cssText='position:absolute;top:14px;left:14px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);border-radius:10px;padding:7px 12px;color:#ef4444;font-family:Cairo,sans-serif;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;z-index:10';
+    _clrBtn.innerHTML='<svg width="14" height="14" viewBox="0 0 18 18" fill="none"><path d="M4 6h10M7 6V4.5h4V6M7 8v6M11 8v6" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/><path d="M5 6l.8 9h6.4l.8-9" stroke="#ef4444" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg><span>مسح رسومات AI ('+_aiCount+')</span>';
+    _clrBtn.onclick=function(){
+      state.drawings=state.drawings.filter(d=>!d._ai);
+      saveDrawings();
+      _updateUndoButtons();
+      render();
+      // إغلاق الـ modal
+      _aipModal.classList.remove('show');
+      // toast تأكيد
+      const _t=document.getElementById('toast');
+      if(_t){_t.textContent='تم مسح رسومات AI من الشارت';_t.style.opacity='1';setTimeout(()=>_t.style.opacity='0',2500);}
+    };
+    _aipModal.style.position=_aipModal.style.position||'fixed';
+    _aipModal.appendChild(_clrBtn);
+  },50);
   setTimeout(()=>{
     // === COMPUTE REAL INDICATORS FROM CHART DATA ===
     const all=state.allCandles;
