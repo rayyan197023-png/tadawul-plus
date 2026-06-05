@@ -1126,26 +1126,49 @@ const secStocks=sectorAllData.filter(d=>(d.stk.sec||"أخرى")===sec.name)
 }
 
 /* ── DNA CARD ── */
-function DnaCard({d}) {
+function DnaCard({d, bars: ohlcvBars}) {
   const [activeBar, setActiveBar] = useState(null);
+  const isReal = ohlcvBars && Array.isArray(ohlcvBars) && ohlcvBars.length >= 20;
 
-  const bars = useMemo(()=>Array.from({length:20},(_,k)=>{
-    const daysAgo=19-k;
-    const date=new Date(); date.setDate(date.getDate()-daysAgo);
+  const bars = useMemo(()=>{
     const dayNames=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
     const monthNames=["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
-    const timeFade=0.5+(k/20)*0.5;
-    const baseH=4+(d.sm/100)*44*timeFade;
-    const noise=(Math.sin(k*2.4+d.stk.sym.charCodeAt(0))*0.5+0.5)*8;
-    const h=Math.round(baseH+noise);
-    const barPct=+((d.stk.pct||0)*timeFade*(0.8+Math.sin(k)*0.2)).toFixed(2);
-    const vol=Math.round((d.stk.v||1e6)*(0.4+Math.sin(k*1.7)*0.3+0.3));
-    return{
-      k, h:Math.max(4,h), barPct, vol, isRecent:k>14,
-      label:`${dayNames[date.getDay()]} ${date.getDate()} ${monthNames[date.getMonth()]}`,
-      shortDate:`${date.getDate()}/${date.getMonth()+1}`,
-    };
-  }),[d]);
+
+    if (isReal) {
+      // ✨ بيانات حقيقيّة: آخر 20 يوماً
+      const last20 = ohlcvBars.slice(-20);
+      const maxVol = Math.max(...last20.map(b=>b.vol||0)) || 1;
+      return last20.map((bar, k) => {
+        const date = bar.t ? new Date(bar.t) : new Date();
+        const prevClose = k > 0 ? last20[k-1].c : bar.o;
+        const barPct = prevClose > 0 ? +(((bar.c - prevClose) / prevClose) * 100).toFixed(2) : 0;
+        // ارتفاع العمود يَعكس الحجم النسبيّ (volume bar)
+        const h = Math.round(4 + ((bar.vol || 0) / maxVol) * 44);
+        return {
+          k, h: Math.max(4, h), barPct, vol: bar.vol || 0, isRecent: k > 14,
+          label: `${dayNames[date.getDay()]} ${date.getDate()} ${monthNames[date.getMonth()]}`,
+          shortDate: `${date.getDate()}/${date.getMonth()+1}`,
+        };
+      });
+    }
+
+    // فولباك: بيانات تَجريبيّة (إذا cache لم يَصِل بعد)
+    return Array.from({length:20},(_,k)=>{
+      const daysAgo=19-k;
+      const date=new Date(); date.setDate(date.getDate()-daysAgo);
+      const timeFade=0.5+(k/20)*0.5;
+      const baseH=4+(d.sm/100)*44*timeFade;
+      const noise=(Math.sin(k*2.4+d.stk.sym.charCodeAt(0))*0.5+0.5)*8;
+      const h=Math.round(baseH+noise);
+      const barPct=+((d.stk.pct||0)*timeFade*(0.8+Math.sin(k)*0.2)).toFixed(2);
+      const vol=Math.round((d.stk.v||1e6)*(0.4+Math.sin(k*1.7)*0.3+0.3));
+      return{
+        k, h:Math.max(4,h), barPct, vol, isRecent:k>14,
+        label:`${dayNames[date.getDay()]} ${date.getDate()} ${monthNames[date.getMonth()]}`,
+        shortDate:`${date.getDate()}/${date.getMonth()+1}`,
+      };
+    });
+  },[d, ohlcvBars, isReal]);
 
   const ab = activeBar!==null ? bars[activeBar] : null;
 
