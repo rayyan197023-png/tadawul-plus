@@ -1387,26 +1387,33 @@ function HomeContent({idx, chgP, market, liveStocks=[], isLoadingH=false, isRefr
   const syms = useMemo(()=>liveStocks.map(s=>s.sym),[liveStocks]);
   const ohlcvCache = useOHLCVCache(syms, period === "سنوي" ? "1Y" : "3M");
 
-  // أيام كل فترة
-  const periodDays = period==="يومي"?1 : period==="أسبوعي"?5 : period==="شهري"?22 : 252;
+  // أيام كل فترة (عدد شموع التداول)
+  // الأسبوعي = 5 أيام تداول، لكن نَحتاج 6 شموع (إغلاق الخميس السابق + 5 أيام)
+  const periodBars = period==="يومي"?2 : period==="أسبوعي"?6 : period==="شهري"?23 : 253;
+  const periodVolDays = period==="يومي"?1 : period==="أسبوعي"?5 : period==="شهري"?22 : 252;
 
   // إعادة حساب pct/vol لكل سهم حسب الفترة
-const periodStocks = useMemo(()=>liveStocks.map(s=>{
-    if (period === "يومي") return s;
+  const periodStocks = useMemo(()=>liveStocks.map(s=>{
+    if (period === "يومي") return s; // اليومي يُستخدم s.pct و s.v مباشرة
     const bars = ohlcvCache[s.sym];
-    // ⚠️ إذا لا توجد bars كافية، نُعلّم السهم كـ "غير صالح"
-    if (!bars || !Array.isArray(bars) || bars.length < periodDays) {
-      return { ...s, _invalid: true };
+    if (!bars || !Array.isArray(bars) || bars.length < periodBars) {
+      return { ...s, _invalid: true }; // ⚠️ غير صالح للفترة
     }
-    const slice = bars.slice(-periodDays);
-    if (slice.length < 2) return s;
+    const slice = bars.slice(-periodBars);
+    // firstClose = إغلاق الشمعة قبل بداية الفترة (الخميس السابق للأسبوعي)
     const firstClose = slice[0].c;
+    // lastClose = إغلاق آخر شمعة (اليوم الحاليّ)
     const lastClose = slice[slice.length-1].c;
-    if (!firstClose || !lastClose) return s;
+    if (!firstClose || !lastClose) return { ...s, _invalid: true };
     const pPct = ((lastClose - firstClose) / firstClose) * 100;
-    const pVol = slice.reduce((sum,b)=>sum+(b.vol||0),0);
+    // الحجم = مجموع آخر periodVolDays فقط (بدون الشمعة المرجعيّة)
+    const volSlice = slice.slice(-periodVolDays);
+    const pVol = volSlice.reduce((sum,b)=>sum+(b.vol||0),0);
     return { ...s, pct: pPct, v: pVol };
-  }),[liveStocks, ohlcvCache, period, periodDays]);
+  }),[liveStocks, ohlcvCache, period, periodBars, periodVolDays]);
+
+  // ✨ استبعاد الأسهم بدون بيانات فترة صالحة (لا تَخلط مع اليومي)
+  const validStocks = period === "يومي" ? periodStocks : periodStocks.filter(s=>!s._invalid);
 
 // ✨ استبعاد الأسهم بدون بيانات فترة صالحة
 const validStocks = period === "يومي" ? periodStocks : periodStocks.filter(s=>!s._invalid);
