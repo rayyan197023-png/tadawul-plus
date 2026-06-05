@@ -774,7 +774,8 @@ function AdvancedSection({liveStocks=[]}) {
           borderTop:"none",overflow:"hidden",
         }}>
           <div style={{display:"flex",borderBottom:"1px solid rgba(255,255,255,.06)"}}>
-            {[{id:"liquidity",l:"خريطة السيولة"},{id:"breadth",l:"عرض السوق"},{id:"top",l:"أفضل الأسهم"}].map(p=>(
+            {[{id:"liquidity",l:"خريطة السيولة"},{id:"breadth",l:"عرض السوق"}].map(p=>(
+
               <button key={p.id} onClick={()=>setPanel(p.id)} style={{
                 flex:1,padding:"10px 4px",cursor:"pointer",fontFamily:"Cairo,sans-serif",
                 background:"none",border:"none",fontSize:11,fontWeight:600,
