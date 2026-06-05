@@ -808,21 +808,54 @@ function LiquidityMapPanel({stocks=[], allStocks=[], ohlcvCache={}}) {
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [selSec, setSelSec]         = useState(null);
 
-  const data = useMemo(() => stocks.map(s => {
-    const vol    = s.v    || 1e6;
-    const avgVol = s.avgV || vol;
-    const rv     = ((vol + avgVol) / 2) / avgVol;
-    const lpi    = Math.round(((s.pct||0) / 3) * 40 + (rv - 1) * 25);
+  // ✨ متوسّط حجم كل الأسهم (للأسهم بدون OHLCV cache)
+  const globalAvgVol = useMemo(() => {
+    if (!stocks.length) return 1e6;
+    return stocks.reduce((sum, s) => sum + (s.v || 0), 0) / stocks.length;
+  }, [stocks]);
 
-    let sm = 20;
-    if (rv > 2.5 && (s.pct||0) > 0) sm += 30;
-    else if (rv > 1.5 && (s.pct||0) > 0) sm += 20;
-    else if (rv > 1.2) sm += 10;
-    if ((s.pct||0) > 2) sm += 25;
-    else if ((s.pct||0) > 0) sm += 15;
-    else if ((s.pct||0) < -2) sm -= 10;
-    if (vol > avgVol * 1.5) sm += 25;
-    else if (vol > avgVol) sm += 15;
+  const data = useMemo(() => stocks.map(s => {
+    const vol = s.v || 1e6;
+    const pct = s.pct || 0;
+
+    // ✨ حساب avgVol حقيقي من OHLCV عند توفّره
+    const cachedBars = ohlcvCache[s.sym];
+    const isRealVol = cachedBars && Array.isArray(cachedBars) && cachedBars.length >= 10;
+    let avgVol;
+    if (isRealVol) {
+      const lastN = cachedBars.slice(-20);
+      avgVol = lastN.reduce((sum, b) => sum + (b.vol || 0), 0) / lastN.length || vol;
+    } else {
+      // فولباك: متوسّط السوق العام
+      avgVol = globalAvgVol;
+    }
+
+    const rv = avgVol > 0 ? vol / avgVol : 1;
+    const lpi = Math.round((pct / 3) * 40 + (rv - 1) * 25);
+
+    // ── حساب SM Score (نطاق 0-100) ──
+    let sm = 20; // قاعدة
+
+    // 1️⃣ الحجم النسبيّ
+    if (rv > 2.5 && pct > 0)       sm += 30;
+    else if (rv > 1.5 && pct > 0)  sm += 22;
+    else if (rv > 1.2)             sm += 12;
+    else if (rv >= 0.8 && rv <= 1.2) sm += 5;  // حجم متوازن
+
+    // 2️⃣ تَغيّر السعر
+    if (pct > 3)        sm += 30;
+    else if (pct > 2)   sm += 25;
+    else if (pct > 1)   sm += 20;
+    else if (pct > 0)   sm += 12;
+    else if (pct < -3)  sm -= 15;
+    else if (pct < -2)  sm -= 8;
+    else if (pct < 0)   sm -= 3;
+
+    // 3️⃣ شدة الحجم
+    if (vol > avgVol * 2.0)      sm += 25;
+    else if (vol > avgVol * 1.3) sm += 15;
+    else if (vol > avgVol)       sm += 8;
+
     sm = Math.min(100, Math.max(0, sm));
 
     const hd = (s.pct||0) > 0.3 && rv > 1.5 && lpi < 0;
