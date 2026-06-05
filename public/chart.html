@@ -2167,7 +2167,8 @@ function showCompareModal(){
  const closeM=()=>{const _s=document.getElementById('sbg');if(_s)_s.style.pointerEvents='';m.remove();};
 
  const card=document.createElement('div');
- card.style.cssText='background:linear-gradient(145deg,#0d1628,#060c18);border:1.5px solid rgba(245,158,11,0.3);border-radius:20px;padding:20px;width:calc(100% - 32px);max-width:380px;box-shadow:0 -8px 40px rgba(0,0,0,0.9)';
+ card.style.cssText='background:linear-gradient(145deg,#0d1628,#060c18);border:1.5px solid rgba(245,158,11,0.3);border-radius:20px;padding:20px;width:calc(100% - 32px);max-width:380px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 -8px 40px rgba(0,0,0,0.9)';
+
  card.onclick=e=>e.stopPropagation();
 
  card.innerHTML=`
