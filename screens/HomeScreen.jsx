@@ -1466,7 +1466,7 @@ function HomeContent({idx, chgP, market, liveStocks=[], isLoadingH=false, isRefr
             <div style={{position:"absolute",top:40,right:0,zIndex:100,background:CARD,borderRadius:12,
               overflow:"hidden",border:"1px solid rgba(255,255,255,.1)",
               boxShadow:"0 8px 24px rgba(0,0,0,.5)",minWidth:100}}>
-              {["يومي","أسبوعي","شهري","سنوي"].map(p=>(
+                            {["يومي","أسبوعي","شهري"].map(p=>(
                 <div key={p} onClick={()=>{setPeriod(p);setShowPeriodMenu(false);}}
                   style={{padding:"10px 16px",cursor:"pointer",
                     display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,
