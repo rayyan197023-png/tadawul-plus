@@ -745,6 +745,10 @@ function AdvancedSection({liveStocks=[]}) {
     [liveStocks]
   );
 
+  // ✨ جلب OHLCV الحقيقيّ لـ 20 يوماً (شهر تقريباً)
+  const topSyms = useMemo(()=>topStocks.map(s=>s.sym),[topStocks]);
+  const ohlcvCache = useOHLCVCache(topSyms, '3M');
+
   return(
     <div style={{margin:"14px 12px 0"}}>
       <button onClick={()=>setOpen(o=>!o)} style={{
