@@ -1385,12 +1385,12 @@ function HomeContent({idx, chgP, market, liveStocks=[], isLoadingH=false, isRefr
 
   // ✨ جلب OHLCV لحساب التغيّر حسب الفترة
   const syms = useMemo(()=>liveStocks.map(s=>s.sym),[liveStocks]);
-  const ohlcvCache = useOHLCVCache(syms, period === "سنوي" ? "1Y" : "3M");
+  const ohlcvCache = useOHLCVCache(syms, '3M');
 
   // أيام كل فترة (عدد شموع التداول)
   // الأسبوعي = 5 أيام تداول، لكن نَحتاج 6 شموع (إغلاق الخميس السابق + 5 أيام)
-  const periodBars = period==="يومي"?2 : period==="أسبوعي"?6 : period==="شهري"?23 : 253;
-  const periodVolDays = period==="يومي"?1 : period==="أسبوعي"?5 : period==="شهري"?22 : 252;
+  const periodBars = period==="يومي"?2 : period==="أسبوعي"?6 : 23; // شهري = 23
+  const periodVolDays = period==="يومي"?1 : period==="أسبوعي"?5 : 22;
 
   // إعادة حساب pct/vol لكل سهم حسب الفترة
   const periodStocks = useMemo(()=>liveStocks.map(s=>{
