@@ -1391,10 +1391,13 @@ function HomeContent({idx, chgP, market, liveStocks=[], isLoadingH=false, isRefr
   const periodDays = period==="يومي"?1 : period==="أسبوعي"?5 : period==="شهري"?22 : 252;
 
   // إعادة حساب pct/vol لكل سهم حسب الفترة
-  const periodStocks = useMemo(()=>liveStocks.map(s=>{
-    if (period === "يومي") return s; // اليومي يُستخدم s.pct و s.v مباشرة
+const periodStocks = useMemo(()=>liveStocks.map(s=>{
+    if (period === "يومي") return s;
     const bars = ohlcvCache[s.sym];
-    if (!bars || !Array.isArray(bars) || bars.length < 2) return s; // فولباك
+    // ⚠️ إذا لا توجد bars كافية، نُعلّم السهم كـ "غير صالح"
+    if (!bars || !Array.isArray(bars) || bars.length < periodDays) {
+      return { ...s, _invalid: true };
+    }
     const slice = bars.slice(-periodDays);
     if (slice.length < 2) return s;
     const firstClose = slice[0].c;
