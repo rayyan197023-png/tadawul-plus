@@ -787,7 +787,6 @@ function AdvancedSection({liveStocks=[]}) {
           </div>
                     {panel==="liquidity"&&<LiquidityMapPanel stocks={topStocks} allStocks={liveStocks}/>}
           {panel==="breadth"&&<BreadthPanel liveStocks={liveStocks}/>}
-          {panel==="top"&&<TopStocksPanel stocks={liveStocks}/>}
         </div>
       )}
     </div>
