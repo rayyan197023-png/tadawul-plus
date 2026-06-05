@@ -1305,53 +1305,6 @@ function BreadthPanel({liveStocks=[]}) {
   );
 }
 
-/* ── أفضل الأسهم ── */
-function TopStocksPanel({stocks=[]}) {
-  const {openStock}=useNav();
-  const [view,setView]=useState("gainers");
-  const sorted=useMemo(()=>{
-    if(view==="gainers")return[...stocks].sort((a,b)=>(b.pct||0)-(a.pct||0)).slice(0,10);
-    if(view==="losers")return[...stocks].sort((a,b)=>(a.pct||0)-(b.pct||0)).slice(0,10);
-    return[...stocks].sort((a,b)=>(b.v||0)-(a.v||0)).slice(0,10);
-  },[stocks,view]);
-
-  return(
-    <div style={{padding:"10px 12px"}}>
-      <div style={{display:"flex",gap:6,marginBottom:10}}>
-        {[{id:"gainers",l:"أكثر ارتفاعاً"},{id:"losers",l:"أكثر انخفاضاً"},{id:"volume",l:"الأكثر نشاطاً"}].map(v=>(
-          <button key={v.id} onClick={()=>setView(v.id)} style={{
-            flex:1,padding:"5px 4px",borderRadius:8,fontSize:9.5,fontWeight:600,
-            cursor:"pointer",fontFamily:"Cairo,sans-serif",
-            background:view===v.id?BLUE+"20":"rgba(255,255,255,.04)",
-            border:"1px solid "+(view===v.id?BLUE:"rgba(255,255,255,.07)"),
-            color:view===v.id?BLUE:T3,
-          }}>{v.l}</button>
-        ))}
-      </div>
-      {sorted.map((s,i)=>(
-        <div key={i} onClick={()=>openStock(s)} style={{
-          display:"flex",justifyContent:"space-between",alignItems:"center",
-          padding:"8px 0",borderBottom:"1px solid rgba(255,255,255,.04)",cursor:"pointer",
-        }}>
-          <div style={{display:"flex",alignItems:"center",gap:8}}>
-            <span style={{fontSize:10,color:T3,width:16}}>{i+1}</span>
-            <div>
-              <div style={{fontSize:12,fontWeight:700,color:T1}}>{s.name}</div>
-              <div style={{fontSize:9,color:T3}}>{s.sym}</div>
-            </div>
-          </div>
-          <div style={{textAlign:"left"}}>
-            <div style={{fontSize:13,fontWeight:800,color:T1}}>{(s.p||0).toFixed(2)}</div>
-            <div style={{fontSize:11,fontWeight:700,color:(s.pct||0)>=0?G:R}}>
-              {(s.pct||0)>=0?"+":""}{(s.pct||0).toFixed(2)}%
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 /* ─── HOME CONTENT ─── */
 function HomeContent({idx, chgP, market, liveStocks=[], isLoadingH=false, isRefreshingH=false}) {
   const [stTab,setStTab]=useState(0);
