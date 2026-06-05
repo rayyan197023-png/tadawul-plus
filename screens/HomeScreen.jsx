@@ -1220,6 +1220,17 @@ function DnaCard({d, bars: ohlcvBars}) {
         <div style={{display:"flex",alignItems:"center",gap:6}}>
           <span style={{fontSize:14,fontWeight:900,color:PU}}>{d.sm}</span>
           <span style={{fontSize:8,color:T3}}>SM Score</span>
+          <div style={{
+            display:"flex",alignItems:"center",gap:3,
+            background: isReal ? "rgba(16,201,126,.15)" : "rgba(245,158,11,.15)",
+            border: "1px solid " + (isReal ? "rgba(16,201,126,.3)" : "rgba(245,158,11,.3)"),
+            borderRadius:5,padding:"1px 5px",
+          }}>
+            <div style={{width:5,height:5,borderRadius:"50%",background:isReal?G:GOLD}}/>
+            <span style={{fontSize:7,fontWeight:700,color:isReal?G:GOLD}}>
+              {isReal ? "حقيقي" : "تجريبي"}
+            </span>
+          </div>
         </div>
         <span style={{fontSize:9,color:d.phCol,fontWeight:600}}>{d.phase}</span>
         <span style={{fontSize:12,fontWeight:700,color:T1}}>{d.stk.name}</span>
