@@ -1117,7 +1117,7 @@ const secStocks=sectorAllData.filter(d=>(d.stk.sec||"أخرى")===sec.name)
             DNA السيولة -- نمط حركة المال الذكي
           </div>
                     {[...data].filter(d=>d.sm>30).sort((a,b)=>b.sm-a.sm).slice(0,50).map((d,i)=>(
-            <DnaCard key={i} d={d}/>
+            <DnaCard key={i} d={d} bars={ohlcvCache[d.stk.sym]}/>
           ))}
         </div>
       )}
