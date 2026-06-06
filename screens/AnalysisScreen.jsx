@@ -990,20 +990,37 @@ const best3 = allData.length > 0
                   borderRadius:8,padding:"4px 10px",
                   border:"1px solid rgba(16,201,126,.18)",
                 }}>
-                  {[4,8,12,6,10].map(function(barH, i){
-                    const active = tick % 5 === i;
+{(function(){
+                    // فحص حالة السوق السعودي (KSA UTC+3)
+                    var now = new Date();
+                    var utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+                    var ksa = new Date(utc + 3 * 3600000);
+                    var day = ksa.getDay();
+                    var timeInMin = ksa.getHours() * 60 + ksa.getMinutes();
+                    var isWeekday = day >= 0 && day <= 4;
+                    var isMarketHours = timeInMin >= 570 && timeInMin <= 930;
+                    var isOpen = isWeekday && isMarketHours;
+                    var stColor = isOpen ? C.mint : C.coral;
+                    var stLabel = isOpen ? "مباشر" : "مغلق";
                     return (
-                      <div key={i} style={{
-                        width:3,
-                        height: active ? barH + 4 : barH,
-                        borderRadius:2,
-                        background: active ? C.mint : C.mint,
-                        opacity: active ? 1 : 0.22,
-                        transition:"height .25s ease, opacity .25s ease",
-                      }}/>
+                      <>
+                        {[4,8,12,6,10].map(function(barH, i){
+                          var active = isOpen && (tick % 5 === i);
+                          return (
+                            <div key={i} style={{
+                              width:3,
+                              height: active ? barH + 4 : barH,
+                              borderRadius:2,
+                              background: stColor,
+                              opacity: active ? 1 : (isOpen ? 0.22 : 0.4),
+                              transition:"height .25s ease, opacity .25s ease",
+                            }}/>
+                          );
+                        })}
+                        <span style={{fontSize:8,fontWeight:700,color:stColor,marginRight:2}}>{stLabel}</span>
+                      </>
                     );
-                  })}
-                  <span style={{fontSize:8,fontWeight:700,color:C.mint,marginRight:2}}>مباشر</span>
+                  })()}
                   {(function(){
                     var c = (typeof window !== 'undefined') ? window.__tadawulCounts : null;
                     if (!c || !c.total) return null;
