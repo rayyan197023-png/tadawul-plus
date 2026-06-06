@@ -105,6 +105,21 @@ function Shell() {
     } catch { return []; }
   });
 
+  // ✨ استمع لتحديثات watchlist من زرّ النجمة في StockHeader
+  useEffect(() => {
+    function refreshWatchlist() {
+      try {
+        const r = window.localStorage.getItem('tadawul_watchlist');
+        if (r) {
+          const fresh = JSON.parse(r);
+          setWatchlist(fresh);
+        }
+      } catch {}
+    }
+    window.addEventListener('watchlist-updated', refreshWatchlist);
+    return () => window.removeEventListener('watchlist-updated', refreshWatchlist);
+  }, []);
+
   const wlSyms = React.useMemo(() => watchlist.map(w => w.sym), [watchlist]);
 
     // السلع الوهمية الثابتة حُذفت. المصدر الحقيقي الآن FRED (في MoreScreen + AnalysisScreen).
