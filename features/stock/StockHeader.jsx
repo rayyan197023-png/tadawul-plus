@@ -10,7 +10,7 @@ import { colors }           from '../../theme/tokens';
 
 const C = colors;
 
-// ✨ مفتاح المفضّلة في localStorage (مُتوافق مع MoreScreen)
+// ✨ مفتاح المفضّلة في localStorage (متوافق مع MoreScreen)
 const WATCHLIST_KEY = 'tadawul_watchlist';
 
 function loadWatchlist() {
@@ -36,14 +36,20 @@ export default function StockHeader({ stk, onClose }) {
   const [alertSet,   setAlertSet]   = useState(false);
   const btnRef = useRef(null);
 
-  const watched = stk ? watchlist.includes(stk.sym) : false;
+  // ✨ يَدعم تَنسيقَين: array of objects {sym,name,color} أو array of strings
+  const watched = stk ? watchlist.some(w => (typeof w === 'string' ? w : w.sym) === stk.sym) : false;
   
   function toggleWatchlist() {
     if (!stk) return;
     setWatchlist(prev => {
-      const next = prev.includes(stk.sym)
-        ? prev.filter(s => s !== stk.sym)
-        : [...prev, stk.sym];
+      const isWatched = prev.some(w => (typeof w === 'string' ? w : w.sym) === stk.sym);
+      let next;
+      if (isWatched) {
+        next = prev.filter(w => (typeof w === 'string' ? w : w.sym) !== stk.sym);
+      } else {
+        // ✨ نَحفظ كـ object لِيَتوافق مع WatchlistTab
+        next = [...prev, { sym: stk.sym, name: stk.name, color: '#1ee68a' }];
+      }
       saveWatchlist(next);
       // إهتزاز خفيف للتأكيد
       if (navigator.vibrate) navigator.vibrate(30);
