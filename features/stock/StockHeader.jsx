@@ -1,26 +1,55 @@
 'use client';
 /**
- * StockHeader — Price header for StockDetail
+ * StockHeader -- Price header for StockDetail
  * Shows: name, symbol, price, change, quick stats bar
  */
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useSharedPrices } from '../../store';
 import { colors }           from '../../theme/tokens';
 
 const C = colors;
 
+// ✨ مفتاح المفضّلة في localStorage (مُتوافق مع MoreScreen)
+const WATCHLIST_KEY = 'tp_watchlist';
+
+function loadWatchlist() {
+  try {
+    const raw = localStorage.getItem(WATCHLIST_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function saveWatchlist(list) {
+  try {
+    localStorage.setItem(WATCHLIST_KEY, JSON.stringify(list));
+    // ✨ نُطلق event لتَنبيه أيّ شاشة أخرى مفتوحة
+    window.dispatchEvent(new Event('watchlist-updated'));
+  } catch {}
+}
+
 export default function StockHeader({ stk, onClose }) {
-  const stocks = useSharedPrices();
-const toggleWatchlist  = stocks.toggleWatchlist  ?? (() => {});
-const isInWatchlist    = stocks.isInWatchlist    ?? (() => false);
+  const [watchlist, setWatchlist] = useState(() => loadWatchlist());
   const [alertOpen,  setAlertOpen]  = useState(false);
   const [alertPrice, setAlertPrice] = useState(() => stk ? +(stk.p * 1.05).toFixed(2) : 0);
   const [alertType,  setAlertType]  = useState('فوق');
   const [alertSet,   setAlertSet]   = useState(false);
   const btnRef = useRef(null);
 
-  const watched  = isInWatchlist(stk?.sym);
+  const watched = stk ? watchlist.includes(stk.sym) : false;
+  
+  function toggleWatchlist() {
+    if (!stk) return;
+    setWatchlist(prev => {
+      const next = prev.includes(stk.sym)
+        ? prev.filter(s => s !== stk.sym)
+        : [...prev, stk.sym];
+      saveWatchlist(next);
+      // إهتزاز خفيف للتأكيد
+      if (navigator.vibrate) navigator.vibrate(30);
+      return next;
+    });
+  }
   const isUp     = (stk?.pct ?? 0) >= 0;
   const triggered= alertSet && (alertType === 'فوق' ? stk.p >= alertPrice : stk.p <= alertPrice);
 
