@@ -236,6 +236,22 @@ useEffect(function(){
     return function(){clearInterval(t);};
   },[]);
 
+  // ✨ استمع لتحديثات المفضّلة من شاشات أخرى (مثل زرّ النجمة في StockDetail)
+  useEffect(function(){
+    function refreshWatchlist(){
+      try{
+        var r=window.localStorage.getItem("tadawul_watchlist");
+        if(r){
+          var fresh=JSON.parse(r);
+          _setLocalWL(fresh);
+        }
+      }catch(e){}
+    }
+    window.addEventListener('watchlist-updated', refreshWatchlist);
+    return function(){
+      window.removeEventListener('watchlist-updated', refreshWatchlist);
+    };
+  },[]);
 
 
   useEffect(function(){
