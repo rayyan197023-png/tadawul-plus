@@ -1636,7 +1636,13 @@ return result;
       <div style={{position:"sticky",top:0,zIndex:50,background:"linear-gradient(180deg,"+C.void+"fa 0%,"+C.void+"e0 100%)",backdropFilter:"blur(24px)",borderBottom:"1px solid "+C.line+"55",padding:"max(env(safe-area-inset-top, 14px), 14px) 16px 0"}}>
         {/* الصف العلوي: زرّ + + مقبض + جلسة */}
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",paddingBottom:8}}>
-          <button onClick={function(){setSheet(true);}} style={{width:42,height:42,borderRadius:12,border:"1px solid "+C.mint+"33",background:"linear-gradient(135deg,"+C.mint+"22,"+C.mint+"10)",color:C.mint,fontSize:22,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,boxShadow:"0 4px 12px "+C.mint+"22"}}>+</button>
+          <button onClick={function(){setSheet(true);}} style={{width:44,height:44,borderRadius:12,border:"1px solid "+C.mint+"44",background:"linear-gradient(135deg,"+C.mint+"28,"+C.mint+"12)",color:C.mint,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 14px "+C.mint+"33",padding:0}}>
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <circle cx="11" cy="11" r="10" stroke={C.mint} strokeWidth="1.5" fill={C.mint+"15"}/>
+              <line x1="11" y1="6" x2="11" y2="16" stroke={C.mint} strokeWidth="2.2" strokeLinecap="round"/>
+              <line x1="6" y1="11" x2="16" y2="11" stroke={C.mint} strokeWidth="2.2" strokeLinecap="round"/>
+            </svg>
+          </button>
           <button onClick={function(){setHeaderMin(function(h){return !h;});}} style={{width:44,height:5,borderRadius:3,background:headerMin?C.gold:C.ash,cursor:"pointer",border:"none",padding:0,transition:"background .2s"}}/>
           <div style={{display:"flex",alignItems:"center",gap:5,background:sessionColor+"15",border:"1px solid "+sessionColor+"33",borderRadius:20,padding:"4px 10px"}}>
             <span className={isSession?"live-dot":""} style={{width:6,height:6,borderRadius:"50%",background:sessionColor,boxShadow:"0 0 6px "+sessionColor,display:"inline-block"}}/>
