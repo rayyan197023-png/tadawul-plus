@@ -1633,7 +1633,7 @@ return result;
           <div key={i} style={{position:"absolute",width:pp.w,height:pp.h,borderRadius:"50%",background:"radial-gradient(circle,"+pp.c+" 0%,transparent 70%)",top:pp.t,right:pp.r,animation:pp.an+" "+pp.dur+" ease-in-out infinite"}}/>
         );})}
       </div>
-      <div style={{position:"sticky",top:0,zIndex:50,background:"linear-gradient(180deg,"+C.void+"fa 0%,"+C.void+"e0 100%)",backdropFilter:"blur(24px)",borderBottom:"1px solid "+C.line+"55",padding:"10px 16px 0"}}>
+      <div style={{position:"sticky",top:0,zIndex:50,background:"linear-gradient(180deg,"+C.void+"fa 0%,"+C.void+"e0 100%)",backdropFilter:"blur(24px)",borderBottom:"1px solid "+C.line+"55",padding:"max(env(safe-area-inset-top, 14px), 14px) 16px 0"}}>
         {/* الصف العلوي: زرّ + + مقبض + جلسة */}
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",paddingBottom:8}}>
           <button onClick={function(){setSheet(true);}} style={{width:42,height:42,borderRadius:12,border:"1px solid "+C.mint+"33",background:"linear-gradient(135deg,"+C.mint+"22,"+C.mint+"10)",color:C.mint,fontSize:22,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,boxShadow:"0 4px 12px "+C.mint+"22"}}>+</button>
