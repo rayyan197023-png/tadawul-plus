@@ -11,7 +11,7 @@ import { colors }           from '../../theme/tokens';
 const C = colors;
 
 // ✨ مفتاح المفضّلة في localStorage (مُتوافق مع MoreScreen)
-const WATCHLIST_KEY = 'tp_watchlist';
+const WATCHLIST_KEY = 'tadawul_watchlist';
 
 function loadWatchlist() {
   try {
