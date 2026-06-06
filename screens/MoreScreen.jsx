@@ -243,7 +243,12 @@ useEffect(function(){
         var r=window.localStorage.getItem("tadawul_watchlist");
         if(r){
           var fresh=JSON.parse(r);
+          // نُحدّث الـ local state
           _setLocalWL(fresh);
+          // ونُحدّث الـ external state أيضاً (من AppShell) لِلتأكّد
+          if (setExtWatchlist) {
+            setExtWatchlist(fresh);
+          }
         }
       }catch(e){}
     }
