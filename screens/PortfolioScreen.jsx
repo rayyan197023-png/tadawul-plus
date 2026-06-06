@@ -268,13 +268,18 @@ function SummaryCard(props) {
   
   // ✨ استقبل nowT من الأب بدلاً من إنشاء setInterval جديد
   var nowT = props.nowT || new Date();
-  var hour=nowT.getHours(), min=nowT.getMinutes();
+  // تَحويل لِـ KSA (UTC+3)
+  var _utc = nowT.getTime() + (nowT.getTimezoneOffset() * 60000);
+  var _ksa = new Date(_utc + 3 * 3600000);
+  var _day = _ksa.getDay();
+  var hour=_ksa.getHours(), min=_ksa.getMinutes();
   var timeVal=hour*60+min;
-  var isSession=(timeVal>=10*60&&timeVal<15*60);
-  var isPreOpen=(timeVal>=9*60+30&&timeVal<10*60);
+  // الأحد-الخميس فقط (0-4)
+  var isWeekday = _day >= 0 && _day <= 4;
+  var isSession = isWeekday && (timeVal>=10*60&&timeVal<15*60);
+  var isPreOpen = isWeekday && (timeVal>=9*60+30&&timeVal<10*60);
   var sessionLabel=isSession?"الجلسة مفتوحة":isPreOpen?"ما قبل الفتح":"الجلسة مغلقة";
   var sessionColor=isSession?"#1ee68a":isPreOpen?"#fbbf24":"#ff5f6a";
-
   var fmt=function(n){return n.toLocaleString("en-US",{maximumFractionDigits:0});};
   var capitalUsed=tv, capitalFree=Math.max(0,capital-capitalUsed);
   var alpha=props.alpha||0, benchmarkReturn=props.benchmarkReturn||0;
