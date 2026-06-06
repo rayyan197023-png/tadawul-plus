@@ -1633,7 +1633,7 @@ return result;
           <div key={i} style={{position:"absolute",width:pp.w,height:pp.h,borderRadius:"50%",background:"radial-gradient(circle,"+pp.c+" 0%,transparent 70%)",top:pp.t,right:pp.r,animation:pp.an+" "+pp.dur+" ease-in-out infinite"}}/>
         );})}
       </div>
-      <div style={{position:"sticky",top:0,zIndex:50,background:"linear-gradient(180deg,"+C.void+"fa 0%,"+C.void+"e0 100%)",backdropFilter:"blur(24px)",borderBottom:"1px solid "+C.line+"55",padding:"max(env(safe-area-inset-top, 14px), 14px) 16px 0"}}>
+      <div style={{position:"sticky",top:0,zIndex:50,background:"linear-gradient(180deg,"+C.void+"fa 0%,"+C.void+"e0 100%)",backdropFilter:"blur(24px)",borderBottom:"1px solid "+C.line+"55",padding:"calc(env(safe-area-inset-top, 0px) + 28px) 16px 0"}}>
         {/* الصف العلوي: زرّ + + مقبض + جلسة */}
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",paddingBottom:8}}>
           <button onClick={function(){setSheet(true);}} style={{width:44,height:44,borderRadius:12,border:"1px solid "+C.mint+"44",background:"linear-gradient(135deg,"+C.mint+"28,"+C.mint+"12)",color:C.mint,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 14px "+C.mint+"33",padding:0}}>
