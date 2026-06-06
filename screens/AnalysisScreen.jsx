@@ -1365,11 +1365,23 @@ const best = allData.length > 0
                         <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}>
                           <span style={{fontSize:16}}>{mktIcon}</span>
                           <span style={{fontSize:16,fontWeight:900,color:mktColor,letterSpacing:"-.3px"}}>{mktLabel}</span>
-                          <div style={{marginRight:"auto",display:"flex",alignItems:"center",gap:4,
-                            background:mktColor+"15",borderRadius:20,padding:"2px 8px",border:`1px solid ${mktColor}30`}}>
-                            <div className="live-dot" style={{width:5,height:5,borderRadius:"50%",background:mktColor}}/>
-                            <span style={{fontSize:8,fontWeight:700,color:mktColor}}>مباشر</span>
-                          </div>
+                          {(function(){
+                            var now = new Date();
+                            var utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+                            var ksa = new Date(utc + 3 * 3600000);
+                            var day = ksa.getDay();
+                            var timeInMin = ksa.getHours() * 60 + ksa.getMinutes();
+                            var isOpen = (day >= 0 && day <= 4) && (timeInMin >= 570 && timeInMin <= 930);
+                            var stCol = isOpen ? mktColor : C.coral;
+                            var stLbl = isOpen ? "مباشر" : "مغلق";
+                            return (
+                              <div style={{marginRight:"auto",display:"flex",alignItems:"center",gap:4,
+                                background:stCol+"15",borderRadius:20,padding:"2px 8px",border:`1px solid ${stCol}30`}}>
+                                <div className={isOpen?"live-dot":""} style={{width:5,height:5,borderRadius:"50%",background:stCol}}/>
+                                <span style={{fontSize:8,fontWeight:700,color:stCol}}>{stLbl}</span>
+                              </div>
+                            );
+                          })()}
                         </div>
                         <div style={{display:"flex",gap:6}}>
                           {[
