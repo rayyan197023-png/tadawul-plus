@@ -506,6 +506,11 @@ button{font-family:'Cairo',sans-serif;cursor:pointer;outline:none}
    <svg viewBox="0 0 22 22" fill="none" width="16" height="16"><path d="M3 19 L8 9 L14 15 L19 5" stroke="#22c55e" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="9" r="2" fill="#22c55e"/><circle cx="14" cy="15" r="2" fill="#22c55e"/></svg>
    رسم على الشارت
  </button>
+ <button class="fbtn" id="btn-ai-clear" onclick="clearAIDrawings()" ontouchend="event.preventDefault();clearAIDrawings();"
+   style="color:#ef4444;background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.25);width:100%;font-size:13px;font-weight:700;display:none;align-items:center;justify-content:center;gap:8px">
+   <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M4 6h10M7 6V4.5h4V6M7 8v6M11 8v6" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/><path d="M5 6l.8 9h6.4l.8-9" stroke="#ef4444" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+   <span id="ai-clear-label">مسح رسومات AI</span>
+ </button>
  <div style="display:flex;gap:8px">
   <button class="fbtn" onclick="runAI()" style="color:#a78bfa;background:rgba(167,139,250,0.08);border-color:rgba(167,139,250,0.2);flex:1">إعادة التحليل ↻</button>
  </div>
