@@ -4119,16 +4119,6 @@ var neut = normalizeProb(prob.neutral);
     return hh + ":" + mm;
   })()}
 </div>
-        <div style={{display:"flex",gap:6,alignItems:"center"}}>
-          <div style={{display:"flex",alignItems:"center",gap:4,
-            background:`${C.mint}18`,borderRadius:20,padding:"2px 8px",
-            border:`1px solid ${C.mint}30`,
-          }}>
-            <div className="live-dot" style={{width:5,height:5,borderRadius:"50%",background:C.mint}}/>
-            <span style={{fontSize:8,fontWeight:700,color:C.mint}}>مباشر</span>
-          </div>
-          <span style={{fontSize:9,color:C.smoke}}>📶 ▪▪▪</span>
-        </div>
       </div>
 
       {/* ══════════════════════════════════════════════
