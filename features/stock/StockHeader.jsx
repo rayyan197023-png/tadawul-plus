@@ -81,7 +81,7 @@ export default function StockHeader({ stk, onClose }) {
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           {/* Watchlist */}
           <button
-            onClick={() => toggleWatchlist(stk.sym)}
+            onClick={toggleWatchlist}
             style={{
               width: 40, height: 40, borderRadius: 10, cursor: 'pointer',
               background: watched ? C.gold + '20' : C.layer3,
