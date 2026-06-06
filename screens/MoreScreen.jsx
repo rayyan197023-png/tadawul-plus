@@ -441,15 +441,36 @@ setSnaps:setSnaps,
                 <span style={{background:"linear-gradient(90deg,"+C.gold+","+C.goldL+")",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>والتحليلات</span>
               </div>
               
-              <div className="live-bar">
-                <div style={{width:3,height:4, borderRadius:2,background:C.mint,opacity:rankTick%5===0?1:0.2}}/>
-                <div style={{width:3,height:8, borderRadius:2,background:C.mint,opacity:rankTick%5===1?1:0.2}}/>
-                <div style={{width:3,height:12,borderRadius:2,background:C.mint,opacity:rankTick%5===2?1:0.2}}/>
-                <div style={{width:3,height:6, borderRadius:2,background:C.mint,opacity:rankTick%5===3?1:0.2}}/>
-                <div style={{width:3,height:10,borderRadius:2,background:C.mint,opacity:rankTick%5===4?1:0.2}}/>
-                <span style={{fontSize:8,fontWeight:700,color:C.mint,marginRight:2}}>مباشر</span>
-                <span className="m" style={{fontSize:8,color:C.smoke}}>{fmtT}</span>
-              </div>
+              {(function(){
+                // فحص حالة السوق السعودي (KSA UTC+3)
+                var now = new Date();
+                var utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+                var ksa = new Date(utc + 3 * 3600000);
+                var day = ksa.getDay();
+                var timeInMin = ksa.getHours() * 60 + ksa.getMinutes();
+                var isOpen = (day >= 0 && day <= 4) && (timeInMin >= 570 && timeInMin <= 930);
+                var stCol = isOpen ? C.mint : C.coral;
+                var stLbl = isOpen ? "مباشر" : "مغلق";
+                var bars = [4,8,12,6,10];
+                return (
+                  <div className="live-bar">
+                    {bars.map(function(barH, i){
+                      var active = isOpen && (rankTick % 5 === i);
+                      return (
+                        <div key={i} style={{
+                          width:3,
+                          height: barH,
+                          borderRadius:2,
+                          background: stCol,
+                          opacity: active ? 1 : (isOpen ? 0.2 : 0.4),
+                        }}/>
+                      );
+                    })}
+                    <span style={{fontSize:8,fontWeight:700,color:stCol,marginRight:2}}>{stLbl}</span>
+                    <span className="m" style={{fontSize:8,color:C.smoke}}>{fmtT}</span>
+                  </div>
+                );
+              })()}
             </div>
           ):(
             <div style={{display:"flex",alignItems:"center",gap:10}}>
