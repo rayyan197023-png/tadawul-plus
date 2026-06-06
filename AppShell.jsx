@@ -120,6 +120,13 @@ function Shell() {
     return () => window.removeEventListener('watchlist-updated', refreshWatchlist);
   }, []);
 
+  // ✨ احفظ تلقائياً في localStorage عند كلّ تَغيير
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('tadawul_watchlist', JSON.stringify(watchlist));
+    } catch {}
+  }, [watchlist]);
+
   const wlSyms = React.useMemo(() => watchlist.map(w => w.sym), [watchlist]);
 
     // السلع الوهمية الثابتة حُذفت. المصدر الحقيقي الآن FRED (في MoreScreen + AnalysisScreen).
