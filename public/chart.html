@@ -8541,7 +8541,10 @@ function clearAIDrawings(){
   saveDrawings();
   _updateUndoButtons();
   render();
-  // إغلاق الـ modal إن كان مفتوحاً
+  // إخفاء الزرّ بعد المسح
+  const _cb=document.getElementById('btn-ai-clear');
+  if(_cb)_cb.style.display='none';
+  // إغلاق الـ modal
   const aip = document.getElementById('aip');
   if(aip) aip.classList.remove('show');
   // Toast تأكيد
@@ -8550,6 +8553,19 @@ function clearAIDrawings(){
     toast.textContent='تم مسح رسومات AI من الشارت';
     toast.style.opacity='1';
     setTimeout(()=>toast.style.opacity='0',2500);
+  }
+}
+// إظهار/إخفاء زرّ المسح حسب وجود رسومات AI
+function _updateAIClearBtn(){
+  const _cb=document.getElementById('btn-ai-clear');
+  if(!_cb)return;
+  const _cnt=state.drawings.filter(d=>d._ai).length;
+  if(_cnt>0){
+    _cb.style.display='flex';
+    const _lbl=document.getElementById('ai-clear-label');
+    if(_lbl)_lbl.textContent='مسح رسومات AI ('+_cnt+')';
+  } else {
+    _cb.style.display='none';
   }
 }
 
