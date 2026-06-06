@@ -278,7 +278,7 @@ function SummaryCard(props) {
   var isWeekday = _day >= 0 && _day <= 4;
   var isSession = isWeekday && (timeVal>=10*60&&timeVal<15*60);
   var isPreOpen = isWeekday && (timeVal>=9*60+30&&timeVal<10*60);
-  var sessionLabel=isSession?"الجلسة مفتوحة":isPreOpen?"ما قبل الفتح":"الجلسة مغلقة";
+  var sessionLabel=isSession?"الجلسة مفتوحة":isPreOpen?"ما قبل الفتح":"الجلسة مغلقة"; 
   var sessionColor=isSession?"#1ee68a":isPreOpen?"#fbbf24":"#ff5f6a";
   var fmt=function(n){return n.toLocaleString("en-US",{maximumFractionDigits:0});};
   var capitalUsed=tv, capitalFree=Math.max(0,capital-capitalUsed);
