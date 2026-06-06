@@ -243,9 +243,7 @@ useEffect(function(){
         var r=window.localStorage.getItem("tadawul_watchlist");
         if(r){
           var fresh=JSON.parse(r);
-          // نُحدّث الـ local state
           _setLocalWL(fresh);
-          // ونُحدّث الـ external state أيضاً (من AppShell) لِلتأكّد
           if (setExtWatchlist) {
             setExtWatchlist(fresh);
           }
@@ -253,11 +251,13 @@ useEffect(function(){
       }catch(e){}
     }
     window.addEventListener('watchlist-updated', refreshWatchlist);
+    // ✨ نَفحص أيضاً كلّ ثانية كـ fallback (إذا event فَشل)
+    var interval = setInterval(refreshWatchlist, 1500);
     return function(){
       window.removeEventListener('watchlist-updated', refreshWatchlist);
+      clearInterval(interval);
     };
   },[]);
-
 
   useEffect(function(){
     var t=setInterval(function(){
