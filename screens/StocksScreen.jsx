@@ -317,10 +317,22 @@ const liveStocks = stocks.length > 0 ? stocks : [];
               <div style={{ fontSize: 10, color: C.gold, fontWeight: 700, letterSpacing: "3px", marginBottom: 2 }}>TADAWUL+</div>
               <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
                 <div style={{ fontSize: 18, fontWeight: 900, color: C.snow, letterSpacing: "-.5px" }}>سوق الأسهم</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <div className="live" style={{ width: 5, height: 5, borderRadius: "50%", background: C.mint, flexShrink: 0 }} />
-                  <span style={{ fontSize: 11, color: C.smoke, fontFamily: "monospace" }}>{timeStr}</span>
-                </div>
+                {(function(){
+                  // فحص حالة السوق السعودي (KSA UTC+3)
+                  var nowD = new Date();
+                  var utc = nowD.getTime() + (nowD.getTimezoneOffset() * 60000);
+                  var ksa = new Date(utc + 3 * 3600000);
+                  var day = ksa.getDay();
+                  var timeInMin = ksa.getHours() * 60 + ksa.getMinutes();
+                  var isOpen = (day >= 0 && day <= 4) && (timeInMin >= 570 && timeInMin <= 930);
+                  var stCol = isOpen ? C.mint : C.coral;
+                  return (
+                    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                      <div className={isOpen?"live":""} style={{ width: 5, height: 5, borderRadius: "50%", background: stCol, flexShrink: 0 }} />
+                      <span style={{ fontSize: 11, color: C.smoke, fontFamily: "monospace" }}>{timeStr}</span>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
             <div style={{ display: "flex", gap: 8 }}>
