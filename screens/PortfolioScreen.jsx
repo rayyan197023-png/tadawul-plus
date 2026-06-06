@@ -1633,51 +1633,90 @@ return result;
           <div key={i} style={{position:"absolute",width:pp.w,height:pp.h,borderRadius:"50%",background:"radial-gradient(circle,"+pp.c+" 0%,transparent 70%)",top:pp.t,right:pp.r,animation:pp.an+" "+pp.dur+" ease-in-out infinite"}}/>
         );})}
       </div>
-      <div style={{position:"sticky",top:0,zIndex:50,background:"linear-gradient(180deg,"+C.void+"f8 0%,"+C.void+"dd 100%)",backdropFilter:"blur(20px)",borderBottom:"1px solid "+C.line+"55",padding:"10px 20px 0"}}>
+      <div style={{position:"sticky",top:0,zIndex:50,background:"linear-gradient(180deg,"+C.void+"fa 0%,"+C.void+"e0 100%)",backdropFilter:"blur(24px)",borderBottom:"1px solid "+C.line+"55",padding:"10px 16px 0"}}>
+        {/* الصف العلوي: زرّ + + مقبض + جلسة */}
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",paddingBottom:8}}>
-          <button onClick={function(){setSheet(true);}} style={{width:44,height:44,borderRadius:12,border:"1px solid "+C.line,background:C.layer3,color:C.mint,fontSize:22,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,boxShadow:"inset 0 1px 0 "+C.layer2}}>+</button>
-          <button onClick={function(){setHeaderMin(function(h){return !h;});}} style={{width:40,height:4,borderRadius:2,background:headerMin?C.gold:C.ash,cursor:"pointer",border:"none",padding:0,transition:"background .2s"}}/>
-          <div style={{display:"flex",alignItems:"center",gap:4}}>
-            <span className={isSession?"live-dot":""} style={{width:5,height:5,borderRadius:"50%",background:sessionColor,boxShadow:"0 0 6px "+sessionColor,display:"inline-block"}}/>
-            <span style={{fontSize:11,color:sessionColor,fontWeight:700}}>{sessionLabel}</span>
+          <button onClick={function(){setSheet(true);}} style={{width:42,height:42,borderRadius:12,border:"1px solid "+C.mint+"33",background:"linear-gradient(135deg,"+C.mint+"22,"+C.mint+"10)",color:C.mint,fontSize:22,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,boxShadow:"0 4px 12px "+C.mint+"22"}}>+</button>
+          <button onClick={function(){setHeaderMin(function(h){return !h;});}} style={{width:44,height:5,borderRadius:3,background:headerMin?C.gold:C.ash,cursor:"pointer",border:"none",padding:0,transition:"background .2s"}}/>
+          <div style={{display:"flex",alignItems:"center",gap:5,background:sessionColor+"15",border:"1px solid "+sessionColor+"33",borderRadius:20,padding:"4px 10px"}}>
+            <span className={isSession?"live-dot":""} style={{width:6,height:6,borderRadius:"50%",background:sessionColor,boxShadow:"0 0 6px "+sessionColor,display:"inline-block"}}/>
+            <span style={{fontSize:10,color:sessionColor,fontWeight:800}}>{sessionLabel}</span>
           </div>
         </div>
-        {!headerMin&&(<div style={{borderBottom:"1px solid "+C.line+"44",paddingBottom:12,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-          <div style={{display:"flex",alignItems:"center",gap:12}}>
-            <div style={{position:"relative",width:68,height:68,flexShrink:0}}>
-              <svg width={68} height={68} style={{transform:"rotate(-90deg)",position:"absolute",inset:0}}>
-                <circle cx={34} cy={34} r={28} fill="none" stroke={C.ash} strokeWidth={3.5} strokeOpacity={.2}/>
-                <circle cx={34} cy={34} r={28} fill="none" stroke={tp>=0?C.mint:C.coral} strokeWidth={3.5} strokeDasharray={2*Math.PI*28} strokeDashoffset={2*Math.PI*28*(1-Math.min(1,Math.abs(tpP)/50))} strokeLinecap="round" style={{filter:"drop-shadow(0 0 5px "+(tp>=0?C.mint:C.coral)+"aa)",transition:"stroke-dashoffset 1s ease"}}/>
+
+        {/* البطاقة الرئيسيّة: قيمة المحفظة + العائد */}
+        {!headerMin&&(
+        <div className="card-enter" style={{
+          background:"linear-gradient(145deg,"+C.layer1+","+C.layer2+")",
+          borderRadius:18,
+          padding:"14px 16px",
+          border:"1px solid "+(tp>=0?C.mint:C.coral)+"33",
+          boxShadow:"0 8px 24px "+(tp>=0?C.mint:C.coral)+"22, inset 0 1px 0 "+C.layer3,
+          marginBottom:10,
+          position:"relative",
+          overflow:"hidden",
+        }}>
+          {/* شريط علويّ ملوّن */}
+          <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,"+(tp>=0?C.mint:C.coral)+"00,"+(tp>=0?C.mint:C.coral)+"ff,"+(tp>=0?C.mint:C.coral)+"00)"}}/>
+          
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+            {/* اليسار: حلقة العائد */}
+            <div style={{position:"relative",width:74,height:74,flexShrink:0}}>
+              <svg width={74} height={74} style={{transform:"rotate(-90deg)",position:"absolute",inset:0}}>
+                <circle cx={37} cy={37} r={31} fill="none" stroke={C.ash} strokeWidth={4} strokeOpacity={.2}/>
+                <circle cx={37} cy={37} r={31} fill="none" stroke={tp>=0?C.mint:C.coral} strokeWidth={4} strokeDasharray={2*Math.PI*31} strokeDashoffset={2*Math.PI*31*(1-Math.min(1,Math.abs(tpP)/50))} strokeLinecap="round" style={{filter:"drop-shadow(0 0 6px "+(tp>=0?C.mint:C.coral)+"aa)",transition:"stroke-dashoffset 1s ease"}}/>
               </svg>
-              <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2}}>
-                <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:14,fontWeight:900,color:tp>=0?C.mint:C.coral,lineHeight:1,textShadow:tp>=0?"0 0 10px #1ee68a88":"0 0 10px #ff5f6a88"}}>{tpP>=0?"+":""}{tpP.toFixed(1)}%</div>
-                <div style={{fontSize:9,color:C.smoke,fontWeight:700}}>عائد</div>
+              <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1}}>
+                <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:15,fontWeight:900,color:tp>=0?C.mint:C.coral,lineHeight:1,textShadow:tp>=0?"0 0 10px #1ee68a88":"0 0 10px #ff5f6a88"}}>{tpP>=0?"+":""}{tpP.toFixed(1)}%</div>
+                <div style={{fontSize:8,color:C.smoke,fontWeight:700,letterSpacing:".5px"}}>عائد</div>
               </div>
             </div>
-            <div>
-              <div style={{fontSize:17,fontWeight:900,color:C.snow,lineHeight:1,textShadow:"0 0 8px rgba(240,246,255,.4)"}}>محفظتي</div>
-              <div style={{display:"flex",alignItems:"center",gap:6,marginTop:3,flexWrap:"wrap"}}>
-                <span style={{fontSize:12,fontWeight:700,color:tp>=0?C.mint:C.coral,background:(tp>=0?C.mint:C.coral)+"15",border:"1px solid "+(tp>=0?C.mint:C.coral)+"30",padding:"1px 7px",borderRadius:5,fontFamily:"IBM Plex Mono,monospace"}}>{tp>=0?"+":""}{fmt(tp)} ر</span>
-                {urgentN>0&&(<span style={{fontSize:12,fontWeight:800,color:C.coral,display:"flex",alignItems:"center",gap:3}}><SvgIcon name="urgent" size={9} color={C.coral}/>{urgentN} عاجل</span>)}
+
+            {/* اليمين: العنوان + الإحصائيات الرئيسيّة */}
+            <div style={{flex:1,textAlign:"right",paddingRight:14}}>
+              <div style={{display:"flex",alignItems:"center",gap:6,justifyContent:"flex-end",marginBottom:6}}>
+                <span style={{fontSize:18,fontWeight:900,color:C.snow,letterSpacing:"-.3px",textShadow:"0 0 8px rgba(240,246,255,.3)"}}>محفظتي</span>
+                <SvgIcon name="portfolio" size={16} color={C.gold}/>
+              </div>
+              <div style={{display:"flex",alignItems:"baseline",gap:5,justifyContent:"flex-end",marginBottom:4}}>
+                <span style={{fontSize:11,color:C.smoke,fontWeight:700}}>ر</span>
+                <span style={{fontFamily:"IBM Plex Mono,monospace",fontSize:22,fontWeight:900,color:C.snow,lineHeight:1,textShadow:"0 0 8px rgba(240,246,255,.4)"}}>{tv>0?fmt(tv):"0"}</span>
+              </div>
+              <div style={{display:"flex",alignItems:"center",gap:5,justifyContent:"flex-end",flexWrap:"wrap"}}>
+                <span style={{fontSize:11,fontWeight:700,color:tp>=0?C.mint:C.coral,background:(tp>=0?C.mint:C.coral)+"15",border:"1px solid "+(tp>=0?C.mint:C.coral)+"30",padding:"2px 7px",borderRadius:6,fontFamily:"IBM Plex Mono,monospace"}}>{tp>=0?"+":""}{fmt(tp)} ر</span>
+                <span style={{fontSize:11,color:C.smoke,background:C.layer3,borderRadius:6,padding:"2px 7px",border:"1px solid "+C.line}}>{positions.length} مركز</span>
+                {urgentN>0&&(<span className="danger-pulse" style={{fontSize:11,fontWeight:800,color:C.coral,background:C.coral+"15",border:"1px solid "+C.coral+"44",borderRadius:6,padding:"2px 7px",display:"flex",alignItems:"center",gap:3}}><SvgIcon name="urgent" size={9} color={C.coral}/>{urgentN} عاجل</span>)}
               </div>
             </div>
           </div>
-          <div style={{textAlign:"center"}}>
-            <div style={{display:"flex",alignItems:"baseline",gap:5,justifyContent:"center"}}>
-              <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:20,fontWeight:900,color:C.snow,lineHeight:1,textShadow:"0 0 8px rgba(240,246,255,.4)"}}>{tv>0?fmt(tv):"-"}</div>
-              <div style={{fontSize:11,color:C.smoke,fontWeight:700}}>ريال</div>
-            </div>
-            <div style={{fontSize:11,color:C.smoke,marginTop:3,textAlign:"center"}}>{positions.length} مركز</div>
+
+          {/* صف الإحصائيات: اليوم / المُستخدم / المتاح */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginTop:10,paddingTop:10,borderTop:"1px solid "+C.line+"44"}}>
+            {(function(){
+              var capitalUsed=tv;
+              var capitalFree=Math.max(0,capital-capitalUsed);
+              var usedPct=capital>0?Math.round(capitalUsed/capital*100):0;
+              return [
+                {l:"اليوم",v:(dp>=0?"+":"")+fmt(dp),u:"ر",c:dp>=0?C.mint:C.coral,bg:dp>=0?C.mint:C.coral},
+                {l:"مُستثمر",v:fmt(capitalUsed),u:usedPct+"%",c:C.electric,bg:C.electric},
+                {l:"متاح",v:fmt(capitalFree),u:"ر",c:C.gold,bg:C.gold},
+              ].map(function(s,i){return(
+                <div key={i} style={{
+                  background:s.bg+"08",
+                  border:"1px solid "+s.bg+"22",
+                  borderRadius:10,
+                  padding:"6px 8px",
+                  textAlign:"center",
+                }}>
+                  <div style={{fontSize:9,color:C.smoke,marginBottom:3,fontWeight:600}}>{s.l}</div>
+                  <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:12,fontWeight:900,color:s.c,lineHeight:1}}>{s.v}</div>
+                  <div style={{fontSize:9,color:s.c,marginTop:2,fontWeight:700,opacity:.7}}>{s.u}</div>
+                </div>
+              );});
+            })()}
           </div>
-        </div>)}
-        {!headerMin&&(<div style={{padding:"8px 0 0",display:"flex",gap:0}}>
-          {headerStats.map(function(s,i){return(
-            <div key={i} style={{flex:1,borderRight:i<2?"1px solid "+C.line+"44":"none",paddingRight:i<2?8:0,paddingLeft:i>0?8:0,textAlign:"center"}}>
-              <div style={{fontSize:11,color:C.smoke,marginBottom:2}}>{s.l}{s.est&&<span style={{fontSize:11,color:C.ash}}> *</span>}</div>
-              <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:12,fontWeight:800,color:s.c}}>{s.v}</div>
-            </div>
-          );})}
-        </div>)} 
+        </div>
+        )}
         {!headerMin && (
           <div style={{display:"flex",gap:10,marginTop:12,marginBottom:4}}>
             <button
