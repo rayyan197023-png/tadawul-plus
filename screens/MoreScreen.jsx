@@ -707,6 +707,33 @@ style={{
       {sub==="macro"&&<MacroTab p={tabProps}/>}
       {sub==="watchlist"&&<WatchlistTab p={tabProps}/>}
 
+      {/* 🐛 DEBUG OVERLAY */}
+      <div style={{
+        position:'fixed', bottom:80, left:8, zIndex:9999,
+        background:'rgba(0,0,0,0.92)', color:'#1ee68a',
+        padding:'8px 10px', borderRadius:8, fontSize:9,
+        fontFamily:'monospace', maxWidth:200, lineHeight:1.5,
+        border:'1px solid #1ee68a55',
+      }}>
+        <div>WL count: {watchlist.length}</div>
+        <div>LocalWL: {_localWL.length}</div>
+        <div>ExtWL: {extWatchlist?extWatchlist.length:'none'}</div>
+        <div>tabProps.WL: {tabProps.watchlist.length}</div>
+        <div style={{marginTop:4,color:'#ffd878'}}>
+          syms: {watchlist.slice(0,5).map(function(w){return typeof w==='string'?w:w.sym;}).join(',')}
+        </div>
+        <button onClick={function(){
+          try{
+            var r=localStorage.getItem('tadawul_watchlist');
+            alert('localStorage:\n'+r);
+          }catch(e){alert('error: '+e.message);}
+        }} style={{
+          marginTop:6,fontSize:9,padding:'3px 8px',
+          background:'#1ee68a22',border:'1px solid #1ee68a55',
+          color:'#1ee68a',borderRadius:4,cursor:'pointer',
+        }}>اعرض localStorage</button>
+      </div>
+
             {showCalc&&<ProfitCalc onClose={function(){setShowCalc(false);}}/>}
       {showCompare&&<CompareView onClose={function(){setShowCompare(false);}}/>}
 {showAlerts&&<AlertsPanel onClose={function(){setShowAlerts(false);}}/>}      
