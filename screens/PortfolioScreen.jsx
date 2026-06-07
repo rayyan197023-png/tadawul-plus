@@ -3758,7 +3758,7 @@ return result;
                 <span style={{fontSize:11,fontWeight:900,color:C.electric,fontFamily:"IBM Plex Mono,monospace"}}>{(capital/1000).toFixed(0)}K</span>
               </div>
             </div>
-            <div style={{overflowY:"auto",padding:"14px 20px 40px",flex:1,WebkitOverflowScrolling:"touch"}}>
+            <div style={{overflowY:"auto",padding:"14px 20px 160px",flex:1,WebkitOverflowScrolling:"touch",overscrollBehavior:"contain"}}>
 
               <div style={{marginBottom:14}}>
                 <div style={{fontSize:11,color:C.smoke,fontWeight:700,letterSpacing:.5,marginBottom:8}}>اختر السهم</div>
