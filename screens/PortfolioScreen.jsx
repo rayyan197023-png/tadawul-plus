@@ -3657,14 +3657,40 @@ return result;
         </div>
       )}
 
-      {sheet&&(
-        <div style={{position:"fixed",inset:0,zIndex:200,background:"rgba(6,8,15,.88)",backdropFilter:"blur(14px)",display:"flex",alignItems:"flex-end",justifyContent:"center",animation:"fadeIn .25s ease both"}} onClick={function(){setSheet(false);}}>
-          <div onClick={function(e){e.stopPropagation();}} style={{width:"100%",maxWidth:430,background:"linear-gradient(180deg,"+C.layer2+" 0%,"+C.deep+" 100%)",borderRadius:"24px 24px 0 0",marginTop:"auto",border:"1px solid "+C.line,borderBottom:"none",maxHeight:"calc(100vh - 80px)",height:"calc(100vh - 80px)",height:"100vh",height:"82vh",display:"flex",flexDirection:"column",boxShadow:"0 -24px 64px rgba(0,0,0,.8), inset 0 1px 0 "+C.layer3,animation:"slideUp .38s cubic-bezier(.16,1,.3,1) both"}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 16px 0"}}>
-              <button onClick={function(){setSheet(false);}} style={{width:44,height:44,borderRadius:12,border:"1px solid "+C.line,background:C.layer3,color:C.mist,fontSize:18,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><SvgIcon name="stop" size={16} color={C.smoke}/></button>
-              <div style={{width:40,height:4,borderRadius:2,background:C.ash}}/>
-              <div style={{width:44,height:44}}/>
+     {sheet&&(
+        <div style={{position:"fixed",inset:0,zIndex:200,background:"rgba(6,8,15,.92)",backdropFilter:"blur(20px)",display:"flex",alignItems:"flex-end",justifyContent:"center",animation:"fadeIn .25s ease both"}} onClick={function(){setSheet(false);}}>
+          <div onClick={function(e){e.stopPropagation();}} style={{
+            width:"100%",
+            maxWidth:430,
+            background:"linear-gradient(180deg,"+C.layer2+" 0%,"+C.deep+" 100%)",
+            borderRadius:"28px 28px 0 0",
+            marginTop:"auto",
+            border:"1px solid "+C.line,
+            borderBottom:"none",
+            height:"94vh",
+            maxHeight:"94vh",
+            display:"flex",
+            flexDirection:"column",
+            boxShadow:"0 -24px 64px rgba(0,0,0,.85), inset 0 1px 0 "+C.layer3,
+            animation:"slideUp .38s cubic-bezier(.16,1,.3,1) both",
+            paddingBottom:"env(safe-area-inset-bottom, 0px)",
+          }}>
+            {/* ─── شريط السحب العلوي ─── */}
+            <div style={{display:"flex",justifyContent:"center",padding:"10px 0 4px",flexShrink:0}}>
+              <div style={{width:44,height:5,borderRadius:3,background:C.ash,opacity:.6}}/>
             </div>
+            {/* ─── شريط التحكم: إغلاق + عنوان + لاشيء ─── */}
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"4px 16px 8px",flexShrink:0}}>
+              <button onClick={function(){setSheet(false);}} style={{width:40,height:40,borderRadius:12,border:"1px solid "+C.line,background:C.layer3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <SvgIcon name="stop" size={16} color={C.smoke}/>
+              </button>
+              <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
+                <span style={{fontSize:9,fontWeight:700,color:C.electric,letterSpacing:"2.5px"}}>TADAWUL+</span>
+                <span style={{fontSize:16,fontWeight:900,color:C.snow,letterSpacing:"-.3px"}}>إضافة مركز جديد</span>
+              </div>
+              <div style={{width:40,height:40}}/>
+            </div>
+
             <div style={{padding:"12px 20px 14px",borderBottom:"1px solid "+C.line,display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
               <div style={{display:"flex",alignItems:"center",gap:8}}>
                 <div style={{width:3,height:16,background:C.electric,borderRadius:2}}/>
