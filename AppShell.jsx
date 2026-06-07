@@ -394,11 +394,31 @@ export default function AppShell() {
       input, select, textarea {
         font-size: 16px !important;
       }
-      /* استعِد الحجم الأصلي بصرياً مع transform */
       input[type="number"], input[type="text"], input[type="search"], input[type="tel"], input[type="email"] {
         font-size: 16px !important;
       }
+      /* ✨ إصلاح ارتفاع viewport في iOS Safari */
+      html, body {
+        height: 100dvh;
+        height: 100svh;
+        overscroll-behavior: none;
+      }
+      /* ✨ منع bounce / rubber-band scroll */
+      body {
+        position: fixed;
+        width: 100%;
+        overflow: hidden;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+      #__next, #root {
+        height: 100dvh;
+        overflow: hidden;
+      }
     `;
+    
     document.head.appendChild(el);
     return () => el.remove();
   }, []);
