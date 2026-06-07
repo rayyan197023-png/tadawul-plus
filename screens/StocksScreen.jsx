@@ -551,18 +551,7 @@ const liveStocks = stocks.length > 0 ? stocks : [];
         </div>
       </div>
 
-      {/* Stock Detail */}
-      {sel && (() => {
-        const found = allData.find(d => d.stk.sym === sel);
-        if (!found) return null;
-        const s = found.stk;
-        return (
-          <StockDetail
-            stk={{ sym: s.sym, name: s.name, sec: s.sec, p: s.p, ch: s.ch, pct: s.pct }}
-            onClose={closeDetail}
-          />
-        );
-      })()}
+      {/* StockDetail يُفتح عبر AppShell -- لا حاجة لطبقة هنا */}
     </div>
   );
 }
