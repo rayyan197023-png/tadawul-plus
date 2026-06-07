@@ -3657,7 +3657,34 @@ return result;
         </div>
       )}
 
-     {sheet&&(
+     {sheet&&(function(){
+       // ─── حالة السحب للأسفل ───
+       var dragStartY = null;
+       var dragCurrentY = 0;
+       function onHandleTouchStart(e){
+         dragStartY = e.touches[0].clientY;
+       }
+       function onHandleTouchMove(e){
+         if(dragStartY === null) return;
+         dragCurrentY = e.touches[0].clientY - dragStartY;
+         if(dragCurrentY > 0){
+           e.currentTarget.parentElement.style.transform = "translateY(" + dragCurrentY + "px)";
+           e.currentTarget.parentElement.style.transition = "none";
+         }
+       }
+       function onHandleTouchEnd(e){
+         var sheet = e.currentTarget.parentElement;
+         sheet.style.transition = "transform .25s ease";
+         if(dragCurrentY > 100){
+           sheet.style.transform = "translateY(100vh)";
+           setTimeout(function(){ setSheet(false); }, 250);
+         } else {
+           sheet.style.transform = "translateY(0)";
+         }
+         dragStartY = null;
+         dragCurrentY = 0;
+       }
+       return(
         <div style={{position:"fixed",inset:0,zIndex:200,background:"rgba(6,8,15,.92)",backdropFilter:"blur(20px)",display:"flex",alignItems:"flex-end",justifyContent:"center",animation:"fadeIn .25s ease both"}} onClick={function(){setSheet(false);}}>
           <div onClick={function(e){e.stopPropagation();}} style={{
             width:"100%",
@@ -3675,8 +3702,20 @@ return result;
             animation:"slideUp .38s cubic-bezier(.16,1,.3,1) both",
             paddingBottom:"env(safe-area-inset-bottom, 0px)",
           }}>
-            {/* ─── شريط السحب العلوي ─── */}
-            <div style={{display:"flex",justifyContent:"center",padding:"10px 0 4px",flexShrink:0}}>
+            {/* ─── شريط السَحب العلوي (قابِل للسَحب لِلإغلاق) ─── */}
+            <div 
+              onTouchStart={onHandleTouchStart}
+              onTouchMove={onHandleTouchMove}
+              onTouchEnd={onHandleTouchEnd}
+              style={{
+                display:"flex",
+                justifyContent:"center",
+                padding:"14px 0 8px",
+                flexShrink:0,
+                cursor:"grab",
+                touchAction:"none",
+              }}
+            >
               <div style={{width:44,height:5,borderRadius:3,background:C.ash,opacity:.6}}/>
             </div>
             {/* ─── شريط التحكم: إغلاق + عنوان + لاشيء ─── */}
