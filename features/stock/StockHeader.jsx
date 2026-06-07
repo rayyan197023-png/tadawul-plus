@@ -62,7 +62,7 @@ export default function StockHeader({ stk, onClose }) {
   if (!stk) return null;
 
   return (
-    <div style={{ padding: '4px 16px 8px', flexShrink: 0, background: C.layer2, borderBottom: `1px solid ${C.border}` }}>
+    <div style={{ padding: '4px 16px 8px', flexShrink: 0, background: C.ink, borderBottom: `1px solid ${C.border}` }}>
 
       {/* Name row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
