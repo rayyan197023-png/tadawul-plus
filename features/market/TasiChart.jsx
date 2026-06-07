@@ -53,7 +53,10 @@ const PERIOD_CFG = {
   },
 };
 
+import { useSharedPrices } from '../../store';
+
 export default function TasiChart({ market }) {
+  const allStocks = useSharedPrices();
   const [period,    setPeriod]    = useState('يوم');
   const [tasiLive,  setTasiLive]  = useState(null);
   const [ohlcvData, setOhlcvData] = useState({});
@@ -115,6 +118,16 @@ const advancing  = tasiLive?.advancing   ?? 0;
 const declining  = tasiLive?.declining   ?? 0;
 const unchanged  = tasiLive?.unchanged   ?? 0;
 const totalVol   = tasiLive?.total_volume ?? 0;
+
+// ✨ احسب قيمة التداول الإجمالية: Σ (volume × price) لكل سهم
+const totalValue = useMemo(() => {
+  if (!allStocks || !allStocks.length) return 0;
+  return allStocks.reduce((sum, s) => {
+    const vol = s.v || s.vol || 0;
+    const price = s.p || 0;
+    return sum + (vol * price);
+  }, 0);
+}, [allStocks]);
 
     // ── Build points for selected period
   const pts = useMemo(() => {
@@ -216,13 +229,13 @@ const dayChgVal = +chgVal.toFixed(2);
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 5 }}>
             <span style={{ fontSize: 10, color: 'rgba(255,255,255,.55)' }}>
-             حجم التداول: <span style={{ color: 'rgba(255,255,255,.85)', fontWeight: 600 }}>{
-               totalVol
-                 ? (totalVol >= 1e9
-                     ? (totalVol/1e9).toFixed(2)+' مليار'
-                     : totalVol >= 1e6
-                       ? (totalVol/1e6).toFixed(1)+' مليون'
-                       : (totalVol/1e3).toFixed(0)+' ألف')+' سهم'
+             قيمة التداول: <span style={{ color: 'rgba(255,255,255,.85)', fontWeight: 600 }}>{
+               totalValue
+                 ? (totalValue >= 1e9
+                     ? (totalValue/1e9).toFixed(2)+' مليار ر.س'
+                     : totalValue >= 1e6
+                       ? (totalValue/1e6).toFixed(0)+' مليون ر.س'
+                       : '--')
                  : '--'
              }</span>
             </span>
