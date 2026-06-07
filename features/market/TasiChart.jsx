@@ -216,8 +216,17 @@ const dayChgVal = +chgVal.toFixed(2);
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 5 }}>
             <span style={{ fontSize: 10, color: 'rgba(255,255,255,.55)' }}>
-             حجم التداول: <span style={{ color: 'rgba(255,255,255,.85)', fontWeight: 600 }}>{totalVol ? (totalVol/1e9).toFixed(2)+' مليار' : '--'}</span>
+             حجم التداول: <span style={{ color: 'rgba(255,255,255,.85)', fontWeight: 600 }}>{
+               totalVol
+                 ? (totalVol >= 1e9
+                     ? (totalVol/1e9).toFixed(2)+' مليار'
+                     : totalVol >= 1e6
+                       ? (totalVol/1e6).toFixed(1)+' مليون'
+                       : (totalVol/1e3).toFixed(0)+' ألف')+' سهم'
+                 : '--'
+             }</span>
             </span>
+            
             <span style={{ color: 'rgba(255,255,255,.35)' }}>·</span>
             <span style={{ fontSize: 10, color: 'rgba(255,255,255,.55)' }}>
               الافتتاح: <span style={{ color: 'rgba(255,255,255,.85)', fontWeight: 600 }}>{openPrice.toFixed(2)}</span>
