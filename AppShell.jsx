@@ -389,11 +389,20 @@ export default function AppShell() {
     document.documentElement.style.setProperty('--font-scale', fontScale[savedFont] || '1');
     document.documentElement.style.zoom = zoomMap[savedFont] || '1';
 
-    el.textContent = getGlobalStyles();
+    el.textContent = getGlobalStyles() + `
+      /* ✨ منع iOS Safari من التَكبير على inputs (حجم < 16px) */
+      input, select, textarea {
+        font-size: 16px !important;
+      }
+      /* استعِد الحجم الأصلي بصرياً مع transform */
+      input[type="number"], input[type="text"], input[type="search"], input[type="tel"], input[type="email"] {
+        font-size: 16px !important;
+      }
+    `;
     document.head.appendChild(el);
     return () => el.remove();
   }, []);
-
+  
   return (
     <RootStoreProvider>
       <Shell />
