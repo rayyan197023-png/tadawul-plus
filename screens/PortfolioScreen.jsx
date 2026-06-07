@@ -3838,15 +3838,17 @@ return result;
                 <div style={{fontSize:11,color:C.smoke,fontWeight:700,marginBottom:5}}>راس مالك (لحساب المبالغ)</div>
                 <input type="number" value={capital} onChange={function(e){setCapital(parseFloat(e.target.value)||100000);}} style={{width:"100%",boxSizing:"border-box",background:C.layer3,border:"1px solid "+C.line,borderRadius:11,padding:"10px",fontSize:15,color:C.snow,fontFamily:"IBM Plex Mono,monospace",outline:"none",textAlign:"center"}} onKeyDown={function(e){if(e.key==="Enter"){haptic.tap();e.target.blur();}}} />
               </div>
-                        </div>
+            </div>
           </div>
         </div>
-      )}
+       );
+     })()}
   </>
 )}
     </div>
   );
 }
+
 
 
 
