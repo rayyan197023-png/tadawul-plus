@@ -3728,7 +3728,7 @@ return result;
                   <input value={stockSrch} onChange={function(e){setStockSrch(e.target.value);}} placeholder="ابحث بالرمز او الاسم..." style={{flex:1,background:"transparent",border:"none",outline:"none",fontSize:12,color:C.snow,fontFamily:"Cairo,sans-serif",textAlign:"right"}}/>
                   {stockSrch&&<button onClick={function(){setStockSrch("");}} style={{background:"transparent",border:"none",cursor:"pointer",color:C.smoke,fontSize:14,fontFamily:"inherit"}}>x</button>}
                 </div>
-                <div style={{display:"flex",flexDirection:"column",gap:5,maxHeight:180,overflowY:"auto"}}>
+                <div style={{display:"flex",flexDirection:"column",gap:5,maxHeight:260,overflowY:"auto",WebkitOverflowScrolling:"touch",border:"1px solid "+C.line+"33",borderRadius:12,padding:6,background:"rgba(0,0,0,.15)"}}>
                   {sl.filter(function(s){return !stockSrch||(s.sym.includes(stockSrch)||s.name.includes(stockSrch));}).map(function(s){
                     var h=allData.find(function(d){return d.stk&&d.stk.sym===s.sym;}); h=h?h.health:null;
                     var sc=h&&h.sig==="شراء قوي"?C.mint:h&&h.sig==="تخفيف"?C.coral:h&&h.sig==="مراقبة"?C.amber:C.smoke;
