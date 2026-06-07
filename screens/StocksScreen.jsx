@@ -3,7 +3,7 @@ import React, { useState, useMemo, useEffect, useRef, useCallback, startTransiti
 import { useHaptic }        from '../hooks/useHaptic';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
 import { useNav, useSharedPrices, useStockState } from '../store';
-import StockDetail          from '../features/stock/StockDetail';
+// import StockDetail removed -- opened by AppShell
 import { useOHLCVCache }    from '../hooks/useOHLCVCache';
 
 // ── Design Tokens ─────────────────────────────────────────────
