@@ -2167,6 +2167,15 @@ return(
                             }
                             var openH = Math.floor(minsToOpen / 60);
                             var openM = minsToOpen % 60;
+                            // ✨ تَحويل الأرقام الإنجليزية إلى عربية شرقية
+                            var toArabicNum = function(n){
+                              var ar = ["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
+                              return String(n).split("").map(function(d){
+                                return /\d/.test(d) ? ar[parseInt(d,10)] : d;
+                              }).join("");
+                            };
+                            var hStr = toArabicNum(openH);
+                            var mStr = toArabicNum(openM);
                             return(
                               <div style={{
                                 flexShrink:0,width:56,
@@ -2183,9 +2192,11 @@ return(
                                 }}>مغلق</div>
                                 <div style={{
                                   fontSize:11,fontWeight:900,
-                                  color:C.coral,lineHeight:1,direction:"ltr",
+                                  color:C.coral,lineHeight:1,
+                                  direction:"rtl",
+                                  whiteSpace:"nowrap",
                                 }}>
-                                  {openH}س {openM}د
+                                  {hStr}س {mStr}د
                                 </div>
                                 <div style={{fontSize:6.5,color:C.smoke,lineHeight:1.3}}>
                                   للافتتاح
