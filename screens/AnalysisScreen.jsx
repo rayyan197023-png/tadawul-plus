@@ -2141,10 +2141,64 @@ return(
                         {/* نافذة الفرصة -- مبنية على بيانات الحجم الفعلية */}
                         {/* 🎯 معايرة: 50 بدلاً من 55 - لتظهر مع "عاجل" */}
                         {(health.score>=50 || ((health.extras && health.extras.vr) || 1) >= 1.4)&&(function(){
+                          // ─── فحص حالة السوق السعودي ───
+                          var nowD = new Date();
+                          var utc = nowD.getTime() + (nowD.getTimezoneOffset() * 60000);
+                          var ksa = new Date(utc + 3 * 3600000);
+                          var ksaDay = ksa.getDay();
+                          var ksaMin = ksa.getHours()*60 + ksa.getMinutes();
+                          var isOpen = (ksaDay>=0 && ksaDay<=4) && (ksaMin>=570 && ksaMin<=930);
+
+                          // ─── السوق مغلق: حسب الوقت المتبقّي للافتتاح ───
+                          if(!isOpen){
+                            var minsToOpen;
+                            if(ksaDay===5){ // الجمعة
+                              minsToOpen = ((6-ksaDay)*24*60) + (570 - ksaMin) + 24*60;
+                            } else if(ksaDay===6){ // السبت
+                              minsToOpen = (24*60) + (570 - ksaMin);
+                            } else if(ksaMin < 570){ // قبل الفتح
+                              minsToOpen = 570 - ksaMin;
+                            } else { // بعد الإغلاق
+                              if(ksaDay===4){ // الخميس → الأحد
+                                minsToOpen = (3*24*60) + (570 - ksaMin) + 24*60;
+                              } else {
+                                minsToOpen = (24*60 - ksaMin) + 570;
+                              }
+                            }
+                            var openH = Math.floor(minsToOpen / 60);
+                            var openM = minsToOpen % 60;
+                            return(
+                              <div style={{
+                                flexShrink:0,width:56,
+                                background:"linear-gradient(160deg,"+C.coral+"15,"+C.coral+"06)",
+                                border:"1px solid "+C.coral+"35",
+                                borderRadius:12,padding:"7px 5px",
+                                textAlign:"center",
+                                display:"flex",flexDirection:"column",
+                                alignItems:"center",justifyContent:"center",gap:2,
+                              }}>
+                                <div style={{
+                                  fontSize:7,color:C.coral,fontWeight:800,lineHeight:1,
+                                  background:C.coral+"18",borderRadius:4,padding:"1px 5px",
+                                }}>مغلق</div>
+                                <div style={{
+                                  fontSize:11,fontWeight:900,
+                                  color:C.coral,lineHeight:1,direction:"ltr",
+                                }}>
+                                  {openH}س {openM}د
+                                </div>
+                                <div style={{fontSize:6.5,color:C.smoke,lineHeight:1.3}}>
+                                  للافتتاح
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          // ─── السوق مفتوح: العدّاد التَنازلي الأصلي ───
                           var vr   = (health.extras && health.extras.vr) || 1;
                           var L9   = (health.layers && health.layers.L9)  || 50;
 
-                          // كلما ارتفع الحجم ضاقت النافذة — إلحاح حقيقي
+                          // كلما ارتفع الحجم ضاقت النافذة -- إلحاح حقيقي
                           var windowMins = vr >= 1.5 ? 8
                                         : vr >= 1.3 ? 15
                                         : vr >= 1.1 ? 25
