@@ -119,13 +119,14 @@ export default function StockDetail({ stk: baseStk, onClose }) {
         display: "flex",
         gap: 4,
         padding: "8px 10px",
-        background: C.layer1,
+        background: C.ink,
         borderBottom: `1px solid ${C.line}`,
         overflowX: "auto",
         flexShrink: 0,
         scrollbarWidth: "none",
         msOverflowStyle: "none",
       }}>
+
         {tabs.map(t => (
           <button
             key={t.id}
