@@ -1470,10 +1470,6 @@ const best = allData.length > 0
                       <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:5}}>
                         <span style={{fontSize:8,color:C.gold,fontWeight:700,background:"rgba(212,168,67,.12)",border:"1px solid rgba(212,168,67,.25)",padding:"2px 8px",borderRadius:6}}>⭐ أفضل اختيار</span>
                         <span style={{fontSize:9,fontWeight:700,color:best.health.sigC,background:best.health.sigC+"15",border:"1px solid "+best.health.sigC+"33",padding:"2px 8px",borderRadius:6}}>{best.health.sig}</span>
-                        <div style={{display:"flex",alignItems:"center",gap:3}}>
-                          <span style={{fontSize:8,color:C.smoke}}>ثقة:</span>
-                          <span style={{fontSize:10,fontWeight:700,color:best.health.sigC}}>{best.health.score}%</span>
-                        </div>
                       </div>
                       {/* يسار — الدائرة */}
                       <div style={{position:"relative",width:52,height:52,flexShrink:0}}>
