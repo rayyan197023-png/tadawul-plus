@@ -1372,7 +1372,7 @@ const best = allData.length > 0
                       {/* التصنيف + الأرقام السريعة — يمين */}
                       <div style={{flex:1}}>
                         <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}>
-                          <span style={{fontSize:16}}>{mktIcon}</span>
+<span style={{display:"flex",alignItems:"center"}}>{mktIcon}</span>
                           <span style={{fontSize:16,fontWeight:900,color:mktColor,letterSpacing:"-.3px"}}>{mktLabel}</span>
                           {(function(){
                             var now = new Date();
