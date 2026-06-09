@@ -21,6 +21,18 @@ export async function POST(req) {
         });
       } catch(e) {}
     }
+// إرسال Push Notification
+try {
+  await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'https://tadawul-plus.vercel.app'}/api/push`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'notify',
+      title: title,
+      body: msg,
+    }),
+  });
+} catch(e) {}
 
     return Response.json({ ok: true });
   } catch (e) {
