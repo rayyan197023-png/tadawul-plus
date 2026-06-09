@@ -169,7 +169,7 @@ export function usePriceUpdater() {
 
     fetchAll();
     // ── WebSocket لحظي ──
-let ws: WebSocket | null = null;
+let ws = null;
 
 function connectWS() {
   ws = new WebSocket(
