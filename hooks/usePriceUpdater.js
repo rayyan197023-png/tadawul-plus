@@ -180,8 +180,9 @@ function connectWS() {
       'wss://app.sahmk.sa/ws/v1/stocks/?api_key=' + SAHMK_WS_KEY
     );
 
-    ws.onopen = function() {
-      const wsSyms = STOCKS.map(function(s) { return s.sym; });
+ws.onopen = function() {
+    window.__WS_STATUS__ = '🟢 متصل';
+    const wsSyms = STOCKS.map(function(s) { return s.sym; });
       for (let i = 0; i < wsSyms.length; i += 20) {
         ws.send(JSON.stringify({
           action: 'subscribe',
