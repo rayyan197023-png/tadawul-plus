@@ -147,3 +147,31 @@ self.addEventListener('message', (event) => {
     });
   }
 });
+
+// ═══════════════════════════════════════════════
+// 🔔 Push Notifications
+// ═══════════════════════════════════════════════
+
+self.addEventListener('push', (event) => {
+  const data = event.data?.json() || {};
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'تداول+', {
+      body:    data.body  || '',
+      icon:    '/icon-192.png',
+      badge:   '/icon-192.png',
+      dir:     'rtl',
+      lang:    'ar',
+      tag:     data.tag   || 'tadawul',
+      renotify: true,
+      data:    data,
+    })
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.openWindow('/')
+  );
+});
+
