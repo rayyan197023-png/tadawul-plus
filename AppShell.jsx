@@ -137,14 +137,6 @@ function Shell() {
   useLiveStockPrices();
   useMarketBridge();
     usePriceUpdater();
-const [wsStatus, setWsStatus] = useState('...');
-useEffect(() => {
-  const check = setInterval(() => {
-    const status = window.__WS_STATUS__ || 'غير متصل';
-    setWsStatus(status);
-  }, 2000);
-  return () => clearInterval(check);
-}, []);
 
   // ── تحميل Fundamentals ──────────────────────────────────────
   useEffect(() => {
@@ -304,16 +296,6 @@ useEffect(() => {
     }}>
 
       {/* Content Area */}
-      {/* WS Status */}
-<div style={{
-  position: 'fixed', top: 8, left: 8,
-  zIndex: 9999, background: 'rgba(0,0,0,0.7)',
-  borderRadius: 8, padding: '4px 8px',
-  fontSize: 11, color: '#fff',
-  direction: 'rtl',
-}}>
-  WS: {wsStatus}
-</div>
       <div style={{
         position: 'absolute', inset: 0,
         overflowY: 'scroll', overflowX: 'hidden',
