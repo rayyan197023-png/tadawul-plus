@@ -383,6 +383,9 @@ if ('serviceWorker' in navigator && 'PushManager' in window) {
       const res = await fetch('/api/push');
       const { publicKey } = await res.json();
       if (!publicKey) return;
+// طلب إذن الإشعارات
+const permission = await Notification.requestPermission();
+if (permission !== 'granted') return;
 
       // التحقق من اشتراك موجود
       let sub = await reg.pushManager.getSubscription();
