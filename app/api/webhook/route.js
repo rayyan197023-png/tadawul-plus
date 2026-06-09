@@ -1,17 +1,26 @@
 export const runtime = 'nodejs';
 
+const SAHMK_BASE = 'https://app.sahmk.sa/api/v1';
+const SAHMK_KEY  = process.env.SAHMK_KEY ?? '';
+
 export async function POST(req) {
   try {
     const body = await req.json();
     const { event_type, symbol, stock_name, sentiment, description } = body;
 
-    // بناء الإشعار
     const title = `⚡ ${stock_name || symbol} -- ${event_type || 'حدث جديد'}`;
     const msg   = description || 'حدث جديد في السوق السعودي';
 
-    // حفظ الحدث في KV أو نرسله للمستخدمين
-    // في الوقت الحالي نرجع 200 فقط
     console.log('[Webhook]', title, msg);
+
+    // إرسال Push Notification لجميع المشتركين
+    if (SAHMK_KEY) {
+      try {
+        const subsRes = await fetch(`${SAHMK_BASE}/push-subscriptions`, {
+          headers: { 'X-API-Key': SAHMK_KEY }
+        });
+      } catch(e) {}
+    }
 
     return Response.json({ ok: true });
   } catch (e) {
