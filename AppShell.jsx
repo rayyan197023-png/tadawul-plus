@@ -389,20 +389,20 @@ useEffect(() => {
     }
 
     const id = 'tadawul-global';
+
+    fetch('/api/sahmkdata', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'register_webhook',
+        url: 'https://tadawul-plus.vercel.app/api/webhook',
+        name: 'Tadawul Plus Events',
+      }),
+    }).then(r => r.json()).then(function(d) {
+      console.log('[Webhook]', d);
+    });
+
     if (document.getElementById(id)) return;
-  fetch('/api/sahmkdata', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      action: 'register_webhook',
-      url: 'https://tadawul-plus.vercel.app/api/webhook',
-      name: 'Tadawul Plus Events',
-    }),
-  }).then(r => r.json()).then(function(d) {
-    console.log('[Webhook]', d);
-    if (d.id) localStorage.setItem('webhook_registered', '1');
-  });
-}
     const el = document.createElement('style');
     el.id = id;
 
