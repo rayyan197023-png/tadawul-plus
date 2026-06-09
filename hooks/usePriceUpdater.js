@@ -179,7 +179,7 @@ function connectWS() {
   ws.onopen = () => {
     const syms = STOCKS.map(s => s.sym);
     for (let i = 0; i < syms.length; i += 20) {
-      ws!.send(JSON.stringify({
+ws.send(JSON.stringify({
         action: 'subscribe',
         symbols: syms.slice(i, i + 20),
       }));
