@@ -16,71 +16,39 @@ export async function GET(req: NextRequest) {
   const symbols  = searchParams.get('symbols')  ?? '';
   const market   = searchParams.get('market')   ?? 'TASI';
   const limit    = searchParams.get('limit')    ?? '300';
+  const interval = searchParams.get('interval') ?? '60m';
 
   if (!SAHMK_KEY) {
     return NextResponse.json({ error: 'SAHMK_KEY not set' }, { status: 500 });
   }
-  
+
   // ⚡ مدة الـ cache حسب نوع الـ endpoint (بالثواني)
+  // الباقة الاحترافية: أسعار لحظية = 0 cache
   const cacheDuration: Record<string, number> = {
-    tasi:         60,      // 1 دقيقة (سعر التاسي اللحظي)
-    quote:        60,      // 1 دقيقة (سعر سهم واحد)
-    quotes:       60,      // 1 دقيقة (مجموعة أسعار)
-    prices:       60,      // 1 دقيقة
-    gainers:      300,     // 5 دقائق (أعلى الرابحين)
-    losers:       300,     // 5 دقائق (أعلى الخاسرين)
-    volume:       300,     // 5 دقائق (الأعلى تداولاً)
-    ohlcv:        300,     // 5 دقائق (الشموع)
-    sectors:      3600,    // ساعة (القطاعات لا تتغير كثيراً)
-    companies:    86400,   // 24 ساعة (قائمة الشركات)
-    fundamentals: 21600,   // 6 ساعات (الأساسيات تتحدث ربعياً)
+    tasi:         0,       // لحظي -- بدون cache
+    quote:        0,       // لحظي -- بدون cache
+    quotes:       0,       // لحظي -- بدون cache
+    prices:       0,       // لحظي -- بدون cache
+    gainers:      30,      // 30 ثانية
+    losers:       30,      // 30 ثانية
+    volume:       30,      // 30 ثانية
+    ohlcv:        60,      // دقيقة (intraday 60m)
+    sectors:      60,      // دقيقة
+    companies:    86400,   // 24 ساعة
+    fundamentals: 21600,   // 6 ساعات
     ratios:       21600,   // 6 ساعات
-    financials:   86400,   // 24 ساعة (البيانات المالية)
-    dividends:    86400,   // 24 ساعة (التوزيعات)
+    financials:   86400,   // 24 ساعة
+    dividends:    86400,   // 24 ساعة
+    // ── جديد: باقة احترافية ──
+    fair_value:   3600,    // السعر العادل -- ساعة
+    analysts:     3600,    // إجماع المحللين -- ساعة
+    events:       300,     // أحداث الأسهم AI -- 5 دقائق
+    signals:      60,      // إشارات متقدمة -- دقيقة
+    intraday:     0,       // بيانات intraday لحظية
   };
 
-  // ─────────────────────────────────────────────
-  // الكشف عن حالة السوق السعودي (KSA timezone UTC+3)
-  // أيام التداول: الأحد إلى الخميس (0-4 في getDay)
-  // نشاط السوق: 09:30 - 15:30 (شامل المزادات)
-  // ─────────────────────────────────────────────
-  function getMarketStatus() {
-    const now = new Date();
-    // تحويل لتوقيت الرياض (UTC+3)
-    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-    const ksa = new Date(utc + (3 * 3600000));
-    const day = ksa.getDay(); // 0=أحد، 4=خميس، 5=جمعة، 6=سبت
-    const hour = ksa.getHours();
-    const min = ksa.getMinutes();
-    const timeInMin = hour * 60 + min;
-    const isWeekday = day >= 0 && day <= 4; // الأحد-الخميس
-    const isMarketHours = timeInMin >= 570 && timeInMin <= 930; // 09:30-15:30
-    const isOpen = isWeekday && isMarketHours;
-    // حساب الوقت حتى افتتاح السوق التالي بالثواني
-    let secondsUntilOpen = 0;
-    if (!isOpen) {
-      const next = new Date(ksa);
-      next.setHours(9, 30, 0, 0);
-      // إذا تجاوزنا 09:30 اليوم → اليوم التالي
-      if (timeInMin >= 570) next.setDate(next.getDate() + 1);
-      // تخطّي الجمعة والسبت
-      while (next.getDay() === 5 || next.getDay() === 6) {
-        next.setDate(next.getDate() + 1);
-      }
-      secondsUntilOpen = Math.floor((next.getTime() - ksa.getTime()) / 1000);
-    }
-    return { isOpen, secondsUntilOpen };
-  }
-
-  const marketStatus = getMarketStatus();
-  let maxAge = cacheDuration[endpoint] ?? 60;
-  // إذا السوق مُغلق، أطل الـ cache حتى الافتتاح (للأسعار اللحظية فقط)
-  // البيانات الأساسية (companies, sectors...) تَستخدم cache الطبيعي
-  const liveEndpoints = ['tasi','quote','quotes','prices','gainers','losers','volume','ohlcv'];
-  if (!marketStatus.isOpen && liveEndpoints.includes(endpoint)) {
-    maxAge = Math.max(maxAge, marketStatus.secondsUntilOpen);
-  }
-  const staleAge = maxAge * 5; // مدة stale-while-revalidate
+  const maxAge = cacheDuration[endpoint] ?? 0;
+  const staleAge = maxAge > 0 ? maxAge * 3 : 0;
 
   const headers = {
     'Accept': 'application/json',
@@ -93,83 +61,116 @@ export async function GET(req: NextRequest) {
 
     if (endpoint === 'quote') {
       url = `${SAHMK_BASE}/quote/${sym}/`;
+
     } else if (endpoint === 'quotes' || endpoint === 'prices') {
       url = `${SAHMK_BASE}/quotes/?symbols=${symbols}`;
+
     } else if (endpoint === 'ohlcv') {
-            const daysMap: Record<string, number> = {
+      const daysMap: Record<string, number> = {
         '1D': 1, '1W': 7, '1M': 30,
         '3M': 90, '6M': 180, '1Y': 365,
-        '3Y': 1095, '5Y': 1825
+        '3Y': 1095, '5Y': 1825,
       };
       const days = daysMap[period] ?? 90;
       const fromDate = from || new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);
       const toDate   = to   || new Date().toISOString().slice(0, 10);
       url = `${SAHMK_BASE}/historical/${sym}/?from=${fromDate}&to=${toDate}`;
+
+    } else if (endpoint === 'intraday') {
+      // ── جديد: بيانات Intraday بـ 60m (حتى 90 يوم) ──
+      const fromDate = from || new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+      const toDate   = to   || new Date().toISOString().slice(0, 10);
+      url = `${SAHMK_BASE}/historical/${sym}/?from=${fromDate}&to=${toDate}&interval=${interval}`;
+
     } else if (endpoint === 'tasi') {
       url = `${SAHMK_BASE}/market/summary/?index=TASI`;
+
     } else if (endpoint === 'gainers') {
-      url = `${SAHMK_BASE}/market/gainers/?limit=10&index=TASI`;
+      url = `${SAHMK_BASE}/market/gainers/?limit=20&index=TASI`;
+
     } else if (endpoint === 'losers') {
-      url = `${SAHMK_BASE}/market/losers/?limit=10&index=TASI`;
+      url = `${SAHMK_BASE}/market/losers/?limit=20&index=TASI`;
+
     } else if (endpoint === 'volume') {
-      url = `${SAHMK_BASE}/market/volume/?limit=10&index=TASI`;
+      url = `${SAHMK_BASE}/market/volume/?limit=20&index=TASI`;
+
     } else if (endpoint === 'sectors') {
       url = `${SAHMK_BASE}/market/sectors/?index=TASI`;
+
     } else if (endpoint === 'companies') {
       const offset = searchParams.get('offset') ?? '0';
       url = `${SAHMK_BASE}/companies/?market=${market}&limit=${limit}&offset=${offset}`;
+
     } else if (endpoint === 'fundamentals') {
       url = `${SAHMK_BASE}/company/${sym}/`;
+
     } else if (endpoint === 'ratios') {
       url = `${SAHMK_BASE}/analytics/ratios/${sym}/`;
+
     } else if (endpoint === 'financials') {
-      url = `${SAHMK_BASE}/financials/${sym}/?type=all&period=annual&history=3y`;
+      url = `${SAHMK_BASE}/financials/${sym}/?type=all&period=annual&history=5y`;
+
     } else if (endpoint === 'dividends') {
       url = `${SAHMK_BASE}/dividends/${sym}/`;
+
+    // ── Endpoints جديدة -- الباقة الاحترافية ──
+    } else if (endpoint === 'fair_value') {
+      url = `${SAHMK_BASE}/analytics/fair-value/${sym}/`;
+
+    } else if (endpoint === 'analysts') {
+      url = `${SAHMK_BASE}/analytics/consensus/${sym}/`;
+
+    } else if (endpoint === 'events') {
+      url = `${SAHMK_BASE}/events/${sym}/`;
+
+    } else if (endpoint === 'signals') {
+      url = `${SAHMK_BASE}/analytics/signals/${sym}/`;
+
     } else {
       return NextResponse.json({ error: 'Unknown endpoint' }, { status: 400 });
     }
 
-    const res = await fetch(url, { headers });
+    const res = await fetch(url, {
+      headers,
+      // لا يوجد timeout مصطنع -- الباقة الاحترافية سريعة
+      cache: 'no-store',
+    });
 
-        if (!res.ok) {
+    if (!res.ok) {
       const text = await res.text();
-      
-      // لا نحفظ الأخطاء أبداً - فقط نسمح للمُتصفّح بإعادة المحاولة
-      // 429 يُحلّ بـ retry في الـ client بدلاً من إغلاق الـ cache
       return new NextResponse(
         JSON.stringify({ error: `sahmk error ${res.status}`, detail: text }),
         {
           status: res.status,
           headers: {
-            'Cache-Control': 'no-store, no-cache, must-revalidate',
+            'Cache-Control': 'no-store',
             'Content-Type': 'application/json; charset=utf-8',
           },
         }
       );
     }
 
-    // نأخذ النص كما هو من sahmk بدون أي محاولة لتعديل الترميز
     const text = await res.text();
 
-    // نرجع النص الخام مباشرة (Next.js لن يحاول re-serialize)
-        return new NextResponse(text, {
+    // الأسعار اللحظية: no-cache كامل
+    const cacheHeader = maxAge === 0
+      ? 'no-store, no-cache, must-revalidate'
+      : `public, s-maxage=${maxAge}, stale-while-revalidate=${staleAge}`;
+
+    return new NextResponse(text, {
       status: 200,
       headers: {
-        'Cache-Control': `public, s-maxage=${maxAge}, stale-while-revalidate=${staleAge}`,
-        'CDN-Cache-Control': `public, max-age=${maxAge}`,
+        'Cache-Control': cacheHeader,
         'Content-Type': 'application/json; charset=utf-8',
       },
     });
 
-    } catch (err: any) {
-    console.error('PROXY ERROR:', err.name, '|', err.message, '|', err.stack);
+  } catch (err: any) {
     return NextResponse.json(
       {
         error: 'Proxy failed',
         name: err.name,
         message: err.message,
-        stack: err.stack?.split('\n').slice(0, 5).join(' | '),
       },
       { status: 500 }
     );
