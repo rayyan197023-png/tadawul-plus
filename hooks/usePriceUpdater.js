@@ -218,7 +218,8 @@ ws.onclose = function() {
     if (isMounted.current) setTimeout(connectWS, 5000);
   };
 
-    ws.onerror = function() {
+ws.onerror = function() {
+      window.__WS_STATUS__ = '🔴 خطأ';
       ws = null;
     };
 
