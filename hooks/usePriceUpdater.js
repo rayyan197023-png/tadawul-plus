@@ -168,49 +168,60 @@ export function usePriceUpdater() {
     }
 
     fetchAll();
-    // ── WebSocket لحظي ──
+// ── WebSocket لحظي ──
 let ws = null;
+const SAHMK_WS_KEY = process.env.NEXT_PUBLIC_SAHMK_KEY || '';
 
 function connectWS() {
-  ws = new WebSocket(
-    `wss://app.sahmk.sa/ws/v1/stocks/?api_key=${process.env.NEXT_PUBLIC_SAHMK_KEY}`
-  );
+  if (!SAHMK_WS_KEY) return;
+  
+  try {
+    ws = new WebSocket(
+      'wss://app.sahmk.sa/ws/v1/stocks/?api_key=' + SAHMK_WS_KEY
+    );
 
-  ws.onopen = () => {
-    const syms = STOCKS.map(s => s.sym);
-    for (let i = 0; i < syms.length; i += 20) {
-ws.send(JSON.stringify({
-        action: 'subscribe',
-        symbols: syms.slice(i, i + 20),
-      }));
-    }
-  };
+    ws.onopen = function() {
+      const wsSyms = STOCKS.map(function(s) { return s.sym; });
+      for (let i = 0; i < wsSyms.length; i += 20) {
+        ws.send(JSON.stringify({
+          action: 'subscribe',
+          symbols: wsSyms.slice(i, i + 20),
+        }));
+      }
+    };
 
-  ws.onmessage = (event) => {
-    try {
-      const msg = JSON.parse(event.data);
-      if (msg.type !== 'quote') return;
-      const q = msg.data;
-      if (!q?.symbol || !q?.price) return;
-
-      dispatch({
-        type: STOCK_ACTIONS.UPDATE_PRICE,
-        payload: {
-          sym: q.symbol,
-          data: {
-            p:   q.price,
-            ch:  q.change_percent ?? 0,
-            pct: q.change_percent ?? 0,
-            v:   q.volume         ?? 0,
+    ws.onmessage = function(event) {
+      try {
+        const msg = JSON.parse(event.data);
+        if (msg.type !== 'quote') return;
+        const q = msg.data;
+        if (!q || !q.symbol || !q.price) return;
+        dispatch({
+          type: 'UPDATE_PRICE',
+          payload: {
+            sym: q.symbol,
+            data: {
+              p:   q.price,
+              ch:  q.change_percent || 0,
+              pct: q.change_percent || 0,
+              v:   q.volume         || 0,
+            },
           },
-        },
-      });
-    } catch { /* تجاهل */ }
-  };
+        });
+      } catch(e) { /* تجاهل */ }
+    };
 
-  ws.onclose = () => {
-    if (isMounted.current) setTimeout(connectWS, 5000);
-  };
+    ws.onclose = function() {
+      if (isMounted.current) setTimeout(connectWS, 5000);
+    };
+
+    ws.onerror = function() {
+      ws = null;
+    };
+
+  } catch(e) {
+    console.warn('[WS]', e.message);
+  }
 }
 
 connectWS();
