@@ -238,6 +238,8 @@ ws.onerror = function(e) {
     console.warn('[WS]', e.message);
   }
 }
+window.__WS_STATUS__ = '🟡 استدعاء connectWS...';
+connectWS();
 
 connectWS();
     const timer = setInterval(fetchAll, INTERVAL_MS);
