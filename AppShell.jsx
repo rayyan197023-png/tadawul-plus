@@ -376,7 +376,7 @@ export default function AppShell() {
     const id = 'tadawul-global';
     if (document.getElementById(id)) return;
     // تسجيل webhook -- يُحذف بعد التشغيل مرة واحدة
-if (!localStorage.getItem('webhook_registered')) {
+if (true) {
   fetch('/api/sahmkdata', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
