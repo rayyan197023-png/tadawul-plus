@@ -23,6 +23,7 @@ export async function POST(req) {
         return Response.json({ error: 'invalid subscription' }, { status: 400 });
       }
       subscriptions.set(subscription.endpoint, subscription);
+      console.log('[Push] NEW SUBSCRIPTION count:', subscriptions.size);
       console.log('[Push] subscribed:', subscription.endpoint.slice(0, 50));
       return Response.json({ ok: true, count: subscriptions.size });
     }
