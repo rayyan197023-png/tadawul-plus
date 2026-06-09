@@ -145,67 +145,8 @@ export function usePriceUpdater() {
 
    fetchAll();
 
-   // ── WebSocket لحظي ──
-   let ws = null;
-
-   async function connectWS() {
-     try {
-       const res = await fetch('/api/sahmkdata', { method: 'PUT' });
-       if (!res.ok) { window.__WS_STATUS__ = '🔴 فشل جلب token'; return; }
-       const { url } = await res.json();
-
-       ws = new WebSocket(url);
-       window.__WS_STATUS__ = '🟡 جاري الاتصال...';
-
-       ws.onopen = function() {
-         window.__WS_STATUS__ = '🟢 متصل';
-         const wsSyms = STOCKS.map(function(s) { return s.sym; });
-         for (let i = 0; i < wsSyms.length; i += 20) {
-           ws.send(JSON.stringify({
-             action: 'subscribe',
-             symbols: wsSyms.slice(i, i + 20),
-           }));
-         }
-       };
-
-       ws.onmessage = function(event) {
-         try {
-           const msg = JSON.parse(event.data);
-           if (msg.type !== 'quote') return;
-           const q = msg.data;
-           if (!q || !q.symbol || !q.price) return;
-           dispatch({
-             type: 'UPDATE_PRICE',
-             payload: {
-               sym: q.symbol,
-               data: {
-                 p:   q.price,
-                 ch:  q.change_percent || 0,
-                 pct: q.change_percent || 0,
-                 v:   q.volume         || 0,
-               },
-             },
-           });
-         } catch(e) {}
-       };
-
-       ws.onclose = function(e) {
-         window.__WS_STATUS__ = '🔴 منقطع: ' + e.code;
-         if (isMounted.current) setTimeout(connectWS, 5000);
-       };
-
-       ws.onerror = function() {
-         window.__WS_STATUS__ = '🔴 خطأ';
-         ws = null;
-       };
-
-     } catch(e) {
-       window.__WS_STATUS__ = '🔴 catch: ' + e.message;
-     }
-   }
-
-   connectWS();
-
+// ── تحديث سريع كل 5 ثوانٍ بدل WebSocket ──
+const INTERVAL_MS = 5_000;
    const timer = setInterval(fetchAll, INTERVAL_MS);
 
    return () => {
