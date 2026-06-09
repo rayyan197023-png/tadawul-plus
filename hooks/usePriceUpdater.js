@@ -215,8 +215,8 @@ ws.onopen = function() {
       } catch(e) { /* تجاهل */ }
     };
 
-ws.onclose = function() {
-    window.__WS_STATUS__ = '🔴 منقطع';
+ws.onclose = function(e) {
+      window.__WS_STATUS__ = '🔴 منقطع كود: ' + e.code;
     if (isMounted.current) setTimeout(connectWS, 5000);
   };
 
