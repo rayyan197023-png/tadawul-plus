@@ -171,6 +171,8 @@ export function usePriceUpdater() {
 // ── WebSocket لحظي ──
 let ws = null;
 const SAHMK_WS_KEY = process.env.NEXT_PUBLIC_SAHMK_KEY || '';
+console.log('[WS KEY]', SAHMK_WS_KEY ? 'موجود' : 'فارغ');
+window.__WS_STATUS__ = SAHMK_WS_KEY ? '🟡 جاري الاتصال...' : '⚠️ مفتاح فارغ';
 
 function connectWS() {
   if (!SAHMK_WS_KEY) return;
