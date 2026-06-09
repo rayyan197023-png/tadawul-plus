@@ -220,8 +220,8 @@ ws.onclose = function() {
     if (isMounted.current) setTimeout(connectWS, 5000);
   };
 
-ws.onerror = function() {
-      window.__WS_STATUS__ = '🔴 خطأ';
+ws.onerror = function(e) {
+      window.__WS_STATUS__ = '🔴 خطأ: ' + (e?.message || 'connection failed');
       ws = null;
     };
 
