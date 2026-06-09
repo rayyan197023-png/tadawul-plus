@@ -145,14 +145,11 @@ export function usePriceUpdater() {
 
    fetchAll();
 
-// ── تحديث سريع كل 5 ثوانٍ بدل WebSocket ──
-const INTERVAL_MS = 5_000;
    const timer = setInterval(fetchAll, INTERVAL_MS);
 
    return () => {
      isMounted.current = false;
      clearInterval(timer);
-     if (ws) ws.close();
    };
  }, [dispatch, marketDispatch]);
 }
