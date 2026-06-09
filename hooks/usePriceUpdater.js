@@ -219,6 +219,7 @@ connectWS();
     return () => {
       isMounted.current = false;
       clearInterval(timer);
+      ws?.close();
     };
   }, [dispatch, marketDispatch]);
 }
