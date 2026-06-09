@@ -213,9 +213,10 @@ ws.onopen = function() {
       } catch(e) { /* تجاهل */ }
     };
 
-    ws.onclose = function() {
-      if (isMounted.current) setTimeout(connectWS, 5000);
-    };
+ws.onclose = function() {
+    window.__WS_STATUS__ = '🔴 منقطع';
+    if (isMounted.current) setTimeout(connectWS, 5000);
+  };
 
     ws.onerror = function() {
       ws = null;
