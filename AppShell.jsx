@@ -372,37 +372,10 @@ function Shell() {
 
 // ── AppShell Entry Point ──────────────────────────────────────
 export default function AppShell() {
-useEffect(() => {
-    // تسجيل webhook -- يُحذف بعد التشغيل مرة واحدة
-    if (true) {
-      fetch('/api/sahmkdata', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'register_webhook',
-          url: 'https://tadawul-plus.vercel.app/api/webhook',
-          name: 'Tadawul Plus Events',
-        }),
-      }).then(r => r.json()).then(function(d) {
-        console.log('[Webhook]', d);
-      });
-    }
-
+  useEffect(() => {
     const id = 'tadawul-global';
-
-    fetch('/api/sahmkdata', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'register_webhook',
-        url: 'https://tadawul-plus.vercel.app/api/webhook',
-        name: 'Tadawul Plus Events',
-      }),
-    }).then(r => r.json()).then(function(d) {
-      console.log('[Webhook]', d);
-    });
-
     if (document.getElementById(id)) return;
+
     const el = document.createElement('style');
     el.id = id;
 
