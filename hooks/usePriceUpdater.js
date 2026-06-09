@@ -193,6 +193,7 @@ function connectWS() {
     ws.onmessage = function(event) {
       try {
         const msg = JSON.parse(event.data);
+        console.log('[WS]', msg.type, msg.data?.symbol, msg.data?.price);
         if (msg.type !== 'quote') return;
         const q = msg.data;
         if (!q || !q.symbol || !q.price) return;
