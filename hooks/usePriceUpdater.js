@@ -181,6 +181,15 @@ function connectWS() {
     ws = new WebSocket(
       'wss://app.sahmk.sa/ws/v1/stocks/?api_key=' + SAHMK_WS_KEY
     );
+ws = new WebSocket(
+    'wss://app.sahmk.sa/ws/v1/stocks/?api_key=' + SAHMK_WS_KEY
+  );
+window.__WS_STATUS__ = '🟡 جاري الاتصال... ' + ws.url.slice(0, 50);
+setTimeout(function() {
+  if (ws && ws.readyState === 0) {
+    window.__WS_STATUS__ = '🔴 timeout - readyState: ' + ws.readyState;
+  }
+}, 10000);
 
 ws.onopen = function() {
     window.__WS_STATUS__ = '🟢 متصل';
