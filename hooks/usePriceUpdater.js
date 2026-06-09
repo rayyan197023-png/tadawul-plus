@@ -235,7 +235,7 @@ ws.onerror = function(e) {
     };
 
   } catch(e) {
-    console.warn('[WS]', e.message);
+    window.__WS_STATUS__ = '🔴 catch: ' + e.message;
   }
 }
 window.__WS_STATUS__ = '🟡 استدعاء connectWS...';
