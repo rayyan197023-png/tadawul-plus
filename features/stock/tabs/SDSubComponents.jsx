@@ -399,6 +399,150 @@ function NLPNewsPanel({ stk }) {
     </SectionCard>
   );
 }
+/* ═══════════════════════════════════════════════════════════════
+   IntradayChart -- شارت Intraday من sahmk
+═══════════════════════════════════════════════════════════════ */
+
+function IntradayChart({ stk }) {
+  const [bars, setBars] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!stk?.sym) return;
+    setLoading(true);
+    fetch(`/api/sahmkdata?endpoint=intraday&sym=${stk.sym}`)
+      .then(r => r.json())
+      .then(d => {
+        const data = d.data || [];
+        setBars(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [stk?.sym]);
+
+  if (loading) return (
+    <SectionCard title="شارت Intraday" accent={C.teal}>
+      <div style={{ padding: "14px 16px" }}>
+        <Skeleton h={80} mb={8}/>
+      </div>
+    </SectionCard>
+  );
+
+  if (!bars.length) return null;
+
+  // فلتر اليوم الحالي فقط
+  const today = new Date().toISOString().slice(0, 10);
+  const todayBars = bars.filter(b => b.date.startsWith(today));
+  const displayBars = todayBars.length >= 2 ? todayBars : bars.slice(-10);
+
+  const closes = displayBars.map(b => b.close);
+  const vols   = displayBars.map(b => b.volume);
+  const n = closes.length;
+  if (n < 2) return null;
+
+  const minC = Math.min(...closes), maxC = Math.max(...closes);
+  const rng = maxC - minC || 1;
+  const maxV = Math.max(...vols) || 1;
+  const isUp = closes[n-1] >= closes[0];
+  const color = isUp ? C.mint : C.coral;
+
+  const W = 320, H = 80, VH = 20, PAD = 4;
+  const px = i => PAD + (i / (n-1)) * (W - PAD*2);
+  const py = v => H - PAD - ((v - minC) / rng) * (H - PAD*2);
+  const pvy = v => H + VH - (v / maxV) * VH * 0.9;
+
+  const linePath = closes.map((c, i) => `${i===0?"M":"L"}${px(i).toFixed(1)},${py(c).toFixed(1)}`).join(" ");
+  const areaPath = linePath + ` L${px(n-1)},${H} L${px(0)},${H} Z`;
+
+  // تنسيق الوقت
+  const fmtTime = dateStr => {
+    try {
+      const d = new Date(dateStr);
+      return `${String(d.getUTCHours()+3).padStart(2,"0")}:${String(d.getUTCMinutes()).padStart(2,"0")}`;
+    } catch { return ""; }
+  };
+
+  const change = closes[n-1] - closes[0];
+  const changePct = ((change / closes[0]) * 100).toFixed(2);
+
+  return (
+    <SectionCard title="شارت Intraday -- ساعي" accent={C.teal}>
+      <div style={{ padding: "10px 16px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <div style={{ fontSize: 10, color: C.smoke }}>
+            {fmtTime(displayBars[0]?.date)} -- {fmtTime(displayBars[n-1]?.date)}
+          </div>
+          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            <span style={{ fontFamily: "IBM Plex Mono,monospace", fontSize: 13, fontWeight: 900, color: C.snow }}>
+              {closes[n-1]?.toFixed(2)}
+            </span>
+            <span style={{ fontFamily: "IBM Plex Mono,monospace", fontSize: 11, fontWeight: 700, color }}>
+              {change >= 0 ? "+" : ""}{change.toFixed(2)} ({changePct}%)
+            </span>
+          </div>
+        </div>
+
+        <svg width="100%" viewBox={`0 0 ${W} ${H + VH + 10}`} preserveAspectRatio="none" style={{ display: "block" }}>
+          <defs>
+            <linearGradient id="intradayGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={color} stopOpacity="0.3"/>
+              <stop offset="100%" stopColor={color} stopOpacity="0"/>
+            </linearGradient>
+          </defs>
+          {/* خطوط الشبكة */}
+          {[0.25, 0.5, 0.75].map((t, i) => (
+            <line key={i} x1={PAD} y1={PAD + t*(H-PAD*2)} x2={W-PAD} y2={PAD + t*(H-PAD*2)}
+              stroke={C.line} strokeWidth="0.4" opacity="0.5"/>
+          ))}
+          {/* منطقة التعبئة */}
+          <path d={areaPath} fill="url(#intradayGrad)"/>
+          {/* الخط */}
+          <path d={linePath} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          {/* نقطة آخر سعر */}
+          <circle cx={px(n-1)} cy={py(closes[n-1])} r="3.5" fill={color}/>
+          {/* أعمدة الحجم */}
+          {displayBars.map((b, i) => {
+            const bh = (b.volume / maxV) * VH * 0.9;
+            const bw = Math.max(1.5, (W - PAD*2) / n * 0.7);
+            const up = i === 0 || b.close >= displayBars[i-1]?.close;
+            return (
+              <rect key={i} x={px(i) - bw/2} y={pvy(b.volume)} width={bw} height={bh}
+                fill={up ? C.mint : C.coral} opacity="0.5"/>
+            );
+          })}
+          {/* تسميات الوقت */}
+          {[0, Math.floor(n/2), n-1].map(idx => (
+            <text key={idx} x={px(idx)} y={H + VH + 9} textAnchor="middle"
+              fill={C.smoke} fontSize="7" fontFamily="IBM Plex Mono,monospace">
+              {fmtTime(displayBars[idx]?.date)}
+            </text>
+          ))}
+          {/* تسمية آخر سعر */}
+          <text x={px(n-1) + 5} y={py(closes[n-1]) + 4} fill={color} fontSize="8"
+            fontFamily="IBM Plex Mono,monospace" fontWeight="700">
+            {closes[n-1]?.toFixed(2)}
+          </text>
+        </svg>
+
+        {/* ملخص السيولة */}
+        {stk.inflow && (
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6, marginTop: 8 }}>
+            {[
+              { l: "شراء", v: ((stk.inflow||0)/1e6).toFixed(1)+"M", c: C.mint },
+              { l: "بيع",  v: ((stk.outflow||0)/1e6).toFixed(1)+"M", c: C.coral },
+              { l: "صافي", v: ((stk.netFlow||0)>=0?"+":"") + ((stk.netFlow||0)/1e6).toFixed(1)+"M", c: (stk.netFlow||0)>=0?C.mint:C.coral },
+            ].map((item, i) => (
+              <div key={i} style={{ background: item.c+"10", borderRadius: 8, padding: "5px", textAlign: "center", border: `1px solid ${item.c}22` }}>
+                <div style={{ fontFamily: "IBM Plex Mono,monospace", fontSize: 11, fontWeight: 800, color: item.c }}>{item.v}</div>
+                <div style={{ fontSize: 9, color: C.smoke }}>{item.l}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </SectionCard>
+  );
+}
 
 export {
   OrderBookLoader, OrderBookPanel,
