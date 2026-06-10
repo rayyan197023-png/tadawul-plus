@@ -172,6 +172,66 @@ function OverviewPane({ stk }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
 
+      {/* الإشارات التقنية من Sahmk */}
+      {(stk.rsi14 || stk.priceDirection) && (
+        <SectionCard title="الإشارات التقنية" accent={C.electric}>
+          <div style={{ padding:"10px 14px", display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+            {stk.rsi14 && (
+              <ValCard
+                label="RSI 14"
+                value={stk.rsi14?.toFixed(1)}
+                color={stk.rsi14 > 70 ? C.coral : stk.rsi14 < 30 ? C.mint : C.electric}
+                sub={stk.rsi14 > 70 ? "تشبع شراء" : stk.rsi14 < 30 ? "تشبع بيع" : "محايد"}
+              />
+            )}
+            {stk.macdLine != null && (
+              <ValCard
+                label="MACD"
+                value={stk.macdLine?.toFixed(3)}
+                color={stk.macdLine > 0 ? C.mint : C.coral}
+                sub={stk.macdLine > 0 ? "صعودي" : "هبوطي"}
+              />
+            )}
+            {stk.ma50 && (
+              <ValCard
+                label="MA50"
+                value={stk.ma50?.toFixed(2)}
+                color={stk.p && stk.p > stk.ma50 ? C.mint : C.coral}
+                sub={stk.p && stk.p > stk.ma50 ? "فوق المتوسط" : "تحت المتوسط"}
+              />
+            )}
+            {stk.priceDirection && (
+              <ValCard
+                label="الاتجاه"
+                value={stk.priceDirection === "bullish" ? "صعودي 📈" : stk.priceDirection === "bearish" ? "هبوطي 📉" : "محايد"}
+                color={stk.priceDirection === "bullish" ? C.mint : stk.priceDirection === "bearish" ? C.coral : C.smoke}
+              />
+            )}
+          </div>
+        </SectionCard>
+      )}
+
+      {/* أحداث السهم AI */}
+      {stk.stockEvents && stk.stockEvents.length > 0 && (
+        <SectionCard title="أحداث السهم AI" accent={C.plasma}>
+          <div style={{ padding:"8px 14px", display:"flex", flexDirection:"column", gap:8 }}>
+            {stk.stockEvents.slice(0,3).map(function(ev, i) {
+              var sentColor = ev.sentiment && ev.sentiment.includes('positive') ? C.mint :
+                              ev.sentiment && ev.sentiment.includes('negative') ? C.coral : C.smoke;
+              return (
+                <div key={i} style={{ background:C.layer3, borderRadius:10, padding:"10px 12px", border:`1px solid ${sentColor}33` }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
+                    <span style={{ fontSize:9, color:sentColor, fontWeight:700 }}>{ev.sentiment || "محايد"}</span>
+                    <span style={{ fontSize:9, color:C.smoke }}>{ev.event_date}</span>
+                  </div>
+                  <div style={{ fontSize:11, color:C.mist, lineHeight:1.5 }}>{ev.description}</div>
+                </div>
+              );
+            })}
+          </div>
+        </SectionCard>
+      )}
+
       {/* DCF Fair Value */}
       <SectionCard title="القيمة العادلة -- DCF" accent={C.gold}>
         <div style={{ padding: "12px 14px" }}>
