@@ -1002,7 +1002,9 @@ function SDOverview({ stk, per, setPer, onNav, onExpand }) {
     setAnalystLoading(false);
   };
 
-const est = analystData || stk.analystsData || (ANALYST_EST ? (ANALYST_EST[stk.sym] || ANALYST_EST.default) : {});
+const sahmkAnalysts = stk.analystsData || null;
+const est = analystData || sahmkAnalysts || (ANALYST_EST ? (ANALYST_EST[stk.sym] || ANALYST_EST.default) : {});
+
 const banks = analystData?.banks?.slice(0,8) || [];
   const peers  = PEERS[stk.sym] || PEERS.default;
 
@@ -1222,9 +1224,13 @@ const banks = analystData?.banks?.slice(0,8) || [];
       {/* تقييمات المحللين */}
       <SectionCard title="تقييمات المحللين" accent={aColor} badge={banks.length>0?{text:banks.length+" بنك",color:C.electric}:null}>
         <div style={{ padding:"8px 16px 0", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-          <div style={{ fontSize:10, color:C.smoke, lineHeight:1.5 }}>
-            {lastFetched ? '✓ بيانات حية -- '+lastFetched : "اضغط للبحث الحي بـ AI"}
-          </div>
+<div style={{ fontSize:10, color:C.smoke, lineHeight:1.5 }}>
+  {sahmkAnalysts?.numAnalysts > 0
+    ? `✓ ${sahmkAnalysts.numAnalysts} محلل -- SAHMK`
+    : lastFetched
+    ? '✓ بيانات حية -- ' + lastFetched
+    : "اضغط للبحث الحي بـ AI"}
+</div>
           <button onClick={fetchAnalystRatings} disabled={analystLoading}
             style={{ display:"flex", alignItems:"center", gap:5, background:analystLoading?C.layer3:`${C.electric}18`, border:`1px solid ${C.electric}44`, borderRadius:8, padding:"5px 10px", color:C.electric, fontSize:11, fontWeight:700, cursor:analystLoading?"not-allowed":"pointer", fontFamily:"Cairo,sans-serif", minHeight:32 }}>
             {analystLoading ? (
