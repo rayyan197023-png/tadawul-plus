@@ -4,7 +4,7 @@ import { useStockDispatch } from '../store/stockStore';
 import { useMarketDispatch, MARKET_ACTIONS } from '../store';
 import { STOCKS_MAP as SEED_MAP, updateLiveStocks, STOCKS } from '../constants/stocksData';
 
-const INTERVAL_MS = 5_000;
+const INTERVAL_MS = 15_000;
 const CHUNK_SIZE  = 50;
 const NAMES_MAP = {};
 const SHORT_OVERRIDES = {
