@@ -1449,17 +1449,11 @@ useEffect(function(){
           </button>
           
           <button onClick={function(){setActiveTab("manual");setActiveFilter("all");}}
-          <button onClick={function(){setActiveTab("events");}}
-  style={{flex:1,padding:"10px",background:activeTab==="events"?"linear-gradient(135deg,"+C.teal+"22,"+C.teal+"08)":"transparent",border:"1px solid "+(activeTab==="events"?C.teal+"55":C.line+"44"),borderRadius:10,color:activeTab==="events"?C.teal:C.smoke,fontSize:12,fontWeight:800,cursor:"pointer",fontFamily:"Cairo,sans-serif"}}>
-  <span style={{display:"inline-flex",alignItems:"center",gap:6}}>
-    <span style={{fontSize:14}}>📰</span>
-    أحداث
-  </span>
-</button>
-style={{flex:1,padding:"10px",background:activeTab==="manual"?"linear-gradient(135deg,"+C.electric+"22,"+C.electric+"08)":"transparent",border:"1px solid "+(activeTab==="manual"?C.electric+"55":C.line+"44"),borderRadius:10,color:activeTab==="manual"?C.electric:C.smoke,fontSize:12,fontWeight:800,cursor:"pointer",fontFamily:"Cairo,sans-serif",position:"relative",transition:"all 0.2s"}}>
+            style={{flex:1,padding:"10px",background:activeTab==="manual"?"linear-gradient(135deg,"+C.electric+"22,"+C.electric+"08)":"transparent",border:"1px solid "+(activeTab==="manual"?C.electric+"55":C.line+"44"),borderRadius:10,color:activeTab==="manual"?C.electric:C.smoke,fontSize:12,fontWeight:800,cursor:"pointer",fontFamily:"Cairo,sans-serif",position:"relative",transition:"all 0.2s"}}>
             <span style={{display:"inline-flex",alignItems:"center",gap:6}}>
               <Ico k="bell" color={activeTab==="manual"?C.electric:C.smoke} size={13}/>
               يدوية
+
             </span>
             {manualAlerts.length>0&&(
               <span style={{position:"absolute",top:6,right:8,background:C.electric+"33",color:C.electric,fontSize:9,padding:"1px 6px",borderRadius:6,fontWeight:800}}>{manualAlerts.length}</span>
