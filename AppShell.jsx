@@ -430,7 +430,49 @@ export default function AppShell() {
     document.head.appendChild(el);
     return () => el.remove();
   }, []);
-  
+  useEffect(() => {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+
+  setTimeout(async function() {
+    try {
+      window.__PUSH_ERROR__ = 'جاري التسجيل...';
+      
+      const reg = await navigator.serviceWorker.register('/sw.js');
+      await navigator.serviceWorker.ready;
+      
+      window.__PUSH_ERROR__ = 'SW جاهز';
+
+      const res = await fetch('/api/push');
+      const { publicKey } = await res.json();
+      if (!publicKey) return;
+
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') {
+        window.__PUSH_ERROR__ = 'رُفض الإذن';
+        return;
+      }
+
+      let sub = await reg.pushManager.getSubscription();
+      if (!sub) {
+        sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: publicKey,
+        });
+      }
+
+      await fetch('/api/push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'subscribe', subscription: sub }),
+      });
+
+      window.__PUSH_ERROR__ = '✅ مشترك';
+    } catch(e) {
+      window.__PUSH_ERROR__ = '❌ ' + e.message;
+    }
+  }, 3000);
+}, []);
+
   return (
     <RootStoreProvider>
       <Shell />
