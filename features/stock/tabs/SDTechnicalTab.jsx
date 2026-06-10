@@ -371,8 +371,9 @@ function SDTechnical({ stk }) {
             <div style={{ display: "flex", height: 10, borderRadius: 4, overflow: "hidden", gap: 1 }}>
               {maVals.map((m, i) => {
                 const aboveMA = p >= m.v;
-                const opacity = aboveMA ? 1 : 0.18;
-                const borderBottom = aboveMA ? `2px solid ${m.c}` : "none";
+                const diff = Math.abs(m.v - p) / p;
+                const opacity = aboveMA ? Math.max(0.5, 1 - diff * 3) : 0.15;
+                const borderBottom = "none";
                 return (
                   <div key={i} style={{ flex: 1, background: m.c, opacity, position: "relative", borderBottom }}>
                     <span style={{ position: "absolute", bottom: "-14px", left: "50%", transform: "translateX(-50%)", fontSize: 7, color: m.c, whiteSpace: "nowrap", opacity: 1 }}>{m.n}</span>
