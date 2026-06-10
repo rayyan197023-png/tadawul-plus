@@ -405,6 +405,7 @@ if (permission !== 'granted') return;
       });
     } catch(e) {
       console.warn('[Push]', e.message);
+      window.__PUSH_ERROR__ = e.message;
     }
   });
 }
