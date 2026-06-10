@@ -178,23 +178,69 @@ function SDShareholders({ stk }) {
         )}
       </SectionCard>
 
-      {/* تغيرات الملكية */}
-      <SectionCard title="تغيرات الملكية" accent={C.smoke}>
-        <EmptyState
-          icon="📅"
-          title="سجل التغيرات غير متوفر"
-          subtitle="ستظهر تغيرات الملكية في آخر 12 شهراً عند توفر API"
-        />
-      </SectionCard>
+      {/* السيولة اليومية */}
+      {(stk.inflow || stk.outflow) && (
+        <SectionCard title="تدفق السيولة اليومي" accent={C.teal}>
+          <div style={{ padding:"12px 16px" }}>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginBottom:10 }}>
+              {[
+                { l:"تدفق شراء",  v:((stk.inflow||0)/1e6).toFixed(1)+"M",  c:C.mint },
+                { l:"تدفق بيع",   v:((stk.outflow||0)/1e6).toFixed(1)+"M", c:C.coral },
+                { l:"صافي",       v:((stk.netFlow||0)>=0?"+":"") + ((stk.netFlow||0)/1e6).toFixed(1)+"M", c:(stk.netFlow||0)>=0?C.mint:C.coral },
+              ].map((item,i) => (
+                <div key={i} style={{ background:item.c+"10", borderRadius:9, padding:"10px 6px", textAlign:"center", border:`1px solid ${item.c}22` }}>
+                  <div style={{ fontFamily:"IBM Plex Mono,monospace", fontSize:13, fontWeight:900, color:item.c }}>{item.v}</div>
+                  <div style={{ fontSize:9, color:C.smoke, marginTop:3 }}>{item.l}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+              {[
+                { l:"صفقات شراء", v:stk.inflowT ? stk.inflowT.toLocaleString() : "--", c:C.mint },
+                { l:"صفقات بيع",  v:stk.outflowT ? stk.outflowT.toLocaleString() : "--", c:C.coral },
+              ].map((item,i) => (
+                <div key={i} style={{ background:C.layer3, borderRadius:9, padding:"8px", textAlign:"center", border:`1px solid ${C.line}33` }}>
+                  <div style={{ fontFamily:"IBM Plex Mono,monospace", fontSize:12, fontWeight:800, color:item.c }}>{item.v}</div>
+                  <div style={{ fontSize:9, color:C.smoke, marginTop:2 }}>{item.l}</div>
+                </div>
+              ))}
+            </div>
+            {stk.netFlow != null && (
+              <div style={{ marginTop:10, padding:"8px 10px", background:(stk.netFlow>=0?C.mint:C.coral)+"10", borderRadius:8, border:`1px solid ${(stk.netFlow>=0?C.mint:C.coral)}22`, fontSize:10, color:C.mist, lineHeight:1.6 }}>
+                {stk.netFlow >= 0 ? "✓ ضغط شراء -- تدفق إيجابي للسيولة" : "✗ ضغط بيع -- تدفق سلبي للسيولة"}
+              </div>
+            )}
+          </div>
+        </SectionCard>
+      )}
 
-      {/* تدفق المؤسسات */}
-      <SectionCard title="تدفق المؤسسات" accent={C.plasma}>
-        <EmptyState
-          icon="🏦"
-          title="بيانات التدفق المؤسسي غير متوفرة"
-          subtitle="ستظهر إحصائيات شراء وبيع المؤسسات الفصلية عند توفر API"
-        />
-      </SectionCard>
+      {/* الأسهم الحرة vs المقيدة */}
+      {stk.floatPct != null && stk.sharesOut != null && (
+        <SectionCard title="هيكل الأسهم" accent={C.electric}>
+          <div style={{ padding:"12px 16px" }}>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:10 }}>
+              {[
+                { l:"الأسهم الحرة",    v:stk.floatPct+"%",                                                          c:C.mint },
+                { l:"الأسهم المقيدة",  v:(100-stk.floatPct).toFixed(1)+"%",                                        c:C.amber },
+                { l:"إجمالي الأسهم",   v:(stk.sharesOut/1e9).toFixed(2)+"B",                                       c:C.electric },
+                { l:"القيمة السوقية",  v:stk.mc || "--",                                                            c:C.gold },
+              ].map((item,i) => (
+                <div key={i} style={{ background:item.c+"10", borderRadius:9, padding:"10px", textAlign:"center", border:`1px solid ${item.c}22` }}>
+                  <div style={{ fontFamily:"IBM Plex Mono,monospace", fontSize:13, fontWeight:900, color:item.c }}>{item.v}</div>
+                  <div style={{ fontSize:9, color:C.smoke, marginTop:3 }}>{item.l}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ height:8, borderRadius:4, overflow:"hidden", background:C.amber+"44" }}>
+              <div style={{ height:"100%", width:`${stk.floatPct}%`, background:C.mint, borderRadius:"4px 0 0 4px" }}/>
+            </div>
+            <div style={{ display:"flex", justifyContent:"space-between", marginTop:4, fontSize:9, color:C.smoke }}>
+              <span style={{ color:C.mint }}>حرة {stk.floatPct}%</span>
+              <span style={{ color:C.amber }}>مقيدة {(100-stk.floatPct).toFixed(1)}%</span>
+            </div>
+          </div>
+        </SectionCard>
+      )}
 
       {/* Concentration Ratio */}
       {shs.length > 0 && (() => {
