@@ -1002,8 +1002,8 @@ function SDOverview({ stk, per, setPer, onNav, onExpand }) {
     setAnalystLoading(false);
   };
 
-  const est   = analystData || (ANALYST_EST ? (ANALYST_EST[stk.sym] || ANALYST_EST.default) : {});
-  const banks = analystData?.banks?.slice(0,8) || (ANALYST_BANKS[stk.sym] || ANALYST_BANKS.default).slice(0,5);
+const est = analystData || stk.analystsData || (ANALYST_EST ? (ANALYST_EST[stk.sym] || ANALYST_EST.default) : {});
+const banks = analystData?.banks?.slice(0,8) || [];
   const peers  = PEERS[stk.sym] || PEERS.default;
 
   const rng = (stk.hi52 || stk.p*1.1) - (stk.lo52 || stk.p*0.9) || 1;
