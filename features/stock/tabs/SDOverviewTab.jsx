@@ -734,7 +734,8 @@ function SnowflakeCard({ stk, scores }) {
       label: getLabel("cr", stk.currentRatio),
       tip:"نسبة التداول (Current Ratio). الأعلى أفضل.",
       ranges:"أكثر من 2 = ممتاز | 1.5-2 = جيد | 1-1.5 = مقبول | أقل من 1 = خطر",
-      v: Math.min(100,Math.max(0, stk.currentRatio ? Math.round(Math.min(100,stk.currentRatio*45)) : scores?.debtScore||65)) },
+      v: Math.min(100,Math.max(0, stk.debtEquity!=null ? Math.round(Math.max(0,100-stk.debtEquity*40)) : scores?.debtScore!=null ? scores.debtScore : 0)) },
+
     { l:"التوزيع", col:C.gold, key:"div",
       raw: stk.divYld!=null ? stk.divYld+"%" : "-",
       label: getLabel("div", stk.divYld),
