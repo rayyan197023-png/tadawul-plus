@@ -459,16 +459,12 @@ const useSahmkData = (baseStkData) => {
         }
 
         // cache مفقود/قديم → جلب متوازي كامل
-const [company, ratios, financials, dividend, priceHistory, fairValue, analysts, signals, events] = await Promise.all([
+const [company, ratios, financials, dividend, priceHistory] = await Promise.all([
   fetchSahmkCompany(sym),
   fetchSahmkRatios(sym),
   fetchSahmkFinancials(sym),
   fetchSahmkDividend(sym),
   fetchSahmkOhlcv(sym, '3M'),
-  fetchSahmkFairValue(sym),
-  fetchSahmkAnalysts(sym),
-  fetchSahmkSignals(sym),
-  fetchSahmkEvents(sym),
 ]);
 
         
