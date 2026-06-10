@@ -581,5 +581,6 @@ const fetchSahmkEvents = async (sym) => {
   } catch (e) { return []; }
 };
 
-export { SDApiEngines, useSahmkData, sahmkFetch, fetchSahmkQuote, fetchSahmkCompany, fetchSahmkRatios, fetchSahmkFinancials, fetchSahmkDividend, fetchSahmkOhlcv };
+export { SDApiEngines, useSahmkData, sahmkFetch, fetchSahmkQuote, fetchSahmkCompany, fetchSahmkRatios, fetchSahmkFinancials, fetchSahmkDividend, fetchSahmkOhlcv, fetchSahmkFairValue, fetchSahmkAnalysts, fetchSahmkSignals, fetchSahmkEvents };
+
 
