@@ -382,7 +382,8 @@ export default function AppShell() {
     if (document.getElementById(id)) return;
 // ── اشتراك Push Notifications ──
 if ('serviceWorker' in navigator && 'PushManager' in window) {
-  navigator.serviceWorker.ready.then(async function(reg) {
+  window.__PUSH_ERROR__ = 'بدأ كود Push...';
+navigator.serviceWorker.ready.then(async function(reg) {
     try {
       // جلب المفتاح العام
       const res = await fetch('/api/push');
