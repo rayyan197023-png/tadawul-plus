@@ -384,6 +384,8 @@ export default function AppShell() {
 if ('serviceWorker' in navigator && 'PushManager' in window) {
   window.__PUSH_ERROR__ = 'بدأ كود Push...';
 navigator.serviceWorker.ready.then(async function(reg) {
+window.__PUSH_ERROR__ = 'service worker ready...';
+
     try {
       // جلب المفتاح العام
       const res = await fetch('/api/push');
