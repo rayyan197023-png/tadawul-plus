@@ -371,16 +371,62 @@ export default function NewsScreen() {
   // { id, title, ago, cat, sym, hot, body } ثم setNEWS(data)
   const fetchNews = useCallback(async () => {
     try {
-      // مثال للترقية المستقبلية:
-      //   const res  = await fetch('/api/news?market=tasi');
-      //   const data = await res.json();
-      //   if (Array.isArray(data) && data.length) { setNEWS(data); return; }
-      // حتى تتوفّر الباقة: نُبقي العيّنة التجريبية
-      setNEWS(MOCK_NEWS);
+      const res  = await fetch('/api/sahmkdata?endpoint=events&limit=50&importance=important');
+      if (!res.ok) throw new Error('failed');
+      const data = await res.json();
+      const events = data.events || [];
+      if (!events.length) { setNEWS([]); return; }
+
+      const sentMap = {
+        very_positive: 'أرباح', positive: 'أرباح',
+        slightly_positive: 'تحليل', neutral: 'أخبار',
+        slightly_negative: 'تحليل', negative: 'اقتصاد',
+        very_negative: 'اقتصاد',
+      };
+
+      const typeMap = {
+        FINANCIAL_REPORT: 'أرباح',
+        DIVIDEND_ANNOUNCEMENT: 'توزيعات',
+        EARNINGS_SURPRISE: 'أرباح',
+        MERGER_ACQUISITION: 'أخبار',
+        MANAGEMENT_CHANGE: 'أخبار',
+        REGULATORY_ACTION: 'اقتصاد',
+        PARTNERSHIP: 'تحليل',
+        MARKET_EXPANSION: 'تحليل',
+        RESTRUCTURING: 'اقتصاد',
+        STOCK_SPLIT: 'أخبار',
+        NEW_LISTING: 'أخبار',
+        OTHER: 'أخبار',
+      };
+
+      function timeAgo(dateStr) {
+        try {
+          const diff = Date.now() - new Date(dateStr).getTime();
+          const mins = Math.floor(diff / 60000);
+          const hrs  = Math.floor(diff / 3600000);
+          const days = Math.floor(diff / 86400000);
+          if (mins < 60)  return `منذ ${mins} د`;
+          if (hrs  < 24)  return `منذ ${hrs} س`;
+          return `منذ ${days} يوم`;
+        } catch { return ''; }
+      }
+
+      const mapped = events.map((ev, i) => ({
+        id:   ev.symbol + '_' + i,
+        title: ev.description || ev.event_type || 'حدث جديد',
+        body:  ev.description || '',
+        ago:   timeAgo(ev.article_date || ev.event_date),
+        cat:   typeMap[ev.event_type] || sentMap[ev.sentiment] || 'أخبار',
+        sym:   ev.symbol || '',
+        hot:   ev.sentiment === 'very_positive' || ev.sentiment === 'very_negative',
+      }));
+
+      setNEWS(mapped);
     } catch (e) {
-      setNEWS(MOCK_NEWS); // فشل الجلب → عيّنة آمنة
+      setNEWS([]);
     }
   }, []);
+
 
   useEffect(() => { fetchNews(); }, [fetchNews]);
   const tabScrollTimerRef = useRef(null);
