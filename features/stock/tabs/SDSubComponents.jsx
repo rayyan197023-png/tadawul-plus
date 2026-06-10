@@ -548,4 +548,5 @@ export {
   OrderBookLoader, OrderBookPanel,
   TickLoader, TickDataPanel,
   NLPLoader, NLPNewsPanel,
+  IntradayChart,
 };
