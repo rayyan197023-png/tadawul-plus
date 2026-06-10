@@ -1,6 +1,8 @@
 export const runtime = 'nodejs';
 
-const webpush = require('web-push');
+import { createRequire } from 'module';
+const require2 = createRequire(import.meta.url);
+const webpush = require2('web-push');
 
 const VAPID_PUBLIC  = process.env.NEXT_PUBLIC_VAPID_PUBLIC  ?? '';
 const VAPID_PRIVATE = process.env.VAPID_PRIVATE ?? '';
@@ -29,8 +31,6 @@ export async function POST(req) {
       if (!subscription?.endpoint) {
         return Response.json({ error: 'invalid subscription' }, { status: 400 });
       }
-
-      // حفظ في Supabase
       await fetch(`${SUPABASE_URL}/rest/v1/push_subscriptions`, {
         method: 'POST',
         headers: { ...sbHeaders(), 'Prefer': 'return=minimal,resolution=ignore-duplicates' },
@@ -39,13 +39,11 @@ export async function POST(req) {
           subscription: subscription,
         }),
       });
-
       console.log('[Push] subscribed:', subscription.endpoint.slice(0, 50));
       return Response.json({ ok: true });
     }
 
     if (action === 'notify') {
-      // جلب كل الاشتراكات من Supabase
       const res = await fetch(`${SUPABASE_URL}/rest/v1/push_subscriptions?select=subscription`, {
         headers: { ...sbHeaders(), 'Prefer': 'return=representation' },
       });
@@ -63,7 +61,6 @@ export async function POST(req) {
           results.sent++;
         } catch(e) {
           results.failed++;
-          // احذف الاشتراك المنتهي
           await fetch(`${SUPABASE_URL}/rest/v1/push_subscriptions?endpoint=eq.${encodeURIComponent(row.subscription.endpoint)}`, {
             method: 'DELETE',
             headers: sbHeaders(),
@@ -83,12 +80,16 @@ export async function POST(req) {
 }
 
 export async function GET() {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/push_subscriptions?select=id`, {
-    headers: { ...sbHeaders(), 'Prefer': 'return=representation' },
-  });
-  const rows = await res.json();
-  return Response.json({ 
-    publicKey: VAPID_PUBLIC,
-    count: Array.isArray(rows) ? rows.length : 0,
-  });
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/push_subscriptions?select=id`, {
+      headers: { ...sbHeaders(), 'Prefer': 'return=representation' },
+    });
+    const rows = await res.json();
+    return Response.json({ 
+      publicKey: VAPID_PUBLIC,
+      count: Array.isArray(rows) ? rows.length : 0,
+    });
+  } catch(e) {
+    return Response.json({ publicKey: VAPID_PUBLIC, count: 0, error: e.message });
+  }
 }
