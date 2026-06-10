@@ -431,13 +431,18 @@ const useSahmkData = (baseStkData) => {
         }
 
         // cache مفقود/قديم → جلب متوازي كامل
-        const [company, ratios, financials, dividend, priceHistory] = await Promise.all([
-          fetchSahmkCompany(sym),
-          fetchSahmkRatios(sym),
-          fetchSahmkFinancials(sym),
-          fetchSahmkDividend(sym),
-          fetchSahmkOhlcv(sym, '3M'),
-        ]);
+const [company, ratios, financials, dividend, priceHistory, fairValue, analysts, signals, events] = await Promise.all([
+  fetchSahmkCompany(sym),
+  fetchSahmkRatios(sym),
+  fetchSahmkFinancials(sym),
+  fetchSahmkDividend(sym),
+  fetchSahmkOhlcv(sym, '3M'),
+  fetchSahmkFairValue(sym),
+  fetchSahmkAnalysts(sym),
+  fetchSahmkSignals(sym),
+  fetchSahmkEvents(sym),
+]);
+
         
         // حسابات إضافية (P/S, PEG, EPS تاريخي)
         var extras = {};
@@ -467,14 +472,19 @@ const useSahmkData = (baseStkData) => {
         }
 
                 // تجميع الأساسيات للتخزين (بدون السعر المتغير)
-        var fundData = {
-          ...(company || {}),
-          ...(ratios || {}),
-          ...(financials || {}),
-          ...(dividend || {}),
-          ...extras,
-          priceHistory,
-        };
+var fundData = {
+  ...(company || {}),
+  ...(ratios || {}),
+  ...(financials || {}),
+  ...(dividend || {}),
+  ...(fairValue || {}),
+  ...(analysts ? { analystsData: analysts } : {}),
+  ...(signals || {}),
+  stockEvents: events || [],
+  ...extras,
+  priceHistory,
+};
+
         // حفظ الأساسيات في cache الدائم (3 أشهر)
         writeFundCache(sym, fundData);
 
