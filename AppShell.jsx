@@ -296,6 +296,11 @@ function Shell() {
     }}>
 
       {/* Content Area */}
+      {typeof window !== 'undefined' && window.__PUSH_ERROR__ && (
+  <div style={{position:'fixed',top:50,left:8,right:8,zIndex:9999,background:'#c00',color:'white',padding:8,borderRadius:8,fontSize:11,direction:'ltr'}}>
+    {window.__PUSH_ERROR__}
+  </div>
+)}
       <div style={{
         position: 'absolute', inset: 0,
         overflowY: 'scroll', overflowX: 'hidden',
