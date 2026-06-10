@@ -1,9 +1,4 @@
 'use client';
-/**
- * @module AppShell
- * @description نقطة الدخول الرئيسية للتطبيق
- */
-
 import React, { lazy, Suspense, useEffect, useCallback } from 'react';
 import { RootStoreProvider }  from './store/index';
 import { useNav, useStockState } from './store';
@@ -20,9 +15,8 @@ import { getGlobalStyles }    from './theme/globalStyles';
 
 const C = colors;
 
-// ── Lazy Screens ─────────────────────────────────────────────
 const HomeScreen        = lazy(() => import('./screens/HomeScreen'));
-const StocksScreen = lazy(() => import('./screens/StocksScreen?v=2'));
+const StocksScreen      = lazy(() => import('./screens/StocksScreen?v=2'));
 const AnalysisScreen    = lazy(() => import('./screens/AnalysisScreen'));
 const PortfolioScreen   = lazy(() => import('./screens/PortfolioScreen'));
 const NewsScreen        = lazy(() => import('./screens/NewsScreen'));
@@ -45,7 +39,6 @@ const SCREEN_MAP = {
   [TAB_IDS.REBALANCING]: RebalancingScreen,
 };
 
-// ── Loader ────────────────────────────────────────────────────
 function Loader() {
   return (
     <div style={{ padding: 16, minHeight: '60vh' }}>
@@ -84,7 +77,6 @@ function Loader() {
   );
 }
 
-// ── Shell ─────────────────────────────────────────────────────
 function Shell() {
   const { activeTab, isStockOpen, activeStock, closeStock } = useNav();
   const haptic       = useHaptic();
@@ -106,22 +98,17 @@ function Shell() {
     } catch { return []; }
   });
 
-  // ✨ استمع لتحديثات watchlist من زرّ النجمة في StockHeader
   useEffect(() => {
     function refreshWatchlist() {
       try {
         const r = window.localStorage.getItem('tadawul_watchlist');
-        if (r) {
-          const fresh = JSON.parse(r);
-          setWatchlist(fresh);
-        }
+        if (r) { const fresh = JSON.parse(r); setWatchlist(fresh); }
       } catch {}
     }
     window.addEventListener('watchlist-updated', refreshWatchlist);
     return () => window.removeEventListener('watchlist-updated', refreshWatchlist);
   }, []);
 
-  // ✨ احفظ تلقائياً في localStorage عند كلّ تَغيير
   useEffect(() => {
     try {
       window.localStorage.setItem('tadawul_watchlist', JSON.stringify(watchlist));
@@ -129,16 +116,12 @@ function Shell() {
   }, [watchlist]);
 
   const wlSyms = React.useMemo(() => watchlist.map(w => w.sym), [watchlist]);
-
-    // السلع الوهمية الثابتة حُذفت. المصدر الحقيقي الآن FRED (في MoreScreen + AnalysisScreen).
   const [commData, setCommData] = React.useState([]);
 
-  // ── Hooks الأساسية ──────────────────────────────────────────
   useLiveStockPrices();
   useMarketBridge();
-    usePriceUpdater();
+  usePriceUpdater();
 
-  // ── تحميل Fundamentals ──────────────────────────────────────
   useEffect(() => {
     const load = async () => {
       try {
@@ -156,21 +139,19 @@ function Shell() {
     }
   }, []);
 
-  // ── Smart Alerts + Preloading ────────────────────────────────
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     import('./lib/webVitals').then(({ reportWebVitals }) => reportWebVitals());
-import('./lib/registerSW').then(({ registerServiceWorker }) => registerServiceWorker());
+    import('./lib/registerSW').then(({ registerServiceWorker }) => registerServiceWorker());
 
-    // Smart Alerts
     const initAlerts = async () => {
       try {
         const { runSmartAlertsEngine, requestNotificationPermission } =
           await import('./engines/smartAlertsEngine');
         const { STOCKS_LIVE: STOCKS } = await import('./constants/stocksData');
         const { analyzeStockRadar }   = await import('./engines/analysisEngine');
- 
+
         requestNotificationPermission();
 
         const runEngine = () => {
@@ -228,47 +209,27 @@ import('./lib/registerSW').then(({ registerServiceWorker }) => registerServiceWo
       setTimeout(initAlerts, 3000);
     }
 
-    // Preloading
     const idle = (fn, t) => 'requestIdleCallback' in window
       ? requestIdleCallback(fn, { timeout: t })
       : setTimeout(fn, t);
 
-    idle(() => {
-      import('./screens/StocksScreen');
-      import('./screens/AnalysisScreen');
-    }, 2000);
-    idle(() => {
-      import('./screens/PortfolioScreen');
-      import('./screens/AIScreen');
-    }, 4000);
-    idle(() => {
-      import('./screens/NewsScreen');
-      import('./screens/MoreScreen');
-    }, 6000);
+    idle(() => { import('./screens/StocksScreen'); import('./screens/AnalysisScreen'); }, 2000);
+    idle(() => { import('./screens/PortfolioScreen'); import('./screens/AIScreen'); }, 4000);
+    idle(() => { import('./screens/NewsScreen'); import('./screens/MoreScreen'); }, 6000);
   }, []);
 
-  // ── Message Handler ──────────────────────────────────────────
   useEffect(() => {
     function handleMessage(e) {
       const d = e.data;
       if (!d) return;
-      if (d.type === 'AI_CHART_ANALYSIS') {
-        setAiAnalysis(d);
-        return;
-      }
+      if (d.type === 'AI_CHART_ANALYSIS') { setAiAnalysis(d); return; }
       if (d.type === 'TADAWUL_SNAPSHOT') {
         setSnapshots(prev => [{
-          id:         Date.now(),
-          sym:        d.sym        || '',
-          name:       d.name       || '',
-          date:       new Date().toISOString().slice(0, 16).replace('T', ' '),
-          color:      '#f0c050',
-          tag:        'تحليل فني',
-          chartImage: d.chartImage || null,
-          price:      d.price      || null,
-          rsi:        d.rsi        || null,
-          macd:       d.macd       || null,
-          per:        d.per        || '',
+          id: Date.now(), sym: d.sym || '', name: d.name || '',
+          date: new Date().toISOString().slice(0, 16).replace('T', ' '),
+          color: '#f0c050', tag: 'تحليل فني',
+          chartImage: d.chartImage || null, price: d.price || null,
+          rsi: d.rsi || null, macd: d.macd || null, per: d.per || '',
         }, ...prev.slice(0, 19)]);
       }
     }
@@ -280,7 +241,7 @@ import('./lib/registerSW').then(({ registerServiceWorker }) => registerServiceWo
     ? { ...activeStock, ...priceCache[activeStock.sym] }
     : activeStock;
 
-  const tabDef      = TABS.find(t => t.id === activeTab) ?? TABS[0];
+  const tabDef       = TABS.find(t => t.id === activeTab) ?? TABS[0];
   const ActiveScreen = SCREEN_MAP[activeTab] ?? HomeScreen;
 
   return (
@@ -294,13 +255,6 @@ import('./lib/registerSW').then(({ registerServiceWorker }) => registerServiceWo
       direction: 'rtl',
       paddingTop: 'env(safe-area-inset-top)',
     }}>
-
-      {/* Content Area */}
-      {typeof window !== 'undefined' && window.__PUSH_ERROR__ && (
-  <div style={{position:'fixed',top:50,left:8,right:8,zIndex:9999,background:'#c00',color:'white',padding:8,borderRadius:8,fontSize:11,direction:'ltr'}}>
-    {window.__PUSH_ERROR__}
-  </div>
-)}
       <div style={{
         position: 'absolute', inset: 0,
         overflowY: 'scroll', overflowX: 'hidden',
@@ -311,18 +265,14 @@ import('./lib/registerSW').then(({ registerServiceWorker }) => registerServiceWo
         <ErrorBoundary label="الشاشة الرئيسية">
           <Suspense key={activeTab} fallback={<Loader />}>
             {activeTab === TAB_IDS.MORE
-              ? <ActiveScreen
-                  snapshots={snapshots}   setSnapshots={setSnapshots}
-                  snapOpen={snapOpen}     setSnapOpen={setSnapOpen}
-                  watchlist={watchlist}   setWatchlist={setWatchlist}
-                  commData={commData}     setCommData={setCommData}
-                />
+              ? <ActiveScreen snapshots={snapshots} setSnapshots={setSnapshots}
+                  snapOpen={snapOpen} setSnapOpen={setSnapOpen}
+                  watchlist={watchlist} setWatchlist={setWatchlist}
+                  commData={commData} setCommData={setCommData} />
               : activeTab === TAB_IDS.AI
-              ? <ActiveScreen
-                  aiAnalysis={aiAnalysis}
+              ? <ActiveScreen aiAnalysis={aiAnalysis}
                   onClearAnalysis={() => setAiAnalysis(null)}
-                  commData={commData}
-                />
+                  commData={commData} />
               : activeTab === TAB_IDS.ANALYSIS
               ? <ActiveScreen commData={commData} />
               : <ActiveScreen />
@@ -331,7 +281,6 @@ import('./lib/registerSW').then(({ registerServiceWorker }) => registerServiceWo
         </ErrorBoundary>
       </div>
 
-      {/* Bottom Navigation */}
       <div style={{
         position: 'fixed', bottom: 0,
         left: '50%', transform: 'translateX(-50%)',
@@ -340,13 +289,8 @@ import('./lib/registerSW').then(({ registerServiceWorker }) => registerServiceWo
         <TadawulNav />
       </div>
 
-      {/* Stock Detail */}
       {isStockOpen && liveStock && (
-        <div style={{
-          position: 'fixed', inset: 0,
-          zIndex: expandedChart ? 500 : 200,
-          background: C.bg,
-        }}>
+        <div style={{ position: 'fixed', inset: 0, zIndex: expandedChart ? 500 : 200, background: C.bg }}>
           <ErrorBoundary label="صفحة السهم">
             <Suspense fallback={<Loader />}>
               <StockDetail
@@ -365,22 +309,19 @@ import('./lib/registerSW').then(({ registerServiceWorker }) => registerServiceWo
         </div>
       )}
 
-      {/* Expanded Chart */}
       {expandedChart && liveStock && (
         <Suspense fallback={<div />}>
           <ChartScreen stk={liveStock} onClose={() => setExpandedChart(false)} />
         </Suspense>
       )}
-        </div>
+    </div>
   );
 }
 
-// ── AppShell Entry Point ──────────────────────────────────────
 export default function AppShell() {
   useEffect(() => {
     const id = 'tadawul-global';
     if (document.getElementById(id)) return;
-
 
     const el = document.createElement('style');
     el.id = id;
@@ -388,9 +329,7 @@ export default function AppShell() {
     const savedFont  = localStorage.getItem('tadawul_font_size') || 'medium';
     const savedTheme = localStorage.getItem('tadawul_theme')     || 'dark';
 
-    document.documentElement.setAttribute(
-      'data-theme', savedTheme === 'light' ? 'light' : 'dark'
-    );
+    document.documentElement.setAttribute('data-theme', savedTheme === 'light' ? 'light' : 'dark');
 
     const fontScale = { small: '0.9', medium: '1', large: '1.12' };
     const zoomMap   = { small: '0.92', medium: '1', large: '1.1'  };
@@ -398,80 +337,17 @@ export default function AppShell() {
     document.documentElement.style.zoom = zoomMap[savedFont] || '1';
 
     el.textContent = getGlobalStyles() + `
-      /* ✨ منع iOS Safari من التَكبير على inputs (حجم < 16px) */
-      input, select, textarea {
-        font-size: 16px !important;
-      }
-      input[type="number"], input[type="text"], input[type="search"], input[type="tel"], input[type="email"] {
-        font-size: 16px !important;
-      }
-      /* ✨ إصلاح ارتفاع viewport في iOS Safari */
-      html, body {
-        height: 100dvh;
-        height: 100svh;
-        overscroll-behavior: none;
-      }
-      /* ✨ منع bounce / rubber-band scroll */
-      body {
-        position: fixed;
-        width: 100%;
-        overflow: hidden;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-      }
-      #__next, #root {
-        height: 100dvh;
-        overflow: hidden;
-      }
+      input, select, textarea { font-size: 16px !important; }
+      input[type="number"], input[type="text"], input[type="search"],
+      input[type="tel"], input[type="email"] { font-size: 16px !important; }
+      html, body { height: 100dvh; height: 100svh; overscroll-behavior: none; }
+      body { position: fixed; width: 100%; overflow: hidden; top: 0; left: 0; right: 0; bottom: 0; }
+      #__next, #root { height: 100dvh; overflow: hidden; }
     `;
-    
+
     document.head.appendChild(el);
     return () => el.remove();
   }, []);
-  useEffect(() => {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-
-  setTimeout(async function() {
-    try {
-      window.__PUSH_ERROR__ = 'جاري التسجيل...';
-      
-      const reg = await navigator.serviceWorker.register('/sw.js');
-      await navigator.serviceWorker.ready;
-      
-      window.__PUSH_ERROR__ = 'SW جاهز';
-
-      const res = await fetch('/api/push');
-      const { publicKey } = await res.json();
-      if (!publicKey) return;
-
-      const permission = await Notification.requestPermission();
-      if (permission !== 'granted') {
-        window.__PUSH_ERROR__ = 'رُفض الإذن';
-        return;
-      }
-
-      let sub = await reg.pushManager.getSubscription();
-      if (!sub) {
-        sub = await reg.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: publicKey,
-        });
-      }
-
-      await fetch('/api/push', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'subscribe', subscription: sub }),
-      });
-
-      window.__PUSH_ERROR__ = '✅ مشترك';
-    } catch(e) {
-      window.__PUSH_ERROR__ = '❌ ' + e.message;
-    }
-  }, 3000);
-}, []);
 
   return (
     <RootStoreProvider>
