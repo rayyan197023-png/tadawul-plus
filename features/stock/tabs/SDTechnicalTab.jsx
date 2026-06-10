@@ -370,12 +370,12 @@ function SDTechnical({ stk }) {
             </div>
             <div style={{ display: "flex", height: 10, borderRadius: 4, overflow: "hidden", gap: 1 }}>
               {maVals.map((m, i) => {
-                const diff = Math.abs(m.v - p) / p;
-                const belowPrice = m.v > 0 && m.v <= p;
-                const opacity = belowPrice ? 0.9 : Math.max(0.15, 0.7 - diff * 8);
+                const aboveMA = p >= m.v;
+                const opacity = aboveMA ? 1 : 0.18;
+                const borderBottom = aboveMA ? `2px solid ${m.c}` : "none";
                 return (
-                  <div key={i} style={{ flex: 1, background: m.c, opacity, position: "relative" }}>
-                    <span style={{ position: "absolute", bottom: "-14px", left: "50%", transform: "translateX(-50%)", fontSize: 7, color: m.c, whiteSpace: "nowrap" }}>{m.n}</span>
+                  <div key={i} style={{ flex: 1, background: m.c, opacity, position: "relative", borderBottom }}>
+                    <span style={{ position: "absolute", bottom: "-14px", left: "50%", transform: "translateX(-50%)", fontSize: 7, color: m.c, whiteSpace: "nowrap", opacity: 1 }}>{m.n}</span>
                   </div>
                 );
               })}
