@@ -280,18 +280,35 @@ var incomeRows = incAll.filter(function(x){return x.is_full_year;}).slice(0,4).m
         "صافي الدخل": fmtB(x.net_income),
       };
     });
-    var balanceRows = balAll.slice(0,4).map(function(x){
-      return {
-        period: x.fiscal_year || "--",
+var balanceRowsQ = balAll.filter(function(x){return !x.is_full_year;}).slice(0,4).map(function(x){
+  return {
+    period: (x.fiscal_year || "") + " Q" + (x.fiscal_quarter || ""),
+    "إجمالي الأصول": fmtB(x.total_assets),
+    "إجمالي الخصوم": fmtB(x.total_liabilities),
+    "حقوق الملكية": fmtB(x.stockholders_equity),
+    "إجمالي الدين": fmtB(x.total_debt),
+  };
+});
+var balanceRows = balAll.filter(function(x){return x.is_full_year;}).slice(0,4).map(function(x){
+  return {
+    period: x.fiscal_year || "--",
+
         "إجمالي الأصول": fmtB(x.total_assets),
         "إجمالي الخصوم": fmtB(x.total_liabilities),
         "حقوق الملكية": fmtB(x.stockholders_equity),
         "إجمالي الدين": fmtB(x.total_debt),
       };
     });
-    var cashflowRows = cfAll.slice(0,4).map(function(x){
-      return {
-        period: x.fiscal_year || "--",
+var cashflowRowsQ = cfAll.filter(function(x){return !x.is_full_year;}).slice(0,4).map(function(x){
+  return {
+    period: (x.fiscal_year || "") + " Q" + (x.fiscal_quarter || ""),
+    "التدفق التشغيلي": fmtB(x.operating_cash_flow),
+  };
+});
+var cashflowRows = cfAll.filter(function(x){return x.is_full_year;}).slice(0,4).map(function(x){
+  return {
+    period: x.fiscal_year || "--",
+
         "التدفق التشغيلي": fmtB(x.operating_cash_flow),
       };
     });
@@ -370,8 +387,8 @@ var incomeRows = incAll.filter(function(x){return x.is_full_year;}).slice(0,4).m
       epsHistoryRaw: epsHistory,
       financials: {
         income:   { annual: incomeRows,   quarterly: incomeRowsQ },
-        balance:  { annual: balanceRows,  quarterly: [] },
-        cashflow: { annual: cashflowRows, quarterly: [] },
+        balance:  { annual: balanceRows,  quarterly: balanceRowsQ },
+        cashflow: { annual: cashflowRows, quarterly: cashflowRowsQ },
       },
     };
     fundCache['f_'+sym] = result;
