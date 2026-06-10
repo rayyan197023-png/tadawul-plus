@@ -1459,6 +1459,13 @@ useEffect(function(){
               <span style={{position:"absolute",top:6,right:8,background:C.electric+"33",color:C.electric,fontSize:9,padding:"1px 6px",borderRadius:6,fontWeight:800}}>{manualAlerts.length}</span>
             )}
           </button>
+                    <button onClick={function(){setActiveTab("events");}}
+            style={{flex:1,padding:"10px",background:activeTab==="events"?"linear-gradient(135deg,"+C.teal+"22,"+C.teal+"08)":"transparent",border:"1px solid "+(activeTab==="events"?C.teal+"55":C.line+"44"),borderRadius:10,color:activeTab==="events"?C.teal:C.smoke,fontSize:12,fontWeight:800,cursor:"pointer",fontFamily:"Cairo,sans-serif"}}>
+            <span style={{display:"inline-flex",alignItems:"center",gap:6}}>
+              <span style={{fontSize:14}}>📰</span>
+              أحداث
+            </span>
+          </button>
         </div>
 
         {/* Filters - only for smart tab */}
