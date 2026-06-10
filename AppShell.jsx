@@ -161,7 +161,7 @@ function Shell() {
     if (typeof window === 'undefined') return;
 
     import('./lib/webVitals').then(({ reportWebVitals }) => reportWebVitals());
-    import('./lib/registerSW').then(({ unregisterServiceWorker }) => unregisterServiceWorker());
+import('./lib/registerSW').then(({ registerServiceWorker }) => registerServiceWorker());
 
     // Smart Alerts
     const initAlerts = async () => {
