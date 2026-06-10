@@ -1,6 +1,6 @@
 export const runtime = 'nodejs';
 
-import webpush from 'web-push';
+const webpush = require('web-push');
 
 const VAPID_PUBLIC  = process.env.NEXT_PUBLIC_VAPID_PUBLIC  ?? '';
 const VAPID_PRIVATE = process.env.VAPID_PRIVATE ?? '';
