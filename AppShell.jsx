@@ -380,43 +380,7 @@ export default function AppShell() {
   useEffect(() => {
     const id = 'tadawul-global';
     if (document.getElementById(id)) return;
-// ── اشتراك Push Notifications ──
-if ('serviceWorker' in navigator && 'PushManager' in window) {
-  window.__PUSH_ERROR__ = 'بدأ كود Push...';
-navigator.serviceWorker.ready.then(async function(reg) {
-window.__PUSH_ERROR__ = 'service worker ready...';
 
-    try {
-      // جلب المفتاح العام
-      const res = await fetch('/api/push');
-      const { publicKey } = await res.json();
-      if (!publicKey) return;
-// طلب إذن الإشعارات
-const permission = await Notification.requestPermission();
-if (permission !== 'granted') return;
-
-      // التحقق من اشتراك موجود
-      let sub = await reg.pushManager.getSubscription();
-      if (!sub) {
-        // إنشاء اشتراك جديد
-        sub = await reg.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: publicKey,
-        });
-      }
-
-      // إرسال الاشتراك للسيرفر
-      await fetch('/api/push', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'subscribe', subscription: sub }),
-      });
-    } catch(e) {
-      console.warn('[Push]', e.message);
-      window.__PUSH_ERROR__ = e.message;
-    }
-  });
-}
 
     const el = document.createElement('style');
     el.id = id;
