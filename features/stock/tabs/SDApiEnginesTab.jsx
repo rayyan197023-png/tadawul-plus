@@ -501,10 +501,6 @@ var fundData = {
   ...(ratios || {}),
   ...(financials || {}),
   ...(dividend || {}),
-  ...(fairValue || {}),
-  ...(analysts ? { analystsData: analysts } : {}),
-  ...(signals || {}),
-  stockEvents: events || [],
   ...extras,
   priceHistory,
 };
@@ -606,6 +602,6 @@ const fetchSahmkEvents = async (sym) => {
   } catch (e) { return []; }
 };
 
-export { SDApiEngines, useSahmkData, sahmkFetch, fetchSahmkQuote, fetchSahmkCompany, fetchSahmkRatios, fetchSahmkFinancials, fetchSahmkDividend, fetchSahmkOhlcv, fetchSahmkFairValue, fetchSahmkAnalysts, fetchSahmkSignals, fetchSahmkEvents };
+export { SDApiEngines, useSahmkData, sahmkFetch, fetchSahmkQuote, fetchSahmkCompany, fetchSahmkRatios, fetchSahmkFinancials, fetchSahmkDividend, fetchSahmkOhlcv };
 
 
