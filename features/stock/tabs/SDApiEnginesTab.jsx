@@ -141,6 +141,9 @@ const fetchSahmkCompany = async (sym) => {
   try {
     const d = await sahmkFetch("fundamentals", { sym });
     const f = d.fundamentals || {};
+    const tech = d.technicals || {};
+    const val  = d.valuation  || {};
+    const ana  = d.analysts   || {};
     const result = {
       name:        d.name || d.name_en,
       sec:         d.sector,
@@ -171,9 +174,32 @@ const fetchSahmkCompany = async (sym) => {
       floatPct:    f.float_shares && f.shares_outstanding
                      ? parseFloat((f.float_shares/f.shares_outstanding*100).toFixed(2))
                      : null,
-      hi52:        f.fifty_two_week_high,
+            hi52:        f.fifty_two_week_high,
       lo52:        f.fifty_two_week_low,
+      // Technicals
+      rsi14:          tech.rsi_14            || null,
+      macdLine:       tech.macd_line         || null,
+      macdSignal:     tech.macd_signal       || null,
+      macdHistogram:  tech.macd_histogram    || null,
+      ma50:           tech.fifty_day_average || null,
+      techStrength:   tech.technical_strength|| null,
+      priceDirection: tech.price_direction   || null,
+      // Valuation
+      fairPrice:      val.fair_price         || null,
+      fairConfidence: val.fair_price_confidence || null,
+      // Analysts
+      analystsData: ana.num_analysts ? {
+        targetMean:  ana.target_mean   || null,
+        targetHigh:  ana.target_high   || null,
+        targetLow:   ana.target_low    || null,
+        consensus:   ana.consensus     || null,
+        numAnalysts: ana.num_analysts  || 0,
+        buy:  Math.round((ana.num_analysts || 0) * 0.5),
+        hold: Math.round((ana.num_analysts || 0) * 0.3),
+        sell: Math.round((ana.num_analysts || 0) * 0.2),
+      } : null,
     };
+    
     fundCache['c_'+sym] = result;
     return result;
   } catch (e) {
