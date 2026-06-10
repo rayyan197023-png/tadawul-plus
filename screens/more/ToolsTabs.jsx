@@ -1207,6 +1207,17 @@ function AlertsPanel(props) {
   ];
   
   var sTab=useState("smart"); var activeTab=sTab[0]; var setActiveTab=sTab[1];
+  var sEvents=useState([]); var events=sEvents[0]; var setEvents=sEvents[1];
+var sEvLoading=useState(false); var evLoading=sEvLoading[0]; var setEvLoading=sEvLoading[1];
+
+useEffect(function(){
+  if(activeTab!=='events') return;
+  setEvLoading(true);
+  fetch('/api/sahmkdata?endpoint=events&limit=20&importance=important')
+    .then(function(r){return r.json();})
+    .then(function(d){setEvents(d.events||[]);setEvLoading(false);})
+    .catch(function(){setEvLoading(false);});
+},[activeTab]);
   var sFilter=useState("all"); var activeFilter=sFilter[0]; var setActiveFilter=sFilter[1];
   var sShowSettings=useState(false); var showSettings=sShowSettings[0]; var setShowSettings=sShowSettings[1];
   var sShowForm=useState(false); var showForm=sShowForm[0]; var setShowForm=sShowForm[1];
@@ -1438,7 +1449,14 @@ function AlertsPanel(props) {
           </button>
           
           <button onClick={function(){setActiveTab("manual");setActiveFilter("all");}}
-            style={{flex:1,padding:"10px",background:activeTab==="manual"?"linear-gradient(135deg,"+C.electric+"22,"+C.electric+"08)":"transparent",border:"1px solid "+(activeTab==="manual"?C.electric+"55":C.line+"44"),borderRadius:10,color:activeTab==="manual"?C.electric:C.smoke,fontSize:12,fontWeight:800,cursor:"pointer",fontFamily:"Cairo,sans-serif",position:"relative",transition:"all 0.2s"}}>
+          <button onClick={function(){setActiveTab("events");}}
+  style={{flex:1,padding:"10px",background:activeTab==="events"?"linear-gradient(135deg,"+C.teal+"22,"+C.teal+"08)":"transparent",border:"1px solid "+(activeTab==="events"?C.teal+"55":C.line+"44"),borderRadius:10,color:activeTab==="events"?C.teal:C.smoke,fontSize:12,fontWeight:800,cursor:"pointer",fontFamily:"Cairo,sans-serif"}}>
+  <span style={{display:"inline-flex",alignItems:"center",gap:6}}>
+    <span style={{fontSize:14}}>📰</span>
+    أحداث
+  </span>
+</button>
+style={{flex:1,padding:"10px",background:activeTab==="manual"?"linear-gradient(135deg,"+C.electric+"22,"+C.electric+"08)":"transparent",border:"1px solid "+(activeTab==="manual"?C.electric+"55":C.line+"44"),borderRadius:10,color:activeTab==="manual"?C.electric:C.smoke,fontSize:12,fontWeight:800,cursor:"pointer",fontFamily:"Cairo,sans-serif",position:"relative",transition:"all 0.2s"}}>
             <span style={{display:"inline-flex",alignItems:"center",gap:6}}>
               <Ico k="bell" color={activeTab==="manual"?C.electric:C.smoke} size={13}/>
               يدوية
@@ -1531,6 +1549,34 @@ function AlertsPanel(props) {
             </button>
           </div>
         )}
+{activeTab==="events"&&(
+  <div style={{padding:"0 14px",display:"flex",flexDirection:"column",gap:10}}>
+    {evLoading&&<div style={{textAlign:"center",padding:20,color:C.smoke,fontSize:12}}>جاري التحميل...</div>}
+    {!evLoading&&events.length===0&&(
+      <div style={{textAlign:"center",padding:40,color:C.smoke}}>
+        <div style={{fontSize:40,marginBottom:10}}>📰</div>
+        <div style={{fontSize:13,color:C.mist}}>لا توجد أحداث حالياً</div>
+      </div>
+    )}
+    {events.map(function(ev,i){
+      var sentColor=ev.sentiment&&ev.sentiment.includes('positive')?C.mint:ev.sentiment&&ev.sentiment.includes('negative')?C.coral:C.smoke;
+      return(
+        <div key={i} style={{background:"linear-gradient(135deg,"+C.layer2+","+C.layer3+")",borderRadius:14,padding:"14px 16px",border:"1px solid "+C.line}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
+            <div style={{fontSize:9,color:sentColor,background:sentColor+"15",padding:"3px 8px",borderRadius:6,border:"1px solid "+sentColor+"33",fontWeight:700}}>
+              {ev.sentiment||'محايد'}
+            </div>
+            <div style={{textAlign:"right"}}>
+              <div style={{fontSize:13,fontWeight:800,color:C.snow,marginBottom:2}}>{ev.stock_name||ev.symbol}</div>
+              <div style={{fontSize:9,color:C.smoke}}>{ev.event_type} · {ev.event_date}</div>
+            </div>
+          </div>
+          <div style={{fontSize:11,color:C.mist,lineHeight:1.6,textAlign:"right"}}>{ev.description}</div>
+        </div>
+      );
+    })}
+  </div>
+)}
 
         {/* Alerts list */}
         <div style={{padding:"0 14px",display:"flex",flexDirection:"column",gap:10}}>
