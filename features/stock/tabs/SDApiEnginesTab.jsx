@@ -545,6 +545,7 @@ const fetchSahmkFairValue = async (sym) => {
 const fetchSahmkAnalysts = async (sym) => {
   try {
     const d = await sahmkFetch("analysts", { sym });
+    console.log('[Analysts RAW]', JSON.stringify(d));
     return {
       targetMean:  d.target_mean  || null,
       targetHigh:  d.target_high  || null,
