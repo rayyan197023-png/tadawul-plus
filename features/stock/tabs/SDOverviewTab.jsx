@@ -1090,8 +1090,8 @@ const banks = [];
               <div style={{ position:"absolute", top:"50%", left:`${pos52}%`, transform:"translate(-50%,-50%)", width:10, height:10, borderRadius:"50%", background:C.snow, boxShadow:`0 0 6px ${C.snow}77` }}/>
             </div>
             <div style={{ display:"flex", justifyContent:"space-between", marginTop:6, fontSize:11 }}>
-              <span style={{ color:C.coral, fontFamily:"IBM Plex Mono,monospace" }}>{stk.lo52} ر.س</span>
               <span style={{ color:C.mint, fontFamily:"IBM Plex Mono,monospace" }}>{stk.hi52} ر.س</span>
+              <span style={{ color:C.coral, fontFamily:"IBM Plex Mono,monospace" }}>{stk.lo52} ر.س</span>
             </div>
           </div>
         </SectionCard>
