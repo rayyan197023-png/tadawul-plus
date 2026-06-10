@@ -1181,6 +1181,38 @@ const banks = analystData?.banks?.slice(0,8) || [];
         </button>
       </SectionCard>
 
+      {/* السعر العادل من Sahmk */}
+      {stk.fairPrice && (
+        <SectionCard title="السعر العادل -- SAHMK AI" accent={C.gold}>
+          <div style={{ padding:"12px 14px" }}>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+              <div style={{ background:C.gold+"12", borderRadius:10, padding:"10px", textAlign:"center", border:`1px solid ${C.gold}33` }}>
+                <div style={{ fontSize:10, color:C.smoke, marginBottom:4 }}>السعر العادل</div>
+                <div style={{ fontFamily:"IBM Plex Mono,monospace", fontSize:18, fontWeight:900, color:C.gold }}>
+                  {stk.fairPrice} ر.س
+                </div>
+              </div>
+              <div style={{
+                background: stk.p && stk.fairPrice > stk.p ? C.mint+"12" : C.coral+"12",
+                borderRadius:10, padding:"10px", textAlign:"center",
+                border:`1px solid ${stk.p && stk.fairPrice > stk.p ? C.mint : C.coral}33`,
+              }}>
+                <div style={{ fontSize:10, color:C.smoke, marginBottom:4 }}>الفرصة</div>
+                <div style={{ fontFamily:"IBM Plex Mono,monospace", fontSize:18, fontWeight:900,
+                  color: stk.p && stk.fairPrice > stk.p ? C.mint : C.coral }}>
+                  {stk.p ? ((stk.fairPrice - stk.p) / stk.p * 100).toFixed(1) : "--"}%
+                </div>
+              </div>
+            </div>
+            {stk.fairConfidence && (
+              <div style={{ marginTop:8, fontSize:10, color:C.smoke, textAlign:"center" }}>
+                مستوى الثقة: {Math.round(stk.fairConfidence * 100)}%
+              </div>
+            )}
+          </div>
+        </SectionCard>
+      )}
+
       {/* درجات الصحة المالية */}
       <HealthScores scores={scores} scoreLabel={scoreLabel} scoreColor={scoreColor}/>
 
