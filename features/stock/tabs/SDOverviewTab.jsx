@@ -962,50 +962,9 @@ function SDOverview({ stk, per, setPer, onNav, onExpand }) {
   const effPer = per || internalPer;
   const effSetPer = setPer || setInternalPer;
 
-  // إجماع المحللين بـ AI
-  const [analystData, setAnalystData] = useState(null);
-  const [analystLoading, setAnalystLoading] = useState(false);
-  const [analystError, setAnalystError] = useState(null);
-  const [lastFetched, setLastFetched] = useState(null);
+const est = stk.analystsData || (ANALYST_EST ? (ANALYST_EST[stk.sym] || ANALYST_EST.default) : {});
+const banks = [];
 
-  const fetchAnalystRatings = async () => {
-    setAnalystLoading(true);
-    setAnalystError(null);
-    try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          tools: [{ type: "web_search_20250305", name: "web_search" }],
-          messages: [{
-            role: "user",
-            content: 'ابحث عن أحدث تقييمات المحللين لسهم '+stk.name+' برمز ('+stk.sym+') في تداول السعودية.\nأجب فقط بـ JSON صالح بدون أي نص إضافي:\n{"buy":عدد,"hold":عدد,"sell":عدد,"targetPrice":رقم,"highTarget":رقم,"lowTarget":رقم,"banks":[{"bank":"الاسم","rating":"شراء/احتفاظ/بيع","target":رقم,"date":"YYYY/MM/DD"}]}'
-          }]
-        })
-      });
-      const data = await response.json();
-      const textBlocks = data.content?.filter(b => b.type === "text") || [];
-      const fullText = textBlocks.map(b => b.text).join("");
-      const match = fullText.match(/\{[\s\S]*\}/);
-      if (match) {
-        const parsed = JSON.parse(match[0]);
-        setAnalystData(parsed);
-        setLastFetched(new Date().toLocaleString("ar-SA"));
-      } else {
-        setAnalystError("لم يتم العثور على بيانات");
-      }
-    } catch(e) {
-      setAnalystError("خطأ في الاتصال: " + e.message);
-    }
-    setAnalystLoading(false);
-  };
-
-const sahmkAnalysts = stk.analystsData || null;
-const est = analystData || sahmkAnalysts || (ANALYST_EST ? (ANALYST_EST[stk.sym] || ANALYST_EST.default) : {});
-
-const banks = analystData?.banks?.slice(0,8) || [];
   const peers  = PEERS[stk.sym] || PEERS.default;
 
   const rng = (stk.hi52 || stk.p*1.1) - (stk.lo52 || stk.p*0.9) || 1;
@@ -1225,24 +1184,9 @@ const banks = analystData?.banks?.slice(0,8) || [];
       <SectionCard title="تقييمات المحللين" accent={aColor} badge={banks.length>0?{text:banks.length+" بنك",color:C.electric}:null}>
         <div style={{ padding:"8px 16px 0", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
 <div style={{ fontSize:10, color:C.smoke, lineHeight:1.5 }}>
-  {sahmkAnalysts?.numAnalysts > 0
-    ? `✓ ${sahmkAnalysts.numAnalysts} محلل -- SAHMK`
-    : lastFetched
-    ? '✓ بيانات حية -- ' + lastFetched
-    : "اضغط للبحث الحي بـ AI"}
+  {est?.numAnalysts > 0 ? `✓ ${est.numAnalysts} محلل -- SAHMK` : "بيانات المحللين من SAHMK"}
 </div>
-          <button onClick={fetchAnalystRatings} disabled={analystLoading}
-            style={{ display:"flex", alignItems:"center", gap:5, background:analystLoading?C.layer3:`${C.electric}18`, border:`1px solid ${C.electric}44`, borderRadius:8, padding:"5px 10px", color:C.electric, fontSize:11, fontWeight:700, cursor:analystLoading?"not-allowed":"pointer", fontFamily:"Cairo,sans-serif", minHeight:32 }}>
-            {analystLoading ? (
-              <><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.electric} strokeWidth="2.5" style={{animation:"spin 1s linear infinite"}}><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>جارٍ التحديث...</>
-            ) : (
-              <><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.electric} strokeWidth="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.09-1"/></svg>تحديث AI</>
-            )}
-          </button>
         </div>
-        {analystError && (
-          <div style={{ margin:"6px 16px 0", padding:"6px 10px", background:`${C.coral}15`, border:`1px solid ${C.coral}33`, borderRadius:8, fontSize:10, color:C.coral }}>{analystError}</div>
-        )}
         <div style={{ padding:"14px 16px" }}>
           {tot > 0 ? (
             <>
