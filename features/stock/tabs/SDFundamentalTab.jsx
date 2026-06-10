@@ -282,8 +282,9 @@ function OverviewPane({ stk }) {
           <ValCard label="Forward P/E" value={stk.forwardPE?.toFixed(2)} color={C.electric}/>
           <ValCard label="P/B"       value={stk.pb?.toFixed(2)}       color={C.plasma}/>
           <ValCard label="P/S"       value={stk.ps?.toFixed(2) ?? "--"} color={C.plasma}/>
-          <ValCard label="EV/EBITDA" value={stk.evEbitda?.toFixed(2) ?? "--"} color={C.teal}/>
-          <ValCard label="PEG"       value={stk.peg?.toFixed(2) ?? "--"} color={C.teal} sub={stk.peg ? (stk.peg < 1 ? "ممتاز" : "مرتفع") : null}/>
+          {stk.evEbitda && <ValCard label="EV/EBITDA" value={stk.evEbitda?.toFixed(2)} color={C.teal}/>}
+
+          {stk.peg && <ValCard label="PEG" value={stk.peg?.toFixed(2)} color={C.teal} sub={stk.peg < 1 ? "ممتاز" : "مرتفع"}/>}
         </div>
       </SectionCard>
 
