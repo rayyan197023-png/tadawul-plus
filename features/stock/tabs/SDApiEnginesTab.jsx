@@ -549,58 +549,6 @@ var fundData = {
   const stk = liveData ? { ...baseStkData, ...liveData } : baseStkData;
   return { stk, loading, lastFetch, apiStatus, apiError };
 };
-const fetchSahmkFairValue = async (sym) => {
-  try {
-    const d = await sahmkFetch("fair_value", { sym });
-    return {
-      fairPrice: d.fair_price || null,
-      fairConfidence: d.fair_price_confidence || null,
-      calculatedAt: d.calculated_at || null,
-    };
-  } catch (e) { return null; }
-};
-
-const fetchSahmkAnalysts = async (sym) => {
-  try {
-    const d = await sahmkFetch("analysts", { sym });
-    console.log('[Analysts RAW]', JSON.stringify(d));
-    return {
-      targetMean:  d.target_mean  || null,
-      targetHigh:  d.target_high  || null,
-      targetLow:   d.target_low   || null,
-      consensus:   d.consensus    || null,
-      numAnalysts: d.num_analysts || 0,
-      buy:  Math.round((d.consensus_score || 0) >= 1.5 ? (d.num_analysts || 0) * 0.6 : (d.num_analysts || 0) * 0.2),
-      hold: Math.round((d.num_analysts || 0) * 0.3),
-      sell: Math.round((d.consensus_score || 0) <= 0.5 ? (d.num_analysts || 0) * 0.5 : (d.num_analysts || 0) * 0.1),
-    };
-  } catch (e) { return null; }
-};
-
-const fetchSahmkSignals = async (sym) => {
-  if (fundCache['sig_'+sym]) return fundCache['sig_'+sym];
-  try {
-    const d = await sahmkFetch("signals", { sym });
-    const result = {
-      rsi14:          d.rsi_14             || null,
-      macdLine:       d.macd_line          || null,
-      macdSignal:     d.macd_signal        || null,
-      macdHistogram:  d.macd_histogram     || null,
-      ma50:           d.fifty_day_average  || null,
-      techStrength:   d.technical_strength || null,
-      priceDirection: d.price_direction    || null,
-    };
-    fundCache['sig_'+sym] = result;
-    return result;
-  } catch (e) { return null; }
-};
-
-const fetchSahmkEvents = async (sym) => {
-  try {
-    const d = await sahmkFetch("events", { sym, limit: 5, importance: "important" });
-    return d.events || [];
-  } catch (e) { return []; }
-};
 
 export { SDApiEngines, useSahmkData, sahmkFetch, fetchSahmkQuote, fetchSahmkCompany, fetchSahmkRatios, fetchSahmkFinancials, fetchSahmkDividend, fetchSahmkOhlcv };
 
