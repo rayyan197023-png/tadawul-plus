@@ -262,9 +262,19 @@ const fetchSahmkFinancials = async (sym) => {
     // تنسيق الأرقام (مليار)
     var fmtB = function(v){ return v != null ? (v/1e9).toFixed(1)+" مليار" : "--"; };
     // بناء جداول العرض (سنوي)
-    var incomeRows = incAll.slice(0,4).map(function(x){
-      return {
-        period: x.fiscal_year || "--",
+// ربع سنوي
+var incomeRowsQ = incAll.filter(function(x){return !x.is_full_year;}).slice(0,4).map(function(x){
+  return {
+    period: (x.fiscal_year || "") + " Q" + (x.fiscal_quarter || ""),
+    "الإيرادات": fmtB(x.total_revenue),
+    "الدخل التشغيلي": fmtB(x.operating_income),
+    "صافي الدخل": fmtB(x.net_income),
+  };
+});
+var incomeRows = incAll.filter(function(x){return x.is_full_year;}).slice(0,4).map(function(x){
+  return {
+    period: x.fiscal_year || "--",
+
         "الإيرادات": fmtB(x.total_revenue),
         "الدخل التشغيلي": fmtB(x.operating_income),
         "صافي الدخل": fmtB(x.net_income),
@@ -359,7 +369,7 @@ const fetchSahmkFinancials = async (sym) => {
       finScores: scores,
       epsHistoryRaw: epsHistory,
       financials: {
-        income:   { annual: incomeRows,   quarterly: [] },
+        income:   { annual: incomeRows,   quarterly: incomeRowsQ },
         balance:  { annual: balanceRows,  quarterly: [] },
         cashflow: { annual: cashflowRows, quarterly: [] },
       },
