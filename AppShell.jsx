@@ -170,7 +170,7 @@ import('./lib/registerSW').then(({ registerServiceWorker }) => registerServiceWo
           await import('./engines/smartAlertsEngine');
         const { STOCKS_LIVE: STOCKS } = await import('./constants/stocksData');
         const { analyzeStockRadar }   = await import('./engines/analysisEngine');
-
+ 
         requestNotificationPermission();
 
         const runEngine = () => {
