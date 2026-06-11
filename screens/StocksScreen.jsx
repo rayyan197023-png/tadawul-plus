@@ -227,7 +227,7 @@ const liveStocks = stocks.length > 0 ? stocks : [];
   // ✨ جلب بيانات OHLCV الحقيقية لأول 30 سهماً مرئياً (آمن من 429)
   // يتبع القائمة المفلترة: عند تغيير القطاع/البحث، يُجلب أول 30 من النتيجة الجديدة
   var visibleSyms = useMemo(function() {
-    return filtered.slice(0, 30).map(function(d) { return d.stk.sym; });
+return filtered.slice(0, 60).map(function(d) { return d.stk.sym; });
   }, [filtered]);
 
   var realBars = useOHLCVCache(visibleSyms, '3M');
