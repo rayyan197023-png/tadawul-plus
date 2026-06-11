@@ -478,6 +478,14 @@ function FundsTab(props) {
               }}>{t.l}</button>
             );})}
           </div>
+                    {/* تنبيه البيانات التقديرية */}
+          <div style={{margin:"8px 16px 0",background:"rgba(251,191,36,0.08)",border:"1px solid rgba(251,191,36,0.25)",borderRadius:12,padding:"10px 14px",display:"flex",gap:10,alignItems:"flex-start"}}>
+            <span style={{fontSize:16,flexShrink:0}}>⚠️</span>
+            <div>
+              <div style={{fontSize:11,fontWeight:700,color:C.amber,marginBottom:2}}>بيانات تقديرية للمقارنة فقط</div>
+              <div style={{fontSize:10,color:C.smoke,lineHeight:1.6}}>العوائد وصافي الأصول تقديرية وليست أرقاماً رسمية معتمدة. راجع موقع شركة الإدارة أو هيئة السوق المالية cma.org.sa للأرقام الرسمية.</div>
+            </div>
+          </div>
           <div style={{padding:"10px 16px",display:"flex",flexDirection:"column",gap:10}}>
             {fundsF.map(function(fund,i){
               var pos=fund.ret1y>=0;
