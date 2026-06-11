@@ -48,10 +48,16 @@ function genBars(stk) {
     bars.push({ c: price, vol: (stk.avgV || 1000) * (0.6 + rnd() * 0.9) });
   }
 // توجيه تدريجي نحو السعر الحالي بدل القفزة المفاجئة
+// توجيه تدريجي على آخر 8 نقاط بدل القفزة المفاجئة
 const last = bars.length - 1;
-const prev = bars[last - 1]?.c || stk.p;
-bars[last].c = prev + (stk.p - prev) * 0.3;
-bars[last - 1].c = prev + (stk.p - prev) * 0.15;
+const anchor = bars[last - 8]?.c || bars[0].c;
+for (let i = 1; i <= 8; i++) {
+  const t = i / 8;
+  const target = anchor + (stk.p - anchor) * t;
+  const noise = (Math.random() - 0.5) * stk.p * 0.004;
+  bars[last - 8 + i].c = target + noise;
+}
+bars[last].c = stk.p;
 return bars;
 }
 
