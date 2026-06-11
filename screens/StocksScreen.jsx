@@ -39,26 +39,21 @@ function genBars(stk) {
     seed = (seed * 1664525 + 1013904223) & 0xffffffff;
     return (seed >>> 0) / 0xffffffff;
   };
-  const bars  = [];
-  let price   = stk.p * (0.88 + rnd() * 0.06);
-  const trend = stk.ch >= 0 ? 0.501 : 0.499;
+  const bars = [];
+  const up = stk.ch >= 0;
+  // نبدأ قريباً من السعر الحالي (±3%)
+  let price = stk.p * (0.97 + rnd() * 0.06);
+  const trend = up ? 0.502 : 0.498;
   for (let i = 0; i < 60; i++) {
-    const chg = (rnd() - trend) * price * 0.022;
-    price = Math.max(price * 0.7, Math.min(price * 1.3, price + chg));
+    const chg = (rnd() - trend) * price * 0.018;
+    price = Math.max(price * 0.85, Math.min(price * 1.15, price + chg));
     bars.push({ c: price, vol: (stk.avgV || 1000) * (0.6 + rnd() * 0.9) });
   }
-// توجيه تدريجي نحو السعر الحالي بدل القفزة المفاجئة
-// توجيه تدريجي على آخر 8 نقاط بدل القفزة المفاجئة
-const last = bars.length - 1;
-const anchor = bars[last - 8]?.c || bars[0].c;
-for (let i = 1; i <= 8; i++) {
-  const t = i / 8;
-  const target = anchor + (stk.p - anchor) * t;
-  const noise = (Math.random() - 0.5) * stk.p * 0.004;
-  bars[last - 8 + i].c = target + noise;
-}
-bars[last].c = stk.p;
-return bars;
+  // آخر 3 نقاط تصل للسعر الحالي بشكل طبيعي
+  bars[57].c = bars[56].c + (stk.p - bars[56].c) * 0.3;
+  bars[58].c = bars[57].c + (stk.p - bars[57].c) * 0.5;
+  bars[59].c = stk.p;
+  return bars;
 }
 
 function MiniChart({ bars, color, h = 40, id = "" }) {
