@@ -7686,12 +7686,14 @@ async function loadStk(){
     try{
       const tf=API_CONFIG.tfMap[state.per]||state.per;
       const _rangeDays=RANGE_DAYS[state.range]||365;
-            const raw=await API_CONFIG.fetch('candles',{
+      const raw=await API_CONFIG.fetch('candles',{
         symbol:s.sym, interval:tf,
         period:state.per,
         rangeDays:_rangeDays,
-        limit:PER_COUNT[state.per]||130
+        limit:PER_COUNT[state.per]||130,
+        useIntraday:_useIntraday
       });
+
       if(raw&&Array.isArray(raw)&&raw.length>5){
         let candles=normalizeCandles(raw);
         candles=_aggregateCandles(candles, state.per);
