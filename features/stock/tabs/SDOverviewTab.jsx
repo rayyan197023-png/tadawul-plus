@@ -45,49 +45,73 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
   const [sahmkLoading, setSahmkLoading] = useState(false);
 
     // sahmk فترات مدعومة فعلياً: 1D, 1W, 1Y فقط (الباقي يرجع ~3 أشهر افتراضياً)
-  const periodMap = {
-    "1D":  "1D",     // 1 شمعة (اليوم)
-    "1W":  "1W",     // 5 شموع (أسبوع)
-    "1M":  "3Mo",    // 58 شمعة (~3 أشهر، الأقرب)
-    "3M":  "3Mo",    // 58 شمعة (3 أشهر) ✓
-    "6M":  "1Y",     // نأخذ نصف 249 شمعة
-    "1Y":  "1Y",     // 249 شمعة (سنة كاملة) ✓
-    "5Y":  "1Y",     // الحد الأقصى من sahmk
-    "MAX": "1Y"      // الحد الأقصى من sahmk
-  };
-
   useEffect(() => {
     if (!sym) return;
     let cancelled = false;
     setSahmkLoading(true);
-    const periodParam = periodMap[per] || "3Mo";
-    fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${sym}&period=${periodParam}`)
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (cancelled || !data) return;
-        const bars = data.bars || data.data || data.ohlcv || [];
-        const normalized = bars
-          .map(b => ({
-            o: +(b.o ?? b.open ?? b.Open ?? 0),
-            h: +(b.h ?? b.high ?? b.High ?? 0),
-            l: +(b.l ?? b.low  ?? b.Low  ?? 0),
-            c: +(b.c ?? b.close ?? b.Close ?? b.last ?? 0),
-            v: +(b.v ?? b.volume ?? b.Volume ?? 0),
-          }))
-                    .filter(b => b.c > 0);
-        
-        // قص حسب الفترة المطلوبة من المستخدم
-        let sliced = normalized;
-        if (per === "6M") sliced = normalized.slice(-130);   // نصف سنة
-        else if (per === "1M") sliced = normalized.slice(-22); // شهر تقريباً
-        else if (per === "3M") sliced = normalized.slice(-65); // 3 أشهر
-        
-        setSahmkBars(sliced);
-      })
-      .catch(() => { if (!cancelled) setSahmkBars([]); })
-      .finally(() => { if (!cancelled) setSahmkLoading(false); });
+
+    const fetchBars = async () => {
+      try {
+        let normalized = [];
+
+        if (per === "1D") {
+          // فريم اليوم: نستخدم intraday ساعي
+          const res = await fetch(`/api/sahmkdata?endpoint=intraday&sym=${sym}&interval=60m`);
+          const data = res.ok ? await res.json() : null;
+          if (data?.data?.length) {
+            // فلتر اليوم الحالي فقط
+            const today = new Date().toISOString().slice(0, 10);
+            const todayBars = data.data.filter(b => b.date.startsWith(today));
+            const srcBars = todayBars.length >= 2 ? todayBars : data.data.slice(-8);
+            normalized = srcBars.map(b => ({
+              o: b.open, h: b.high, l: b.low, c: b.close, v: b.volume,
+            })).filter(b => b.c > 0);
+          }
+        } else if (per === "1W") {
+          // أسبوع: آخر 5 أيام من intraday
+          const res = await fetch(`/api/sahmkdata?endpoint=intraday&sym=${sym}&interval=60m`);
+          const data = res.ok ? await res.json() : null;
+          if (data?.data?.length) {
+            normalized = data.data.slice(-35).map(b => ({
+              o: b.open, h: b.high, l: b.low, c: b.close, v: b.volume,
+            })).filter(b => b.c > 0);
+          }
+        } else {
+          // باقي الفريمات: ohlcv يومي
+          const periodMap = {
+            "1M": "3Mo", "3M": "3Mo", "6M": "1Y", "1Y": "1Y", "5Y": "1Y", "MAX": "1Y"
+          };
+          const periodParam = periodMap[per] || "3Mo";
+          const res = await fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${sym}&period=${periodParam}`);
+          const data = res.ok ? await res.json() : null;
+          if (data) {
+            const bars = data.bars || data.data || data.ohlcv || [];
+            normalized = bars.map(b => ({
+              o: +(b.o ?? b.open ?? 0),
+              h: +(b.h ?? b.high ?? 0),
+              l: +(b.l ?? b.low  ?? 0),
+              c: +(b.c ?? b.close ?? b.last ?? 0),
+              v: +(b.v ?? b.volume ?? 0),
+            })).filter(b => b.c > 0);
+
+            if (per === "6M") normalized = normalized.slice(-130);
+            else if (per === "1M") normalized = normalized.slice(-22);
+            else if (per === "3M") normalized = normalized.slice(-65);
+          }
+        }
+
+        if (!cancelled) setSahmkBars(normalized);
+      } catch {
+        if (!cancelled) setSahmkBars([]);
+      } finally {
+        if (!cancelled) setSahmkLoading(false);
+      }
+    };
+
+    fetchBars();
     return () => { cancelled = true; };
   }, [sym, per]);
+
 
   const history = sahmkBars.length > 0 ? sahmkBars : (stk?.priceHistory || []);
   const canvasRef  = useRef(null);
