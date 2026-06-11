@@ -303,7 +303,7 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
       });
     }
 
-    [[20,C.electric,1.4,0.75],[50,C.plasma,1.4,0.65],[200,C.gold,1.2,0.60]].forEach(([period,col,lw,op])=>{
+    [[20,C.electric,1.4,0.75],[50,C.plasma,1.4,0.65]].forEach(([period,col,lw,op])=>{
       const mapts=calcMApts(period,W);
       if(mapts.length<2) return;
       ctx.strokeStyle=col+(Math.round(op*255).toString(16).padStart(2,'0'));
@@ -509,7 +509,6 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
           {lbl:"VWAP",clr:C.amber,dash:"5,3"},
           {lbl:"MA20",clr:C.electric,dash:""},
           {lbl:"MA50",clr:C.plasma,dash:""},
-          {lbl:"MA200",clr:C.gold,dash:""},
           {lbl:"Pivot",clr:C.electric,dash:"6,4"},
         ].map((item,i)=>(
           <span key={i} style={{ display:"flex", alignItems:"center", gap:4 }}>
