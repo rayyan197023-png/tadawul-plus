@@ -7495,7 +7495,8 @@ function togglePerMenu(){
  m.style.top=(r.bottom+6)+'px';m.style.right=Math.max(4,window.innerWidth-r.right)+'px';m.style.left='auto';
  m.classList.add('open');b.classList.add('open');openPer=true;
 }
-const RANGE_DAYS={'شهر':30,'3أشهر':90,'سنة':365,'5سنوات':1825,'الكل':7300};
+const RANGE_DAYS={'أسبوع':7,'شهر':30,'3أشهر':90,'6أشهر':182,'سنة':365,'سنتين':730,'5سنوات':1825,'الكل':3650};
+
 
 function toggleRangeMenu(){
  const m=document.getElementById('range-menu'),b=document.getElementById('range-btn');
