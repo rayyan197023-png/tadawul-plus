@@ -180,8 +180,10 @@ const API_CONFIG = {
         const _per = params.period || '1D';
         const _intradayPers = ['1H','4H'];
         if(_intradayPers.includes(_per)){
+          // 4H: نجمع 4 شموع ساعية في شمعة واحدة
           qs = `?endpoint=intraday&sym=${params.symbol}&interval=60m`;
         } else {
+
           qs = `?endpoint=ohlcv&sym=${params.symbol}&from=${fmt(fromD)}&to=${fmt(toD)}`;
         }
 
