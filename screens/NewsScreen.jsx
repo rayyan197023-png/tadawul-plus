@@ -370,12 +370,22 @@ export default function NewsScreen() {
   // عند الترقية: استبدل سطر العيّنة بـ fetch من مزوّد الأخبار، وحوّل الرد لصيغة
   // { id, title, ago, cat, sym, hot, body } ثم setNEWS(data)
   const fetchNews = useCallback(async () => {
+    const CACHE_KEY = 'tdw_news_cache';
+    const CACHE_HOURS = 720; // 30 يوم
+    // تحميل الأخبار المحفوظة أولاً
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.items && parsed.items.length) setNEWS(parsed.items);
+      }
+    } catch(e) {}
     try {
       const res  = await fetch('/api/sahmkdata?endpoint=events&limit=50&importance=important');
       if (!res.ok) throw new Error('failed');
       const data = await res.json();
       const events = data.events || [];
-      if (!events.length) { setNEWS([]); return; }
+      if (!events.length) return; // نبقي الأخبار المحفوظة
 
       const sentMap = {
         very_positive: 'أرباح', positive: 'أرباح',
