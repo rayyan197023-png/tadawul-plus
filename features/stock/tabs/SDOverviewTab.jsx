@@ -53,6 +53,16 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
     const fetchBars = async () => {
       try {
         let normalized = [];
+        if (per === "1H") {
+          // ساعي: آخر يومين من intraday
+          const res = await fetch(`/api/sahmkdata?endpoint=intraday&sym=${sym}&interval=60m`);
+          const data = res.ok ? await res.json() : null;
+          if (data?.data?.length) {
+            normalized = data.data.slice(-16).map(b => ({
+              o: b.open, h: b.high, l: b.low, c: b.close, v: b.volume,
+            })).filter(b => b.c > 0);
+          }
+        } else
 
         if (per === "1D") {
           // فريم اليوم: نستخدم intraday ساعي
@@ -944,7 +954,8 @@ function PerDropdown({ per, setPer }) {
   const [open, setOpen] = useState(false);
   const [rect, setRect] = useState(null);
   const btnRef = useRef(null);
-  const labels = {"1D":"يوم","1W":"أسبوع","1M":"شهر","3M":"3 أشهر","6M":"6 أشهر","1Y":"سنة","5Y":"5 سنوات","MAX":"أقصى"};
+  const labels = {"1H":"ساعي","1D":"يوم","1W":"أسبوع","1M":"شهر","3M":"3 أشهر","6M":"6 أشهر","1Y":"سنة","MAX":"أقصى"};
+
   const toggle = () => {
     if(btnRef.current) setRect(btnRef.current.getBoundingClientRect());
     setOpen(v=>!v);
@@ -962,7 +973,8 @@ function PerDropdown({ per, setPer }) {
         <>
           <div onClick={()=>setOpen(false)} style={{ position:"fixed", inset:0, zIndex:100 }}/>
           <div style={{ position:"fixed", top:rect.top - 212, left: Math.max(8, rect.right - 148), background:C.layer1, border:`1px solid ${C.line}`, borderRadius:10, padding:6, boxShadow:"0 8px 24px rgba(0,0,0,.8)", zIndex:100, display:"grid", gridTemplateColumns:"1fr 1fr", gap:3, minWidth:140 }}>
-            {["1D","1W","1M","3M","6M","1Y","5Y","MAX"].map(p2=>(
+            {["1H","1D","1W","1M","3M","6M","1Y","MAX"].map(p2=>(
+
               <button key={p2} onClick={()=>{ setPer(p2); setOpen(false); }}
                 style={{ padding:"8px 6px", borderRadius:7, background:per===p2?`${C.electric}22`:"transparent", border:`1px solid ${per===p2?C.electric+"55":C.line+"33"}`, color:per===p2?C.electric:C.smoke, fontFamily:"IBM Plex Mono,monospace", fontSize:11, fontWeight:per===p2?800:500, cursor:"pointer", textAlign:"center", lineHeight:1.4 }}>
                 <div>{p2}</div>
