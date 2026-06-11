@@ -504,22 +504,6 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
         </div>
       </div>
 
-      <div style={{ background:C.layer1, borderTop:`1px solid ${C.line}22`, padding:"2px 8px", height:26 }}>
-        {(()=>{
-          const W3=360,H3=20;
-          const rMin=Math.min(...closes),rMax=Math.max(...closes),rRng=rMax-rMin||1;
-          const miniPath=closes.map((v,i)=>`${i===0?"M":"L"}${(i/(n-1||1)*W3).toFixed(1)},${H3-(v-rMin)/rRng*(H3-3)}`).join(" ");
-          const viewW=Math.min(W3,W3/zoom), viewX=Math.max(0,W3-viewW);
-          return (
-            <svg width="100%" height={H3} viewBox={`0 0 ${W3} ${H3}`} preserveAspectRatio="none" style={{display:"block"}}>
-              <path d={miniPath} fill="none" stroke={color} strokeWidth="1" opacity=".35"/>
-              {zoom>1.05&&<rect x={viewX} y={0} width={viewW} height={H3} fill={C.electric} opacity=".10" rx="2"/>}
-              {zoom>1.05&&<rect x={viewX} y={0} width={1.5} height={H3} fill={C.electric} opacity=".5"/>}
-            </svg>
-          );
-        })()}
-      </div>
-
       <div style={{ display:"flex", gap:6, padding:"3px 8px 4px", flexWrap:"wrap", alignItems:"center", borderTop:`1px solid ${C.line}33`, background:C.ink }}>
         {[
           {lbl:"VWAP",clr:C.amber,dash:"5,3"},
