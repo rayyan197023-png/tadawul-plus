@@ -47,8 +47,12 @@ function genBars(stk) {
     price = Math.max(price * 0.7, Math.min(price * 1.3, price + chg));
     bars.push({ c: price, vol: (stk.avgV || 1000) * (0.6 + rnd() * 0.9) });
   }
-  bars[bars.length - 1].c = stk.p;
-  return bars;
+// توجيه تدريجي نحو السعر الحالي بدل القفزة المفاجئة
+const last = bars.length - 1;
+const prev = bars[last - 1]?.c || stk.p;
+bars[last].c = prev + (stk.p - prev) * 0.3;
+bars[last - 1].c = prev + (stk.p - prev) * 0.15;
+return bars;
 }
 
 function MiniChart({ bars, color, h = 40, id = "" }) {
