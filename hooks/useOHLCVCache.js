@@ -37,9 +37,14 @@ export function useOHLCVCache(syms = [], period = '3M') {
       }
     }
 
-    for (let i = 0; i < toFetch.length; i += 5) {
-      fetchBatch(toFetch.slice(i, i + 5));
-    }
+// تأخير بين الدفعات لتجنب 429
+async function fetchAll() {
+  for (let i = 0; i < toFetch.length; i += 5) {
+    await new Promise(r => setTimeout(r, 800));
+    fetchBatch(toFetch.slice(i, i + 5));
+  }
+}
+fetchAll();
 
     return () => { cancelled = true; };
   }, [syms.join(','), period]);
