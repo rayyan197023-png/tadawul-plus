@@ -431,9 +431,16 @@ export default function NewsScreen() {
         hot:   ev.sentiment === 'very_positive' || ev.sentiment === 'very_negative',
       }));
 
-      setNEWS(mapped);
+      // دمج الأخبار الجديدة مع المحفوظة (الجديدة أولاً، بدون تكرار)
+      setNEWS(prev => {
+        const existingIds = new Set(prev.map(n => n.id));
+        const fresh = mapped.filter(n => !existingIds.has(n.id));
+        const merged = [...fresh, ...prev].slice(0, 200);
+        try { localStorage.setItem('tdw_news_cache', JSON.stringify({ items: merged, savedAt: Date.now() })); } catch(e) {}
+        return merged;
+      });
     } catch (e) {
-      setNEWS([]);
+      // نبقي الأخبار المحفوظة عند فشل الجلب
     }
   }, []);
 
