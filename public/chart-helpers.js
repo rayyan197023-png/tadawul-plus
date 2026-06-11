@@ -29,7 +29,8 @@ function normalizeCandles(rawData){
         : d.date ? new Date(d.date)
         : d.time ? new Date(d.time)
         : new Date(Date.now()-(rawData.length-1-i)*86400000);
-      
+      // sahmk uses 'date' field directly
+      if(!d.t && d.date) d.t = d.date;      
       o  = +(d.o||d.open||d.Open||0);
       hi = +(d.hi||d.high||d.High||d.h||0);
       lo = +(d.lo||d.low||d.Low||d.l||0);
