@@ -1619,7 +1619,8 @@ return result;
         {l:"راس المال المستخدم",v:Math.round(tv/capital*100)+"%",c:C.amber},
       ],
     };
-  },[positions,tpP,tradeLog,tv,capital,tasiReturn]);
+  },[positions,tpP,tradeLog,tv,capital,benchmarkReturn,tasiBarsState]);
+
   var foundH=allData.find(function(d){return d.stk&&d.stk.sym===addSym;}); var foundHealth=foundH?foundH.health:null;
   var foundHealthColor=foundHealth?foundHealth.sig==="شراء قوي"?C.mint:foundHealth.sig==="تخفيف"?C.coral:foundHealth.sig==="مراقبة"?C.amber:C.smoke:C.smoke;
   var foundHealthPct=foundHealth&&foundHealth.positionSize?foundHealth.positionSize.pct:0;
