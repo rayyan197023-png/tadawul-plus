@@ -23,6 +23,7 @@ import { genBars, stockHealth, recordFeedback } from '../engines/analysisEngine'
 import { fetchEngineBars } from '../utils/historicalData';
 import { calcSmartAction } from '../engines/positionEngine';
 import { analyzePortfolio, addIntelligenceLayer, generatePortfolioValueChart, generateDrawdownChart, generateMonthlyReturnsHeatmap, generateRiskReturnScatter, generateCorrelationHeatmap, generateVaRDistribution } from '../engines/portfolioEngine';
+import { simpleReturns } from '../utils/portfolioMath';
 import { analyzePortfolioIQ } from '../engines/portfolioIQ';
 import RiskDashboard from '../components/RiskDashboard';
 import PortfolioValueChart from '../components/charts/PortfolioValueChart';
