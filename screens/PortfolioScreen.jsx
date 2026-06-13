@@ -1294,8 +1294,10 @@ var positionData = {
   var portfolioAnalysis = useMemo(function() {
 
     if (!positions || positions.length === 0) return null;
-        var positionsWithBars = positions.map(function(p) {
-      var bars = getBars(p.sym, p.stk, 60); // ✨ حقيقي إن توفّر، وإلا genBars
+
+    // ✨ نافذة 60 يوم: للتحليل الأساسي + قيمة المحفظة + Drawdown + الارتباط + VaR
+    var positionsWithBars60 = positions.map(function(p) {
+      var bars = getBars(p.sym, p.stk, 60); // ✨ حقيقي إن توفّر بطول كافٍ، وإلا genBars (60 دائماً)
       return {
         sym: p.sym,
         qty: p.qty,
@@ -1305,26 +1307,39 @@ var positionData = {
       };
     });
 
-        var analysis = analyzePortfolio(positionsWithBars, tasiBarsState.bars || []);
+    // ✨ نافذة 365 يوم: للعوائد الشهرية ومخطط المخاطرة/العائد (تحتاج سلسلة أطول)
+    var positionsWithBars365 = positions.map(function(p) {
+      var bars = getBars(p.sym, p.stk, 365); // ✨ حقيقي إن توفّر بطول كافٍ، وإلا genBars (365 دائماً)
+      return {
+        sym: p.sym,
+        qty: p.qty,
+        value: p.value,
+        bars: bars,
+        stk: p.stk,
+      };
+    });
+
+        var analysis = analyzePortfolio(positionsWithBars60, tasiBarsState.bars || []);
     analysis.benchmarkSource = tasiBarsState.source; // 'real' | 'synthetic' | 'pending' (للإفصاح)
-    analysis = addIntelligenceLayer(analysis, positionsWithBars, stockHealth);
+    analysis = addIntelligenceLayer(analysis, positionsWithBars60, stockHealth);
 
     // ⭐ بيانات الرسم البياني
                      analysis.chartData = {
       portfolioValue: generatePortfolioValueChart(
-        positionsWithBars, 
+        positionsWithBars60, 
         analysis.totalValue, 
         60
       ),
-      drawdown: generateDrawdownChart(positionsWithBars, 60),
-      monthlyReturns: generateMonthlyReturnsHeatmap(positionsWithBars, 365),
-      riskReturn: generateRiskReturnScatter(positionsWithBars, analysis),
-      correlation: generateCorrelationHeatmap(positionsWithBars),
-      varDistribution: generateVaRDistribution(positionsWithBars),
+      drawdown: generateDrawdownChart(positionsWithBars60, 60),
+      monthlyReturns: generateMonthlyReturnsHeatmap(positionsWithBars365, 365),
+      riskReturn: generateRiskReturnScatter(positionsWithBars365, analysis),
+      correlation: generateCorrelationHeatmap(positionsWithBars60),
+      varDistribution: generateVaRDistribution(positionsWithBars60),
     };
 
         return analysis;
   }, [positions, tasiBarsState, realBarsMap]);
+
  // ✨ تحليل Portfolio IQ - مع تخزين في useMemo (CRITICAL Performance Fix!)
 
 var portfolioIQ = useMemo(function(){
