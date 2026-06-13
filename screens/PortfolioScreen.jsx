@@ -1326,8 +1326,10 @@ var positionData = {
       portfolioValue: generatePortfolioValueChart(
         positionsWithBars60, 
         analysis.totalValue, 
-        60
+        60,
+        tasiBarsState.bars || []
       ),
+
       drawdown: generateDrawdownChart(positionsWithBars60, 60),
       monthlyReturns: generateMonthlyReturnsHeatmap(positionsWithBars365, 365),
       riskReturn: generateRiskReturnScatter(positionsWithBars365, analysis),
