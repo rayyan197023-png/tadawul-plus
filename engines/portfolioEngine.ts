@@ -3592,30 +3592,21 @@ export function generatePortfolioValueChart(
 
 
   // ④ بناء المنحنيين (نبدأ من القيمة الحالية ونمشي للخلف)
-  var chartData = [];
-  var portfolioValue = currentValue;
-  var tasiValue = currentValue; // يبدأ من نفس النقطة للمقارنة
-
-  // نعكس العوائد لنبني من الماضي للحاضر
+  // ④ بناء المنحنيين -- مُطبَّعان (Normalized) لنفس نقطة البداية
+  // ✨ كلا الخطين يبدأ من نفس القيمة (currentValue) ويتحرك حسب عائده الخاص.
+  // هذا يجعل "الأعلى في النهاية = الأداء الأفضل" بصرياً، وهو المعيار المالي الصحيح
+  // (TradingView/Bloomberg). المقارنة بطريقة "نفس نقطة النهاية" كانت تعكس الانطباع البصري:
+  // الخط ذو العائد الأعلى يبدأ من نقطة أدنى ليصل لنفس النهاية، فيبدو "أضعف" طوال الفترة.
   var numPoints = Math.min(portfolioReturns.length, tasiReturns.length, days);
-  
-  // قيم البداية (نحسبها بقسمة على حاصل ضرب 1+العوائد)
-  var portfolioStartValue = currentValue;
-  var tasiStartValue = currentValue;
-  
-  for (var i = 0; i < numPoints; i++) {
-    portfolioStartValue = portfolioStartValue / (1 + portfolioReturns[portfolioReturns.length - 1 - i]);
-    tasiStartValue = tasiStartValue / (1 + tasiReturns[tasiReturns.length - 1 - i]);
-  }
 
-  // الآن نبني المنحنى من البداية للنهاية
-  var currentPortfolio = portfolioStartValue;
-  var currentTasi = tasiStartValue;
+  var chartData = [];
+  var currentPortfolio = currentValue;
+  var currentTasi = currentValue;
 
   for (var j = 0; j < numPoints; j++) {
     var dateObj = new Date();
     dateObj.setDate(dateObj.getDate() - (numPoints - j - 1));
-    
+
     if (j > 0) {
       currentPortfolio *= (1 + portfolioReturns[portfolioReturns.length - numPoints + j]);
       currentTasi *= (1 + tasiReturns[tasiReturns.length - numPoints + j]);
