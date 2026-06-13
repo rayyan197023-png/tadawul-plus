@@ -66,6 +66,14 @@ const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
       if (p.return > maxReturn) maxReturn = Math.ceil(p.return / 5) * 5;
     });
 
+    // ✨ هامش أمان -- يمنع رسم النقاط (والنصوص الملصقة بها) على حافة الرسم تماماً
+    var riskPad = Math.max(5, (maxRisk - minRisk) * 0.12);
+    var returnPad = Math.max(5, (maxReturn - minReturn) * 0.12);
+    maxRisk = Math.ceil((maxRisk + riskPad) / 5) * 5;
+    minRisk = Math.max(0, Math.floor((minRisk - riskPad * 0.3) / 5) * 5);
+    maxReturn = Math.ceil((maxReturn + returnPad) / 5) * 5;
+    minReturn = Math.floor((minReturn - returnPad) / 5) * 5;
+
     // ② Dimensions
     const width = 350;
     const height = 280;
