@@ -1242,18 +1242,16 @@ var positionData = {
   var dp=positions.reduce(function(s,p){return s+p.dayPnl;},0);
 
   // ── مقارنة بالمرجع (Benchmark vs TASI) ──────────────────────────
-  // TASI return تقريبي من متوسط أداء الأسهم في المحفظة مقارنة بالسوق
+  // ✨ عائد تاسي الحقيقي (تراكمي) من tasiBarsState.bars -- نفس منهجية حساب tpP للمحفظة
+  // إن لم تتوفر بيانات تاسي حقيقية بعد، نُرجع 0 (بدل تقدير اصطناعي مضلِّل)
   var benchmarkReturn = useMemo(function(){
-    if(!positions.length) return 0;
-    // متوسط وزني لأداء قطاع كل سهم كمقياس بديل لـ TASI
-    var totalW = tv || 1;
-    var wReturn = positions.reduce(function(s,p){
-      var h = allData.find(function(d){return d.stk&&d.stk.sym===p.sym;});
-      var tasiSectorReturn = h&&h.health&&h.health.tasiCtx ? h.health.tasiCtx.domDir*2.5 : 1.8;
-      return s + (p.value/totalW) * tasiSectorReturn;
-    }, 0);
-    return +wReturn.toFixed(2);
-  }, [positions, tv, allData]);
+    if(!tasiBarsState.bars || tasiBarsState.bars.length < 2) return 0;
+    var rets = simpleReturns(tasiBarsState.bars);
+    var cumulative = 1;
+    for(var i=0;i<rets.length;i++) cumulative *= (1 + rets[i]);
+    return +((cumulative - 1) * 100).toFixed(2);
+  }, [tasiBarsState]);
+
 
   var alpha = +(tpP - benchmarkReturn).toFixed(2); // Alpha vs TASI
   var decisions=useMemo(function(){var m={};positions.forEach(function(p){m[p.sym]=getDecision(p);});return m;},[positions]);
