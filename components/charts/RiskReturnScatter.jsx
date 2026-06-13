@@ -219,7 +219,8 @@ const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
       </div>
 
       {/* SVG */}
-      <svg width={width} height={height} style={{ width: '100%', maxWidth: width }}>
+      <svg width={width} height={height} viewBox={'0 0 ' + width + ' ' + height} style={{ width: '100%', maxWidth: width, display: 'block' }}>
+
         {/* Quadrant backgrounds */}
         <rect 
           x={padding.left} y={padding.top} 
