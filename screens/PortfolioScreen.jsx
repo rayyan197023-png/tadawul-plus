@@ -1585,7 +1585,8 @@ return result;
 
   var compareData=useMemo(function(){
     var portReturn=tpP;
-    var alpha2=portReturn-tasiReturn;
+    var alpha2=portReturn-benchmarkReturn;
+
     var best=positions.slice().sort(function(a,b){return b.pnlPct-a.pnlPct;})[0];
     var worst=positions.slice().sort(function(a,b){return a.pnlPct-b.pnlPct;})[0];
     var winRate2=positions.filter(function(p){return p.pnl>=0;}).length;
