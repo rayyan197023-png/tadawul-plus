@@ -117,14 +117,18 @@ const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
     });
 
     // ⑦ Portfolio + Benchmark positions
+    // ✨ clamp داخل حدود الرسم بهامش 18px لكل جانب -- يمنع خروج الدائرة أو النص الملصق
+    const clampX = (x) => Math.max(padding.left + 18, Math.min(width - padding.right - 18, x));
+    const clampY = (y) => Math.max(padding.top + 14, Math.min(height - padding.bottom - 8, y));
+
     const portfolioPos = portfolio ? {
-      x: xScale(portfolio.risk),
-      y: yScale(portfolio.return),
+      x: clampX(xScale(portfolio.risk)),
+      y: clampY(yScale(portfolio.return)),
     } : null;
 
     const benchmarkPos = benchmark ? {
-      x: xScale(benchmark.risk),
-      y: yScale(benchmark.return),
+      x: clampX(xScale(benchmark.risk)),
+      y: clampY(yScale(benchmark.return)),
     } : null;
 
     return {
