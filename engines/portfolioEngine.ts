@@ -3566,7 +3566,8 @@ export function addIntelligenceLayer(
 export function generatePortfolioValueChart(
   positions: Position[],
   currentValue: number,
-  days?: number
+  days?: number,
+  tasiBars?: Bar[]
 ): any[] {
   if (!positions || positions.length === 0 || !currentValue) {
     return [];
@@ -3583,9 +3584,12 @@ export function generatePortfolioValueChart(
 
   // ② حساب عوائد المحفظة اليومية
   var portfolioReturns = calcPortfolioReturns(positions, weights);
-  
-  // ③ حساب عوائد TASI الاصطناعي
-  var tasiReturns = buildTasiSyntheticReturns(positions);
+
+  // ③ عوائد تاسي: حقيقية إن توفّرت (tasiBars)، وإلا اصطناعية من أسهم المحفظة
+  var tasiReturns = (tasiBars && tasiBars.length > 1)
+    ? simpleReturns(tasiBars)
+    : buildTasiSyntheticReturns(positions);
+
 
   // ④ بناء المنحنيين (نبدأ من القيمة الحالية ونمشي للخلف)
   var chartData = [];
