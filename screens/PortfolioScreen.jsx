@@ -1159,12 +1159,13 @@ useEffect(() => {
     return function(){ cancelled = true; };
   }, [port]);
 
-  // ✨ المرحلة 1: مُحدِّد مصدر البارات -- حقيقي إن توفّر، وإلا genBars (آمن)
+  // ✨ المرحلة 1: مُحدِّد مصدر البارات -- حقيقي إن توفّر بطول كافٍ، وإلا genBars (آمن)
+  // ⚠️ يجب أن يُرجع طولاً ثابتاً = count دائماً، حتى لا تختلف نوافذ التحليل بين الأسهم
   function getBars(sym, stk, count) {
     count = count || 60;
     var real = realBarsMap[sym];
-    if (real && real.length >= 30) {
-      return real.length > count ? real.slice(-count) : real;
+    if (real && real.length >= count) {
+      return real.slice(-count);
     }
     return genBars(stk, count);
   }
