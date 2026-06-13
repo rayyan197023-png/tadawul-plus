@@ -1599,10 +1599,11 @@ return result;
       sectorMap[sec]=(sectorMap[sec]||0)+p.value;
     });
     var sectors=Object.keys(sectorMap).map(function(k){return {name:k,pct:tv>0?Math.round(sectorMap[k]/tv*100):0};}).sort(function(a,b){return b.pct-a.pct;});
-    var tasiLiveLabel = tasiLive.now ? "تاسي (حي)" : "تاسي (تقدير)";
+    var tasiLiveLabel = (tasiBarsState.bars && tasiBarsState.bars.length>0) ? "تاسي (حي)" : "تاسي (تقدير)";
     return {
-      portReturn:portReturn, tasiReturn:tasiReturn, alpha:alpha2,
-      tasiLabel:tasiLiveLabel, tasiIsLive:!!tasiLive.now,
+      portReturn:portReturn, tasiReturn:benchmarkReturn, alpha:alpha2,
+      tasiLabel:tasiLiveLabel, tasiIsLive:!!(tasiBarsState.bars && tasiBarsState.bars.length>0),
+
       best:best, worst:worst, winRate:winRate2, firstDate:firstDate,
       sectors:sectors,
       bars:[
