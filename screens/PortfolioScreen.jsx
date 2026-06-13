@@ -1241,6 +1241,10 @@ var positionData = {
   var tpP=tv-tp>0?tp/(tv-tp)*100:0;
   var dp=positions.reduce(function(s,p){return s+p.dayPnl;},0);
 
+   // ✨ شموع تاسي الحقيقية + مصدر المرجع (للإفصاح) -- يجب أن يُعرَّف قبل استخدامه أدناه
+  var tbs_s=useState({bars:[], source:'pending'});
+  var tasiBarsState=tbs_s[0], setTasiBarsState=tbs_s[1];
+
   // ── مقارنة بالمرجع (Benchmark vs TASI) ──────────────────────────
   // ✨ عائد تاسي الحقيقي (تراكمي) من tasiBarsState.bars -- نفس منهجية حساب tpP للمحفظة
   // إن لم تتوفر بيانات تاسي حقيقية بعد، نُرجع 0 (بدل تقدير اصطناعي مضلِّل)
@@ -1255,10 +1259,6 @@ var positionData = {
 
   var alpha = +(tpP - benchmarkReturn).toFixed(2); // Alpha vs TASI
   var decisions=useMemo(function(){var m={};positions.forEach(function(p){m[p.sym]=getDecision(p);});return m;},[positions]);
-
-  // ✨ شموع تاسي الحقيقية + مصدر المرجع (للإفصاح) -- مُعرّف هنا قبل portfolioAnalysis
-  var tbs_s=useState({bars:[], source:'pending'});
-  var tasiBarsState=tbs_s[0], setTasiBarsState=tbs_s[1];
 
 
   // ✨ هل بيانات كل أسهم المحفظة الحقيقية وصلت؟ (لمعالجة الوميض)
