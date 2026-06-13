@@ -241,14 +241,24 @@ const DrawdownChart = React.memo(function DrawdownChart(props) {
               strokeDasharray="3,4"
               strokeWidth={1}
             />
+            {/* ✨ الملصق داخل صندوق صغير عند الحافة اليسرى -- يمنع التراكب مع الخط الأحمر */}
+            <rect
+              x={width - padding.right - 32}
+              y={yScale(line.value) - 9}
+              width={30}
+              height={11}
+              rx={3}
+              fill={C.ink}
+              fillOpacity={0.75}
+            />
             <text
-              x={width - padding.right - 2}
-              y={yScale(line.value) - 2}
-              textAnchor="end"
+              x={width - padding.right - 17}
+              y={yScale(line.value) - 1}
+              textAnchor="middle"
               fontSize={8}
               fill={line.color}
               fontFamily="IBM Plex Mono,monospace"
-              opacity={0.6}
+              fontWeight="bold"
             >
               {line.label}
             </text>
