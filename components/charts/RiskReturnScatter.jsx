@@ -104,13 +104,16 @@ const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
     const midX = xScale(midRisk);
 
     // ⑥ Pre-calculate stock points
+    const clampX2 = (x) => Math.max(padding.left + 18, Math.min(width - padding.right - 18, x));
+    const clampY2 = (y) => Math.max(padding.top + 14, Math.min(height - padding.bottom - 8, y));
+
     const stockPoints = stocks.map((stock) => {
       const color = QUADRANT_COLORS[stock.quadrant] || C.smoke;
       const radius = Math.max(4, Math.min(10, (stock.weight || 5) / 5 + 4));
       return {
         ...stock,
-        x: xScale(stock.risk),
-        y: yScale(stock.return),
+        x: clampX2(xScale(stock.risk)),
+        y: clampY2(yScale(stock.return)),
         color,
         radius,
       };
