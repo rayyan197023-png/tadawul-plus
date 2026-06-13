@@ -267,17 +267,26 @@ const DrawdownChart = React.memo(function DrawdownChart(props) {
 
         {/* Y-Axis Labels */}
         {yLabels.map((label, i) => (
-          <text
-            key={'ylabel-' + i}
-            x={padding.left - 5}
-            y={label.y + 3}
-            textAnchor="end"
-            fontSize={9}
-            fill={C.smoke}
-            fontFamily="IBM Plex Mono,monospace"
-          >
-            {label.label}
-          </text>
+          <g key={'ylabel-' + i}>
+            <rect
+              x={2}
+              y={label.y - 7}
+              width={padding.left - 6}
+              height={11}
+              fill={C.layer1}
+              fillOpacity={0.85}
+            />
+            <text
+              x={padding.left - 5}
+              y={label.y + 3}
+              textAnchor="end"
+              fontSize={9}
+              fill={C.smoke}
+              fontFamily="IBM Plex Mono,monospace"
+            >
+              {label.label}
+            </text>
+          </g>
         ))}
 
         {/* Zero Line */}
