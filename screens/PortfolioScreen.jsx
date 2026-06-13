@@ -1345,6 +1345,7 @@ var portfolioIQ = useMemo(function(){
     try {
     var positionsWithDecision = positions.map(function(p){  
         return Object.assign({}, p, {
+          bars: getBars(p.sym, p.stk, 60), // ✨ ضروري لـ analyzePortfolio بداخل analyzePortfolioIQ
           entryDecision: p.health ? {
             grade: p.health.grade || 'C',
             score: p.health.score || 50,
@@ -1356,7 +1357,8 @@ var portfolioIQ = useMemo(function(){
           }
         });
       });
-      var result = analyzePortfolioIQ(positionsWithDecision, [], {riskTolerance: 0.20});
+      var result = analyzePortfolioIQ(positionsWithDecision, tasiBarsState.bars || [], {riskTolerance: 0.20});
+
 // ✨ Safety: إصلاح getHealthGrade undefined bug
 if (result && typeof result === 'object' && !result.grade) {
   var iqs = result.iqScore || 0;
