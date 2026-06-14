@@ -260,7 +260,6 @@ function PerfChart(props) {
       </svg>
       <div style={{display:"flex",justifyContent:"space-between",padding:"0 8px",marginTop:-4}}>
         <span style={{fontSize:11,color:C.ash}}>{history[0].date.slice(5)}</span>
-        <span style={{fontSize:11,fontWeight:800,color:lineColor,fontFamily:"IBM Plex Mono,monospace"}}>{isUp?"+":""}{pctChange}%</span>
         <span style={{fontSize:11,color:C.ash}}>{history[history.length-1].date.slice(5)}</span>
       </div>
     </div>
