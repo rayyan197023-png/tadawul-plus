@@ -228,7 +228,18 @@ function PerfChart(props) {
   var vals=history.map(function(h){return h.v;});
   var mn=Math.min.apply(null,vals)*0.998, mx=Math.max.apply(null,vals)*1.002;
   var range=mx-mn||1;
-  var isUp=vals[vals.length-1]>=vals[0];
+  // ✨ حارس القيمة التأسيسية الشاذة: إن كانت أول نقطة أقل من 5% من آخر نقطة،
+  // فهي قيمة بداية شبه صفرية (من أول صفقة قبل اكتمال السجل) وتُضخّم %التغيير بشكل خاطئ.
+  // نستخدم أول نقطة "معقولة" (≥ 5% من القيمة الحالية) كأساس للنسبة، مع الإبقاء على الرسم كما هو.
+  var lastVal=vals[vals.length-1];
+  var baseIdx=0;
+  for(var bi=0;bi<vals.length-1;bi++){
+    if(vals[bi] >= lastVal*0.05){ baseIdx=bi; break; }
+    baseIdx=bi+1;
+  }
+  var baseVal=vals[baseIdx]||vals[0];
+  var isUp=vals[vals.length-1]>=baseVal;
+
   var lineColor=isUp?C.mint:C.coral;
   var pts=history.map(function(h,i){
     return {x:padX+(i/(history.length-1))*(W-padX*2), y:H-padY-((h.v-mn)/range)*(H-padY*2), v:h.v, d:h.date};
