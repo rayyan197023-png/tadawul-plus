@@ -740,6 +740,11 @@ export default function RebalancingScreen() {
     });
   }, [rawPositions, realBars]);
 
+  // ✨ حارس "نتيجة مرحلية": طالما لم تصل البارات الحقيقية لكل رموز المحفظة بعد،
+  // analysis.healthScore يُحسب من بيانات genBars الأولية ثم يتغيّر فجأة عند اكتمال realBars،
+  // فتُعاد animation الدائرة من جديد (يبدو كـ"تحميل مرتين"). ننتظر الاكتمال قبل الحساب النهائي.
+  const barsReady = portSyms.length === 0 || portSyms.every(s => realBars[s] && realBars[s].length >= 30);
+
   const analysis = useMemo(() => {
     return analyzePortfolio(positions);
   }, [positions]);
