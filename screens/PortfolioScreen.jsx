@@ -247,7 +247,8 @@ function PerfChart(props) {
   var polyline=pts.map(function(p){return p.x+","+p.y;}).join(" ");
   var first=pts[0], last=pts[pts.length-1];
   var areaPath="M"+first.x+","+first.y+" L"+pts.slice(1).map(function(p){return p.x+","+p.y;}).join(" L")+" L"+last.x+","+(H-padY)+" L"+first.x+","+(H-padY)+" Z";
-  var pctChange=((vals[vals.length-1]-vals[0])/vals[0]*100).toFixed(1);
+  var pctChange=baseVal>0?(((vals[vals.length-1]-baseVal)/baseVal*100).toFixed(1)):"0.0";
+
   var maxIdx=vals.indexOf(Math.max.apply(null,vals));
   return (
     <div>
