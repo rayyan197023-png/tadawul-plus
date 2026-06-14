@@ -861,7 +861,35 @@ export default function RebalancingScreen() {
         </div>
       </div>
 
-      <HealthScoreCard score={analysis.healthScore}/>
+      {barsReady ? (
+        <HealthScoreCard score={analysis.healthScore}/>
+      ) : (
+        <div style={{
+          background: "linear-gradient(145deg," + C.layer1 + "," + C.layer2 + ")",
+          borderRadius: 20,
+          padding: "24px 16px",
+          marginBottom: 16,
+          border: "1px solid " + C.line + "44",
+          textAlign: "center",
+        }}>
+          <div style={{
+            fontSize: 11, color: C.gold, fontWeight: 800,
+            letterSpacing: "2px", marginBottom: 16,
+          }}>
+            🎯 صحة المحفظة
+          </div>
+          <div style={{
+            width: 40, height: 40, margin: "0 auto 16px",
+            border: "3px solid " + C.line, borderTopColor: C.gold,
+            borderRadius: "50%", animation: "rbSpin 0.9s linear infinite",
+          }}/>
+          <div style={{fontSize: 12, color: C.smoke}}>
+            جارٍ تحليل بيانات الأسهم…
+          </div>
+          <style>{"@keyframes rbSpin{to{transform:rotate(360deg)}}"}</style>
+        </div>
+      )}
+
       <SummaryCard summary={analysis.summary}/>
 
       {analysis.sectors && analysis.sectors.length > 0 && (
