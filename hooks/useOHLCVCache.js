@@ -53,6 +53,13 @@ export function useOHLCVCache(syms = [], period = '3M') {
           const r = await fetchEngineBars(sym, { days });
           if (!cancelled && r.bars && r.bars.length > 0) {
             setData(prev => Object.assign({}, prev, { [sym]: r.bars }));
+            // ✨ حفظ في localStorage مع timestamp للكاش الـ12 ساعة
+            try {
+              var cacheRaw2 = localStorage.getItem('ohlcv_cache_v1');
+              var cache2 = cacheRaw2 ? JSON.parse(cacheRaw2) : {};
+              cache2[sym] = { bars: r.bars, ts: Date.now() };
+              localStorage.setItem('ohlcv_cache_v1', JSON.stringify(cache2));
+            } catch(e) {}
           }
         } catch { /* فشل سهم لا يوقف الباقي */ }
         loadingRef.current.delete(sym);
