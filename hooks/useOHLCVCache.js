@@ -10,10 +10,32 @@ import { useState, useEffect, useRef } from 'react';
 import { fetchEngineBars } from '../utils/historicalData';
 
 export function useOHLCVCache(syms = [], period = '3M') {
-  const [data, setData] = useState({});
-  const loadingRef = useRef(new Set());
-  // أيام البيانات حسب الفترة المطلوبة
-  const days = period === '1Y' ? 365 : period === '6M' ? 180 : 90; // 3M افتراضي
+  const days = period === '1Y' ? 365 : period === '6M' ? 180 : 90;
+
+  // ✨ تهيئة الـstate من localStorage مباشرة (بدل البدء بـ{} فارغ دائماً)
+  // هذا يجعل allData يرى البيانات المحفوظة فوراً بدل انتظار fetch جديد
+  const [data, setData] = useState(function() {
+    if (typeof window === 'undefined') return {};
+    var init = {};
+    try {
+      var cacheRaw = localStorage.getItem('ohlcv_cache_v1');
+      if (cacheRaw) {
+        var cache = JSON.parse(cacheRaw);
+        var now = Date.now();
+        var TTL = 12 * 60 * 60 * 1000; // 12 ساعة
+        Object.keys(cache).forEach(function(key) {
+          var entry = cache[key];
+          // استخدم البيانات فقط إذا لم تنتهِ صلاحيتها
+          if (entry && entry.ts && (now - entry.ts) < TTL && Array.isArray(entry.bars) && entry.bars.length >= 20) {
+            init[key] = entry.bars;
+          }
+        });
+      }
+    } catch(e) {}
+    return init;
+  });
+
+  const loadingRef = useRef(new Set()); // 3M افتراضي
 
   useEffect(() => {
     if (!syms.length) return;
