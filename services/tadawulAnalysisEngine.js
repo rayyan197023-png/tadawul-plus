@@ -1101,9 +1101,19 @@ function calcEarningsModel(stk){
 
 /* ══ DCF ══ */
 function calcDCF(stk){
-  var eps=stk.eps||stk.p/(stk.pe||15);
+  // ✨ حارس EPS: إذا كان أكبر من 50% من السعر فهو إجمالي لا للسهم
+  var rawEps = stk.eps || stk.p/(stk.pe||15);
+  var eps = (rawEps > stk.p * 0.5 && stk.shares && stk.shares > 0)
+    ? rawEps / stk.shares
+    : rawEps > stk.p * 0.5
+    ? stk.p / (stk.pe||15)
+    : rawEps;
+  // ✨ حارس epsGrw: إذا كان خارج ±200 فهو مضروب في 100
+  var rawGrw = stk.epsGrw || 5;
+  if (Math.abs(rawGrw) > 200) rawGrw = rawGrw / 100;
   var ke=0.08+(stk.sector_beta||1)*0.055;
   var roe=(stk.roe||12)/100;
+
   // bookValue الفعلي أدق من تقدير bvps
   var bvps = stk.bookValue || (roe>ke ? eps/roe : stk.p/(stk.pe||15)*(1-ke/roe*0.5));
   bvps=Math.max(bvps,eps);
