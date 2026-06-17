@@ -1101,8 +1101,14 @@ function calcEarningsModel(stk){
 
 /* ══ DCF ══ */
 function calcDCF(stk){
-  // ✨ حارس EPS: إذا كان أكبر من 50% من السعر فهو إجمالي لا للسهم
-  var rawEps = stk.eps || stk.p/(stk.pe||15);
+  // إذا لم تتوفر بيانات أساسية حقيقية → لا تحسب DCF
+  if (!stk.eps || !stk.pe || stk.eps <= 0) {
+    return {intrinsic: null, upside: null, wacc: 0.10,
+      g1Used: 5, signal: 'بيانات غير كافية', rating: 'غير متاح',
+      bullCase: null, bearCase: null};
+  }
+  var eps = stk.eps;
+
   var eps = (rawEps > stk.p * 0.5 && stk.shares && stk.shares > 0)
     ? rawEps / stk.shares
     : rawEps > stk.p * 0.5
