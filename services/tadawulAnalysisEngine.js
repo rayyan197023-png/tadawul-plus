@@ -1117,7 +1117,8 @@ function calcDCF(stk){
   // bookValue الفعلي أدق من تقدير bvps
   var bvps = stk.bookValue || (roe>ke ? eps/roe : stk.p/(stk.pe||15)*(1-ke/roe*0.5));
   bvps=Math.max(bvps,eps);
-  var g1=Math.min((stk.epsGrw||5)/100,0.12);
+  var g1=Math.min(rawGrw/100,0.12);
+
   var gdpGrowthRate=(MACRO.gdpGrowth||4.0)/100;
   var sectorGrowthAdj={"طاقة":0.01,"بنوك":0.005,"تقنية":0.02,"تعدين":0.005,"غذاء":0.005}[stk.sec]||0;
   var gStable=Math.min(g1,gdpGrowthRate+sectorGrowthAdj);
