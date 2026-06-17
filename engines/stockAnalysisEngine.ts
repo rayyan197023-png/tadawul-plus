@@ -58,14 +58,29 @@ export function calcDCF(stk: any): any {
   const wacc = (waccBySector as any)[stk.sectorId] ?? 0.10;
 
   // If FCF is negative, use EPS*0.6 as fallback
-  const rawFCF = (stk.freeCashFlow != null && stk.freeCashFlow !== 0)
+  // ✨ FCF per share: إذا كان freeCashFlow إجمالياً (> 1000x السعر)، قسمه على عدد الأسهم
+  // هذا يحل مشكلة DCF المبالغ فيه عندما تكون البيانات بالملايين لا بالريال للسهم
+  var rawFCFTotal = (stk.freeCashFlow != null && stk.freeCashFlow !== 0)
     ? stk.freeCashFlow
-    : stk.eps != null ? stk.eps * 0.6
+    : stk.eps != null ? stk.eps * 0.6 * (stk.shares || 1)
     : stk.p * 0.04;
-  // FCF yield cap: max 12% of price — prevents DCF explosion for high-FCF stocks
-  // If a stock yields >12% FCF, something is unusual (data error or temporary spike)
+  
+  // تحويل إلى قيمة للسهم إن كانت إجمالية
+  var rawFCF;
+  if (stk.shares && stk.shares > 0 && rawFCFTotal > stk.p * 100) {
+    // البيانات إجمالية -- قسّم على عدد الأسهم
+    rawFCF = rawFCFTotal / stk.shares;
+  } else if (stk.eps != null && Math.abs(rawFCFTotal) < Math.abs(stk.eps) * 10) {
+    // البيانات معقولة نسبياً -- استخدمها مباشرة
+    rawFCF = rawFCFTotal;
+  } else {
+    // fallback آمن: EPS × 0.6 (نسبة FCF/Earnings تاريخية)
+    rawFCF = stk.eps != null ? stk.eps * 0.6 : stk.p * 0.04;
+  }
+
+  // FCF yield cap: max 12% of price -- prevents DCF explosion
   const maxFCF  = stk.p * 0.12;
-  const baseFCF = Math.min(rawFCF, maxFCF);
+  const baseFCF = Math.min(Math.abs(rawFCF), maxFCF) * (rawFCF < 0 ? -1 : 1);
   let fcf = baseFCF;
   let pv  = 0;
 
