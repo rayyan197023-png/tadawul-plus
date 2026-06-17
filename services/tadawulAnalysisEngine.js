@@ -1126,7 +1126,8 @@ function calcDCF(stk){
   var dcfVal=gStable<ke&&eps>0?eps*(1+g1)/(ke-gStable):stk.p;
   // sectorBase ثابت +5 — بدل قيم step تعسفية متباينة
   var sectorBase = 5;
-  var lynchPE=Math.min(30,Math.max(10,(stk.epsGrw||5)+(stk.divY||0)+sectorBase));
+  var lynchPE=Math.min(30,Math.max(10,(rawGrw||5)+(stk.divY||0)+sectorBase));
+
   var lynch=eps*lynchPE;
   var peRel=Math.max(0.12,0.45-0.30*Math.tanh(((stk.pe||15)-20)/25));
   var grahamW=Math.max(0.10,0.35-0.20*Math.tanh(((stk.pe||15)-25)/20));
