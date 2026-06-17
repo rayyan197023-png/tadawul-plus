@@ -32,11 +32,14 @@ export function calcDCF(stk: any): any {
 
   // Growth confidence discount: high growth (>15%) is discounted by market
   // A 23% grower rarely sustains that. Effective g1 capped at 15% with discount above.
-  const rawGrw  = (stk.epsGrw ?? 5) / 100;
-  const g1      = rawGrw > 0.15
-    ? 0.15  // cap: beyond 15%, sustainability is uncertain
-    : Math.min(rawGrw, 0.25);
-  const g2      = Math.min(g1 * 0.5, 0.06);   // stage 2: half of g1, max 6%
+  // ✨ حارس epsGrw: إذا كان خارج ±200% فهو مضروب في 100 من الـAPI
+  const rawGrwRaw = stk.epsGrw ?? 5;
+  const epsGrwFixed = Math.abs(rawGrwRaw) > 200 ? rawGrwRaw / 100 : rawGrwRaw;
+  const rawGrw  = epsGrwFixed / 100;
+  // حارس النمو: تقييد بين -50% و+25% لمنع انهيار DCF
+  const g1      = Math.min(Math.max(rawGrw, -0.50), 0.15);
+  const g2      = Math.min(Math.max(g1 * 0.5, 0), 0.06);   // stage 2: لا سالب
+
   const gTerm   = 0.03;                         // terminal growth (Saudi GDP long-term)
 
   // ── WACC by sector (Saudi market calibrated)
