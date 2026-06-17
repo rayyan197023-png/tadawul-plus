@@ -238,6 +238,24 @@ const fetchSahmkRatios = async (sym) => {
       opMargin:   (r.operating_margin != null && Math.abs(r.operating_margin) < 100) ? r.operating_margin : null,
       debtEquity: r.debt_to_equity,
       roic:       (roic != null && Math.abs(roic) < 80) ? roic : null,
+      epsGrw:     (function(){
+                    var g = r.eps_growth ?? r.earnings_growth ?? null;
+                    if (g == null) return null;
+                    // ✨ إذا كان خارج ±200 فهو مضروب في 100
+                    if (Math.abs(g) > 200) g = g / 100;
+                    return parseFloat(g.toFixed(2));
+                  })(),
+      shares:     km.shares_outstanding ?? null,
+      freeCashFlow: (function(){
+                    var fcf = km.free_cash_flow ?? km.operating_cash_flow ?? null;
+                    if (fcf == null) return null;
+                    var shares = km.shares_outstanding;
+                    // إذا كان إجمالياً (> سعر × 1000) قسّم على الأسهم
+                    return (shares && shares > 0 && Math.abs(fcf) > 10000)
+                      ? parseFloat((fcf / shares).toFixed(4))
+                      : fcf;
+                  })(),
+
       _revenue:   km.total_revenue,
       _netIncome: km.net_income,
       _ocf:       km.operating_cash_flow,
