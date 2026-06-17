@@ -58,26 +58,18 @@ export function calcDCF(stk: any): any {
   const wacc = (waccBySector as any)[stk.sectorId] ?? 0.10;
 
   // If FCF is negative, use EPS*0.6 as fallback
-  // ✨ FCF per share: إذا كان freeCashFlow إجمالياً (> 1000x السعر)، قسمه على عدد الأسهم
-  // هذا يحل مشكلة DCF المبالغ فيه عندما تكون البيانات بالملايين لا بالريال للسهم
-  var rawFCFTotal = (stk.freeCashFlow != null && stk.freeCashFlow !== 0)
-    ? stk.freeCashFlow
-    : stk.eps != null ? stk.eps * 0.6 * (stk.shares || 1)
-    : stk.p * 0.04;
-  
-  // تحويل إلى قيمة للسهم إن كانت إجمالية
-  var rawFCF;
-  if (stk.shares && stk.shares > 0 && rawFCFTotal > stk.p * 100) {
-    // البيانات إجمالية -- قسّم على عدد الأسهم
-    rawFCF = rawFCFTotal / stk.shares;
-  } else if (stk.eps != null && Math.abs(rawFCFTotal) < Math.abs(stk.eps) * 10) {
-    // البيانات معقولة نسبياً -- استخدمها مباشرة
-    rawFCF = rawFCFTotal;
+  // ✨ FCF للسهم الواحد فقط -- sahmk يُرجع freeCashFlow إجمالياً بالملايين أحياناً
+  // الحارس: إن كان FCF أكبر من 5x السعر، فهو إجمالي لا للسهم -- استخدم EPS بدلاً منه
+  let rawFCF: number;
+  if (stk.freeCashFlow != null && stk.freeCashFlow !== 0 && Math.abs(stk.freeCashFlow) <= stk.p * 5) {
+    // FCF معقول نسبياً للسهم الواحد
+    rawFCF = stk.freeCashFlow;
+  } else if (stk.eps != null) {
+    // FCF إجمالي أو غير متاح -- استخدم EPS × 0.6 كتقريب FCF/share
+    rawFCF = stk.eps * 0.6;
   } else {
-    // fallback آمن: EPS × 0.6 (نسبة FCF/Earnings تاريخية)
-    rawFCF = stk.eps != null ? stk.eps * 0.6 : stk.p * 0.04;
+    rawFCF = stk.p * 0.04;
   }
-
   // FCF yield cap: max 12% of price -- prevents DCF explosion
   const maxFCF  = stk.p * 0.12;
   const baseFCF = Math.min(Math.abs(rawFCF), maxFCF) * (rawFCF < 0 ? -1 : 1);
