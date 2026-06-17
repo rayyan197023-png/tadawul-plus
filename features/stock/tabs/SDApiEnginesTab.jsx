@@ -152,15 +152,22 @@ const fetchSahmkCompany = async (sym) => {
       website:     d.website,
       pe:          (f.pe_ratio != null && f.pe_ratio > 3 && f.pe_ratio < 300) ? f.pe_ratio : null,
       forwardPE:   (f.forward_pe != null && f.forward_pe > 0.5 && f.forward_pe < 300) ? f.forward_pe : null,
-      eps:         (function(){
-                     var e = f.eps_ttm || f.basic_eps || f.eps;
-                     // تحقق منطقي: EPS عادة < 30% من السعر
-                     var px = d.current_price || f.fifty_two_week_high || 100;
-                     if (e != null && e > px * 0.3 && f.basic_eps != null && f.basic_eps < e) {
-                       return f.basic_eps;
-                     }
-                     return e;
-                   })(),
+eps:          (function(){
+                 var e = f.eps_ttm || f.basic_eps || f.eps;
+                 if (e == null) return null;
+                 var px = d.current_price || f.fifty_two_week_high || 100;
+                 // ✨ إذا كان EPS أكبر من السعر × 5 فهو إجمالي بالملايين
+                 if (Math.abs(e) > px * 5) {
+                   var shares = f.shares_outstanding;
+                   if (shares && shares > 0) return parseFloat((e / shares).toFixed(4));
+                   return null; // لا يمكن تصحيحه
+                 }
+                 // حارس < 30% من السعر
+                 if (e > px * 0.3 && f.basic_eps != null && f.basic_eps < e) {
+                   return f.basic_eps;
+                 }
+                 return e;
+               })(),
                    
       bvps:        f.book_value,
       pb:          f.price_to_book,
