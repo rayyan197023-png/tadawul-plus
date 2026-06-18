@@ -534,8 +534,10 @@ function Card(props) {
                 </div>
               </div>
               <div style={{textAlign:"center"}}>
-                <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:13,fontWeight:900,color:p.pnlPct>=0?C.mint:C.coral,textShadow:p.pnlPct>=0?"0 0 8px #1ee68a55":"0 0 8px #ff5f6a55",whiteSpace:"nowrap"}}>{Math.round(p.qty*p.avgCost*(1+p.pnlPct/100)).toLocaleString("en-US")}</div>
-                <div style={{fontSize:9,color:C.smoke,marginTop:1}}>ريال</div>
+                <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:12,fontWeight:700,color:C.smoke,whiteSpace:"nowrap"}}>{Math.round(p.cost).toLocaleString("en-US")}</div>
+                <div style={{fontSize:8,color:C.ash,marginBottom:3}}>التكلفة</div>
+                <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:13,fontWeight:900,color:p.pnlPct>=0?C.mint:C.coral,textShadow:p.pnlPct>=0?"0 0 8px #1ee68a55":"0 0 8px #ff5f6a55",whiteSpace:"nowrap"}}>{Math.round(p.value).toLocaleString("en-US")}</div>
+                <div style={{fontSize:9,color:p.pnlPct>=0?C.mint:C.coral,marginTop:1}}>الحالية</div>
               </div>
             </div>
           </div>
