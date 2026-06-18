@@ -503,7 +503,6 @@ function Card(props) {
               <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
                 <span style={{fontFamily:"IBM Plex Mono,monospace",fontSize:18,fontWeight:800,color:C.snow,letterSpacing:"-0.5px"}}>{p.curPrice.toFixed(2)}</span>
                 <span style={{fontSize:12,fontWeight:700,color:p.stk.ch>=0?C.mint:C.coral,background:(p.stk.ch>=0?C.mint:C.coral)+"18",borderRadius:6,padding:"2px 8px",border:"1px solid "+(p.stk.ch>=0?C.mint:C.coral)+"33"}}>{p.stk.ch>=0?"+":""}{(p.stk.ch||0).toFixed(2)}%</span>
-                <span style={{fontFamily:"IBM Plex Mono,monospace",fontSize:13,fontWeight:800,color:p.pnlPct>=0?C.mint:C.coral,textShadow:p.pnlPct>=0?"0 0 8px #1ee68a66":"0 0 8px #ff5f6a66"}}>{p.pnlPct>=0?"+":""}{p.pnlPct.toFixed(1)}%</span>
               </div>
               {/* ✨ سعر الدخول + نسبة الربح منذ الشراء */}
               <div style={{display:"flex",alignItems:"center",gap:6,marginTop:4,flexWrap:"wrap"}}>
