@@ -662,8 +662,8 @@ function Card(props) {
                     
                     {/* T3 */}
                     <div style={{
-                      background: p.curPrice>=d.smartData.targets.t3.price ? C.mint+"25" : C.gold + "10",
-                      border: "1px solid " + (p.curPrice>=d.smartData.targets.t3.price ? C.mint+"55" : C.gold + "25"),
+                      background: C.mint+"15",
+                      border: "1px solid " + C.mint+"35",
                       borderRadius: 6,
                       padding: "5px 6px",
                       textAlign:"center",
