@@ -1700,17 +1700,37 @@ return result;
           <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,"+(tp>=0?C.mint:C.coral)+"00,"+(tp>=0?C.mint:C.coral)+"ff,"+(tp>=0?C.mint:C.coral)+"00)"}}/>
           
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+
             {/* اليسار: حلقة العائد */}
-            <div style={{position:"relative",width:74,height:74,flexShrink:0}}>
-              <svg width={74} height={74} style={{transform:"rotate(-90deg)",position:"absolute",inset:0}}>
-                <circle cx={37} cy={37} r={31} fill="none" stroke={C.ash} strokeWidth={4} strokeOpacity={.2}/>
-                <circle cx={37} cy={37} r={31} fill="none" stroke={tp>=0?C.mint:C.coral} strokeWidth={4} strokeDasharray={2*Math.PI*31} strokeDashoffset={2*Math.PI*31*(1-Math.min(1,Math.abs(tpP)/50))} strokeLinecap="round" style={{filter:"drop-shadow(0 0 6px "+(tp>=0?C.mint:C.coral)+"aa)",transition:"stroke-dashoffset 1s ease"}}/>
+            <div style={{position:"relative",width:100,height:100,flexShrink:0}}>
+              {/* خلفية توهج */}
+              <div style={{position:"absolute",inset:0,borderRadius:"50%",background:"radial-gradient(circle,"+(tp>=0?C.mint:C.coral)+"18 0%,transparent 70%)"}}/>
+              <svg width={100} height={100} style={{transform:"rotate(-90deg)",position:"absolute",inset:0}}>
+                {/* دائرة خلفية */}
+                <circle cx={50} cy={50} r={42} fill="none" stroke={C.layer3} strokeWidth={6}/>
+                {/* دائرة تزيينية داخلية */}
+                <circle cx={50} cy={50} r={34} fill="none" stroke={(tp>=0?C.mint:C.coral)+"15"} strokeWidth={1}/>
+                {/* الدائرة الرئيسية */}
+                <circle cx={50} cy={50} r={42} fill="none"
+                  stroke={tp>=0?C.mint:C.coral}
+                  strokeWidth={7}
+                  strokeDasharray={2*Math.PI*42}
+                  strokeDashoffset={2*Math.PI*42*(1-Math.min(1,Math.abs(tpP)/50))}
+                  strokeLinecap="round"
+                  style={{filter:"drop-shadow(0 0 8px "+(tp>=0?C.mint:C.coral)+"cc)",transition:"stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)"}}
+                />
+                {/* نقطة نهاية متوهجة */}
+                <circle cx={50} cy={8} r={4} fill={tp>=0?C.mint:C.coral}
+                  style={{filter:"drop-shadow(0 0 6px "+(tp>=0?C.mint:C.coral)+")"}}
+                  transform={`rotate(${Math.min(1,Math.abs(tpP)/50)*360} 50 50)`}
+                />
               </svg>
-              <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1}}>
-                <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:15,fontWeight:900,color:tp>=0?C.mint:C.coral,lineHeight:1,textShadow:tp>=0?"0 0 10px #1ee68a88":"0 0 10px #ff5f6a88"}}>{tpP>=0?"+":""}{tpP.toFixed(1)}%</div>
-                <div style={{fontSize:8,color:C.smoke,fontWeight:700,letterSpacing:".5px"}}>عائد</div>
+              <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2}}>
+                <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:18,fontWeight:900,color:tp>=0?C.mint:C.coral,lineHeight:1,textShadow:tp>=0?"0 0 16px #1ee68aaa":"0 0 16px #ff5f6aaa"}}>{tpP>=0?"+":""}{tpP.toFixed(1)}%</div>
+                <div style={{fontSize:9,color:C.smoke,fontWeight:700,letterSpacing:"1px"}}>عائد</div>
               </div>
             </div>
+
 
             {/* اليمين: العنوان + الإحصائيات الرئيسيّة */}
             <div style={{flex:1,textAlign:"right",paddingRight:14}}>
