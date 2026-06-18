@@ -652,10 +652,10 @@ function Card(props) {
                       textAlign:"center",
                     }}>
                       <div style={{fontSize:7,color:C.smoke,fontWeight:700,marginBottom:1}}>T2 (33%)</div>
-                      <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:11,fontWeight:900,color:p.curPrice>=d.smartData.targets.t2.price?C.mint:C.amber}}>
+                      <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:11,fontWeight:900,color:C.mint}}>
                         {d.smartData.targets.t2.price.toFixed(2)}
                       </div>
-                      <div style={{fontSize:8,color:p.curPrice>=d.smartData.targets.t2.price?C.mint:C.amber,fontWeight:700}}>
+                      <div style={{fontSize:8,color:C.mint,fontWeight:700}}>
                         +{d.smartData.targets.t2.pct}%
                       </div>
                     </div>
