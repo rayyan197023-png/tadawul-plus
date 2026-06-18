@@ -320,13 +320,6 @@ function SummaryCard(props) {
             <div style={{height:"100%",width:Math.min(100,capitalUsed/capital*100)+"%",background:C.electric,borderRadius:2,transition:"width 1s ease"}}/>
           </div>
         </div>
-        <div style={{flex:1,background:C.smoke+"06",borderRadius:12,padding:"8px 12px",border:"1px solid "+C.line}}>
-          <div style={{fontSize:11,color:C.smoke,marginBottom:3}}>نقدي متاح</div>
-          <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:13,fontWeight:900,color:C.smoke}}>{fmt(capitalFree)} ر</div>
-          <div style={{height:3,background:C.layer3,borderRadius:2,marginTop:5,overflow:"hidden"}}>
-            <div style={{height:"100%",width:Math.min(100,capitalFree/capital*100)+"%",background:C.smoke,borderRadius:2}}/>
-          </div>
-        </div>
       </div>
     </div>
   );
@@ -1745,8 +1738,8 @@ return result;
               var usedPct=capital>0?Math.round(capitalUsed/capital*100):0;
               return [
                 {l:"اليوم",v:(dp>=0?"+":"")+fmt(dp),u:"ر",c:dp>=0?C.mint:C.coral,bg:dp>=0?C.mint:C.coral},
-                {l:"مُستثمر",v:fmt(capitalUsed),u:usedPct+"%",c:C.electric,bg:C.electric},
-                {l:"متاح",v:fmt(capitalFree),u:"ر",c:C.gold,bg:C.gold},
+                {l:"صافي الثروة",v:fmt(capitalUsed),u:usedPct+"%",c:C.electric,bg:C.electric},
+
               ].map(function(s,i){return(
                 <div key={i} style={{
                   background:s.bg+"08",
