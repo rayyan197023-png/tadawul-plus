@@ -625,10 +625,11 @@ function Card(props) {
                 <div>
                   <div style={{fontSize:9,color:C.smoke,fontWeight:700,marginBottom:5}}>🎯 أهداف جني الأرباح:</div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:5}}>
+
                     {/* T1 */}
                     <div style={{
-                      background: p.curPrice>=d.smartData.targets.t1.price ? C.mint+"25" : C.teal + "10",
-                      border: "1px solid " + (p.curPrice>=d.smartData.targets.t1.price ? C.mint+"55" : C.teal + "25"),
+                      background: C.mint+"15",
+                      border: "1px solid " + C.mint+"35",
                       borderRadius: 6,
                       padding: "5px 6px",
                       textAlign:"center",
