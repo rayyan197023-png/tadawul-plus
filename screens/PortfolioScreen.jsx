@@ -1729,10 +1729,6 @@ return result;
 
             {/* اليمين: العنوان + الإحصائيات الرئيسيّة */}
             <div style={{flex:1,textAlign:"right",paddingRight:14}}>
-              <div style={{display:"flex",alignItems:"center",gap:6,justifyContent:"flex-end",marginBottom:6}}>
-                <span style={{fontSize:18,fontWeight:900,color:C.snow,letterSpacing:"-.3px",textShadow:"0 0 8px rgba(240,246,255,.3)"}}>محفظتي</span>
-                <SvgIcon name="portfolio" size={16} color={C.gold}/>
-              </div>
               <div style={{display:"flex",alignItems:"baseline",gap:5,justifyContent:"flex-end",marginBottom:4}}>
                 <span style={{fontSize:11,color:C.smoke,fontWeight:700}}>ر</span>
                 <span style={{fontFamily:"IBM Plex Mono,monospace",fontSize:22,fontWeight:900,color:C.snow,lineHeight:1,textShadow:"0 0 8px rgba(240,246,255,.4)"}}>{tv>0?fmt(tv):"0"}</span>
