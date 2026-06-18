@@ -1720,9 +1720,9 @@ return result;
                   style={{filter:"drop-shadow(0 0 8px "+(tp>=0?C.mint:C.coral)+"cc)",transition:"stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)"}}
                 />
                 {/* نقطة نهاية متوهجة */}
-                <circle cx={50} cy={8} r={4} fill={tp>=0?C.mint:C.coral}
+                <circle cx={50} cy={8} r={3.5} fill={tp>=0?C.mint:C.coral}
                   style={{filter:"drop-shadow(0 0 6px "+(tp>=0?C.mint:C.coral)+")"}}
-                  transform={`rotate(${Math.min(1,Math.abs(tpP)/50)*360} 50 50)`}
+                  transform={`rotate(${Math.min(1,Math.abs(tpP)/50)*360*-1} 50 50)`}
                 />
               </svg>
               <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2}}>
