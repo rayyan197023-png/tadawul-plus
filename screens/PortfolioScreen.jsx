@@ -316,7 +316,7 @@ function SummaryCard(props) {
       </div>
     </div>
   );
-}
+} 
 
 function EditModal(props) {
   var pos=props.pos, onClose=props.onClose, setPort=props.setPort, setTradeLog=props.setTradeLog;
