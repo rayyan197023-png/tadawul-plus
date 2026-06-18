@@ -1729,10 +1729,12 @@ return result;
 
             {/* اليمين: العنوان + الإحصائيات الرئيسيّة */}
             <div style={{flex:1,textAlign:"right",paddingRight:14}}>
-              <div style={{display:"flex",alignItems:"baseline",gap:5,justifyContent:"flex-end",marginBottom:4}}>
-                <span style={{fontSize:11,color:C.smoke,fontWeight:700}}>ر</span>
-                <span style={{fontFamily:"IBM Plex Mono,monospace",fontSize:22,fontWeight:900,color:C.snow,lineHeight:1,textShadow:"0 0 8px rgba(240,246,255,.4)"}}>{tv>0?fmt(tv):"0"}</span>
-              </div>
+          <div style={{display:"flex",alignItems:"baseline",gap:5,justifyContent:"flex-end",marginBottom:4}}>
+            <span style={{fontSize:11,color:C.smoke,fontWeight:700}}>ر</span>
+            <span style={{fontFamily:"IBM Plex Mono,monospace",fontSize:22,fontWeight:900,color:C.snow,lineHeight:1,textShadow:"0 0 8px rgba(240,246,255,.4)"}}>{tv>0?fmt(tv):"0"}</span>
+            <span style={{fontSize:11,fontWeight:700,color:C.electric}}>صافي الثروة</span>
+          </div>
+
               <div style={{display:"flex",alignItems:"center",gap:5,justifyContent:"flex-end",flexWrap:"wrap"}}>
                 <span style={{fontSize:11,fontWeight:700,color:tp>=0?C.mint:C.coral,background:(tp>=0?C.mint:C.coral)+"15",border:"1px solid "+(tp>=0?C.mint:C.coral)+"30",padding:"2px 7px",borderRadius:6,fontFamily:"IBM Plex Mono,monospace"}}>{tp>=0?"+":""}{fmt(tp)} ر</span>
                 <span style={{fontSize:11,color:C.smoke,background:C.layer3,borderRadius:6,padding:"2px 7px",border:"1px solid "+C.line}}>{positions.length} مركز</span>
