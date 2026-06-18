@@ -93,7 +93,9 @@ export function calcDCF(stk: any): any {
   const tv  = fcf * (1 + gTerm) / (wacc - gTerm);
   pv       += tv / Math.pow(1 + wacc, 10);
 
-  const intrinsicValue = +pv.toFixed(2);
+  // ✨ سقف منطقي: القيمة العادلة لا تتجاوز 15x السعر الحالي
+  const rawIntrinsic   = +pv.toFixed(2);
+  const intrinsicValue = +Math.min(rawIntrinsic, stk.p * 15).toFixed(2);
   const upside         = stk.p > 0 ? +((intrinsicValue - stk.p) / stk.p * 100).toFixed(1) : 0;
   const margin         = upside;
 
