@@ -492,7 +492,6 @@ function Card(props) {
                   <SvgIcon name={d.icon} size={12} color={d.color}/>
                   {d.act}{d.pct>0?" "+d.pct+"%":""}
                 </div>
-                <span style={{fontSize:11,color:C.smoke,background:C.layer3,borderRadius:4,padding:"1px 6px",border:"1px solid "+C.line}}>{p.sym}</span>
 
               </div>
 
