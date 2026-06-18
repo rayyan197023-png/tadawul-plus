@@ -496,8 +496,11 @@ function Card(props) {
 
               </div>
 
-              {/* اسم السهم - كبير وواضح */}
-              <div style={{fontSize:isTop?22:19,fontWeight:900,color:C.snow,lineHeight:1.1,marginBottom:5,textShadow:"0 0 20px rgba(240,246,255,.15)"}}>{p.stk.name}</div>
+              {/* اسم السهم + الرمز */}
+              <div style={{display:"flex",alignItems:"baseline",gap:8,marginBottom:5}}>
+                <span style={{fontSize:isTop?22:19,fontWeight:900,color:C.snow,lineHeight:1.1,textShadow:"0 0 20px rgba(240,246,255,.15)"}}>{p.stk.name}</span>
+                <span style={{fontSize:12,fontWeight:700,color:C.ash,background:C.layer3,padding:"1px 6px",borderRadius:5,border:"1px solid "+C.line,fontFamily:"IBM Plex Mono,monospace"}}>{p.sym}</span>
+              </div>
 
               {/* السعر + التغير */}
               <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
