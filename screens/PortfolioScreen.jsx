@@ -669,10 +669,10 @@ function Card(props) {
                       textAlign:"center",
                     }}>
                       <div style={{fontSize:7,color:C.smoke,fontWeight:700,marginBottom:1}}>T3 (34%)</div>
-                      <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:11,fontWeight:900,color:p.curPrice>=d.smartData.targets.t3.price?C.mint:C.gold}}>
+                      <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:11,fontWeight:900,color:C.mint}}>
                         {d.smartData.targets.t3.price.toFixed(2)}
                       </div>
-                      <div style={{fontSize:8,color:p.curPrice>=d.smartData.targets.t3.price?C.mint:C.gold,fontWeight:700}}>
+                      <div style={{fontSize:8,color:C.mint,fontWeight:700}}>
                         +{d.smartData.targets.t3.pct}%
                       </div>
                     </div>
