@@ -313,13 +313,6 @@ function SummaryCard(props) {
         </div>
       )}
       <div style={{display:"flex",gap:8}}>
-        <div style={{flex:1,background:C.electric+"08",borderRadius:12,padding:"8px 12px",border:"1px solid "+C.electric+"22"}}>
-          <div style={{fontSize:11,color:C.smoke,marginBottom:3}}>مستثمر</div>
-          <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:13,fontWeight:900,color:C.electric}}>{fmt(capitalUsed)} ر</div>
-          <div style={{height:3,background:C.layer3,borderRadius:2,marginTop:5,overflow:"hidden"}}>
-            <div style={{height:"100%",width:Math.min(100,capitalUsed/capital*100)+"%",background:C.electric,borderRadius:2,transition:"width 1s ease"}}/>
-          </div>
-        </div>
       </div>
     </div>
   );
