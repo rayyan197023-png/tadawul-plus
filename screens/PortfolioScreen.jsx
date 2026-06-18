@@ -199,7 +199,7 @@ function DonutChart(props) {
           {slices.map(function(s,i){return <path key={i} d={s.d} fill={s.color} opacity={.88} style={{filter:"drop-shadow(0 2px 6px rgba(0,0,0,.5))"}}/>;}) }
           <circle cx={cx} cy={cy} r={32} fill={C.layer1}/>
           <text x={cx} y={cy-7} textAnchor="middle" fill={C.snow} fontSize={13} fontWeight={900} fontFamily="IBM Plex Mono,monospace">{slices.length}</text>
-          <text x={cx} y={cy+8} textAnchor="middle" fill={C.smoke} fontSize={9} fontFamily="Cairo,sans-serif">سهم</text>
+          <text x={cx} y={cy+8} textAnchor="middle" fill={C.smoke} fontSize={9} fontFamily="Cairo,sans-serif">مركز</text>
         </svg>
       </div>
       <div style={{flex:1,display:"flex",flexDirection:"column",gap:6}}>
@@ -1728,11 +1728,10 @@ return result;
             <span style={{fontSize:11,fontWeight:700,color:C.electric}}>صافي الثروة</span>
           </div>
 
-              <div style={{display:"flex",alignItems:"center",gap:5,justifyContent:"flex-end",flexWrap:"wrap"}}>
-                <span style={{fontSize:11,fontWeight:700,color:tp>=0?C.mint:C.coral,background:(tp>=0?C.mint:C.coral)+"15",border:"1px solid "+(tp>=0?C.mint:C.coral)+"30",padding:"2px 7px",borderRadius:6,fontFamily:"IBM Plex Mono,monospace"}}>{tp>=0?"+":""}{fmt(tp)} ر</span>
-                <span style={{fontSize:11,color:C.smoke,background:C.layer3,borderRadius:6,padding:"2px 7px",border:"1px solid "+C.line}}>{positions.length} مركز</span>
-                {urgentN>0&&(<span className="danger-pulse" style={{fontSize:11,fontWeight:800,color:C.coral,background:C.coral+"15",border:"1px solid "+C.coral+"44",borderRadius:6,padding:"2px 7px",display:"flex",alignItems:"center",gap:3}}><SvgIcon name="urgent" size={9} color={C.coral}/>{urgentN} عاجل</span>)}
-              </div>
+          <div style={{display:"flex",alignItems:"center",gap:5,justifyContent:"flex-end",flexWrap:"wrap"}}>
+            <span style={{fontSize:11,fontWeight:700,color:tp>=0?C.mint:C.coral,background:(tp>=0?C.mint:C.coral)+"15",border:"1px solid "+(tp>=0?C.mint:C.coral)+"30",padding:"2px 7px",borderRadius:6,fontFamily:"IBM Plex Mono,monospace"}}>{tp>=0?"+":""}{fmt(tp)} ر</span>
+            {urgentN>0&&(<span className="danger-pulse" style={{fontSize:11,fontWeight:800,color:C.coral,background:C.coral+"15",border:"1px solid "+C.coral+"44",borderRadius:6,padding:"2px 7px",display:"flex",alignItems:"center",gap:3}}><SvgIcon name="urgent" size={9} color={C.coral}/>{urgentN} عاجل</span>)}
+          </div>
             </div>
           </div>
 
