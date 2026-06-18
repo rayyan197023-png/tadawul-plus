@@ -1719,11 +1719,6 @@ return result;
                   strokeLinecap="round"
                   style={{filter:"drop-shadow(0 0 8px "+(tp>=0?C.mint:C.coral)+"cc)",transition:"stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)"}}
                 />
-                {/* نقطة نهاية متوهجة */}
-                <circle cx={50} cy={8} r={3.5} fill={tp>=0?C.mint:C.coral}
-                  style={{filter:"drop-shadow(0 0 6px "+(tp>=0?C.mint:C.coral)+")"}}
-                  transform={`rotate(${Math.min(1,Math.abs(tpP)/50)*360*-1} 50 50)`}
-                />
               </svg>
               <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2}}>
                 <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:18,fontWeight:900,color:tp>=0?C.mint:C.coral,lineHeight:1,textShadow:tp>=0?"0 0 16px #1ee68aaa":"0 0 16px #ff5f6aaa"}}>{tpP>=0?"+":""}{tpP.toFixed(1)}%</div>
