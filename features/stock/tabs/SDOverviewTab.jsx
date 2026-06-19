@@ -119,7 +119,7 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
   }, [sym, per]);
 
 
-  const history = sahmkBars.length > 0 ? sahmkBars : (stk?.priceHistory || []);
+  const history = sahmkBars;
   const canvasRef  = useRef(null);
   const volRef     = useRef(null);
   const [crosshair, setCrosshair] = useState(null);
