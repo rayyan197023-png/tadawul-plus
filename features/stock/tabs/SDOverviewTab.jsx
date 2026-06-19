@@ -127,11 +127,13 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
   const touchRef = useRef({});
 
   const pts = useMemo(() => {
-    const nMap = {"1D":78,"1W":5,"1M":22,"3M":65,"6M":130,"1Y":252,"5Y":260,"MAX":120};
-    const baseN = nMap[per] || 30;
+    const nMap = {"1D":78,"1W":35,"1M":22,"3M":65,"6M":130,"1Y":248,"5Y":248,"MAX":248};
+    const baseN = nMap[per] || 65;
     const n = Math.max(10, Math.round(baseN / zoom));
-    if (history.length >= n)
+    // إذا البيانات الحقيقية موجودة استخدمها دائماً
+    if (history.length >= 5)
       return history.slice(-n).map(h=>({ o:h.o??h.c, h:h.h??h.c, l:h.l??h.c, c:h.c, v:h.v??0 }));
+
     const volPct = per==="1D"?0.002:per==="1W"?0.007:per==="1M"?0.010:per==="3M"?0.012:per==="6M"?0.014:per==="1Y"?0.016:0.020;
     const seed = sym.split("").reduce((a,c2)=>a+c2.charCodeAt(0),0);
     let lcg = (seed * 1664525 + 1013904223) & 0xffffffff;
