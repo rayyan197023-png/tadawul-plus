@@ -410,13 +410,23 @@ function IntradayChart({ stk }) {
   useEffect(() => {
     if (!stk?.sym) return;
     setLoading(true);
-    fetch(`/api/sahmkdata?endpoint=intraday&sym=${stk.sym}`)
+    fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=3M`)
       .then(r => r.json())
       .then(d => {
         const data = d.data || [];
-        setBars(data);
+        // توحيد الصيغة: ohlcv يُرجع {date,open,high,low,close,volume}
+        const normalized = data.map(b => ({
+          date:   b.date,
+          close:  b.close,
+          volume: b.volume || 0,
+          open:   b.open,
+          high:   b.high,
+          low:    b.low,
+        }));
+        setBars(normalized);
         setLoading(false);
       })
+
       .catch(() => setLoading(false));
   }, [stk?.sym]);
 
