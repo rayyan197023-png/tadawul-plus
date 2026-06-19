@@ -5,7 +5,7 @@
  */
 import { useState, useMemo, useEffect } from 'react';
 import { STOCKS_LIVE as STOCKS } from '../../constants/stocksData';
-import { ArcRing, C, DIVS, EVENTS, FUNDS, IPOS, Ico, MiniLine, SectionHeader, Stars, MACRO } from './MoreShared';
+import { ArcRing, C, DIVS, FUNDS, Ico, MiniLine, SectionHeader, Stars, MACRO } from './MoreShared';
 import { DIV_STOCKS } from '../../constants/dividendStocks';
 import { useDividendsList } from '../../hooks/useDividend';
 
