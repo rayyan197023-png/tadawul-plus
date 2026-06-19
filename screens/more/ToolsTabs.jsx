@@ -1493,10 +1493,31 @@ function AlertsPanel(props) {
         {activeTab==="manual"&&showForm&&(
           <div style={{margin:"0 14px 12px",background:C.layer3,borderRadius:14,padding:14,border:"1px solid "+C.line}}>
             <div style={{fontSize:10,color:C.smoke,marginBottom:8,textAlign:"right",fontWeight:700}}>السهم</div>
-            <select value={sym.sym} onChange={function(e){var f=STOCKS.filter(function(s){return s.sym===e.target.value;});if(f[0])setSym(f[0]);}}
-              style={{width:"100%",background:C.layer2,border:"1px solid "+C.line,borderRadius:9,padding:"9px 12px",color:C.snow,fontSize:12,direction:"rtl",outline:"none",marginBottom:10,cursor:"pointer"}}>
-              {STOCKS.map(function(s){return(<option key={s.sym} value={s.sym} style={{background:C.layer2}}>{s.name} {s.p} ر.س</option>);})}
-            </select>
+            <div style={{position:"relative",marginBottom:10}}>
+              <input
+                value={price.startsWith("search:")? price.slice(7) : (sym.name+" "+sym.p+" ر.س")}
+                onChange={function(e){setPrice("search:"+e.target.value);}}
+                onFocus={function(){setPrice("search:");}}
+                placeholder="ابحث باسم السهم أو رقمه..."
+                style={{width:"100%",background:C.layer2,border:"1px solid "+C.gold+"55",borderRadius:9,padding:"9px 12px",color:C.snow,fontSize:12,direction:"rtl",outline:"none",boxSizing:"border-box"}}
+              />
+              {price.startsWith("search:") && (function(){
+                var q=price.slice(7).trim();
+                var results=q.length>0?STOCKS.filter(function(s){return s.sym.indexOf(q)>=0||s.name.indexOf(q)>=0;}).slice(0,6):STOCKS.slice(0,6);
+                return(
+                  <div style={{position:"absolute",top:"110%",left:0,right:0,background:C.layer2,border:"1px solid "+C.line,borderRadius:10,zIndex:50,overflow:"hidden",boxShadow:"0 8px 24px rgba(0,0,0,.5)",maxHeight:200,overflowY:"auto"}}>
+                    {results.map(function(s){return(
+                      <div key={s.sym} onClick={function(){setSym(s);setPrice("");}}
+                        style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 14px",borderBottom:"1px solid "+C.line+"44",cursor:"pointer",background:sym.sym===s.sym?C.gold+"11":"transparent"}}>
+                        <div style={{fontFamily:"monospace",fontSize:11,fontWeight:700,color:C.smoke}}>{s.sym}</div>
+                        <div style={{fontSize:12,color:C.snow}}>{s.name}</div>
+                        <div style={{fontSize:11,color:C.gold}}>{s.p} ر.س</div>
+                      </div>
+                    );})}
+                  </div>
+                );
+              })()}
+            </div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:10}}>
               {typeOpts.map(function(t){return(
                 <button key={t.k} onClick={function(){setType(t.k);}}
