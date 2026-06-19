@@ -89,13 +89,14 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
         } else {
           // باقي الفريمات: ohlcv يومي
           const periodMap = {
-            "1M": "3Mo", "3M": "3Mo", "6M": "1Y", "1Y": "1Y", "5Y": "1Y", "MAX": "1Y"
+            "1M": "1M", "3M": "3M", "6M": "6M", "1Y": "1Y", "5Y": "3Y", "MAX": "5Y"
           };
-          const periodParam = periodMap[per] || "3Mo";
+          const periodParam = periodMap[per] || "3M";
           const res = await fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${sym}&period=${periodParam}`);
           const data = res.ok ? await res.json() : null;
           if (data) {
-            const bars = data.bars || data.data || data.ohlcv || [];
+            const bars = data.data || data.bars || data.ohlcv || [];
+
             normalized = bars.map(b => ({
               o: +(b.o ?? b.open ?? 0),
               h: +(b.h ?? b.high ?? 0),
