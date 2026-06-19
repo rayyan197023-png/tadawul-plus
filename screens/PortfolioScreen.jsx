@@ -177,7 +177,7 @@ stopPct = Math.min(Math.abs(stopPct), 10);
 function DonutChart(props) {
   var positions=props.positions, tv=props.tv;
   if(!positions||positions.length===0) return null;
-  var cx=70, cy=70, r=54, r2=38;
+  var cx=80, cy=80, r=64, r2=44;
   var colors=[C.electric,C.mint,C.gold,C.coral,C.plasma,C.amber,C.teal];
   var slices=[];
   var angle=-Math.PI/2;
@@ -189,37 +189,88 @@ function DonutChart(props) {
     var x3=cx+r2*Math.cos(angle+sweep), y3=cy+r2*Math.sin(angle+sweep);
     var x4=cx+r2*Math.cos(angle), y4=cy+r2*Math.sin(angle);
     var large=sweep>Math.PI?1:0;
-    slices.push({d:"M"+x1+","+y1+" A"+r+","+r+" 0 "+large+",1 "+x2+","+y2+" L"+x3+","+y3+" A"+r2+","+r2+" 0 "+large+",0 "+x4+","+y4+" Z",color:colors[i%colors.length],pct:Math.round(pct*100),name:p.stk.name,pnlPct:p.pnlPct,cost:p.cost,value:p.value});
+    var midAngle=angle+sweep/2;
+    slices.push({
+      d:"M"+x1+","+y1+" A"+r+","+r+" 0 "+large+",1 "+x2+","+y2+" L"+x3+","+y3+" A"+r2+","+r2+" 0 "+large+",0 "+x4+","+y4+" Z",
+      color:colors[i%colors.length],
+      pct:Math.round(pct*100),
+      name:p.stk.name,
+      sym:p.sym,
+      pnlPct:p.pnlPct,
+      value:p.value,
+      midX:cx+(r+r2)/2*Math.cos(midAngle),
+      midY:cy+(r+r2)/2*Math.sin(midAngle),
+    });
     angle+=sweep;
   });
   return (
-    <div style={{display:"flex",alignItems:"center",gap:14}}>
-      <div style={{flexShrink:0}}>
-        <svg width={140} height={140}>
-          {slices.map(function(s,i){return <path key={i} d={s.d} fill={s.color} opacity={.88} style={{filter:"drop-shadow(0 2px 6px rgba(0,0,0,.5))"}}/>;}) }
-          <circle cx={cx} cy={cy} r={32} fill={C.layer1}/>
-          <text x={cx} y={cy-7} textAnchor="middle" fill={C.snow} fontSize={13} fontWeight={900} fontFamily="IBM Plex Mono,monospace">{slices.length}</text>
-          <text x={cx} y={cy+8} textAnchor="middle" fill={C.smoke} fontSize={9} fontFamily="Cairo,sans-serif">مركز</text>
+    <div style={{display:"flex",flexDirection:"column",gap:14}}>
+      {/* الدائرة */}
+      <div style={{display:"flex",justifyContent:"center"}}>
+        <svg width={160} height={160} style={{filter:"drop-shadow(0 8px 24px rgba(0,0,0,.5))"}}>
+          <defs>
+            {slices.map(function(s,i){return(
+              <radialGradient key={i} id={"dg"+i} cx="50%" cy="35%" r="65%">
+                <stop offset="0%" stopColor={s.color} stopOpacity="1"/>
+                <stop offset="100%" stopColor={s.color} stopOpacity="0.6"/>
+              </radialGradient>
+            );})}
+          </defs>
+          {/* ظل ثلاثي الأبعاد */}
+          <ellipse cx={cx} cy={cy+6} rx={r+4} ry={8} fill="rgba(0,0,0,0.35)" style={{filter:"blur(4px)"}}/>
+          {/* الشرائح */}
+          {slices.map(function(s,i){return(
+            <path key={i} d={s.d}
+              fill={"url(#dg"+i+")"}
+              stroke={C.ink} strokeWidth={2}
+              style={{filter:"drop-shadow(0 2px 8px "+s.color+"44)"}}
+            />
+          );})}
+          {/* دائرة داخلية بتأثير زجاجي */}
+          <circle cx={cx} cy={cy} r={r2-2} fill={C.layer1} stroke={C.layer3} strokeWidth={1}/>
+          <circle cx={cx} cy={cy-6} r={r2-8} fill="rgba(255,255,255,0.03)"/>
+          {/* النص المركزي */}
+          <text x={cx} y={cy-8} textAnchor="middle" fill={C.snow} fontSize={20} fontWeight={900} fontFamily="IBM Plex Mono,monospace">{slices.length}</text>
+          <text x={cx} y={cy+8} textAnchor="middle" fill={C.smoke} fontSize={10} fontFamily="Cairo,sans-serif">مركز</text>
         </svg>
       </div>
-      <div style={{flex:1,display:"flex",flexDirection:"column",gap:6}}>
+      {/* قائمة الأسهم */}
+      <div style={{display:"flex",flexDirection:"column",gap:8}}>
         {slices.map(function(s,i){return(
-          <div key={i} style={{display:"flex",alignItems:"center",gap:7}}>
-            <div style={{width:3,height:24,borderRadius:2,background:s.color,flexShrink:0}}/>
-            <div style={{flex:1}}>
-              <div style={{fontSize:12,color:C.mist,fontWeight:700}}>{s.name}</div>
-              <div style={{display:"flex",gap:8,marginTop:1,alignItems:"center",flexWrap:"wrap"}}>
-                <span style={{fontSize:11,color:s.color,fontFamily:"IBM Plex Mono,monospace",fontWeight:800}}>{s.pct}%</span>
-                <span style={{fontSize:11,color:s.pnlPct>=0?C.mint:C.coral,fontFamily:"IBM Plex Mono,monospace",fontWeight:800}}>({Math.round(s.value).toLocaleString("en-US")} ر)</span>
-                <span style={{fontSize:11,color:s.pnlPct>=0?C.mint:C.coral,fontFamily:"IBM Plex Mono,monospace"}}>{s.pnlPct>=0?"+":""}{s.pnlPct.toFixed(1)}%</span>
+          <div key={i} style={{
+            display:"flex",alignItems:"center",gap:10,
+            background:s.color+"08",
+            border:"1px solid "+s.color+"25",
+            borderRadius:12,
+            padding:"8px 12px",
+          }}>
+            {/* مؤشر اللون */}
+            <div style={{width:4,height:36,borderRadius:3,background:"linear-gradient(180deg,"+s.color+","+s.color+"66)",flexShrink:0,boxShadow:"0 0 8px "+s.color+"66"}}/>
+            {/* المعلومات */}
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}}>
+                <div style={{display:"flex",alignItems:"center",gap:6}}>
+                  <span style={{fontSize:13,color:C.snow,fontWeight:800}}>{s.name}</span>
+                  <span style={{fontSize:10,color:C.ash,background:C.layer3,borderRadius:4,padding:"1px 5px",fontFamily:"IBM Plex Mono,monospace"}}>{s.sym}</span>
+                </div>
+                <span style={{fontFamily:"IBM Plex Mono,monospace",fontSize:13,fontWeight:900,color:s.color}}>{s.pct}%</span>
+              </div>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                <span style={{fontFamily:"IBM Plex Mono,monospace",fontSize:11,color:C.smoke}}>{Math.round(s.value).toLocaleString("en-US")} ر</span>
+                <span style={{fontFamily:"IBM Plex Mono,monospace",fontSize:12,fontWeight:800,color:s.pnlPct>=0?C.mint:C.coral,background:(s.pnlPct>=0?C.mint:C.coral)+"15",borderRadius:5,padding:"1px 7px"}}>{s.pnlPct>=0?"+":""}{s.pnlPct.toFixed(1)}%</span>
+              </div>
+              {/* شريط النسبة */}
+              <div style={{height:3,background:C.layer3,borderRadius:2,marginTop:5,overflow:"hidden"}}>
+                <div style={{height:"100%",width:s.pct+"%",background:"linear-gradient(90deg,"+s.color+","+s.color+"88)",borderRadius:2,transition:"width 1s ease",boxShadow:"0 0 6px "+s.color+"44"}}/>
               </div>
             </div>
           </div>
-        );}) }
+        );})}
       </div>
     </div>
   );
 }
+
 
 function PerfChart(props) {
   var history=props.history;
