@@ -108,12 +108,14 @@ function DividendsTab(props) {
                 width:"100%",padding:"24px 20px",
                 border:"1px solid "+C.line,
                 boxShadow:"0 -24px 64px rgba(0,0,0,.7), inset 0 1px 0 "+C.layer3,
-                maxHeight:"88vh",overflowY:"auto",paddingBottom:60,
+                maxHeight:"92vh",overflowY:"scroll",
+                paddingBottom:100,
                 WebkitOverflowScrolling:"touch",
                 overscrollBehavior:"contain",
-
               }}>
-                <div style={{textAlign:"center",marginBottom:20}}>
+
+                <div style={{textAlign:"center",marginBottom:20,marginTop:10}}>
+
                   <div style={{fontSize:9,color:C.mint,fontWeight:700,letterSpacing:"2px",marginBottom:4}}>DIVIDENDS CALCULATOR</div>
                   <div className="glow-mint" style={{fontSize:18,fontWeight:900,color:C.snow}}>{divItem.name}</div>
                   <div style={{fontSize:10,color:C.smoke,marginTop:3}}>{divItem.freq} · عائد {(divItem.yield||0).toFixed(2)}% سنوي</div>
