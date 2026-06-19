@@ -3862,10 +3862,6 @@ return result;
               <button onClick={doAdd} style={{width:"100%",padding:"14px",background:canAdd?"linear-gradient(135deg,"+C.mint+"33,"+C.mint+"18)":"rgba(255,255,255,.04)",border:"1px solid "+(canAdd?C.mint+"55":C.line),borderRadius:14,cursor:canAdd?"pointer":"default",fontSize:14,fontWeight:900,color:canAdd?C.mint:C.smoke,fontFamily:"Cairo,sans-serif",boxShadow:canAdd?"0 4px 20px "+C.mint+"22":"none",transition:"all .2s"}}>
                 {canAdd?"اضافة المركز":"اختر سهماً وادخل البيانات"}
               </button>
-              <div style={{marginTop:16,paddingTop:16,borderTop:"1px solid "+C.line}}>
-                <div style={{fontSize:11,color:C.smoke,fontWeight:700,marginBottom:5}}>راس مالك (لحساب المبالغ)</div>
-                <input type="number" value={capital} onChange={function(e){setCapital(parseFloat(e.target.value)||100000);}} style={{width:"100%",boxSizing:"border-box",background:C.layer3,border:"1px solid "+C.line,borderRadius:11,padding:"10px",fontSize:15,color:C.snow,fontFamily:"IBM Plex Mono,monospace",outline:"none",textAlign:"center"}} onKeyDown={function(e){if(e.key==="Enter"){haptic.tap();e.target.blur();}}} />
-              </div>
             </div>
           </div>
         </div>
