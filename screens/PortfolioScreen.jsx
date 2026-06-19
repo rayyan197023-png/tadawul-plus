@@ -1729,7 +1729,7 @@ return result;
           </div>
 
           <div style={{display:"flex",alignItems:"center",gap:5,justifyContent:"flex-end",flexWrap:"wrap"}}>
-            <span style={{fontSize:11,fontWeight:700,color:tp>=0?C.mint:C.coral,background:(tp>=0?C.mint:C.coral)+"15",border:"1px solid "+(tp>=0?C.mint:C.coral)+"30",padding:"2px 7px",borderRadius:6,fontFamily:"IBM Plex Mono,monospace"}}>اجمالي الارباح {tp>=0?"+":""}{fmt(tp)} ر</span>
+            <span style={{fontSize:11,fontWeight:700,color:tp>=0?C.mint:C.coral,background:(tp>=0?C.mint:C.coral)+"15",border:"1px solid "+(tp>=0?C.mint:C.coral)+"30",padding:"2px 7px",borderRadius:6,fontFamily:"IBM Plex Mono,monospace"}}>اجمالي الأرباح {tp>=0?"+":""}{fmt(tp)} ر</span>
             <span style={{fontSize:11,fontWeight:700,color:dp>=0?C.mint:C.coral,background:(dp>=0?C.mint:C.coral)+"15",border:"1px solid "+(dp>=0?C.mint:C.coral)+"30",padding:"2px 7px",borderRadius:6,fontFamily:"IBM Plex Mono,monospace"}}>ربح اليوم {dp>=0?"+":""}{fmt(dp)} ر</span>
             {urgentN>0&&(<span className="danger-pulse" style={{fontSize:11,fontWeight:800,color:C.coral,background:C.coral+"15",border:"1px solid "+C.coral+"44",borderRadius:6,padding:"2px 7px",display:"flex",alignItems:"center",gap:3}}><SvgIcon name="urgent" size={9} color={C.coral}/>{urgentN} عاجل</span>)}
           </div>
