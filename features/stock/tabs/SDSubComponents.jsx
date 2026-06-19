@@ -430,10 +430,12 @@ function IntradayChart({ stk }) {
 
   if (!bars.length) return null;
 
-  // فلتر اليوم الحالي فقط
-  const today = new Date().toISOString().slice(0, 10);
-  const todayBars = bars.filter(b => b.date.startsWith(today));
-  const displayBars = todayBars.length >= 2 ? todayBars : bars.slice(-10);
+  // فلتر اليوم الحالي -- بتوقيت السعودية (UTC+3)
+  const nowKSA = new Date(Date.now() + 3 * 3600000);
+  const today = nowKSA.toISOString().slice(0, 10);
+  const todayBars = bars.filter(b => b.date && b.date.startsWith(today));
+  // إذا لم تتوفر بيانات اليوم (سوق مغلق) -- خذ آخر 30 شمعة
+  const displayBars = todayBars.length >= 2 ? todayBars : bars.slice(-30);
 
   const closes = displayBars.map(b => b.close);
   const vols   = displayBars.map(b => b.volume);
