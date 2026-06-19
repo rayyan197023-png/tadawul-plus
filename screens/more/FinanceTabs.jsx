@@ -107,7 +107,7 @@ function DividendsTab(props) {
                 width:"100%",padding:"24px 20px",
                 border:"1px solid "+C.line,
                 boxShadow:"0 -24px 64px rgba(0,0,0,.7), inset 0 1px 0 "+C.layer3,
-                maxHeight:"88vh",overflowY:"auto",
+                maxHeight:"88vh",overflowY:"auto",paddingBottom:40,
               }}>
                 <div style={{textAlign:"center",marginBottom:20}}>
                   <div style={{fontSize:9,color:C.mint,fontWeight:700,letterSpacing:"2px",marginBottom:4}}>DIVIDENDS CALCULATOR</div>
@@ -194,7 +194,7 @@ function DividendsTab(props) {
                   width:"100%",background:"linear-gradient(135deg,"+C.layer3+","+C.edge+")",
                   border:"1px solid "+C.line,color:C.smoke,
                   padding:"14px",borderRadius:14,fontSize:13,cursor:"pointer",
-                  fontFamily:"Cairo,sans-serif",
+                  fontFamily:"Cairo,sans-serif",marginBottom:20,
                 }}>إغلاق</button>
               </div>
             </div>
