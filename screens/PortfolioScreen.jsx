@@ -1738,8 +1738,8 @@ return result;
             </div>
           </div>
 
-          {/* صف الإحصائيات: اليوم / المُستخدم / المتاح */}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginTop:10,paddingTop:10,borderTop:"1px solid "+C.line+"44"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,marginTop:6,paddingTop:6,borderTop:"1px solid "+C.line+"44"}}>
+
               {(function(){
               var capitalUsed=tv;
               var capitalFree=Math.max(0,capital-capitalUsed);
