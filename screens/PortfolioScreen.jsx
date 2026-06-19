@@ -3758,34 +3758,6 @@ return result;
               <div style={{width:40,height:40}}/>
             </div>
 
-            {/* ─── شريط التَقدُّم + رأس المال ─── */}
-            <div style={{padding:"10px 20px 14px",borderBottom:"1px solid "+C.line+"55",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,gap:10}}>
-              <div style={{display:"flex",alignItems:"center",gap:8,flex:1}}>
-                {[{n:"١",l:"السهم"},{n:"٢",l:"الكمية"},{n:"٣",l:"تأكيد"}].map(function(st,idx){
-                  var active=idx===0?true:idx===1?!!(addSym):idx===2?canAdd:false;
-                  return(
-                    <div key={idx} style={{display:"flex",alignItems:"center",gap:6,flex:idx<2?"none":"none"}}>
-                      <div style={{display:"flex",alignItems:"center",gap:4}}>
-                        <div style={{
-                          width:22,height:22,borderRadius:"50%",
-                          background:active?"linear-gradient(135deg,"+C.electric+","+C.electric+"88)":"rgba(255,255,255,.06)",
-                          display:"flex",alignItems:"center",justifyContent:"center",
-                          fontSize:11,fontWeight:900,color:active?C.snow:C.ash,
-                          boxShadow:active?"0 0 12px "+C.electric+"55":"none",
-                          transition:"all .25s",
-                        }}>{st.n}</div>
-                        <span style={{fontSize:10,color:active?C.snow:C.ash,fontWeight:700}}>{st.l}</span>
-                      </div>
-                      {idx<2&&<div style={{width:14,height:1.5,background:active?C.electric+"66":C.line,borderRadius:1}}/>}
-                    </div>
-                  );
-                })}
-              </div>
-              <div style={{background:C.electric+"18",border:"1px solid "+C.electric+"33",borderRadius:8,padding:"4px 9px",flexShrink:0}}>
-                <span style={{fontSize:9,fontWeight:600,color:C.electric+"aa",display:"block",lineHeight:1}}>رأس المال</span>
-                <span style={{fontSize:11,fontWeight:900,color:C.electric,fontFamily:"IBM Plex Mono,monospace"}}>{(capital/1000).toFixed(0)}K</span>
-              </div>
-            </div>
             <div style={{overflowY:"auto",padding:"14px 20px 160px",flex:1,WebkitOverflowScrolling:"touch",overscrollBehavior:"contain"}}>
 
               <div style={{marginBottom:14}}>
