@@ -88,15 +88,21 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
           }
         } else {
           // باقي الفريمات: ohlcv يومي
-          const periodMap = {
-            "1M": "1M", "3M": "3M", "6M": "6M", "1Y": "1Y", "5Y": "3Y", "MAX": "5Y"
-          };
-          const periodParam = periodMap[per] || "3M";
-          const res = await fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${sym}&period=${periodParam}`);
+          // sahmk يدعم 1Y فقط بشكل موثوق -- نجلب سنة ونقطع حسب الفترة
+          const res = await fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${sym}&period=1Y`);
           const data = res.ok ? await res.json() : null;
           if (data) {
             const bars = data.data || data.bars || data.ohlcv || [];
-
+            const sliceMap = {"1M":22,"3M":65,"6M":130,"1Y":252,"5Y":252,"MAX":252};
+            const sliceN = sliceMap[per] || 65;
+            normalized = bars.slice(-sliceN).map(b => ({
+              o: +(b.open  ?? b.o ?? 0),
+              h: +(b.high  ?? b.h ?? 0),
+              l: +(b.low   ?? b.l ?? 0),
+              c: +(b.close ?? b.c ?? b.adjusted_close ?? 0),
+              v: +(b.volume ?? b.v ?? 0),
+            })).filter(b => b.c > 0);
+          }
 
             normalized = bars.map(b => ({
               o: +(b.o ?? b.open ?? 0),
