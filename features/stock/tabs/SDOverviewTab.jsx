@@ -97,6 +97,7 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
           if (data) {
             const bars = data.data || data.bars || data.ohlcv || [];
 
+
             normalized = bars.map(b => ({
               o: +(b.o ?? b.open ?? 0),
               h: +(b.h ?? b.high ?? 0),
