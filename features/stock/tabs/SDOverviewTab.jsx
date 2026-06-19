@@ -111,10 +111,6 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
               c: +(b.c ?? b.close ?? b.last ?? 0),
               v: +(b.v ?? b.volume ?? 0),
             })).filter(b => b.c > 0);
-
-            if (per === "6M") normalized = normalized.slice(-130);
-            else if (per === "1M") normalized = normalized.slice(-22);
-            else if (per === "3M") normalized = normalized.slice(-65);
           }
         }
 
