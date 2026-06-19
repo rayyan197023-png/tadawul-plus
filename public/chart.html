@@ -7518,7 +7518,19 @@ function setRange(r){
  document.querySelectorAll('#range-menu .pmenu-item').forEach(el=>el.classList.toggle('active',el.textContent.trim()===r));
  closeMenus();
  // تغيير الزمن لا يغير الفريم — فقط نغير عدد الشموع المعروضة
- const rangeToVisible={'أسبوع':7,'شهر':22,'3أشهر':65,'6أشهر':130,'سنة':248,'سنتين':248,'5سنوات':248,'الكل':248};
+const rangeToVisible={'أسبوع':7,'شهر':22,'3أشهر':65,'6أشهر':130,'سنة':248,'سنتين':496,'5سنوات':1260,'الكل':3650};
+const newVis=Math.min(rangeToVisible[r]||248, state.allCandles.length);
+if(state.allCandles&&state.allCandles.length>0){
+ state.visible=newVis;
+ state.offset=0;
+ // إذا طلب المستخدم بيانات أكثر من المتوفرة — اجلب من API
+ if(rangeToVisible[r]>state.allCandles.length){
+  loadStk();
+ } else {
+  invalidateChart();
+  render();
+ }
+
  const newVis=rangeToVisible[r]||248;
  if(state.allCandles&&state.allCandles.length>0){
   state.visible=Math.min(newVis,state.allCandles.length);
