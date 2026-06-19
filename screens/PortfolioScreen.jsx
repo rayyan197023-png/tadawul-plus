@@ -1743,7 +1743,6 @@ return result;
               var capitalFree=Math.max(0,capital-capitalUsed);
               var usedPct=capital>0?Math.round(capitalUsed/capital*100):0;
               return [
-                {l:"اليوم",v:(dp>=0?"+":"")+fmt(dp),u:"ر",c:dp>=0?C.mint:C.coral,bg:dp>=0?C.mint:C.coral},
 
               ].map(function(s,i){return(
                 <div key={i} style={{
