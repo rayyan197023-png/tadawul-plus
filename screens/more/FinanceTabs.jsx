@@ -100,14 +100,18 @@ function DividendsTab(props) {
         <div style={{position:"relative",zIndex:1}}>
           
           {divItem&&(
-            <div style={{position:"fixed",inset:0,background:"rgba(6,8,15,.97)",zIndex:99,display:"flex",alignItems:"flex-end"}}>
+            <div style={{position:"fixed",inset:0,background:"rgba(6,8,15,.97)",zIndex:99,display:"flex",alignItems:"flex-end",touchAction:"none"}}>
+
               <div style={{
                 background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",
                 borderRadius:"24px 24px 0 0",
                 width:"100%",padding:"24px 20px",
                 border:"1px solid "+C.line,
                 boxShadow:"0 -24px 64px rgba(0,0,0,.7), inset 0 1px 0 "+C.layer3,
-                maxHeight:"88vh",overflowY:"auto",paddingBottom:40,
+                maxHeight:"88vh",overflowY:"auto",paddingBottom:60,
+                WebkitOverflowScrolling:"touch",
+                overscrollBehavior:"contain",
+
               }}>
                 <div style={{textAlign:"center",marginBottom:20}}>
                   <div style={{fontSize:9,color:C.mint,fontWeight:700,letterSpacing:"2px",marginBottom:4}}>DIVIDENDS CALCULATOR</div>
