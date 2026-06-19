@@ -440,12 +440,8 @@ function IntradayChart({ stk }) {
 
   if (!bars.length) return null;
 
-  // فلتر اليوم الحالي -- بتوقيت السعودية (UTC+3)
-  const nowKSA = new Date(Date.now() + 3 * 3600000);
-  const today = nowKSA.toISOString().slice(0, 10);
-  const todayBars = bars.filter(b => b.date && b.date.startsWith(today));
-  // إذا لم تتوفر بيانات اليوم (سوق مغلق) -- خذ آخر 30 شمعة
-  const displayBars = todayBars.length >= 2 ? todayBars : bars.slice(-30);
+  // ohlcv يومي -- لا حاجة لفلتر اليوم
+  const displayBars = bars.slice(-60);
 
   const closes = displayBars.map(b => b.close);
   const vols   = displayBars.map(b => b.volume);
@@ -478,7 +474,8 @@ function IntradayChart({ stk }) {
   const changePct = ((change / closes[0]) * 100).toFixed(2);
 
   return (
-    <SectionCard title="شارت Intraday -- ساعي" accent={C.teal}>
+    <SectionCard title="الشارت اليومي -- 3 أشهر" accent={C.teal}>
+
       <div style={{ padding: "10px 16px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
           <div style={{ fontSize: 10, color: C.smoke }}>
