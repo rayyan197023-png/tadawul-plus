@@ -25,7 +25,8 @@ import { C, Ico, COMM, PRIORITY_ORDER, WATCHLIST_DEFAULT, RANKINGS, FUNDS, IPOS,
 import { RankingsTab, CommoditiesTab } from './more/MarketTabs';
 
 // ── تبويبات مالية
-import { DividendsTab, IposTab, FundsTab, CalendarTab, MacroTab } from './more/FinanceTabs';
+import { DividendsTab, FundsTab, MacroTab } from './more/FinanceTabs';
+
 
 // ── تبويبات الأدوات
 import { SnapshotsTab, SettingsTab, ProfitCalc, CompareView, AlertsPanel, WatchlistTab } from './more/ToolsTabs';
@@ -93,8 +94,6 @@ const { setTab } = useNav();
   const [rankSec, setRankSec] = useState("الكل");
   const [commCat, setCommCat] = useState("الكل");
   const [fundTab, setFundTab] = useState("all");
-  const [ipoF, setIpoF] = useState("all");
-  const [calF, setCalF] = useState("all");
   const [homeConf, setHomeConf] = useState({showOpportunity:true,showTopMovers:true,showSectorChart:true,showAdvanced:false});
   const [snaps, setSnaps] = useState(function(){
   try{
