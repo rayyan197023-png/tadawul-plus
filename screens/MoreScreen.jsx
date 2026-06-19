@@ -19,7 +19,7 @@ import AILearningDashboard from '../components/AILearningDashboard';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
 import { useRankings } from '../hooks/useRankings';
 // ── Shared constants + UI
-import { C, Ico, COMM, PRIORITY_ORDER, WATCHLIST_DEFAULT, RANKINGS, FUNDS, IPOS, EVENTS, DIVS, CSS_STR, TADAWUL, WTI } from './more/MoreShared'; 
+import { C, Ico, COMM, PRIORITY_ORDER, WATCHLIST_DEFAULT, RANKINGS, FUNDS, DIVS, CSS_STR, TADAWUL, WTI } from './more/MoreShared';
 
 // ── تبويبات السوق
 import { RankingsTab, CommoditiesTab } from './more/MarketTabs';
