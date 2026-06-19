@@ -376,8 +376,6 @@ useEffect(function(){
   commData.forEach(function(c){if(catList.indexOf(c.cat)===-1)catList.push(c.cat);});
   var commF=commCat==="الكل"?commData:commData.filter(function(c){return c.cat===commCat;});
   var fundsF=fundTab==="all"?FUNDS:fundTab==="top"?FUNDS.slice().sort(function(a,b){return b.ret1y-a.ret1y;}).slice(0,3):FUNDS.filter(function(f){return f.type==="إسلامي";});
-  var iposF=ipoF==="all"?IPOS:ipoF==="open"?IPOS.filter(function(x){return x.open;}):IPOS.filter(function(x){return !x.open;});
-  var eventsF=calF==="all"?EVENTS:calF==="high"?EVENTS.filter(function(e){return e.imp===3;}):EVENTS.filter(function(e){return e.sym!==null;});
 
   function cfmt(v) {
   if(v==null||isNaN(v)) return "-- ر.س";
@@ -424,8 +422,6 @@ useEffect(function(){
     commData:commData, commCat:commCat, setCommCat:setCommCat,
     commLastUpdate:commLastUpdate, commLoading:commLoading, fetchYahoo:fetchYahooData,
     fundTab:fundTab, setFundTab:setFundTab,
-    ipoF:ipoF, setIpoF:setIpoF,
-    calF:calF, setCalF:setCalF,
     divItem:divItem, setDivItem:setDivItem,
     divShares:divShares, setDivShares:setDivShares,
     divCost:divCost, setDivCost:setDivCost,
