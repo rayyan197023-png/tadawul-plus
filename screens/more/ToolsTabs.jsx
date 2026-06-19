@@ -1345,7 +1345,7 @@ function AlertsPanel(props) {
 
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(6,8,15,.95)",zIndex:999,display:"flex",flexDirection:"column",justifyContent:"flex-end"}}>
-      <div style={{background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",borderRadius:"20px 20px 0 0",maxHeight:"92vh",overflowY:"auto",paddingBottom:"80px",border:"1px solid "+C.line,boxShadow:"0 -24px 60px rgba(0,0,0,.6)"}}>
+      <div style={{background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",borderRadius:"20px 20px 0 0",height:"92vh",overflowY:"scroll",paddingBottom:"120px",border:"1px solid "+C.line,boxShadow:"0 -24px 60px rgba(0,0,0,.6)",WebkitOverflowScrolling:"touch",overscrollBehavior:"contain"}}>
         
         {/* Header */}
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px",borderBottom:"1px solid "+C.line,position:"sticky",top:0,background:"linear-gradient(160deg,"+C.layer1+","+C.layer2+")",zIndex:10}}>
