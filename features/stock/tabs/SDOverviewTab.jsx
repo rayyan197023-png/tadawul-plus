@@ -115,9 +115,10 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
         }
 
         if (!cancelled) setSahmkBars(normalized);
-      } catch {
+      } catch (e) {
         if (!cancelled) setSahmkBars([]);
       } finally {
+
         if (!cancelled) setSahmkLoading(false);
       }
     };
