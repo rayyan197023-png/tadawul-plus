@@ -137,7 +137,7 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
     // لا بيانات وهمية -- إرجاع مصفوفة فارغة إذا لم تتوفر بيانات حقيقية
     return [];
 
-  }, [sym, per, base, zoom]);
+  }, [sym, per, base, zoom, history]);
 
   const n=pts.length;
   const closes=pts.map(p=>p.c);
