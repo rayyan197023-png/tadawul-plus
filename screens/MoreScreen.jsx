@@ -399,8 +399,7 @@ useEffect(function(){
     {id:"rankings",   label:"قوائم التصنيف",   color:C.amber,   icoK:"medal",   sub:"أفضل الأسهم · مباشر"},
     {id:"commodities",label:"الأسواق العالمية", color:C.gold,    icoK:"globe",   sub:"نفط · معادن · مؤشرات"},
     {id:"macro",      label:"الاقتصاد الكلي",     color:"#22d3ee", icoK:"globe",   sub:"GDP · تضخم · فائدة · PMI"},
-    {id:"ipos",       label:"الاكتتابات",        color:C.electric,icoK:"rocket",  sub:"مفتوح · قريباً · مكتمل"},
-    {id:"calendar",   label:"التقويم المالي",    color:C.teal,    icoK:"calendar",sub:"أرباح · توزيعات · اجتماعات"},
+
     {id:"dividends",  label:"التوزيعات",         color:C.mint,    icoK:"coins",   sub:"استحقاقات · DRIP · YoC"},
     {id:"compare",    label:"مقارنة سهمين",      color:"#f97316", icoK:"scale",   sub:"رادار · جدول · مقاييس"},
 
@@ -689,14 +688,10 @@ style={{
       
       {sub==="dividends"&&<DividendsTab p={tabProps}/>}
 
-      
-      {sub==="ipos"&&<IposTab p={tabProps}/>}
 
       
       {sub==="funds"&&<FundsTab p={tabProps}/>}
 
-      
-      {sub==="calendar"&&<CalendarTab p={tabProps}/>}
 
       
       {sub==="snapshots"&&<SnapshotsTab p={tabProps}/>}
