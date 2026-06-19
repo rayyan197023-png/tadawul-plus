@@ -350,7 +350,15 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
 
   },[pts,crosshair,chartType,stk]);
 
-  if(n===0) return null;
+  if(n===0) return (
+    <div style={{height:220,display:"flex",alignItems:"center",justifyContent:"center",background:C.ink}}>
+      <div style={{textAlign:"center"}}>
+        <div style={{fontSize:12,color:C.smoke,marginBottom:8}}>جارٍ تحميل البيانات...</div>
+        <div style={{width:32,height:32,border:`3px solid ${C.line}`,borderTopColor:C.electric,borderRadius:"50%",animation:"spin 0.9s linear infinite",margin:"0 auto"}}/>
+        <style>{"@keyframes spin{to{transform:rotate(360deg)}}"}</style>
+      </div>
+    </div>
+  );
 
   const getCoords=(clientX,clientY)=>{
     const canvas=canvasRef.current; if(!canvas) return null;
