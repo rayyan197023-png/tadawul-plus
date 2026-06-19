@@ -1738,13 +1738,13 @@ return result;
 
           {/* صف الإحصائيات: اليوم / المُستخدم / المتاح */}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginTop:10,paddingTop:10,borderTop:"1px solid "+C.line+"44"}}>
-            {(function(){
+              {(function(){
               var capitalUsed=tv;
               var capitalFree=Math.max(0,capital-capitalUsed);
               var usedPct=capital>0?Math.round(capitalUsed/capital*100):0;
               return [
-
               ].map(function(s,i){return(
+
                 <div key={i} style={{
                   background:s.bg+"08",
                   border:"1px solid "+s.bg+"22",
