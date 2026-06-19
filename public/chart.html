@@ -7533,17 +7533,6 @@ function setRange(r){
  }
 }
 
- const newVis=rangeToVisible[r]||248;
- if(state.allCandles&&state.allCandles.length>0){
-  state.visible=Math.min(newVis,state.allCandles.length);
-  state.offset=0;
-  invalidateChart();
-  render();
- } else {
-  loadStk();
- }
-}
-
 
 function toggleCtMenu(){
  const m=document.getElementById('ct-menu'),b=document.getElementById('ct-btn');
