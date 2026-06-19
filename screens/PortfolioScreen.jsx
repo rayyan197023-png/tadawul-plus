@@ -1763,82 +1763,18 @@ return result;
         </div>
         )}
         {!headerMin && (
-          <div style={{display:"flex",gap:10,marginTop:12,marginBottom:4}}>
-            <button
-              onClick={function(){switchTab("decisions");}}
-              style={{
-                flex:1,
-                padding:"14px 10px",
-                background:"linear-gradient(135deg,"+C.gold+"18,"+C.gold+"08)",
-                border:"1px solid "+C.gold+"33",
-                borderRadius:14,
-                cursor:"pointer",
-                display:"flex",
-                flexDirection:"column",
-                alignItems:"center",
-                gap:6,
-                boxShadow:"0 4px 12px "+C.gold+"15",
-                transition:"all 0.2s",
-              }}
-            >
-              <div style={{fontSize:22}}>🔍</div>
-              <div style={{fontSize:12,fontWeight:900,color:C.gold,fontFamily:"Cairo,sans-serif"}}>
-                التحليل
-              </div>
-              <div style={{fontSize:9,color:C.smoke,fontWeight:600}}>
-                9 طبقات
-              </div>
+          <div style={{display:"flex",gap:6,marginTop:8,marginBottom:4}}>
+            <button onClick={function(){switchTab("decisions");}} style={{flex:1,padding:"8px 6px",background:"linear-gradient(135deg,"+C.gold+"18,"+C.gold+"08)",border:"1px solid "+C.gold+"33",borderRadius:10,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
+              <div style={{fontSize:12,fontWeight:900,color:C.gold,fontFamily:"Cairo,sans-serif"}}>التحليل</div>
+              <div style={{fontSize:9,color:C.smoke,fontWeight:600}}>9 طبقات</div>
             </button>
-            
-            <button
-            onClick={function(){setTab(TAB_IDS.REBALANCING);}}
-              style={{
-                flex:1,
-                padding:"14px 10px",
-                background:"linear-gradient(135deg,"+C.electric+"18,"+C.electric+"08)",
-                border:"1px solid "+C.electric+"33",
-                borderRadius:14,
-                cursor:"pointer",
-                display:"flex",
-                flexDirection:"column",
-                alignItems:"center",
-                gap:6,
-                boxShadow:"0 4px 12px "+C.electric+"15",
-                transition:"all 0.2s",
-              }}
-            >
-              <div style={{fontSize:22}}>⚖️</div>
-              <div style={{fontSize:12,fontWeight:900,color:C.electric,fontFamily:"Cairo,sans-serif"}}>
-                توازن المحفظة
-              </div>
-              <div style={{fontSize:9,color:C.smoke,fontWeight:600}}>
-                Rebalance
-              </div>
+            <button onClick={function(){setTab(TAB_IDS.REBALANCING);}} style={{flex:1,padding:"8px 6px",background:"linear-gradient(135deg,"+C.electric+"18,"+C.electric+"08)",border:"1px solid "+C.electric+"33",borderRadius:10,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
+              <div style={{fontSize:12,fontWeight:900,color:C.electric,fontFamily:"Cairo,sans-serif"}}>توازن</div>
+              <div style={{fontSize:9,color:C.smoke,fontWeight:600}}>Rebalance</div>
             </button>
-                        <button
-              onClick={function(){haptic.tap(); switchTab("iq");}}
-              style={{
-                flex:1,
-                padding:"14px 10px",
-                background:"linear-gradient(135deg,"+C.plasma+"18,"+C.plasma+"08)",
-                border:"1px solid "+C.plasma+"33",
-                borderRadius:14,
-                cursor:"pointer",
-                display:"flex",
-                flexDirection:"column",
-                alignItems:"center",
-                gap:6,
-                boxShadow:"0 4px 12px "+C.plasma+"15",
-                transition:"all 0.2s",
-              }}
-            >
-              <div style={{fontSize:22}}>🧠</div>
-              <div style={{fontSize:12,fontWeight:900,color:C.plasma,fontFamily:"Cairo,sans-serif"}}>
-                Portfolio IQ
-              </div>
-              <div style={{fontSize:9,color:C.smoke,fontWeight:600}}>
-                ذكاء متقدم
-              </div>
+            <button onClick={function(){haptic.tap(); switchTab("iq");}} style={{flex:1,padding:"8px 6px",background:"linear-gradient(135deg,"+C.plasma+"18,"+C.plasma+"08)",border:"1px solid "+C.plasma+"33",borderRadius:10,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
+              <div style={{fontSize:12,fontWeight:900,color:C.plasma,fontFamily:"Cairo,sans-serif"}}>Portfolio IQ</div>
+              <div style={{fontSize:9,color:C.smoke,fontWeight:600}}>ذكاء متقدم</div>
             </button>
           </div>
         )}
