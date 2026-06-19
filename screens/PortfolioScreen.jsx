@@ -1682,17 +1682,18 @@ return result;
         <div className="card-enter" style={{
           background:"linear-gradient(145deg,"+C.layer1+","+C.layer2+")",
           borderRadius:18,
-          padding:"14px 16px",
+          padding:"12px 16px",
           border:"1px solid "+(tp>=0?C.mint:C.coral)+"33",
           boxShadow:"0 8px 24px "+(tp>=0?C.mint:C.coral)+"22, inset 0 1px 0 "+C.layer3,
           marginBottom:10,
           position:"relative",
           overflow:"hidden",
         }}>
+
           {/* شريط علويّ ملوّن */}
           <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,"+(tp>=0?C.mint:C.coral)+"00,"+(tp>=0?C.mint:C.coral)+"ff,"+(tp>=0?C.mint:C.coral)+"00)"}}/>
           
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
 
             {/* اليسار: حلقة العائد */}
             <div style={{position:"relative",width:100,height:100,flexShrink:0}}>
