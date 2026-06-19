@@ -103,15 +103,6 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
               v: +(b.volume ?? b.v ?? 0),
             })).filter(b => b.c > 0);
           }
-
-            normalized = bars.map(b => ({
-              o: +(b.o ?? b.open ?? 0),
-              h: +(b.h ?? b.high ?? 0),
-              l: +(b.l ?? b.low  ?? 0),
-              c: +(b.c ?? b.close ?? b.last ?? 0),
-              v: +(b.v ?? b.volume ?? 0),
-            })).filter(b => b.c > 0);
-          }
         }
 
         if (!cancelled) setSahmkBars(normalized);
