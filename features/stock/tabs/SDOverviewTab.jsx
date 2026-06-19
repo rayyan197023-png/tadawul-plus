@@ -134,20 +134,9 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
     if (history.length >= 5)
       return history.slice(-n).map(h=>({ o:h.o??h.c, h:h.h??h.c, l:h.l??h.c, c:h.c, v:h.v??0 }));
 
-    const volPct = per==="1D"?0.002:per==="1W"?0.007:per==="1M"?0.010:per==="3M"?0.012:per==="6M"?0.014:per==="1Y"?0.016:0.020;
-    const seed = sym.split("").reduce((a,c2)=>a+c2.charCodeAt(0),0);
-    let lcg = (seed * 1664525 + 1013904223) & 0xffffffff;
-    const rand = () => { lcg = (lcg * 1664525 + 1013904223) & 0xffffffff; return (lcg >>> 0) / 0xffffffff; };
-    const arr=[]; let p = base*(0.95+rand()*0.10); p=Math.max(base*0.88,Math.min(base*1.12,p));
-    for(let i=0;i<n;i++){
-      const o=parseFloat(p.toFixed(2));
-      const pull=(base-p)*(0.04+(i/n)*0.08), noise=(rand()-0.5)*base*volPct*2;
-      p=Math.max(base*0.84,Math.min(base*1.16,p+pull+noise));
-      const c2=i===n-1?base:parseFloat(p.toFixed(2));
-      const br=Math.abs(c2-o)*0.5+base*volPct*0.3, wm=0.3+rand()*0.5;
-      arr.push({o,h:parseFloat((Math.max(o,c2)+br*wm).toFixed(2)),l:parseFloat((Math.min(o,c2)-br*wm).toFixed(2)),c:c2,v:Math.floor(60e6+rand()*140e6)});
-    }
-    return arr;
+    // لا بيانات وهمية -- إرجاع مصفوفة فارغة إذا لم تتوفر بيانات حقيقية
+    return [];
+
   }, [sym, per, base, zoom]);
 
   const n=pts.length;
