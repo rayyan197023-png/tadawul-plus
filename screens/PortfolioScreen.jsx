@@ -1412,10 +1412,12 @@ var positionData = {
 
 var portfolioIQ = useMemo(function(){
     if (!positions || positions.length === 0) return null;
+    var realPositions = positions.filter(function(p){ return p.hasRealData; });
+    if (realPositions.length === 0) return null; // لا بيانات حقيقية بعد -- لا نحسب شيئاً
     try {
-    var positionsWithDecision = positions.map(function(p){  
+    var positionsWithDecision = realPositions.map(function(p){  
         return Object.assign({}, p, {
-          bars: getBars(p.sym, p.stk, 60), // ✨ ضروري لـ analyzePortfolio بداخل analyzePortfolioIQ
+          bars: realBarsMap[p.sym].slice(-60),
           entryDecision: p.health ? {
             grade: p.health.grade || 'C',
             score: p.health.score || 50,
