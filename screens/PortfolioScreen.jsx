@@ -118,8 +118,9 @@ return {
   upside: null,
   rr: sa.targets ? sa.targets.expectedRR : null,
   smartData: {
-    stopPrice: sa.stopData ? sa.stopData.stopPrice : null,
-    stopPct: sa.stopData ? sa.stopData.stopPct : null,
+    stopPrice: sa.trailingStop ? sa.trailingStop.stopPrice : (sa.stopData ? sa.stopData.stopPrice : null),
+    stopPct: sa.trailingStop ? sa.trailingStop.stopPct : (sa.stopData ? sa.stopData.stopPct : null),
+    stopMode: sa.trailingStop ? sa.trailingStop.mode : 'fixed', // ✨ 'fixed' | 'trailing'
     targets: sa.targets,
     positionHealth: sa.positionHealth,
     confidence: sa.confidence,
