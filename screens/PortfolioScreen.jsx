@@ -1279,9 +1279,11 @@ var positionData = {
   avgCost: pp.avgCost,
   curPrice: stk.p,
   qty: pp.qty,
+  stk: stk, // ✨ مطلوب لتصنيف قيادي/مضاربي عبر mktCap في الوقف المتحرك
   entryDate: pp.entryDate || 
              (entryFromLog ? entryFromLog.date + "T00:00:00.000Z" : null),
 };
+
           smartAction = calcSmartAction(positionData, h, smartBars, h.riskGate || 'SAFE');
         }
             } catch(e) {
