@@ -1497,7 +1497,8 @@ if (mktCap > 50000000000) { // 50B+ = Large cap
  * - Historical returns
  * - Random walk with drift
  */
-function runCrystalBall(positions: IQPosition[], base: any, simulations: number = 1000): CrystalBallAnalysis {
+function runCrystalBall(positions: IQPosition[], base: any, simulations: number = 1000): CrystalBallAnalysis | null {
+
   // Use defaults if data unavailable (allows testing without historical bars)
   // ✨ تحقق صريح بدل || الذي يستبدل 0% الحقيقي بافتراض مزيّف
   const hasRealPerf = !!(base.performance &&
