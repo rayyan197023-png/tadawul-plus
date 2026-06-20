@@ -30,7 +30,7 @@ const memCache = {}; // { [sym]: { bars, ts } }
 function normalizeCandles(rawData) {
   if (!Array.isArray(rawData) || !rawData.length) return [];
 
-  return rawData.map(function (d, i) {
+  var sorted = rawData.map(function (d, i) {
     var t = d.t instanceof Date ? d.t
           : d.t         ? new Date(typeof d.t === 'number' && d.t < 1e12 ? d.t * 1000 : d.t)
           : d.timestamp ? new Date(typeof d.timestamp === 'number' && d.timestamp < 1e12 ? d.timestamp * 1000 : d.timestamp)
