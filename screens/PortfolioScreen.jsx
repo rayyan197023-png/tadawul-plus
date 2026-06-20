@@ -574,7 +574,8 @@ function Card(props) {
 strokeLinecap="round" style={{filter:"drop-shadow(0 0 6px "+gradeColor+"aa)",transition:"stroke-dashoffset 1s ease"}}/>
                 </svg>
                 <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-                  <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:isTop?16:14,fontWeight:900,color:gradeColor,lineHeight:1,textShadow:"0 0 10px "+gradeColor+"88"}}>{score}</div>
+<div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:isTop?16:14,fontWeight:900,color:gradeColor,lineHeight:1,textShadow:"0 0 10px "+gradeColor+"88"}}>{hasScore ? score : "…"}</div>
+
                   <div style={{fontSize:isTop?8:7,color:C.smoke,marginTop:1,fontWeight:700}}>{grade}</div>
                 </div>
               </div>
