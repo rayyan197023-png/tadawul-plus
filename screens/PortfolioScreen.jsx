@@ -1263,7 +1263,8 @@ useEffect(() => {
       var h = hasRealData ? (realHealthMap[pp.sym] || null) : null;
       var value=stk.p*pp.qty, cost=pp.avgCost*pp.qty, pnl=value-cost;
 
-      var smartBars = hasRealData ? realBars.slice(-60) : [];
+      // ✨ بدون قصّ 60 يوم -- الوقف المتحرك يحتاج كامل التاريخ منذ الشراء
+      var smartBars = hasRealData ? realBars : [];
       var smartAction = null;
 
       try {
