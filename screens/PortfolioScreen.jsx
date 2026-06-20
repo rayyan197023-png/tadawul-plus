@@ -2286,9 +2286,16 @@ return result;
                 تحليل بمستوى Bloomberg + Bridgewater
               </div>
             </div>
-          ): portfolioIQ ? (
+          ): !portfolioIQ ? (
+            <div style={{textAlign:"center",padding:"70px 20px"}}>
+              <div style={{fontSize:36,marginBottom:16}}>⏳</div>
+              <div style={{fontSize:13,fontWeight:800,color:C.mist,marginBottom:8}}>جارٍ تحميل بيانات أسهمك الحقيقية</div>
+              <div style={{fontSize:12,color:C.smoke,lineHeight:1.7}}>تحليل Portfolio IQ سيظهر فور اكتمال البيانات الحقيقية لأسهمك</div>
+            </div>
+          ) : (
             (function(){
               var iq = portfolioIQ;
+
               var scoreColor = iq.iqScore >= 80 ? C.mint :
                                iq.iqScore >= 65 ? C.teal :
                                iq.iqScore >= 50 ? C.amber : C.coral;
