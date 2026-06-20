@@ -778,7 +778,9 @@ export function calcSmartAction(
     reason,
     positionHealth,
     stopData,
+    trailingStop,
     targets,
+
     metadata: {
       pnlPct: positionHealth.pnlPct,
       daysHeld: positionHealth.daysHeld,
