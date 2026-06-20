@@ -44,20 +44,41 @@ function normalizeCandles(rawData) {
     var c  = +(d.c  || d.close || d.Close || d.last || d.lastTradedPrice || 0);
     var v  = +(d.v  || d.volume|| d.Volume|| d.vol  || d.tradeVolume || 0);
 
-    // ضمان OHLC صالح
+    if (!o) o = c;
     hi = Math.max(hi, o, c);
     lo = Math.min(lo || c, o || c, c) || c;
-    if (!o) o = c;
 
     return { o: o, hi: hi, lo: lo, c: c, v: v, t: t };
   })
   .filter(function (d) { return d.c > 0; }) // إزالة الشموع غير الصالحة
-  .sort(function (a, b) { // ✨ فرز تصاعدي بالتاريخ (الأقدم أولاً) لاتجاه صحيح
+  .sort(function (a, b) { // فرز تصاعدي بالتاريخ (الأقدم أولاً)
     var ta = a.t ? a.t.getTime() : 0;
     var tb = b.t ? b.t.getTime() : 0;
     return ta - tb;
-  });
+  })
+  ._tpCrossValidate(); // ✨ فحص متسلسل (انظر التعريف أسفل الدالة)
 }
+
+// ✨ فحص اتّساق متسلسل -- يقارن كل شمعة بإغلاق سابقتها، يمنع شموع
+// "متّسقة ذاتياً" لكن فاسدة فعلياً (نفس فئة باغ الشمعة المشوّهة في الشارت)
+Array.prototype._tpCrossValidate = function () {
+  var candles = this;
+  for (var i = 1; i < candles.length; i++) {
+    var cur = candles[i], prev = candles[i - 1];
+    if (!prev.c || prev.c <= 0) continue;
+    var dev = function (v) { return Math.abs(v - prev.c) / prev.c; };
+    var LIMIT = 0.30;
+
+    if (dev(cur.o) > LIMIT) cur.o = dev(cur.c) <= LIMIT ? cur.c : prev.c;
+    if (dev(cur.c) > LIMIT) cur.c = prev.c;
+
+    cur.hi = Math.max(cur.hi, cur.o, cur.c);
+    cur.lo = Math.min(cur.lo, cur.o, cur.c);
+    if (dev(cur.hi) > LIMIT * 1.5) cur.hi = Math.max(cur.o, cur.c) * 1.01;
+    if (dev(cur.lo) > LIMIT * 1.5) cur.lo = Math.min(cur.o, cur.c) * 0.99;
+  }
+  return candles;
+};
 
 /* ───────────────────────────────────────────────
    الجلب من الشبكة -- نمط API_CONFIG.fetch('candles')
