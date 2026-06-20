@@ -1465,7 +1465,8 @@ return result;
         })
       };
 }
-  }, [positions]);
+}, [positions, realBarsMap]);
+
 
   // ======= كشف تغيير القرار وإطلاق التنبيه =======
   useEffect(function(){
