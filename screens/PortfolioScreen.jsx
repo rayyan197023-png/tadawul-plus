@@ -641,7 +641,13 @@ strokeLinecap="round" style={{filter:"drop-shadow(0 0 6px "+gradeColor+"aa)",tra
                   borderRadius: 8,
                   padding: "6px 8px",
                 }}>
-                  <div style={{fontSize:8,color:C.smoke,fontWeight:700,marginBottom:2}}>🛑 وقف الخسارة</div>
+                  <div style={{fontSize:8,color:C.smoke,fontWeight:700,marginBottom:2,display:"flex",alignItems:"center",gap:3}}>
+                    🛑 وقف الخسارة
+                    {d.smartData.stopMode === 'trailing' && (
+                      <span style={{color:C.mint,fontWeight:900}}>📈 متحرك</span>
+                    )}
+                  </div>
+
                   <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:13,fontWeight:900,color:C.coral}}>
                     {d.smartData.stopPrice.toFixed(2)}
                   </div>
