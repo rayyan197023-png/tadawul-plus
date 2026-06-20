@@ -1996,7 +1996,7 @@ return result;
               
                             {/* ═══ الرسوم البيانية المتقدمة (قابلة للطي) ═══ */}
               {/* ✨ حالة تحميل: نُخفي الأرقام حتى تصل البيانات الحقيقية (معالجة الوميض) */}
-              {showAdvanced && !barsReady && (
+              {showAdvanced && !portfolioAnalysis && (
                 <div style={{
                   background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",
                   border:"1px solid "+C.line, borderRadius:16, padding:"32px 20px",
@@ -2011,23 +2011,26 @@ return result;
                     جارٍ جلب البيانات الحقيقية من تاسي…
                   </div>
                   <div style={{fontSize:11, color:C.smoke, lineHeight:1.6}}>
-                    نحلّل الأسعار التاريخية الفعلية لأسهم محفظتك
+                    التحليل يظهر فقط بعد توفّر بيانات حقيقية -- لا أرقام تقديرية
                   </div>
                   <style>{"@keyframes spin{to{transform:rotate(360deg)}}"}</style>
                 </div>
               )}
-              {showAdvanced && barsReady && (
+              {showAdvanced && portfolioAnalysis && (
               <>
-              {/* ✨ إفصاح مصدر البيانات */}
-              {analysisDataSource === 'synthetic-timeout' && (
+              {!portfolioAnalysis.dataCoverage.isComplete && (
                 <div style={{
                   background:C.amber+"12", border:"1px solid "+C.amber+"33",
                   borderRadius:10, padding:"8px 12px", marginBottom:12,
-                  fontSize:11, color:C.amber, textAlign:"center",
+                  fontSize:11, color:C.amber, textAlign:"center", lineHeight:1.6,
                 }}>
-                  ⚠ تعذّر جلب كل البيانات الحقيقية -- بعض الأرقام تقديرية
+                  ⚠ التحليل مبني على {portfolioAnalysis.dataCoverage.pct}% من قيمة محفظتك
+                  ({portfolioAnalysis.dataCoverage.includedSyms.length} من {positions.length} سهم) --
+                  باقي الأسهم ({portfolioAnalysis.dataCoverage.excludedSyms.join('، ')}) لسا بياناتها قيد التحميل
                 </div>
               )}
+              {/* 📈 رسم بياني: قيمة المحفظة عبر الزمن */}
+
               {/* 📈 رسم بياني: قيمة المحفظة عبر الزمن */}
               {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.portfolioValue && portfolioAnalysis.chartData.portfolioValue.length > 0 && (
                 <PortfolioValueChart data={portfolioAnalysis.chartData.portfolioValue} />
