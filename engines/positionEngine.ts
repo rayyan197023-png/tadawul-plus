@@ -671,8 +671,10 @@ export function calcSmartAction(
   const score = health?.score || 50;
   const composite = positionHealth.composite;
   
-  const stopData = calcSmartStopLoss(entryPrice, currentPrice, health, bars);
+  const stopData = calcSmartStopLoss(entryPrice, currentPrice, health, bars); // مرجع لحساب الأهداف R-multiple
+  const trailingStop = calcProfessionalTrailingStop(position, bars, health);  // ✨ نقطة الخروج الفعلية
   const targets = calcSmartTakeProfit(entryPrice, stopData.stopPrice, health, bars);
+  const activeStop = trailingStop || stopData;
   
   let action: string;
   let percent: number;
@@ -689,14 +691,17 @@ export function calcSmartAction(
     confidence = 95;
     reason = '🚨 السوق في خطر نظامي - أغلق فوراً';
   }
-  else if (currentPrice <= stopData.stopPrice) {
+  else if (currentPrice <= activeStop.stopPrice) {
     action = 'وقف خسارة';
     percent = 100;
     color = '#ff5f6a';
     urgency = 'critical';
     confidence = 100;
-    reason = `🛑 السعر اخترق Stop Loss (${stopData.stopPct.toFixed(1)}%) - أغلق المركز`;
+    reason = trailingStop && trailingStop.mode === 'trailing'
+      ? `🛑 اخترق الوقف المتحرك (${activeStop.stopPct.toFixed(1)}%) -- أغلق واحتفظ بالأرباح المؤمّنة`
+      : `🛑 السعر اخترق Stop Loss (${activeStop.stopPct.toFixed(1)}%) - أغلق المركز`;
   }
+
   else if (targets && currentPrice >= targets.t3.price) {
     action = 'بيع كامل';
     percent = 100;
