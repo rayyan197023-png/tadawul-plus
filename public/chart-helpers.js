@@ -269,8 +269,20 @@ async fetch(type, params={}) {
       if (nextFrom >= toD) break;
       curFrom = nextFrom;
     }
+    // إزالة التكرارات (تواريخ متطابقة من تداخل الدفعات) وترتيب زمني تصاعدي
+    const seen = new Set();
+    merged = merged
+      .filter(d => {
+        const key = d.date || d.t || (d.timestamp ?? JSON.stringify(d));
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .sort((a,b) => new Date(a.date||a.t||a.timestamp) - new Date(b.date||b.t||b.timestamp));
+
     return merged;
   },
+
 
   // ── WebSocket (sahmk doesn't support WS -- polling only) ─────
   _ws: null,
