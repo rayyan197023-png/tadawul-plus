@@ -905,13 +905,13 @@ if (mktCap > 50000000000) { // 50B+ = Large cap
       'high_volatility';
   }
 
-  // Quality Factor (placeholder - would need fundamentals)
-  factors.quality.score = 60; // Default
-  factors.quality.classification = 'unknown';
+  // ✨ لا بيانات أساسية (fundamentals) متاحة لحساب هذين العاملين فعلياً --
+  // نُرجع null صراحة بدل رقم مُختلَق، حتى لا يُعرض كأنه نتيجة تحليل حقيقي
+  factors.quality.score = null;
+  factors.quality.classification = 'unavailable';
 
-  // Value Factor (placeholder)
-  factors.value.score = 50;
-  factors.value.classification = 'mixed';
+  factors.value.score = null;
+  factors.value.classification = 'unavailable';
 
   // Style classification
   const style = classifyPortfolioStyle(factors);
