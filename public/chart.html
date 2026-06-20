@@ -2345,15 +2345,23 @@ const clampOff=Math.min(maxOff,Math.max(0,state.offset));
 const end=all.length-clampOff,start=Math.max(0,end-VIS);
 
  const sub=all.slice(start,end),n=sub.length;
-  // تصحيح آخر شمعة المشوهة
- if(sub.length>0){
+
+if(sub.length>0){
   const last=sub[sub.length-1];
-  if(last.hi>last.c*2||last.lo<last.c*0.1||last.hi-last.lo>last.c*0.5){
-   const fixedHi=Math.max(last.o||last.c,last.c)*1.001;
-   const fixedLo=Math.min(last.o||last.c,last.c)*0.999;
-   sub[sub.length-1]={...last,hi:fixedHi,lo:fixedLo};
+  const ref = sub.length>1 ? sub[sub.length-2].c : last.c; // مرجع موثوق
+  const bad = v => v==null || v<=0 || v>ref*2 || v<ref*0.5;
+  if(bad(last.hi)||bad(last.lo)||bad(last.o)){
+    const safeC = (last.c>0) ? last.c : ref;
+    const safeO = bad(last.o) ? safeC : last.o;
+    sub[sub.length-1] = {
+      ...last,
+      o: safeO,
+      c: safeC,
+      hi: Math.max(safeO, safeC) * 1.002,
+      lo: Math.min(safeO, safeC) * 0.998,
+    };
   }
- }
+}
 
  // Renko: compute from FULL dataset then slice — prevents bricks disappearing on pan
  let renkoSub=null;
