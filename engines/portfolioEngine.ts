@@ -3887,19 +3887,36 @@ export function generateRiskReturnScatter(positions: Position[], analysisData: a
     });
   });
 
-  // ② إضافة نقطة المحفظة
+  // ② إضافة نقطة المحفظة -- نحسبها من نفس نافذة 365 يوم ونفس منهجية الأسهم
+  // (لا نعيد استخدام analysisData.performance لأنه يُحسب بنافذة 60 يوم مختلفة)
   var portfolio = null;
-  if (analysisData && analysisData.performance) {
-    portfolio = {
-      sym: 'محفظتك',
-      name: 'محفظتك',
-      risk: +((analysisData.performance.volatility || 0) * 100).toFixed(2),
-      return: +((analysisData.performance.annualReturn || 0) * 100).toFixed(2),
-      sharpe: analysisData.performance.sharpe || 0,
-      weight: 100,
-      type: 'portfolio',
-    };
+  if (positions && positions.length > 0) {
+    var pWeights: any = {};
+    var pTotalVal = 0;
+    positions.forEach(function(p: any) { pTotalVal += p.value || 0; });
+    positions.forEach(function(p: any) { pWeights[p.sym] = (p.value || 0) / pTotalVal; });
+
+    var pReturns = calcPortfolioReturns(positions, pWeights);
+    if (pReturns.length >= 2) {
+      var pMeanDaily = mean(pReturns);
+      var pStdDaily = std(pReturns);
+      var pAnnualReturn = pMeanDaily * 252;
+      var pAnnualVol = pStdDaily * Math.sqrt(252);
+      var pRf = CONFIG.RISK_FREE_DAILY * TRADING_DAYS;
+      var pSharpe = pAnnualVol > 0 ? (pAnnualReturn - pRf) / pAnnualVol : 0;
+
+      portfolio = {
+        sym: 'محفظتك',
+        name: 'محفظتك',
+        risk: +(pAnnualVol * 100).toFixed(2),
+        return: +(pAnnualReturn * 100).toFixed(2),
+        sharpe: +pSharpe.toFixed(2),
+        weight: 100,
+        type: 'portfolio',
+      };
+    }
   }
+
 
   // ③ إضافة نقطة TASI (متوسط الأسهم كمرجع اصطناعي)
   var benchmark = null;
