@@ -183,12 +183,12 @@ const API_CONFIG = {
   },
 
   // ── HTTP Fetch with sahmk endpoint routing ───────────────────
-  async fetch(type, params={}) {
+async fetch(type, params={}) {
     const base = this.endpoints[type];
     if(!base || !this.enabled) return null;
     try {
       let qs = '';
-      
+
       if(type === 'candles') {
         const days = params.rangeDays || 365;
         const toD = new Date();
@@ -197,32 +197,27 @@ const API_CONFIG = {
         const _per = params.period || '1D';
         const _intradayPers = ['1H','4H'];
         if(_intradayPers.includes(_per)){
-          // 4H: نجمع 4 شموع ساعية في شمعة واحدة
           qs = `?endpoint=intraday&sym=${params.symbol}&interval=60m`;
         } else {
-
-          qs = `?endpoint=ohlcv&sym=${params.symbol}&from=${fmt(fromD)}&to=${fmt(toD)}`;
+          // سهمك يُرجع حد أقصى ~1000 شمعة لكل طلب بدءاً من from --
+          // نجلب على دفعات حتى نوصل لتاريخ "to" المطلوب
+          return await this._fetchCandlesPaginated(params.symbol, fromD, toD);
         }
-
       } else if(type === 'ticker') {
-        // sahmk quote: ?endpoint=quote&sym=2010
         qs = `?endpoint=quote&sym=${params.symbol}`;
       } else if(type === 'stocks') {
-        // sahmk companies: ?endpoint=companies&market=TASI
         qs = `?endpoint=companies&market=TASI`;
       } else if(type === 'info') {
-        // sahmk company info: ?endpoint=company&sym=2010
         qs = `?endpoint=company&sym=${params.symbol}`;
       }
-      
+
       const r = await fetch(base + qs, {
         headers: this.headers,
         signal: AbortSignal.timeout(10000)
       });
       if(!r.ok) throw new Error('HTTP '+r.status);
       const data = await r.json();
-      
-            // Unwrap sahmk response shapes by endpoint type
+
       const unwrap = {
         candles: d => d.bars || d.data || d.ohlcv || d,
         ticker:  d => d.quote || d.data || d,
@@ -234,6 +229,47 @@ const API_CONFIG = {
       console.warn('[sahmk API]', type, e.message);
       return null;
     }
+  },
+
+  // ── جلب شموع OHLCV على دفعات لتجاوز حد 1000 سجل لكل طلب ─────
+  async _fetchCandlesPaginated(symbol, fromD, toD) {
+    const fmt = d => d.toISOString().slice(0,10);
+    const toStr = fmt(toD);
+    let curFrom = fromD;
+    let merged = [];
+    let lastSeen = null;
+    const MAX_LOOPS = 8; // حماية من حلقة لا نهائية (8×1000 = 8000 شمعة كحد أقصى)
+
+    for (let i = 0; i < MAX_LOOPS; i++) {
+      const qs = `?endpoint=ohlcv&sym=${symbol}&from=${fmt(curFrom)}&to=${toStr}`;
+      let data;
+      try {
+        const r = await fetch(this.endpoints.candles + qs, {
+          headers: this.headers,
+          signal: AbortSignal.timeout(10000)
+        });
+        if (!r.ok) break;
+        data = await r.json();
+      } catch (e) {
+        console.warn('[sahmk API] candles page', e.message);
+        break;
+      }
+
+      const arr = data.bars || data.data || data.ohlcv || (Array.isArray(data) ? data : []);
+      if (!Array.isArray(arr) || !arr.length) break;
+      merged = merged.concat(arr);
+
+      const latest = data.latest_bar_at;
+      if (!latest || latest >= toStr) break;
+      if (lastSeen && latest <= lastSeen) break;
+      lastSeen = latest;
+
+      const nextFrom = new Date(latest);
+      nextFrom.setDate(nextFrom.getDate() + 1);
+      if (nextFrom >= toD) break;
+      curFrom = nextFrom;
+    }
+    return merged;
   },
 
   // ── WebSocket (sahmk doesn't support WS -- polling only) ─────
