@@ -41,24 +41,6 @@ function normalizeCandles(rawData){
     return{o,hi,lo,c,v,t};
   }).filter(d=>d.c>0);
 
-  // ── فحص اتّساق متسلسل (Cross-candle) ──────────────────────────
-  // الفحص الذاتي وحده لا يكفي: لو كان o فاسداً، تصير الشمعة "متّسقة
-  // رياضياً" لكن جسمها ضخم بصرياً. هنا نقارن كل شمعة بإغلاق سابقتها.
-  for(let i=1;i<candles.length;i++){
-    const cur=candles[i], prev=candles[i-1];
-    if(!prev.c||prev.c<=0)continue;
-    const dev=v=>Math.abs(v-prev.c)/prev.c;
-    const LIMIT=0.30; // أقصى تحرك منطقي بين يومين متتاليين
-
-    if(dev(cur.o)>LIMIT) cur.o = dev(cur.c)<=LIMIT ? cur.c : prev.c;
-    if(dev(cur.c)>LIMIT) cur.c = prev.c;
-
-    cur.hi = Math.max(cur.hi, cur.o, cur.c);
-    cur.lo = Math.min(cur.lo, cur.o, cur.c);
-    if(dev(cur.hi)>LIMIT*1.5) cur.hi = Math.max(cur.o,cur.c)*1.01;
-    if(dev(cur.lo)>LIMIT*1.5) cur.lo = Math.min(cur.o,cur.c)*0.99;
-  }
-
   return candles;
 }
 
