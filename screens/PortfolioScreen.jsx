@@ -2032,7 +2032,8 @@ return result;
               {/* 📈 رسم بياني: قيمة المحفظة عبر الزمن */}
 
               {/* 📈 رسم بياني: قيمة المحفظة عبر الزمن */}
-              {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.portfolioValue && portfolioAnalysis.chartData.portfolioValue.length > 0 && (
+              {portfolioAnalysis.chartData && portfolioAnalysis.chartData.portfolioValue && portfolioAnalysis.chartData.portfolioValue.length > 0 && (
+
                 <PortfolioValueChart data={portfolioAnalysis.chartData.portfolioValue} />
               )}
 
