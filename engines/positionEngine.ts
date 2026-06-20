@@ -570,9 +570,11 @@ export function calcPositionHealth(
   else if (pnlPct >= -7) pnlScore = 20;
   else pnlScore = 5;
   
-  // ③ Stop loss proximity (15%)
-  const stopData = calcSmartStopLoss(entryPrice, currentPrice, health, bars);
+  // ③ Stop loss proximity (15%) -- الوقف المتحرك الفعلي إن توفّر
+  const trailingStopPH = calcProfessionalTrailingStop(position, bars, health);
+  const stopData = trailingStopPH || calcSmartStopLoss(entryPrice, currentPrice, health, bars);
   const distanceToStop = ((currentPrice - stopData.stopPrice) / currentPrice) * 100;
+
   const stopScore = distanceToStop > 5 ? 100
                   : distanceToStop > 3 ? 75
                   : distanceToStop > 1 ? 40
