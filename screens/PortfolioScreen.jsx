@@ -2038,32 +2038,37 @@ return result;
               )}
 
               {/* 📉 رسم بياني: Drawdown */}
-                           {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.drawdown && portfolioAnalysis.chartData.drawdown.data && portfolioAnalysis.chartData.drawdown.data.length > 0 && (
+{portfolioAnalysis.chartData && portfolioAnalysis.chartData.drawdown && portfolioAnalysis.chartData.drawdown.data && portfolioAnalysis.chartData.drawdown.data.length > 0 && (
+
                 <DrawdownChart data={portfolioAnalysis.chartData.drawdown} />
               )}
 
               {/* 📅 جدول العوائد الشهرية */}
-              {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.monthlyReturns && portfolioAnalysis.chartData.monthlyReturns.months && portfolioAnalysis.chartData.monthlyReturns.months.length > 0 && (
+{portfolioAnalysis.chartData && portfolioAnalysis.chartData.monthlyReturns && portfolioAnalysis.chartData.monthlyReturns.months && portfolioAnalysis.chartData.monthlyReturns.months.length > 0 && (
+
                 <MonthlyReturnsHeatmap data={portfolioAnalysis.chartData.monthlyReturns} />
               )}
 
               {/* 📊 رسم المخاطرة vs العائد */}
-              {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.riskReturn && portfolioAnalysis.chartData.riskReturn.stocks && portfolioAnalysis.chartData.riskReturn.stocks.length > 0 && (
+{portfolioAnalysis.chartData && portfolioAnalysis.chartData.riskReturn && portfolioAnalysis.chartData.riskReturn.stocks && portfolioAnalysis.chartData.riskReturn.stocks.length > 0 && (
+
                 <RiskReturnScatter data={portfolioAnalysis.chartData.riskReturn} />
               )}
 
               {/* 🔗 مصفوفة الارتباط */}
-              {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.correlation && portfolioAnalysis.chartData.correlation.matrix && portfolioAnalysis.chartData.correlation.matrix.length >= 2 && (
+{portfolioAnalysis.chartData && portfolioAnalysis.chartData.correlation && portfolioAnalysis.chartData.correlation.matrix && portfolioAnalysis.chartData.correlation.matrix.length >= 2 && (
+
                 <CorrelationHeatmap data={portfolioAnalysis.chartData.correlation} />
               )}
 
               {/* 📊 رسم توزيع VaR */}
-              {portfolioAnalysis && portfolioAnalysis.chartData && portfolioAnalysis.chartData.varDistribution && portfolioAnalysis.chartData.varDistribution.bins && portfolioAnalysis.chartData.varDistribution.bins.length >= 3 && (
+{portfolioAnalysis.chartData && portfolioAnalysis.chartData.varDistribution && portfolioAnalysis.chartData.varDistribution.bins && portfolioAnalysis.chartData.varDistribution.bins.length >= 3 && (
+
                 <VaRDistributionChart data={portfolioAnalysis.chartData.varDistribution} />
               )}
 
               {/* 🛡️ لوحة المخاطر الشاملة */}
-              {portfolioAnalysis && <RiskDashboard analysis={portfolioAnalysis} />}
+<RiskDashboard analysis={portfolioAnalysis} />
               </>
               )}
             </div>
