@@ -115,9 +115,9 @@ const DrawdownChart = React.memo(function DrawdownChart(props) {
   
   const psychMessage = useMemo(() => {
     if (maxDrawdown > -5) return 'محفظتك مستقرة جداً -- يسهل الاحتفاظ بها نفسياً';
-    if (maxDrawdown > -10) return 'تراجعات طبيعية -- معظم المستثمرين يتحملون هذا المستوى';
-    if (maxDrawdown > -20) return 'يتطلب صبراً -- 80% من المستثمرين يتحملون هذا';
-    if (maxDrawdown > -30) return 'صعب نفسياً -- معظم المستثمرين يبيعون هنا';
+    if (maxDrawdown > -10) return 'تراجعات طبيعية -- مستوى يتحمّله أغلب المستثمرين على المدى الطويل';
+    if (maxDrawdown > -20) return 'يتطلب صبراً -- مستوى تراجع شائع، لكنه يضغط نفسياً على كثيرين';
+    if (maxDrawdown > -30) return 'صعب نفسياً -- كثير من المستثمرين يميلون للبيع عند هذا المستوى';
     return 'تراجع حاد -- يتطلب تحمّل استثنائي';
   }, [maxDrawdown]);
 
