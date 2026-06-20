@@ -1499,10 +1499,18 @@ if (mktCap > 50000000000) { // 50B+ = Large cap
  */
 function runCrystalBall(positions: IQPosition[], base: any, simulations: number = 1000): CrystalBallAnalysis {
   // Use defaults if data unavailable (allows testing without historical bars)
-  const annualReturn = (base.performance && base.performance.annualReturn) || 0.085; // TASI avg
-  const annualVol = (base.performance && base.performance.volatility) || 0.20; // Default 20%
+  // ✨ تحقق صريح بدل || الذي يستبدل 0% الحقيقي بافتراض مزيّف
+  const hasRealPerf = !!(base.performance &&
+    base.performance.annualReturn !== undefined && base.performance.annualReturn !== null &&
+    base.performance.volatility !== undefined && base.performance.volatility !== null);
 
-  const initialValue = base.totalValue || 100000;
+  if (!hasRealPerf || !base.totalValue) {
+    return null; // لا نفبرك تنبؤاً من افتراضات عامة -- لا بيانات كافية = لا Crystal Ball
+  }
+
+  const annualReturn = base.performance.annualReturn;
+  const annualVol = base.performance.volatility;
+  const initialValue = base.totalValue;
   
   // Daily parameters
   const dailyReturn = annualReturn / TRADING_DAYS;
