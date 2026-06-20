@@ -1248,14 +1248,15 @@ useEffect(() => {
     var tv=port.reduce(function(s,pp){var stk=sl.find(function(x){return x.sym===pp.sym;});return s+(stk?stk.p:pp.avgCost)*pp.qty;},0)||1;
         return port.map(function(pp){
       var stk=sl.find(function(x){return x.sym===pp.sym;})||{sym:pp.sym,name:pp.sym,p:pp.avgCost,ch:0,sec:"-"};
-      // ✨ صحة حقيقية إن توفّرت (من بيانات sahmk)، وإلا allData (genBars)
-      var h = realHealthMap[pp.sym] || null;
-      if (!h) { var hd=allData.find(function(d){return d.stk&&d.stk.sym===pp.sym;}); h=hd?hd.health:null; }
+      // ✨ صحة وقرار حقيقيان فقط -- بدون أي fallback لـ genBars على مركز حقيقي
+      var realBars = realBarsMap[pp.sym];
+      var hasRealData = !!(realBars && realBars.length >= 30);
+      var h = hasRealData ? (realHealthMap[pp.sym] || null) : null;
       var value=stk.p*pp.qty, cost=pp.avgCost*pp.qty, pnl=value-cost;
-      
-      // ✨ Smart Action Engine - تحليل احترافي لكل مركز (بيانات حقيقية إن توفّرت)
-      var smartBars = getBars(pp.sym, stk, 60);
+
+      var smartBars = hasRealData ? realBars.slice(-60) : [];
       var smartAction = null;
+
       try {
         if(h && smartBars && smartBars.length >= 14) {
           // ✨ استخدم تاريخ أول صفقة شراء من tradeLog إذا متوفر
@@ -1287,10 +1288,12 @@ var positionData = {
         dayPnl: stk.ch/100*value,
         curPrice: stk.p,
         curWeightPct: value/tv*100,
-        smartAction: smartAction, // ✨ جديد!
+        smartAction: smartAction,
+        hasRealData: hasRealData, // ✨ يحدد إن كانت البيانات حقيقية أو لسا قيد التحميل
       });
     });
-  },[port,sl,allData,realBarsMap,realHealthMap]);
+  },[port,sl,realBarsMap,realHealthMap,tradeLog]);
+
 
   var tv=positions.reduce(function(s,p){return s+p.value;},0);
   var tp=positions.reduce(function(s,p){return s+p.pnl;},0);
