@@ -478,13 +478,20 @@ function EditModal(props) {
 function Card(props) {
   var p=props.p, i=props.i, capital=props.capital, setSellSheet=props.setSellSheet;
   var onEdit=props.onEdit;
-  var d=useMemo(function(){return getDecision(p);},[p]);
+  var d=useMemo(function(){
+    if (!p.hasRealData) {
+      return {act:"بيانات قيد التحميل",pct:0,color:C.smoke,icon:"watch",
+        reason:"البيانات التاريخية الحقيقية لهذا السهم لم تصل بعد -- القرار سيظهر فور اكتمالها",
+        detail:null,urgent:false,upside:null,rr:null};
+    }
+    return getDecision(p);
+  },[p]);
 
-  var score = p.health && p.health.score !== undefined && p.health.score !== null
-  ? p.health.score
-  : Math.min(95, Math.max(20, Math.round(50 + (p.pnlPct || 0) * 0.8 + (p.stk.ch || 0) * 3)));
-  var grade=p.health?p.health.grade||"ض":score>=85?"م":score>=75?"ج":score>=65?"ب":score>=55?"م-":score>=45?"ض+":"ض";
-  var gradeColor=score>=75?C.mint:score>=55?C.amber:C.coral;
+
+  var hasScore = !!(p.health && p.health.score !== undefined && p.health.score !== null);
+  var score = hasScore ? p.health.score : null;
+  var grade = hasScore ? (p.health.grade || "ض") : "…";
+  var gradeColor = hasScore ? (score>=75?C.mint:score>=55?C.amber:C.coral) : C.smoke;
   var circ=2*Math.PI*22;
   var urgentAnim=d.urgent?"dangerPulse 2.4s ease-in-out infinite":d.color===C.mint?"buyGlow 3.2s ease-in-out infinite":"";
   var cardStyle={animationDelay:(i*.06)+"s",marginBottom:12,position:"relative"};
