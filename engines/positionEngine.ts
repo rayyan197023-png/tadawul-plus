@@ -408,6 +408,109 @@ export function calcTrailingStop(
 }
 
 // ═══════════════════════════════════════════════════════
+// 🏔️ PROFESSIONAL TRAILING STOP -- Chandelier Exit
+// ═══════════════════════════════════════════════════════
+
+export interface TrailingStopProResult {
+  stopPrice: number;
+  stopPct: number;
+  mode: 'fixed' | 'trailing';
+  stockType: 'قيادي' | 'مضاربي';
+  atrMultiplier: number;
+  atr: number;
+  highestSinceEntry: number;
+  distanceFromHighPct: number;
+  lockedProfitPct: number | null;
+  reason: string;
+}
+
+/**
+ * ✨ Professional Trailing Stop -- Chandelier Exit
+ * المنهجية: Wilder's ATR (1978) + Chandelier Exit (Le Beau / Elder)
+ *
+ * المبدأ:
+ * 1) السعر ≤ سعر الشراء  → الوقف ثابت (مرتكز على سعر الشراء، لا يهبط مع نزول السعر)
+ * 2) السعر > سعر الشراء  → الوقف يتسلّق خلف أعلى سعر مُسجَّل منذ الشراء
+ * 3) Ratchet: لأن "أعلى سعر منذ الشراء" رقم تصاعدي دائماً، الوقف لا يتراجع أبداً
+ *
+ * تصنيف نوع السهم من القيمة السوقية (نفس عتبة 50 مليار المستخدمة في بقية المحرك):
+ * - قيادي  (≥50 مليار): 2.5× ATR -- تذبذب أقل، وقف أضيق نسبياً
+ * - مضاربي (<50 مليار): 3.5× ATR -- تذبذب أعلى، يحتاج مساحة أكبر لتفادي الإخراج بالضوضاء
+ */
+export function calcProfessionalTrailingStop(
+  position: Position,
+  bars: Bar[] | null,
+  health: Health | null
+): TrailingStopProResult | null {
+  const entryPrice = position.avgCost || 0;
+  const currentPrice = position.curPrice || entryPrice;
+  if (!entryPrice || !currentPrice) return null;
+
+  // ① الوقف الثابت المرتكز على سعر الشراء (calcSmartStopLoss أصلاً ترتكز كل
+  //    طرقها الثلاث على entryPrice وليس currentPrice -- لذا هي "ثابتة" طبيعياً)
+  const fixedStop = calcSmartStopLoss(entryPrice, currentPrice, health, bars);
+
+  // ② تصنيف نوع السهم
+  const mktCapB = (position.stk && (position.stk as any).mktCap) || 0;
+  const isLeading = mktCapB >= 50;
+  const stockType: 'قيادي' | 'مضاربي' = isLeading ? 'قيادي' : 'مضاربي';
+  const atrMultiplier = isLeading ? 2.5 : 3.5;
+
+  // ③ ATR الفعلي
+  const atr = health?.extras?.atrPct
+    ? (health.extras.atrPct / 100) * currentPrice
+    : currentPrice * 0.015;
+
+  // ④ أعلى سعر مُسجَّل منذ الشراء (من البيانات الحقيقية + السعر الحي)
+  let highestSinceEntry = currentPrice;
+  if (bars && bars.length > 0) {
+    const entryTime = position.entryDate ? new Date(position.entryDate).getTime() : 0;
+    bars.forEach((b: any) => {
+      const barTime = b.t ? new Date(b.t).getTime() : 0;
+      if (!entryTime || barTime >= entryTime) {
+        const hi = b.hi != null ? b.hi : (b.h != null ? b.h : b.c);
+        if (hi != null && hi > highestSinceEntry) highestSinceEntry = hi;
+      }
+    });
+  }
+
+  // ⑤ في خسارة/تعادل: الوقف الثابت فقط -- لا يهبط مع تراجع السعر
+  if (currentPrice <= entryPrice) {
+    return {
+      stopPrice: fixedStop.stopPrice,
+      stopPct: fixedStop.stopPct,
+      mode: 'fixed',
+      stockType, atrMultiplier,
+      atr: +atr.toFixed(3),
+      highestSinceEntry: +highestSinceEntry.toFixed(2),
+      distanceFromHighPct: 0,
+      lockedProfitPct: null,
+      reason: `وقف ثابت (${stockType}) عند ${fixedStop.stopPct.toFixed(1)}% -- لم يُفعَّل التتبّع بعد`,
+    };
+  }
+
+  // ⑥ في ربح: الوقف يتسلّق خلف القمة، بحدّ أدنى = الوقف الثابت (ratchet)
+  const trailingStopRaw = highestSinceEntry - atr * atrMultiplier;
+  const finalStop = Math.max(fixedStop.stopPrice, trailingStopRaw);
+  const stopPct = +(((finalStop - entryPrice) / entryPrice) * 100).toFixed(1);
+  const lockedProfitPct = finalStop > entryPrice ? stopPct : null;
+
+  return {
+    stopPrice: +finalStop.toFixed(2),
+    stopPct,
+    mode: 'trailing',
+    stockType, atrMultiplier,
+    atr: +atr.toFixed(3),
+    highestSinceEntry: +highestSinceEntry.toFixed(2),
+    distanceFromHighPct: +(((highestSinceEntry - finalStop) / highestSinceEntry) * 100).toFixed(1),
+    lockedProfitPct,
+    reason: lockedProfitPct !== null
+      ? `وقف متحرك (${stockType}) -- أرباح مؤمّنة +${lockedProfitPct.toFixed(1)}%`
+      : `وقف متحرك (${stockType}) يتسلّق خلف القمة -- لم يتجاوز سعر الشراء بصافي بعد`,
+  };
+}
+
+// ═══════════════════════════════════════════════════════
 // 💚 POSITION HEALTH
 // ═══════════════════════════════════════════════════════
 
