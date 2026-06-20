@@ -8,44 +8,60 @@
 function normalizeCandles(rawData){
   if(!Array.isArray(rawData)||!rawData.length)return [];
   const sample=rawData[0];
-  // Detect format by field names (Generic handles Yahoo/Tadawul/sahmk via field aliases)
   const isAlphaV  = '1. open' in sample;
-  const isBinance = Array.isArray(sample); // Binance returns arrays
-  
-  return rawData.map((d,i)=>{
+  const isBinance = Array.isArray(sample);
+
+  let candles = rawData.map((d,i)=>{
     let o,hi,lo,c,v,t;
-    
+
     if(isBinance&&Array.isArray(d)){
-      // Binance: [openTime,open,high,low,close,volume,...]
       t=new Date(d[0]); o=+d[1]; hi=+d[2]; lo=+d[3]; c=+d[4]; v=+d[5];
     } else if(isAlphaV){
       t=new Date(d['date']||d['timestamp']||Object.keys(d)[0]);
       o=+d['1. open']; hi=+d['2. high']; lo=+d['3. low']; c=+d['4. close']; v=+(d['5. volume']||0);
     } else {
-      // Generic: try common field names
       t = d.t instanceof Date ? d.t
         : d.t ? new Date(typeof d.t==='number'&&d.t<1e12?d.t*1000:d.t)
         : d.timestamp ? new Date(typeof d.timestamp==='number'&&d.timestamp<1e12?d.timestamp*1000:d.timestamp)
         : d.date ? new Date(d.date)
         : d.time ? new Date(d.time)
         : new Date(Date.now()-(rawData.length-1-i)*86400000);
-      // sahmk uses 'date' field directly
-      if(!d.t && d.date) d.t = d.date;      
+      if(!d.t && d.date) d.t = d.date;
       o  = +(d.o||d.open||d.Open||0);
       hi = +(d.hi||d.high||d.High||d.h||0);
       lo = +(d.lo||d.low||d.Low||d.l||0);
       c  = +(d.c||d.close||d.Close||d.last||d.lastTradedPrice||0);
       v  = +(d.v||d.volume||d.Volume||d.vol||d.tradeVolume||0);
     }
-    
-    // Ensure valid OHLC: hi>=max(o,c), lo<=min(o,c)
+
+    if(!o)o=c;
     hi=Math.max(hi,o,c);
     lo=Math.min(lo,o,c);
-    if(!o)o=c;
-    
+
     return{o,hi,lo,c,v,t};
-  }).filter(d=>d.c>0); // remove invalid candles
+  }).filter(d=>d.c>0);
+
+  // ── فحص اتّساق متسلسل (Cross-candle) ──────────────────────────
+  // الفحص الذاتي وحده لا يكفي: لو كان o فاسداً، تصير الشمعة "متّسقة
+  // رياضياً" لكن جسمها ضخم بصرياً. هنا نقارن كل شمعة بإغلاق سابقتها.
+  for(let i=1;i<candles.length;i++){
+    const cur=candles[i], prev=candles[i-1];
+    if(!prev.c||prev.c<=0)continue;
+    const dev=v=>Math.abs(v-prev.c)/prev.c;
+    const LIMIT=0.30; // أقصى تحرك منطقي بين يومين متتاليين
+
+    if(dev(cur.o)>LIMIT) cur.o = dev(cur.c)<=LIMIT ? cur.c : prev.c;
+    if(dev(cur.c)>LIMIT) cur.c = prev.c;
+
+    cur.hi = Math.max(cur.hi, cur.o, cur.c);
+    cur.lo = Math.min(cur.lo, cur.o, cur.c);
+    if(dev(cur.hi)>LIMIT*1.5) cur.hi = Math.max(cur.o,cur.c)*1.01;
+    if(dev(cur.lo)>LIMIT*1.5) cur.lo = Math.min(cur.o,cur.c)*0.99;
+  }
+
+  return candles;
 }
+
 
 // ── Divergence Detection ────────────────────────────────
 function _findPivots(arr, lookback=5){
