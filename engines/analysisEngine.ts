@@ -2584,9 +2584,14 @@ function calc9Layers(stk: any, bars: any[]): any {
   if (!stk || typeof stk !== 'object') {
     return _emptyHealthResult();
   }
-  if (!bars || !Array.isArray(bars) || bars.length < 5) {
+  // ✨ الحد رُفع من 5 إلى 15 -- لأن analyzeStockRadar بالأسفل تتطلب
+  // pastBars.length>=15 وإلا تُولّد 60 شمعة عشوائية (generateBarsRadar) بصمت،
+  // فتُلوّث L1/L2/L4/L5/L6/L7/L8 ببيانات صناعية رغم أن bars الأصلية حقيقية.
+  // رفع الحد هنا يضمن: إما بيانات حقيقية كافية لكل الطبقات، أو نتيجة محايدة صريحة.
+  if (!bars || !Array.isArray(bars) || bars.length < 15) {
     return _emptyHealthResult();
   }
+
   
   const last5  = bars.slice(-5);
   const last10 = bars.slice(-10);
