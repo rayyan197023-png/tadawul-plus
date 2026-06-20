@@ -123,6 +123,7 @@ export interface SmartActionResult {
   reason: string;
   positionHealth: PositionHealthResult;
   stopData: StopLossResult;
+  trailingStop: TrailingStopProResult | null;
   targets: TakeProfitResult | null;
   metadata: {
     pnlPct: number;
