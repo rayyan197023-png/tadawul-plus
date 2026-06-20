@@ -570,7 +570,8 @@ function Card(props) {
               <div style={{position:"relative",width:isTop?60:52,height:isTop?60:52}}>
                 <svg width={isTop?60:52} height={isTop?60:52} style={{transform:"rotate(-90deg)",position:"absolute",inset:0}}>
                   <circle cx={isTop?30:26} cy={isTop?30:26} r={isTop?25:22} fill="none" stroke={C.ash} strokeWidth={3} strokeOpacity={.2}/>
-                  <circle cx={isTop?30:26} cy={isTop?30:26} r={isTop?25:22} fill="none" stroke={gradeColor} strokeWidth={3} strokeDasharray={isTop?2*Math.PI*25:circ} strokeDashoffset={(isTop?2*Math.PI*25:circ)*(1-score/100)} strokeLinecap="round" style={{filter:"drop-shadow(0 0 6px "+gradeColor+"aa)",transition:"stroke-dashoffset 1s ease"}}/>
+                  <circle cx={isTop?30:26} cy={isTop?30:26} r={isTop?25:22} fill="none" stroke={gradeColor} strokeWidth={3} strokeDasharray={isTop?2*Math.PI*25:circ} strokeDashoffset={(isTop?2*Math.PI*25:circ)*(1-(hasScore?score/100:0))}
+strokeLinecap="round" style={{filter:"drop-shadow(0 0 6px "+gradeColor+"aa)",transition:"stroke-dashoffset 1s ease"}}/>
                 </svg>
                 <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
                   <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:isTop?16:14,fontWeight:900,color:gradeColor,lineHeight:1,textShadow:"0 0 10px "+gradeColor+"88"}}>{score}</div>
