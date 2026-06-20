@@ -3679,7 +3679,7 @@ return result;
                 </div>
               );
             })()
-          ) : null}
+          )}
         </div>
       )}
 
