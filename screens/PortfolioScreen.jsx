@@ -1343,58 +1343,58 @@ var positionData = {
     var allReal = port.every(function(pp){ var r = realBarsMap[pp.sym]; return r && r.length >= 30; });
     return allReal ? 'real' : (fetchTimedOut ? 'synthetic-timeout' : 'pending');
   }, [port, realBarsMap, fetchTimedOut]);
-
-  // ═══ تحليل المحفظة الشامل (المراحل 1-5) ═══
+  // ═══ تحليل المحفظة الشامل -- بيانات حقيقية فقط، بدون genBars إطلاقاً ═══
   var portfolioAnalysis = useMemo(function() {
-
     if (!positions || positions.length === 0) return null;
 
-    // ✨ نافذة 60 يوم: للتحليل الأساسي + قيمة المحفظة + Drawdown + الارتباط + VaR
-    var positionsWithBars60 = positions.map(function(p) {
-      var bars = getBars(p.sym, p.stk, 60); // ✨ حقيقي إن توفّر بطول كافٍ، وإلا genBars (60 دائماً)
-      return {
-        sym: p.sym,
-        qty: p.qty,
-        value: p.value,
-        bars: bars,
-        stk: p.stk,
-      };
-    });
+    // نستبعد أي سهم بياناته الحقيقية ناقصة بدل تعويضه ببيانات عشوائية
+    function realOnlyPositions(count) {
+      var included = [], excluded = [];
+      positions.forEach(function(p) {
+        var real = realBarsMap[p.sym];
+        if (real && real.length >= count) {
+          included.push({ sym: p.sym, qty: p.qty, value: p.value, bars: real.slice(-count), stk: p.stk });
+        } else {
+          excluded.push(p.sym);
+        }
+      });
+      return { included: included, excluded: excluded };
+    }
 
-    // ✨ نافذة 365 يوم: للعوائد الشهرية ومخطط المخاطرة/العائد (تحتاج سلسلة أطول)
-    var positionsWithBars365 = positions.map(function(p) {
-      var bars = getBars(p.sym, p.stk, 365); // ✨ حقيقي إن توفّر بطول كافٍ، وإلا genBars (365 دائماً)
-      return {
-        sym: p.sym,
-        qty: p.qty,
-        value: p.value,
-        bars: bars,
-        stk: p.stk,
-      };
-    });
+    var w60 = realOnlyPositions(60);
+    var w365 = realOnlyPositions(365);
+    var positionsWithBars60 = w60.included;
+    var positionsWithBars365 = w365.included;
 
-        var analysis = analyzePortfolio(positionsWithBars60, tasiBarsState.bars || []);
-    analysis.benchmarkSource = tasiBarsState.source; // 'real' | 'synthetic' | 'pending' (للإفصاح)
+    if (positionsWithBars60.length === 0) return null; // لا بيانات حقيقية بعد -- ننتظر
+
+    var coveredValue60 = positionsWithBars60.reduce(function(s,p){return s+p.value;},0);
+    var coveragePct = tv > 0 ? Math.round(coveredValue60 / tv * 100) : 0;
+
+    var analysis = analyzePortfolio(positionsWithBars60, tasiBarsState.bars || []);
+    analysis.benchmarkSource = tasiBarsState.source;
     analysis = addIntelligenceLayer(analysis, positionsWithBars60, stockHealth);
 
-    // ⭐ بيانات الرسم البياني
-                     analysis.chartData = {
-      portfolioValue: generatePortfolioValueChart(
-        positionsWithBars60, 
-        analysis.totalValue, 
-        60,
-        tasiBarsState.bars || []
-      ),
+    analysis.dataCoverage = {
+      pct: coveragePct,
+      includedSyms: positionsWithBars60.map(function(p){return p.sym;}),
+      excludedSyms: w60.excluded,
+      isComplete: w60.excluded.length === 0,
+    };
 
+    analysis.chartData = {
+      portfolioValue: generatePortfolioValueChart(positionsWithBars60, coveredValue60, 60, tasiBarsState.bars || []),
       drawdown: generateDrawdownChart(positionsWithBars60, 60),
-      monthlyReturns: generateMonthlyReturnsHeatmap(positionsWithBars365, 365),
-      riskReturn: generateRiskReturnScatter(positionsWithBars365, analysis),
+      monthlyReturns: positionsWithBars365.length > 0
+        ? generateMonthlyReturnsHeatmap(positionsWithBars365, 365) : { months: [], stats: {} },
+      riskReturn: positionsWithBars365.length > 0
+        ? generateRiskReturnScatter(positionsWithBars365, analysis) : { stocks: [], portfolio: null, benchmark: null },
       correlation: generateCorrelationHeatmap(positionsWithBars60),
       varDistribution: generateVaRDistribution(positionsWithBars60),
     };
 
-        return analysis;
-  }, [positions, tasiBarsState, realBarsMap]);
+    return analysis;
+  }, [positions, tasiBarsState, realBarsMap, tv]);
 
  // ✨ تحليل Portfolio IQ - مع تخزين في useMemo (CRITICAL Performance Fix!)
 
