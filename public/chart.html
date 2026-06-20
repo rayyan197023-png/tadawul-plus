@@ -7829,17 +7829,32 @@ function _applyTick(tick){
   // Update last candle with new price
   if(state.allCandles.length > 0){
     const last = state.allCandles[state.allCandles.length - 1];
-    last.c = tick.c;
-    last.hi = Math.max(last.hi, tick.c);
-    last.lo = Math.min(last.lo, tick.c);
-    if(tick.v) last.v = tick.v;
+    const lastDate = last.t instanceof Date ? last.t : new Date(last.t);
+    const today = new Date();
+    const isSameDay = lastDate.getFullYear()===today.getFullYear() &&
+                       lastDate.getMonth()===today.getMonth() &&
+                       lastDate.getDate()===today.getDate();
+
+    if(isSameDay){
+      // شمعة اليوم فعلاً — حدّثها عادي
+      last.c = tick.c;
+      last.hi = Math.max(last.hi, tick.c);
+      last.lo = Math.min(last.lo, tick.c);
+      if(tick.v) last.v = tick.v;
+    } else {
+      // آخر شمعة قديمة (بيانات 5Y/الكل غير محدّثة حتى اليوم)
+      // لا تُمدّدها بسعر اليوم — أضف شمعة منفصلة جديدة
+      state.allCandles.push({
+        o: tick.c, hi: tick.c, lo: tick.c, c: tick.c,
+        v: tick.v || 0, t: today
+      });
+    }
   }
 
   // Update header price display
   const pEl = document.getElementById('pmain');
   if(pEl){
     pEl.textContent = tick.c.toFixed(2);
-    // Flash green/red on change
     const up = tick.c >= prev;
     pEl.style.color = up ? '#22c55e' : '#ef4444';
     setTimeout(()=>pEl.style.color='', 600);
@@ -7853,6 +7868,7 @@ function _applyTick(tick){
   invalidateChart();
   render();
 }
+
 
 // ── Load full stock list from API ─────────────────────────────
 async function loadStockList(){
