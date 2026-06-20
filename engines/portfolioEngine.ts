@@ -3574,7 +3574,6 @@ export function generatePortfolioValueChart(
   }
   days = days || 60;
 
-  // ① حساب الأوزان
   var weights: any = {};
   var totalVal = 0;
   positions.forEach(function(p) { totalVal += p.value || 0; });
@@ -3582,42 +3581,40 @@ export function generatePortfolioValueChart(
     weights[p.sym] = (p.value || 0) / totalVal;
   });
 
-  // ② حساب عوائد المحفظة اليومية
   var portfolioReturns = calcPortfolioReturns(positions, weights);
-
-  // ③ عوائد تاسي: حقيقية إن توفّرت (tasiBars)، وإلا اصطناعية من أسهم المحفظة
   var tasiReturns = (tasiBars && tasiBars.length > 1)
     ? simpleReturns(tasiBars)
     : buildTasiSyntheticReturns(positions);
 
-
-  // ④ بناء المنحنيين (نبدأ من القيمة الحالية ونمشي للخلف)
-  // ④ بناء المنحنيين -- مُطبَّعان (Normalized) لنفس نقطة البداية
-  // ✨ كلا الخطين يبدأ من نفس القيمة (currentValue) ويتحرك حسب عائده الخاص.
-  // هذا يجعل "الأعلى في النهاية = الأداء الأفضل" بصرياً، وهو المعيار المالي الصحيح
-  // (TradingView/Bloomberg). المقارنة بطريقة "نفس نقطة النهاية" كانت تعكس الانطباع البصري:
-  // الخط ذو العائد الأعلى يبدأ من نقطة أدنى ليصل لنفس النهاية، فيبدو "أضعف" طوال الفترة.
   var numPoints = Math.min(portfolioReturns.length, tasiReturns.length, days);
+  if (numPoints < 2) return [];
+
+  // ✨ نبني المنحنى التراكمي من الماضي للحاضر بشكل طبيعي، ثم نُعايره (rescale)
+  // بحيث ينتهي بالضبط عند القيمة الحقيقية الحالية -- لا يبدأ منها.
+  // البناء القديم كان يبدأ من currentValue عند أقدم نقطة ويمشي للأمام، فتصبح
+  // نقطة "اليوم" قيمة مركّبة وهمية لا تساوي قيمة المحفظة الفعلية.
+  var portfolioCum = [1.0];
+  var tasiCum = [1.0];
+  for (var j = 1; j < numPoints; j++) {
+    portfolioCum.push(portfolioCum[j - 1] * (1 + portfolioReturns[portfolioReturns.length - numPoints + j]));
+    tasiCum.push(tasiCum[j - 1] * (1 + tasiReturns[tasiReturns.length - numPoints + j]));
+  }
+
+  var pScale = currentValue / portfolioCum[portfolioCum.length - 1];
+  var tScale = currentValue / tasiCum[tasiCum.length - 1];
 
   var chartData = [];
-  var currentPortfolio = currentValue;
-  var currentTasi = currentValue;
-
-  for (var j = 0; j < numPoints; j++) {
+  for (var k = 0; k < numPoints; k++) {
     var dateObj = new Date();
-    dateObj.setDate(dateObj.getDate() - (numPoints - j - 1));
-
-    if (j > 0) {
-      currentPortfolio *= (1 + portfolioReturns[portfolioReturns.length - numPoints + j]);
-      currentTasi *= (1 + tasiReturns[tasiReturns.length - numPoints + j]);
-    }
-
+    dateObj.setDate(dateObj.getDate() - (numPoints - k - 1));
+    var pv = portfolioCum[k] * pScale;
+    var tv2 = tasiCum[k] * tScale;
     chartData.push({
       date: dateObj.getTime(),
       dateLabel: (dateObj.getMonth() + 1) + '/' + dateObj.getDate(),
-      portfolio: Math.round(currentPortfolio),
-      benchmark: Math.round(currentTasi),
-      alpha: Math.round(currentPortfolio - currentTasi),
+      portfolio: Math.round(pv),
+      benchmark: Math.round(tv2),
+      alpha: Math.round(pv - tv2),
     });
   }
 
