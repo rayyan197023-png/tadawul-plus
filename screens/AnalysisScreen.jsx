@@ -2303,14 +2303,15 @@ return(
                             : 0.05;
                           pct = Math.max(3, Math.min(20, Math.round(kelAdj * 100)));
                         }
-                        // ✨ حساب ديناميكي بناءً على ATR (تقلّب السهم)
+// ✨ موحَّد مع المحفظة: نفس calcSmartStopLoss/calcSmartTakeProfit من positionEngine.js
 var atrPct = (health.extras && health.extras.atrPct) || 2.5;
-var stopPct = Math.max(3, Math.min(8, atrPct * 1.5));
-var tgtPct = Math.max(5, Math.min(15, atrPct * 3));
 var alertPct = Math.max(0.5, Math.min(3, atrPct * 0.5));
 
-var stop = (stk.p * (1 - stopPct/100)).toFixed(2);
-var tgt  = (stk.p * (1 + tgtPct/100)).toFixed(2);
+var unifiedStop = calcSmartStopLoss(stk.p, stk.p, health, bars);
+var unifiedTargets = calcSmartTakeProfit(stk.p, unifiedStop.stopPrice, health, bars);
+
+var stop = unifiedStop.stopPrice.toFixed(2);
+var tgt  = unifiedTargets ? unifiedTargets.t1.price.toFixed(2) : stop;
 var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                         
 
