@@ -586,22 +586,22 @@ async function shareStockCard(cardElement, stockSym, stockName, price, change) {
     ctx.fillText('/ 100', 200, 740);
     
     // ─── خطة التداول ───
-    if(tp.entry) {
+     if(shareStop) {
       ctx.fillStyle = '#d4a843';
       ctx.font = 'bold 36px Cairo, sans-serif';
       ctx.textAlign = 'right';
       ctx.fillText('🎯 خطة التداول', 1020, 840);
       
-      // Entry
+      // Entry -- موحَّد: نفس السعر الحالي
       ctx.fillStyle = '#90a4c8';
       ctx.font = '28px Cairo, sans-serif';
       ctx.fillText('الدخول:', 1020, 920);
       ctx.fillStyle = '#f0f6ff';
       ctx.font = 'bold 42px IBM Plex Mono, monospace';
       ctx.textAlign = 'left';
-      ctx.fillText(tp.entry.toFixed(2), 60, 920);
+      ctx.fillText(stk.p.toFixed(2), 60, 920);
       
-      // Stop Loss
+      // Stop Loss -- موحَّد مع positionEngine
       ctx.fillStyle = '#90a4c8';
       ctx.font = '28px Cairo, sans-serif';
       ctx.textAlign = 'right';
@@ -609,9 +609,9 @@ async function shareStockCard(cardElement, stockSym, stockName, price, change) {
       ctx.fillStyle = '#f04f5a';
       ctx.font = 'bold 42px IBM Plex Mono, monospace';
       ctx.textAlign = 'left';
-      ctx.fillText(tp.stopLoss ? tp.stopLoss.toFixed(2) : '--', 60, 990);
+      ctx.fillText(shareStop.stopPrice.toFixed(2), 60, 990);
       
-      // Target 1
+      // Target 1 -- موحَّد مع positionEngine
       ctx.fillStyle = '#90a4c8';
       ctx.font = '28px Cairo, sans-serif';
       ctx.textAlign = 'right';
@@ -619,9 +619,9 @@ async function shareStockCard(cardElement, stockSym, stockName, price, change) {
       ctx.fillStyle = '#10c97e';
       ctx.font = 'bold 42px IBM Plex Mono, monospace';
       ctx.textAlign = 'left';
-      ctx.fillText(tp.target1 ? tp.target1.toFixed(2) : '--', 60, 1060);
+      ctx.fillText(shareTargets ? shareTargets.t1.price.toFixed(2) : '--', 60, 1060);
       
-      // Target 2
+      // Target 2 -- موحَّد مع positionEngine
       ctx.fillStyle = '#90a4c8';
       ctx.font = '28px Cairo, sans-serif';
       ctx.textAlign = 'right';
@@ -629,8 +629,9 @@ async function shareStockCard(cardElement, stockSym, stockName, price, change) {
       ctx.fillStyle = '#10c97e';
       ctx.font = 'bold 42px IBM Plex Mono, monospace';
       ctx.textAlign = 'left';
-      ctx.fillText(tp.target2 ? tp.target2.toFixed(2) : '--', 60, 1130);
+      ctx.fillText(shareTargets ? shareTargets.t2.price.toFixed(2) : '--', 60, 1130);
     }
+
     
     // ─── خط فاصل سفلي ───
     ctx.strokeStyle = '#1f2940';
