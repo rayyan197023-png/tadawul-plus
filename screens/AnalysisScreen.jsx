@@ -2412,8 +2412,9 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                             <div style={{flex:1,minWidth:0}}>
                               <div style={{
                                 fontSize:11,fontWeight:900,
-                                color:health.sigC,lineHeight:1,marginBottom:3,
+                                color:lineColor,lineHeight:1,marginBottom:3,
                               }}>{line1}</div>
+
                               <div style={{
                                 fontSize:9,color:C.mist,
                                 lineHeight:1.4,direction:"ltr",textAlign:"right",
