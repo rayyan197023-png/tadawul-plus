@@ -2531,6 +2531,20 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                                 </div>
                               )}
                             </div>
+                            {cardOverbought && (
+                              <div style={{
+                                padding:"6px 12px",
+                                background:C.amber+"10",
+                                borderBottom:"1px solid "+C.amber+"20",
+                                display:"flex",alignItems:"center",gap:6,
+                              }}>
+                                <span style={{fontSize:10}}>⚠️</span>
+                                <span style={{fontSize:8,color:C.amber,fontWeight:700}}>
+                                  RSI مرتفع جداً -- هذه الخطة افتراضية حتى يهدأ الزخم
+                                </span>
+                              </div>
+                            )}
+
                             
                             {/* جسم البطاقة */}
                             <div style={{padding:"10px 12px"}}>
