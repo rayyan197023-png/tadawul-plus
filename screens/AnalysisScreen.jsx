@@ -2486,7 +2486,8 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
 {health.tradingPlan && (function(){
 
   var tp = health.tradingPlan;
-  var sigColor = tp.actionColor || health.sigC;
+  // ✨ موحَّد: لا نعرض لون "واثق" أخضر إذا كانت البطاقة في حالة تحذير RSI أعلاها
+  var sigColor = cardOverbought ? C.amber : (tp.actionColor || health.sigC);
 
   // ✨ موحَّد مع المحفظة: نفس وقف الخسارة والأهداف من positionEngine.js
   var uStop = calcSmartStopLoss(stk.p, stk.p, health, bars);
