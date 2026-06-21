@@ -2447,13 +2447,22 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                           </div>
                         );
                       })()}
-                      {/* Trading Plan */}
-                      {health.tradingPlan && (function(){
+{/* Trading Plan */}
+{health.tradingPlan && (function(){
 
-                        var tp = health.tradingPlan;
-                        var sigColor = tp.actionColor || health.sigC;
-                        
-                        return(
+  var tp = health.tradingPlan;
+  var sigColor = tp.actionColor || health.sigC;
+
+  // ✨ موحَّد مع المحفظة: نفس وقف الخسارة والأهداف من positionEngine.js
+  var uStop = calcSmartStopLoss(stk.p, stk.p, health, bars);
+  var uTargets = calcSmartTakeProfit(stk.p, uStop.stopPrice, health, bars);
+  var uT1 = uTargets ? uTargets.t1 : null;
+  var uT2 = uTargets ? uTargets.t2 : null;
+  var uRR = uTargets ? uTargets.weightedRR : null;
+  var uRRLabel = uRR ? (uRR>=3?"ممتاز ⭐":uRR>=2?"جيد ✓":uRR>=1.5?"مقبول":"ضعيف ⚠") : "";
+
+  return(
+
                           <div style={{
                             marginTop:10,
                             background:"linear-gradient(135deg," + sigColor + "10," + sigColor + "06)",
