@@ -3188,7 +3188,8 @@ var neut = normalizeProb(prob.neutral);
                         var vwapD  = ex.vwapDev;
                         var macroE = ex.macroEnv;
                         var macroS = ex.macroScore;
-                        var rsiColor = rsiV>70?C.coral:rsiV<30?C.mint:C.amber;
+                        var rsiColor = rsiV>=75?C.coral:rsiV<30?C.mint:C.amber;
+
                         var macdColor= macdH>0?C.mint:C.coral;
                         var adxColor = adxV>35?C.electric:adxV>25?C.amber:C.ash;
                         return(
