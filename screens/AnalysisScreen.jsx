@@ -3241,17 +3241,17 @@ var neut = normalizeProb(prob.neutral);
                               {[
                                 {l:"CMF", v:cmfV!=null?cmfV.toFixed(2):"-",
                                   c:cmfV>0.05?C.mint:cmfV<-0.05?C.coral:C.amber,
-                                  // 🆕 كشف التباعد: CMF إيجابي + OBV سلبي
-                                  s:(cmfV>0.05 && obvUp===false)?"تباعد إيجابي ⚠":
-                                    (cmfV<-0.05 && obvUp===true)?"تباعد سلبي ⚠":
+                                  // 🔧 موحَّد مع بطاقة التحذير الكبيرة: عتبة 0.1 لكشف "تباعد" (لا 0.05)
+                                  s:(cmfV>0.1 && obvUp===false)?"تباعد إيجابي ⚠":
+                                    (cmfV<-0.1 && obvUp===true)?"تباعد سلبي ⚠":
                                     cmfV>0.15?"تدفق قوي":cmfV>0?"تدفق إيجابي":cmfV<-0.05?"ضغط بيع":"محايد"},
                                 {l:"OBV", v:obvUp!=null?(obvUp?"صاعد ↑":"هابط ↓"):"-",
                                   c:obvUp?C.mint:C.coral,
-                                  // 🆕 كشف التباعد في OBV
-                                  s:(obvUp && cmfV<-0.05)?"يصعد مع ضغط بيع":
-                                    (!obvUp && cmfV>0.05)?"يهبط مع تدفق إيجابي":
+                                  // 🔧 موحَّد مع بطاقة التحذير الكبيرة: عتبة 0.1
+                                  s:(obvUp && cmfV<-0.1)?"يصعد مع ضغط بيع":
+                                    (!obvUp && cmfV>0.1)?"يهبط مع تدفق إيجابي":
                                     obvUp?"تأكيد صعود":"تباعد سلبي"},
-                                {l:"VWAP", v:vwapD!=null?vwapD.toFixed(1)+"%":"-",
+{l:"VWAP", v:vwapD!=null?vwapD.toFixed(1)+"%":"-",
                                   c:vwapD>2?C.mint:vwapD<-2?C.coral:vwapD<-1?C.amber:vwapD>1?C.electric:C.amber,
                                   // 🆕 وصف أدق لـ VWAP
                                   s:vwapD>5?"فوق VWAP بقوة":
