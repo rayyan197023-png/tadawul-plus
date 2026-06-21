@@ -2534,7 +2534,7 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                             <div style={{padding:"10px 12px"}}>
                               {/* الصف الأول: Entry + Stop + Target1 + Target2 */}
                               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:6}}>
-                                {/* Entry */}
+                                {/* Entry -- موحَّد: نفس السعر الحالي المستخدم لحساب uStop/uTargets */}
                                 <div style={{
                                   background:"rgba(255,255,255,.03)",
                                   border:"1px solid rgba(255,255,255,.06)",
@@ -2545,7 +2545,7 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                                     <span style={{fontSize:8,color:C.smoke,fontWeight:600}}>الدخول</span>
                                   </div>
                                   <div className="num" style={{fontSize:14,fontWeight:900,color:C.snow,direction:"ltr"}}>
-                                    {tp.entry ? tp.entry.toFixed(2) : "-"}
+                                    {stk.p.toFixed(2)}
                                   </div>
                                 </div>
                                 
