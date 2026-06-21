@@ -3203,21 +3203,26 @@ var neut = normalizeProb(prob.neutral);
                             {/* Row 1: RSI + MACD + ADX */}
                             <div style={{display:"flex",gap:5,marginBottom:5}}>
                               {[
-                                                                                {l:"RSI", v:rsiV!=null?rsiV.toFixed(0):"-", c:rsiColor,
-                                  // 🔧 موحَّد مع باقي البطاقة: عتبة 75 (لا 70) لذروة الشراء
-                                  s:rsiV>85?"ذروة شراء شديدة ⚠":
+                                                                                                {l:"RSI", v:rsiV!=null?rsiV.toFixed(0):"-",
+                                  c:rsiV==null?C.ash:rsiColor,
+                                  // 🔧 موحَّد مع باقي البطاقة: عتبة 75 (لا 70) لذروة الشراء + حماية null
+                                  s:rsiV==null?"لا بيانات":
+                                    rsiV>85?"ذروة شراء شديدة ⚠":
                                     rsiV>=75?"ذروة شراء ⚠":
                                     rsiV<20?"ذروة بيع شديدة":
                                     rsiV<30?"ذروة بيع":
                                     rsiV>55?"محايد قوي":
                                     rsiV>45?"محايد":"ضعيف"},
-
-                                {l:"MACD", v:macdH!=null?(macdH>0?"+":"")+macdH:"-", c:macdColor,
-                                  s:macdH>0?"إيجابي":"سلبي"},
-                                                                {l:"ADX", v:adxV!=null?adxV:"-", c:adxColor,
-                                  // 🔧 إصلاح: إضافة الاتجاه لـ "اتجاه نشط" أيضاً
-                                  s:adxV>35?"اتجاه قوي "+((adxBull?"↑":"↓")):adxV>25?"اتجاه نشط "+((adxBull?"↑":"↓")):adxV>15?"اتجاه ضعيف":"عرضي"},
+                                {l:"MACD", v:macdH!=null?(macdH>0?"+":"")+macdH.toFixed(3):"-",
+                                  c:macdH==null?C.ash:macdColor,
+                                  s:macdH==null?"لا بيانات":macdH>0?"إيجابي":"سلبي"},
+                                                                {l:"ADX", v:adxV!=null?adxV:"-",
+                                  c:adxV==null?C.ash:adxColor,
+                                  // 🔧 إصلاح: إضافة الاتجاه لـ "اتجاه نشط" أيضاً + حماية null
+                                  s:adxV==null?"لا بيانات":
+                                    adxV>35?"اتجاه قوي "+((adxBull?"↑":"↓")):adxV>25?"اتجاه نشط "+((adxBull?"↑":"↓")):adxV>15?"اتجاه ضعيف":"عرضي"},
                               ].map(function(it,i){
+
                                 return(
                                   <div key={i} style={{
                                     flex:1,background:C.layer2,
