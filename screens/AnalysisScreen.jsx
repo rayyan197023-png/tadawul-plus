@@ -2632,12 +2632,15 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                                   </div>
                                   <div style={{display:"flex",alignItems:"baseline",gap:6}}>
                                     <div className="num" style={{fontSize:13,fontWeight:900,color:C.gold}}>
-{uRR || "-"}
+{uRR ? uRR + ":1" : "-"}
 
                                     </div>
                                     <div style={{fontSize:8,color:C.gold,fontWeight:700}}>
+{uRRLabel}
 
                                     </div>
+                                  </div>
+
                                   </div>
                                 </div>
                                 
