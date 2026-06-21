@@ -1198,8 +1198,11 @@ useEffect(() => {
   // جلب بارات أسهم المحفظة الحقيقية (أسهم المحفظة فقط -- لا كل السوق)
   useEffect(function() {
     var syms = port.map(function(pp){ return pp.sym; });
+    // ✨ أضف السهم المختار حالياً في شيت الإضافة (إن وُجد) لجلب بياناته الحقيقية أيضاً
+    if (addSym && syms.indexOf(addSym) === -1) syms = syms.concat([addSym]);
     if (syms.length === 0) return;
     var cancelled = false;
+
 
     var toFetch = syms.filter(function(s){ return !realBarsMap[s]; });
     if (toFetch.length === 0) return;
