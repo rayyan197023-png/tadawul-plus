@@ -2339,30 +2339,35 @@ var tgt  = unifiedTargets ? unifiedTargets.t1.price.toFixed(2) : stop;
 var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                         
 
-                        // ✨ Action Plan مع وعي بـ RSI و regime
-                        var icon, line1, line2, bg, border;
+                        // ✨ Action Plan مع وعي بـ RSI و regime -- لون النص متّسق دائماً مع الخلفية
+                        var icon, line1, line2, bg, border, lineColor;
                         var rsiV = (health.extras && health.extras.rsiV) || 50;
                         var isOverbought = rsiV >= 75;
                         var isRegimeVolatile = health.regime === "volatile" || health.regime === "news-driven";
                         
                         if(health.score >= 65){
-                          icon  = "✅";
                           // ─── رسالة سياقية حسب RSI ───
                           if(isOverbought){
+                            icon  = "⚠️";
                             line1 = "فرصة شراء بحذر - " + pct + "% من المحفظة";
                             line2 = "RSI مرتفع - ادخل تدريجياً | وقف: " + stop;
                             bg    = "rgba(245,158,11,.10)";
                             border= "rgba(245,158,11,.30)";
+                            lineColor = C.amber;
                           } else if(isRegimeVolatile){
+                            icon  = "⚠️";
                             line1 = "فرصة شراء (سوق متقلب) - " + pct + "%";
                             line2 = "قلّص الحجم | وقف: " + stop + " · هدف: " + tgt;
                             bg    = "rgba(212,168,67,.10)";
                             border= "rgba(212,168,67,.30)";
+                            lineColor = C.gold;
                           } else {
+                            icon  = "✅";
                             line1 = "فرصة شراء - " + pct + "% من المحفظة";
                             line2 = "وقف: " + stop + " · هدف: " + tgt;
                             bg    = "rgba(16,201,126,.08)";
                             border= "rgba(16,201,126,.25)";
+                            lineColor = C.mint;
                           }
                         } else if(health.score >= 55){
                           icon  = "🔔";
@@ -2370,24 +2375,28 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                           line2 = "انتظر تأكيد الحجم قبل الشراء";
                           bg    = "rgba(245,158,11,.08)";
                           border= "rgba(245,158,11,.22)";
+                          lineColor = C.amber;
                         } else if(health.score >= 45){
                           icon  = "⏸";
                           line1 = "لا توجد إشارة دخول";
                           line2 = "إذا كنت مالكاً: احتفظ وراقب";
                           bg    = "rgba(6,182,212,.07)";
                           border= "rgba(6,182,212,.2)";
+                          lineColor = C.teal;
                         } else if(health.score >= 35){
                           icon  = "⚠";
                           line1 = "تجنّب الشراء الآن";
                           line2 = "إذا كنت مالكاً: راجع وقف الخسارة";
                           bg    = "rgba(245,158,11,.08)";
                           border= "rgba(245,158,11,.22)";
+                          lineColor = C.amber;
                         } else {
                           icon  = "🔴";
                           line1 = "إشارة ضعف قوية";
                           line2 = "إذا كنت مالكاً: قلّص أو وقف عند " + stop;
                           bg    = "rgba(240,79,90,.08)";
                           border= "rgba(240,79,90,.22)";
+                          lineColor = C.coral;
                         }
                                                                                                 return(
                           <div>
