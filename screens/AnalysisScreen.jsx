@@ -1847,17 +1847,7 @@ return(
                               <text x={cx+r*Math.cos(rad)*1.18} y={cy+r*Math.sin(rad)*1.18} textAnchor="middle" dominantBaseline="middle" fill={C.gold} fontSize={5} fontWeight="700">65</text>
                             </svg>);
                           })()}
-                                                  {(function(){
-                            // 🔧 إصلاح: عدم إظهار delta عند ch صغير جداً
-                            var absCh = Math.abs(stk.ch);
-                            if (absCh < 0.3) return null;  // أقل من 0.3% = لا حركة
-                            
-                            var trend=stk.ch>=0;
-                            var delta=Math.max(1,Math.min(12,Math.abs(Math.round(health.score*stk.ch/100*3))));
-                            return(<div style={{position:"absolute",bottom:-18,left:"50%",transform:"translateX(-50%)",display:"flex",alignItems:"center",gap:2,background:trend?"rgba(16,201,126,.15)":"rgba(240,79,90,.15)",border:"1px solid "+(trend?"rgba(16,201,126,.3)":"rgba(240,79,90,.3)"),borderRadius:5,padding:"1px 5px",whiteSpace:"nowrap"}}>
-                              <span style={{fontSize:7,fontWeight:800,color:trend?C.mint:C.coral}}>{trend?"↑":"↓"}{delta}</span>
-                            </div>);
-                          })()}
+                                                  
                         </div>
 
                       </div>
