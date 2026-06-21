@@ -2084,65 +2084,63 @@ return(
                         marginTop:10,display:"flex",flexDirection:"row-reverse",gap:6,
                         paddingTop:10,borderTop:"1px solid rgba(255,255,255,.05)",
                       }}>
-                        {/* System 1 — العقل السريع */}
-                        <div style={{
-                          flex:1,
-                          background:health.sigC+"14",
-                          border:"1px solid " + health.sigC + "30",
-                          borderRadius:12,padding:"9px 12px",
-                          display:"flex",alignItems:"center",gap:8,
-                        }}>
-                          {/* 🎯 معايرة علمية: 65/55/45 */}
-                          <span style={{fontSize:20,flexShrink:0,lineHeight:1}}>
-                            {health.score>=65?"🚀":health.score>=55?"👁":health.score>=45?"⚖️":"🛡"}
-                          </span>
-                          <div>
-                            <div style={{
-                              fontSize:11,fontWeight:800,
-                              color:health.sigC,lineHeight:1,marginBottom:3,
-                            }}>
-                              {health.score>=65?"فرصة الآن"
-                              :health.score>=55?"راقب عن قرب"
-                              :health.score>=45?"لا تتسرع"
-                              :"احتاط"}
-                            </div>
-                                                                                                                <div style={{fontSize:8.5,color:C.smoke,lineHeight:1.3}}>
-                              {/* ✨ رسالة موحدة مع regime + sig + RSI */}
-                              {(function(){
-                                var vr = (health.extras && health.extras.vr) || 1;
-                                var rsiV = (health.extras && health.extras.rsiV) || 50;
-                                var regime = health.regime;
-                                var isVolatile = regime === "volatile" || regime === "news-driven";
-                                var isOverbought = rsiV >= 75;
-                                
-                                // ─── سهم قوي ──
-                                if(health.score >= 65){
-                                  if(isOverbought) return "إشارة قوية لكن RSI مرتفع - دخول تدريجي";
-                                  if(isVolatile) return "إشارة قوية في سوق متقلب - قلّل الحجم";
-                                  return "السيولة والزخم يدعمان الدخول";
-                                }
-                                // ─── سهم مراقبة ──
-                                if(health.score >= 55){
-                                  if(isVolatile) return "تذبذب عالٍ - انتظر استقراراً";
-                                  return "انتظر تأكيد الحجم قبل الدخول";
-                                }
-                                // ─── سهم محايد ──
-                                if(health.score >= 45){
-                                  if(vr >= 1.5) return "حجم عالٍ - راقب الاتجاه";
-                                  return "الإشارة غير حاسمة - تجنّب الدخول";
-                                }
-                                // ─── سهم ضعيف ──
-                                if(health.score >= 35){
-                                  if(vr >= 1.5 && stk.ch >= 0) return "حجم عالٍ رغم الضعف - مضاربي";
-                                  if(stk.ch < -1) return "تراجع متواصل - تجنّب";
-                                  return "إشارة ضعيفة - لا تشتري";
-                                }
-                                if(stk.ch < -2) return "ضغط بيعي مرتفع - ابتعد";
-                                return "إشارة ضعيفة جداً - خطر";
-                              })()}
-                            </div>
-                          </div>
-                        </div>
+{/* System 1 -- العقل السريع -- موحَّد: العنوان واللون والنص لا تتناقض أبداً */}
+{(function(){
+  var vr = (health.extras && health.extras.vr) || 1;
+  var rsiV = (health.extras && health.extras.rsiV) || 50;
+  var regime = health.regime;
+  var isVolatile = regime === "volatile" || regime === "news-driven";
+  var isOverbought = rsiV >= 75;
+
+  var icon, title, subtitle, boxColor;
+
+  if(health.score >= 65){
+    if(isOverbought){
+      icon = "⚠️"; title = "فرصة بحذر"; boxColor = C.amber;
+      subtitle = "RSI مرتفع جداً (" + Math.round(rsiV) + ") - دخول تدريجي فقط";
+    } else if(isVolatile){
+      icon = "🚀"; title = "فرصة الآن"; boxColor = health.sigC;
+      subtitle = "إشارة قوية في سوق متقلب - قلّل الحجم";
+    } else {
+      icon = "🚀"; title = "فرصة الآن"; boxColor = health.sigC;
+      subtitle = "السيولة والزخم يدعمان الدخول";
+    }
+  } else if(health.score >= 55){
+    icon = "👁"; title = "راقب عن قرب"; boxColor = health.sigC;
+    subtitle = isVolatile ? "تذبذب عالٍ - انتظر استقراراً" : "انتظر تأكيد الحجم قبل الدخول";
+  } else if(health.score >= 45){
+    icon = "⚖️"; title = "لا تتسرع"; boxColor = health.sigC;
+    subtitle = vr >= 1.5 ? "حجم عالٍ - راقب الاتجاه" : "الإشارة غير حاسمة - تجنّب الدخول";
+  } else if(health.score >= 35){
+    icon = "🛡"; title = "احتاط"; boxColor = health.sigC;
+    if(vr >= 1.5 && stk.ch >= 0) subtitle = "حجم عالٍ رغم الضعف - مضاربي";
+    else if(stk.ch < -1) subtitle = "تراجع متواصل - تجنّب";
+    else subtitle = "إشارة ضعيفة - لا تشتري";
+  } else {
+    icon = "🛡"; title = "احتاط"; boxColor = health.sigC;
+    subtitle = stk.ch < -2 ? "ضغط بيعي مرتفع - ابتعد" : "إشارة ضعيفة جداً - خطر";
+  }
+
+  return(
+    <div style={{
+      flex:1,
+      background:boxColor+"14",
+      border:"1px solid " + boxColor + "30",
+      borderRadius:12,padding:"9px 12px",
+      display:"flex",alignItems:"center",gap:8,
+    }}>
+      <span style={{fontSize:20,flexShrink:0,lineHeight:1}}>{icon}</span>
+      <div>
+        <div style={{
+          fontSize:11,fontWeight:800,
+          color:boxColor,lineHeight:1,marginBottom:3,
+        }}>{title}</div>
+        <div style={{fontSize:8.5,color:C.smoke,lineHeight:1.3}}>{subtitle}</div>
+      </div>
+    </div>
+  );
+})()}
+
 
 {/* نافذة الفرصة -- مبنية على بيانات الحجم الفعلية */}
 {/* 🎯 معايرة: 50 بدلاً من 55 - لتظهر مع "عاجل" */}
