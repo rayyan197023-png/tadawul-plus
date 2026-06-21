@@ -3830,10 +3830,16 @@ return result;
                     <span style={{fontFamily:"IBM Plex Mono,monospace",fontSize:15,fontWeight:900,color:C.snow,textShadow:"0 0 8px rgba(240,246,255,.4)"}}>{found.p.toFixed(2)} ر</span>
                   </div>
                   {foundHealth&&(
+                  {foundHealth ? (
                     <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                       <span style={{fontSize:11,fontWeight:700,color:foundHealthColor,background:foundHealthColor+"18",border:"1px solid "+foundHealthColor+"33",borderRadius:5,padding:"1px 7px"}}>{foundHealth.sig}</span>
                       <span style={{fontSize:11,color:C.electric,background:C.electric+"14",border:"1px solid "+C.electric+"22",borderRadius:5,padding:"1px 7px"}}>الحجم المقترح: {foundHealthPct}%</span>
                       <span style={{fontSize:11,color:C.smoke,background:C.layer3,border:"1px solid "+C.line,borderRadius:5,padding:"1px 7px"}}>{foundHealth.grade} . {foundHealth.score}/100</span>
+                    </div>
+                  ) : (
+                    <div style={{fontSize:11,color:C.smoke,display:"flex",alignItems:"center",gap:6}}>
+                      <span style={{width:11,height:11,border:"2px solid "+C.line,borderTopColor:C.electric,borderRadius:"50%",display:"inline-block",animation:"spin .9s linear infinite"}}/>
+                      جارٍ جلب بيانات حقيقية لتحليل دقيق...
                     </div>
                   )}
                 </div>
