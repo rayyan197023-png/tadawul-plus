@@ -2582,6 +2582,7 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
   </div>
 </div>
                               </div>
+
                               
                               {/* الصف الثالث: R/R Ratio + Worst Case */}
                               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8}}>
