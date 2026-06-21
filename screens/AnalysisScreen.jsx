@@ -25,6 +25,7 @@ import {
   applyFeedbackToWeights, loadFeedbackState,
   saveFeedbackState, getAdaptiveWeightAdjustment,
 } from '../engines/analysisEngine';
+import { calcSmartStopLoss, calcSmartTakeProfit } from '../engines/positionEngine';
 
 // ── مكونات UI المساعدة
 import {
