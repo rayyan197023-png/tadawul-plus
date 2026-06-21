@@ -3202,14 +3202,15 @@ var neut = normalizeProb(prob.neutral);
                             {/* Row 1: RSI + MACD + ADX */}
                             <div style={{display:"flex",gap:5,marginBottom:5}}>
                               {[
-                                                                                                {l:"RSI", v:rsiV!=null?rsiV.toFixed(0):"-", c:rsiColor,
-                                  // 🔧 إضافة 5 مستويات لـ RSI مع تحذيرات
-                                  s:rsiV>80?"ذروة شراء شديدة ⚠":
-                                    rsiV>70?"ذروة شراء ⚠":
+                                                                                {l:"RSI", v:rsiV!=null?rsiV.toFixed(0):"-", c:rsiColor,
+                                  // 🔧 موحَّد مع باقي البطاقة: عتبة 75 (لا 70) لذروة الشراء
+                                  s:rsiV>85?"ذروة شراء شديدة ⚠":
+                                    rsiV>=75?"ذروة شراء ⚠":
                                     rsiV<20?"ذروة بيع شديدة":
                                     rsiV<30?"ذروة بيع":
                                     rsiV>55?"محايد قوي":
                                     rsiV>45?"محايد":"ضعيف"},
+
                                 {l:"MACD", v:macdH!=null?(macdH>0?"+":"")+macdH:"-", c:macdColor,
                                   s:macdH>0?"إيجابي":"سلبي"},
                                                                 {l:"ADX", v:adxV!=null?adxV:"-", c:adxColor,
