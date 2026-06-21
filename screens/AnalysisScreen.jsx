@@ -1694,11 +1694,14 @@ const best = allData.length > 0
               const selected=sel===stk.sym;
               const globalRank = rankMap[stk.sym] || 1;
 const rankUp=stk.ch>0;
-                            const isBuy=health.score>=65;     // كان 75 - معايرة علمية
+const isBuy=health.score>=65;     // كان 75 - معايرة علمية
               const isDanger=health.score<45;   // يبقى - دفاعي
               const isRare=health.score>=75;    // كان 85 - فرصة استثنائية
               const isFlashing = flashCard === stk.sym;
               const level = cardLevel[stk.sym] || 1; // 1=مبسط 2=كامل
+              // ✨ موحَّد على مستوى البطاقة كلها: يُستخدم لتلوين كل قسم يتأثر بـ RSI
+              const cardOverbought = ((health.extras && health.extras.rsiV) || 50) >= 75;
+
 return(
   <div key={stk.sym}
     id={"stock-" + stk.sym}
