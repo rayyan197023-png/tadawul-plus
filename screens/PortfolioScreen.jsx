@@ -1541,8 +1541,8 @@ return result;
       return;
     }
     
-    var h=allData.find(function(d){return d.stk&&d.stk.sym===addSym;}); h=h?h.health:null;
-    var layersAtEntry = h ? h.layers || null : null;
+    var layersAtEntry = foundHealth ? foundHealth.layers || null : null;
+
     
     // ✨ احسب القيمة الجديدة قبل setPort
     var addedValue = qty * cost;
