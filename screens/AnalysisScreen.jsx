@@ -3099,7 +3099,7 @@ var neut = normalizeProb(prob.neutral);
                               <div style={{display:"flex",gap:6}}>
                                 <div style={{
                                   flex:2,background:C.layer2,
-                                  border:"1px solid "+C.edge,
+                                  border:"1px solid "+(cardOverbought?C.amber+"33":C.edge),
                                   borderRadius:12,padding:"10px 12px",
                                 }}>
                                                                     <div style={{fontSize:8,color:C.smoke,marginBottom:4,display:"flex",alignItems:"center",gap:3,justifyContent:"flex-end"}}>
@@ -3108,12 +3108,18 @@ var neut = normalizeProb(prob.neutral);
                                   </div>
                                   <div style={{
                                     fontSize:22,fontWeight:900,
-                                    color:health.sigC||C.gold,lineHeight:1,
+                                    color:cardOverbought?C.amber:(health.sigC||C.gold),lineHeight:1,
                                   }}>{pct}%</div>
                                   <div style={{fontSize:8,color:C.ash,marginTop:3}}>
                                     Kelly كامل: {kelly}% · {recK||""}
                                   </div>
+                                  {cardOverbought && (
+                                    <div style={{fontSize:7,color:C.amber,marginTop:3,fontWeight:600}}>
+                                      ⚠ قلّص الحجم -- RSI مرتفع
+                                    </div>
+                                  )}
                                 </div>
+
                                                                                                 <div style={{
                                   flex:1,background:C.layer2,
                                   border:"1px solid "+C.edge,
