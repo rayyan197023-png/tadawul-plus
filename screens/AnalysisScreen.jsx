@@ -2527,10 +2527,12 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                                   </div>
                                   <div style={{display:"flex",alignItems:"baseline",gap:4,direction:"ltr"}}>
                                     <div className="num" style={{fontSize:13,fontWeight:900,color:C.coral}}>
-                                      {tp.stopLoss ? tp.stopLoss.toFixed(2) : "-"}
+{uStop.stopPrice.toFixed(2)}
+
                                     </div>
                                     <div style={{fontSize:8,fontWeight:700,color:C.coral}}>
-                                      ({tp.stopLossPct ? tp.stopLossPct.toFixed(1) : "-"}%)
+({uStop.stopPct.toFixed(1)}%)
+
                                     </div>
                                   </div>
                                 </div>
@@ -2550,10 +2552,12 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                                   </div>
                                   <div style={{display:"flex",alignItems:"baseline",gap:4,direction:"ltr"}}>
                                     <div className="num" style={{fontSize:13,fontWeight:900,color:C.mint}}>
-                                      {tp.target1 ? tp.target1.toFixed(2) : "-"}
+{uT1 ? uT1.price.toFixed(2) : "-"}
+
                                     </div>
                                     <div style={{fontSize:8,fontWeight:700,color:C.mint}}>
-                                      (+{tp.target1Pct ? tp.target1Pct.toFixed(1) : "-"}%)
+(+{uT1 ? uT1.pct.toFixed(1) : "-"}%)
+
                                     </div>
                                   </div>
                                 </div>
@@ -2593,10 +2597,11 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                                   </div>
                                   <div style={{display:"flex",alignItems:"baseline",gap:6}}>
                                     <div className="num" style={{fontSize:13,fontWeight:900,color:C.gold}}>
-                                      {tp.rrRatio ? tp.rrRatio.toFixed(1) : "-"}
+{uRR || "-"}
+
                                     </div>
                                     <div style={{fontSize:8,color:C.gold,fontWeight:700}}>
-                                      {tp.rrLabel || ""}
+
                                     </div>
                                   </div>
                                 </div>
