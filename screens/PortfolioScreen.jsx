@@ -1132,6 +1132,7 @@ useEffect(() => {
         "@keyframes buyGlow{0%,100%{box-shadow:0 0 0 1px #1ee68a22,0 4px 20px rgba(0,0,0,.3)}50%{box-shadow:0 0 0 1px #1ee68a55,0 4px 28px #1ee68a18}}",
         "@keyframes dangerPulse{0%,100%{box-shadow:0 0 0 1px #ff5f6a22,0 4px 20px rgba(0,0,0,.3)}50%{box-shadow:0 0 0 1px #ff5f6a44,0 4px 24px #ff5f6a15}}",
         "@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}",
+        "@keyframes spin{to{transform:rotate(360deg)}}", 
         ".card-enter{animation:springIn .55s cubic-bezier(.16,1,.3,1) both}",
         ".fade-in{animation:fadeIn .35s ease both}",
         ".buy-glow{animation:buyGlow 3.2s ease-in-out infinite}",
