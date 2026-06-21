@@ -3907,10 +3907,40 @@ function stockHealth(stk: any, bars: any[], macroOverride?: any): any {
     (merged as any).abmInfo = { applied: false };
   }
 
+  // ════════════════════════════════════════════════════════════
+  //  🛑 TOP-EXHAUSTION VETO -- نضبط score قبل Grade/Confidence/Signal
+  //  
+  //  المبدأ: سهم قرب قمة 52 أسبوع + RSI مرتفع جداً + علامة تصريف
+  //  (upthrust أو تباعد سلبي: OBV هابط مع CMF ضعيف) = لا يستحق
+  //  إشارة شراء، مهما كانت الطبقات الأخرى إيجابية.
+  //  
+  //  التدخّل هنا (على score مباشرة، قبل Grade/Sig/PositionSize)
+  //  يضمن اتساق كل عناصر الواجهة دفعة واحدة -- بدل تعديل كل بطاقة
+  //  على حدة (بطاقة الإجراء في AnalysisScreen تقرأ score مباشرة،
+  //  ليس sig فقط).
+  // ════════════════════════════════════════════════════════════
+  var vetoExtras = tech.extras || {};
+  var nearTop = vetoExtras.pricePos != null && vetoExtras.pricePos >= 85;
+  var rsiHot = vetoExtras.rsiV != null && vetoExtras.rsiV >= 75;
+  var distributionSignal = !!vetoExtras.upth ||
+    (vetoExtras.obvRising === false && vetoExtras.cmf != null && vetoExtras.cmf < 0.05);
+  var topExhaustionVeto = nearTop && rsiHot && distributionSignal;
+
+  if(topExhaustionVeto){
+    // سقف قسري داخل منطقة "تخفيف" (<45) -- يمنع شراء قوي/مراقبة تماماً
+    merged.score = Math.min(merged.score, 44);
+  }
+  (merged as any).topExhaustionVeto = topExhaustionVeto;
+  if(topExhaustionVeto){
+    (merged as any).vetoReason =
+      "⚠️ قرب قمة 52 أسبوع (" + vetoExtras.pricePos + "%) + RSI مرتفع (" +
+      Math.round(vetoExtras.rsiV) + ") + علامة تصريف -- تجنّب الدخول حتى يتأكد الاختراق بسيولة";
+  }
 
   // ════════════════════════════════════════════════
   //  STEP 5: CONFIDENCE THRESHOLD
   // ════════════════════════════════════════════════
+
   var conflictCnt = tech.extras && tech.extras.conflictCount ? tech.extras.conflictCount : 0;
   var ct = calcConfidenceThreshold(
     conviction, layers, ensemble, conflictCnt,
