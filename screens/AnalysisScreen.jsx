@@ -1797,7 +1797,9 @@ return(
                             <span style={{fontSize:10,fontWeight:800,color:health.sigC}}>{health.sig}</span>
                           </div>
                           <div style={{display:"inline-flex",alignItems:"center",gap:4,background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.08)",borderRadius:7,padding:"2px 8px"}}>
-                            <span style={{fontSize:8,color:C.smoke}}>أعلى من</span>
+                            {globalRank !== 1 && globalRank > 3 && (
+                              <span style={{fontSize:8,color:C.smoke}}>أعلى من</span>
+                            )}
                             <span style={{fontSize:9,fontWeight:800,color:globalRank<=3?C.gold:globalRank<=5?C.mint:C.mist}}>{
                               globalRank === 1 ? "الأول" :
                               globalRank <= 3 ? "أعلى " + Math.min(99, Math.round((allData.length-globalRank)/allData.length*100)) + "%" :
@@ -1806,6 +1808,7 @@ return(
                             <span style={{fontSize:8,color:C.smoke}}>من السوق</span>
                             {globalRank<=3&&<span style={{fontSize:9}}>🔥</span>}
                           </div>
+
                           {(function(){
                             var layers=health.layers||{};
                             var items=[{name:"السيولة",val:layers.L9||0,w:21,icon:"💧"},{name:"الاحتمالية",val:layers.L7||0,w:18,icon:"🧮"},{name:"الرادار",val:layers.L8||0,w:15,icon:"🎯"},{name:"الهيكل",val:layers.L1||0,w:14,icon:"🏗"},{name:"كيلي",val:layers.L6||0,w:12,icon:"📐"},{name:"المؤشرات",val:layers.L5||0,w:9,icon:"🔗"}];
