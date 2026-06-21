@@ -2619,7 +2619,8 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                                     </div>
                                     <div style={{display:"flex",alignItems:"baseline",gap:4,direction:"ltr"}}>
                                       <div className="num" style={{fontSize:13,fontWeight:900,color:C.amber}}>
-                                        -{tp.worstCase.percentage ? tp.worstCase.percentage.toFixed(1) : "-"}%
+-{Math.abs(uStop.stopPct).toFixed(1)}%
+
                                       </div>
                                     </div>
                                   </div>
