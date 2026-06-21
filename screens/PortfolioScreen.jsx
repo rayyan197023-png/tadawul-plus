@@ -3810,16 +3810,12 @@ return result;
                 </div>
                 <div style={{display:"flex",flexDirection:"column",gap:5,maxHeight:260,overflowY:"auto",WebkitOverflowScrolling:"touch",border:"1px solid "+C.line+"33",borderRadius:12,padding:6,background:"rgba(0,0,0,.15)"}}>
                   {sl.filter(function(s){return !stockSrch||(s.sym.includes(stockSrch)||s.name.includes(stockSrch));}).map(function(s){
-                    var h=allData.find(function(d){return d.stk&&d.stk.sym===s.sym;}); h=h?h.health:null;
-                    var sc=h&&h.sig==="شراء قوي"?C.mint:h&&h.sig==="تخفيف"?C.coral:h&&h.sig==="مراقبة"?C.amber:C.smoke;
                     var isA=addSym===s.sym;
                     var isHalal=s.sec!=="بنوك";
                     return(
                       <button key={s.sym} onClick={function(){setAddSym(s.sym);setAddCost(s.p.toFixed(2));}} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:12,cursor:"pointer",background:isA?"linear-gradient(135deg,"+C.electric+"22,"+C.electric+"0a)":"rgba(255,255,255,.02)",border:"1px solid "+(isA?C.electric+"55":C.line),fontFamily:"Cairo,sans-serif",minHeight:44,transition:"all .15s"}}>
-                        <div style={{width:7,height:7,borderRadius:"50%",background:sc,boxShadow:"0 0 5px "+sc,flexShrink:0}}/>
                         <span style={{fontFamily:"IBM Plex Mono,monospace",fontSize:12,fontWeight:800,color:isA?C.snow:C.mist,minWidth:36}}>{s.sym}</span>
                         <span style={{flex:1,fontSize:12,fontWeight:600,color:isA?C.snow:C.smoke,textAlign:"right"}}>{s.name}</span>
-                        <span style={{fontSize:11,fontWeight:700,color:sc,background:sc+"15",borderRadius:5,padding:"1px 7px"}}>{h?h.sig||"-":"-"}</span>
                         {isHalal&&<span style={{fontSize:11,color:C.teal,background:C.teal+"15",borderRadius:5,padding:"1px 5px"}}>حلال</span>}
                         <span style={{fontFamily:"IBM Plex Mono,monospace",fontSize:12,fontWeight:800,color:isA?C.snow:C.mist}}>{s.p.toFixed(2)}</span>
                       </button>
