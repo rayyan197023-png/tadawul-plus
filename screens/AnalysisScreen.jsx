@@ -2144,11 +2144,37 @@ return(
                           </div>
                         </div>
 
-                        {/* نافذة الفرصة -- مبنية على بيانات الحجم الفعلية */}
-                        {/* 🎯 معايرة: 50 بدلاً من 55 - لتظهر مع "عاجل" */}
-                        {(health.score>=50 || ((health.extras && health.extras.vr) || 1) >= 1.4)&&(function(){
-                          // ─── فحص حالة السوق السعودي ───
-                          var nowD = new Date();
+{/* نافذة الفرصة -- مبنية على بيانات الحجم الفعلية */}
+{/* 🎯 معايرة: 50 بدلاً من 55 - لتظهر مع "عاجل" */}
+{(health.score>=50 || ((health.extras && health.extras.vr) || 1) >= 1.4)&&(function(){
+  // ✨ لا نخلق إلحاحاً للشراء عند RSI مرتفع جداً -- نستبدل العداد بشارة تحذير
+  var rsiVWindow = (health.extras && health.extras.rsiV) || 50;
+  if(rsiVWindow >= 75){
+    return(
+      <div style={{
+        flexShrink:0,width:56,
+        background:"linear-gradient(160deg,"+C.amber+"18,"+C.amber+"06)",
+        border:"1px solid "+C.amber+"40",
+        borderRadius:12,padding:"7px 5px",
+        textAlign:"center",
+        display:"flex",flexDirection:"column",
+        alignItems:"center",justifyContent:"center",gap:2,
+      }}>
+        <div style={{
+          fontSize:7,color:C.amber,fontWeight:800,lineHeight:1,
+          background:C.amber+"18",borderRadius:4,padding:"1px 5px",
+        }}>RSI مرتفع</div>
+        <div style={{fontSize:14,lineHeight:1}}>⏸</div>
+        <div style={{fontSize:6.5,color:C.smoke,lineHeight:1.3}}>
+          لا تستعجل
+        </div>
+      </div>
+    );
+  }
+
+  // ─── فحص حالة السوق السعودي ───
+  var nowD = new Date();
+
                           var utc = nowD.getTime() + (nowD.getTimezoneOffset() * 60000);
                           var ksa = new Date(utc + 3 * 3600000);
                           var ksaDay = ksa.getDay();
