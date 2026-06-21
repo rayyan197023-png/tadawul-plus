@@ -3107,16 +3107,19 @@ var neut = normalizeProb(prob.neutral);
                                     Kelly كامل: {kelly}% · {recK||""}
                                   </div>
                                 </div>
-                                                                <div style={{
+                                                                                                <div style={{
                                   flex:1,background:C.layer2,
                                   border:"1px solid "+C.edge,
                                   borderRadius:12,padding:"10px 12px",
                                   display:"flex",flexDirection:"column",
                                   alignItems:"center",justifyContent:"center",
                                 }}>
-                                  <div style={{fontSize:8,color:C.smoke,marginBottom:4,display:"flex",alignItems:"center",gap:3,justifyContent:"flex-end"}}>
-                                    الثقة
+                                  <div style={{fontSize:8,color:C.smoke,marginBottom:1,display:"flex",alignItems:"center",gap:3,justifyContent:"flex-end"}}>
+                                    ثقة الحجم
                                     <Tooltip termKey="الثقة" size="small"/>
+                                  </div>
+                                  <div style={{fontSize:6,color:C.ash,marginBottom:3,textAlign:"center"}}>
+                                    موثوقية حساب النسبة
                                   </div>
 
                                   <div style={{
