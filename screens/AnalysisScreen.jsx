@@ -3245,27 +3245,31 @@ var neut = normalizeProb(prob.neutral);
                             <div style={{display:"flex",gap:5,marginBottom:5}}>
                               {[
                                 {l:"CMF", v:cmfV!=null?cmfV.toFixed(2):"-",
-                                  c:cmfV>0.05?C.mint:cmfV<-0.05?C.coral:C.amber,
-                                  // 🔧 موحَّد مع بطاقة التحذير الكبيرة: عتبة 0.1 لكشف "تباعد" (لا 0.05)
-                                  s:(cmfV>0.1 && obvUp===false)?"تباعد إيجابي ⚠":
+                                  c:cmfV==null?C.ash:(cmfV>0.05?C.mint:cmfV<-0.05?C.coral:C.amber),
+                                  // 🔧 موحَّد مع بطاقة التحذير الكبيرة: عتبة 0.1 لكشف "تباعد" (لا 0.05) + حماية null
+                                  s:cmfV==null?"لا بيانات":
+                                    (cmfV>0.1 && obvUp===false)?"تباعد إيجابي ⚠":
                                     (cmfV<-0.1 && obvUp===true)?"تباعد سلبي ⚠":
                                     cmfV>0.15?"تدفق قوي":cmfV>0?"تدفق إيجابي":cmfV<-0.05?"ضغط بيع":"محايد"},
                                 {l:"OBV", v:obvUp!=null?(obvUp?"صاعد ↑":"هابط ↓"):"-",
-                                  c:obvUp?C.mint:C.coral,
-                                  // 🔧 موحَّد مع بطاقة التحذير الكبيرة: عتبة 0.1
-                                  s:(obvUp && cmfV<-0.1)?"يصعد مع ضغط بيع":
-                                    (!obvUp && cmfV>0.1)?"يهبط مع تدفق إيجابي":
+                                  c:obvUp==null?C.ash:(obvUp?C.mint:C.coral),
+                                  // 🔧 موحَّد مع بطاقة التحذير الكبيرة: عتبة 0.1 + حماية null
+                                  s:obvUp==null?"لا بيانات":
+                                    (obvUp && cmfV!=null && cmfV<-0.1)?"يصعد مع ضغط بيع":
+                                    (!obvUp && cmfV!=null && cmfV>0.1)?"يهبط مع تدفق إيجابي":
                                     obvUp?"تأكيد صعود":"تباعد سلبي"},
-{l:"VWAP", v:vwapD!=null?vwapD.toFixed(1)+"%":"-",
-                                  c:vwapD>2?C.mint:vwapD<-2?C.coral:vwapD<-1?C.amber:vwapD>1?C.electric:C.amber,
-                                  // 🆕 وصف أدق لـ VWAP
-                                  s:vwapD>5?"فوق VWAP بقوة":
+                                {l:"VWAP", v:vwapD!=null?vwapD.toFixed(1)+"%":"-",
+                                  c:vwapD==null?C.ash:(vwapD>2?C.mint:vwapD<-2?C.coral:vwapD<-1?C.amber:vwapD>1?C.electric:C.amber),
+                                  // 🆕 وصف أدق لـ VWAP + حماية null
+                                  s:vwapD==null?"لا بيانات":
+                                    vwapD>5?"فوق VWAP بقوة":
                                     vwapD>2?"فوق VWAP":
                                     vwapD>1?"يصعد فوق VWAP":
                                     vwapD>-1?"عند VWAP":
                                     vwapD>-3?"يهبط تحت VWAP":
                                     "تحت VWAP بقوة"},
                               ].map(function(it,i){
+
                                 return(
                                   <div key={i} style={{
                                     flex:1,background:C.layer2,
