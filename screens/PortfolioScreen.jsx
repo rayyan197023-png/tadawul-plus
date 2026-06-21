@@ -963,16 +963,6 @@ function SellSheet(props) {
 export default function PortfolioScreen() {
   const { openStock, setTab } = useNav();
 
-  // ── حساب بيانات الصحة من محرك التحليل الاحترافي ──────────────
-  // allData: نفس البنية التي تنتجها AnalysisScreen
-  // يحسب health لكل سهم في قائمة STOCKS
-  const allData = useMemo(function() {
-    return STOCKS.map(function(stk) {
-      var bars = genBars(stk);
-      return { stk: stk, bars: bars, health: stockHealth(stk, bars) };
-    });
-  }, []); // تُحسب مرة واحدة — STOCKS ثابتة
-
   var stocks = STOCKS;
 const [isLoading, setIsLoading] = useState(true);
 const [showAdvanced, setShowAdvanced] = useState(false);
