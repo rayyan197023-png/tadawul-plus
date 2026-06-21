@@ -2562,25 +2562,25 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                                   </div>
                                 </div>
                                 
-                                {/* Target 2 */}
-                                <div style={{
-                                  background:"rgba(16,201,126,.09)",
-                                  border:"1px solid rgba(16,201,126,.25)",
-                                  borderRadius:8,padding:"6px 8px",
-                                }}>
-                                  <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:2}}>
-                                    <span style={{fontSize:9}}>🚀</span>
-                                    <span style={{fontSize:8,color:C.smoke,fontWeight:600}}>الهدف الثاني</span>
-                                  </div>
-                                  <div style={{display:"flex",alignItems:"baseline",gap:4,direction:"ltr"}}>
-                                    <div className="num" style={{fontSize:13,fontWeight:900,color:C.mint}}>
-                                      {tp.target2 ? tp.target2.toFixed(2) : "-"}
-                                    </div>
-                                    <div style={{fontSize:8,fontWeight:700,color:C.mint}}>
-                                      (+{tp.target2Pct ? tp.target2Pct.toFixed(1) : "-"}%)
-                                    </div>
-                                  </div>
-                                </div>
+{/* Target 2 */}
+<div style={{
+  background:"rgba(16,201,126,.09)",
+  border:"1px solid rgba(16,201,126,.25)",
+  borderRadius:8,padding:"6px 8px",
+}}>
+  <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:2}}>
+    <span style={{fontSize:9}}>🚀</span>
+    <span style={{fontSize:8,color:C.smoke,fontWeight:600}}>الهدف الثاني</span>
+  </div>
+  <div style={{display:"flex",alignItems:"baseline",gap:4,direction:"ltr"}}>
+    <div className="num" style={{fontSize:13,fontWeight:900,color:C.mint}}>
+      {uT2 ? uT2.price.toFixed(2) : "-"}
+    </div>
+    <div style={{fontSize:8,fontWeight:700,color:C.mint}}>
+      (+{uT2 ? uT2.pct.toFixed(1) : "-"}%)
+    </div>
+  </div>
+</div>
                               </div>
                               
                               {/* الصف الثالث: R/R Ratio + Worst Case */}
