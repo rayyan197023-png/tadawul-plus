@@ -1554,7 +1554,8 @@ return result;
       return prev.concat([{sym:addSym,qty:qty,avgCost:cost, layersAtEntry: layersAtEntry}]);
     });
 
-    setTradeLog(function(prev){return [{id:Date.now(),sym:addSym,name:found?found.name:addSym,action:"شراء",qty:qty,price:cost,date:new Date().toISOString().slice(0,10),signal:h?h.sig||"-":"-",score:h?h.score||0:0}].concat(prev);});
+    setTradeLog(function(prev){return [{id:Date.now(),sym:addSym,name:found?found.name:addSym,action:"شراء",qty:qty,price:cost,date:new Date().toISOString().slice(0,10),signal:foundHealth?foundHealth.sig||"-":"-",score:foundHealth?foundHealth.score||0:0}].concat(prev);});
+
     setSheet(false); setAddSym(""); setAddQty(""); setAddCost("");
     
     // ✨ سجّل نقطة أداء - استخدم القيمة الحديثة
