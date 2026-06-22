@@ -146,7 +146,7 @@ export default function BacktestScreen() {
         } catch(e) {
           console.error('[Winner] Failed to load:', e.message);
         }
-      } 
+      }  
 
       if (config.mode === 'analysis') {
         var category = STOCK_CATEGORIES[config.category];
