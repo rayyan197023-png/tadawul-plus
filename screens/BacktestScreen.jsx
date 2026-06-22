@@ -139,12 +139,7 @@ export default function BacktestScreen() {
           if (currentWinner && currentWinner.weights) {
             activeWinnerWeights = currentWinner.weights;
             activeWinnerParams = currentWinner.params || null;
-            try {
-              alert('✅ Winner LOADED:\n\nScore: ' + currentWinner.score + 
-                    '\nWeights: L1=' + currentWinner.weights.L1 + 
-                    ', L9=' + currentWinner.weights.L9 +
-                    '\nParams: ' + JSON.stringify(activeWinnerParams).substring(0, 200));
-            } catch(_) {}
+
           } else {
             console.warn('[Winner] exists but missing weights');
           }
