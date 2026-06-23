@@ -2694,7 +2694,7 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                                       fontSize:11,fontWeight:900,
                                       color:sigColor,lineHeight:1.3,
                                     }}>{tp.actionPlan}</div>
-                                    {tp.riskWarning && (
+                                    {tp.riskWarning && tp.riskWarning !== tp.actionPlan && (
                                       <div style={{
                                         fontSize:8,color:C.amber,
                                         marginTop:3,lineHeight:1.4,
