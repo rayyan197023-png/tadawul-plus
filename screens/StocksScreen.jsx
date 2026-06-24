@@ -82,7 +82,8 @@ function MiniChart({ bars, color, h = 40, id = "" }) {
 }
 
 // ── Stock Card ────────────────────────────────────────────────
-const StockCard = React.memo(function StockCard({ stk, bars, flash, openDetail, setFlash, fmtVol }) {
+const StockCard = React.memo(function StockCard({ stk, bars, flash, openDetail, setFlash, fmtVol, netFlow }) {
+
   const up     = (stk.ch || 0) >= 0;
   const pc     = up ? C.mint : C.coral;
   const isFlsh = flash === stk.sym;
