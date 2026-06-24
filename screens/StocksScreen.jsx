@@ -128,6 +128,14 @@ const StockCard = React.memo(function StockCard({ stk, bars, flash, openDetail, 
               <span style={{ fontSize: 9, color: pc, opacity: 0.45 }}>·</span>
               <span style={{ fontSize: 11, fontWeight: 700, color: pc }}>{up ? "+" : ""}{((stk.p || 0) * (stk.ch || 0) / 100).toFixed(2)}</span>
             </div>
+            {(stk.v || 0) > 0 && (
+              <div style={{ direction: "ltr" }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: C.ash, fontFamily: "monospace" }}>
+                  {fmtVol((stk.v || 0) * (stk.p || 0))}
+                </span>
+                <span style={{ fontSize: 9, color: C.ash, marginRight: 2 }}>ر</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
