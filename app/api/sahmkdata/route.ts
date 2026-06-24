@@ -132,6 +132,9 @@ export async function GET(req: NextRequest) {
       if (evType)     evUrl += `&type=${evType}`;
       url = evUrl;
 
+    } else if (endpoint === 'liquidity') {
+      url = `${SAHMK_BASE}/quote/${sym}/`;
+
     } else if (endpoint === 'signals') {
       url = `${SAHMK_BASE}/analytics/signals/${sym}/`;
 
