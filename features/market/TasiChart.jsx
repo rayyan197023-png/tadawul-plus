@@ -99,6 +99,12 @@ const fetchOHLCV = async (retryCount = 0) => {
           setOhlcvData(prev => ({
             ...prev,
             [period]: j.data.map(b => b.close),
+            [period + '_ohlc']: j.data.map(b => ({
+              o: b.open  ?? b.close,
+              h: b.high  ?? b.close,
+              l: b.low   ?? b.close,
+              c: b.close,
+            })),
           }));
         }
       } catch(e) {}
