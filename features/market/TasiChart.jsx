@@ -19,7 +19,7 @@ import { HISTORICAL_SERIES } from '../../hooks/useMarketEngine'; // constants on
 const C = colors;
 
 // ── Period configuration
-const PERIODS = ['يوم', 'أسبوع', 'شهر', '3 أشهر', 'سنة'];
+const PERIODS = ['أسبوع', 'شهر', '3 أشهر', 'سنة'];
 
 const PERIOD_CFG = {
   'يوم': {
