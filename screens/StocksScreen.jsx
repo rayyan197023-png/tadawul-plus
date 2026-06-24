@@ -552,6 +552,7 @@ return filtered.slice(0, 60).map(function(d) { return d.stk.sym; });
                             openDetail={openDetail}
                             setFlash={setFlash}
                             fmtVol={fmtVol}
+                            netFlow={liquidityMap[stk.sym]}
                           />
                         );
                       })}
