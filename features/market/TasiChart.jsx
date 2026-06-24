@@ -343,23 +343,33 @@ const dayChgVal = +chgVal.toFixed(2);
           )}
           {/* Candlestick mode */}
           {chartType === 'candle' && pts.length > 0 && (() => {
-            const candleW = Math.max(2, Math.floor(W / pts.length * 0.7));
-            // Group into candles (aggregate N points per candle)
+            const ohlcRaw = ohlcvData[period + '_ohlc'];
+            const candleW = Math.max(2, Math.floor(W / Math.min(40, pts.length) * 0.7));
             const candleCount = Math.min(40, pts.length);
-            const step = pts.length / candleCount;
             const candles = [];
-            for (let i = 0; i < candleCount; i++) {
-              const start = Math.floor(i * step);
-              const end   = Math.min(Math.floor((i + 1) * step), pts.length);
-              const slice = pts.slice(start, end);
-              if (!slice.length) continue;
-              const o = slice[0];
-              const cl = slice[slice.length - 1];
-              const hi2 = Math.max(...slice);
-              const lo2 = Math.min(...slice);
-              const x   = Math.round(i / candleCount * W + W / candleCount / 2);
-              candles.push({ x, o, c: cl, hi: hi2, lo: lo2, up: cl >= o });
+            if (ohlcRaw && ohlcRaw.length > 0) {
+              // شموع حقيقية من API
+              const step = ohlcRaw.length / candleCount;
+              for (let i = 0; i < candleCount; i++) {
+                const b = ohlcRaw[Math.floor(i * step)];
+                if (!b) continue;
+                const x = Math.round(i / candleCount * W + W / candleCount / 2);
+                candles.push({ x, o: b.o, c: b.c, hi: b.h, lo: b.l, up: b.c >= b.o });
+              }
+            } else {
+              // fallback: اشتق من الخط
+              const step = pts.length / candleCount;
+              for (let i = 0; i < candleCount; i++) {
+                const start = Math.floor(i * step);
+                const end   = Math.min(Math.floor((i + 1) * step), pts.length);
+                const slice = pts.slice(start, end);
+                if (!slice.length) continue;
+                const o = slice[0], cl = slice[slice.length - 1];
+                const x = Math.round(i / candleCount * W + W / candleCount / 2);
+                candles.push({ x, o, c: cl, hi: Math.max(...slice), lo: Math.min(...slice), up: cl >= o });
+              }
             }
+
             return candles.map((candle, i) => {
               const openY  = toY(candle.o);
               const closeY = toY(candle.c);
