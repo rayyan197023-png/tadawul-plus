@@ -128,12 +128,20 @@ const StockCard = React.memo(function StockCard({ stk, bars, flash, openDetail, 
               <span style={{ fontSize: 9, color: pc, opacity: 0.45 }}>·</span>
               <span style={{ fontSize: 11, fontWeight: 700, color: pc }}>{up ? "+" : ""}{((stk.p || 0) * (stk.ch || 0) / 100).toFixed(2)}</span>
             </div>
-            {(stk.v || 0) > 0 && (
-              <div style={{ direction: "ltr" }}>
-                <span style={{ fontSize: 10, fontWeight: 700, color: C.ash, fontFamily: "monospace" }}>
-                  {fmtVol((stk.v || 0) * (stk.p || 0))}
+            {netFlow != null && (
+              <div style={{ direction: "ltr", display: "flex", alignItems: "center", gap: 2 }}>
+                <span style={{
+                  fontSize: 10, fontWeight: 700, fontFamily: "monospace",
+                  color: netFlow >= 0 ? C.mint : C.coral,
+                }}>
+                  {netFlow >= 0 ? "+" : ""}{fmtVol(Math.abs(netFlow))}
                 </span>
-                <span style={{ fontSize: 9, color: C.ash, marginRight: 2 }}>ر</span>
+                <span style={{ fontSize: 9, color: netFlow >= 0 ? C.mint : C.coral, opacity: 0.7 }}>ر</span>
+              </div>
+            )}
+            {netFlow == null && (stk.v || 0) > 0 && (
+              <div style={{ direction: "ltr" }}>
+                <span style={{ fontSize: 9, color: C.ash, fontFamily: "monospace" }}>…</span>
               </div>
             )}
           </div>
