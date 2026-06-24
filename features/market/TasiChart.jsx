@@ -57,7 +57,7 @@ import { useSharedPrices } from '../../store';
 
 export default function TasiChart({ market }) {
   const allStocks = useSharedPrices();
-  const [period,    setPeriod]    = useState('يوم');
+const [period, setPeriod] = useState('أسبوع');
   const [tasiLive,  setTasiLive]  = useState(null);
   const [ohlcvData, setOhlcvData] = useState({});
 const todayPtsRef = useRef([]);
