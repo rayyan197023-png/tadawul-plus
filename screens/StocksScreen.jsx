@@ -150,7 +150,7 @@ const StockCard = React.memo(function StockCard({ stk, bars, flash, openDetail, 
       </div>
     </div>
   );
-), (prev, next) =>
+}, (prev, next) =>
   prev.stk.p    === next.stk.p   &&
   prev.stk.ch   === next.stk.ch  &&
   prev.stk.v    === next.stk.v   &&
