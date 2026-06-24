@@ -179,6 +179,31 @@ const liveStocks = stocks.length > 0 ? stocks : [];
   const [search,       setSearch]      = useState("");
   const [showSrch,     setShowSrch]    = useState(false);
   const [now,          setNow]         = useState(new Date());
+const [liquidityMap, setLiquidityMap] = useState({});
+const liquidityFetched = useRef(new Set());
+
+useEffect(function() {
+  var syms = filtered.slice(0, 20).map(function(d) { return d.stk.sym; });
+  var toFetch = syms.filter(function(s) { return !liquidityFetched.current.has(s); });
+  if (toFetch.length === 0) return;
+  
+  // جلب واحد كل 300ms لتفادي 429
+  toFetch.forEach(function(sym, i) {
+    setTimeout(function() {
+      fetch('/api/sahmkdata?endpoint=liquidity&sym=' + sym)
+        .then(function(r) { return r.json(); })
+        .then(function(j) {
+          if (j && j.liquidity && typeof j.liquidity.net_value === 'number') {
+            liquidityFetched.current.add(sym);
+            setLiquidityMap(function(prev) {
+              return Object.assign({}, prev, { [sym]: j.liquidity.net_value });
+            });
+          }
+        })
+        .catch(function() {});
+    }, i * 300);
+  });
+}, [filtered]);
 
   // ── إخفاء Skeleton عند وصول البيانات ─────────────────────
   useEffect(() => {
