@@ -254,8 +254,8 @@ return filtered.slice(0, 60).map(function(d) { return d.stk.sym; });
 const [liquidityMap, setLiquidityMap] = useState({});
 const liquidityFetched = useRef(new Set());
 
-useEffect(function() {
-  var syms = filtered.slice(0, 20).map(function(d) { return d.stk.sym; });
+  useEffect(function() {
+    var syms = filtered.slice(0, visibleCount).map(function(d) { return d.stk.sym; });
   var toFetch = syms.filter(function(s) { return !liquidityFetched.current.has(s); });
   if (toFetch.length === 0) return;
   
