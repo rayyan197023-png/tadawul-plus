@@ -368,7 +368,7 @@ const dayChgVal = +chgVal.toFixed(2);
                 const x = Math.round(i / candleCount * W + W / candleCount / 2);
                 candles.push({ x, o, c: cl, hi: Math.max(...slice), lo: Math.min(...slice), up: cl >= o });
               }
-            }
+            } 
 
             return candles.map((candle, i) => {
               const openY  = toY(candle.o);
