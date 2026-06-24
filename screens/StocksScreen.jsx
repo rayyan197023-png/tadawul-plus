@@ -149,11 +149,12 @@ const StockCard = React.memo(function StockCard({ stk, bars, flash, openDetail, 
       </div>
     </div>
   );
-}, (prev, next) =>
-  prev.stk.p   === next.stk.p   &&
-  prev.stk.ch  === next.stk.ch  &&
-  prev.stk.v   === next.stk.v   &&
-  prev.flash   === next.flash
+), (prev, next) =>
+  prev.stk.p    === next.stk.p   &&
+  prev.stk.ch   === next.stk.ch  &&
+  prev.stk.v    === next.stk.v   &&
+  prev.flash    === next.flash   &&
+  prev.netFlow  === next.netFlow
 );
 
 // ── Main Screen ───────────────────────────────────────────────
