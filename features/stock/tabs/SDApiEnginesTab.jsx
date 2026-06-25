@@ -173,8 +173,9 @@ const fetchSahmkCompany = async (sym) => {
 
       forwardPE:   (f.forward_pe != null && f.forward_pe > 0.5 && f.forward_pe < 300) ? f.forward_pe : null,
 eps:          (function(){
-                 // الأولوية: eps_ttm (آخر 12 شهر) ثم basic_eps ثم eps
-                 var e = f.eps_ttm ?? f.basic_eps ?? f.eps ?? null;
+                 // ✨ eps_ttm هو الأدق (آخر 4 أرباع) -- basic_eps ثانياً -- نتجاهل eps القديم
+                 var e = f.eps_ttm ?? f.basic_eps ?? null;
+
                  if (e == null) return null;
                  var px = parseFloat(d.price || d.current_price || 0);
                  var shares = f.shares_outstanding;
