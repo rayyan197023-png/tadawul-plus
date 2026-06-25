@@ -60,11 +60,11 @@ export const ANALYST_EST = {
 const fundCache = {};
 
 // cache دائم في localStorage (3 أشهر - الأساسيات الربعية)
-const FUND_CACHE_DURATION = 90 * 24 * 60 * 60 * 1000; // 90 يوم
+const FUND_CACHE_DURATION = 24 * 60 * 60 * 1000; // يوم واحد فقط
 
 const readFundCache = (sym) => {
   try {
-const raw = localStorage.getItem(`stockFund_v9_${sym}`);
+const raw = localStorage.getItem(`stockFund_v10_${sym}`);
 
     if (!raw) return null;
     const parsed = JSON.parse(raw);
@@ -77,7 +77,8 @@ const raw = localStorage.getItem(`stockFund_v9_${sym}`);
 
 const writeFundCache = (sym, data) => {
   try {
-localStorage.setItem(`stockFund_v9_${sym}`, JSON.stringify({
+localStorage.setItem(`stockFund_v10_${sym}`, JSON.stringify({
+
 
       timestamp: Date.now(),
       data: data,
@@ -150,23 +151,30 @@ const fetchSahmkCompany = async (sym) => {
       sec:         d.sector,
       industry:    d.industry,
       website:     d.website,
-      pe:          (f.pe_ratio != null && f.pe_ratio > 3 && f.pe_ratio < 300) ? f.pe_ratio : null,
+      pe:          (function(){
+                     // أولاً من API مباشرة
+                     if (f.pe_ratio != null && f.pe_ratio > 0.5 && f.pe_ratio < 500) return parseFloat(f.pe_ratio.toFixed(2));
+                     // ثانياً احسبه من السعر ÷ EPS
+                     var px = parseFloat(d.price || d.current_price || 0);
+                     var eps = f.eps_ttm ?? f.basic_eps ?? f.eps ?? null;
+                     if (px > 0 && eps != null && eps > 0) return parseFloat((px / eps).toFixed(2));
+                     return null;
+                   })(),
+
       forwardPE:   (f.forward_pe != null && f.forward_pe > 0.5 && f.forward_pe < 300) ? f.forward_pe : null,
 eps:          (function(){
-                 var e = f.eps_ttm || f.basic_eps || f.eps;
+                 // الأولوية: eps_ttm (آخر 12 شهر) ثم basic_eps ثم eps
+                 var e = f.eps_ttm ?? f.basic_eps ?? f.eps ?? null;
                  if (e == null) return null;
-                 var px = d.current_price || f.fifty_two_week_high || 100;
-                 // ✨ إذا كان EPS أكبر من السعر × 5 فهو إجمالي بالملايين
-                 if (Math.abs(e) > px * 5) {
-                   var shares = f.shares_outstanding;
-                   if (shares && shares > 0) return parseFloat((e / shares).toFixed(4));
-                   return null; // لا يمكن تصحيحه
+                 var px = parseFloat(d.price || d.current_price || 0);
+                 var shares = f.shares_outstanding;
+                 // لو EPS أكبر من السعر × 10 فهو إجمالي ريال (مش للسهم)
+                 if (px > 0 && Math.abs(e) > px * 10 && shares && shares > 0) {
+                   return parseFloat((e / shares).toFixed(2));
                  }
-                 // حارس < 30% من السعر
-                 if (e > px * 0.3 && f.basic_eps != null && f.basic_eps < e) {
-                   return f.basic_eps;
-                 }
-                 return e;
+                 // لو EPS سالب كبير جداً بالنسبة للسعر -- مشكوك فيه
+                 if (px > 0 && Math.abs(e) > px * 3) return null;
+                 return parseFloat(e.toFixed(2));
                })(),
                    
       bvps:        f.book_value,
