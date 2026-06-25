@@ -64,7 +64,7 @@ const FUND_CACHE_DURATION = 24 * 60 * 60 * 1000; // يوم واحد فقط
 
 const readFundCache = (sym) => {
   try {
-const raw = localStorage.getItem(`stockFund_v11_${sym}`);
+const raw = localStorage.getItem(`stockFund_v12_${sym}`);
 
     if (!raw) return null;
     const parsed = JSON.parse(raw);
@@ -77,7 +77,7 @@ const raw = localStorage.getItem(`stockFund_v11_${sym}`);
 
 const writeFundCache = (sym, data) => {
   try {
-localStorage.setItem(`stockFund_v11_${sym}`, JSON.stringify({
+localStorage.setItem(`stockFund_v12_${sym}`, JSON.stringify({
 
 
       timestamp: Date.now(),
