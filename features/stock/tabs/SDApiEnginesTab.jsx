@@ -152,12 +152,22 @@ const fetchSahmkCompany = async (sym) => {
       industry:    d.industry,
       website:     d.website,
       pe:          (function(){
-                     // أولاً من API مباشرة
-                     if (f.pe_ratio != null && f.pe_ratio > 0.5 && f.pe_ratio < 500) return parseFloat(f.pe_ratio.toFixed(2));
-                     // ثانياً احسبه من السعر ÷ EPS
-                     var px = parseFloat(d.price || d.current_price || 0);
-                     var eps = f.eps_ttm ?? f.basic_eps ?? f.eps ?? null;
-                     if (px > 0 && eps != null && eps > 0) return parseFloat((px / eps).toFixed(2));
+                     // ✨ نحسب P/E دائماً من السعر ÷ eps_ttm (الأدق)
+                     // pe_ratio من API مبني على eps قديم (legacy) -- نتجاهله
+                     var px = parseFloat(d.current_price || d.price || 0);
+                     var epsTTM = f.eps_ttm;
+                     if (px > 0 && epsTTM != null && epsTTM > 0) {
+                       return parseFloat((px / epsTTM).toFixed(2));
+                     }
+                     // fallback: basic_eps (سنوي)
+                     var epsBasic = f.basic_eps;
+                     if (px > 0 && epsBasic != null && epsBasic > 0) {
+                       return parseFloat((px / epsBasic).toFixed(2));
+                     }
+                     // آخر fallback: pe_ratio من API
+                     if (f.pe_ratio != null && f.pe_ratio > 0.5 && f.pe_ratio < 500) {
+                       return parseFloat(f.pe_ratio.toFixed(2));
+                     }
                      return null;
                    })(),
 
