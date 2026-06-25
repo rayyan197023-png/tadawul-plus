@@ -982,7 +982,7 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=3Y`),
                 <div style={{ fontSize: 9, color: C.amber, fontWeight: 800, marginBottom: 4 }}>⚠️ تحذير / سيناريو بديل</div>
                 <div style={{ fontSize: 10, color: C.mist, lineHeight: 1.8 }}>{ewData.warning}</div>
               </div>
-            )}
+            )} 
 
             {/* الملخص */}
             <div style={{ background: C.layer3, borderRadius: 8, padding: "10px 12px", border: `1px solid ${C.line}` }}>
