@@ -710,7 +710,6 @@ if (curPrice > midPoint) {
   fibRatio = "100%";
   waveNote = `بداية موجة A هابطة -- هدف ${waveTarget.toFixed(2)}`;
       }
-    }
 
     // حساب الدعم والمقاومة من آخر قمتين وقاعين
     const support    = lows.length  >= 2 ? Math.min(lows[lows.length-1].price, lows[lows.length-2].price)   : (lows[0]?.price  || curPrice * 0.95);
