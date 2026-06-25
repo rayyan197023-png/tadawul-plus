@@ -697,10 +697,18 @@ function ElliottWaveAI({ stk, hist }) {
         fibRatio = "161.8%";
         waveNote = `موجة C هابطة ممتدة -- هدف ${waveTarget.toFixed(2)}`;
       } else {
-        waveNum = "A"; waveType = "هبوطية";
-        waveTarget = fib(lastHigh, lastLow, 1.0);
-        fibRatio = "100%";
-        waveNote = `بداية موجة هابطة -- هدف ${waveTarget.toFixed(2)}`;
+// تحقق إن السعر الحالي فوق المنتصف = ارتداد صاعد
+const midPoint = (lastHigh + lastLow) / 2;
+if (curPrice > midPoint) {
+  waveNum = "A"; waveType = "تصحيح صاعد";
+  waveTarget = fib(lastLow, lastHigh, 0.618);
+  fibRatio = "61.8%";
+  waveNote = `موجة A صاعدة ضمن تصحيح ABC -- هدف فيبوناتشي 61.8% عند ${waveTarget.toFixed(2)}`;
+} else {
+  waveNum = "A"; waveType = "هبوطية";
+  waveTarget = fib(lastHigh, lastLow, 1.0);
+  fibRatio = "100%";
+  waveNote = `بداية موجة A هابطة -- هدف ${waveTarget.toFixed(2)}`;
       }
     }
 
