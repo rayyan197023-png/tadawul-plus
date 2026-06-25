@@ -155,7 +155,9 @@ function OverviewPane({ stk }) {
       sectorStr.includes("تأمين") || 
       sectorStr.includes("insurance");
     if (isBankSector) return { notApplicable: true };
-    const growthRate = stk.growthYoY || 5;
+    // ✨ حد أقصى للنمو 15% وأدنى -5% -- نمو أعلى من هذا غير مستدام في DCF
+    const rawGrowth = stk.growthYoY || 5;
+    const growthRate = Math.min(15, Math.max(-5, rawGrowth));
     const discountRate = 9;
     const terminalGrowth = 3;
     const yearsForecast = 5;
@@ -171,9 +173,13 @@ function OverviewPane({ stk }) {
     const fairValue = pvSum + pvTerminal;
     const upside = ((fairValue - stk.p) / stk.p) * 100;
 
+    // ✨ لو القيمة أكثر من 5x السعر الحالي -- DCF غير موثوق (افتراضات خاطئة)
+    if (fairValue > stk.p * 5 || fairValue < 0) return { notApplicable: true, reason: "نتيجة DCF غير موثوقة -- افتراضات النمو قد تكون مبالغاً فيها" };
+
     return {
       fairValue: fairValue.toFixed(2),
       upside: upside.toFixed(1),
+
       growthAssumed: growthRate,
       discount: discountRate,
     };
@@ -251,12 +257,14 @@ function OverviewPane({ stk }) {
               border: `1px solid ${C.amber}33`, borderRadius: 10,
               textAlign: "center",
             }}>
-              <div style={{ fontSize: 16, marginBottom: 8 }}>🏦</div>
+              <div style={{ fontSize: 16, marginBottom: 8 }}>
+                {dcfData.reason ? "⚠️" : "🏦"}
+              </div>
               <div style={{ fontSize: 12, fontWeight: 800, color: C.amber, marginBottom: 6 }}>
-                DCF غير مناسب لهذا القطاع
+                {dcfData.reason ? "DCF غير موثوق" : "DCF غير مناسب لهذا القطاع"}
               </div>
               <div style={{ fontSize: 10, color: C.smoke, lineHeight: 1.6 }}>
-                البنوك والخدمات المالية تُقيَّم بـ P/B وP/E وعائد حقوق الملكية (ROE) -- لا بالتدفق النقدي الحر
+                {dcfData.reason || "البنوك والخدمات المالية تُقيَّم بـ P/B وP/E وعائد حقوق الملكية (ROE) -- لا بالتدفق النقدي الحر"}
               </div>
             </div>
           ) : dcfData ? (
