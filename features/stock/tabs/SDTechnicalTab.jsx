@@ -724,6 +724,18 @@ function ElliottWaveAI({ stk, hist }) {
       ? parseFloat((lows[lows.length - 1]?.price * 0.995 || curPrice * 0.95).toFixed(2))
       : parseFloat((highs[highs.length - 1]?.price * 1.005 || curPrice * 1.05).toFixed(2));
 
+    if (waveTarget > 0 && (waveTarget > curPrice * 1.6 || waveTarget < curPrice * 0.4)) {
+      if (waveDir === "صاعد") {
+        waveTarget = parseFloat((curPrice * 1.08).toFixed(2));
+        waveNote += ` | هدف: ${waveTarget} ر.س`;
+      } else {
+        waveTarget = parseFloat((curPrice * 0.92).toFixed(2));
+        waveNote += ` | هدف: ${waveTarget} ر.س`;
+      }
+    } else if (waveTarget > 0) {
+      waveNote += ` | هدف: ${waveTarget} ر.س`;
+    }
+
     // ✨ فحص منطقي: الهدف يجب أن يكون ضمن ±60% من السعر الحالي
     if (waveTarget > 0 && (waveTarget > curPrice * 1.6 || waveTarget < curPrice * 0.4)) {
       // الهدف بعيد جداً -- احسبه من السعر الحالي بدلاً من القمم/القيعان القديمة
