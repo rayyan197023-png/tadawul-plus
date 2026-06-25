@@ -695,7 +695,7 @@ function ElliottWaveAI({ stk, hist }) {
         waveNum = "C"; waveType = "ممتدة";
         waveTarget = fib(lastHigh, lastLow, 1.618);
         fibRatio = "161.8%";
-        waveNote = `موجة C هابطة ممتدة -- هدف ${waveTarget.toFixed(2)}`;
+      waveNote = `موجة C هابطة ممتدة`;
       } else {
         // تحقق إن السعر الحالي فوق المنتصف = ارتداد صاعد
         const midPoint = (lastHigh + lastLow) / 2;
@@ -703,12 +703,13 @@ function ElliottWaveAI({ stk, hist }) {
           waveNum = "A"; waveType = "تصحيح صاعد";
           waveTarget = fib(lastLow, lastHigh, 0.618);
           fibRatio = "61.8%";
-          waveNote = `موجة A صاعدة ضمن تصحيح ABC -- هدف فيبوناتشي 61.8% عند ${waveTarget.toFixed(2)}`;
+      waveNote = `موجة A صاعدة ضمن تصحيح ABC`;
+
         } else {
           waveNum = "A"; waveType = "هبوطية";
           waveTarget = fib(lastHigh, lastLow, 1.0);
           fibRatio = "100%";
-          waveNote = `بداية موجة A هابطة -- هدف ${waveTarget.toFixed(2)}`;
+      waveNote = `بداية موجة A هابطة`;
         }
       }
     }
