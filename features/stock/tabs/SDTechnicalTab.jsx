@@ -808,6 +808,30 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=3Y`),
 
       const curPrice = stk.p || daily[daily.length - 1]?.c || 0;
 
+      // ✨ توافق الإطارات: إذا الأسبوعي صاعد، اليومي لا يمكن أن يكون موجة A هابطة مستقلة
+      if (primary && intermediate) {
+        if (primary.dir === "صاعد" && intermediate.wave === "A" && intermediate.dir === "هابط") {
+          intermediate.wave = "4";
+          intermediate.type = "تصحيح مؤقت";
+          intermediate.dir = "محايد";
+          intermediate.note = `تصحيح مؤقت ضمن الاتجاه الصاعد الرئيسي -- دعم عند ${intermediate.support} ر.س`;
+        }
+        if (primary.dir === "هابط" && intermediate.wave === "5" && intermediate.dir === "صاعد") {
+          intermediate.wave = "B";
+          intermediate.type = "ارتداد مؤقت";
+          intermediate.dir = "محايد";
+          intermediate.note = `ارتداد B مؤقت عكس الاتجاه الهابط الرئيسي`;
+        }
+      }
+
+      // ✨ توافق الهدف مع الاتجاه
+      if (primary && primary.dir === "صاعد" && primary.target < curPrice) {
+        primary.target = parseFloat((curPrice * 1.05).toFixed(2));
+      }
+      if (primary && primary.dir === "هابط" && primary.target > curPrice) {
+        primary.target = parseFloat((curPrice * 0.95).toFixed(2));
+      }
+
       // الهدف التالي
       const bullTarget = primary?.target > curPrice ? primary.target : (intermediate?.target > curPrice ? intermediate.target : parseFloat((curPrice * 1.05).toFixed(2)));
       const bearTarget = primary?.support || parseFloat((curPrice * 0.95).toFixed(2));
