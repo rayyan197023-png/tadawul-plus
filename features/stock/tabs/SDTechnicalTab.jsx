@@ -697,21 +697,24 @@ function ElliottWaveAI({ stk, hist }) {
         fibRatio = "161.8%";
         waveNote = `موجة C هابطة ممتدة -- هدف ${waveTarget.toFixed(2)}`;
       } else {
-// تحقق إن السعر الحالي فوق المنتصف = ارتداد صاعد
-const midPoint = (lastHigh + lastLow) / 2;
-if (curPrice > midPoint) {
-  waveNum = "A"; waveType = "تصحيح صاعد";
-  waveTarget = fib(lastLow, lastHigh, 0.618);
-  fibRatio = "61.8%";
-  waveNote = `موجة A صاعدة ضمن تصحيح ABC -- هدف فيبوناتشي 61.8% عند ${waveTarget.toFixed(2)}`;
-} else {
-  waveNum = "A"; waveType = "هبوطية";
-  waveTarget = fib(lastHigh, lastLow, 1.0);
-  fibRatio = "100%";
-  waveNote = `بداية موجة A هابطة -- هدف ${waveTarget.toFixed(2)}`;
+        // تحقق إن السعر الحالي فوق المنتصف = ارتداد صاعد
+        const midPoint = (lastHigh + lastLow) / 2;
+        if (curPrice > midPoint) {
+          waveNum = "A"; waveType = "تصحيح صاعد";
+          waveTarget = fib(lastLow, lastHigh, 0.618);
+          fibRatio = "61.8%";
+          waveNote = `موجة A صاعدة ضمن تصحيح ABC -- هدف فيبوناتشي 61.8% عند ${waveTarget.toFixed(2)}`;
+        } else {
+          waveNum = "A"; waveType = "هبوطية";
+          waveTarget = fib(lastHigh, lastLow, 1.0);
+          fibRatio = "100%";
+          waveNote = `بداية موجة A هابطة -- هدف ${waveTarget.toFixed(2)}`;
+        }
       }
+    }
 
-    // حساب الدعم والمقاومة من آخر قمتين وقاعين
+    // حساب الدعم والمقاومة
+
     const support    = lows.length  >= 2 ? Math.min(lows[lows.length-1].price, lows[lows.length-2].price)   : (lows[0]?.price  || curPrice * 0.95);
     const resistance = highs.length >= 2 ? Math.max(highs[highs.length-1].price, highs[highs.length-2].price) : (highs[0]?.price || curPrice * 1.05);
 
