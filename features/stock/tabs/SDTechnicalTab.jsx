@@ -814,8 +814,12 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=3Y`),
           intermediate.wave = "4";
           intermediate.type = "تصحيح مؤقت";
           intermediate.dir = "محايد";
-          intermediate.note = `تصحيح مؤقت ضمن الاتجاه الصاعد الرئيسي -- دعم عند ${intermediate.support} ر.س`;
+          // ✨ هدف موجة 4 = 38.2% تصحيح من السعر الحالي (لا يجب أن ينزل كثيراً)
+          var wave4Target = parseFloat((curPrice * 0.90).toFixed(2));
+          intermediate.target = wave4Target;
+          intermediate.note = `تصحيح مؤقت ضمن الاتجاه الصاعد الرئيسي -- دعم متوقع عند ${wave4Target} ر.س (10% تصحيح)`;
         }
+
         if (primary.dir === "هابط" && intermediate.wave === "5" && intermediate.dir === "صاعد") {
           intermediate.wave = "B";
           intermediate.type = "ارتداد مؤقت";
