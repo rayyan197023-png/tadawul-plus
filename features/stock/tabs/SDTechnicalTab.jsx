@@ -821,6 +821,18 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=3Y`),
         }
 
         if (primary.dir === "هابط" && intermediate.wave === "5" && intermediate.dir === "صاعد") {
+      // ✨ الساعي: لو هدفه عكس اتجاهه، صحّحه
+      if (minor) {
+        if (minor.dir === "هابط" && minor.target > curPrice) {
+          minor.target = parseFloat((curPrice * 0.95).toFixed(2));
+          minor.note = minor.note.replace(/هدف.*ر\.س/, '') + ` | هدف: ${minor.target} ر.س`;
+        }
+        if (minor.dir === "صاعد" && minor.target < curPrice) {
+          minor.target = parseFloat((curPrice * 1.05).toFixed(2));
+          minor.note = minor.note.replace(/هدف.*ر\.س/, '') + ` | هدف: ${minor.target} ر.س`;
+        }
+      }
+ 
           intermediate.wave = "B";
           intermediate.type = "ارتداد مؤقت";
           intermediate.dir = "محايد";
