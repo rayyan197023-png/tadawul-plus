@@ -155,15 +155,16 @@ const fetchSahmkCompany = async (sym) => {
                      // ✨ نحسب P/E دائماً من السعر ÷ eps_ttm (الأدق)
                      // pe_ratio من API مبني على eps قديم (legacy) -- نتجاهله
                      var px = parseFloat(d.current_price || d.price || 0);
-                     var epsTTM = f.eps_ttm;
-                     if (px > 0 && epsTTM != null && epsTTM > 0) {
-                       return parseFloat((px / epsTTM).toFixed(2));
-                     }
-                     // fallback: basic_eps (سنوي)
+                     // ✨ basic_eps أدق وأكثر توافقاً مع المنصات (تكرشارت وغيرها)
                      var epsBasic = f.basic_eps;
                      if (px > 0 && epsBasic != null && epsBasic > 0) {
                        return parseFloat((px / epsBasic).toFixed(2));
                      }
+                     var epsTTM = f.eps_ttm;
+                     if (px > 0 && epsTTM != null && epsTTM > 0) {
+                       return parseFloat((px / epsTTM).toFixed(2));
+                     }
+
                      // آخر fallback: pe_ratio من API
                      if (f.pe_ratio != null && f.pe_ratio > 0.5 && f.pe_ratio < 500) {
                        return parseFloat(f.pe_ratio.toFixed(2));
@@ -173,8 +174,8 @@ const fetchSahmkCompany = async (sym) => {
 
       forwardPE:   (f.forward_pe != null && f.forward_pe > 0.5 && f.forward_pe < 300) ? f.forward_pe : null,
 eps:          (function(){
-                 // ✨ eps_ttm هو الأدق (آخر 4 أرباع) -- basic_eps ثانياً -- نتجاهل eps القديم
-                 var e = f.eps_ttm ?? f.basic_eps ?? null;
+                 // ✨ basic_eps = صافي الدخل السنوي ÷ الأسهم -- هو الأدق والمتوافق مع تكرشارت
+                 var e = f.basic_eps ?? f.eps_ttm ?? null;
 
                  if (e == null) return null;
                  var px = parseFloat(d.price || d.current_price || 0);
