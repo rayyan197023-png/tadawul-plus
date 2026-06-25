@@ -290,7 +290,7 @@ function OverviewPane({ stk }) {
                 افتراضات: نمو {dcfData.growthAssumed}% • خصم {dcfData.discount}% • نمو نهائي 3% • 5 سنوات
               </div>
             </>
-          ) : (
+            ) : (
             <EmptyState
               icon="💰"
               title="DCF غير متوفر"
