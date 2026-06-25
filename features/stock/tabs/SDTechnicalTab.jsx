@@ -723,6 +723,26 @@ function ElliottWaveAI({ stk, hist }) {
       ? parseFloat((lows[lows.length - 1]?.price * 0.995 || curPrice * 0.95).toFixed(2))
       : parseFloat((highs[highs.length - 1]?.price * 1.005 || curPrice * 1.05).toFixed(2));
 
+    // ✨ فحص منطقي: الهدف يجب أن يكون ضمن ±60% من السعر الحالي
+    if (waveTarget > 0 && (waveTarget > curPrice * 1.6 || waveTarget < curPrice * 0.4)) {
+      // الهدف بعيد جداً -- احسبه من السعر الحالي بدلاً من القمم/القيعان القديمة
+      if (waveDir === "صاعد") {
+        waveTarget = parseFloat((curPrice * 1.08).toFixed(2));
+        waveNote += ` (الهدف المعدّل من السعر الحالي)`;
+      } else {
+        waveTarget = parseFloat((curPrice * 0.92).toFixed(2));
+        waveNote += ` (الهدف المعدّل من السعر الحالي)`;
+      }
+    }
+
+    // ✨ دعم ومقاومة قريبان من السعر الحالي
+    const safeSupport = support < curPrice * 0.5 || support > curPrice
+      ? parseFloat((curPrice * 0.93).toFixed(2))
+      : parseFloat(support.toFixed(2));
+    const safeResistance = resistance > curPrice * 1.5 || resistance < curPrice
+      ? parseFloat((curPrice * 1.07).toFixed(2))
+      : parseFloat(resistance.toFixed(2));
+
     return {
       wave: waveNum,
       dir:  waveDir,
@@ -731,9 +751,11 @@ function ElliottWaveAI({ stk, hist }) {
       target: waveTarget,
       fib: fibRatio,
       note: waveNote,
-      support: parseFloat(support.toFixed(2)),
-      resistance: parseFloat(resistance.toFixed(2)),
-      invalidation,
+      support: safeSupport,
+      resistance: safeResistance,
+      invalidation: invalidation > curPrice * 1.5 || invalidation < curPrice * 0.5
+        ? parseFloat((waveDir === "صاعد" ? curPrice * 0.93 : curPrice * 1.07).toFixed(2))
+        : invalidation,
       pivotCount: pivots.length,
     };
   };
