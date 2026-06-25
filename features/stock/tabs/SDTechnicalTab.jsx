@@ -544,139 +544,469 @@ function SDTechnical({ stk }) {
 ═══════════════════════════════════════════════════════════════ */
 
 function ElliottWaveAI({ stk, hist }) {
-  const [ewData, setEwData] = useState(null);
+  const [ewData,    setEwData]    = useState(null);
   const [ewLoading, setEwLoading] = useState(false);
-  const [ewErr, setEwErr] = useState(null);
+  const [ewErr,     setEwErr]     = useState(null);
   const [ewFetched, setEwFetched] = useState(null);
 
-  const analyzeEW = async () => {
+  // ═══ تجميع اليومي → أسبوعي ═══
+  const buildWeekly = (daily) => {
+    if (!daily || daily.length === 0) return [];
+    const weeks = [];
+    for (let i = 0; i < daily.length; i += 5) {
+      const slice = daily.slice(i, i + 5);
+      if (slice.length === 0) continue;
+      weeks.push({
+        d: slice[0].d,
+        o: slice[0].o,
+        h: Math.max(...slice.map(b => b.h)),
+        l: Math.min(...slice.map(b => b.l)),
+        c: slice[slice.length - 1].c,
+        v: slice.reduce((s, b) => s + b.v, 0),
+      });
+    }
+    return weeks;
+  };
+
+  // ═══ ZigZag: تحديد القمم والقيعان ═══
+  const zigzag = (bars, threshold = 0.03) => {
+    if (!bars || bars.length < 5) return [];
+    const pivots = [];
+    let lastType = null;
+    let lastPrice = bars[0].c;
+    let lastIdx = 0;
+
+    for (let i = 1; i < bars.length; i++) {
+      const h = bars[i].h, l = bars[i].l;
+      if (lastType !== "H" && h >= lastPrice * (1 + threshold)) {
+        if (lastType === null || (lastType === "H" && h > pivots[pivots.length - 1].price)) {
+          if (lastType === "H") pivots.pop();
+        }
+        pivots.push({ idx: i, price: h, date: bars[i].d, type: "H" });
+        lastType = "H"; lastPrice = h; lastIdx = i;
+      } else if (lastType !== "L" && l <= lastPrice * (1 - threshold)) {
+        if (lastType === "L" && l < pivots[pivots.length - 1].price) pivots.pop();
+        pivots.push({ idx: i, price: l, date: bars[i].d, type: "L" });
+        lastType = "L"; lastPrice = l; lastIdx = i;
+      }
+    }
+    return pivots;
+  };
+
+  // ═══ فيبوناتشي ═══
+  const fib = (start, end, level) => parseFloat((start + (end - start) * level).toFixed(2));
+  const fibLevels = [0.236, 0.382, 0.5, 0.618, 0.786, 1.0, 1.272, 1.618, 2.0, 2.618];
+
+  const getFibLabel = (ratio) => {
+    const labels = { 0.236:"23.6%", 0.382:"38.2%", 0.5:"50%", 0.618:"61.8%", 0.786:"78.6%", 1.0:"100%", 1.272:"127.2%", 1.618:"161.8%", 2.0:"200%", 2.618:"261.8%" };
+    let closest = 0.618, minDiff = 999;
+    for (const lvl of fibLevels) {
+      if (Math.abs(ratio - lvl) < minDiff) { minDiff = Math.abs(ratio - lvl); closest = lvl; }
+    }
+    return labels[closest] || ratio.toFixed(3);
+  };
+
+  // ═══ تحليل الموجات من القمم والقيعان ═══
+  const analyzeWaves = (pivots, bars, timeframe) => {
+    if (!pivots || pivots.length < 4) return null;
+
+    const recent = pivots.slice(-10);
+    const last = bars[bars.length - 1];
+    const curPrice = stk.p || last?.c || 0;
+
+    // تحديد الاتجاه العام
+    const firstPivot = recent[0];
+    const lastPivot  = recent[recent.length - 1];
+    const overallUp  = lastPivot.price > firstPivot.price;
+
+    // البحث عن موجات دافعة (5 موجات)
+    const highs = recent.filter(p => p.type === "H");
+    const lows  = recent.filter(p => p.type === "L");
+
+    // تحديد أرقام الموجات
+    let waveNum = "?", waveDir = "محايد", waveType = "غير محدد";
+    let waveStart = 0, waveTarget = 0, fibRatio = "?";
+    let waveNote = "";
+
+    if (overallUp && highs.length >= 2 && lows.length >= 2) {
+      // حساب نسبة الموجة الأخيرة
+      const lastLow  = lows[lows.length - 1].price;
+      const lastHigh = highs[highs.length - 1].price;
+      const prevLow  = lows.length >= 2 ? lows[lows.length - 2].price : lows[0].price;
+      const prevHigh = highs.length >= 2 ? highs[highs.length - 2].price : highs[0].price;
+      const moveSize = lastHigh - lastLow;
+      const prevSize = prevHigh - prevLow;
+      const ratio = prevSize > 0 ? moveSize / prevSize : 1;
+
+      waveDir = "صاعد";
+      waveStart = lastLow;
+
+      if (curPrice > lastHigh * 0.98) {
+        // السعر عند القمة -- في موجة دافعة أو بداية تصحيح
+        if (ratio >= 1.5) {
+          waveNum = "3"; waveType = "ممتدة";
+          waveTarget = fib(lastLow, lastHigh, 1.618);
+          fibRatio = "161.8%";
+          waveNote = `الموجة الثالثة الأقوى -- بدأت من ${lastLow.toFixed(2)} وامتدت ${(ratio * 100).toFixed(0)}% من الموجة الأولى`;
+        } else if (ratio >= 0.9 && ratio < 1.5) {
+          waveNum = "5"; waveType = "طبيعية";
+          waveTarget = fib(lastLow, lastHigh, 1.0);
+          fibRatio = "100%";
+          waveNote = `الموجة الخامسة -- مساوية للموجة الأولى تقريباً، مرشحة للانتهاء قريباً`;
+        } else {
+          waveNum = "1"; waveType = "بداية";
+          waveTarget = fib(lastLow, lastHigh, 1.618);
+          fibRatio = "161.8%";
+          waveNote = `بداية موجة صاعدة جديدة من ${lastLow.toFixed(2)}`;
+        }
+      } else if (curPrice < lastHigh * 0.98 && curPrice > lastLow * 1.02) {
+        // السعر في منتصف -- تصحيح أو موجة 4
+        const retrace = (lastHigh - curPrice) / (lastHigh - lastLow);
+        if (retrace >= 0.382 && retrace <= 0.618) {
+          waveNum = "4"; waveType = "تصحيحي";
+          waveTarget = fib(lastHigh, lastLow, 0.382);
+          fibRatio = getFibLabel(retrace);
+          waveNote = `تصحيح موجة 4 -- تراجع ${(retrace * 100).toFixed(0)}% من الموجة 3، الهدف ${waveTarget}`;
+        } else if (retrace > 0.618) {
+          waveNum = "2"; waveType = "تصحيح عميق";
+          waveTarget = fib(lastHigh, lastLow, 0.618);
+          fibRatio = getFibLabel(retrace);
+          waveNote = `تصحيح موجة 2 عميق -- تراجع ${(retrace * 100).toFixed(0)}%، الدعم القوي عند ${waveTarget}`;
+        } else {
+          waveNum = "B"; waveType = "تصحيحي";
+          waveTarget = fib(lastLow, lastHigh, 0.618);
+          fibRatio = "61.8%";
+          waveNote = `موجة B تصحيحية -- ارتداد ضمن نمط ABC`;
+        }
+      }
+    } else if (!overallUp && highs.length >= 2 && lows.length >= 2) {
+      const lastLow  = lows[lows.length - 1].price;
+      const lastHigh = highs[highs.length - 1].price;
+      const prevLow  = lows.length >= 2 ? lows[lows.length - 2].price : lows[0].price;
+      const prevHigh = highs.length >= 2 ? highs[highs.length - 2].price : highs[0].price;
+      const moveSize = lastHigh - lastLow;
+      const prevSize = prevHigh - prevLow;
+      const ratio = prevSize > 0 ? moveSize / prevSize : 1;
+
+      waveDir = "هابط";
+      waveStart = lastHigh;
+
+      if (ratio >= 1.5) {
+        waveNum = "C"; waveType = "ممتدة";
+        waveTarget = fib(lastHigh, lastLow, 1.618);
+        fibRatio = "161.8%";
+        waveNote = `موجة C هابطة ممتدة -- هدف ${waveTarget.toFixed(2)}`;
+      } else {
+        waveNum = "A"; waveType = "هبوطية";
+        waveTarget = fib(lastHigh, lastLow, 1.0);
+        fibRatio = "100%";
+        waveNote = `بداية موجة هابطة -- هدف ${waveTarget.toFixed(2)}`;
+      }
+    }
+
+    // حساب الدعم والمقاومة من آخر قمتين وقاعين
+    const support    = lows.length  >= 2 ? Math.min(lows[lows.length-1].price, lows[lows.length-2].price)   : (lows[0]?.price  || curPrice * 0.95);
+    const resistance = highs.length >= 2 ? Math.max(highs[highs.length-1].price, highs[highs.length-2].price) : (highs[0]?.price || curPrice * 1.05);
+
+    // نقطة الإبطال
+    const invalidation = overallUp
+      ? parseFloat((lows[lows.length - 1]?.price * 0.995 || curPrice * 0.95).toFixed(2))
+      : parseFloat((highs[highs.length - 1]?.price * 1.005 || curPrice * 1.05).toFixed(2));
+
+    return {
+      wave: waveNum,
+      dir:  waveDir,
+      type: waveType,
+      start: waveStart,
+      target: waveTarget,
+      fib: fibRatio,
+      note: waveNote,
+      support: parseFloat(support.toFixed(2)),
+      resistance: parseFloat(resistance.toFixed(2)),
+      invalidation,
+      pivotCount: pivots.length,
+    };
+  };
+
+  // ═══ الدالة الرئيسية ═══
+  const analyze = async () => {
     setEwLoading(true);
     setEwErr(null);
     try {
-      const monthly = hist.filter((_, i) => i % 20 === 0).slice(-12).map(c => `${c.d || ""}:${c.c}`).join(", ");
-      const weekly = hist.filter((_, i) => i % 5 === 0).slice(-24).map(c => `${c.d || ""}:${c.c}`).join(", ");
-      const daily = hist.slice(-30).map(c => `${c.d || ""}:O${c.o || c.c} H${c.h || c.c} L${c.l || c.c} C${c.c}`).join(" | ");
+      // جلب البيانات
+      const [dRes, hRes] = await Promise.all([
+        fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=1Y`),
+        fetch(`/api/sahmkdata?endpoint=intraday&sym=${stk.sym}&interval=60m`),
+      ]);
+      const [dJson, hJson] = await Promise.all([dRes.json(), hRes.json()]);
 
-      const prompt = `أنت أفضل محلل موجات إيليوت في العالم. حلّل سهم ${stk.name} (${stk.sym}) بناءً على البيانات:
-
-السعر الحالي: ${stk.p} ر.س
-شمعات شهرية (آخر 12 شهر): ${monthly}
-شمعات أسبوعية (آخر 24 أسبوع): ${weekly}
-شمعات يومية (آخر 30 يوم): ${daily}
-
-أجب بـ JSON فقط:
-{
-  "primary":{"wave":"3","dir":"صاعد","type":"ممتدة","note":"..."},
-  "intermediate":{"wave":"iii","dir":"صاعد","type":"ممتدة","note":"..."},
-  "minor":{"wave":"3","dir":"صاعد","type":"طبيعية","note":"..."},
-  "currentPos":"...",
-  "nextTarget":{"bull":0,"bear":0,"fib":"61.8%"},
-  "support":0,
-  "resistance":0,
-  "warning":"...",
-  "summary":"..."
-}`;
-
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1500,
-          messages: [{ role: "user", content: prompt }]
-        })
+      const parseBar = b => ({
+        d: b.date || "", o: +b.open, h: +b.high, l: +b.low, c: +b.close, v: +(b.volume || 0),
       });
-      const d = await res.json();
-      const txt = (d.content || []).filter(b => b.type === "text").map(b => b.text).join("");
-      const m = txt.match(/\{[\s\S]*\}/);
-      if (m) {
-        setEwData(JSON.parse(m[0]));
-        setEwFetched(new Date().toLocaleString("ar-SA"));
-      } else setEwErr("لم يتمكن AI من تحليل الموجات");
-    } catch (e) {
-      setEwErr("خطأ: " + e.message);
+
+      const daily  = (dJson?.data || []).filter(b => b.close > 0).map(parseBar);
+      const hourly = (hJson?.data || []).filter(b => b.close > 0).map(parseBar).slice(-48);
+      const weekly = buildWeekly(daily);
+
+      if (daily.length < 20) { setEwErr("بيانات غير كافية -- تحتاج 20+ شمعة يومية"); setEwLoading(false); return; }
+
+      // ZigZag لكل إطار
+      const wPivots = zigzag(weekly, 0.04);  // 4% للأسبوعي
+      const dPivots = zigzag(daily,  0.025); // 2.5% لليومي
+      const hPivots = zigzag(hourly, 0.015); // 1.5% للساعي
+
+      // تحليل كل إطار
+      const primary      = analyzeWaves(wPivots, weekly, "أسبوعي");
+      const intermediate = analyzeWaves(dPivots, daily,  "يومي");
+      const minor        = analyzeWaves(hPivots.length >= 4 ? hPivots : dPivots.slice(-6), hourly.length > 0 ? hourly : daily.slice(-20), "ساعي");
+
+      const curPrice = stk.p || daily[daily.length - 1]?.c || 0;
+
+      // الهدف التالي
+      const bullTarget = primary?.target > curPrice ? primary.target : (intermediate?.target > curPrice ? intermediate.target : parseFloat((curPrice * 1.05).toFixed(2)));
+      const bearTarget = primary?.support || parseFloat((curPrice * 0.95).toFixed(2));
+
+      // تقييم الثقة
+      const confidence = Math.min(95, Math.max(40,
+        (wPivots.length >= 6 ? 30 : 15) +
+        (dPivots.length >= 6 ? 25 : 12) +
+        (hPivots.length >= 4 ? 20 : 10) +
+        (primary?.wave !== "?" ? 15 : 0) +
+        (intermediate?.wave !== "?" ? 10 : 0)
+      ));
+
+      // الملخص
+      const dir = primary?.dir || "محايد";
+      const summary =
+        `السهم في موجة ${primary?.wave || "؟"} ${dir} على الإطار الأسبوعي` +
+        (primary?.type ? ` من نوع ${primary.type}` : "") + ". " +
+        (intermediate ? `على اليومي الموجة ${intermediate.wave} ${intermediate.dir}` + (intermediate.target ? ` بهدف ${intermediate.target.toFixed(2)} ر.س` : "") + ". " : "") +
+        (minor ? `الساعي يُظهر موجة ${minor.wave} ${minor.dir}` + (minor.target ? ` بهدف ${minor.target.toFixed(2)}` : "") + ". " : "") +
+        (primary?.target ? `الهدف الرئيسي ${primary.target.toFixed(2)} ر.س` : "") +
+        (primary?.invalidation ? ` ونقطة الإبطال ${primary.invalidation} ر.س.` : ".");
+
+      // تحذير
+      const warning =
+        (primary?.wave === "5" ? "⚠️ الموجة الخامسة -- قد تنتهي قريباً ويبدأ تصحيح. " : "") +
+        (primary?.wave === "4" ? "🔄 تصحيح الموجة 4 -- لا تشتري حتى تكتمل وتبدأ الموجة 5. " : "") +
+        (intermediate?.wave === "C" ? "⚠️ موجة C -- ضغط بيعي قد يستمر. " : "") +
+        (confidence < 60 ? "📊 بيانات ZigZag محدودة -- التحليل تقريبي." : "");
+
+      setEwData({
+        primary, intermediate, minor,
+        structure: dir === "صاعد" ? "نمط دافع (1-2-3-4-5)" : dir === "هابط" ? "نمط تصحيحي (A-B-C)" : "نمط غير محدد",
+        currentPos: `السعر الحالي ${curPrice.toFixed(2)} ر.س -- ${primary?.wave !== "?" ? `ضمن الموجة ${primary?.wave} ${dir}` : "الموجة غير محددة"}`,
+        nextTarget: { bull: bullTarget, bear: bearTarget, fib: primary?.fib || "61.8%" },
+        invalidation: primary?.invalidation || 0,
+        support:      primary?.support      || 0,
+        resistance:   primary?.resistance   || 0,
+        confidence,
+        warning:  warning  || "لا تحذيرات خاصة حالياً",
+        summary,
+        dataInfo: {
+          weeklyBars:  weekly.length,
+          dailyBars:   daily.length,
+          hourlyBars:  hourly.length,
+          wPivots:     wPivots.length,
+          dPivots:     dPivots.length,
+          hPivots:     hPivots.length,
+        },
+      });
+      setEwFetched(new Date().toLocaleTimeString("ar-SA"));
+    } catch(e) {
+      setEwErr("خطأ في التحليل: " + e.message);
     }
     setEwLoading(false);
   };
 
-  const waveColor = w => {
-    if (!w) return C.smoke;
-    if (w.dir === "صاعد") return C.mint;
-    if (w.dir === "هابط") return C.coral;
-    return C.amber;
-  };
+  const waveColor = w => !w ? C.smoke : w.dir === "صاعد" ? C.mint : w.dir === "هابط" ? C.coral : C.amber;
 
   return (
-    <SectionCard title="موجات إيليوت -- تحليل AI" accent={C.plasma}
-      badge={ewFetched ? { text: "AI حي", color: C.mint } : { text: "محلل متقدم", color: C.plasma }}>
+    <SectionCard title="موجات إيليوت -- تحليل خوارزمي" accent={C.plasma}
+      badge={ewFetched ? { text: "✓ " + ewFetched, color: C.mint } : { text: "ZigZag + فيبوناتشي", color: C.plasma }}>
       <div style={{ padding: "10px 16px" }}>
+
         {!ewData && !ewLoading && (
           <div style={{ textAlign: "center", padding: "16px 0" }}>
-            <div style={{ fontSize: 11, color: C.smoke, marginBottom: 12, lineHeight: 1.6 }}>
-              تحليل AI احترافي للموجات الرئيسية والفرعية<br/>
-              على الإطارات الشهري والأسبوعي واليومي
+            <div style={{ fontSize: 11, color: C.smoke, marginBottom: 6, lineHeight: 1.8 }}>
+              خوارزمية ZigZag تحلل القمم والقيعان الحقيقية<br/>
+              <span style={{ color: C.electric }}>أسبوعي (52 أسبوع)</span> •{" "}
+              <span style={{ color: C.mint }}>يومي (90 يوم)</span> •{" "}
+              <span style={{ color: C.gold }}>ساعي (48 ساعة)</span><br/>
+              <span style={{ fontSize: 9, color: C.ash }}>بدون AI -- خوارزمية رياضية بحتة</span>
             </div>
-            <button onClick={analyzeEW} style={{
+            <button onClick={analyze} style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               background: `linear-gradient(135deg,${C.plasma}33,${C.electric}22)`,
               border: `1px solid ${C.plasma}66`,
               borderRadius: 12, padding: "12px 24px",
               color: C.plasma, fontSize: 12, fontWeight: 800,
               cursor: "pointer", fontFamily: "Cairo,sans-serif",
-              boxShadow: `0 0 20px ${C.plasma}22`,
-            }}>تحليل موجات إيليوت بالذكاء الاصطناعي</button>
+            }}>
+              🌊 تحليل موجات إيليوت
+            </button>
           </div>
         )}
+
         {ewLoading && (
           <div style={{ textAlign: "center", padding: "20px 0" }}>
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={C.plasma} strokeWidth="2"
               style={{ animation: "spin 1s linear infinite", display: "block", margin: "0 auto 10px" }}>
               <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
             </svg>
-            <div style={{ fontSize: 11, color: C.smoke }}>يحلل AI الموجات على 3 إطارات زمنية...</div>
+            <div style={{ fontSize: 11, color: C.plasma, fontWeight: 700 }}>يحلل القمم والقيعان...</div>
+            <div style={{ fontSize: 10, color: C.smoke, marginTop: 4 }}>ZigZag على 3 إطارات زمنية</div>
           </div>
         )}
+
         {ewErr && (
-          <div style={{ padding: "10px", background: C.coral + "15", borderRadius: 8, fontSize: 11, color: C.coral }}>
+          <div style={{ padding: "10px", background: C.coral+"15", borderRadius: 8, fontSize: 11, color: C.coral, marginBottom: 10 }}>
             {ewErr}
+            <button onClick={analyze} style={{ display: "block", marginTop: 8, background: "transparent", border: `1px solid ${C.coral}44`, borderRadius: 6, padding: "6px 14px", color: C.coral, fontSize: 10, cursor: "pointer", fontFamily: "Cairo,sans-serif" }}>
+              إعادة المحاولة
+            </button>
           </div>
         )}
+
         {ewData && (
-          <>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6, marginBottom: 10 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+
+            {/* الإطارات الثلاثة */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6 }}>
               {[
-                { label: "شهري (Primary)", data: ewData.primary },
-                { label: "أسبوعي (Interm.)", data: ewData.intermediate },
-                { label: "يومي (Minor)", data: ewData.minor },
+                { label: "أسبوعي", sub: "Primary",  data: ewData.primary },
+                { label: "يومي",   sub: "Interm.",  data: ewData.intermediate },
+                { label: "ساعي",   sub: "Minor",    data: ewData.minor },
               ].map((tf, i) => {
                 const col = waveColor(tf.data);
                 return (
                   <div key={i} style={{
-                    background: col + "12", borderRadius: 10,
-                    padding: "8px 6px", border: `1px solid ${col}33`, textAlign: "center",
+                    background: col+"12", borderRadius: 10,
+                    padding: "10px 6px", border: `1px solid ${col}33`, textAlign: "center",
                   }}>
-                    <div style={{ fontSize: 8, color: C.smoke, marginBottom: 4 }}>{tf.label}</div>
-                    <div style={{ fontFamily: "IBM Plex Mono,monospace", fontSize: 18, fontWeight: 900, color: col, lineHeight: 1 }}>
+                    <div style={{ fontSize: 8, color: C.smoke, marginBottom: 2 }}>{tf.label}</div>
+                    <div style={{ fontSize: 8, color: col, opacity: 0.7, marginBottom: 4 }}>{tf.sub}</div>
+                    <div style={{ fontFamily: "IBM Plex Mono,monospace", fontSize: 22, fontWeight: 900, color: col, lineHeight: 1 }}>
                       {tf.data?.wave || "?"}
                     </div>
-                    <div style={{ fontSize: 9, color: col, marginTop: 3, fontWeight: 700 }}>{tf.data?.dir || ""}</div>
+                    <div style={{ fontSize: 9, color: col, marginTop: 4, fontWeight: 700 }}>{tf.data?.dir || "--"}</div>
+                    <div style={{ fontSize: 8, color: C.smoke, marginTop: 2 }}>{tf.data?.type || ""}</div>
+                    {tf.data?.fib && <div style={{ fontSize: 8, color: C.gold, marginTop: 3, fontWeight: 700 }}>{tf.data.fib}</div>}
                   </div>
                 );
               })}
             </div>
-            {ewData.summary && (
-              <div style={{ background: C.layer3, borderRadius: 8, padding: "8px 10px", fontSize: 10, color: C.mist, lineHeight: 1.7 }}>
-                {ewData.summary}
+
+            {/* الهيكل */}
+            {ewData.structure && (
+              <div style={{ background: C.plasma+"10", border: `1px solid ${C.plasma}33`, borderRadius: 8, padding: "8px 12px", fontSize: 10, color: C.plasma, fontWeight: 700, textAlign: "center" }}>
+                🔷 {ewData.structure}
               </div>
             )}
-            <button onClick={analyzeEW} disabled={ewLoading} style={{
-              marginTop: 8, width: "100%",
-              background: C.plasma + "15", border: `1px solid ${C.plasma}44`,
-              borderRadius: 7, padding: "6px",
-              color: C.plasma, fontSize: 10, fontWeight: 700,
+
+            {/* الموقع الحالي */}
+            <div style={{ background: C.layer3, borderRadius: 8, padding: "8px 12px" }}>
+              <div style={{ fontSize: 9, color: C.smoke, marginBottom: 4, fontWeight: 700 }}>📍 الموقع الحالي</div>
+              <div style={{ fontSize: 11, color: C.mist, lineHeight: 1.7 }}>{ewData.currentPos}</div>
+            </div>
+
+            {/* الأهداف */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 6 }}>
+              {[
+                { l: "هدف صاعد", v: ewData.nextTarget?.bull, c: C.mint },
+                { l: "هدف هابط", v: ewData.nextTarget?.bear, c: C.coral },
+                { l: "دعم",      v: ewData.support,           c: C.electric },
+                { l: "مقاومة",   v: ewData.resistance,        c: C.amber },
+              ].map((item, i) => (
+                <div key={i} style={{ background: item.c+"10", borderRadius: 8, padding: "8px 4px", textAlign: "center", border: `1px solid ${item.c}25` }}>
+                  <div style={{ fontSize: 8, color: C.smoke, marginBottom: 3 }}>{item.l}</div>
+                  <div style={{ fontFamily: "IBM Plex Mono,monospace", fontSize: 11, fontWeight: 900, color: item.c }}>
+                    {item.v ? parseFloat(item.v).toFixed(2) : "--"}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* نقطة الإبطال */}
+            {ewData.invalidation > 0 && (
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: C.coral+"08", border: `1px solid ${C.coral}22`, borderRadius: 8, padding: "8px 12px" }}>
+                <span style={{ fontSize: 10, color: C.smoke }}>🚫 نقطة إبطال السيناريو</span>
+                <span style={{ fontFamily: "IBM Plex Mono,monospace", fontSize: 12, fontWeight: 900, color: C.coral }}>
+                  {parseFloat(ewData.invalidation).toFixed(2)} ر.س
+                </span>
+              </div>
+            )}
+
+            {/* الثقة */}
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.smoke, marginBottom: 4 }}>
+                <span>مستوى الثقة بالتحليل</span>
+                <span style={{ color: ewData.confidence >= 70 ? C.mint : C.amber, fontWeight: 700 }}>{ewData.confidence}%</span>
+              </div>
+              <div style={{ height: 4, background: C.layer3, borderRadius: 2, overflow: "hidden" }}>
+                <div style={{ height: "100%", width: ewData.confidence+"%", background: ewData.confidence >= 70 ? C.mint : C.amber, borderRadius: 2 }}/>
+              </div>
+            </div>
+
+            {/* تفاصيل كل موجة */}
+            {[
+              { label: "🗓 أسبوعي -- Primary", data: ewData.primary },
+              { label: "📅 يومي -- Intermediate", data: ewData.intermediate },
+              { label: "⏰ ساعي -- Minor", data: ewData.minor },
+            ].map((tf, i) => {
+              if (!tf.data?.note) return null;
+              const col = waveColor(tf.data);
+              return (
+                <div key={i} style={{ background: col+"08", border: `1px solid ${col}22`, borderRadius: 8, padding: "8px 12px" }}>
+                  <div style={{ fontSize: 9, color: col, fontWeight: 800, marginBottom: 4 }}>
+                    {tf.label} -- موجة {tf.data.wave} {tf.data.type}
+                    {tf.data.target ? ` | هدف: ${parseFloat(tf.data.target).toFixed(2)} ر.س` : ""}
+                    {tf.data.fib ? ` (${tf.data.fib})` : ""}
+                  </div>
+                  <div style={{ fontSize: 10, color: C.mist, lineHeight: 1.8 }}>{tf.data.note}</div>
+                </div>
+              );
+            })}
+
+            {/* تحذير */}
+            {ewData.warning && ewData.warning !== "لا تحذيرات خاصة حالياً" && (
+              <div style={{ background: C.amber+"10", border: `1px solid ${C.amber}33`, borderRadius: 8, padding: "8px 12px" }}>
+                <div style={{ fontSize: 9, color: C.amber, fontWeight: 800, marginBottom: 4 }}>⚠️ تحذير / سيناريو بديل</div>
+                <div style={{ fontSize: 10, color: C.mist, lineHeight: 1.8 }}>{ewData.warning}</div>
+              </div>
+            )}
+
+            {/* الملخص */}
+            <div style={{ background: C.layer3, borderRadius: 8, padding: "10px 12px", border: `1px solid ${C.line}` }}>
+              <div style={{ fontSize: 9, color: C.electric, fontWeight: 800, marginBottom: 6 }}>📊 الملخص التحليلي</div>
+              <div style={{ fontSize: 11, color: C.mist, lineHeight: 1.8 }}>{ewData.summary}</div>
+            </div>
+
+            {/* معلومات البيانات */}
+            {ewData.dataInfo && (
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                {[
+                  { l: "أسبوعي", v: ewData.dataInfo.weeklyBars + " شمعة / " + ewData.dataInfo.wPivots + " محور", c: C.electric },
+                  { l: "يومي",   v: ewData.dataInfo.dailyBars  + " شمعة / " + ewData.dataInfo.dPivots + " محور", c: C.mint },
+                  { l: "ساعي",   v: ewData.dataInfo.hourlyBars + " شمعة / " + ewData.dataInfo.hPivots + " محور", c: C.gold },
+                ].map((item, i) => (
+                  <div key={i} style={{ flex: 1, background: item.c+"08", border: `1px solid ${item.c}22`, borderRadius: 6, padding: "5px 6px", textAlign: "center" }}>
+                    <div style={{ fontSize: 8, color: item.c, fontWeight: 700 }}>{item.l}</div>
+                    <div style={{ fontSize: 8, color: C.smoke, marginTop: 2 }}>{item.v}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* زر التحديث */}
+            <button onClick={analyze} disabled={ewLoading} style={{
+              width: "100%", background: C.plasma+"15", border: `1px solid ${C.plasma}44`,
+              borderRadius: 8, padding: "8px", color: C.plasma, fontSize: 11, fontWeight: 700,
               cursor: "pointer", fontFamily: "Cairo,sans-serif",
-            }}>تحديث</button>
-          </>
+            }}>
+              🔄 تحديث التحليل
+            </button>
+          </div>
         )}
       </div>
     </SectionCard>
