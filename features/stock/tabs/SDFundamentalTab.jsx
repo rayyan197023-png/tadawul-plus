@@ -245,9 +245,24 @@ function OverviewPane({ stk }) {
       {/* DCF Fair Value */}
       <SectionCard title="القيمة العادلة -- DCF" accent={C.gold}>
         <div style={{ padding: "12px 14px" }}>
-          {dcfData ? (
+          {dcfData && dcfData.notApplicable ? (
+            <div style={{
+              padding: "14px", background: C.amber+"10",
+              border: `1px solid ${C.amber}33`, borderRadius: 10,
+              textAlign: "center",
+            }}>
+              <div style={{ fontSize: 16, marginBottom: 8 }}>🏦</div>
+              <div style={{ fontSize: 12, fontWeight: 800, color: C.amber, marginBottom: 6 }}>
+                DCF غير مناسب لهذا القطاع
+              </div>
+              <div style={{ fontSize: 10, color: C.smoke, lineHeight: 1.6 }}>
+                البنوك والخدمات المالية تُقيَّم بـ P/B وP/E وعائد حقوق الملكية (ROE) -- لا بالتدفق النقدي الحر
+              </div>
+            </div>
+          ) : dcfData ? (
             <>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 10 }}>
+
                 <div style={{ background: C.gold + "12", borderRadius: 10, padding: "10px", textAlign: "center", border: `1px solid ${C.gold}33` }}>
                   <div style={{ fontSize: 10, color: C.smoke, marginBottom: 4 }}>القيمة العادلة</div>
                   <div style={{ fontFamily: "IBM Plex Mono,monospace", fontSize: 18, fontWeight: 900, color: C.gold }}>
