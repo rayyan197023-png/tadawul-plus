@@ -145,6 +145,16 @@ function OverviewPane({ stk }) {
   // DCF بسيط من البيانات الحية
   const dcfData = useMemo(() => {
     if (!stk.eps || !stk.p) return null;
+    // ✨ DCF غير مناسب للبنوك والخدمات المالية والتأمين
+    var sectorStr = (stk.sec || stk.sector || stk.industry || "").toLowerCase();
+    var isBankSector = 
+      sectorStr.includes("bank") || 
+      sectorStr.includes("بنك") || 
+      sectorStr.includes("financial") || 
+      sectorStr.includes("مالي") || 
+      sectorStr.includes("تأمين") || 
+      sectorStr.includes("insurance");
+    if (isBankSector) return { notApplicable: true };
     const growthRate = stk.growthYoY || 5;
     const discountRate = 9;
     const terminalGrowth = 3;
