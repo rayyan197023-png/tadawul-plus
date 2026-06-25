@@ -821,7 +821,6 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=3Y`),
         }
 
         if (primary.dir === "هابط" && intermediate.wave === "5" && intermediate.dir === "صاعد") {
-        if (primary.dir === "هابط" && intermediate.wave === "5" && intermediate.dir === "صاعد") {
           intermediate.wave = "B";
           intermediate.type = "ارتداد مؤقت";
           intermediate.dir = "محايد";
