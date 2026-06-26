@@ -178,41 +178,6 @@ function SDShareholders({ stk }) {
         )}
       </SectionCard>
 
-      {/* السيولة اليومية */}
-      {(stk.inflow || stk.outflow) && (
-        <SectionCard title="تدفق السيولة اليومي" accent={C.teal}>
-          <div style={{ padding:"12px 16px" }}>
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginBottom:10 }}>
-              {[
-                { l:"تدفق شراء",  v:((stk.inflow||0)/1e6).toFixed(1)+"M",  c:C.mint },
-                { l:"تدفق بيع",   v:((stk.outflow||0)/1e6).toFixed(1)+"M", c:C.coral },
-                { l:"صافي",       v:((stk.netFlow||0)>=0?"+":"") + ((stk.netFlow||0)/1e6).toFixed(1)+"M", c:(stk.netFlow||0)>=0?C.mint:C.coral },
-              ].map((item,i) => (
-                <div key={i} style={{ background:item.c+"10", borderRadius:9, padding:"10px 6px", textAlign:"center", border:`1px solid ${item.c}22` }}>
-                  <div style={{ fontFamily:"IBM Plex Mono,monospace", fontSize:13, fontWeight:900, color:item.c }}>{item.v}</div>
-                  <div style={{ fontSize:9, color:C.smoke, marginTop:3 }}>{item.l}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
-              {[
-                { l:"صفقات شراء", v:stk.inflowT ? stk.inflowT.toLocaleString() : "--", c:C.mint },
-                { l:"صفقات بيع",  v:stk.outflowT ? stk.outflowT.toLocaleString() : "--", c:C.coral },
-              ].map((item,i) => (
-                <div key={i} style={{ background:C.layer3, borderRadius:9, padding:"8px", textAlign:"center", border:`1px solid ${C.line}33` }}>
-                  <div style={{ fontFamily:"IBM Plex Mono,monospace", fontSize:12, fontWeight:800, color:item.c }}>{item.v}</div>
-                  <div style={{ fontSize:9, color:C.smoke, marginTop:2 }}>{item.l}</div>
-                </div>
-              ))}
-            </div>
-            {stk.netFlow != null && (
-              <div style={{ marginTop:10, padding:"8px 10px", background:(stk.netFlow>=0?C.mint:C.coral)+"10", borderRadius:8, border:`1px solid ${(stk.netFlow>=0?C.mint:C.coral)}22`, fontSize:10, color:C.mist, lineHeight:1.6 }}>
-                {stk.netFlow >= 0 ? "✓ ضغط شراء -- تدفق إيجابي للسيولة" : "✗ ضغط بيع -- تدفق سلبي للسيولة"}
-              </div>
-            )}
-          </div>
-        </SectionCard>
-      )}
 
       {/* الأسهم الحرة vs المقيدة */}
       {stk.floatPct != null && stk.sharesOut != null && (
