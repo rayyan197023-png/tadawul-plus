@@ -698,7 +698,8 @@ function ElliottWaveAI({ stk, hist }) {
       waveStart = lastLow;
 
       if (curPrice > lastHigh * 0.98) {
-        if (ratio >= 1.5 || totalMove > 1.0) {
+        if (isWave3) {
+
           // حركة > 100% أو امتداد 1.5x = موجة 3
           waveNum = "3"; waveType = ratio >= 2.5 ? "ممتدة" : "طبيعية";
           waveTarget = fib(lastLow, lastHigh, 1.618);
