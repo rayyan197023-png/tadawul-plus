@@ -3800,7 +3800,8 @@ if(lastY>=cTop&&lastY<=cBot&&clampOff===0){
       state._alertFired=true;
       // Play sound
       try{
-        const ac=getAudioContext();if(!ac)return;
+const ac=getAudioContext();if(!ac)throw new Error('no audio');
+
 
         const osc=ac.createOscillator();const gain=ac.createGain();
         osc.connect(gain);gain.connect(ac.destination);
