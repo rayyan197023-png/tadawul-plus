@@ -183,7 +183,15 @@ async fetch(type, params={}) {
         } else {
           // سهمك يُرجع حد أقصى ~1000 شمعة لكل طلب بدءاً من from --
           // نجلب على دفعات حتى نوصل لتاريخ "to" المطلوب
-          return await this._fetchCandlesPaginated(params.symbol, fromD, toD);
+          const qs5y = `?endpoint=ohlcv&sym=${params.symbol}&period=5Y`;
+          const r5y = await fetch(this.endpoints.candles + qs5y, {
+            headers: this.headers,
+            signal: AbortSignal.timeout(10000)
+          });
+          if(!r5y.ok) return [];
+          const d5y = await r5y.json();
+          return d5y.data || d5y.bars || [];
+
         }
       } else if(type === 'ticker') {
         qs = `?endpoint=quote&sym=${params.symbol}`;
