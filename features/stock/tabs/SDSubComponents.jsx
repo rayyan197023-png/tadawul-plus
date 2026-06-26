@@ -256,10 +256,9 @@ function NLPNewsPanel({ stk }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/sahmkdata?endpoint=news&sym=${stk.sym}`);
+      const res = await fetch(`/api/sahmkdata?endpoint=events&sym=${stk.sym}`);
       const d = await res.json();
-
-      const rawNews = d?.data || d?.news || d?.articles || [];
+      const rawNews = d?.events || [];
 
       if (!rawNews.length) {
         setError("لا توجد أخبار متاحة لهذا السهم");
@@ -268,17 +267,42 @@ function NLPNewsPanel({ stk }) {
       }
 
       const analyzed = rawNews.slice(0, 8).map(n => {
-        const text = (n.title || "") + " " + (n.summary || n.description || "");
-        const { score, sentiment, impact } = analyzeSentiment(text);
+        const text = n.description || "";
+        // ✨ استخدام sentiment من sahmk مباشرة
+        const sentimentMap = {
+          "positive":          { sentiment: "إيجابي", score: 75 },
+          "slightly_positive": { sentiment: "إيجابي", score: 62 },
+          "neutral":           { sentiment: "محايد",  score: 50 },
+          "slightly_negative": { sentiment: "سلبي",   score: 38 },
+          "negative":          { sentiment: "سلبي",   score: 25 },
+        };
+        const mapped = sentimentMap[n.sentiment] || { sentiment: "محايد", score: 50 };
+
+        // ✨ دمج تحليل الكلمات المفتاحية مع sentiment من sahmk
+        const kwAnalysis = analyzeSentiment(text);
+        const finalScore = Math.round((mapped.score * 0.6) + (kwAnalysis.score * 0.4));
+
+        const impact = n.importance === "important" ? "عالي"
+          : n.event_type === "FINANCIAL_REPORT" ? "عالي"
+          : "متوسط";
+
+        const categoryMap = {
+          "FINANCIAL_REPORT": "أرباح",
+          "DIVIDEND":         "توزيعات",
+          "BOARD_MEETING":    "مجلس الإدارة",
+          "REGULAR":          "تقرير",
+          "OTHER":            categorize(text),
+        };
+
         return {
-          title:     n.title || n.headline || "خبر",
-          src:       n.source || n.publisher || "مصدر",
-          sentiment,
-          score,
+          title:    text.slice(0, 120) + (text.length > 120 ? "..." : ""),
+          src:      n.stock_name || stk.name || "sahmk",
+          sentiment: mapped.sentiment,
+          score:    finalScore,
           impact,
-          category:  categorize(text),
-          time:      timeAgo(n.published_at || n.date || n.publishedAt),
-          url:       n.url || null,
+          category: categoryMap[n.event_type] || categorize(text),
+          time:     timeAgo(n.event_date || n.article_date),
+          url:      null,
         };
       });
 
