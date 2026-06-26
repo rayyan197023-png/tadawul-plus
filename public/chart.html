@@ -7747,7 +7747,8 @@ async function loadStk(){
         }
 if(!chartReady){
   state.offset=0;
-  const rangeToVis={'أسبوع':7,'شهر':22,'3أشهر':65,'6أشهر':130,'سنة':248,'سنتين':496,'5سنوات':1000,'الكل':1000};
+const rangeToVis={'أسبوع':7,'شهر':22,'3أشهر':65,'6أشهر':130,'سنة':248,'سنتين':248,'5سنوات':248,'الكل':248};
+
   state.visible=Math.min(rangeToVis[state.range]||dv[state.per]||48, candles.length);
   state.offset=0;
 
