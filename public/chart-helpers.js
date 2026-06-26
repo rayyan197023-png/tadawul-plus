@@ -223,7 +223,8 @@ async fetch(type, params={}) {
     const MAX_LOOPS = 8; // حماية من حلقة لا نهائية (8×1000 = 8000 شمعة كحد أقصى)
 
     for (let i = 0; i < MAX_LOOPS; i++) {
-      const qs = `?endpoint=ohlcv&sym=${symbol}&from=${fmt(curFrom)}&to=${toStr}`;
+      const qs = `?endpoint=ohlcv&sym=${symbol}&period=5Y`;
+
       let data;
       try {
         const r = await fetch(this.endpoints.candles + qs, {
@@ -241,15 +242,7 @@ async fetch(type, params={}) {
       if (!Array.isArray(arr) || !arr.length) break;
       merged = merged.concat(arr);
 
-      const latest = data.latest_bar_at;
-      if (!latest || latest >= toStr) break;
-      if (lastSeen && latest <= lastSeen) break;
-      lastSeen = latest;
-
-      const nextFrom = new Date(latest);
-      nextFrom.setDate(nextFrom.getDate() + 1);
-      if (nextFrom >= toD) break;
-      curFrom = nextFrom;
+      break; // sahmk يرجع كل البيانات المتاحة في طلب واحد
     }
     // إزالة التكرارات (تواريخ متطابقة من تداخل الدفعات) وترتيب زمني تصاعدي
     const seen = new Set();
