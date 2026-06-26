@@ -7751,6 +7751,8 @@ const rangeToVis={'أسبوع':7,'شهر':22,'3أشهر':65,'6أشهر':130,'س�
 const _vis=Math.min(rangeToVis[state.range]||dv[state.per]||48, candles.length);
 state.visible=_vis;
 state.offset=0;
+// تأكد أن آخر شمعة مرئية
+if(state.offset>0) state.offset=0;
 
   chartReady=true;
   invalidateChart();render();
