@@ -309,11 +309,13 @@ function NLPNewsPanel({ stk }) {
       const overall = Math.round(analyzed.reduce((s, n) => s + n.score, 0) / analyzed.length);
       const posNews = analyzed.filter(n => n.sentiment === "إيجابي").length;
       const negNews = analyzed.filter(n => n.sentiment === "سلبي").length;
+      const neuNews = analyzed.filter(n => n.sentiment === "محايد").length;
       const summary = overall > 65
         ? `المشاعر إيجابية -- ${posNews} خبر إيجابي من أصل ${analyzed.length}`
         : overall < 40
         ? `المشاعر سلبية -- ${negNews} خبر سلبي من أصل ${analyzed.length}`
-        : `المشاعر محايدة -- توازن بين ${posNews} إيجابي و${negNews} سلبي`;
+        : `المشاعر محايدة -- ${posNews} إيجابي و${neuNews} محايد و${negNews} سلبي من أصل ${analyzed.length}`;
+
 
       setData({ news: analyzed, overall, summary });
       setFetched(new Date().toLocaleTimeString("ar-SA"));
