@@ -611,26 +611,73 @@ function ElliottWaveAI({ stk, hist }) {
     if (!pivots || pivots.length < 4) return null;
 
     const recent = pivots.slice(-14);
-
     const last = bars[bars.length - 1];
     const curPrice = stk.p || last?.c || 0;
 
-    // تحديد الاتجاه العام
     const firstPivot = recent[0];
     const lastPivot  = recent[recent.length - 1];
     const overallUp  = lastPivot.price > firstPivot.price;
 
-    // البحث عن موجات دافعة (5 موجات)
     const highs = recent.filter(p => p.type === "H");
     const lows  = recent.filter(p => p.type === "L");
 
-    // تحديد أرقام الموجات
     let waveNum = "?", waveDir = "محايد", waveType = "غير محدد";
     let waveStart = 0, waveTarget = 0, fibRatio = "?";
-    let waveNote = "";
+    let waveNote = "", waveProps = "";
+
+    // ═══ خصائص كل موجة أكاديمياً ═══
+    const WAVE_PROPS = {
+      "1": {
+        title: "موجة 1 -- البداية الخفية",
+        chars: "أضعف موجات الدافع. تبدأ والأخبار سلبية والجمهور متشائم. RSI يخرج من تشبع البيع. حجم تداول منخفض إلى متوسط. غالباً تُفسَّر كارتداد مؤقت.",
+        rules: "لا قواعد صارمة عليها. تمتد عادة بين 38.2%-61.8% فيبوناتشي.",
+        signal: "فرصة شراء مبكرة للمتابعين الدقيقين.",
+      },
+      "2": {
+        title: "موجة 2 -- التصحيح الخادع",
+        chars: "تصحيح عميق 50%-61.8% من موجة 1. تُوهم بعودة الهبوط. حجم تداول يتراجع تدريجياً. RSI يتراجع لكن لا يكسر منطقة تشبع البيع.",
+        rules: "قاعدة صارمة: لا تتجاوز بداية موجة 1 أبداً. شكلها zigzag أو flat أو مجموعة.",
+        signal: "فرصة دخول ممتازة للمتحلي بالصبر.",
+      },
+      "3": {
+        title: "موجة 3 -- الأقوى والأطول",
+        chars: "الأقوى والأطول في معظم الأحيان. تمتد 161.8% أو أكثر من موجة 1. حجم تداول مرتفع جداً. RSI في منطقة تشبع الشراء. الأخبار إيجابية والجمهور متحمس. اختراقات قوية للمقاومات.",
+        rules: "قاعدة صارمة: لا تكون أقصر من موجتي 1 و5. إذا امتدت: 261.8% أو 423.6%.",
+        signal: "⚡ أقوى إشارة شراء -- معظم الأرباح تتحقق هنا.",
+      },
+      "4": {
+        title: "موجة 4 -- التصحيح الجانبي",
+        chars: "تصحيح خفيف 38.2%-50% من موجة 3. أبطأ وأطول زمنياً من موجة 2. شكلها مسطح (flat) أو مثلث. RSI يتراجع لكن يبقى فوق 40. حجم تداول يتراجع.",
+        rules: "قاعدة صارمة: لا تتداخل مع منطقة موجة 1 (إلا في الأسواق الآجلة). شكل مثلث = إشارة امتداد الموجة 5.",
+        signal: "فرصة دخول أخيرة قبل موجة 5.",
+      },
+      "5": {
+        title: "موجة 5 -- الختام المضلل",
+        chars: "أضعف من موجة 3. تباعد سلبي واضح في RSI وMACD (السعر يرتفع لكن المؤشرات تتراجع). حجم تداول أقل من موجة 3. الأخبار ممتازة والجمهور في ذروة التفاؤل.",
+        rules: "تساوي موجة 1 عادة، أو 61.8%، أو 161.8% منها. قد تكون مقتطعة (أقل من قمة 3) في أسواق ضعيفة.",
+        signal: "⚠️ تحذير: نهاية الدورة الصاعدة وبداية تصحيح ABC.",
+      },
+      "A": {
+        title: "موجة A -- بداية التصحيح",
+        chars: "هبوط حاد -- كثيرون يظنونه تصحيحاً مؤقتاً فقط. حجم تداول متوسط إلى مرتفع. تتكون من 5 موجات فرعية في الـ zigzag أو 3 في الـ flat.",
+        rules: "في zigzag: 5 موجات فرعية. في flat: 3 موجات فرعية. يصعب تمييزها مبكراً.",
+        signal: "⚠️ ابدأ بتقليص المراكز الشرائية.",
+      },
+      "B": {
+        title: "موجة B -- الارتداد الخادع",
+        chars: "ارتداد صاعد وهمي -- أخطر موجة للمتداولين. يوهم بعودة الاتجاه الصاعد. حجم تداول منخفض جداً = إشارة خطر واضحة. RSI لا يصل لمستويات موجة 5.",
+        rules: "لا يتجاوز بداية موجة A عادة (إلا في expanded flat). شكله غير منتظم وصعب التحديد.",
+        signal: "🚫 فخ للمتداولين -- لا تشتري على ارتفاع B.",
+      },
+      "C": {
+        title: "موجة C -- الهبوط الحقيقي",
+        chars: "أقوى وأعنف من موجة A. يتجاوز قاع A دائماً. حجم تداول مرتفع. يتكون من 5 موجات فرعية. المتداولون الذين اشتروا في B يتكبدون خسائر كبيرة.",
+        rules: "يساوي A عادة (100%) أو 161.8% منه. نهايته = بداية دورة صاعدة جديدة.",
+        signal: "فرصة شراء قوية عند اكتمال C.",
+      },
+    };
 
     if (overallUp && highs.length >= 2 && lows.length >= 2) {
-      // حساب نسبة الموجة الأخيرة
       const lastLow  = lows[lows.length - 1].price;
       const lastHigh = highs[highs.length - 1].price;
       const prevLow  = lows.length >= 2 ? lows[lows.length - 2].price : lows[0].price;
@@ -639,13 +686,16 @@ function ElliottWaveAI({ stk, hist }) {
       const prevSize = prevHigh - prevLow;
       const ratio = prevSize > 0 ? moveSize / prevSize : 1;
 
+      // ✨ تحديد رقم الموجة بناءً على نسبة الحركة الكلية
+      const totalMove = (lastHigh - lows[0].price) / lows[0].price;
+
       waveDir = "صاعد";
       waveStart = lastLow;
 
       if (curPrice > lastHigh * 0.98) {
-        // السعر عند القمة -- في موجة دافعة أو بداية تصحيح
-        if (ratio >= 1.5) {
-          waveNum = "3"; waveType = "ممتدة";
+        if (ratio >= 1.5 || totalMove > 1.0) {
+          // حركة > 100% أو امتداد 1.5x = موجة 3
+          waveNum = "3"; waveType = ratio >= 2.5 ? "ممتدة" : "طبيعية";
           waveTarget = fib(lastLow, lastHigh, 1.618);
           fibRatio = "161.8%";
           waveNote = `الموجة الثالثة الأقوى -- بدأت من ${lastLow.toFixed(2)} وامتدت ${(ratio * 100).toFixed(0)}% من الموجة الأولى`;
@@ -661,23 +711,22 @@ function ElliottWaveAI({ stk, hist }) {
           waveNote = `بداية موجة صاعدة جديدة من ${lastLow.toFixed(2)}`;
         }
       } else if (curPrice < lastHigh * 0.98 && curPrice > lastLow * 1.02) {
-        // السعر في منتصف -- تصحيح أو موجة 4
         const retrace = (lastHigh - curPrice) / (lastHigh - lastLow);
         if (retrace >= 0.382 && retrace <= 0.618) {
           waveNum = "4"; waveType = "تصحيحي";
           waveTarget = fib(lastHigh, lastLow, 0.382);
           fibRatio = getFibLabel(retrace);
-          waveNote = `تصحيح موجة 4 -- تراجع ${(retrace * 100).toFixed(0)}% من الموجة 3، الهدف ${waveTarget}`;
+          waveNote = `تصحيح موجة 4 -- تراجع ${(retrace * 100).toFixed(0)}% من الموجة 3`;
         } else if (retrace > 0.618) {
           waveNum = "2"; waveType = "تصحيح عميق";
           waveTarget = fib(lastHigh, lastLow, 0.618);
           fibRatio = getFibLabel(retrace);
-          waveNote = `تصحيح موجة 2 عميق -- تراجع ${(retrace * 100).toFixed(0)}%، الدعم القوي عند ${waveTarget}`;
+          waveNote = `تصحيح موجة 2 عميق -- تراجع ${(retrace * 100).toFixed(0)}%`;
         } else {
-          waveNum = "B"; waveType = "تصحيحي";
+          waveNum = "B"; waveType = "ارتداد";
           waveTarget = fib(lastLow, lastHigh, 0.618);
           fibRatio = "61.8%";
-          waveNote = `موجة B تصحيحية -- ارتداد ضمن نمط ABC`;
+          waveNote = `موجة B -- ارتداد ضمن نمط ABC`;
         }
       }
     } else if (!overallUp && highs.length >= 2 && lows.length >= 2) {
@@ -696,83 +745,60 @@ function ElliottWaveAI({ stk, hist }) {
         waveNum = "C"; waveType = "ممتدة";
         waveTarget = fib(lastHigh, lastLow, 1.618);
         fibRatio = "161.8%";
-      waveNote = `موجة C هابطة ممتدة`;
+        waveNote = `موجة C هابطة ممتدة`;
       } else {
-        // تحقق إن السعر الحالي فوق المنتصف = ارتداد صاعد
         const midPoint = (lastHigh + lastLow) / 2;
         if (curPrice > midPoint) {
-          waveNum = "A"; waveType = "تصحيح صاعد";
+          waveNum = "B"; waveType = "ارتداد صاعد";
           waveTarget = fib(lastLow, lastHigh, 0.618);
           fibRatio = "61.8%";
-      waveNote = `موجة A صاعدة ضمن تصحيح ABC`;
-
+          waveNote = `موجة B -- ارتداد صاعد وهمي ضمن تصحيح ABC`;
         } else {
           waveNum = "A"; waveType = "هبوطية";
           waveTarget = fib(lastHigh, lastLow, 1.0);
           fibRatio = "100%";
-      waveNote = `بداية موجة A هابطة`;
+          waveNote = `بداية موجة A هابطة`;
         }
       }
     }
 
-    // حساب الدعم والمقاومة
+    // ═══ إضافة الخصائص الأكاديمية ═══
+    const props = WAVE_PROPS[waveNum];
+    waveProps = props ? {
+      title: props.title,
+      chars: props.chars,
+      rules: props.rules,
+      signal: props.signal,
+    } : null;
 
-    const support    = lows.length  >= 2 ? Math.min(lows[lows.length-1].price, lows[lows.length-2].price)   : (lows[0]?.price  || curPrice * 0.95);
+    const support    = lows.length >= 2 ? Math.min(lows[lows.length-1].price, lows[lows.length-2].price) : (lows[0]?.price || curPrice * 0.95);
     const resistance = highs.length >= 2 ? Math.max(highs[highs.length-1].price, highs[highs.length-2].price) : (highs[0]?.price || curPrice * 1.05);
-
-    // نقطة الإبطال
     const invalidation = overallUp
-      ? parseFloat((lows[lows.length - 1]?.price * 0.995 || curPrice * 0.95).toFixed(2))
-      : parseFloat((highs[highs.length - 1]?.price * 1.005 || curPrice * 1.05).toFixed(2));
+      ? parseFloat((lows[lows.length-1]?.price * 0.995 || curPrice * 0.95).toFixed(2))
+      : parseFloat((highs[highs.length-1]?.price * 1.005 || curPrice * 1.05).toFixed(2));
 
     if (waveTarget > 0 && (waveTarget > curPrice * 1.6 || waveTarget < curPrice * 0.4)) {
-      if (waveDir === "صاعد") {
-        waveTarget = parseFloat((curPrice * 1.08).toFixed(2));
-        waveNote += ` | هدف: ${waveTarget} ر.س`;
-      } else {
-        waveTarget = parseFloat((curPrice * 0.92).toFixed(2));
-        waveNote += ` | هدف: ${waveTarget} ر.س`;
-      }
+      waveTarget = parseFloat((waveDir === "صاعد" ? curPrice * 1.08 : curPrice * 0.92).toFixed(2));
+      waveNote += ` | هدف معدّل: ${waveTarget} ر.س`;
     } else if (waveTarget > 0) {
       waveNote += ` | هدف: ${waveTarget} ر.س`;
     }
 
-    // ✨ فحص منطقي: الهدف يجب أن يكون ضمن ±60% من السعر الحالي
-    if (waveTarget > 0 && (waveTarget > curPrice * 1.6 || waveTarget < curPrice * 0.4)) {
-      // الهدف بعيد جداً -- احسبه من السعر الحالي بدلاً من القمم/القيعان القديمة
-      if (waveDir === "صاعد") {
-        waveTarget = parseFloat((curPrice * 1.08).toFixed(2));
-        waveNote += ` (الهدف المعدّل من السعر الحالي)`;
-      } else {
-        waveTarget = parseFloat((curPrice * 0.92).toFixed(2));
-        waveNote += ` (الهدف المعدّل من السعر الحالي)`;
-      }
-    }
-
-    // ✨ دعم ومقاومة قريبان من السعر الحالي
-    const safeSupport = support < curPrice * 0.5 || support > curPrice
-      ? parseFloat((curPrice * 0.93).toFixed(2))
-      : parseFloat(support.toFixed(2));
-    const safeResistance = resistance > curPrice * 1.5 || resistance < curPrice
-      ? parseFloat((curPrice * 1.07).toFixed(2))
-      : parseFloat(resistance.toFixed(2));
+    const safeSupport = support < curPrice * 0.5 || support > curPrice ? parseFloat((curPrice * 0.93).toFixed(2)) : parseFloat(support.toFixed(2));
+    const safeResistance = resistance > curPrice * 1.5 || resistance < curPrice ? parseFloat((curPrice * 1.07).toFixed(2)) : parseFloat(resistance.toFixed(2));
 
     return {
-      wave: waveNum,
-      dir:  waveDir,
-      type: waveType,
-      start: waveStart,
-      target: waveTarget,
-      fib: fibRatio,
-      note: waveNote,
-      support: safeSupport,
-      resistance: safeResistance,
+      wave: waveNum, dir: waveDir, type: waveType,
+      start: waveStart, target: waveTarget, fib: fibRatio,
+      note: waveNote, props: waveProps,
+      support: safeSupport, resistance: safeResistance,
       invalidation: invalidation > curPrice * 1.5 || invalidation < curPrice * 0.5
         ? parseFloat((waveDir === "صاعد" ? curPrice * 0.93 : curPrice * 1.07).toFixed(2))
         : invalidation,
       pivotCount: pivots.length,
     };
   };
+
 
   // ═══ الدالة الرئيسية ═══
   const analyze = async () => {
