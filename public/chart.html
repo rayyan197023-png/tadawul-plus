@@ -2566,7 +2566,7 @@ if(sub.length>0){
   });
  }
  const tvy=v=>vBot-(v/mv)*(vBot-vTop);
- const lastC=sub[n-1]?.c||state.stk.p;
+const lastC=sub[n-1]?.c||0;
  const isUp=lastC>=(sub[0]?.c||state.stk.p);
  const col0=isUp?'#22c55e':'#ef4444';
 
