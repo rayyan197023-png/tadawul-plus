@@ -16,30 +16,7 @@ function SDApiEngines({ stk }) {
   const hasLive = !!(stk.inflow || stk.netFlow);
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-      {/* بطاقة حالة API */}
-      <div style={{ background:hasLive?C.mint+"10":C.electric+"08", border:`1px solid ${hasLive?C.mint:C.electric}22`, borderRadius:14, padding:"10px 14px" }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-          <div style={{ fontSize:12, fontWeight:700, color:hasLive?C.mint:C.electric }}>
-            {hasLive?"✓ بيانات حية -- SAHMK API":"محركات -- تحميل..."}
-          </div>
-          {hasLive && <span style={{ fontSize:9, color:C.smoke }}>{"تتجدد كل 30 ث"}</span>}
-        </div>
-        {hasLive && stk.netFlow != null && (
-          <div style={{ marginTop:8, display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:6 }}>
-            {[
-              {l:"تدفق شراء",  v:((stk.inflow||0)/1e6).toFixed(1)+"M",  c:C.mint},
-              {l:"تدفق بيع",   v:((stk.outflow||0)/1e6).toFixed(1)+"M", c:C.coral},
-              {l:"صافي",       v:(stk.netFlow>=0?"+":"")+(stk.netFlow/1e6).toFixed(1)+"M", c:stk.netFlow>=0?C.mint:C.coral},
-            ].map((item,i)=>(
-              <div key={i} style={{ background:item.c+"10", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
-                <div style={{ fontFamily:"IBM Plex Mono,monospace", fontSize:11, fontWeight:800, color:item.c }}>{item.v}</div>
-                <div style={{ fontSize:9, color:C.smoke }}>{item.l}</div>
-              </div>
-            ))}
-          </div>
-        )}
-        {!hasLive && <div style={{ fontSize:11, color:C.smoke, lineHeight:1.6, marginTop:4 }}>{"جارٍ جلب البيانات من SAHMK API..."}</div>}
-      </div>
+
 
       <OrderBookLoader stk={stk}/>
       <TickLoader      stk={stk}/>
