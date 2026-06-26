@@ -8,7 +8,8 @@
  * - ANALYST_EST فارغ -- يُملأ من API لاحقاً
  */
 import { useState, useEffect, useMemo } from 'react';
-import { NLPLoader, OrderBookLoader, TickLoader, IntradayChart } from './SDSubComponents';
+import { NLPLoader, OrderBookLoader, TickLoader } from './SDSubComponents';
+
 import { C, Skeleton } from './StockDetailShared';
 
 function SDApiEngines({ stk }) {
