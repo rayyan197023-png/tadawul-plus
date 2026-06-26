@@ -212,58 +212,110 @@ function NLPNewsPanel({ stk }) {
   const [error,   setError]   = useState(null);
   const [fetched, setFetched] = useState(null);
 
+  // ═══ تحليل المشاعر بالكلمات المفتاحية ═══
+  const analyzeSentiment = (text) => {
+    const positive = ["أرباح","نمو","ارتفاع","صعود","قوي","إيجابي","توزيعات","فوز","عقد","اتفاقية","توسع","زيادة","تحسن","ممتاز","قياسي","تجاوز","فاق","تحقيق","إنجاز","شراكة"];
+    const negative = ["خسارة","هبوط","انخفاض","ضعيف","سلبي","تراجع","غرامة","مخالفة","دعوى","إفلاس","تخفيض","ديون","مشكلة","أزمة","تحقيق","إيقاف","تأخر","فشل","خطر","تحذير"];
+    const high_impact = ["أرباح","خسارة","توزيعات","عقد","اتفاقية","غرامة","دعوى","إيقاف","توسع","استحواذ"];
+
+    const lowerText = text.toLowerCase();
+    let score = 50;
+    let posCount = 0, negCount = 0;
+
+    positive.forEach(w => { if (text.includes(w)) { score += 8; posCount++; } });
+    negative.forEach(w => { if (text.includes(w)) { score -= 8; negCount++; } });
+
+    score = Math.max(5, Math.min(95, score));
+    const sentiment = score > 60 ? "إيجابي" : score < 40 ? "سلبي" : "محايد";
+    const hasHighImpact = high_impact.some(w => text.includes(w));
+    const impact = hasHighImpact ? "عالي" : (Math.abs(score - 50) > 20 ? "متوسط" : "منخفض");
+
+    return { score, sentiment, impact };
+  };
+
+  // ═══ تصنيف الخبر ═══
+  const categorize = (text) => {
+    if (text.includes("أرباح") || text.includes("إيرادات") || text.includes("ربحية") || text.includes("مالي")) return "أرباح";
+    if (text.includes("قطاع") || text.includes("سوق") || text.includes("اقتصاد") || text.includes("نفط")) return "قطاعي";
+    if (text.includes("عقد") || text.includes("اتفاقية") || text.includes("شراكة") || text.includes("استحواذ")) return "شركة";
+    if (text.includes("تصنيف") || text.includes("توصية") || text.includes("تحليل") || text.includes("مستهدف")) return "تصنيف";
+    return "ماكرو";
+  };
+
+  // ═══ حساب الوقت النسبي ═══
+  const timeAgo = (dateStr) => {
+    try {
+      const diff = (Date.now() - new Date(dateStr).getTime()) / 1000 / 3600;
+      if (diff < 1) return "منذ أقل من ساعة";
+      if (diff < 24) return `منذ ${Math.floor(diff)}س`;
+      return `منذ ${Math.floor(diff/24)} يوم`;
+    } catch { return ""; }
+  };
+
   const fetchNews = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1500,
-          tools: [{ type: "web_search_20250305", name: "web_search" }],
-          messages: [{
-            role: "user",
-            content: 'ابحث عن أحدث 5 أخبار مهمة عن سهم ' + stk.name + ' (' + stk.sym + ') في السوق السعودي خلال آخر 48 ساعة.\nلكل خبر حلل مشاعره تجاه السهم.\nأجب بـ JSON فقط بالشكل التالي بدون أي نص خارجه:\n{"news":[{"title":"عنوان الخبر بالعربي","src":"المصدر","sentiment":"إيجابي أو سلبي أو محايد","score":رقم_من_0_الى_100,"impact":"عالي أو متوسط أو منخفض","category":"أرباح أو قطاعي أو شركة أو ماكرو أو تصنيف","time":"منذ Xس أو منذ X يوم"}],"overall":رقم_الإجماع,"summary":"ملخص قصير للمشاعر"}'
-          }]
-        })
-      });
+      const res = await fetch(`/api/sahmkdata?endpoint=news&sym=${stk.sym}`);
       const d = await res.json();
-      const txt = (d.content || []).filter(b => b.type === "text").map(b => b.text).join("");
-      const m = txt.match(/\{[\s\S]*\}/);
-      if (m) {
-        setData(JSON.parse(m[0]));
-        setFetched(new Date().toLocaleString("ar-SA"));
-      } else {
-        setError("لم يُعثر على بيانات");
+
+      const rawNews = d?.data || d?.news || d?.articles || [];
+
+      if (!rawNews.length) {
+        setError("لا توجد أخبار متاحة لهذا السهم");
+        setLoading(false);
+        return;
       }
-    } catch (e) {
-      setError("خطأ: " + e.message);
+
+      const analyzed = rawNews.slice(0, 8).map(n => {
+        const text = (n.title || "") + " " + (n.summary || n.description || "");
+        const { score, sentiment, impact } = analyzeSentiment(text);
+        return {
+          title:     n.title || n.headline || "خبر",
+          src:       n.source || n.publisher || "مصدر",
+          sentiment,
+          score,
+          impact,
+          category:  categorize(text),
+          time:      timeAgo(n.published_at || n.date || n.publishedAt),
+          url:       n.url || null,
+        };
+      });
+
+      const overall = Math.round(analyzed.reduce((s, n) => s + n.score, 0) / analyzed.length);
+      const posNews = analyzed.filter(n => n.sentiment === "إيجابي").length;
+      const negNews = analyzed.filter(n => n.sentiment === "سلبي").length;
+      const summary = overall > 65
+        ? `المشاعر إيجابية -- ${posNews} خبر إيجابي من أصل ${analyzed.length}`
+        : overall < 40
+        ? `المشاعر سلبية -- ${negNews} خبر سلبي من أصل ${analyzed.length}`
+        : `المشاعر محايدة -- توازن بين ${posNews} إيجابي و${negNews} سلبي`;
+
+      setData({ news: analyzed, overall, summary });
+      setFetched(new Date().toLocaleTimeString("ar-SA"));
+    } catch(e) {
+      setError("خطأ في جلب الأخبار: " + e.message);
     }
     setLoading(false);
   };
 
   const news = data?.news || [];
-  const avg = data?.overall ?? (news.length > 0
-    ? Math.round(news.reduce((s, n) => s + (n.score || 0), 0) / news.length)
-    : 50);
-  const sC = avg > 65 ? C.mint : avg < 40 ? C.coral : C.amber;
+  const avg  = data?.overall ?? 50;
+  const sC   = avg > 65 ? C.mint : avg < 40 ? C.coral : C.amber;
 
   return (
-    <SectionCard title="تحليل المشاعر -- AI + بحث حي" accent={sC}
-      badge={data ? { text: "حي", color: C.mint } : { text: "في انتظار التحديث", color: C.amber }}>
+    <SectionCard title="تحليل المشاعر -- أخبار الشركة" accent={sC}
+      badge={data ? { text: "✓ " + fetched, color: C.mint } : { text: "في انتظار التحديث", color: C.amber }}>
       <div style={{ padding: "8px 16px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+
+        {/* شريط التحكم */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
           <div>
             {data ? (
-              <>
-                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <Tag text={avg > 65 ? "إيجابي" : avg < 40 ? "سلبي" : "محايد"} color={sC}/>
-                  <span style={{ fontFamily: "IBM Plex Mono,monospace", fontSize: 13, fontWeight: 900, color: sC }}>{avg}/100</span>
-                </div>
-                {fetched && <div style={{ fontSize: 9, color: C.mint, marginTop: 2 }}>{"✓ بيانات حية -- "}{fetched}</div>}
-              </>
+              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <Tag text={avg > 65 ? "إيجابي" : avg < 40 ? "سلبي" : "محايد"} color={sC}/>
+                <span style={{ fontFamily: "IBM Plex Mono,monospace", fontSize: 13, fontWeight: 900, color: sC }}>{avg}/100</span>
+              </div>
             ) : (
               <span style={{ fontSize: 11, color: C.smoke }}>اضغط لتحليل أحدث الأخبار</span>
             )}
@@ -279,52 +331,46 @@ function NLPNewsPanel({ stk }) {
           }}>
             {loading ? (
               <>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={C.electric} strokeWidth="2.5" style={{ animation: "spin 1s linear infinite" }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={C.electric} strokeWidth="2.5"
+                  style={{ animation: "spin 1s linear infinite" }}>
                   <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
                 </svg>
                 جارٍ...
               </>
             ) : (
-              <>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={C.electric} strokeWidth="2.5">
-                  <polyline points="23 4 23 10 17 10"/>
-                  <path d="M20.49 15a9 9 0 1 1-.09-1"/>
-                </svg>
-                {data ? "تحديث AI" : "تحليل AI"}
-              </>
+              <>🔄 {data ? "تحديث" : "تحليل AI"}</>
             )}
           </button>
         </div>
 
+        {/* شريط المشاعر */}
         {data && (
-          <div style={{ marginBottom: 12 }}>
-            <div style={{ height: 5, background: C.layer3, borderRadius: 3, overflow: "hidden", marginBottom: 6 }}>
-              <div style={{
-                height: "100%", width: `${avg}%`,
-                background: `linear-gradient(90deg,${avg > 65 ? C.coral : C.mint},${sC})`,
-                borderRadius: 3,
-              }}/>
+          <>
+            <div style={{ height: 5, background: C.layer3, borderRadius: 3, overflow: "hidden", marginBottom: 8 }}>
+              <div style={{ height: "100%", width: `${avg}%`, background: sC, borderRadius: 3, transition: "width .5s" }}/>
             </div>
+
+            {/* مخطط المشاعر */}
             {news.length > 1 && (
-              <svg width="100%" height="28" viewBox="0 0 200 28" preserveAspectRatio="none" style={{ display: "block" }}>
+              <svg width="100%" height="32" viewBox="0 0 200 32" preserveAspectRatio="none" style={{ display: "block", marginBottom: 8 }}>
                 <defs>
-                  <linearGradient id="sentGrad" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="sentGrad2" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor={sC} stopOpacity=".3"/>
                     <stop offset="100%" stopColor={sC} stopOpacity="0"/>
                   </linearGradient>
                 </defs>
                 {(() => {
-                  const pts3 = news.map((n, i) => ({
+                  const pts = news.map((n, i) => ({
                     x: (i / (news.length - 1)) * 196 + 2,
-                    y: 28 - (n.score || 0) / 100 * 24,
+                    y: 30 - (n.score / 100) * 26,
                   }));
-                  const path3 = pts3.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
-                  const area3 = path3 + ` L${pts3[pts3.length-1].x},28 L2,28 Z`;
+                  const path = pts.map((p, i) => `${i===0?"M":"L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+                  const area = path + ` L${pts[pts.length-1].x},30 L2,30 Z`;
                   return (
                     <>
-                      <path d={area3} fill="url(#sentGrad)"/>
-                      <path d={path3} fill="none" stroke={sC} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      {pts3.map((p, i) => (
+                      <path d={area} fill="url(#sentGrad2)"/>
+                      <path d={path} fill="none" stroke={sC} strokeWidth="1.5" strokeLinecap="round"/>
+                      {pts.map((p, i) => (
                         <circle key={i} cx={p.x} cy={p.y} r="2.5"
                           fill={news[i].sentiment === "إيجابي" ? C.mint : news[i].sentiment === "سلبي" ? C.coral : C.amber}/>
                       ))}
@@ -333,72 +379,55 @@ function NLPNewsPanel({ stk }) {
                 })()}
               </svg>
             )}
-          </div>
+
+            {/* ملخص */}
+            <div style={{ padding: "7px 10px", background: sC+"10", border: `1px solid ${sC}33`, borderRadius: 8, marginBottom: 10, fontSize: 11, color: C.mist, lineHeight: 1.6 }}>
+              {data.summary}
+            </div>
+          </>
         )}
 
-        {data?.summary && (
-          <div style={{
-            padding: "7px 10px",
-            background: sC + "10", border: `1px solid ${sC}33`,
-            borderRadius: 8, marginBottom: 10,
-            fontSize: 11, color: C.mist, lineHeight: 1.6,
-          }}>
-            {data.summary}
-          </div>
-        )}
-
+        {/* خطأ */}
         {error && (
-          <div style={{
-            padding: "6px 10px",
-            background: C.coral + "15", border: `1px solid ${C.coral}33`,
-            borderRadius: 8, marginBottom: 8,
-            fontSize: 10, color: C.coral,
-          }}>{error}</div>
+          <div style={{ padding: "8px 10px", background: C.coral+"15", border: `1px solid ${C.coral}33`, borderRadius: 8, marginBottom: 8, fontSize: 10, color: C.coral }}>
+            {error}
+          </div>
         )}
 
-        {news.length > 0 ? (
-          news.map((n, i) => {
-            const sc = n.sentiment === "إيجابي" ? C.mint : n.sentiment === "سلبي" ? C.coral : C.amber;
-            return (
-              <div key={i} style={{
-                padding: "9px 0",
-                borderBottom: i < news.length - 1 ? `1px solid ${C.line}22` : 0,
-              }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
-                  <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-                    <Tag text={n.src} color={C.electric}/>
-                    <Tag text={n.category} color={C.smoke}/>
-                    <span style={{ fontSize: 10, color: C.smoke }}>{n.time}</span>
-                  </div>
-                  <div style={{ display: "flex", gap: 3, flexShrink: 0 }}>
-                    <Tag
-                      text={n.impact === "عالي" ? "⚡عالي" : n.impact === "متوسط" ? "متوسط" : "منخفض"}
-                      color={n.impact === "عالي" ? C.coral : n.impact === "متوسط" ? C.amber : C.smoke}
-                    />
-                    <Tag text={n.sentiment} color={sc}/>
-                  </div>
+        {/* قائمة الأخبار */}
+        {news.length > 0 ? news.map((n, i) => {
+          const sc = n.sentiment === "إيجابي" ? C.mint : n.sentiment === "سلبي" ? C.coral : C.amber;
+          return (
+            <div key={i} style={{ padding: "9px 0", borderBottom: i < news.length-1 ? `1px solid ${C.line}22` : 0 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
+                <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                  <Tag text={n.src} color={C.electric}/>
+                  <Tag text={n.category} color={C.smoke}/>
+                  <span style={{ fontSize: 9, color: C.smoke }}>{n.time}</span>
                 </div>
-                <div style={{ fontSize: 11, color: C.mist, lineHeight: 1.6 }}>{n.title}</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 5 }}>
-                  <div style={{ flex: 1, height: 3, background: C.layer3, borderRadius: 2, overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${n.score}%`, background: sc, borderRadius: 2 }}/>
-                  </div>
-                  <span style={{ fontFamily: "IBM Plex Mono,monospace", fontSize: 10, color: sc, fontWeight: 700, flexShrink: 0 }}>{n.score}</span>
+                <div style={{ display: "flex", gap: 3, flexShrink: 0 }}>
+                  <Tag text={n.impact === "عالي" ? "⚡عالي" : n.impact === "متوسط" ? "متوسط" : "منخفض"}
+                    color={n.impact === "عالي" ? C.coral : n.impact === "متوسط" ? C.amber : C.smoke}/>
+                  <Tag text={n.sentiment} color={sc}/>
                 </div>
               </div>
-            );
-          })
-        ) : !loading && !error && (
-          <EmptyState
-            icon="📰"
-            title="لا توجد أخبار محملة"
-            subtitle="اضغط الزر أعلاه لجلب أحدث الأخبار وتحليل مشاعرها"
-          />
+              <div style={{ fontSize: 11, color: C.mist, lineHeight: 1.6 }}>{n.title}</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 5 }}>
+                <div style={{ flex: 1, height: 3, background: C.layer3, borderRadius: 2, overflow: "hidden" }}>
+                  <div style={{ height: "100%", width: `${n.score}%`, background: sc, borderRadius: 2 }}/>
+                </div>
+                <span style={{ fontFamily: "IBM Plex Mono,monospace", fontSize: 10, color: sc, fontWeight: 700 }}>{n.score}</span>
+              </div>
+            </div>
+          );
+        }) : !loading && !error && (
+          <EmptyState icon="📰" title="لا توجد أخبار محملة" subtitle="اضغط الزر أعلاه لجلب أحدث أخبار الشركة"/>
         )}
       </div>
     </SectionCard>
   );
 }
+
 /* ═══════════════════════════════════════════════════════════════
    IntradayChart -- شارت Intraday من sahmk
 ═══════════════════════════════════════════════════════════════ */
