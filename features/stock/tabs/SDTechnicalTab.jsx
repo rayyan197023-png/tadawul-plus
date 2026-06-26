@@ -690,6 +690,8 @@ function ElliottWaveAI({ stk, hist }) {
       const allLows = pivots.filter(p => p.type === "L");
       const absoluteBottom = allLows.length > 0 ? Math.min(...allLows.map(p => p.price)) : lows[0].price;
       const totalMove = (lastHigh - absoluteBottom) / absoluteBottom;
+      // ✨ لو الحركة الكلية > 50% أو ratio > 1.2 → موجة 3
+      const isWave3 = totalMove > 0.5 || ratio >= 1.2;
 
 
       waveDir = "صاعد";
