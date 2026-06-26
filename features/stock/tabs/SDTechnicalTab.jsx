@@ -1091,7 +1091,7 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=3Y`),
             ].map((tf, i) => {
               if (!tf.data?.note) return null;
               const col = waveColor(tf.data);
-              const [open, setOpen] = useState(i === 0);
+
               return (
                 <div key={i} style={{ border: `1px solid ${col}33`, borderRadius: 10, overflow: "hidden" }}>
                   {/* Header */}
@@ -1110,10 +1110,9 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=3Y`),
                         </div>
                       )}
                     </div>
-                    <span style={{ color: col, fontSize: 12 }}>{open ? "▲" : "▼"}</span>
                   </div>
 
-                  {open && (
+
                     <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: 8 }}>
 
                       {/* ملاحظة الخوارزمية */}
