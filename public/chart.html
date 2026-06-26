@@ -3774,13 +3774,17 @@ const lastC=sub[n-1]?.c||0;
  }
  } ctx.restore(); // end chart clip
 
- // Last price dashed line
- const lastY=ty(lastC);
+// Last price dashed line
+const lastY=ty(lastC);
 if(lastY>=cTop&&lastY<=cBot&&clampOff===0&&state.offset===0){
- const lastCandleX=tx(n-1);
- ctx.strokeStyle=col0;ctx.lineWidth=0.6;ctx.setLineDash([4,5]);
- ctx.beginPath();ctx.moveTo(lastCandleX,lastY);ctx.lineTo(CW,lastY);ctx.stroke();ctx.setLineDash([]);
+ const _lastX=tx(n-1);
+ if(_lastX>=CW-bw*3){
+  ctx.strokeStyle=col0;ctx.lineWidth=0.6;ctx.setLineDash([4,5]);
+  ctx.beginPath();ctx.moveTo(_lastX,lastY);ctx.lineTo(CW,lastY);ctx.stroke();
+  ctx.setLineDash([]);
+ }
 }
+
 
 
  // ── Alert Line & Trigger Check  ──────────────
