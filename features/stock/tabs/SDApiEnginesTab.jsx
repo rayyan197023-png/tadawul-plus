@@ -13,7 +13,7 @@ import { NLPLoader, OrderBookLoader, TickLoader } from './SDSubComponents';
 import { C, Skeleton } from './StockDetailShared';
 
 function SDApiEngines({ stk }) {
-  const hasLive = !!(stk.inflow || stk.netFlow);
+
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
 
