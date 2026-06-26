@@ -32,7 +32,7 @@ function ShareholdersLoader({ stk }) {
 function SDShareholders({ stk }) {
   const shs = SHAREHOLDERS[stk.sym] || SHAREHOLDERS.default;
   const txs = INSIDER_TX[stk.sym] || INSIDER_TX.default;
-  const CACHE_KEY = `shariah_${stk.sym}`;
+
 
   const loadCache = () => {
     try {
@@ -89,7 +89,6 @@ function SDShareholders({ stk }) {
   // لا نجلب تلقائياً بعد الآن -- المستخدم يضغط الزر
   // useEffect(() => { if(!loadCache()) checkShariah(); }, [stk.sym]);
 
-  const sC = shStatus.halal === true ? C.mint : shStatus.halal === false ? C.coral : C.amber;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -312,72 +311,6 @@ function SDShareholders({ stk }) {
         )}
       </SectionCard>
 
-      {/* الالتزام الشرعي */}
-      <SectionCard title="الالتزام الشرعي" accent={sC}>
-        <div style={{ padding: "14px 16px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                <span style={{ fontSize: 11, color: C.smoke, textTransform: "uppercase", letterSpacing: "0.6px" }}>الالتزام الشرعي</span>
-                {shStatus.date && (
-                  <span style={{ fontSize: 11, color: C.smoke, background: C.layer3, padding: "1px 6px", borderRadius: 6, border: `1px solid ${C.line}` }}>{shStatus.date}</span>
-                )}
-                {shStatus.source_type === "ai" && <Tag text="AI" color={C.electric}/>}
-                {shStatus.source_type === "cache" && <Tag text="مخزن" color={C.gold}/>}
-              </div>
-              {shStatus.loading ? (
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
-                  <div style={{ width: 14, height: 14, border: `2px solid ${C.electric}`, borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }}/>
-                  <span style={{ fontSize: 11, color: C.smoke }}>جارٍ التحقق...</span>
-                </div>
-              ) : (
-                <div style={{ fontFamily: "IBM Plex Mono,monospace", fontSize: 14, fontWeight: 900, color: sC, textShadow: `0 0 8px ${sC}55`, marginTop: 2 }}>
-                  {shStatus.status}
-                </div>
-              )}
-              {shStatus.reason && !shStatus.loading && (
-                <div style={{ fontSize: 11, color: C.smoke, marginTop: 4 }}>{shStatus.reason}</div>
-              )}
-              {shStatus.purification != null && !shStatus.loading && (
-                <div style={{ marginTop: 6, fontSize: 11, color: C.amber, background: C.amber + "10", borderRadius: 6, padding: "4px 10px", border: `1px solid ${C.amber}22` }}>
-                  نسبة التطهير: {shStatus.purification}% من الدخل الاستثماري
-                </div>
-              )}
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, marginLeft: 12 }}>
-              <div style={{
-                width: 44, height: 44, borderRadius: 22,
-                background: sC + "18", border: `1px solid ${sC}44`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 20, color: sC, fontWeight: 900,
-                textShadow: `0 0 10px ${sC}66`,
-              }}>
-                {shStatus.loading ? "…" : shStatus.halal === true ? "✓" : shStatus.halal === false ? "✗" : "?"}
-              </div>
-              <button onClick={() => { haptic(); checkShariah(); }} disabled={shStatus.loading} style={{
-                background: "transparent", border: `1px solid ${C.line}`,
-                color: C.smoke, fontSize: 11, padding: "8px 14px",
-                borderRadius: 8, cursor: "pointer", whiteSpace: "nowrap",
-                fontFamily: "Cairo,sans-serif", minHeight: 44,
-              }}>{shStatus.source_type === "pending" ? "تحقق AI" : "تحديث AI"}</button>
-            </div>
-          </div>
-          {shStatus.details && !shStatus.loading && (
-            <div style={{ background: sC + "10", borderRadius: 10, padding: "10px 12px", border: `1px solid ${sC}25`, marginTop: 12 }}>
-              <div style={{ fontSize: 11, color: sC, fontWeight: 700, marginBottom: 4 }}>الحكم الشرعي التفصيلي</div>
-              <div style={{ fontSize: 11, color: C.mist, lineHeight: 1.7 }}>{shStatus.details}</div>
-              {shStatus.source && (
-                <div style={{ fontSize: 11, color: C.smoke, marginTop: 6, paddingTop: 6, borderTop: `1px solid ${sC}22` }}>
-                  المرجع: {shStatus.source}
-                </div>
-              )}
-            </div>
-          )}
-          {shStatus.error && (
-            <div style={{ fontSize: 11, color: C.coral, marginTop: 4 }}>{shStatus.error}</div>
-          )}
-        </div>
-      </SectionCard>
 
       {/* تحليل اتجاه المطلعين */}
       {txs.length > 0 && (() => {
