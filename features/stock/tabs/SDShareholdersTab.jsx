@@ -34,62 +34,6 @@ function SDShareholders({ stk }) {
   const txs = INSIDER_TX[stk.sym] || INSIDER_TX.default;
 
 
-  const loadCache = () => {
-    try {
-      const raw = sessionStorage.getItem(CACHE_KEY);
-      if (!raw) return null;
-      const obj = JSON.parse(raw);
-      if (Date.now() - obj.ts > 30 * 24 * 60 * 60 * 1000) {
-        sessionStorage.removeItem(CACHE_KEY);
-        return null;
-      }
-      return obj;
-    } catch { return null; }
-  };
-
-  const [shStatus, setShStatus] = useState(() => {
-    const cached = loadCache();
-    if (cached) return { loading: false, ...cached, source_type: "cache" };
-    return {
-      loading: false,
-      halal: null,
-      status: "--",
-      reason: "",
-      details: "",
-      source: "",
-      date: `${new Date().getMonth() + 1}/${new Date().getFullYear()}`,
-      source_type: "pending",
-    };
-  });
-
-  const checkShariah = async () => {
-    setShStatus(s => ({ ...s, loading: true }));
-    try {
-      const mY = `${new Date().getMonth() + 1}/${new Date().getFullYear()}`;
-      const prompt = 'أنت خبير شرعي متخصص. قيّم سهم ' + stk.name + ' (' + stk.sym + ') في القطاع: ' + (stk.sec || "--") + ' للشهر ' + mY + '.\n\nالبيانات المالية:\n- نسبة الدين/الأصول: ' + (stk.debtEquity || "غير متوفر") + '\n- هامش الربح: ' + (stk.netMargin || "غير متوفر") + '%\n- قطاع النشاط: ' + (stk.industry || stk.sec || "--") + '\n\nالمعايير الشرعية:\n1. نسبة الدين/إجمالي الأصول < 33%\n2. الذمم المدينة/إجمالي الأصول < 45%\n3. الإيرادات من الأنشطة المحرمة < 5%\n4. طبيعة النشاط الأساسي\n\nأجب بـ JSON فقط:\n{"halal":true أو false,"status":"متوافق مع الشريعة" أو "يحتاج تطهير" أو "غير متوافق","reason":"سبب محدد","details":"تحليل شرعي تفصيلي 3-4 أسطر","purification":نسبة أو null,"source":"AAOIFI / IFSB / هيئة الرقابة الشرعية","date":"' + mY + '"}';
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 600,
-          messages: [{ role: "user", content: prompt }]
-        })
-      });
-      const data = await res.json();
-      const parsed = JSON.parse((data.content || []).map(b => b.text || "").join("").replace(/```json|```/g, "").trim());
-      const result = { loading: false, ...parsed, ts: Date.now(), source_type: "ai" };
-      try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(result)); } catch {}
-      setShStatus(result);
-    } catch {
-      setShStatus(s => ({ ...s, loading: false, error: "تعذّر جلب التقرير" }));
-    }
-  };
-
-  // لا نجلب تلقائياً بعد الآن -- المستخدم يضغط الزر
-  // useEffect(() => { if(!loadCache()) checkShariah(); }, [stk.sym]);
-
-
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
 
