@@ -7747,18 +7747,16 @@ async function loadStk(){
         }
 if(!chartReady){
   state.offset=0;
-const rangeToVis={'أسبوع':7,'شهر':22,'3أشهر':65,'6أشهر':130,'سنة':248,'سنتين':248,'5سنوات':248,'الكل':248};
+  const rangeToVis={'أسبوع':7,'شهر':22,'3أشهر':65,'6أشهر':130,'سنة':248,'سنتين':248,'5سنوات':248,'الكل':248};
+  state.visible=Math.min(rangeToVis[state.range]||dv[state.per]||48, candles.length);
+  chartReady=true;
+  invalidateChart();render();
+  setTimeout(hideLoader,120);
+  _startLiveTicker();
+  if(_aiDrawMode) setTimeout(()=>_buildAndDrawAIAnnotations(_aiDrawMode),400);
+  return;
+}
 
-state.visible=Math.min(rangeToVis[state.range]||dv[state.per]||48, candles.length);
-
-
-        chartReady=true;
-               invalidateChart();render();
-                setTimeout(hideLoader,120);
-        _startLiveTicker();
-        if(_aiDrawMode) setTimeout(()=>_buildAndDrawAIAnnotations(_aiDrawMode),400);
-        return;
-      }
       } catch(e){ console.warn('[loadStk API]',e); }
   }
 
