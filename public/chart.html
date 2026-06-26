@@ -3776,12 +3776,14 @@ if(sub.length>0){
 
  // Last price dashed line
  const lastY=ty(lastC);
- if(lastY>=cTop&&lastY<=cBot&&clampOff===0){
+if(lastY>=cTop&&lastY<=cBot&&clampOff===0&&state.offset===0){
+ const lastCandleX=tx(n-1);
  ctx.strokeStyle=col0;ctx.lineWidth=0.6;ctx.setLineDash([4,5]);
-ctx.beginPath();ctx.moveTo(tx(n-1),lastY);ctx.lineTo(CW,lastY);ctx.stroke();ctx.setLineDash([]);
- }
+ ctx.beginPath();ctx.moveTo(lastCandleX,lastY);ctx.lineTo(CW,lastY);ctx.stroke();ctx.setLineDash([]);
+}
 
- // ── Alert Line & Trigger Check ──────────────
+
+ // ── Alert Line & Trigger Check  ──────────────
  if(typeof _checkMultiAlerts==='function')_checkMultiAlerts(sub,ind);
  if(state.alert!=null){
   const alertPrice=state.alert;
