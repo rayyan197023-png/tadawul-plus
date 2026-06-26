@@ -587,22 +587,6 @@ function IntradayChart({ stk }) {
             {closes[n-1]?.toFixed(2)}
           </text>
         </svg>
-
-        {/* ملخص السيولة */}
-        {stk.inflow && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6, marginTop: 8 }}>
-            {[
-              { l: "شراء", v: ((stk.inflow||0)/1e6).toFixed(1)+"M", c: C.mint },
-              { l: "بيع",  v: ((stk.outflow||0)/1e6).toFixed(1)+"M", c: C.coral },
-              { l: "صافي", v: ((stk.netFlow||0)>=0?"+":"") + ((stk.netFlow||0)/1e6).toFixed(1)+"M", c: (stk.netFlow||0)>=0?C.mint:C.coral },
-            ].map((item, i) => (
-              <div key={i} style={{ background: item.c+"10", borderRadius: 8, padding: "5px", textAlign: "center", border: `1px solid ${item.c}22` }}>
-                <div style={{ fontFamily: "IBM Plex Mono,monospace", fontSize: 11, fontWeight: 800, color: item.c }}>{item.v}</div>
-                <div style={{ fontSize: 9, color: C.smoke }}>{item.l}</div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </SectionCard>
   );
