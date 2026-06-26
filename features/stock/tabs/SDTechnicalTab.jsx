@@ -887,8 +887,11 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=3Y`),
           intermediate.wave = "4";
           intermediate.type = "تصحيح مؤقت";
           intermediate.dir = "محايد";
-          intermediate.target = parseFloat((curPrice * 0.92).toFixed(2));
-          intermediate.note = `تصحيح موجة 4 من قمة ${weeklyHigh2.toFixed(2)} -- دعم عند ${intermediate.target} ر.س`;
+          // موجة 4 تصحح 38.2% من موجة 3 -- الدعم عند 61.8% فيبوناتشي من القمة
+          const wave4Support = parseFloat((weeklyHigh2 - (weeklyHigh2 - absoluteBottom || weeklyHigh2 * 0.5) * 0.382).toFixed(2));
+          const safeWave4 = wave4Support > curPrice * 0.85 && wave4Support < curPrice ? wave4Support : parseFloat((curPrice * 0.92).toFixed(2));
+          intermediate.target = safeWave4;
+          intermediate.note = `تصحيح موجة 4 من قمة ${weeklyHigh2.toFixed(2)} -- دعم فيبوناتشي 38.2% عند ${safeWave4} ر.س`;
         }
       }
 
