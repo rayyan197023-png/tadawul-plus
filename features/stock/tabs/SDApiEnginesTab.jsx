@@ -40,7 +40,7 @@ function SDApiEngines({ stk }) {
         )}
         {!hasLive && <div style={{ fontSize:11, color:C.smoke, lineHeight:1.6, marginTop:4 }}>{"جارٍ جلب البيانات من SAHMK API..."}</div>}
       </div>
-            <IntradayChart stk={stk}/>
+
       <OrderBookLoader stk={stk}/>
       <TickLoader      stk={stk}/>
       <NLPLoader       stk={stk}/>
