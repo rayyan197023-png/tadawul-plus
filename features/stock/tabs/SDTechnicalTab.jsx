@@ -829,17 +829,40 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=3Y`),
         }
       } 
 
-      // ✨ الساعي: لو هدفه عكس اتجاهه، صحّحه (مستقل عن أي شرط)
+      // ✨ الساعي: تصحيح منطقي شامل
       if (minor) {
-        if (minor.dir === "هابط" && minor.target > curPrice) {
+        // لو السعر تراجع أكثر من 5% من أعلى قمة أسبوعية → الساعي في تصحيح
+        const weeklyHigh = weekly.length > 0 ? Math.max(...weekly.slice(-12).map(b => b.h)) : curPrice;
+        const dropFromHigh = (weeklyHigh - curPrice) / weeklyHigh;
+        if (dropFromHigh > 0.05 && minor.dir === "صاعد") {
+          // السعر تراجع من القمة -- الساعي في تصحيح لا صعود
+          minor.wave = "4";
+          minor.type = "تصحيح مؤقت";
+          minor.dir = "محايد";
+          minor.target = parseFloat((curPrice * 0.95).toFixed(2));
+          minor.note = `تصحيح مؤقت من قمة ${weeklyHigh.toFixed(2)} -- دعم متوقع عند ${minor.target} ر.س`;
+        } else if (minor.dir === "هابط" && minor.target > curPrice) {
           minor.target = parseFloat((curPrice * 0.95).toFixed(2));
           minor.note = minor.note.replace(/هدف.*ر\.س/, '') + ` | هدف: ${minor.target} ر.س`;
-        }
-        if (minor.dir === "صاعد" && minor.target < curPrice) {
+        } else if (minor.dir === "صاعد" && minor.target < curPrice) {
           minor.target = parseFloat((curPrice * 1.05).toFixed(2));
           minor.note = minor.note.replace(/هدف.*ر\.س/, '') + ` | هدف: ${minor.target} ر.س`;
         }
       }
+
+      // ✨ اليومي: لو السعر تراجع من قمة أسبوعية → اليومي في موجة 4 أو تصحيح
+      if (intermediate && primary) {
+        const weeklyHigh2 = weekly.length > 0 ? Math.max(...weekly.slice(-12).map(b => b.h)) : curPrice;
+        const dropFromHigh2 = (weeklyHigh2 - curPrice) / weeklyHigh2;
+        if (dropFromHigh2 > 0.05 && primary.dir === "صاعد" && intermediate.dir === "صاعد") {
+          intermediate.wave = "4";
+          intermediate.type = "تصحيح مؤقت";
+          intermediate.dir = "محايد";
+          intermediate.target = parseFloat((curPrice * 0.92).toFixed(2));
+          intermediate.note = `تصحيح موجة 4 من قمة ${weeklyHigh2.toFixed(2)} -- دعم عند ${intermediate.target} ر.س`;
+        }
+      }
+
 
       // ✨ توافق الهدف مع الاتجاه
       if (primary && primary.dir === "صاعد" && primary.target < curPrice) {
