@@ -3776,11 +3776,11 @@ const lastC=sub[n-1]?.c||0;
 
 // Last price dashed line
 const lastY=ty(lastC);
-if(lastY>=cTop&&lastY<=cBot&&clampOff===0){
+const _lastCandleX=tx(n-1);
+if(lastY>=cTop&&lastY<=cBot&&clampOff===0&&_lastCandleX>=CW*0.5){
  ctx.strokeStyle=col0;ctx.lineWidth=0.6;ctx.setLineDash([4,5]);
- ctx.beginPath();ctx.moveTo(0,lastY);ctx.lineTo(CW,lastY);ctx.stroke();ctx.setLineDash([]);
+ ctx.beginPath();ctx.moveTo(_lastCandleX,lastY);ctx.lineTo(CW,lastY);ctx.stroke();ctx.setLineDash([]);
 }
-
 
 
  // ── Alert Line & Trigger Check  ──────────────
