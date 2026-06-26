@@ -687,7 +687,10 @@ function ElliottWaveAI({ stk, hist }) {
       const ratio = prevSize > 0 ? moveSize / prevSize : 1;
 
       // ✨ تحديد رقم الموجة بناءً على نسبة الحركة الكلية
-      const totalMove = (lastHigh - lows[0].price) / lows[0].price;
+      const allLows = pivots.filter(p => p.type === "L");
+      const absoluteBottom = allLows.length > 0 ? Math.min(...allLows.map(p => p.price)) : lows[0].price;
+      const totalMove = (lastHigh - absoluteBottom) / absoluteBottom;
+
 
       waveDir = "صاعد";
       waveStart = lastLow;
