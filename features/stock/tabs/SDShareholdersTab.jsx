@@ -11,7 +11,7 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { C, SkeletonCard, SectionCard, Tag, EmptyState, haptic, SHAREHOLDERS, INSIDER_TX } from './StockDetailShared';
-import { InfoTooltip } from './SDFundamentalTab';
+
 
 function ShareholdersLoader({ stk }) {
   const [show, setShow] = useState(false);
