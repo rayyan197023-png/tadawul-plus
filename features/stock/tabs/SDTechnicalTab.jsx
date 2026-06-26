@@ -610,7 +610,8 @@ function ElliottWaveAI({ stk, hist }) {
   const analyzeWaves = (pivots, bars, timeframe) => {
     if (!pivots || pivots.length < 4) return null;
 
-    const recent = pivots.slice(-10);
+    const recent = pivots.slice(-14);
+
     const last = bars[bars.length - 1];
     const curPrice = stk.p || last?.c || 0;
 
