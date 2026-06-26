@@ -826,7 +826,7 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=3Y`),
           intermediate.dir = "محايد";
           intermediate.note = `ارتداد B مؤقت عكس الاتجاه الهابط الرئيسي`;
         }
-      }
+      } 
 
       // ✨ الساعي: لو هدفه عكس اتجاهه، صحّحه (مستقل عن أي شرط)
       if (minor) {
