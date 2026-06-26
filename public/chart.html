@@ -4434,7 +4434,8 @@ if(lastY>=cTop&&lastY<=cBot&&clampOff===0&&state.offset===0){
  }
 
  // Last price badge
- if(lastY>=cTop&&lastY<=cBot&&clampOff===0){
+if(lastY>=cTop&&lastY<=cBot&&clampOff===0&&sub[n-1]?.c){
+
  ctx.fillStyle=col0;
  ctx.fillRect(CW,lastY-9,YW,18);
  // Arrow
