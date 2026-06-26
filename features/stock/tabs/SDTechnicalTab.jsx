@@ -814,7 +814,7 @@ function ElliottWaveAI({ stk, hist }) {
     try {
       // جلب البيانات
       const [dRes, hRes] = await Promise.all([
-fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=3Y`),
+fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=5Y`),
 
         fetch(`/api/sahmkdata?endpoint=intraday&sym=${stk.sym}&interval=60m`),
       ]);
