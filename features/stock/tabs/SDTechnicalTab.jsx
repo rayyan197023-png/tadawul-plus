@@ -1083,8 +1083,7 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=3Y`),
                 <div style={{ height: "100%", width: ewData.confidence+"%", background: ewData.confidence >= 70 ? C.mint : C.amber, borderRadius: 2 }}/>
               </div>
             </div>
-
-            {/* تفاصيل كل موجة */}
+            {/* تفاصيل كل موجة + الخصائص الأكاديمية */}
             {[
               { label: "🗓 أسبوعي -- Primary", data: ewData.primary },
               { label: "📅 يومي -- Intermediate", data: ewData.intermediate },
@@ -1092,14 +1091,59 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=3Y`),
             ].map((tf, i) => {
               if (!tf.data?.note) return null;
               const col = waveColor(tf.data);
+              const [open, setOpen] = useState(i === 0);
               return (
-                <div key={i} style={{ background: col+"08", border: `1px solid ${col}22`, borderRadius: 8, padding: "8px 12px" }}>
-                  <div style={{ fontSize: 9, color: col, fontWeight: 800, marginBottom: 4 }}>
-                    {tf.label} -- موجة {tf.data.wave} {tf.data.type}
-                    {tf.data.target ? ` | هدف: ${parseFloat(tf.data.target).toFixed(2)} ر.س` : ""}
-                    {tf.data.fib ? ` (${tf.data.fib})` : ""}
+                <div key={i} style={{ border: `1px solid ${col}33`, borderRadius: 10, overflow: "hidden" }}>
+                  {/* Header */}
+                  <div onClick={() => setOpen(!open)} style={{
+                    background: col+"15", padding: "10px 12px",
+                    display: "flex", justifyContent: "space-between", alignItems: "center",
+                    cursor: "pointer",
+                  }}>
+                    <div>
+                      <div style={{ fontSize: 9, color: col, fontWeight: 800 }}>
+                        {tf.label} -- موجة {tf.data.wave} {tf.data.type}
+                      </div>
+                      {tf.data.target > 0 && (
+                        <div style={{ fontSize: 9, color: C.smoke, marginTop: 2 }}>
+                          هدف: {parseFloat(tf.data.target).toFixed(2)} ر.س {tf.data.fib ? `(${tf.data.fib})` : ""}
+                        </div>
+                      )}
+                    </div>
+                    <span style={{ color: col, fontSize: 12 }}>{open ? "▲" : "▼"}</span>
                   </div>
-                  <div style={{ fontSize: 10, color: C.mist, lineHeight: 1.8 }}>{tf.data.note}</div>
+
+                  {open && (
+                    <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: 8 }}>
+
+                      {/* ملاحظة الخوارزمية */}
+                      <div style={{ fontSize: 10, color: C.mist, lineHeight: 1.8, background: C.layer3, borderRadius: 6, padding: "6px 10px" }}>
+                        {tf.data.note}
+                      </div>
+
+                      {/* الخصائص الأكاديمية */}
+                      {tf.data.props && (
+                        <>
+                          <div style={{ background: col+"10", border: `1px solid ${col}22`, borderRadius: 8, padding: "8px 10px" }}>
+                            <div style={{ fontSize: 10, color: col, fontWeight: 800, marginBottom: 6 }}>
+                              📚 {tf.data.props.title}
+                            </div>
+                            <div style={{ fontSize: 9, color: C.mist, lineHeight: 1.8, marginBottom: 6 }}>
+                              {tf.data.props.chars}
+                            </div>
+                            <div style={{ height: 1, background: col+"22", margin: "6px 0" }}/>
+                            <div style={{ fontSize: 9, color: C.smoke, lineHeight: 1.7, marginBottom: 4 }}>
+                              <span style={{ color: col, fontWeight: 700 }}>📏 القواعد: </span>
+                              {tf.data.props.rules}
+                            </div>
+                            <div style={{ fontSize: 9, color: C.amber, lineHeight: 1.7, fontWeight: 700, background: C.amber+"10", borderRadius: 6, padding: "5px 8px", marginTop: 4 }}>
+                              {tf.data.props.signal}
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}
