@@ -2300,7 +2300,15 @@ function _drawNoData(W,H){
 
 function render(){
  try {
- console.log('[render] candles:', state.allCandles.length, 'visible:', state.visible, 'offset:', state.offset, 'end:', state.allCandles.length - state.offset);
+ const _toast=document.getElementById('toast');
+ if(_toast){
+  _toast.textContent='c:'+state.allCandles.length+' v:'+state.visible+' o:'+state.offset+' end:'+(state.allCandles.length-state.offset);
+  _toast.style.display='block';
+  _toast.style.opacity='1';
+  _toast.style.background='#0a1428';
+  _toast.style.color='#3b9eff';
+  _toast.style.fontSize='10px';
+ }
  const W=cv.offsetWidth||window.innerWidth;
  const H=cv.offsetHeight||400;
  if(!W||!H||H<50)return;
