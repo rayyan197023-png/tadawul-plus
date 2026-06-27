@@ -2300,20 +2300,7 @@ function _drawNoData(W,H){
 
 function render(){
  try {
-const _toast=document.getElementById('toast');
-if(_toast){
-  const _lastC=state.allCandles[state.allCandles.length-1];
-  const _firstV=state.allCandles[Math.max(0,state.allCandles.length-state.visible-state.offset)];
-  const _lastV=state.allCandles[state.allCandles.length-1-state.offset];
-  const _fmtD=d=>d?.t?new Date(d.t).toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'2-digit'}):'?';
-  _toast.textContent='v:'+state.visible+' o:'+state.offset+' | شمعة أول:'+_fmtD(_firstV)+' | آخر:'+_fmtD(_lastV)+' | حقيقي:'+_fmtD(_lastC);
-  _toast.style.display='block';
-  _toast.style.opacity='1';
-  _toast.style.background='#0a1428';
-  _toast.style.color='#3b9eff';
-  _toast.style.fontSize='9px';
-  _toast.style.whiteSpace='nowrap';
-}
+
   _toast.style.display='block';
   _toast.style.opacity='1';
   _toast.style.background='#0a1428';
