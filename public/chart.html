@@ -7756,6 +7756,7 @@ const D=window._chartDiag;
         rangeDays:_rangeDays,
         limit:PER_COUNT[state.per]||130
       });
+D.push('raw: '+(raw?raw.length:'NULL'));
 
 if(raw&&Array.isArray(raw)&&raw.length>5){
         let candles=normalizeCandles(raw);
