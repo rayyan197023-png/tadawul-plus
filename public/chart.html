@@ -7743,22 +7743,6 @@ if(raw&&Array.isArray(raw)&&raw.length>5){
         let candles=normalizeCandles(raw);
         candles=_aggregateCandles(candles, state.per);
 state.allCandles=candles;
-// أضف شمعة اليوم إن كانت البيانات قديمة
-const _todayD=new Date();
-const _lastCD=candles[candles.length-1];
-const _lastDateD=_lastCD?.t?new Date(_lastCD.t):null;
-if(_lastDateD&&s.p>0){
-  const _diffDays=Math.round((_todayD-_lastDateD)/86400000);
-  if(_diffDays>1){
-    for(let _di=1;_di<=_diffDays;_di++){
-      const _nd=new Date(_lastDateD);
-      _nd.setDate(_nd.getDate()+_di);
-      if(_nd.getDay()===0||_nd.getDay()===6)continue; // تخطي عطلة نهاية الأسبوع
-      state.allCandles.push({o:s.p,hi:s.p,lo:s.p,c:s.p,v:0,t:_nd});
-    }
-  }
-}
-
 
         // Update live price from freshest candle
         const last=state.allCandles[state.allCandles.length-1];
