@@ -7738,6 +7738,8 @@ async function loadStk(){
         let candles=normalizeCandles(raw);
         candles=_aggregateCandles(candles, state.per);
         state.allCandles=candles;
+state.allCandles=candles;
+console.log('[loadStk] total candles:', candles.length, '| first:', candles[0]?.t, '| last:', candles[candles.length-1]?.t);
 
         // Update live price from freshest candle
         const last=state.allCandles[state.allCandles.length-1];
