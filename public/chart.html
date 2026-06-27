@@ -7761,7 +7761,7 @@ state.allCandles=candles;
   const _t=document.getElementById('toast');
   if(_t){
     _t.textContent=_msg;
-    _t.style.cssText='display:block;opacity:1;background:#051020;color:#3b9eff;font-size:8px;white-space:nowrap;position:absolute;top:5px;left:0;right:0;z-index:999;padding:4px 8px;border-radius:0';
+    _t.style.cssText='display:block;opacity:1;background:#051020;color:#3b9eff;font-size:8px;white-space:nowrap;z-index:999;padding:4px 8px;max-width:100%;overflow:hidden;text-overflow:ellipsis';
   }
 })();
 
