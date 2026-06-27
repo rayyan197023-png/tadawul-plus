@@ -7710,6 +7710,23 @@ function _aggregateCandles(daily, mode){
 }
 
 async function loadStk(){
+window._chartDiag = {
+  step: 'start',
+  log: [],
+  push(msg){ this.log.push(msg); this._show(); },
+  _show(){
+    let el=document.getElementById('_cdiag');
+    if(!el){
+      el=document.createElement('div');
+      el.id='_cdiag';
+      el.style.cssText='position:fixed;bottom:80px;left:0;right:0;background:#000c;color:#0f0;font-size:9px;padding:4px 8px;z-index:9999;white-space:pre-wrap;max-height:120px;overflow:auto;font-family:monospace';
+      document.body.appendChild(el);
+    }
+    el.textContent=this.log.slice(-8).join('\n');
+  }
+};
+const D=window._chartDiag;
+
   showLoader(state.stk.name+' — '+state.per);
   const s=state.stk, up=s.pct>=0;
   document.getElementById('sym-code').textContent=s.sym;
