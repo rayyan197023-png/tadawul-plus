@@ -7763,6 +7763,7 @@ if(raw&&Array.isArray(raw)&&raw.length>5){
 D.push('candles: '+candles.length+' last:'+new Date(candles[candles.length-1]?.t).toLocaleDateString('en-GB'));
  
 state.allCandles=candles;
+D.push('allCandles set: '+state.allCandles.length+' visible:'+state.visible);
 
         // Update live price from freshest candle
         const last=state.allCandles[state.allCandles.length-1];
