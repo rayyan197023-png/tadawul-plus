@@ -192,7 +192,9 @@ async fetch(type, params={}) {
           });
           if(!r5y.ok) return [];
           const d5y = await r5y.json();
-          return d5y.data || d5y.bars || [];
+const _raw5y = d5y.data || d5y.bars || [];
+return _raw5y.sort((a,b)=>new Date(a.date||a.t||a.timestamp)-new Date(b.date||b.t||b.timestamp));
+
 
         }
       } else if(type === 'ticker') {
