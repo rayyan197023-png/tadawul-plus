@@ -217,7 +217,7 @@ return _raw5y.sort((a,b)=>new Date(a.date||a.t||a.timestamp)-new Date(b.date||b.
 
       const unwrap = {
         candles: d => d.bars || d.data || d.ohlcv || d,
-        ticker:  d => d.quote || d.data || d,
+        ticker:  d => d.quote || d.data || d.results || d,
         stocks:  d => d.results || d.companies || d.data || d,
         info:    d => d.company || d.data || d,
       };
