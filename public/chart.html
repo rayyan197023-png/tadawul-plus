@@ -6455,7 +6455,8 @@ function renderCrosshair(){
  const bw=Math.max(1.5,(CW/n)*0.72);
  const drawW=CW-bw*2-16;
  const ty=logScale&&mn>0&&mx>0?v=>cTop+cH-(Math.log(Math.max(0.01,v)/mn)/Math.log(mx/mn))*cH:v=>cTop+cH-((v-mn)/rng)*cH;
- const tx=i=>bw+(n<=1?drawW/2:(i/(n-1))*(drawW-bw));
+const tx=i=>bw+(n<=1?drawW/2:(i/(n-1))*(drawW-bw*1.5));
+
  const px2price=y=>mn+((cBot-y)/cH)*rng;
  const cd=crosshair.ci>=0&&_lastRenderedSub?_lastRenderedSub[Math.min(crosshair.ci,_lastRenderedSub.length-1)]:null;
  const isUp=cd?cd.c>=cd.o:true;
