@@ -2300,6 +2300,7 @@ function _drawNoData(W,H){
 
 function render(){
  try {
+ console.log('[render] candles:', state.allCandles.length, 'visible:', state.visible, 'offset:', state.offset, 'end:', state.allCandles.length - state.offset);
  const W=cv.offsetWidth||window.innerWidth;
  const H=cv.offsetHeight||400;
  if(!W||!H||H<50)return;
