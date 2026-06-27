@@ -7744,9 +7744,6 @@ async function loadStk(){
         candles=_aggregateCandles(candles, state.per);
         state.allCandles=candles;
 
-state.allCandles=candles;
-// فحص مؤقت
-(()=>{
   const _l=candles[candles.length-1];
   const _f=candles[0];
   const _fmt=d=>{try{return new Date(d.t).toLocaleDateString('en-GB');}catch(e){return String(d.t).slice(0,10);}};
