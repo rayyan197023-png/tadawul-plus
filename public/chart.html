@@ -7739,28 +7739,10 @@ async function loadStk(){
         limit:PER_COUNT[state.per]||130
       });
 
-      if(raw&&Array.isArray(raw)&&raw.length>5){
+if(raw&&Array.isArray(raw)&&raw.length>5){
         let candles=normalizeCandles(raw);
         candles=_aggregateCandles(candles, state.per);
         state.allCandles=candles;
-
-  const _l=candles[candles.length-1];
-  const _f=candles[0];
-  const _fmt=d=>{try{return new Date(d.t).toLocaleDateString('en-GB');}catch(e){return String(d.t).slice(0,10);}};
-  const _msg=[
-    'إجمالي:'+candles.length,
-    'أول:'+_fmt(_f),
-    'آخر:'+_fmt(_l),
-    'visible:'+state.visible,
-    'offset:'+state.offset,
-    'range:'+state.range
-  ].join(' | ');
-  const _t=document.getElementById('toast');
-  if(_t){
-    _t.textContent=_msg;
-    _t.style.cssText='display:block;opacity:1;background:#051020;color:#3b9eff;font-size:8px;white-space:nowrap;z-index:999;padding:4px 8px;max-width:100%;overflow:hidden;text-overflow:ellipsis';
-  }
-})();
 
         // Update live price from freshest candle
         const last=state.allCandles[state.allCandles.length-1];
@@ -7768,10 +7750,9 @@ async function loadStk(){
           s.p=last.c;
           document.getElementById('pmain').textContent=last.c.toFixed(2);
         }
-const rangeToVis={'أسبوع':7,'شهر':22,'3أشهر':65,'6أشهر':130,'سنة':candles.length,'سنتين':candles.length,'5سنوات':candles.length,'الكل':candles.length};
+const rangeToVis={'أسبوع':7,'شهر':22,'3أشهر':65,'6أشهر':130,'سنة':248,'سنتين':248,'5سنوات':248,'الكل':248};
 const _vis=Math.min(rangeToVis[state.range]||dv[state.per]||48, candles.length);
 state.visible=_vis;
-
 state.offset=0;
 chartReady=true;
 invalidateChart();render();
@@ -7782,6 +7763,7 @@ return;
       }
       } catch(e){ console.warn('[loadStk API]',e); }
   }
+
 
 
 
