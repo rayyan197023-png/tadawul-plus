@@ -7744,6 +7744,26 @@ async function loadStk(){
         candles=_aggregateCandles(candles, state.per);
         state.allCandles=candles;
 
+state.allCandles=candles;
+// فحص مؤقت
+(()=>{
+  const _l=candles[candles.length-1];
+  const _f=candles[0];
+  const _fmt=d=>{try{return new Date(d.t).toLocaleDateString('en-GB');}catch(e){return String(d.t).slice(0,10);}};
+  const _msg=[
+    'إجمالي:'+candles.length,
+    'أول:'+_fmt(_f),
+    'آخر:'+_fmt(_l),
+    'visible:'+state.visible,
+    'offset:'+state.offset,
+    'range:'+state.range
+  ].join(' | ');
+  const _t=document.getElementById('toast');
+  if(_t){
+    _t.textContent=_msg;
+    _t.style.cssText='display:block;opacity:1;background:#051020;color:#3b9eff;font-size:8px;white-space:nowrap;position:absolute;top:5px;left:0;right:0;z-index:999;padding:4px 8px;border-radius:0';
+  }
+})();
 
         // Update live price from freshest candle
         const last=state.allCandles[state.allCandles.length-1];
