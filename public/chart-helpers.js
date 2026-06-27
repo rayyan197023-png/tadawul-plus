@@ -137,10 +137,9 @@ const API_CONFIG = {
   enabled: true,
 
   // ── SAHMK endpoints (all via /api/sahmkdata proxy) ────────────
-  endpoints: {
+endpoints: {
     candles:    '/api/sahmkdata',
     ticker:     '/api/sahmkdata',
-    tickerMode: 'poll',
     stocks:     '/api/sahmkdata',
     orderflow:  null,
     calendar:   null,
