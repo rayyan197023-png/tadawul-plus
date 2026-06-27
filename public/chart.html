@@ -7742,8 +7742,13 @@ async function loadStk(){
         let candles=normalizeCandles(raw);
         candles=_aggregateCandles(candles, state.per);
         state.allCandles=candles;
-state.allCandles=candles;
-console.log('[loadStk] total candles:', candles.length, '| first:', candles[0]?.t, '| last:', candles[candles.length-1]?.t);
+const _t=document.getElementById('toast');
+if(_t){
+  const _f=candles[0];
+  const _l=candles[candles.length-1];
+  _t.textContent='total:'+candles.length+' | آخر:'+JSON.stringify(_l?.t||_l?.date||'?').slice(0,15);
+  _t.style.display='block';_t.style.opacity='1';_t.style.background='#0a1428';_t.style.color='#3b9eff';_t.style.fontSize='9px';_t.style.whiteSpace='nowrap';
+}
 
         // Update live price from freshest candle
         const last=state.allCandles[state.allCandles.length-1];
