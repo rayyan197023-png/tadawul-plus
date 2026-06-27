@@ -7750,9 +7750,10 @@ async function loadStk(){
           s.p=last.c;
           document.getElementById('pmain').textContent=last.c.toFixed(2);
         }
-const rangeToVis={'أسبوع':7,'شهر':22,'3أشهر':65,'6أشهر':130,'سنة':248,'سنتين':248,'5سنوات':248,'الكل':248};
+const rangeToVis={'أسبوع':7,'شهر':22,'3أشهر':65,'6أشهر':130,'سنة':candles.length,'سنتين':candles.length,'5سنوات':candles.length,'الكل':candles.length};
 const _vis=Math.min(rangeToVis[state.range]||dv[state.per]||48, candles.length);
 state.visible=_vis;
+
 state.offset=0;
 chartReady=true;
 invalidateChart();render();
