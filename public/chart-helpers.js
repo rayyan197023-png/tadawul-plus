@@ -41,6 +41,8 @@ function normalizeCandles(rawData){
     return{o,hi,lo,c,v,t};
   }).filter(d=>d.c>0);
 
+  // ترتيب تصاعدي حسب التاريخ -- الأحدث في النهاية
+  candles.sort((a,b)=>new Date(a.t)-new Date(b.t));
   return candles;
 }
 
