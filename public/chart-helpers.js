@@ -149,6 +149,7 @@ const API_CONFIG = {
   },
 
   // ── Auth (sahmk public, no auth needed) ──────────────────────
+    tickerMode: 'poll',
   headers: {},
 
   // ── Timeframe mapping: app → sahmk ohlcv period ──────────────
