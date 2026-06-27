@@ -7760,6 +7760,8 @@ const D=window._chartDiag;
 if(raw&&Array.isArray(raw)&&raw.length>5){
         let candles=normalizeCandles(raw);
         candles=_aggregateCandles(candles, state.per);
+D.push('candles: '+candles.length+' last:'+new Date(candles[candles.length-1]?.t).toLocaleDateString('en-GB'));
+ 
 state.allCandles=candles;
 
         // Update live price from freshest candle
