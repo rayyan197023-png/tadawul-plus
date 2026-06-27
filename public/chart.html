@@ -7850,10 +7850,12 @@ function _applyTick(tick){
     } else {
       // آخر شمعة قديمة (بيانات 5Y/الكل غير محدّثة حتى اليوم)
       // لا تُمدّدها بسعر اليوم — أضف شمعة منفصلة جديدة
-      state.allCandles.push({
-        o: tick.c, hi: tick.c, lo: tick.c, c: tick.c,
-        v: tick.v || 0, t: today
-      });
+state.allCandles.push({
+  o: tick.c, hi: tick.c, lo: tick.c, c: tick.c,
+  v: tick.v || 0, t: today
+});
+state.offset=0;
+state.visible=Math.min(state.visible, state.allCandles.length);
     }
   }
 
