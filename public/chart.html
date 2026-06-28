@@ -7843,8 +7843,10 @@ async function _pollLivePrice(){
     ch:  +(raw.change || raw.ch || 0),
     pct: +(raw.changePct || raw.changePercent || raw.pct || 0),
   };
+  window._chartDiag&&window._chartDiag.push('poll: c='+tick.c+' raw_keys='+Object.keys(raw||{}).slice(0,5).join(','));
   if(tick.c > 0) _applyTick(tick);
 }
+
 
 function _applyTick(tick){
   if(!tick || !tick.c || tick.c <= 0) return;
