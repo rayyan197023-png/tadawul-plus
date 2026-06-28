@@ -217,7 +217,7 @@ return merged.filter(d=>{
         headers: this.headers,
         signal: AbortSignal.timeout(10000)
       });
-      window._chartDiag&&window._chartDiag.push('fetch '+type+' status:'+r.status+' url:'+base+qs);
+
       if(!r.ok) throw new Error('HTTP '+r.status);
  
       if(!r.ok) throw new Error('HTTP '+r.status);
@@ -231,7 +231,6 @@ return merged.filter(d=>{
       };
       return (unwrap[type] || (d => d))(data);
     } catch(e) {
-      window._chartDiag&&window._chartDiag.push('fetch ERR:'+type+' '+e.message);
       return null;
     }
   },
