@@ -7803,11 +7803,11 @@ const LIVE_INTERVAL_MS = 120000;
 function _startLiveTicker(){
   _stopLiveTicker();
   if(!API_CONFIG.enabled) return;
-  window._chartDiag&&window._chartDiag.push('ticker mode:'+API_CONFIG.tickerMode+' ep:'+API_CONFIG.endpoints.ticker);
+
   if(API_CONFIG.tickerMode === 'ws' && API_CONFIG.endpoints.ticker){
     API_CONFIG.wsConnect(tick => _applyTick(tick));
   } else if(API_CONFIG.endpoints.ticker){
-    window._chartDiag&&window._chartDiag.push('starting poll...');
+
     _liveTimer = setInterval(_pollLivePrice, LIVE_INTERVAL_MS);
     _pollLivePrice();
   }
@@ -7822,7 +7822,7 @@ function _stopLiveTicker(){
 async function _pollLivePrice(){
   if(!API_CONFIG.enabled || !API_CONFIG.endpoints.ticker) return;
 const raw = await API_CONFIG.fetch('ticker', {symbol: state.stk.sym});
-window._chartDiag&&window._chartDiag.push('raw ticker:'+JSON.stringify(raw).slice(0,80));
+
 if(!raw) return;
 
   // Normalize tick: accept {price/last/close/c, volume/v, change/ch, changePct/pct}
@@ -7832,7 +7832,7 @@ if(!raw) return;
     ch:  +(raw.change || raw.ch || 0),
     pct: +(raw.changePct || raw.changePercent || raw.pct || 0),
   };
-  window._chartDiag&&window._chartDiag.push('poll: c='+tick.c+' raw_keys='+Object.keys(raw||{}).slice(0,5).join(','));
+
   if(tick.c > 0) _applyTick(tick);
 }
 
@@ -7868,8 +7868,6 @@ state.allCandles.push({
 });
 state.offset=0;
 state.visible=state.allCandles.length;
-window._chartDiag&&window._chartDiag.push('tick: total='+state.allCandles.length+' vis='+state.visible+' price='+tick.c);
-window._chartDiag&&window._chartDiag.push('last candle t:'+new Date(state.allCandles[state.allCandles.length-1].t).toLocaleDateString('en-GB')+' c:'+state.allCandles[state.allCandles.length-1].c);
     }
   }
 
