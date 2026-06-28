@@ -185,18 +185,23 @@ async fetch(type, params={}) {
         } else {
           // سهمك يُرجع حد أقصى ~1000 شمعة لكل طلب بدءاً من from --
           // نجلب على دفعات حتى نوصل لتاريخ "to" المطلوب
-const qs5y = `?endpoint=ohlcv&sym=${params.symbol}&period=1Y`;
 
-
-          const r5y = await fetch(this.endpoints.candles + qs5y, {
-            headers: this.headers,
-            signal: AbortSignal.timeout(10000)
-          });
-          if(!r5y.ok) return [];
-          const d5y = await r5y.json();
-const _raw5y = d5y.data || d5y.bars || [];
-return _raw5y.sort((a,b)=>new Date(a.date||a.t||a.timestamp)-new Date(b.date||b.t||b.timestamp));
-
+const qs1y = `?endpoint=ohlcv&sym=${params.symbol}&period=1Y`;
+const qs5y = `?endpoint=ohlcv&sym=${params.symbol}&period=5Y`;
+const [r1y, r5y] = await Promise.all([
+  fetch(this.endpoints.candles + qs1y, {headers:this.headers, signal:AbortSignal.timeout(10000)}),
+  fetch(this.endpoints.candles + qs5y, {headers:this.headers, signal:AbortSignal.timeout(10000)})
+]);
+const [d1y, d5y] = await Promise.all([r1y.json(), r5y.json()]);
+const raw1y = d1y.data || d1y.bars || [];
+const raw5y = d5y.data || d5y.bars || [];
+const merged = [...raw5y, ...raw1y];
+const seen = new Set();
+return merged.filter(d=>{
+  const k = d.date||d.t||d.timestamp||'';
+  if(seen.has(k)) return false;
+  seen.add(k); return true;
+}).sort((a,b)=>new Date(a.date||a.t||a.timestamp)-new Date(b.date||b.t||b.timestamp));
 
         }
 } else if(type === 'ticker') {
