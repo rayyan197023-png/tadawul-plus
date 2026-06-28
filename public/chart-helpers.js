@@ -223,7 +223,7 @@ return _raw5y.sort((a,b)=>new Date(a.date||a.t||a.timestamp)-new Date(b.date||b.
       };
       return (unwrap[type] || (d => d))(data);
     } catch(e) {
-      console.warn('[sahmk API]', type, e.message);
+      window._chartDiag&&window._chartDiag.push('fetch ERR:'+type+' '+e.message);
       return null;
     }
   },
