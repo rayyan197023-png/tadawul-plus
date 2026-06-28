@@ -7811,7 +7811,8 @@ return;
 // LIVE DATA SYSTEM — activates when API_CONFIG.enabled = true
 
 let _liveTimer = null;
-const LIVE_INTERVAL_MS = 15000; // poll every 15 seconds
+const LIVE_INTERVAL_MS = 60000;
+ // poll every 15 seconds
 
 function _startLiveTicker(){
   _stopLiveTicker();
