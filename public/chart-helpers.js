@@ -185,7 +185,8 @@ async fetch(type, params={}) {
         } else {
           // سهمك يُرجع حد أقصى ~1000 شمعة لكل طلب بدءاً من from --
           // نجلب على دفعات حتى نوصل لتاريخ "to" المطلوب
-const qs5y = `?endpoint=ohlcv&sym=${params.symbol}&period=5Y&to=${new Date().toISOString().slice(0,10)}`;
+const qs5y = `?endpoint=ohlcv&sym=${params.symbol}&period=1Y`;
+
 
           const r5y = await fetch(this.endpoints.candles + qs5y, {
             headers: this.headers,
