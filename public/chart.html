@@ -7834,8 +7834,10 @@ function _stopLiveTicker(){
 
 async function _pollLivePrice(){
   if(!API_CONFIG.enabled || !API_CONFIG.endpoints.ticker) return;
-  const raw = await API_CONFIG.fetch('ticker', {symbol: state.stk.sym});
-  if(!raw) return;
+const raw = await API_CONFIG.fetch('ticker', {symbol: state.stk.sym});
+window._chartDiag&&window._chartDiag.push('raw ticker:'+JSON.stringify(raw).slice(0,80));
+if(!raw) return;
+
   // Normalize tick: accept {price/last/close/c, volume/v, change/ch, changePct/pct}
   const tick = {
     c:   +(raw.price || raw.last || raw.close || raw.c || raw.lastTradedPrice || raw.ltp || 0),
