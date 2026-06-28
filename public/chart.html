@@ -7816,16 +7816,16 @@ const LIVE_INTERVAL_MS = 15000; // poll every 15 seconds
 function _startLiveTicker(){
   _stopLiveTicker();
   if(!API_CONFIG.enabled) return;
-
+  window._chartDiag&&window._chartDiag.push('ticker mode:'+API_CONFIG.tickerMode+' ep:'+API_CONFIG.endpoints.ticker);
   if(API_CONFIG.tickerMode === 'ws' && API_CONFIG.endpoints.ticker){
-    // WebSocket mode
     API_CONFIG.wsConnect(tick => _applyTick(tick));
   } else if(API_CONFIG.endpoints.ticker){
-    // HTTP polling mode
+    window._chartDiag&&window._chartDiag.push('starting poll...');
     _liveTimer = setInterval(_pollLivePrice, LIVE_INTERVAL_MS);
-    _pollLivePrice(); // immediate first poll
+    _pollLivePrice();
   }
 }
+
 
 function _stopLiveTicker(){
   if(_liveTimer){ clearInterval(_liveTimer); _liveTimer=null; }
