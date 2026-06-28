@@ -212,6 +212,9 @@ return _raw5y.sort((a,b)=>new Date(a.date||a.t||a.timestamp)-new Date(b.date||b.
         headers: this.headers,
         signal: AbortSignal.timeout(10000)
       });
+      window._chartDiag&&window._chartDiag.push('fetch '+type+' status:'+r.status+' url:'+base+qs);
+      if(!r.ok) throw new Error('HTTP '+r.status);
+ 
       if(!r.ok) throw new Error('HTTP '+r.status);
       const data = await r.json();
 
