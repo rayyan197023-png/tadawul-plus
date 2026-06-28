@@ -7838,7 +7838,7 @@ async function _pollLivePrice(){
   if(!raw) return;
   // Normalize tick: accept {price/last/close/c, volume/v, change/ch, changePct/pct}
   const tick = {
-    c:   +(raw.price || raw.last || raw.close || raw.c || 0),
+    c:   +(raw.price || raw.last || raw.close || raw.c || raw.lastTradedPrice || raw.ltp || 0),
     v:   +(raw.volume || raw.vol || raw.v || 0),
     ch:  +(raw.change || raw.ch || 0),
     pct: +(raw.changePct || raw.changePercent || raw.pct || 0),
