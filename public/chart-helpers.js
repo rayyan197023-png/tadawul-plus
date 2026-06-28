@@ -200,7 +200,6 @@ return _raw5y.sort((a,b)=>new Date(a.date||a.t||a.timestamp)-new Date(b.date||b.
         }
 } else if(type === 'ticker') {
         qs = `?endpoint=quote&sym=${params.symbol}`;
-        D&&D.push('ticker qs:'+qs);
 
       } else if(type === 'stocks') {
         qs = `?endpoint=companies&market=TASI`;
