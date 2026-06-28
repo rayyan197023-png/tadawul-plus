@@ -7882,7 +7882,7 @@ state.allCandles.push({
 });
 state.offset=0;
 state.visible=state.allCandles.length;
-D.push('tick: total='+state.allCandles.length+' vis='+state.visible+' price='+tick.c);
+window._chartDiag&&window._chartDiag.push('tick: total='+state.allCandles.length+' vis='+state.visible+' price='+tick.c);
     }
   }
 
