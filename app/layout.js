@@ -93,12 +93,8 @@ export const metadata = {
   },
   
   icons: {
-    icon: [
-      { url: '/icon.svg', type: 'image/svg+xml' },
-    ],
-    apple: [
-      { url: '/icon.svg', type: 'image/svg+xml' },
-    ],
+    icon: '/icon.svg',
+    apple: '/apple-touch-icon.png',
   },
 
   
