@@ -1296,6 +1296,13 @@ var positionData = {
 };
 
           smartAction = calcSmartAction(positionData, h, smartBars, h.riskGate || 'SAFE');
+          if(smartAction && completedTargets.length > 0) {
+            var act = smartAction.action || '';
+            if((act.includes('33') && completedTargets.includes('t1')) ||
+               (act.includes('50') && completedTargets.includes('t2'))) {
+              smartAction = null;
+            }
+          }
         }
             } catch(e) {
         console.error('[SmartAction Error]', pp.sym, e.message, e);
