@@ -887,9 +887,10 @@ function SellSheet(props) {
         if(pp.sym!==sellSheet.sym)return pp;
         var rem=pp.qty-qty;
         if(rem<=0)return null;
-        return Object.assign({},pp,{qty:rem});
+        return Object.assign({},pp,{qty:rem, lastSellPrice:price, lastSellDate:new Date().toISOString()});
       }).filter(Boolean);
     });
+
     
     if(navigator.vibrate) navigator.vibrate(50);
     setSellSheet(null);
