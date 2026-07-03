@@ -1279,11 +1279,11 @@ useEffect(() => {
       var value=stk.p*pp.qty, cost=pp.avgCost*pp.qty, pnl=value-cost;
 
       // ✨ بدون قصّ 60 يوم -- الوقف المتحرك يحتاج كامل التاريخ منذ الشراء
-          var smartBars = hasRealData ? realBars : [];
+        
+var smartBars = hasRealData ? realBars : [];
       var smartAction = null;
       var completedTargets = pp.completedTargets || [];
-
-
+      console.log('[debug]', pp.sym, 'completedTargets:', completedTargets);
       try {
         if(h && smartBars && smartBars.length >= 14) {
 
