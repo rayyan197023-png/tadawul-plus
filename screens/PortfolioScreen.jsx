@@ -1136,6 +1136,9 @@ useEffect(() => {
   var al=useState(function(){ return loadLS("tp_alerts", []); });
   var alerts=al[0], setAlerts=al[1];
   useEffect(function(){ saveLS("tp_alerts", alerts); },[alerts]);
+  var ct_s=useState(function(){ return loadLS("tp_completed_targets", {}); });
+  var completedTargetsMap=ct_s[0], setCompletedTargetsMap=ct_s[1];
+  useEffect(function(){ saveLS("tp_completed_targets", completedTargetsMap); },[completedTargetsMap]);
 
   useEffect(function(){
     if(!document.getElementById("tp-portfolio-css")){
