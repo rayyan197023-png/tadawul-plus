@@ -535,7 +535,7 @@ function Card(props) {
               <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:6}}>
                 <div style={{background:"linear-gradient(135deg,"+d.color+"28,"+d.color+"12)",border:"1px solid "+d.color+"55",borderRadius:10,padding:"5px 14px",fontSize:13,fontWeight:900,color:d.color,display:"flex",alignItems:"center",gap:5,boxShadow:"0 2px 8px "+d.color+"22"}}>
                   <SvgIcon name={d.icon} size={12} color={d.color}/>
-                  {d.act}{d.pct>0?" "+d.pct+"%":""}
+{d.act}
                 </div>
 
               </div>
