@@ -1273,9 +1273,9 @@ useEffect(() => {
       // ✨ بدون قصّ 60 يوم -- الوقف المتحرك يحتاج كامل التاريخ منذ الشراء
           var smartBars = hasRealData ? realBars : [];
       var smartAction = null;
-      var recentlySold = pp.lastSellPrice && pp.curPrice 
-        ? Math.abs(pp.lastSellPrice - pp.curPrice) / pp.curPrice < 0.02
-        : false;
+      var completedTargets = pp.completedTargets || [];
+      var recentlySold = completedTargets.length > 0;
+
 
       try {
         if(h && smartBars && smartBars.length >= 14 && !recentlySold) {
