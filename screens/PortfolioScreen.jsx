@@ -1292,7 +1292,7 @@ useEffect(() => {
         
 var smartBars = hasRealData ? realBars : [];
       var smartAction = null;
-      var completedTargets = pp.completedTargets || [];
+      var completedTargets = completedTargetsMap[pp.sym] || [];
       if(completedTargets.length > 0) {
         alert(pp.sym+' completedTargets:'+completedTargets.join(','));
       }
