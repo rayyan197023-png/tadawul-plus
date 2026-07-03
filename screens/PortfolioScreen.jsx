@@ -1267,19 +1267,15 @@ useEffect(() => {
       var value=stk.p*pp.qty, cost=pp.avgCost*pp.qty, pnl=value-cost;
 
       // ✨ بدون قصّ 60 يوم -- الوقف المتحرك يحتاج كامل التاريخ منذ الشراء
-      var smartBars = hasRealData ? realBars : [];
+          var smartBars = hasRealData ? realBars : [];
       var smartAction = null;
-
-      try {
-        if(h && smartBars && smartBars.length >= 14) {
-        var smartAction = null;
-        // تجاهل أمر البيع إذا تم البيع مؤخراً بنفس السعر
-        var recentlySold = pp.lastSellPrice && pp.curPrice 
-          ? Math.abs(pp.lastSellPrice - pp.curPrice) / pp.curPrice < 0.02
-          : false;
+      var recentlySold = pp.lastSellPrice && pp.curPrice 
+        ? Math.abs(pp.lastSellPrice - pp.curPrice) / pp.curPrice < 0.02
+        : false;
 
       try {
         if(h && smartBars && smartBars.length >= 14 && !recentlySold) {
+
  
           // ✨ استخدم تاريخ أول صفقة شراء من tradeLog إذا متوفر
 var entryFromLog = tradeLog.find(function(t){
