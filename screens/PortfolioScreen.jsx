@@ -1305,12 +1305,14 @@ var positionData = {
              (entryFromLog ? entryFromLog.date + "T00:00:00.000Z" : null),
 };
 
-          smartAction = calcSmartAction(positionData, h, smartBars, h.riskGate || 'SAFE');
           if(smartAction && completedTargets.length > 0) {
-            if(completedTargets.includes('t1') && smartAction.action === 'بيع 33%') smartAction = null;
-            if(completedTargets.includes('t2') && smartAction.action === 'بيع 50%') smartAction = null;
-            if(completedTargets.includes('t3') && smartAction.action === 'بيع كامل') smartAction = null;
+            var _act = smartAction.action || '';
+            alert('action='+_act+' targets='+completedTargets.join(','));
+            if(completedTargets.includes('t1') && _act.includes('33')) smartAction = null;
+            if(completedTargets.includes('t2') && _act.includes('50')) smartAction = null;
+            if(completedTargets.includes('t3') && _act.includes('كامل')) smartAction = null;
           }
+
           if(smartAction && completedTargets.length > 0) {
             var pct = smartAction.percent || 0;
             if((pct >= 28 && pct <= 38 && completedTargets.includes('t1')) ||
