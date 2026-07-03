@@ -887,10 +887,15 @@ function SellSheet(props) {
         if(pp.sym!==sellSheet.sym)return pp;
         var originalQty = pp.qty;
         var soldPct = Math.round(qty / originalQty * 100);
-        var completedTargets = pp.completedTargets || [];
+        var completedTargets = (completedTargetsMap[pp.sym] || []).slice();
         if(soldPct >= 28 && soldPct <= 38) completedTargets = completedTargets.concat(['t1']);
         if(soldPct >= 45 && soldPct <= 55) completedTargets = completedTargets.concat(['t2']);
         if(soldPct >= 73 && soldPct <= 77) completedTargets = completedTargets.concat(['t3']);
+        setCompletedTargetsMap(function(prev){
+          var next=Object.assign({},prev);
+          next[sellSheet.sym]=completedTargets;
+          return next;
+        });
         setCompletedTargetsMap(function(prev){
           var next=Object.assign({},prev);
           next[sellSheet.sym]=completedTargets;
