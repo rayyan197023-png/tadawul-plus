@@ -3734,7 +3734,7 @@ return result;
         </div>
       )}
 
-      {sellSheet&&<SellSheet sellSheet={sellSheet} setSellSheet={setSellSheet} setTradeLog={setTradeLog} setPort={setPort} sl={sl}/>}
+{sellSheet&&<SellSheet sellSheet={sellSheet} setSellSheet={setSellSheet} setTradeLog={setTradeLog} setPort={setPort} sl={sl} completedTargetsMap={completedTargetsMap} setCompletedTargetsMap={setCompletedTargetsMap}/>}
       {editPos&&<EditModal pos={editPos} onClose={function(){setEditPos(null);}} setPort={setPort} setTradeLog={setTradeLog}/>}
 
       {showOB&&(
