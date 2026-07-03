@@ -1283,7 +1283,10 @@ useEffect(() => {
 var smartBars = hasRealData ? realBars : [];
       var smartAction = null;
       var completedTargets = pp.completedTargets || [];
-      console.log('[debug]', pp.sym, 'completedTargets:', completedTargets);
+      if(completedTargets.length > 0) {
+        var _t = document.getElementById('toast');
+        if(_t){ _t.textContent = pp.sym+' targets:'+completedTargets.join(','); _t.style.display='block'; _t.style.opacity='1'; }
+      }
       try {
         if(h && smartBars && smartBars.length >= 14) {
 
