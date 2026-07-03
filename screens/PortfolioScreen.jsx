@@ -1272,6 +1272,15 @@ useEffect(() => {
 
       try {
         if(h && smartBars && smartBars.length >= 14) {
+        var smartAction = null;
+        // تجاهل أمر البيع إذا تم البيع مؤخراً بنفس السعر
+        var recentlySold = pp.lastSellPrice && pp.curPrice 
+          ? Math.abs(pp.lastSellPrice - pp.curPrice) / pp.curPrice < 0.02
+          : false;
+
+      try {
+        if(h && smartBars && smartBars.length >= 14 && !recentlySold) {
+ 
           // ✨ استخدم تاريخ أول صفقة شراء من tradeLog إذا متوفر
 var entryFromLog = tradeLog.find(function(t){
   return t.sym === pp.sym && t.action === "شراء";
