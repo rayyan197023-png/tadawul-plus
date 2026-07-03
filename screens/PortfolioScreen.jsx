@@ -887,11 +887,19 @@ function SellSheet(props) {
         if(pp.sym!==sellSheet.sym)return pp;
         var rem=pp.qty-qty;
         if(rem<=0)return null;
-var soldPct = Math.round(qty / (pp.qty) * 100);
+var originalQty = pp.qty;
+var soldPct = Math.round(qty / originalQty * 100);
 var completedTargets = pp.completedTargets || [];
-if(soldPct >= 30 && soldPct <= 36) completedTargets = completedTargets.concat(['t1']);
-if(soldPct >= 48 && soldPct <= 52) completedTargets = completedTargets.concat(['t2']);
-return Object.assign({},pp,{qty:rem, lastSellPrice:price, lastSellDate:new Date().toISOString(), completedTargets:completedTargets});
+if(soldPct >= 28 && soldPct <= 38) completedTargets = completedTargets.concat(['t1']);
+if(soldPct >= 45 && soldPct <= 55) completedTargets = completedTargets.concat(['t2']);
+if(soldPct >= 73 && soldPct <= 77) completedTargets = completedTargets.concat(['t3']);
+return Object.assign({},pp,{
+  qty:rem,
+  lastSellPrice:price,
+  lastSellDate:new Date().toISOString(),
+  completedTargets:completedTargets,
+  originalQty:originalQty
+});
       }).filter(Boolean);
     });
 
