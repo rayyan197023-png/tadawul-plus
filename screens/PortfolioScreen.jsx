@@ -1285,7 +1285,7 @@ useEffect(() => {
 
 
       try {
-        if(h && smartBars && smartBars.length >= 14 && !recentlySold) {
+        if(h && smartBars && smartBars.length >= 14) {
 
  
           // ✨ استخدم تاريخ أول صفقة شراء من tradeLog إذا متوفر
