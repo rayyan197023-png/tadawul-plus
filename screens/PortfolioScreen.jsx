@@ -1344,7 +1344,7 @@ var positionData = {
         hasRealData: hasRealData, // ✨ يحدد إن كانت البيانات حقيقية أو لسا قيد التحميل
       });
     });
-  },[port,sl,realBarsMap,realHealthMap,tradeLog]);
+  },[port,sl,realBarsMap,realHealthMap,tradeLog,completedTargetsMap]);
 
 
   var tv=positions.reduce(function(s,p){return s+p.value;},0);
