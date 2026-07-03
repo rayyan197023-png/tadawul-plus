@@ -887,7 +887,11 @@ function SellSheet(props) {
         if(pp.sym!==sellSheet.sym)return pp;
         var rem=pp.qty-qty;
         if(rem<=0)return null;
-        return Object.assign({},pp,{qty:rem, lastSellPrice:price, lastSellDate:new Date().toISOString()});
+var soldPct = Math.round(qty / (pp.qty) * 100);
+var completedTargets = pp.completedTargets || [];
+if(soldPct >= 30 && soldPct <= 36) completedTargets = completedTargets.concat(['t1']);
+if(soldPct >= 48 && soldPct <= 52) completedTargets = completedTargets.concat(['t2']);
+return Object.assign({},pp,{qty:rem, lastSellPrice:price, lastSellDate:new Date().toISOString(), completedTargets:completedTargets});
       }).filter(Boolean);
     });
 
