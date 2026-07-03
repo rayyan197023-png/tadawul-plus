@@ -818,6 +818,8 @@ strokeLinecap="round" style={{filter:"drop-shadow(0 0 6px "+gradeColor+"aa)",tra
 function SellSheet(props) {
   var sellSheet=props.sellSheet, setSellSheet=props.setSellSheet, setTradeLog=props.setTradeLog, setPort=props.setPort;
   var sl=props.sl||[];
+  var completedTargetsMap=props.completedTargetsMap||{};
+  var setCompletedTargetsMap=props.setCompletedTargetsMap||function(){};
   var sq=useState(String(sellSheet.qty)); var sellQty=sq[0], setSellQty=sq[1];
   var sp=useState(sellSheet.curPrice.toFixed(2)); var sellPrice=sp[0], setSellPrice=sp[1];
   var qty=parseFloat(sellQty)||0, price=parseFloat(sellPrice)||0;
