@@ -1274,7 +1274,6 @@ useEffect(() => {
           var smartBars = hasRealData ? realBars : [];
       var smartAction = null;
       var completedTargets = pp.completedTargets || [];
-      var recentlySold = completedTargets.length > 0;
 
 
       try {
