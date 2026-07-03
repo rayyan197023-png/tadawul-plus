@@ -891,6 +891,11 @@ function SellSheet(props) {
         if(soldPct >= 28 && soldPct <= 38) completedTargets = completedTargets.concat(['t1']);
         if(soldPct >= 45 && soldPct <= 55) completedTargets = completedTargets.concat(['t2']);
         if(soldPct >= 73 && soldPct <= 77) completedTargets = completedTargets.concat(['t3']);
+        setCompletedTargetsMap(function(prev){
+          var next=Object.assign({},prev);
+          next[sellSheet.sym]=completedTargets;
+          return next;
+        }); 
         var rem = pp.qty - qty;
         if(rem <= 0) return null;
         return Object.assign({},pp,{
