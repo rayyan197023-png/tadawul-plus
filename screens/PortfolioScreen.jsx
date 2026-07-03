@@ -1312,15 +1312,6 @@ var positionData = {
             if(completedTargets.includes('t2') && _act.includes('50')) smartAction = null;
             if(completedTargets.includes('t3') && _act.includes('كامل')) smartAction = null;
           }
-
-          if(smartAction && completedTargets.length > 0) {
-            var pct = smartAction.percent || 0;
-            if((pct >= 28 && pct <= 38 && completedTargets.includes('t1')) ||
-               (pct >= 45 && pct <= 55 && completedTargets.includes('t2')) ||
-               (pct >= 73 && pct <= 77 && completedTargets.includes('t3'))) {
-              smartAction = null;
-            }
-          }
         }
 
             } catch(e) {
