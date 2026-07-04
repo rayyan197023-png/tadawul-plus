@@ -154,6 +154,8 @@ var stopPct = atrStop && p.curPrice > 0
   : 7;
 stopPct = Math.min(Math.abs(stopPct), 10);
 
+  var _ctFallback = p.completedTargets || [];
+
   if(gate==="DANGER") return {act:"بيع كامل",pct:100,color:C.coral,icon:"danger",reason:"السوق في خطر نظامي - اغلق جميع المراكز فوراً",detail:"ضغط بيعي استثنائي على مستوى السوق كله",urgent:true,upside:null,rr:null};
 
   if(sig==="شراء قوي"&&score>=75) {
@@ -165,18 +167,19 @@ stopPct = Math.min(Math.abs(stopPct), 10);
 
   if(sig==="مراقبة") {
     if(pnl>20) return {act:"بيع جزئي",pct:30,color:C.amber,icon:"sell",reason:"ربح "+pnl.toFixed(1)+"% - احجز 30% والمحرك لم يعد قوياً",detail:"السيولة الذكية تتباطأ . الإشارة تراجعت من شراء قوي",urgent:false,upside:upside,rr:ps.b||1.5};
-    if(pnl<-stopPct) return {act:"وقف خسارة",pct:100,color:C.coral,icon:"stop",reason:"خسارة "+Math.abs(pnl).toFixed(1)+"% تجاوزت حد الـ "+stopPct.toFixed(1)+"% (ATR-based) - أغلق",detail:"الدفاع عن رأس المال أولاً . حد الخسارة محسوب على أساس تقلب السهم الفعلي",urgent:true,upside:null,rr:null};
-    return {act:"انتظر",pct:0,color:C.amber,icon:"watch",reason:"الإشارة تراجعت من شراء قوي . الزخم يتباطأ",detail:"لا تزد ولا تبع حتى يتضح الاتجاه . انتظر تأكيداً جديداً",urgent:false,upside:upside,rr:null};
+    if(pnl<-stopPct) return {act:"وقف خسارة",pct:100,color:C.coral,icon:"stop",reason:"خسارة "+Math.abs(pnl).toFixed(1)+"% تجاوزت حد الـ "+stopPct.toFixed(1)+"% (ATR-based) - أغلق",detail:"الدفاع عن رأس المال أولاً",urgent:true,upside:null,rr:null};
+    return {act:"انتظر",pct:0,color:C.amber,icon:"watch",reason:"الإشارة تراجعت من شراء قوي . الزخم يتباطأ",detail:"لا تزد ولا تبع حتى يتضح الاتجاه",urgent:false,upside:upside,rr:null};
   }
 
   if(sig==="تخفيف"||score<45) {
-    if(pnl>5) return {act:"بيع 50%",pct:50,color:C.coral,icon:"danger",reason:"ربح "+pnl.toFixed(1)+"% مع ضغط بيعي - احجز الآن",detail:"السيولة الذكية تخرج . الحجم دون المعدل . خطر انقلاب",urgent:true,upside:null,rr:null};
-    return {act:"بيع كامل",pct:100,color:C.coral,icon:"sell",reason:"ضغط بيعي مرتفع . المحرك يرى تدهوراً في الجودة",detail:"استخدم رأس المال في فرص أفضل . لا تتمسك بمركز خاسر",urgent:true,upside:null,rr:null};
+    if(pnl>5&&!_ctFallback.includes('t2')) return {act:"بيع 50%",pct:50,color:C.coral,icon:"danger",reason:"ربح "+pnl.toFixed(1)+"% مع ضغط بيعي - احجز الآن",detail:"السيولة الذكية تخرج . خطر انقلاب",urgent:true,upside:null,rr:null};
+    if(!_ctFallback.includes('t3')) return {act:"بيع كامل",pct:100,color:C.coral,icon:"sell",reason:"ضغط بيعي مرتفع . المحرك يرى تدهوراً في الجودة",detail:"استخدم رأس المال في فرص أفضل",urgent:true,upside:null,rr:null};
+    return {act:"احتفظ",pct:0,color:C.teal,icon:"hold",reason:"تم تنفيذ أوامر البيع -- احتفظ بالباقي",detail:null,urgent:false,upside:upside,rr:null};
   }
 
-  if(wNow===0) return {act:"لا تدخل",pct:0,color:C.smoke,icon:"block",reason:"الإشارة لا تستوفي معايير الدخول",detail:"ننتظر تحسن السيولة والزخم . لا تتعجل الدخول",urgent:false,upside:upside,rr:null};
+  if(wNow===0) return {act:"لا تدخل",pct:0,color:C.smoke,icon:"block",reason:"الإشارة لا تستوفي معايير الدخول",detail:"ننتظر تحسن السيولة والزخم",urgent:false,upside:upside,rr:null};
   if(pnl>10) return {act:"بيع 25%",pct:25,color:C.amber,icon:"sell",reason:"ربح "+pnl.toFixed(1)+"% مع إشارة محايدة . خفف المخاطرة",detail:"خذ 25% من الأرباح . احتفظ بـ 75% للاحتمال الصاعد",urgent:false,upside:upside,rr:null};
-  return {act:"انتظر",pct:0,color:C.smoke,icon:"wait",reason:"إشارة محايدة . لا حافز للتحرك الآن",detail:"انتظر تحسن الإشارة قبل أي قرار . الصبر استراتيجية",urgent:false,upside:upside,rr:null};
+  return {act:"انتظر",pct:0,color:C.smoke,icon:"wait",reason:"إشارة محايدة . لا حافز للتحرك الآن",detail:"انتظر تحسن الإشارة قبل أي قرار",urgent:false,upside:upside,rr:null};
 }
 
 
