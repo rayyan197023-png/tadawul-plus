@@ -1316,7 +1316,11 @@ var positionData = {
              (entryFromLog ? entryFromLog.date + "T00:00:00.000Z" : null),
 };
 
+          smartAction = calcSmartAction(positionData, h, smartBars, h.riskGate || 'SAFE');
+          var completedTargets = completedTargetsMap[pp.sym] || [];
+          alert('act='+( smartAction&&smartAction.action)+' targets='+completedTargets.join(','));
           if(smartAction && completedTargets.length > 0) {
+
             var _act = smartAction.action || '';
             alert('filtering: act='+_act+' targets='+completedTargets.join(','));
             if(completedTargets.includes('t1') && _act.includes('33')) smartAction = null;
