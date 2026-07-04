@@ -188,44 +188,6 @@ function OverviewPane({ stk }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
 
-      {/* الإشارات التقنية من Sahmk */}
-      {(stk.rsi14 || stk.priceDirection) && (
-        <SectionCard title="الإشارات التقنية" accent={C.electric}>
-          <div style={{ padding:"10px 14px", display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
-            {stk.rsi14 && (
-              <ValCard
-                label="RSI 14"
-                value={stk.rsi14?.toFixed(1)}
-                color={stk.rsi14 > 70 ? C.coral : stk.rsi14 < 30 ? C.mint : C.electric}
-                sub={stk.rsi14 > 70 ? "تشبع شراء" : stk.rsi14 < 30 ? "تشبع بيع" : "محايد"}
-              />
-            )}
-            {stk.macdLine != null && (
-              <ValCard
-                label="MACD"
-                value={stk.macdLine?.toFixed(3)}
-                color={stk.macdLine > 0 ? C.mint : C.coral}
-                sub={stk.macdLine > 0 ? "صعودي" : "هبوطي"}
-              />
-            )}
-            {stk.ma50 && (
-              <ValCard
-                label="MA50"
-                value={stk.ma50?.toFixed(2)}
-                color={stk.p && stk.p > stk.ma50 ? C.mint : C.coral}
-                sub={stk.p && stk.p > stk.ma50 ? "فوق المتوسط" : "تحت المتوسط"}
-              />
-            )}
-            {stk.priceDirection && (
-              <ValCard
-                label="الاتجاه"
-                value={stk.priceDirection === "bullish" ? "صعودي 📈" : stk.priceDirection === "bearish" ? "هبوطي 📉" : "محايد"}
-                color={stk.priceDirection === "bullish" ? C.mint : stk.priceDirection === "bearish" ? C.coral : C.smoke}
-              />
-            )}
-          </div>
-        </SectionCard>
-      )}
 
       {/* أحداث السهم AI */}
       {stk.stockEvents && stk.stockEvents.length > 0 && (
