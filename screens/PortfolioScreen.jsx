@@ -903,11 +903,7 @@ function SellSheet(props) {
           next[sellSheet.sym]=completedTargets;
           return next;
         });
-        setCompletedTargetsMap(function(prev){
-          var next=Object.assign({},prev);
-          next[sellSheet.sym]=completedTargets;
-          return next;
-        }); 
+
         var rem = pp.qty - qty;
         if(rem <= 0) return null;
         return Object.assign({},pp,{
