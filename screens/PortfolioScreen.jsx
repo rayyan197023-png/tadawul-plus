@@ -1298,7 +1298,9 @@ useEffect(() => {
         
 var smartBars = hasRealData ? realBars : [];
       var smartAction = null;
+      var completedTargets = completedTargetsMap[pp.sym] || [];
       try {
+
         if(h && smartBars && smartBars.length >= 14) {
 
  
