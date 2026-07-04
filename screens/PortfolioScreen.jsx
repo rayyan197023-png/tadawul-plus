@@ -1320,7 +1320,6 @@ var positionData = {
 };
 
           smartAction = calcSmartAction(positionData, h, smartBars, h.riskGate || 'SAFE');
-          var completedTargets = completedTargetsMap[pp.sym] || [];
 
           if(smartAction && completedTargets.length > 0) {
 
