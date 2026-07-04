@@ -1326,6 +1326,7 @@ var positionData = {
             if(completedTargets.includes('t1') && _act.includes('33')) smartAction = null;
             if(completedTargets.includes('t2') && _act.includes('50')) smartAction = null;
             if(completedTargets.includes('t3') && _act.includes('كامل')) smartAction = null;
+            alert('after filter: smartAction='+(smartAction?smartAction.action:'NULL'));
           }
         }
 
