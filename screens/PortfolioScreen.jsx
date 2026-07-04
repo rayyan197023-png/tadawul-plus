@@ -128,14 +128,10 @@ return {
 };
   }
 
-   // فلتر الأهداف المنجزة -- حتى في الـ fallback
+  // ── Fallback: Logic القديم (إذا smartAction غير متوفر) ──
   var _ctFallback = p.completedTargets || [];
+  var sig=p.health?p.health.sig||"":"", score=p.health?p.health.score||50:50;
 
-  // ── Fallback: Logic القديم (إذا smartAction غير متوفر) ──
-  var sig=p.health?p.health.sig||"":"", score=p.health?p.health.score||50:50;
- 
-  // ── Fallback: Logic القديم (إذا smartAction غير متوفر) ──
-  var sig=p.health?p.health.sig||"":"", score=p.health?p.health.score||50:50;
   var ps=p.health?p.health.positionSize||{pct:10,b:1.5}:{pct:10,b:1.5};
   var gate=p.health?p.health.riskGate||"SAFE":"SAFE";
   var extras=p.health?p.health.extras||{}:{};
