@@ -1343,7 +1343,8 @@ var positionData = {
         curPrice: stk.p,
         curWeightPct: value/tv*100,
         smartAction: smartAction,
-        hasRealData: hasRealData, // ✨ يحدد إن كانت البيانات حقيقية أو لسا قيد التحميل
+        hasRealData: hasRealData,
+        completedTargets: completedTargets,
       });
     });
   },[port,sl,realBarsMap,realHealthMap,tradeLog,completedTargetsMap]);
