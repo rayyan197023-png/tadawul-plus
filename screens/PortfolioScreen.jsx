@@ -1320,7 +1320,7 @@ var positionData = {
 
           if(smartAction && completedTargets.length > 0) {
             var _act = smartAction.action || '';
-            alert('action='+_act+' targets='+completedTargets.join(','));
+            alert('filtering: act='+_act+' targets='+completedTargets.join(','));
             if(completedTargets.includes('t1') && _act.includes('33')) smartAction = null;
             if(completedTargets.includes('t2') && _act.includes('50')) smartAction = null;
             if(completedTargets.includes('t3') && _act.includes('كامل')) smartAction = null;
