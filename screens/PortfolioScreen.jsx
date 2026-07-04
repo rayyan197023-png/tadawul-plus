@@ -1335,6 +1335,20 @@ var positionData = {
             if(completedTargets.includes('t2') && _act.includes('50')) smartAction = null;
             if(completedTargets.includes('t3') && _act.includes('كامل')) smartAction = null;
           }
+          if(!smartAction && completedTargets.length > 0) {
+            smartAction = {
+              action: 'احتفظ',
+              percent: 0,
+              color: '#22d3ee',
+              urgency: 'low',
+              confidence: 70,
+              reason: 'تم تنفيذ ' + completedTargets.map(function(t){return t==='t1'?'T1':t==='t2'?'T2':'T3';}).join(' و') + ' -- احتفظ بالباقي',
+              positionHealth: null,
+              stopData: null,
+              trailingStop: null,
+              targets: null,
+            };
+          } 
         }
 
             } catch(e) {
