@@ -2705,11 +2705,7 @@ ich.senkouA.forEach((v,i)=>{if(v==null)return;fs?(ctx.moveTo(tx(i),ty(v)),fs=fal
 
    const lastA=ich.senkouA.filter(v=>     =null).pop();
    const lastB=ich.senkouB.filter(v=>v!=null).pop();
-for(let i=ich.senkouB.length-1;i>=0;i--){
-  if(ich.senkouB[i]==null)continue;
- 
-  ctx.lineTo(x,ty(ich.senkouB[i]));
-}
+for(let i=ich.senkouB.length-1;i>=0;i--){if(ich.senkouB[i]!=null)ctx.lineTo(tx(i),ty(ich.senkouB[i]));}
 
    ctx.closePath();
    ctx.fillStyle=(lastA>lastB)?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)';
