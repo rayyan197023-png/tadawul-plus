@@ -5766,11 +5766,8 @@ const weakVol=d.v<vma*1.1;
   [[ema9s,'#f59e0b',1.4,'EMA9'],[ema21s,'#a78bfa',1.8,'EMA21']].forEach(([arr,clr,lw,lbl])=>{
    if(!arr)return;
    ctx.strokeStyle=clr;ctx.lineWidth=lw;ctx.beginPath();let f=true;
-arr.forEach((v,i)=>{
-  if(v==null)return;
-  const x=i<sub.length?tx(i):tx(sub.length-1)+(i-sub.length+1)*(CW/Math.max(1,state.visible));
-  f?(ctx.moveTo(x,ty(v)),f=false):ctx.lineTo(x,ty(v));
-});
+arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),ty(v)),f=false):ctx.lineTo(tx(i),ty(v));});
+
    ctx.stroke();   
    const last=arr.filter(v=>v!=null).pop();
    if(last){
