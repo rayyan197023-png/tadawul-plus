@@ -5367,11 +5367,10 @@ if(lastY>=cTop&&lastY<=cBot&&clampOff===0&&sub[n-1]?.c){
   for(let gi=5;gi<_N;gi++){
    const d=all[gi];
    const _atrVal=_atrSma[gi]||0.01,vma=_volSma[gi]||1;
-   const bigVol=d.v>vma*1.4;       // 1.4× avg volume
-   const bigDown=d.c<d.o&&(d.o-d.c)>_atrVal*0.5; // relaxed threshold
-   const bigUp=d.c>d.o&&(d.c-d.o)>_atrVal*0.5;
-   const weakVol=d.v<vma*1.0; // any below-average volume
-
+const bigVol=d.v>vma*1.2;
+const bigDown=d.c<d.o&&(d.o-d.c)>_atrVal*0.3;
+const bigUp=d.c>d.o&&(d.c-d.o)>_atrVal*0.3;
+const weakVol=d.v<vma*1.1;
    if(wyS==='none'){
     // SC: Selling Climax
     // - Wide-spread DOWN bar near recent lows, elevated volume
