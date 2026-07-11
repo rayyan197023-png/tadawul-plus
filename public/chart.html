@@ -2729,10 +2729,12 @@ const lastC=sub[n-1]?.c||0;
    for(let i=_len-1;i>=0;i--){if(ich.senkouB[i]!=null)ctx.lineTo(tx(i),ty(ich.senkouB[i]));}
 
    ctx.closePath();
-   ctx.fillStyle=(lastA>lastB)?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)';
+   // سحابة خفيفة جداً حتى لا تطغى على الشموع — أخضر فاتح للصاعدة، وردي باهت للهابطة
+   ctx.fillStyle=(lastA>lastB)?'rgba(38,166,154,0.09)':'rgba(239,83,80,0.07)';
    ctx.fill();
 
-   [[ich.senkouA,'#22c55e',0.8],[ich.senkouB,'#ef4444',0.7]].forEach(([arr,clr,lw])=>{
+   // خطوط السحابة نفسها رفيعة وباهتة (تُميّز الحدود فقط، بدون تنافس بصري مع الشموع)
+   [[ich.senkouA,'rgba(38,166,154,0.55)',0.7],[ich.senkouB,'rgba(239,83,80,0.5)',0.7]].forEach(([arr,clr,lw])=>{
     ctx.strokeStyle=clr;ctx.lineWidth=lw;ctx.setLineDash([]);
     ctx.beginPath();let f=true;
     arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),ty(v)),f=false):ctx.lineTo(tx(i),ty(v));});
@@ -2740,8 +2742,8 @@ const lastC=sub[n-1]?.c||0;
    });
   }
 
-  // Lines: tenkan, kijun
-  [[ich.tenkan,'#38bdf8',1.2],[ich.kijun,'#ef4444',1.4]].forEach(([arr,clr,lw])=>{
+  // تينكان (أزرق سماوي هادئ) وكيجون (برتقالي غامق — يختلف عن أحمر الشموع)
+  [[ich.tenkan,'#4fc3f7',1.1],[ich.kijun,'#ff9800',1.3]].forEach(([arr,clr,lw])=>{
    if(!arr)return;
    ctx.strokeStyle=clr;ctx.lineWidth=lw;ctx.setLineDash([]);
    ctx.beginPath();let f=true;
@@ -2749,9 +2751,9 @@ const lastC=sub[n-1]?.c||0;
    ctx.stroke();
   });
 
-  // Chikou (lagging 26 periods back)
+  // تشيكو (رمادي-بنفسجي باهت جداً، منقط، بحيث لا يسحب الانتباه)
   if(ich.chikou){
-   ctx.strokeStyle='#a78bfa';ctx.lineWidth=1;ctx.setLineDash([]);
+   ctx.strokeStyle='rgba(158,158,158,0.55)';ctx.lineWidth=1;ctx.setLineDash([2,3]);
    ctx.beginPath();let fc=true;
    ich.chikou.forEach((v,i)=>{
     const si=i-26;if(si<0||v==null)return;
@@ -2760,7 +2762,6 @@ const lastC=sub[n-1]?.c||0;
    ctx.stroke();ctx.setLineDash([]);
   }
  }
-
 
  // BB bands
  if(ind.bb){
