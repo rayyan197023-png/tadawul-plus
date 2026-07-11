@@ -2701,17 +2701,13 @@ const lastC=sub[n-1]?.c||0;
   // Cloud fill
   if(ich.senkouA&&ich.senkouB){
    ctx.beginPath();let fs=true;
-ich.senkouA.forEach((v,i)=>{
-  if(v==null)return;
-  const x=i<sub.length?tx(i):tx(sub.length-1)+(i-sub.length+1)*(CW/Math.max(1,state.visible));
-  fs?(ctx.moveTo(x,ty(v)),fs=false):ctx.lineTo(x,ty(v));
-});
+ich.senkouA.forEach((v,i)=>{if(v==null)return;fs?(ctx.moveTo(tx(i),ty(v)),fs=false):ctx.lineTo(tx(i),ty(v));});
 
    const lastA=ich.senkouA.filter(v=>     =null).pop();
    const lastB=ich.senkouB.filter(v=>v!=null).pop();
 for(let i=ich.senkouB.length-1;i>=0;i--){
   if(ich.senkouB[i]==null)continue;
-  const x=i<sub.length?tx(i):tx(sub.length-1)+(i-sub.length+1)*(CW/Math.max(1,state.visible));
+ 
   ctx.lineTo(x,ty(ich.senkouB[i]));
 }
 
