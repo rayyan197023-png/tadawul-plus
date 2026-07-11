@@ -2713,30 +2713,44 @@ const lastC=sub[n-1]?.c||0;
  // Ichimoku Cloud
  if(ind.ichi&&ind.ichi.tenkan){
   const ich=ind.ichi;
-  // Cloud fill
+  // tx يمتد فقط لآخر شمعة ظاهرة (index n-1). نحتاج دالة إضافية
+  // لحساب مواضع الـ 26 نقطة المستقبلية بنفس تباعد الشموع الحالي.
+  const _step=n>1?(tx(1)-tx(0)):bw;
+  const txF=i=>tx(n-1)+(i-(n-1))*_step; // امتداد خطي بعد آخر شمعة
+
+  // Cloud fill (senkouA/senkouB أطول من sub بمقدار future=26)
   if(ich.senkouA&&ich.senkouB){
+   const _len=ich.senkouA.length;
+   const _xAt=i=>i<n?tx(i):txF(i);
    ctx.beginPath();let fs=true;
-ich.senkouA.forEach((v,i)=>{if(v==null)return;fs?(ctx.moveTo(tx(i),ty(v)),fs=false):ctx.lineTo(tx(i),ty(v));});
+   ich.senkouA.forEach((v,i)=>{if(v==null)return;fs?(ctx.moveTo(_xAt(i),ty(v)),fs=false):ctx.lineTo(_xAt(i),ty(v));});
 
-const lastA=ich.senkouA.filter(v=>v!=null).pop();
-const lastB=ich.senkouB.filter(v=>v!=null).pop();
+   const lastA=ich.senkouA.filter(v=>v!=null).pop();
+   const lastB=ich.senkouB.filter(v=>v!=null).pop();
 
-for(let i=ich.senkouB.length-1;i>=0;i--){if(ich.senkouB[i]!=null)ctx.lineTo(tx(i),ty(ich.senkouB[i]));}
+   for(let i=_len-1;i>=0;i--){if(ich.senkouB[i]!=null)ctx.lineTo(_xAt(i),ty(ich.senkouB[i]));}
 
    ctx.closePath();
    ctx.fillStyle=(lastA>lastB)?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)';
    ctx.fill();
+
+   // خطوط senkouA/senkouB (تمتد للمستقبل)
+   [[ich.senkouA,'#22c55e',0.8],[ich.senkouB,'#ef4444',0.7]].forEach(([arr,clr,lw])=>{
+    ctx.strokeStyle=clr;ctx.lineWidth=lw;ctx.setLineDash([]);
+    ctx.beginPath();let f=true;
+    arr.forEach((v,i)=>{if(v==null)return;const xx=_xAt(i);f?(ctx.moveTo(xx,ty(v)),f=false):ctx.lineTo(xx,ty(v));});
+    ctx.stroke();
+   });
   }
-  // Lines: tenkan, kijun, senkouA, senkouB
-  [[ich.tenkan,'#38bdf8',1.2,[]],[ich.kijun,'#ef4444',1.4,[]],[ich.senkouA,'#22c55e',0.8,[]],[ich.senkouB,'#ef4444',0.7,[]]].forEach(([arr,clr,lw,dash])=>{
+
+  // Lines: tenkan, kijun (بطول الشموع العادي فقط)
+  [[ich.tenkan,'#38bdf8',1.2],[ich.kijun,'#ef4444',1.4]].forEach(([arr,clr,lw])=>{
    if(!arr)return;
-   ctx.strokeStyle=clr;ctx.lineWidth=lw;ctx.setLineDash(dash);
+   ctx.strokeStyle=clr;ctx.lineWidth=lw;ctx.setLineDash([]);
    ctx.beginPath();let f=true;
-arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),ty(v)),f=false):ctx.lineTo(tx(i),ty(v));});
-
-   ctx.stroke();ctx.setLineDash([]);
+   arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),ty(v)),f=false):ctx.lineTo(tx(i),ty(v));});
+   ctx.stroke();
   });
-
 
   // Chikou (lagging 26 periods back)
   if(ich.chikou){
