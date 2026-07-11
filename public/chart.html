@@ -2703,8 +2703,9 @@ const lastC=sub[n-1]?.c||0;
    ctx.beginPath();let fs=true;
 ich.senkouA.forEach((v,i)=>{if(v==null)return;fs?(ctx.moveTo(tx(i),ty(v)),fs=false):ctx.lineTo(tx(i),ty(v));});
 
-   const lastA=ich.senkouA.filter(v=>     =null).pop();
-   const lastB=ich.senkouB.filter(v=>v!=null).pop();
+const lastA=ich.senkouA.filter(v=>v!=null).pop();
+const lastB=ich.senkouB.filter(v=>v!=null).pop();
+
 for(let i=ich.senkouB.length-1;i>=0;i--){if(ich.senkouB[i]!=null)ctx.lineTo(tx(i),ty(ich.senkouB[i]));}
 
    ctx.closePath();
