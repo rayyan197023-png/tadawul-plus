@@ -5275,11 +5275,7 @@ arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),ty(v)),f=false):ctx.li
   [[iTen,'#38bdf8',1.6,'Tenkan'],[iKij,'#f97316',1.8,'Kijun'],
    [iSA,'rgba(34,197,94,0.8)',1.0],[iSB,'rgba(239,68,68,0.8)',1.0]].forEach(([arr,clr,lw,lbl])=>{
    if(!arr)return;ctx.strokeStyle=clr;ctx.lineWidth=lw;ctx.setLineDash([]);ctx.beginPath();let f=true;
-arr.forEach((v,i)=>{
-  if(v==null)return;
-  const x=i<sub.length?tx(i):tx(sub.length-1)+(i-sub.length+1)*(CW/Math.max(1,state.visible));
-  f?(ctx.moveTo(x,ty(v)),f=false):ctx.lineTo(x,ty(v));
-});
+arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),ty(v)),f=false):ctx.lineTo(tx(i),ty(v));});
 
    if(lbl){const last=arr.filter(v=>v!=null).pop();if(last){ctx.fillStyle=clr;ctx.font='bold 7px monospace';ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillText(lbl,CW-4,ty(last));ctx.textBaseline='alphabetic';}}
   });
