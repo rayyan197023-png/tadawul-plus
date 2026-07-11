@@ -124,9 +124,25 @@ const calcSupertrend=(h,l,c2,n=10,m=3)=>{const atr2=calcATR_data(h.map((_,i)=>({
 // PSAR
 const calcPSAR=(h,l,step=0.02,maxA=0.2)=>{if(h.length<2)return h.map(()=>null);let bull=true,af=step,ep=h[0],sar=l[0];return h.map((_,i)=>{if(i===0)return{val:sar,bull};let ns=sar+af*(ep-sar);if(bull){ns=Math.min(ns,l[i-1],i>1?l[i-2]:l[i-1]);}else{ns=Math.max(ns,h[i-1],i>1?h[i-2]:h[i-1]);}if(bull&&l[i]<ns){bull=false;ns=ep;ep=l[i];af=step;}else if(!bull&&h[i]>ns){bull=true;ns=ep;ep=h[i];af=step;}else{if(bull&&h[i]>ep){ep=h[i];af=Math.min(af+step,maxA);}else if(!bull&&l[i]<ep){ep=l[i];af=Math.min(af+step,maxA);}}sar=ns;return{val:sar,bull};});};
 
-// Ichimoku
-const calcIchi=(h,l,c2)=>{const n=h.length;const mid=(per,i)=>{if(i<per-1)return null;return(Math.max(...h.slice(i-per+1,i+1))+Math.min(...l.slice(i-per+1,i+1)))/2;};const tenkan=h.map((_,i)=>mid(9,i));const kijun=h.map((_,i)=>mid(26,i));const senkouA=new Array(n).fill(null);tenkan.forEach((t,i)=>{if(t==null||kijun[i]==null)return;const fi=i+26;if(fi<n)senkouA[fi]=(t+kijun[i])/2;});const senkouB=new Array(n).fill(null);h.forEach((_,i)=>{const v=mid(52,i);if(v==null)return;const fi=i+26;if(fi<n)senkouB[fi]=v;});const chikou=c2?c2.slice():null;return{tenkan,kijun,senkouA,senkouB,chikou};};
-
+// Ichimoku -- مع دعم الغيمة المستقبلية (26 شمعة قدام آخر شمعة)
+const calcIchi=(h,l,c2)=>{
+  const n=h.length;
+  const FUTURE=26;
+  const mid=(per,i)=>{if(i<per-1||i>=n)return null;return(Math.max(...h.slice(i-per+1,i+1))+Math.min(...l.slice(i-per+1,i+1)))/2;};
+  const tenkan=h.map((_,i)=>mid(9,i));
+  const kijun=h.map((_,i)=>mid(26,i));
+  const totalLen=n+FUTURE;
+  const senkouA=new Array(totalLen).fill(null);
+  const senkouB=new Array(totalLen).fill(null);
+  for(let i=0;i<n;i++){
+    const t=tenkan[i], k=kijun[i];
+    if(t!=null&&k!=null) senkouA[i+FUTURE]=(t+k)/2;
+    const b=mid(52,i);
+    if(b!=null) senkouB[i+FUTURE]=b;
+  }
+  const chikou=c2?c2.slice():null;
+  return{tenkan,kijun,senkouA,senkouB,chikou,future:FUTURE,baseLen:n};
+};
 
 
 // STD
