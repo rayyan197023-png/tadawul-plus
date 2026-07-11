@@ -2440,7 +2440,8 @@ if(sub.length>0){
  adx: _fi(hasInd('ADX') ?adx(allH,allL,allC,getIS('ADX').period||14):null),
  psar: _fi(hasInd('PSAR') ?calcPSAR(allH,allL):null),
  supertrend:_fi(hasInd('SUPERTREND')?calcSupertrend(allH,allL,allC):null),
- ichi: hasInd('ICHIMOKU') ?{...calcIchi(allH,allL,allC),sl:slc}:null,
+ ichi: hasInd('ICHIMOKU') ?calcIchi(allH,allL,allC):null,
+
  dpo: _fi(hasInd('DPO') ?calcDPO(allC):null),
  // Volume
  obv: _fi(hasInd('OBV') ?obv(allC,allV):null),
