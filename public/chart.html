@@ -2523,10 +2523,16 @@ if(sub.length>0){
  const mid=(rawMn+rawMx)/2;
  const halfRng=((rawMx-rawMn)*0.5+pad)/Math.max(0.1,yScale);
  const mn=mid-halfRng, mx=mid+halfRng, rng=mx-mn||1;
- const bw=Math.max(1.5,(CW/n)*0.72);
+ // حجز مساحة يمين الشارت لغيمة إيشيموكو المستقبلية -- فقط عند الحافة اليمنى الحقيقية
+ // (state.offset===0) ومع تفعيل المؤشر. أي سحب لليسار يلغي الحجز فوراً ويرجع الشموع لطبيعتها.
+ const _ichiActive = hasInd('ICHIMOKU');
+ const _atRightEdge = (clampOff===0);
+ const _cloudPad = (_ichiActive && _atRightEdge) ? 26 : 0;
+
+ const bw=Math.max(1.5,(CW/(n+_cloudPad))*0.72);
  const drawW=CW-bw*2-16;
  const mv=Math.max(...sub.map(d=>d.v))||1;
- const _totalSlots=n-1;
+ const _totalSlots=n+_cloudPad-1;
  const tx=i=>bw*0.5+(_totalSlots<=0?drawW/2:(i/_totalSlots)*(drawW-bw*2));
 
  // Log scale: use raw prices (no negative padding) as bounds
