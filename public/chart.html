@@ -2720,24 +2720,16 @@ const lastC=sub[n-1]?.c||0;
  if(ind.ichi&&ind.ichi.tenkan){
   const ich=ind.ichi;
 
-  // امتداد بصري للغيمة المستقبلية -- فقط عند الحافة اليمنى الحقيقية (لم يتم السحب لليسار)
-  // بدون التأثير على معادلة tx العامة أو موضع باقي الشموع
-  const _atRightEdge = (clampOff===0);
-  const _step = n>1 ? (tx(1)-tx(0)) : bw;
-  const _xAt = _atRightEdge
-    ? (i => i<n ? tx(i) : tx(n-1)+(i-(n-1))*_step)
-    : (i => i<n ? tx(i) : null); // لو مو بآخر الشارت، لا نرسم الجزء المستقبلي إطلاقاً
-
-  // Cloud fill (senkouA/senkouB أطول من sub بمقدار future=26)
+  // Cloud fill -- tx تحجز المساحة تلقائياً الآن (26 فتحة) عند الحافة اليمنى مع تفعيل المؤشر
   if(ich.senkouA&&ich.senkouB){
    const _len=ich.senkouA.length;
    ctx.beginPath();let fs=true;
-   ich.senkouA.forEach((v,i)=>{if(v==null)return;const xx=_xAt(i);if(xx==null)return;fs?(ctx.moveTo(xx,ty(v)),fs=false):ctx.lineTo(xx,ty(v));});
+   ich.senkouA.forEach((v,i)=>{if(v==null)return;fs?(ctx.moveTo(tx(i),ty(v)),fs=false):ctx.lineTo(tx(i),ty(v));});
 
    const lastA=ich.senkouA.filter(v=>v!=null).pop();
    const lastB=ich.senkouB.filter(v=>v!=null).pop();
 
-   for(let i=_len-1;i>=0;i--){if(ich.senkouB[i]!=null){const xx=_xAt(i);if(xx!=null)ctx.lineTo(xx,ty(ich.senkouB[i]));}}
+   for(let i=_len-1;i>=0;i--){if(ich.senkouB[i]!=null)ctx.lineTo(tx(i),ty(ich.senkouB[i]));}
 
    ctx.closePath();
    // سحابة خفيفة جداً حتى لا تطغى على الشموع — أخضر فاتح للصاعدة، وردي باهت للهابطة
@@ -2748,7 +2740,7 @@ const lastC=sub[n-1]?.c||0;
    [[ich.senkouA,'rgba(38,166,154,0.55)',0.7],[ich.senkouB,'rgba(239,83,80,0.5)',0.7]].forEach(([arr,clr,lw])=>{
     ctx.strokeStyle=clr;ctx.lineWidth=lw;ctx.setLineDash([]);
     ctx.beginPath();let f=true;
-    arr.forEach((v,i)=>{if(v==null)return;const xx=_xAt(i);if(xx==null)return;f?(ctx.moveTo(xx,ty(v)),f=false):ctx.lineTo(xx,ty(v));});
+    arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),ty(v)),f=false):ctx.lineTo(tx(i),ty(v));});
     ctx.stroke();
    });
   }
