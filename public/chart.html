@@ -2523,11 +2523,10 @@ if(sub.length>0){
  const mid=(rawMn+rawMx)/2;
  const halfRng=((rawMx-rawMn)*0.5+pad)/Math.max(0.1,yScale);
  const mn=mid-halfRng, mx=mid+halfRng, rng=mx-mn||1;
- // FUTURE_PAD معرّف كثابت عام في chart-layout.js -- نفس القيمة هنا لضمان التطابق
- const bw=Math.max(1.5,(CW/(n+FUTURE_PAD))*0.72);
+ const bw=Math.max(1.5,(CW/n)*0.72);
  const drawW=CW-bw*2-16;
  const mv=Math.max(...sub.map(d=>d.v))||1;
- const _totalSlots=n+FUTURE_PAD-1;
+ const _totalSlots=n-1;
  const tx=i=>bw*0.5+(_totalSlots<=0?drawW/2:(i/_totalSlots)*(drawW-bw*2));
 
  // Log scale: use raw prices (no negative padding) as bounds
