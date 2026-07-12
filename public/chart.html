@@ -6766,10 +6766,16 @@ function _enrichDrawing(d){
     const sub=all.slice(start,end2);
     if(!sub.length)return;
     const W=b.CW;
-    const bw=Math.max(1.5,(W/Math.max(1,state.visible))*0.72);
+    // ── يجب أن تطابق تماماً معادلة tx/bw/drawW المستخدمة في render() ──
+    const FUTURE_PAD=26;
+    const bw=Math.max(1.5,(W/(_subLen+FUTURE_PAD))*0.72);
     const drawW=W-bw*2-16;
-    // px → candle index (SAME as render's tx inverse)
-    const px2idx=(px)=>Math.round((px-bw)/Math.max(0.1,drawW/Math.max(1,_subLen-1)));
+    const _totalSlots=_subLen+FUTURE_PAD-1;
+    // px → candle index (معكوس دالة tx الجديدة في render())
+    const px2idx=(px)=>{
+      const raw=(px-bw*0.5)/(drawW-bw*2)*_totalSlots;
+      return Math.round(raw);
+    };
     // px → price (SAME as render's ty inverse, with yScale)
     const pp=sub.flatMap(c=>[c.hi,c.lo]);
     const rawMn=Math.min(...pp),rawMx=Math.max(...pp);
