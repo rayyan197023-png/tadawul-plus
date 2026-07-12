@@ -25,9 +25,14 @@ function chartBounds(){
  const cBot=H-22-3-VOL_H-(hasSub?SUB_H+3:0)-(OF_H?OF_H+3:0);
 
  const VIS=Math.min(Math.max(8,state.visible),Math.max(1,state.allCandles.length));
- const bw=Math.max(1.5,(CW/VIS)*0.72);
+ // نفس منطق حجز مساحة الغيمة المستقبلية -- شرطي بـ offset===0 وتفعيل المؤشر
+ const _ichiActive=(typeof state!=='undefined'&&Array.isArray(state.inds)&&state.inds.includes('ICHIMOKU'));
+ const _atRightEdge=(state.offset===0);
+ const _cloudPad=(_ichiActive&&_atRightEdge)?26:0;
+
+ const bw=Math.max(1.5,(CW/(VIS+_cloudPad))*0.72);
  const drawW=CW-bw*2-16;
- const totalSlots=VIS-1;
+ const totalSlots=VIS+_cloudPad-1;
  const tx=i=>bw*0.5+(totalSlots<=0?drawW/2:(i/totalSlots)*(drawW-bw*2));
  const px2idx=px=>totalSlots<=0?0:((px-bw*0.5)/(drawW-bw*2))*totalSlots;
 
