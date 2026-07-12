@@ -5,6 +5,8 @@
 
 // LAYOUT
 // 
+const FUTURE_PAD=26; // مساحة ثابتة يمين الشارت لغيمة إيشيموكو المستقبلية -- ثابت عام مشترك
+
 function chartBounds(){
  // ── مطابق تماماً لـ render() في chart.html ──
  // أيّ تعديل هنا يجب أن يُطابَق في render() والعكس صحيح
@@ -27,8 +29,19 @@ function chartBounds(){
  const OF_H=(typeof showOrderFlow!=='undefined'&&showOrderFlow)?getPH('of',H,0.10):0;
  const cTop=12;
  const cBot=H-22-3-VOL_H-(hasSub?SUB_H+3:0)-(OF_H?OF_H+3:0);
- const bw=Math.max(1.5,(CW/Math.max(1,state.visible))*0.72);
- return{W,H,YW,CW,cTop,cBot,cH:cBot-cTop,bw,vTop:cBot+3,vBot:cBot+3+VOL_H,SUB_H,OF_H};
+
+ // ── يجب أن يطابق تماماً bw/drawW/tx في render() ──
+ const VIS=Math.min(Math.max(8,state.visible),Math.max(1,state.allCandles.length));
+ const bw=Math.max(1.5,(CW/(VIS+FUTURE_PAD))*0.72);
+ const drawW=CW-bw*2-16;
+ const totalSlots=VIS+FUTURE_PAD-1;
+ // دالة tx مطابقة تماماً لمعادلة render() -- مصدر وحيد للحقيقة
+ const tx=i=>bw*0.5+(totalSlots<=0?drawW/2:(i/totalSlots)*(drawW-bw*2));
+ // معكوسها: px → index (float, غير مقرّب)
+ const px2idx=px=>totalSlots<=0?0:((px-bw*0.5)/(drawW-bw*2))*totalSlots;
+
+ return{W,H,YW,CW,cTop,cBot,cH:cBot-cTop,bw,drawW,VIS,totalSlots,tx,px2idx,
+   vTop:cBot+3,vBot:cBot+3+VOL_H,SUB_H,OF_H};
 }
 
 function inChart(pt){
