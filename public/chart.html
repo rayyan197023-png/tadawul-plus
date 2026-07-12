@@ -7894,13 +7894,20 @@ function _applyTick(tick){
       if(tick.v) last.v = tick.v;
     } else {
       // آخر شمعة قديمة (بيانات 5Y/الكل غير محدّثة حتى اليوم)
-      // لا تُمدّدها بسعر اليوم — أضف شمعة منفصلة جديدة
-state.allCandles.push({
-  o: tick.c, hi: tick.c, lo: tick.c, c: tick.c,
-  v: tick.v || 0, t: today
-});
-state.offset=0;
-state.visible=state.allCandles.length;
+      // افتتاح شمعة اليوم الجديدة: نستخدم إغلاق آخر شمعة كسعر افتتاح
+      // (أدق من افتراض o=hi=lo=c، ويمنع ظهور الشمعة كخط رفيع بلا جسم)
+      const prevClose = last.c;
+      const openPrice = prevClose>0 ? prevClose : tick.c;
+      state.allCandles.push({
+        o: openPrice,
+        hi: Math.max(openPrice, tick.c),
+        lo: Math.min(openPrice, tick.c),
+        c: tick.c,
+        v: tick.v || 0,
+        t: today
+      });
+      state.offset=0;
+      state.visible=state.allCandles.length;
     }
   }
 
