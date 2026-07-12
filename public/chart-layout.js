@@ -8,36 +8,27 @@
 const FUTURE_PAD=26; // مساحة ثابتة يمين الشارت لغيمة إيشيموكو المستقبلية -- ثابت عام مشترك
 
 function chartBounds(){
- // ── مطابق تماماً لـ render() في chart.html ──
- // أيّ تعديل هنا يجب أن يُطابَق في render() والعكس صحيح
  const W=cv.offsetWidth||1,H=cv.offsetHeight||1,YW=38,CW=W-YW;
- // قائمة الـ sub-indicators مطابقة لـ SUB_INDS_BASE في render()
  const SUB_IDS=['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD'];
  const subInds=SUB_IDS.filter(id=>state.inds.includes(id));
- // أضف custom sub-panel indicators إن وُجدت
  const customSubInds=(typeof customInds!=='undefined'&&Array.isArray(customInds))
    ?customInds.filter(ci=>ci.type==='subpanel').map(ci=>ci.id):[];
  const allSubs=[...subInds,...customSubInds];
  const hasSub=allSubs.length>0;
- // استخدم getPanelH إن كانت متوفّرة (مع user resize)، وإلا fallback ثابت
  const getPH=(typeof getPanelH==='function')
    ?getPanelH
    :(_key,h,frac)=>Math.round(h*frac);
  const VOL_H=getPH('vol',H,0.14);
  const SUB_H=hasSub?allSubs.reduce((sum,_,pi)=>sum+getPH('sub_'+pi,H,0.09),0):0;
- // Order Flow panel إن كان مُفعَّلاً
  const OF_H=(typeof showOrderFlow!=='undefined'&&showOrderFlow)?getPH('of',H,0.10):0;
  const cTop=12;
  const cBot=H-22-3-VOL_H-(hasSub?SUB_H+3:0)-(OF_H?OF_H+3:0);
 
- // ── يجب أن يطابق تماماً bw/drawW/tx في render() ──
  const VIS=Math.min(Math.max(8,state.visible),Math.max(1,state.allCandles.length));
- const bw=Math.max(1.5,(CW/(VIS+FUTURE_PAD))*0.72);
+ const bw=Math.max(1.5,(CW/VIS)*0.72);
  const drawW=CW-bw*2-16;
- const totalSlots=VIS+FUTURE_PAD-1;
- // دالة tx مطابقة تماماً لمعادلة render() -- مصدر وحيد للحقيقة
+ const totalSlots=VIS-1;
  const tx=i=>bw*0.5+(totalSlots<=0?drawW/2:(i/totalSlots)*(drawW-bw*2));
- // معكوسها: px → index (float, غير مقرّب)
  const px2idx=px=>totalSlots<=0?0:((px-bw*0.5)/(drawW-bw*2))*totalSlots;
 
  return{W,H,YW,CW,cTop,cBot,cH:cBot-cTop,bw,drawW,VIS,totalSlots,tx,px2idx,
