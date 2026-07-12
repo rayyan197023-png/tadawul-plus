@@ -6758,24 +6758,17 @@ function _enrichDrawing(d){
     const all=state.allCandles;
     const n=all.length;
     if(!n)return;
-    // Use SAME bounds calculation as render()
+    // Use SAME bounds/tx calculation as render() -- مصدر وحيد للحقيقة عبر chartBounds()
     const b=chartBounds();
-    const start=Math.max(0,n-state.visible-state.offset);
+    const start=Math.max(0,n-b.VIS-state.offset);
     const end2=n-state.offset;
     const _subLen=end2-start;
     const sub=all.slice(start,end2);
     if(!sub.length)return;
-    const W=b.CW;
-    // ── يجب أن تطابق تماماً معادلة tx/bw/drawW المستخدمة في render() ──
-    const FUTURE_PAD=26;
-    const bw=Math.max(1.5,(W/(_subLen+FUTURE_PAD))*0.72);
-    const drawW=W-bw*2-16;
-    const _totalSlots=_subLen+FUTURE_PAD-1;
-    // px → candle index (معكوس دالة tx الجديدة في render())
-    const px2idx=(px)=>{
-      const raw=(px-bw*0.5)/(drawW-bw*2)*_totalSlots;
-      return Math.round(raw);
-    };
+
+    // px → candle index (نفس معادلة tx تماماً من chartBounds)
+    const px2idx=(px)=>Math.round(b.px2idx(px));
+
     // px → price (SAME as render's ty inverse, with yScale)
     const pp=sub.flatMap(c=>[c.hi,c.lo]);
     const rawMn=Math.min(...pp),rawMx=Math.max(...pp);
@@ -6787,6 +6780,7 @@ function _enrichDrawing(d){
     const rng=mx-mn||1;
     const cH=b.cBot-b.cTop;
     const py2price=(py)=>mn+((b.cBot-py)/cH)*rng;
+
     if(d.p1){
       const ci=Math.max(0,Math.min(_subLen-1,px2idx(d.p1.x)));
       d._p1_price=py2price(d.p1.y);
@@ -6799,6 +6793,7 @@ function _enrichDrawing(d){
     }
   }catch(e){}
 }
+
 
 function finishDrawing(pt) {
  // Pattern tool: add point
