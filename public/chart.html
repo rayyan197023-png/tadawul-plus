@@ -7797,6 +7797,24 @@ state.visible=_vis;
 
 state.offset=0;
 chartReady=true;
+
+// جلب أول تحديث لحظي فوراً (بدون انتظار setInterval) قبل الرندر الأول
+// حتى تظهر شمعة اليوم الحالي مباشرة بدل ما تنتظر التحديث الدوري
+if(API_CONFIG.enabled && API_CONFIG.endpoints.ticker){
+  try{
+    const _raw0=await API_CONFIG.fetch('ticker',{symbol:s.sym});
+    if(_raw0){
+      const _t0={
+        c: +(_raw0.price||_raw0.last||_raw0.close||_raw0.c||_raw0.lastTradedPrice||_raw0.ltp||0),
+        v: +(_raw0.volume||_raw0.vol||_raw0.v||0),
+        ch: +(_raw0.change||_raw0.ch||0),
+        pct: +(_raw0.changePct||_raw0.changePercent||_raw0.pct||0),
+      };
+      if(_t0.c>0) _applyTick(_t0);
+    }
+  }catch(e){ console.warn('[loadStk initial tick]',e); }
+}
+
 invalidateChart();render();
 setTimeout(hideLoader,120);
 _startLiveTicker();
