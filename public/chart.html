@@ -8016,7 +8016,7 @@ async function loadStockList(){
       else STOCKS.push(ns);
     });
     // Refresh stock list UI if open
-    if(typeof _initStockSearch==='function') _initStockSearch();
+    if(typeof buildStkList==='function' && openSht==='stock') buildStkList();
   }
 }
 
