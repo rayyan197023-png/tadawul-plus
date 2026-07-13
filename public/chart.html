@@ -7667,7 +7667,15 @@ function openSheet(id){
  closeMenus();
  if(id==='strat')buildStratList();
  if(id==='draw')buildDrawSheet();
- if(id==='stock')buildStkList();
+ if(id==='stock'){
+  _stkSearchQuery='';
+  buildStkList();
+  setTimeout(()=>{
+   const inp=document.getElementById('stk-search-inp');
+   if(inp)inp.value='';
+   _initStkSearch();
+  },50);
+ }
  if(id==='ind')buildIndList();
  if(id==='alert'){
  // Use last traded price from candles (most accurate)
