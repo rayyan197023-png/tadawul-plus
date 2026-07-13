@@ -7698,33 +7698,41 @@ function closeSheet(){
 function buildStkList(){
  const el=document.getElementById('stk-list');
  if(!el)return;
- // Update shariah button state
- const _shBtn=document.getElementById('shariah-btn');
- if(_shBtn){
-  _shBtn.style.background=_shariahFilter?'rgba(34,197,94,0.15)':'rgba(255,255,255,0.05)';
-  _shBtn.style.border='1px solid '+(_shariahFilter?'rgba(34,197,94,0.5)':'rgba(255,255,255,0.15)');
-  _shBtn.style.color=_shariahFilter?'#22c55e':'#7a8298';
-  _shBtn.textContent='☪ '+(_shariahFilter?'متوافق شرعياً':'فلتر شرعي');
- }
  el.innerHTML='';
- const list=_shariahFilter?STOCKS.filter(s=>s.shariah!==false):STOCKS;
+
+ const q=(_stkSearchQuery||'').trim().toLowerCase();
+ const list=!q?STOCKS:STOCKS.filter(s=>{
+  const name=(s.name||'').toLowerCase();
+  const nameEn=(s.name_en||'').toLowerCase();
+  const sym=(s.sym||'').toLowerCase();
+  return name.includes(q)||nameEn.includes(q)||sym.includes(q);
+ });
+
+ if(!list.length){
+  el.innerHTML='<div style="text-align:center;padding:30px 16px;color:#3a4060;font-size:12px;font-family:Cairo,sans-serif">لا توجد نتائج مطابقة</div>';
+  return;
+ }
+
  list.forEach(s=>{
   const up=s.pct>=0;
   const row=document.createElement('button');row.className='srow';
   row.style.background=state.stk.sym===s.sym?'rgba(59,158,255,0.06)':'transparent';
-  const shBadge=s.shariah===true?'<span style="font-size:8px;background:rgba(34,197,94,0.15);color:#22c55e;border:1px solid rgba(34,197,94,0.3);border-radius:8px;padding:1px 5px;margin-right:4px;font-family:Cairo">☪</span>':s.shariah===false?'<span style="font-size:8px;background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:1px 5px;margin-right:4px;font-family:Cairo">✕</span>':'';
-  row.innerHTML=`<div><span style="font-size:11px;font-weight:700;color:${up?'#22c55e':'#ef4444'}">${up?'+':''}${s.pct}%</span><br><span style="font-size:9px;color:#3a4060">${s.sec}</span></div><div style="text-align:right"><span style="font-size:15px;font-weight:800;color:#f0f2f8">${s.name}</span>${shBadge}<br><span style="font-size:10px;color:#3b9eff;font-family:monospace">${s.sym} · ${s.p.toFixed(2)}</span></div>`;
+  row.innerHTML=`<div><span style="font-size:11px;font-weight:700;color:${up?'#22c55e':'#ef4444'}">${up?'+':''}${s.pct}%</span><br><span style="font-size:9px;color:#3a4060">${s.sec}</span></div><div style="text-align:right"><span style="font-size:15px;font-weight:800;color:#f0f2f8">${s.name}</span><br><span style="font-size:10px;color:#3b9eff;font-family:monospace">${s.sym} · ${s.p.toFixed(2)}</span></div>`;
   row.onclick=()=>{state.stk=s;chartReady=false;showLoader(s.name);loadStk();closeSheet();};
   el.appendChild(row);
  });
 }
-function toggleShariah(){
- _shariahFilter=!_shariahFilter;
- buildStkList();
- // Show toast
- const t=document.getElementById('toast');
- if(t){t.textContent=_shariahFilter?'☪ عرض الأسهم المتوافقة شرعياً فقط':'عرض جميع الأسهم';t.style.display='block';t.style.opacity='1';setTimeout(()=>t.style.opacity='0',2000);}
+
+function _initStkSearch(){
+ const inp=document.getElementById('stk-search-inp');
+ if(!inp||inp._bound)return;
+ inp._bound=true;
+ inp.addEventListener('input',()=>{
+  _stkSearchQuery=inp.value;
+  buildStkList();
+ });
 }
+
 // ── تجميع الشموع اليومية إلى أسبوعية/شهرية ──────────────────────
 // سهمك يوفّر بيانات يومية فقط (endpoint: historical).
 // للفريمات الأكبر نجمّع محلياً: فتح أول يوم، إغلاق آخر يوم، أعلى/أدنى الكل، مجموع الحجم.
