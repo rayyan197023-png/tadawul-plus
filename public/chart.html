@@ -376,7 +376,17 @@ button{font-family:'Cairo',sans-serif;cursor:pointer;outline:none}
   <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
    <button class="scls" onclick="closeSheet()">إغلاق</button>
    <span class="stit">اختر السهم</span>
-   <button id="shariah-btn" onclick="toggleShariah()" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:5px 12px;color:#7a8298;font-size:11px;font-family:Cairo,sans-serif;cursor:pointer">☪ فلتر شرعي</button>
+   <div style="width:52px"></div>
+  </div>
+  <div style="padding:0 16px;width:100%;box-sizing:border-box">
+   <div style="position:relative;width:100%">
+    <input id="stk-search-inp" type="text" inputmode="search" placeholder="ابحث بالاسم أو الرمز..."
+     style="width:100%;background:#0c1424;border:1.5px solid #1e2d45;border-radius:12px;color:#f0f2f8;font-size:14px;font-family:Cairo,sans-serif;padding:11px 38px 11px 14px;box-sizing:border-box;direction:rtl;outline:none">
+    <svg viewBox="0 0 20 20" fill="none" width="16" height="16" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none">
+     <circle cx="8.5" cy="8.5" r="6" stroke="#4a6080" stroke-width="1.6"/>
+     <line x1="13" y1="13" x2="17.5" y2="17.5" stroke="#4a6080" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+   </div>
   </div>
  </div>
  <div class="sbody" id="stk-list"></div>
