@@ -10651,7 +10651,7 @@ document.fonts.ready.then(()=>{[0,100,300].forEach(t=>setTimeout(sizeChart,t));}
 
 // ═══ AI DRAW ON CHART ═══
 let _aiDrawMode=null;
-let _shariahFilter=false; // فلتر الامتثال الشرعي
+let _stkSearchQuery=''; // نص بحث اختيار السهم
 let _aiAnnotations=[]; // {type, price, price2, label, color, idx1, idx2}
 function applyAIDrawingsToChart(){
   // Show mode selector modal
