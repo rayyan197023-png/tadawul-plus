@@ -91,9 +91,10 @@ function _findPivots(arr, lookback=5){
 // Bullish: قاع سعر أدنى (LL) + قاع مؤشر أعلى (HL) -- خط يربط قاع بقاع فقط
 function _calcDivergences(prices, indArr, label){
  if(!prices||!indArr||prices.length<20) return [];
- const LB=5;
- const MATCH_WIN=8; // أقصى فرق بالمواضع بين قمة السعر وقمة المؤشر المقابلة لها
- const MIN_GAP=6;   // أقل مسافة زمنية مسموحة بين نقطتي التباعد
+ const LB=7;         // نافذة أوسع لتقليل التقاط تذبذبات صغيرة كقمم/قيعان وهمية
+ const MATCH_WIN=8;  // أقصى فرق بالمواضع بين قمة السعر وقمة المؤشر المقابلة لها
+ const MIN_GAP=6;    // أقل مسافة زمنية مسموحة بين نقطتي التباعد
+ const MAX_GAP=Math.max(40,Math.round(prices.length*0.15)); // أقصى مسافة زمنية منطقية (نسبة من طول البيانات)
 
  const pPivots=_findPivots(prices,LB);
  const iPivots=_findPivots(indArr,LB);
