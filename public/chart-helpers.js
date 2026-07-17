@@ -199,12 +199,12 @@ function _calcDivergences(prices, indArr, label, color){
   for(let b=a+1;b<pPivots.lows.length;b++){
    const pL1=pPivots.lows[a],pL2=pPivots.lows[b];
    const gap=pL2.i-pL1.i;
-   if(gap<6||gap>120) continue;
-   if(pL2.v>=pL1.v*1.002) continue;
+   if(gap<4||gap>200) continue;
+   if(pL2.v>=pL1.v*1.005) continue;
    const iL2=nearest(iPivots.lows,pL2.i,MATCH_WIN);
    const iL1=nearest(iPivots.lows,pL1.i,MATCH_WIN);
    if(!iL2||!iL1||iL2===iL1) continue;
-   if(iL2.v<=iL1.v*1.002) continue;
+   if(iL2.v<=iL1.v*0.995) continue;
    const baseScore=score(pL1.v,pL2.v,iL1.v,iL2.v,'bullish');
    const strengthBoost=(_pivotStrength(pL1,arrLen)+_pivotStrength(pL2,arrLen))/2;
    rawDivs.push({type:'bullish',i1:pL1.i,i2:pL2.i,
