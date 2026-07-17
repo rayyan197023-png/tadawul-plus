@@ -4111,12 +4111,16 @@ try{
  if(state.inds.includes('RSI')){
   const _fullRsi=_indCache.results?_indCache.results.rsi:null;
   const _fullPricesR=state.allCandles.map(d=>d.c);
-  const _allDivsR=_fullRsi?_calcDivergences(_fullPricesR,_fullRsi,'RSI',cfg.c):[];
+  const _allDivsR=_fullRsi?_calcDivergences(_fullPricesR,_fullRsi,'RSI'):[];
   const VIS_R=sub.length;
   const end_R=state.allCandles.length-Math.min(Math.max(0,state.offset),Math.max(0,state.allCandles.length-VIS_R));
   const start_R=Math.max(0,end_R-VIS_R);
-  const _divs=_allDivsR.filter(dv=>dv.i1>=start_R&&dv.i2<end_R).map(dv=>({...dv,i1:dv.i1-start_R,i2:dv.i2-start_R}));
-  _divs.slice(-3).forEach(dv=>{
+  const _divsVis=_allDivsR.filter(dv=>dv.i1>=start_R&&dv.i2<end_R).map(dv=>({...dv,i1:dv.i1-start_R,i2:dv.i2-start_R}));
+  // فصل صارم: أقوى إشارة هبوطية + أقوى إشارة صعودية فقط -- لا اختلاط بين النوعين
+  const _bestBearR=_divsVis.filter(d=>d.type==='bearish').sort((a,b)=>b.score-a.score)[0];
+  const _bestBullR=_divsVis.filter(d=>d.type==='bullish').sort((a,b)=>b.score-a.score)[0];
+  const _divs=[_bestBearR,_bestBullR].filter(Boolean);
+  _divs.forEach(dv=>{
    const x1=tx(dv.i1), x2=tx(dv.i2);
    const iy1=tyS(dv.ii1,0,100), iy2=tyS(dv.ii2,0,100);
    // Shaded area on indicator panel
