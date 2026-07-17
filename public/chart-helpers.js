@@ -160,13 +160,6 @@ function _calcDivergences(prices, indArr, label){
     if(pPivots.highs[m].v>pB.v){_brokenByHigher=true;break;}
    }
    if(_brokenByHigher) continue;
-   // فحص إضافي لمؤشرات تتذبذب حول الصفر (MACD وغيره): لا يجوز وجود عبور كبير
-   // لخط الصفر بالاتجاه المعاكس بين النقطتين -- يمنع ربط قاعين/قمتين عبر دورة زخم كاملة مختلفة
-   const _iSliceH=indArr.slice(Math.min(iA.i,iB.i),Math.max(iA.i,iB.i)+1).filter(v=>v!=null);
-   if(_iSliceH.length){
-    const _maxBetween=Math.max(..._iSliceH);
-    if(_maxBetween>Math.max(iA.v,iB.v)*1.4 && _maxBetween>0) continue; // قمة وسطى أعلى بوضوح = دورة زخم منفصلة
-   }
 
    const iA=nearest(iPivots.highs,pA.i);
    const iB=nearest(iPivots.highs,pB.i);
