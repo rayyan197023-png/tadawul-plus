@@ -56,6 +56,11 @@ function _findPivots(arr, lookback=5){
  const highs=[],lows=[];
  if(n<lookback*2+1) return {highs,lows};
 
+ const validVals=arr.filter(v=>v!=null);
+ if(validVals.length<10) return {highs,lows};
+ const range=Math.max(...validVals)-Math.min(...validVals)||1;
+ const minMove=range*0.015; // القمة/القاع يجب يبرز 1.5% على الأقل من مدى القيم -- يمنع التقاط ضجيج تافه
+
  for(let i=lookback;i<n-lookback;i++){
   if(arr[i]==null) continue;
   let isHigh=true,isLow=true;
@@ -64,6 +69,15 @@ function _findPivots(arr, lookback=5){
    if(left==null||right==null){isHigh=false;isLow=false;break;}
    if(left>arr[i]||right>arr[i]) isHigh=false;
    if(left<arr[i]||right<arr[i]) isLow=false;
+  }
+  // حد أدنى لحجم الحركة عن أقرب جار مباشر -- يمنع اعتبار كل تعرج بسيط "قمة"
+  if(isHigh){
+   const neigh=Math.max(arr[i-1]??arr[i], arr[i+1]??arr[i]);
+   if(arr[i]-neigh<minMove) isHigh=false;
+  }
+  if(isLow){
+   const neigh=Math.min(arr[i-1]??arr[i], arr[i+1]??arr[i]);
+   if(neigh-arr[i]<minMove) isLow=false;
   }
   if(isHigh) highs.push({i,v:arr[i]});
   if(isLow) lows.push({i,v:arr[i]});
