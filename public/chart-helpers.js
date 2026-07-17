@@ -86,98 +86,89 @@ function _findPivots(arr, lookback=5){
  return {highs:_dedupe(highs,true), lows:_dedupe(lows,false)};
 }
 
-
-function _calcDivergences(prices, indArr, label, color){
+// ── كشف التباعد (Divergence) وفق المعيار الأكاديمي القياسي ──
+// Bearish: قمة سعر أعلى (HH) + قمة مؤشر أدنى (LH) -- خط يربط قمة بقمة فقط
+// Bullish: قاع سعر أدنى (LL) + قاع مؤشر أعلى (HL) -- خط يربط قاع بقاع فقط
+function _calcDivergences(prices, indArr, label){
  if(!prices||!indArr||prices.length<20) return [];
  const LB=5;
- const MATCH_WIN=LB+10; // نافذة أوسع لمطابقة القمة/القاع الكبير حتى لو انزاح زمنياً قليلاً عن المؤشر
- const MIN_GAP=8; // الحد الأدنى بين إشارتين تباعد
+ const MATCH_WIN=8; // أقصى فرق بالمواضع بين قمة السعر وقمة المؤشر المقابلة لها
+ const MIN_GAP=6;   // أقل مسافة زمنية مسموحة بين نقطتي التباعد
 
- // القمم/القيعان الآن مفلترة بالبروزية (راجع _findPivots الجديدة)
- const pPivots=_findPivots(prices, LB);
- const iPivots=_findPivots(indArr, LB);
+ const pPivots=_findPivots(prices,LB);
+ const iPivots=_findPivots(indArr,LB);
 
- // مدى السعر الكلي -- نستخدمه لتطبيع قوة القمة (لحساب أهميتها النسبية)
  const validPrices=prices.filter(v=>v!=null);
  const priceRange=Math.max(...validPrices)-Math.min(...validPrices)||1;
 
- const nearest=(arr,idx,win)=>{
-  let best=null,bestD=win+1;
-  arr.forEach(p=>{const d=Math.abs(p.i-idx);if(d<=win&&d<bestD){bestD=d;best=p;}});
+ // أقرب pivot على المؤشر لموضع معيّن من السعر (بحد أقصى MATCH_WIN)
+ const nearest=(list,idx)=>{
+  let best=null,bestD=MATCH_WIN+1;
+  for(const p of list){
+   const d=Math.abs(p.i-idx);
+   if(d<=MATCH_WIN&&d<bestD){bestD=d;best=p;}
+  }
   return best;
  };
 
- // قوة القمة نفسها: كم تبرز عن السعر المحيط (نسبة من مدى السعر الكلي)
- // + وزن إضافي للقمم الأحدث (الأقرب لآخر شمعة) لأنها أكثر أهمية للقرار الحالي
- const _pivotStrength=(pv,arrLen)=>{
-  const recencyBoost = 1 + (pv.i/arrLen)*0.5; // حتى +50% وزن للقمم الأحدث
-  return recencyBoost;
- };
+ const results=[];
 
- // قوة التباعد نفسه: الفرق النسبي بين حركة السعر وحركة المؤشر
- const score=(p1,p2,i1,i2,type)=>{
-  const priceMovePct=Math.abs(p2-p1)/priceRange;
-  const indMovePct=Math.abs(i2-i1)/Math.abs(i1||1);
-  return priceMovePct*2 + indMovePct; // نعطي وزن أكبر لحجم حركة السعر (القمة الفعلية)
- };
-
- const rawDivs=[];
- const arrLen=prices.length;
-
- // ── Bearish: قمة سعر أعلى + قمة مؤشر أدنى ──
+ // ── Bearish divergence: قمة سعر ↔ قمة سعر فقط ──
  for(let a=0;a<pPivots.highs.length;a++){
   for(let b=a+1;b<pPivots.highs.length;b++){
-   const pH1=pPivots.highs[a],pH2=pPivots.highs[b];
-   const gap=pH2.i-pH1.i;
-   if(gap<4||gap>200) continue;
-   if(pH2.v<=pH1.v*0.995) continue; // يجب أن تكون القمة الثانية أعلى فعلياً (تساهل أكبر)
-   const iH2=nearest(iPivots.highs,pH2.i,MATCH_WIN);
-   const iH1=nearest(iPivots.highs,pH1.i,MATCH_WIN);
-   if(!iH2||!iH1||iH2===iH1) continue;
-   if(iH2.v>=iH1.v*1.005) continue; // المؤشر يجب يكون أدنى أو شبه مساوٍ (تساهل أكبر)
-   const baseScore=score(pH1.v,pH2.v,iH1.v,iH2.v,'bearish');
-   const strengthBoost=(_pivotStrength(pH1,arrLen)+_pivotStrength(pH2,arrLen))/2;
-   rawDivs.push({type:'bearish',i1:pH1.i,i2:pH2.i,
-    ii1:iH1.v,ii2:iH2.v,
-    score:baseScore*strengthBoost,
-    label:'هبوط '+label,color:'#ef4444'});
+   const pA=pPivots.highs[a], pB=pPivots.highs[b];
+   if(pB.i-pA.i<MIN_GAP) continue;
+   if(pB.v<=pA.v) continue; // يجب أن تكون القمة الثانية أعلى فعلياً (Higher High)
+
+   const iA=nearest(iPivots.highs,pA.i);
+   const iB=nearest(iPivots.highs,pB.i);
+   if(!iA||!iB||iA===iB) continue;
+   if(iB.v>=iA.v) continue; // المؤشر يجب يكون أدنى (Lower High) = تباعد حقيقي
+
+   const priceMovePct=(pB.v-pA.v)/priceRange;
+   const indMovePct=Math.abs(iB.v-iA.v)/(Math.abs(iA.v)||1);
+   results.push({
+    type:'bearish', i1:pA.i, i2:pB.i, ii1:iA.v, ii2:iB.v,
+    score:priceMovePct*3+indMovePct,
+    label:'هبوط '+label, color:'#ef4444'
+   });
   }
  }
 
- // ── Bullish: قاع سعر أدنى + قاع مؤشر أعلى ──
+ // ── Bullish divergence: قاع سعر ↔ قاع سعر فقط ──
  for(let a=0;a<pPivots.lows.length;a++){
   for(let b=a+1;b<pPivots.lows.length;b++){
-   const pL1=pPivots.lows[a],pL2=pPivots.lows[b];
-   const gap=pL2.i-pL1.i;
-   if(gap<4||gap>200) continue;
-   if(pL2.v>=pL1.v*1.005) continue;
-   const iL2=nearest(iPivots.lows,pL2.i,MATCH_WIN);
-   const iL1=nearest(iPivots.lows,pL1.i,MATCH_WIN);
-   if(!iL2||!iL1||iL2===iL1) continue;
-   if(iL2.v<=iL1.v*0.995) continue;
-   const baseScore=score(pL1.v,pL2.v,iL1.v,iL2.v,'bullish');
-   const strengthBoost=(_pivotStrength(pL1,arrLen)+_pivotStrength(pL2,arrLen))/2;
-   rawDivs.push({type:'bullish',i1:pL1.i,i2:pL2.i,
-    ii1:iL1.v,ii2:iL2.v,
-    score:baseScore*strengthBoost,
-    label:'صعود '+label,color:'#22c55e'});
+   const pA=pPivots.lows[a], pB=pPivots.lows[b];
+   if(pB.i-pA.i<MIN_GAP) continue;
+   if(pB.v>=pA.v) continue; // يجب أن يكون القاع الثاني أدنى فعلياً (Lower Low)
+
+   const iA=nearest(iPivots.lows,pA.i);
+   const iB=nearest(iPivots.lows,pB.i);
+   if(!iA||!iB||iA===iB) continue;
+   if(iB.v<=iA.v) continue; // المؤشر يجب يكون أعلى (Higher Low) = تباعد حقيقي
+
+   const priceMovePct=(pA.v-pB.v)/priceRange;
+   const indMovePct=Math.abs(iB.v-iA.v)/(Math.abs(iA.v)||1);
+   results.push({
+    type:'bullish', i1:pA.i, i2:pB.i, ii1:iA.v, ii2:iB.v,
+    score:priceMovePct*3+indMovePct,
+    label:'صعود '+label, color:'#22c55e'
+   });
   }
  }
 
- // رتّب حسب القوة تنازلياً، ثم أزل التداخلات (احتفظ بالأقوى فقط لكل نطاق زمني)
- rawDivs.sort((a,b)=>b.score-a.score);
+ // رتّب حسب القوة تنازلياً، وأزل التداخل الزمني (احتفظ بالأقوى لكل نطاق)
+ results.sort((a,b)=>b.score-a.score);
  const final=[];
- rawDivs.forEach(dv=>{
+ for(const r of results){
   const overlap=final.find(f=>
-   f.type===dv.type &&
-   !(dv.i2+MIN_GAP<f.i1 || dv.i1>f.i2+MIN_GAP)
+   f.type===r.type && !(r.i2+MIN_GAP<f.i1 || r.i1>f.i2+MIN_GAP)
   );
-  if(!overlap) final.push(dv);
- });
+  if(!overlap) final.push(r);
+ }
 
  return final.sort((a,b)=>a.i2-b.i2);
 }
-
 
 const API_CONFIG = {
   // تداول+ -- SAHMK API Integration via Next.js proxy
