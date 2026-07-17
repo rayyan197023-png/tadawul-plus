@@ -110,9 +110,29 @@ function _findPivots(arr, lookback=5){
   return merged;
  };
 
+ const finalHighs=_filterAndMerge(rawHighs,true);
+ const finalLows=_filterAndMerge(rawLows,false);
+
+ // ── ضمان وجود القمة/القاع الأكبر إطلاقاً بالنطاق (Global Extremum) ──
+ // حتى لو lookback المحلي فوّتها (لأنها جزء من صعود/هبوط حاد متواصل)،
+ // نضيفها يدوياً كضمان -- لأنها الأهم أكاديمياً بلا منازع
+ const _ensureGlobalExtreme=(finalList,isHigh)=>{
+  let bestIdx=-1,bestV=isHigh?-Infinity:Infinity;
+  arr.forEach((v,i)=>{
+   if(v==null)return;
+   if(isHigh?v>bestV:v<bestV){bestV=v;bestIdx=i;}
+  });
+  if(bestIdx===-1)return finalList;
+  const already=finalList.some(p=>Math.abs(p.i-bestIdx)<lookback);
+  if(already)return finalList;
+  const merged=[...finalList,{i:bestIdx,v:bestV,prom:range}]
+   .sort((a,b)=>a.i-b.i);
+  return merged;
+ };
+
  return {
-  highs:_filterAndMerge(rawHighs,true),
-  lows:_filterAndMerge(rawLows,false)
+  highs:_ensureGlobalExtreme(finalHighs,true),
+  lows:_ensureGlobalExtreme(finalLows,false)
  };
 }
 
