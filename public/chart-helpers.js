@@ -128,7 +128,7 @@ function _calcDivergences(prices, indArr, label){
  const pPivots=_findPivots(alignedPrices,LB);
  const iPivots=_findPivots(alignedInd,LB);
 
- const validPrices=prices.filter(v=>v!=null);
+ const validPrices=alignedPrices.filter(v=>v!=null);
  const priceRange=Math.max(...validPrices)-Math.min(...validPrices)||1;
 
  // أقرب pivot على المؤشر لموضع معيّن من السعر (بحد أقصى MATCH_WIN)
@@ -197,6 +197,12 @@ function _calcDivergences(prices, indArr, label){
    f.type===r.type && !(r.i2+MIN_GAP<f.i1 || r.i1>f.i2+MIN_GAP)
   );
   if(!overlap) final.push(r);
+ }
+
+ // إعادة إضافة الإزاحة (_offsetShift) حتى تشاور النتائج لنفس index الصحيح
+ // بمصفوفة الأسعار الأصلية الكاملة (state.allCandles) المستخدمة بالرسم
+ if(_offsetShift>0){
+  final.forEach(r=>{ r.i1+=_offsetShift; r.i2+=_offsetShift; });
  }
 
  return final.sort((a,b)=>a.i2-b.i2);
