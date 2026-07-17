@@ -4181,13 +4181,17 @@ try{
    // Use full cached arrays for better pivot detection (not just viewport slice)
    const _fullHist=_indCache.mcd?_indCache.mcd.hist:null;
    const _fullPrices=state.allCandles.map(d=>d.c);
-   const _allDivs2=_fullHist?_calcDivergences(_fullPrices,_fullHist,'MACD','#38bdf8'):[];
+   const _allDivs2=_fullHist?_calcDivergences(_fullPrices,_fullHist,'MACD'):[];
    // Convert full-array indices to viewport indices
    const VIS2=sub.length;
    const end2=state.allCandles.length-Math.min(Math.max(0,state.offset),Math.max(0,state.allCandles.length-VIS2));
    const start2=Math.max(0,end2-VIS2);
-   const _divs2=_allDivs2.filter(dv=>dv.i1>=start2&&dv.i2<end2).map(dv=>({...dv,i1:dv.i1-start2,i2:dv.i2-start2}));
-   _divs2.slice(-3).forEach(dv=>{
+   const _divs2Vis=_allDivs2.filter(dv=>dv.i1>=start2&&dv.i2<end2).map(dv=>({...dv,i1:dv.i1-start2,i2:dv.i2-start2}));
+   // فصل صارم: أقوى هبوطية + أقوى صعودية فقط
+   const _bestBearM=_divs2Vis.filter(d=>d.type==='bearish').sort((a,b)=>b.score-a.score)[0];
+   const _bestBullM=_divs2Vis.filter(d=>d.type==='bullish').sort((a,b)=>b.score-a.score)[0];
+   const _divs2=[_bestBearM,_bestBullM].filter(Boolean);
+   _divs2.forEach(dv=>{
     const x1=tx(dv.i1),x2=tx(dv.i2);
     const iy1=tyS(dv.ii1,mn2,mx2),iy2=tyS(dv.ii2,mn2,mx2);
     // Shaded area
