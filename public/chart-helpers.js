@@ -191,17 +191,6 @@ function _calcDivergences(prices, indArr, label){
     if(pPivots.lows[m].v<pB.v){_brokenByLower=true;break;}
    }
    if(_brokenByLower) continue;
-   // فحص إضافي لمؤشرات تتذبذب حول الصفر (MACD وغيره): لا يجوز وجود عبور كبير
-   // لخط الصفر بالاتجاه المعاكس بين النقطتين -- يمنع ربط قاعين عبر قمة موجبة ضخمة تتوسطهما
-   const _iSliceL=indArr.slice(Math.min(iA.i,iB.i),Math.max(iA.i,iB.i)+1).filter(v=>v!=null);
-   if(_iSliceL.length){
-    const _maxBetween2=Math.max(..._iSliceL);
-    const _refLevel=Math.min(iA.v,iB.v);
-    // لو أعلى قيمة بين النقطتين تتجاوز الصفر بوضوح رغم أن القاعين سالبين -- يعني فيه دورة زخم كاملة تتوسط
-    if(_refLevel<0 && _maxBetween2>Math.abs(_refLevel)*0.5) continue;
-    // أو لو أعلى قيمة بين النقطتين أعلى بكثير من كلا القاعين حتى لو موجبين
-    if(_maxBetween2>Math.max(Math.abs(iA.v),Math.abs(iB.v))*1.8 && _maxBetween2>0) continue;
-   }
 
    const iA=nearest(iPivots.lows,pA.i);
    const iB=nearest(iPivots.lows,pB.i);
