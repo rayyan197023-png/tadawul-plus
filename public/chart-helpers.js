@@ -48,22 +48,74 @@ function normalizeCandles(rawData){
 
 
 // ── Divergence Detection ────────────────────────────────
+// ── كشف القمم/القيعان بمعيار البروزية (Prominence) بدل "أعلى من الجيران" فقط ──
+// البروزية = مدى ارتفاع/انخفاض القمة عن أقرب نقطة معاكسة قبلها وبعدها
+// هذا يمنع التقاط تذبذبات صغيرة تافهة، ويركّز على القمم/القيعان الفعلية البارزة
 function _findPivots(arr, lookback=5){
- // Find local highs and lows in array
- const highs=[], lows=[];
- for(let i=lookback; i<arr.length-lookback; i++){
+ const validVals=arr.filter(v=>v!=null);
+ if(validVals.length<10) return {highs:[], lows:[]};
+ const range=Math.max(...validVals)-Math.min(...validVals)||1;
+ const minProminence=range*0.08; // القمة يجب تبرز بنسبة 8% من مدى المؤشر على الأقل
+
+ // خطوة 1: اكتشاف كل النقاط المحلية (raw candidates) بنافذة صغيرة
+ const rawHighs=[],rawLows=[];
+ for(let i=lookback;i<arr.length-lookback;i++){
   if(arr[i]==null) continue;
-  let isHigh=true, isLow=true;
-  for(let j=i-lookback; j<=i+lookback; j++){
+  let isHigh=true,isLow=true;
+  for(let j=i-lookback;j<=i+lookback;j++){
    if(j===i||arr[j]==null) continue;
    if(arr[j]>=arr[i]) isHigh=false;
    if(arr[j]<=arr[i]) isLow=false;
   }
-  if(isHigh) highs.push({i, v:arr[i]});
-  if(isLow)  lows.push({i, v:arr[i]});
+  if(isHigh) rawHighs.push({i,v:arr[i]});
+  if(isLow) rawLows.push({i,v:arr[i]});
  }
- return {highs, lows};
+
+ // خطوة 2: احسب البروزية الفعلية لكل مرشّح (أقرب قاع/قمة معاكسة على الجانبين)
+ const _prominence=(cand,isHigh)=>{
+  const {i,v}=cand;
+  // ابحث يميناً ويساراً عن أقرب نقطة معاكسة (تصل لمستوى مختلف بوضوح)
+  let leftExtreme=v, rightExtreme=v;
+  for(let j=i-1;j>=0;j--){
+   if(arr[j]==null) continue;
+   if(isHigh){ if(arr[j]<leftExtreme) leftExtreme=arr[j]; if(arr[j]>v) break; }
+   else{ if(arr[j]>leftExtreme) leftExtreme=arr[j]; if(arr[j]<v) break; }
+  }
+  for(let j=i+1;j<arr.length;j++){
+   if(arr[j]==null) continue;
+   if(isHigh){ if(arr[j]<rightExtreme) rightExtreme=arr[j]; if(arr[j]>v) break; }
+   else{ if(arr[j]>rightExtreme) rightExtreme=arr[j]; if(arr[j]<v) break; }
+  }
+  return isHigh ? Math.min(v-leftExtreme,v-rightExtreme) : Math.min(rightExtreme-v,leftExtreme-v);
+ };
+
+ // خطوة 3: فلترة حسب الحد الأدنى للبروزية + دمج القمم المتقاربة جداً (خذ الأبرز)
+ const _filterAndMerge=(candidates,isHigh)=>{
+  const scored=candidates
+   .map(c=>({...c,prom:_prominence(c,isHigh)}))
+   .filter(c=>c.prom>=minProminence)
+   .sort((a,b)=>a.i-b.i);
+  const merged=[];
+  const MERGE_GAP=lookback*2;
+  scored.forEach(c=>{
+   const last=merged[merged.length-1];
+   if(last && (c.i-last.i)<MERGE_GAP){
+    // نقطتان قريبتان جداً زمنياً -- احتفظ بالأبرز (الأعلى بروزية، أو الأعلى/الأدنى فعلياً)
+    const better = isHigh ? (c.v>last.v?c:last) : (c.v<last.v?c:last);
+    merged[merged.length-1]=better;
+   } else {
+    merged.push(c);
+   }
+  });
+  return merged;
+ };
+
+ return {
+  highs:_filterAndMerge(rawHighs,true),
+  lows:_filterAndMerge(rawLows,false)
+ };
 }
+
 
 function _calcDivergences(prices, indArr, label, color){
  if(!prices||!indArr||prices.length<20) return [];
