@@ -117,7 +117,8 @@ function _calcDivergences(prices, indArr, label){
  for(let a=0;a<pPivots.highs.length;a++){
   for(let b=a+1;b<pPivots.highs.length;b++){
    const pA=pPivots.highs[a], pB=pPivots.highs[b];
-   if(pB.i-pA.i<MIN_GAP) continue;
+   const _gapAB=pB.i-pA.i;
+   if(_gapAB<MIN_GAP||_gapAB>MAX_GAP) continue; // مسافة زمنية منطقية فقط -- يمنع ربط قمم بعيدة جداً
    if(pB.v<=pA.v) continue; // يجب أن تكون القمة الثانية أعلى فعلياً (Higher High)
 
    const iA=nearest(iPivots.highs,pA.i);
