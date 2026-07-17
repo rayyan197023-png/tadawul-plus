@@ -179,12 +179,12 @@ function _calcDivergences(prices, indArr, label, color){
   for(let b=a+1;b<pPivots.highs.length;b++){
    const pH1=pPivots.highs[a],pH2=pPivots.highs[b];
    const gap=pH2.i-pH1.i;
-   if(gap<6||gap>120) continue;
-   if(pH2.v<=pH1.v*0.998) continue; // يجب أن تكون القمة الثانية أعلى فعلياً
+   if(gap<4||gap>200) continue;
+   if(pH2.v<=pH1.v*0.995) continue; // يجب أن تكون القمة الثانية أعلى فعلياً (تساهل أكبر)
    const iH2=nearest(iPivots.highs,pH2.i,MATCH_WIN);
    const iH1=nearest(iPivots.highs,pH1.i,MATCH_WIN);
    if(!iH2||!iH1||iH2===iH1) continue;
-   if(iH2.v>=iH1.v*0.998) continue; // المؤشر يجب يكون أدنى (تباعد حقيقي)
+   if(iH2.v>=iH1.v*1.005) continue; // المؤشر يجب يكون أدنى أو شبه مساوٍ (تساهل أكبر)
    const baseScore=score(pH1.v,pH2.v,iH1.v,iH2.v,'bearish');
    const strengthBoost=(_pivotStrength(pH1,arrLen)+_pivotStrength(pH2,arrLen))/2;
    rawDivs.push({type:'bearish',i1:pH1.i,i2:pH2.i,
