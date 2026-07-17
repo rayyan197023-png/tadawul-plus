@@ -145,7 +145,7 @@ function _calcDivergences(prices, indArr, label){
 
  const results=[];
 
- // ── Bearish divergence: قمة سعر ↔ قمة سعر فقط ──
+ // ── Bearish divergence: قمة سعر ↔ قمة سعر فقط، بدون أي قمة أعلى تتوسط بينهما ──
  for(let a=0;a<pPivots.highs.length;a++){
   for(let b=a+1;b<pPivots.highs.length;b++){
    const pA=pPivots.highs[a], pB=pPivots.highs[b];
@@ -153,8 +153,13 @@ function _calcDivergences(prices, indArr, label){
    if(_gapAB<MIN_GAP||_gapAB>MAX_GAP) continue; // مسافة زمنية منطقية فقط -- يمنع ربط قمم بعيدة جداً
    if(pB.v<=pA.v) continue; // يجب أن تكون القمة الثانية أعلى فعلياً (Higher High)
    // تقارب نسبي بالمستوى: لا نربط قمة صغيرة جداً بقمة ضخمة بعيدة عنها بمستوى مختلف كلياً
-   // (يمنع نتائج مضللة بصرياً حيث تبدو إحدى النقطتين "قاعاً" بالمقارنة مع سياق الشارت الكامل)
    if(pB.v/pA.v>1.35) continue; // فرق أكبر من 35% بين القمتين = غير منطقي كزوج تباعد واحد
+   // لا يوجد pivot قمة آخر بينهما أعلى من كلا النقطتين (يكسر التسلسل المنطقي)
+   let _brokenByHigher=false;
+   for(let m=a+1;m<b;m++){
+    if(pPivots.highs[m].v>pB.v){_brokenByHigher=true;break;}
+   }
+   if(_brokenByHigher) continue;
 
    const iA=nearest(iPivots.highs,pA.i);
    const iB=nearest(iPivots.highs,pB.i);
