@@ -105,13 +105,28 @@ function _findPivots(arr, lookback=5){
 // Bullish: قاع سعر أدنى (LL) + قاع مؤشر أعلى (HL) -- خط يربط قاع بقاع فقط
 function _calcDivergences(prices, indArr, label){
  if(!prices||!indArr||prices.length<20) return [];
+
+ // ── محاذاة إجبارية بين مصفوفتي السعر والمؤشر ──
+ // لو المؤشر أقصر (بسبب warm-up period مثل RSI الذي يبدأ من index 14)،
+ // أو لو فيه فرق طول لأي سبب، نحاذي المصفوفتين من النهاية (الأحدث) بحيث
+ // يتطابق كل index تماماً بين prices[i] و indArr[i] لنفس التاريخ فعلياً.
+ // بدون هذي الخطوة، أي فرق طول يجعل الـ index يشاور لتاريخين مختلفين
+ // بين السعر والمؤشر، وهذا يفسّر ربط قمة سعر بقاع مؤشر (خطأ ظاهر بالرسم).
+ let alignedPrices=prices, alignedInd=indArr, _offsetShift=0;
+ if(prices.length!==indArr.length){
+  const minLen=Math.min(prices.length,indArr.length);
+  _offsetShift=prices.length-minLen; // كم شمعة نزحنا من بداية prices
+  alignedPrices=prices.slice(_offsetShift);
+  alignedInd=indArr.slice(indArr.length-minLen);
+ }
+
  const LB=7;         // نافذة أوسع لتقليل التقاط تذبذبات صغيرة كقمم/قيعان وهمية
  const MATCH_WIN=8;  // أقصى فرق بالمواضع بين قمة السعر وقمة المؤشر المقابلة لها
  const MIN_GAP=6;    // أقل مسافة زمنية مسموحة بين نقطتي التباعد
- const MAX_GAP=Math.max(40,Math.round(prices.length*0.15)); // أقصى مسافة زمنية منطقية (نسبة من طول البيانات)
+ const MAX_GAP=Math.max(40,Math.round(alignedPrices.length*0.15)); // أقصى مسافة زمنية منطقية
 
- const pPivots=_findPivots(prices,LB);
- const iPivots=_findPivots(indArr,LB);
+ const pPivots=_findPivots(alignedPrices,LB);
+ const iPivots=_findPivots(alignedInd,LB);
 
  const validPrices=prices.filter(v=>v!=null);
  const priceRange=Math.max(...validPrices)-Math.min(...validPrices)||1;
