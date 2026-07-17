@@ -4407,7 +4407,6 @@ try{
    ctx.stroke();
    const cur=vals[vals.length-1];
    ctx.fillStyle='#86efac';ctx.font='bold 7px monospace';ctx.textAlign='left';ctx.fillText('MFI '+cur.toFixed(0),4,top+10);
-   _renderDivOnPanel(ctx,ind.mfi,_divPrices,'#86efac',(v,mn,mx)=>top+ph-((v-mn)/(mx-mn||1))*ph,tx,top,ph,_divStart,_divEnd,0,100);
    if(!ctx._subYAxes)ctx._subYAxes=[];ctx._subYAxes.push({top,ph,mn2:0,mx2:100,color:'#86efac',panKey:'sub_'+pi});
   }
  }
