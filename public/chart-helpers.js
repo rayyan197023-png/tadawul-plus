@@ -401,15 +401,18 @@ function _drawSubYAxis(ctx, top, ph, mn2, mx2, CW, YW, color, darkTheme, panKey)
 function _renderDivOnPanel(ctx,indArr,priceArr,indColor,tyS,tx,top,ph,start,end,mn2,mx2){
   if(!indArr||!priceArr||indArr.length<20)return;
   const fullPrices=priceArr;
-  const divs=_calcDivergences(fullPrices,indArr,'',indColor);
+  const divs=_calcDivergences(fullPrices,indArr,'');
   if(!divs.length)return;
   const vis=divs.filter(dv=>dv.i1>=start&&dv.i2<end)
     .map(dv=>({...dv,i1:dv.i1-start,i2:dv.i2-start}));
   if(!vis.length)return;
-  vis.slice(-3).forEach(dv=>{
+  // فصل صارم: أقوى إشارة هبوطية + أقوى إشارة صعودية فقط -- لا اختلاط بين النوعين
+  const bestBear=vis.filter(dv=>dv.type==='bearish').sort((a,b)=>b.score-a.score)[0];
+  const bestBull=vis.filter(dv=>dv.type==='bullish').sort((a,b)=>b.score-a.score)[0];
+  [bestBear,bestBull].filter(Boolean).forEach(dv=>{
     const x1=tx(dv.i1),x2=tx(dv.i2);
     const iy1=tyS(dv.ii1,mn2,mx2), iy2=tyS(dv.ii2,mn2,mx2);
-    const clr=dv.color;
+    const clr=dv.type==='bullish'?'#22c55e':'#ef4444';
     // Shaded area on indicator
     ctx.fillStyle=clr+'18';
     ctx.beginPath();ctx.moveTo(x1,iy1);ctx.lineTo(x2,iy2);
