@@ -4909,34 +4909,39 @@ if(lastY>=cTop&&lastY<=cBot&&clampOff===0&&sub[n-1]?.c){
  if((state.inds.includes('RSI')||state.inds.includes('MACD'))&&_indCache.results){
   const _fp2=state.allCandles.map(d=>d.c);
   const _dcr2=_indCache.results;
-  const _drawDivs=(arr,prefix,col)=>{
+  const _drawDivs=(arr,prefix)=>{
    if(!arr||!arr.length)return;
    const vis=arr.filter(d=>d.i1>=start&&d.i2<end).map(d=>({...d,r1:d.i1-start,r2:d.i2-start}));
-   vis.slice(-3).forEach(d=>{
+   if(!vis.length)return;
+   // فصل صارم بين bullish و bearish -- كل نوع له أقوى إشارة واحدة مستقلة
+   // (مو آخر 3 بالترتيب الزمني بغض النظر عن النوع، حتى لا تختلط الخطوط بصرياً)
+   const bestBear=vis.filter(d=>d.type==='bearish').sort((a,b)=>b.score-a.score)[0];
+   const bestBull=vis.filter(d=>d.type==='bullish').sort((a,b)=>b.score-a.score)[0];
+   [bestBear,bestBull].filter(Boolean).forEach(d=>{
     const isBull=d.type==='bullish';
     const p1=_fp2[d.i1],p2=_fp2[d.i2];
     if(!p1||!p2)return;
     const x1=tx(d.r1),x2=tx(d.r2),y1=ty(p1),y2=ty(p2);
     ctx.save();ctx.beginPath();ctx.rect(0,cTop,CW,cH);ctx.clip();
-    ctx.strokeStyle=isBull?'rgba(34,197,94,0.8)':'rgba(239,68,68,0.8)';
-    ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
+    ctx.strokeStyle=isBull?'rgba(34,197,94,0.85)':'rgba(239,68,68,0.85)';
+    ctx.lineWidth=1.6;ctx.setLineDash([5,3]);
     ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
     ctx.setLineDash([]);
     [[x1,y1],[x2,y2]].forEach(([px,py])=>{
-     ctx.beginPath();ctx.arc(px,py,3,0,Math.PI*2);
+     ctx.beginPath();ctx.arc(px,py,3.5,0,Math.PI*2);
      ctx.fillStyle=isBull?'#22c55e':'#ef4444';ctx.fill();
+     ctx.strokeStyle='rgba(0,0,0,0.5)';ctx.lineWidth=0.7;ctx.stroke();
     });
     ctx.font='bold 7px Cairo,sans-serif';ctx.textAlign='center';
     ctx.fillStyle=isBull?'rgba(34,197,94,0.95)':'rgba(239,68,68,0.95)';
-    // Bullish: label BELOW lower pivot | Bearish: label ABOVE higher pivot
     const labelY=isBull?Math.max(y1,y2)+16:Math.min(y1,y2)-8;
     const safeY=isBull?Math.min(cBot-6,labelY):Math.max(cTop+8,labelY);
     ctx.fillText((isBull?'↑ ':'↓ ')+prefix,(x1+x2)/2,safeY);
     ctx.restore();
    });
   };
-  if(_dcr2.rsi)_drawDivs(_calcDivergences(_fp2,_dcr2.rsi,'RSI','#f59e0b'),'RSI');
-  if(_indCache.mcd&&_indCache.mcd.hist)_drawDivs(_calcDivergences(_fp2,_indCache.mcd.hist,'MACD','#38bdf8'),'MACD');
+  if(_dcr2.rsi)_drawDivs(_calcDivergences(_fp2,_dcr2.rsi,'RSI'),'RSI');
+  if(_indCache.mcd&&_indCache.mcd.hist)_drawDivs(_calcDivergences(_fp2,_indCache.mcd.hist,'MACD'),'MACD');
  }
 
  // Strategy Signal Overlays 
