@@ -47,57 +47,59 @@ function normalizeCandles(rawData){
 }
 
 
-// ── Divergence Detection ────────────────────────────────
-// ── Williams Fractal: كشف قمم وقيعان السوينغ القياسية (معيار أكاديمي راسخ) ──
-// نقطة = قمة سوينغ إذا كانت أعلى من N شمعة قبلها و N شمعة بعدها (والعكس للقاع)
-// هذا هو نفس التعريف المستخدم في المراجع (Murphy, Pring, Elder) لتحديد pivot صالح للتباعد
+
+// ── ZigZag Pivot Detection: المعيار القياسي لتحديد swing points للتباعد ──
+// يمشي عبر البيانات ويحدد قمة/قاع فقط عند انعكاس حقيقي بنسبة % معينة (deviation)
+// هذا أدق من "أعلى من N جار" لأنه يلتقط القمم الحقيقية بغض النظر عن التذبذب المحلي
 function _findPivots(arr, lookback=5){
- const n=arr.length;
- const highs=[],lows=[];
- if(n<lookback*2+1) return {highs,lows};
-
  const validVals=arr.filter(v=>v!=null);
- if(validVals.length<10) return {highs,lows};
+ if(validVals.length<10) return {highs:[],lows:[]};
  const range=Math.max(...validVals)-Math.min(...validVals)||1;
- const minMove=range*0.015; // القمة/القاع يجب يبرز 1.5% على الأقل من مدى القيم -- يمنع التقاط ضجيج تافه
+ const deviation=range*0.03; // أقل انعكاس معتبر = 3% من مدى القيم الكلي
 
- for(let i=lookback;i<n-lookback;i++){
-  if(arr[i]==null) continue;
-  let isHigh=true,isLow=true;
-  for(let j=1;j<=lookback;j++){
-   const left=arr[i-j], right=arr[i+j];
-   if(left==null||right==null){isHigh=false;isLow=false;break;}
-   if(left>arr[i]||right>arr[i]) isHigh=false;
-   if(left<arr[i]||right<arr[i]) isLow=false;
+ const highs=[],lows=[];
+ let lastPivotIdx=-1, lastPivotVal=null, lastPivotType=null; // 'H' or 'L'
+ let curExtreme=null, curExtremeIdx=-1, curDir=null; // 'up' or 'down'
+
+ // ابحث عن أول قيمة صالحة لنبدأ منها
+ let startIdx=arr.findIndex(v=>v!=null);
+ if(startIdx===-1) return {highs,lows};
+ curExtreme=arr[startIdx]; curExtremeIdx=startIdx;
+
+ for(let i=startIdx+1;i<arr.length;i++){
+  const v=arr[i];
+  if(v==null) continue;
+
+  if(curDir===null){
+   // لسه ما تحدد الاتجاه الأول -- نحدده بأول انعكاس معتبر
+   if(v>=curExtreme+deviation){ curDir='up'; curExtreme=v; curExtremeIdx=i; }
+   else if(v<=curExtreme-deviation){ curDir='down'; curExtreme=v; curExtremeIdx=i; }
+   else if(v>curExtreme){ curExtreme=v; curExtremeIdx=i; } // حدّث القمة المؤقتة
+   else if(v<curExtreme){ curExtreme=v; curExtremeIdx=i; } // حدّث القاع المؤقت (بأي جهة أقرب)
+   continue;
   }
-  // حد أدنى لحجم الحركة عن أقرب جار مباشر -- يمنع اعتبار كل تعرج بسيط "قمة"
-  if(isHigh){
-   const neigh=Math.max(arr[i-1]??arr[i], arr[i+1]??arr[i]);
-   if(arr[i]-neigh<minMove) isHigh=false;
+
+  if(curDir==='up'){
+   if(v>curExtreme){ curExtreme=v; curExtremeIdx=i; } // القمة المؤقتة تستمر بالارتفاع
+   else if(v<=curExtreme-deviation){
+    // انعكاس هبوطي معتبر -- القمة المؤقتة كانت قمة سوينغ حقيقية
+    highs.push({i:curExtremeIdx,v:curExtreme});
+    curDir='down'; curExtreme=v; curExtremeIdx=i;
+   }
+  } else { // curDir==='down'
+   if(v<curExtreme){ curExtreme=v; curExtremeIdx=i; } // القاع المؤقت يستمر بالانخفاض
+   else if(v>=curExtreme+deviation){
+    // انعكاس صعودي معتبر -- القاع المؤقت كان قاع سوينغ حقيقي
+    lows.push({i:curExtremeIdx,v:curExtreme});
+    curDir='up'; curExtreme=v; curExtremeIdx=i;
+   }
   }
-  if(isLow){
-   const neigh=Math.min(arr[i-1]??arr[i], arr[i+1]??arr[i]);
-   if(neigh-arr[i]<minMove) isLow=false;
-  }
-  if(isHigh) highs.push({i,v:arr[i]});
-  if(isLow) lows.push({i,v:arr[i]});
  }
+ // أضف آخر extreme لو كان له معنى
+ if(curDir==='up') highs.push({i:curExtremeIdx,v:curExtreme});
+ else if(curDir==='down') lows.push({i:curExtremeIdx,v:curExtreme});
 
- // دمج نقاط متلاصقة (خلال نصف lookback) بالاحتفاظ بالأبرز فقط -- يمنع تكرار نفس القمة عدة مرات
- const _dedupe=(pts,isHigh)=>{
-  if(!pts.length) return pts;
-  const out=[pts[0]];
-  for(let k=1;k<pts.length;k++){
-   const cur=pts[k], last=out[out.length-1];
-   if(cur.i-last.i<=Math.ceil(lookback/2)){
-    const keep=isHigh?(cur.v>last.v?cur:last):(cur.v<last.v?cur:last);
-    out[out.length-1]=keep;
-   } else out.push(cur);
-  }
-  return out;
- };
-
- return {highs:_dedupe(highs,true), lows:_dedupe(lows,false)};
+ return {highs,lows};
 }
 
 // ── كشف التباعد (Divergence) وفق المعيار الأكاديمي القياسي ──
