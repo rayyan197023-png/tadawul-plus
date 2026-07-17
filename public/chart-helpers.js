@@ -140,7 +140,7 @@ function _findPivots(arr, lookback=5){
 function _calcDivergences(prices, indArr, label, color){
  if(!prices||!indArr||prices.length<20) return [];
  const LB=5;
- const MATCH_WIN=LB+4;
+ const MATCH_WIN=LB+10; // نافذة أوسع لمطابقة القمة/القاع الكبير حتى لو انزاح زمنياً قليلاً عن المؤشر
  const MIN_GAP=8; // الحد الأدنى بين إشارتين تباعد
 
  // القمم/القيعان الآن مفلترة بالبروزية (راجع _findPivots الجديدة)
