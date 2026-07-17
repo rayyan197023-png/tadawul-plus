@@ -125,7 +125,7 @@ function _calcDivergences(prices, indArr, label){
  const LB=7;         // نافذة أوسع لتقليل التقاط تذبذبات صغيرة كقمم/قيعان وهمية
  const MATCH_WIN=8;  // أقصى فرق بالمواضع بين قمة السعر وقمة المؤشر المقابلة لها
  const MIN_GAP=6;    // أقل مسافة زمنية مسموحة بين نقطتي التباعد
- const MAX_GAP=Math.max(40,Math.round(alignedPrices.length*0.15)); // أقصى مسافة زمنية منطقية
+ const MAX_GAP=60; // أقصى مسافة زمنية منطقية (شمعة) -- تباعد مفيد عملياً يكون بمدى قريب نسبياً
 
  const pPivots=_findPivots(alignedPrices,LB);
  const iPivots=_findPivots(alignedInd,LB);
