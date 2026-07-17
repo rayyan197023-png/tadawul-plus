@@ -152,6 +152,9 @@ function _calcDivergences(prices, indArr, label){
    const _gapAB=pB.i-pA.i;
    if(_gapAB<MIN_GAP||_gapAB>MAX_GAP) continue; // مسافة زمنية منطقية فقط -- يمنع ربط قمم بعيدة جداً
    if(pB.v<=pA.v) continue; // يجب أن تكون القمة الثانية أعلى فعلياً (Higher High)
+   // تقارب نسبي بالمستوى: لا نربط قمة صغيرة جداً بقمة ضخمة بعيدة عنها بمستوى مختلف كلياً
+   // (يمنع نتائج مضللة بصرياً حيث تبدو إحدى النقطتين "قاعاً" بالمقارنة مع سياق الشارت الكامل)
+   if(pB.v/pA.v>1.35) continue; // فرق أكبر من 35% بين القمتين = غير منطقي كزوج تباعد واحد
 
    const iA=nearest(iPivots.highs,pA.i);
    const iB=nearest(iPivots.highs,pB.i);
