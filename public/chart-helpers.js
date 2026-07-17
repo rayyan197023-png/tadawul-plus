@@ -176,7 +176,7 @@ function _calcDivergences(prices, indArr, label){
   }
  }
 
- // ── Bullish divergence: قاع سعر ↔ قاع سعر فقط ──
+ // ── Bullish divergence: قاع سعر ↔ قاع سعر فقط، بدون أي قاع أدنى يتوسط بينهما ──
  for(let a=0;a<pPivots.lows.length;a++){
   for(let b=a+1;b<pPivots.lows.length;b++){
    const pA=pPivots.lows[a], pB=pPivots.lows[b];
@@ -185,6 +185,12 @@ function _calcDivergences(prices, indArr, label){
    if(pB.v>=pA.v) continue; // يجب أن يكون القاع الثاني أدنى فعلياً (Lower Low)
    // تقارب نسبي بالمستوى: لا نربط قاعاً ضحلاً بقاع عميق جداً بعيد عنه بمستوى مختلف كلياً
    if(pA.v/pB.v>1.35) continue; // فرق أكبر من 35% بين القاعين = غير منطقي كزوج تباعد واحد
+   // لا يوجد pivot قاع آخر بينهما أدنى من كلا النقطتين (يكسر التسلسل المنطقي)
+   let _brokenByLower=false;
+   for(let m=a+1;m<b;m++){
+    if(pPivots.lows[m].v<pB.v){_brokenByLower=true;break;}
+   }
+   if(_brokenByLower) continue;
 
    const iA=nearest(iPivots.lows,pA.i);
    const iB=nearest(iPivots.lows,pB.i);
