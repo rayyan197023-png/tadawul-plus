@@ -48,92 +48,42 @@ function normalizeCandles(rawData){
 
 
 // ── Divergence Detection ────────────────────────────────
-// ── كشف القمم/القيعان بمعيار البروزية (Prominence) بدل "أعلى من الجيران" فقط ──
-// البروزية = مدى ارتفاع/انخفاض القمة عن أقرب نقطة معاكسة قبلها وبعدها
-// هذا يمنع التقاط تذبذبات صغيرة تافهة، ويركّز على القمم/القيعان الفعلية البارزة
+// ── Williams Fractal: كشف قمم وقيعان السوينغ القياسية (معيار أكاديمي راسخ) ──
+// نقطة = قمة سوينغ إذا كانت أعلى من N شمعة قبلها و N شمعة بعدها (والعكس للقاع)
+// هذا هو نفس التعريف المستخدم في المراجع (Murphy, Pring, Elder) لتحديد pivot صالح للتباعد
 function _findPivots(arr, lookback=5){
- const validVals=arr.filter(v=>v!=null);
- if(validVals.length<10) return {highs:[], lows:[]};
- const range=Math.max(...validVals)-Math.min(...validVals)||1;
- const minProminence=range*0.08; // القمة يجب تبرز بنسبة 8% من مدى المؤشر على الأقل
+ const n=arr.length;
+ const highs=[],lows=[];
+ if(n<lookback*2+1) return {highs,lows};
 
- // خطوة 1: اكتشاف كل النقاط المحلية (raw candidates) بنافذة صغيرة
- const rawHighs=[],rawLows=[];
- for(let i=lookback;i<arr.length-lookback;i++){
+ for(let i=lookback;i<n-lookback;i++){
   if(arr[i]==null) continue;
   let isHigh=true,isLow=true;
-  for(let j=i-lookback;j<=i+lookback;j++){
-   if(j===i||arr[j]==null) continue;
-   if(arr[j]>=arr[i]) isHigh=false;
-   if(arr[j]<=arr[i]) isLow=false;
+  for(let j=1;j<=lookback;j++){
+   const left=arr[i-j], right=arr[i+j];
+   if(left==null||right==null){isHigh=false;isLow=false;break;}
+   if(left>arr[i]||right>arr[i]) isHigh=false;
+   if(left<arr[i]||right<arr[i]) isLow=false;
   }
-  if(isHigh) rawHighs.push({i,v:arr[i]});
-  if(isLow) rawLows.push({i,v:arr[i]});
+  if(isHigh) highs.push({i,v:arr[i]});
+  if(isLow) lows.push({i,v:arr[i]});
  }
 
- // خطوة 2: احسب البروزية الفعلية لكل مرشّح (أقرب قاع/قمة معاكسة على الجانبين)
- const _prominence=(cand,isHigh)=>{
-  const {i,v}=cand;
-  // ابحث يميناً ويساراً عن أقرب نقطة معاكسة (تصل لمستوى مختلف بوضوح)
-  let leftExtreme=v, rightExtreme=v;
-  for(let j=i-1;j>=0;j--){
-   if(arr[j]==null) continue;
-   if(isHigh){ if(arr[j]<leftExtreme) leftExtreme=arr[j]; if(arr[j]>v) break; }
-   else{ if(arr[j]>leftExtreme) leftExtreme=arr[j]; if(arr[j]<v) break; }
+ // دمج نقاط متلاصقة (خلال نصف lookback) بالاحتفاظ بالأبرز فقط -- يمنع تكرار نفس القمة عدة مرات
+ const _dedupe=(pts,isHigh)=>{
+  if(!pts.length) return pts;
+  const out=[pts[0]];
+  for(let k=1;k<pts.length;k++){
+   const cur=pts[k], last=out[out.length-1];
+   if(cur.i-last.i<=Math.ceil(lookback/2)){
+    const keep=isHigh?(cur.v>last.v?cur:last):(cur.v<last.v?cur:last);
+    out[out.length-1]=keep;
+   } else out.push(cur);
   }
-  for(let j=i+1;j<arr.length;j++){
-   if(arr[j]==null) continue;
-   if(isHigh){ if(arr[j]<rightExtreme) rightExtreme=arr[j]; if(arr[j]>v) break; }
-   else{ if(arr[j]>rightExtreme) rightExtreme=arr[j]; if(arr[j]<v) break; }
-  }
-  return isHigh ? Math.min(v-leftExtreme,v-rightExtreme) : Math.min(rightExtreme-v,leftExtreme-v);
+  return out;
  };
 
- // خطوة 3: فلترة حسب الحد الأدنى للبروزية + دمج القمم المتقاربة جداً (خذ الأبرز)
- const _filterAndMerge=(candidates,isHigh)=>{
-  const scored=candidates
-   .map(c=>({...c,prom:_prominence(c,isHigh)}))
-   .filter(c=>c.prom>=minProminence)
-   .sort((a,b)=>a.i-b.i);
-  const merged=[];
-  const MERGE_GAP=lookback*2;
-  scored.forEach(c=>{
-   const last=merged[merged.length-1];
-   if(last && (c.i-last.i)<MERGE_GAP){
-    // نقطتان قريبتان جداً زمنياً -- احتفظ بالأبرز (الأعلى بروزية، أو الأعلى/الأدنى فعلياً)
-    const better = isHigh ? (c.v>last.v?c:last) : (c.v<last.v?c:last);
-    merged[merged.length-1]=better;
-   } else {
-    merged.push(c);
-   }
-  });
-  return merged;
- };
-
- const finalHighs=_filterAndMerge(rawHighs,true);
- const finalLows=_filterAndMerge(rawLows,false);
-
- // ── ضمان وجود القمة/القاع الأكبر إطلاقاً بالنطاق (Global Extremum) ──
- // حتى لو lookback المحلي فوّتها (لأنها جزء من صعود/هبوط حاد متواصل)،
- // نضيفها يدوياً كضمان -- لأنها الأهم أكاديمياً بلا منازع
- const _ensureGlobalExtreme=(finalList,isHigh)=>{
-  let bestIdx=-1,bestV=isHigh?-Infinity:Infinity;
-  arr.forEach((v,i)=>{
-   if(v==null)return;
-   if(isHigh?v>bestV:v<bestV){bestV=v;bestIdx=i;}
-  });
-  if(bestIdx===-1)return finalList;
-  const already=finalList.some(p=>Math.abs(p.i-bestIdx)<lookback);
-  if(already)return finalList;
-  const merged=[...finalList,{i:bestIdx,v:bestV,prom:range}]
-   .sort((a,b)=>a.i-b.i);
-  return merged;
- };
-
- return {
-  highs:_ensureGlobalExtreme(finalHighs,true),
-  lows:_ensureGlobalExtreme(finalLows,false)
- };
+ return {highs:_dedupe(highs,true), lows:_dedupe(lows,false)};
 }
 
 
