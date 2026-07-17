@@ -4393,7 +4393,7 @@ try{
    ctx.stroke();
    const cur=vals[vals.length-1];
    ctx.fillStyle='#67e8f9';ctx.font='bold 7px monospace';ctx.textAlign='left';ctx.fillText('OBV '+(cur/1000).toFixed(0)+'K',4,top+10);
-   {const omn=Math.min(...vals),omx=Math.max(...vals);_renderDivOnPanel(ctx,ind.obv,_divPrices,'#67e8f9',(v,mn,mx)=>top+ph-((v-mn)/(mx-mn||1))*ph,tx,top,ph,_divStart,_divEnd,omn,omx);}
+
    if(!ctx._subYAxes)ctx._subYAxes=[];ctx._subYAxes.push({top,ph,mn2,mx2,color:'#67e8f9',panKey:'sub_'+pi});
   }
  }
