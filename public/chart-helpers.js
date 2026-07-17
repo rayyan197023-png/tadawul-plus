@@ -178,6 +178,8 @@ function _calcDivergences(prices, indArr, label){
    const _gapAB2=pB.i-pA.i;
    if(_gapAB2<MIN_GAP||_gapAB2>MAX_GAP) continue;
    if(pB.v>=pA.v) continue; // يجب أن يكون القاع الثاني أدنى فعلياً (Lower Low)
+   // تقارب نسبي بالمستوى: لا نربط قاعاً ضحلاً بقاع عميق جداً بعيد عنه بمستوى مختلف كلياً
+   if(pA.v/pB.v>1.35) continue; // فرق أكبر من 35% بين القاعين = غير منطقي كزوج تباعد واحد
 
    const iA=nearest(iPivots.lows,pA.i);
    const iB=nearest(iPivots.lows,pB.i);
