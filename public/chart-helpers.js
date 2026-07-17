@@ -140,7 +140,8 @@ function _calcDivergences(prices, indArr, label){
  for(let a=0;a<pPivots.lows.length;a++){
   for(let b=a+1;b<pPivots.lows.length;b++){
    const pA=pPivots.lows[a], pB=pPivots.lows[b];
-   if(pB.i-pA.i<MIN_GAP) continue;
+   const _gapAB2=pB.i-pA.i;
+   if(_gapAB2<MIN_GAP||_gapAB2>MAX_GAP) continue;
    if(pB.v>=pA.v) continue; // يجب أن يكون القاع الثاني أدنى فعلياً (Lower Low)
 
    const iA=nearest(iPivots.lows,pA.i);
