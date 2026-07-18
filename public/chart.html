@@ -10138,49 +10138,6 @@ function toggleCamSub(id){
  }
 }
 
-// ── Level 2 Order Book ──────────────────────────────────────
-const L2_CONFIG = {
- endpoint: '',        // مثال: 'https://api.tadawul.com.sa/v1/orderbook'
- wsEndpoint: '',      // WebSocket للتحديث اللحظي
- apiKey: '',          // مفتاح API
- updateInterval: 500, // ms — تحديث كل 500ms
-};
-
-let _l2Visible = false;
-let _l2Data = { bids:[], asks:[], lastPrice:0, spread:0 };
-let _l2Timer = null;
-
-
-// Connect to real API (call this with your token)
-function connectL2API(endpoint, apiKey){
- L2_CONFIG.endpoint=endpoint;
- L2_CONFIG.apiKey=apiKey;
- console.log('L2 API configured:', endpoint);
-}
-
-// Fetch L2 data — uses mock if no API configured
-async function _fetchL2(){
- if(!_l2Visible)return;
- const base=state.allCandles.length?state.allCandles[state.allCandles.length-1].c:100;
- if(L2_CONFIG.endpoint){
-  try{
-   const res=await fetch(L2_CONFIG.endpoint+'?symbol='+state.stk.sym,{
-    headers:{'Authorization':'Bearer '+L2_CONFIG.apiKey,'Content-Type':'application/json'}
-   });
-   if(res.ok){
-    const raw=await res.json();
-    // Normalize response — adjust field names to match your API
-    _l2Data={
-     bids:(raw.bids||raw.buy||[]).slice(0,12).map(b=>({price:+b.price||+b.p,qty:+b.quantity||+b.q||+b.size,orders:+b.orders||1})),
-     asks:(raw.asks||raw.sell||[]).slice(0,12).map(a=>({price:+a.price||+a.p,qty:+a.quantity||+a.q||+a.size,orders:+a.orders||1})),
-     lastPrice:+raw.lastPrice||+raw.last||base,
-     spread:+raw.spread||0
-    };
-    _renderL2();return;
-   }
-  }catch(e){console.warn('L2 API error:',e);}
- }
-
 
 // ── Brush Editor ─────────────────────────────────────────────
 function showBrushEditor(dr){
