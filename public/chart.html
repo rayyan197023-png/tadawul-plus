@@ -9754,6 +9754,103 @@ function doSnap(){
   setTimeout(()=>{t.classList.remove('show');t.style.display='none';},2000);
  }
 }
+// ── توليد صورة الشارت مع العلامة المائية (نفس منطق doSnap، بدون التخزين الداخلي) ──
+// تُستخدم من saveChartToDevice و shareChartImage
+function _generateChartSnapshotBlob(){
+ return new Promise((resolve,reject)=>{
+  try{
+   const tmp=document.createElement('canvas');
+   tmp.width=cv.width;tmp.height=cv.height;
+   const tc=tmp.getContext('2d');
+   tc.drawImage(cv,0,0);
+   const dpr=window.devicePixelRatio||1;
+   tc.scale(dpr,dpr);
+   const W=cv.width/dpr,H=cv.height/dpr;
+   const sym=state.stk?.sym||'';
+   const per=state.per||'';
+   const now=new Date();
+   const dateStr=now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate()+' '+now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
+   const _isize=18*dpr, _ix=(W-10)*dpr-_isize, _iy=(H-10)*dpr-_isize;
+   tc.save();
+   tc.globalAlpha=0.7;
+   tc.strokeStyle='#3b9eff';
+   tc.lineWidth=1.4*dpr;
+   tc.lineCap='round';tc.lineJoin='round';
+   tc.shadowColor='rgba(0,0,0,0.9)';tc.shadowBlur=6*dpr;
+   const _pts=[[2,14],[6,8],[10,11],[14,4],[18,6]].map(([x,y])=>[_ix+x/20*_isize, _iy+y/16*_isize]);
+   tc.beginPath();_pts.forEach(([x,y],i)=>i?tc.lineTo(x,y):tc.moveTo(x,y));tc.stroke();
+   tc.beginPath();tc.moveTo(_ix+16/20*_isize,_iy+4/16*_isize);tc.lineTo(_ix+_isize,_iy+4/16*_isize);tc.lineTo(_ix+_isize,_iy+8/16*_isize);tc.stroke();
+   tc.restore();
+   tc.font=`600 ${11*dpr}px Cairo,monospace`;
+   tc.textAlign='right';tc.textBaseline='bottom';
+   tc.shadowColor='rgba(0,0,0,0.9)';tc.shadowBlur=8*dpr;
+   tc.fillStyle='rgba(59,158,255,0.8)';
+   tc.fillText(`${sym} · ${per} · ${dateStr}`,(W-34)*dpr,(H-8)*dpr);
+   tc.shadowBlur=0;
+   tmp.toBlob(blob=>{
+    if(!blob){reject(new Error('فشل توليد الصورة'));return;}
+    const filename='تداول_'+sym+'_'+per+'_'+now.toISOString().slice(0,10)+'.png';
+    resolve(new File([blob],filename,{type:'image/png'}));
+   },'image/png');
+  }catch(e){reject(e);}
+ });
+}
+
+function _toastMsg(msg,ms=2500){
+ const t=document.getElementById('toast');
+ if(!t)return;
+ t.textContent=msg;
+ t.style.display='block';
+ t.classList.add('show');
+ setTimeout(()=>{t.classList.remove('show');t.style.display='none';},ms);
+}
+
+// ── حفظ الصورة على الجهاز ──
+async function saveChartToDevice(){
+ try{
+  const file=await _generateChartSnapshotBlob();
+  // على الجوال: افتح Share Sheet (يعطي خيار "حفظ الصورة" ضمن الخيارات مباشرة)
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+   await navigator.share({files:[file],title:'لقطة الشارت'});
+   _toastMsg('✓ تم');
+   return;
+  }
+  // احتياطي: تنزيل تقليدي (كمبيوتر أو متصفح لا يدعم Web Share API)
+  const link=document.createElement('a');
+  link.download=file.name;
+  link.href=URL.createObjectURL(file);
+  link.click();
+  setTimeout(()=>URL.revokeObjectURL(link.href),3000);
+  _toastMsg('✓ تم حفظ الصورة');
+ }catch(e){
+  if(e.name!=='AbortError'){
+   console.warn('Save error:',e);
+   _toastMsg('⚠ حدث خطأ أثناء الحفظ');
+  }
+ }
+}
+
+// ── مشاركة الصورة عبر تطبيقات الجوال ──
+async function shareChartImage(){
+ try{
+  const file=await _generateChartSnapshotBlob();
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+   await navigator.share({
+    files:[file],
+    title:'تداول بلس — '+(state.stk?.name||''),
+    text:(state.stk?.name||'')+' · '+(state.per||'')
+   });
+   _toastMsg('✓ تم');
+  }else{
+   _toastMsg('⚠ المشاركة غير مدعومة على هذا المتصفح');
+  }
+ }catch(e){
+  if(e.name!=='AbortError'){
+   console.warn('Share error:',e);
+   _toastMsg('⚠ حدث خطأ أثناء المشاركة');
+  }
+ }
+}
 
 // 
 // 
