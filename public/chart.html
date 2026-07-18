@@ -4365,10 +4365,11 @@ try{
  if(id==='STOCHRSI'&&ind.stochrsi){
   const vals=ind.stochrsi.filter(v=>v!=null);
   if(vals.length){
-   // استخدم النطاق المعدّل يدوياً (لو موجود من تفاعل زوم محور Y) بدل الثابت 0-100 دائماً
-   const _customRange=(typeof subYRange!=='undefined'&&subYRange&&subYRange['sub_'+pi]);
-   const _mn2=_customRange?_customRange.mn2:0;
-   const _mx2=_customRange?_customRange.mx2:100;
+   // استخدم النطاق المعدّل يدوياً (panelYOverride هو المتغير الفعلي المستخدم بآلية السحب على محور Y)
+   const _panKeySR='sub_'+pi;
+   const _customRange=(typeof panelYOverride!=='undefined'&&panelYOverride[_panKeySR]);
+   const _mn2=_customRange?_customRange.mn:0;
+   const _mx2=_customRange?_customRange.mx:100;
    [80,20].forEach(lv=>{ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=0.5;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(0,tyS(lv,_mn2,_mx2));ctx.lineTo(CW,tyS(lv,_mn2,_mx2));ctx.stroke();ctx.setLineDash([]);});
    ctx.strokeStyle='#ec4899';ctx.lineWidth=1.4;ctx.beginPath();let f=true;
    ind.stochrsi.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),tyS(v,_mn2,_mx2)),f=false):ctx.lineTo(tx(i),tyS(v,_mn2,_mx2));});
