@@ -1979,33 +1979,6 @@ function showDrawingTemplates(){
 }
 
 
-function _renderCalendarOnChart(ctx, sub, tx, cTop, cH, CW){
- if(!showCalendar) return;
- // Show event markers on chart for current timeframe
- sub.forEach((d,i)=>{
-  if(!d.t) return;
-  const dDate = new Date(d.t).toISOString().slice(0,10);
-  const events = calendarData.filter(e=>e.date===dDate);
-  if(!events.length) return;
-  const maxImpact = events.find(e=>e.impact==='high')||events.find(e=>e.impact==='medium')||events[0];
-  const col = maxImpact.impact==='high'?'#ef4444':maxImpact.impact==='medium'?'#f59e0b':'#60a5fa';
-  const x = tx(i);
-  // Vertical marker line
-  ctx.save();
-  ctx.strokeStyle=col+'80';ctx.lineWidth=1;ctx.setLineDash([3,3]);
-  ctx.beginPath();ctx.moveTo(x,cTop+2);ctx.lineTo(x,cTop+cH-2);ctx.stroke();
-  ctx.setLineDash([]);
-  // Top flag
-  ctx.fillStyle=col;
-  ctx.beginPath();ctx.arc(x,cTop+6,4,0,Math.PI*2);ctx.fill();
-  // Impact dot color
-  ctx.fillStyle='#fff';ctx.font='bold 6px sans-serif';
-  ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText(maxImpact.impact==='high'?'!':maxImpact.impact==='medium'?'·':'·',x,cTop+6);
-  ctx.restore();
- });
-}
-
 // ── Stock Comparison (Overlay) ──────────────────────────
 let compareStk = null; // {sym, name, candles[]}
 let showCompare = false;
