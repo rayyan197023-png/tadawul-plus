@@ -9945,21 +9945,6 @@ function importDrawings(){
  inp.click();
 }
 
-function shareChart(){
- // Encode current view as URL hash for sharing
- try{
-  const shareData={
-   sym:state.stk.sym,per:state.per,
-   drawings:state.drawings.filter(d=>!d._ai).slice(0,20) // limit for URL
-  };
-  const encoded=btoa(encodeURIComponent(JSON.stringify(shareData)));
-  const url=window.location.href.split('#')[0]+'#share='+encoded;
-  navigator.clipboard.writeText(url).then(()=>{
-   const t=document.getElementById('toast');
-   if(t){t.textContent='✓ تم نسخ رابط المشاركة';t.style.display='block';t.style.opacity='1';setTimeout(()=>t.style.opacity='0',2000);}
-  }).catch(()=>prompt('رابط المشاركة:',url));
- }catch(e){}
-}
 
 // Load shared chart from URL on startup
 function loadShareFromURL(){
