@@ -2452,7 +2452,8 @@ if(sub.length>0){
  std: _fi(hasInd('STD') ?calcSTD(allC,getIS('STD').period||20):null),
  // Momentum
  rsi: _fi(hasInd('RSI') ?rsi(allC, getIS('RSI').period||14) :null),
- stochrsi:_fi(hasInd('STOCHRSI')?calcStochRSI(allC):null),
+ stochrsiK:_fi(hasInd('STOCHRSI')?calcStochRSI(allC).k:null),
+ stochrsiD:_fi(hasInd('STOCHRSI')?calcStochRSI(allC).d:null),
  roc: _fi(hasInd('ROC') ?calcROC(allC):null),
  mom: _fi(hasInd('MOM') ?calcMOM(allC):null),
  ao: _fi(hasInd('AO') ?calcAO(allH,allL):null),
