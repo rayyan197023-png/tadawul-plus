@@ -166,10 +166,24 @@ button{font-family:'Cairo',sans-serif;cursor:pointer;outline:none}
 </div>
 <div id="cam-menu" style="display:none;position:fixed;background:rgba(6,10,22,0.97);border:1px solid rgba(255,255,255,0.12);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.95);padding:8px;z-index:9999;min-width:230px;">
 
- <!-- PNG -->
+<!-- PNG (حفظ داخل التطبيق) -->
  <div style="display:flex;align-items:center;gap:4px">
-  <button onclick="doSnap();closeCamMenu()" style="flex:1;background:transparent;border:none;padding:10px 14px;color:#c0d0e8;font-size:13px;font-family:Cairo,sans-serif;text-align:right;cursor:pointer;border-radius:9px;box-sizing:border-box;display:flex;align-items:center;gap:8px;direction:rtl"><span style="font-size:15px">📸</span>تصدير PNG</button>
+  <button onclick="doSnap();closeCamMenu()" style="flex:1;background:transparent;border:none;padding:10px 14px;color:#c0d0e8;font-size:13px;font-family:Cairo,sans-serif;text-align:right;cursor:pointer;border-radius:9px;box-sizing:border-box;display:flex;align-items:center;gap:8px;direction:rtl"><span style="font-size:15px">📸</span>حفظ لقطة بالتطبيق</button>
   <button onclick="showCamHelp('png')" style="width:22px;height:22px;border-radius:50%;background:rgba(59,158,255,0.1);border:1px solid rgba(59,158,255,0.2);color:#3b9eff;font-size:10px;font-weight:700;cursor:pointer;flex-shrink:0;margin-left:6px;padding:0">?</button>
+ </div>
+
+ <div style="height:1px;background:rgba(255,255,255,0.06);margin:3px 6px"></div>
+
+ <!-- حفظ على الجهاز -->
+ <div style="display:flex;align-items:center;gap:4px">
+  <button onclick="saveChartToDevice();closeCamMenu()" style="flex:1;background:transparent;border:none;padding:10px 14px;color:#c0d0e8;font-size:13px;font-family:Cairo,sans-serif;text-align:right;cursor:pointer;border-radius:9px;box-sizing:border-box;display:flex;align-items:center;gap:8px;direction:rtl"><span style="font-size:15px">💾</span>حفظ على الجهاز</button>
+ </div>
+
+ <div style="height:1px;background:rgba(255,255,255,0.06);margin:3px 6px"></div>
+
+ <!-- مشاركة -->
+ <div style="display:flex;align-items:center;gap:4px">
+  <button onclick="shareChartImage();closeCamMenu()" style="flex:1;background:transparent;border:none;padding:10px 14px;color:#3b9eff;font-size:13px;font-family:Cairo,sans-serif;text-align:right;cursor:pointer;border-radius:9px;box-sizing:border-box;display:flex;align-items:center;gap:8px;direction:rtl"><span style="font-size:15px">📤</span>مشاركة</button>
  </div>
 
  <div style="height:1px;background:rgba(255,255,255,0.06);margin:3px 6px"></div>
