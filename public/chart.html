@@ -4361,20 +4361,25 @@ try{
    if(!ctx._subYAxes)ctx._subYAxes=[];ctx._subYAxes.push({top,ph,mn2:0,mx2:100,color:'#f472b6',panKey:'sub_'+pi});
   }
  }
- // STOCHRSI sub-panel
+// STOCHRSI sub-panel
  if(id==='STOCHRSI'&&ind.stochrsi){
   const vals=ind.stochrsi.filter(v=>v!=null);
   if(vals.length){
-   [80,20].forEach(lv=>{ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=0.5;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(0,tyS(lv,0,100));ctx.lineTo(CW,tyS(lv,0,100));ctx.stroke();ctx.setLineDash([]);});
+   // استخدم النطاق المعدّل يدوياً (لو موجود من تفاعل زوم محور Y) بدل الثابت 0-100 دائماً
+   const _customRange=(typeof subYRange!=='undefined'&&subYRange&&subYRange['sub_'+pi]);
+   const _mn2=_customRange?_customRange.mn2:0;
+   const _mx2=_customRange?_customRange.mx2:100;
+   [80,20].forEach(lv=>{ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=0.5;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(0,tyS(lv,_mn2,_mx2));ctx.lineTo(CW,tyS(lv,_mn2,_mx2));ctx.stroke();ctx.setLineDash([]);});
    ctx.strokeStyle='#ec4899';ctx.lineWidth=1.4;ctx.beginPath();let f=true;
-   ind.stochrsi.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),tyS(v,0,100)),f=false):ctx.lineTo(tx(i),tyS(v,0,100));});
+   ind.stochrsi.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),tyS(v,_mn2,_mx2)),f=false):ctx.lineTo(tx(i),tyS(v,_mn2,_mx2));});
    ctx.stroke();
    const cur=vals[vals.length-1];
    ctx.fillStyle='#ec4899';ctx.font='bold 7px monospace';ctx.textAlign='left';ctx.fillText('StochRSI '+cur.toFixed(0),4,top+10);
-   _renderDivOnPanel(ctx,ind.stochrsi,_divPrices,'#ec4899',(v,mn,mx)=>top+ph-((v-mn)/(mx-mn||1))*ph,tx,top,ph,_divStart,_divEnd,0,100);
-   if(!ctx._subYAxes)ctx._subYAxes=[];ctx._subYAxes.push({top,ph,mn2:0,mx2:100,color:'#ec4899',panKey:'sub_'+pi});
+   _renderDivOnPanel(ctx,ind.stochrsi,_divPrices,'#ec4899',(v,mn,mx)=>top+ph-((v-mn)/(mx-mn||1))*ph,tx,top,ph,_divStart,_divEnd,_mn2,_mx2);
+   if(!ctx._subYAxes)ctx._subYAxes=[];ctx._subYAxes.push({top,ph,mn2:_mn2,mx2:_mx2,color:'#ec4899',panKey:'sub_'+pi});
   }
  }
+
  // OBV sub-panel
  if(id==='OBV'&&ind.obv){
   const vals=ind.obv.filter(v=>v!=null);
