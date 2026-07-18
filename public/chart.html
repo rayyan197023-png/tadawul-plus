@@ -2310,6 +2310,16 @@ function _drawNoData(W,H){
 
 function render(){
  ctx._subYAxes=[]; // تصفير قائمة محاور Y الفرعية في بداية كل رندر لمنع التراكم عبر عدة استدعاءات
+ // إذا تغيّرت قائمة المؤشرات المفعّلة (تفعيل/تعطيل)، امسح كل تعديلات الزوم اليدوي المحفوظة
+ // لأن panKey (مثل 'sub_2') يعتمد على ترتيب البانلات، فلو الترتيب تغيّر يصبح المفتاح القديم "يتيماً"
+ // ويسبب تراكم بيانات زوم خاطئة من بانل سابق مختلف كان بنفس الموضع الرقمي
+ {
+  const _curIndsKey=(state.activeInds||state.inds||[]).join(',');
+  if(typeof panelYOverride!=='undefined' && window._lastActiveIndsKey!==_curIndsKey){
+   for(const k in panelYOverride) delete panelYOverride[k];
+   window._lastActiveIndsKey=_curIndsKey;
+  }
+ }
  try {
  const W=cv.offsetWidth||window.innerWidth;
  const H=cv.offsetHeight||400;
