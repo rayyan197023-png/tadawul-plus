@@ -1979,35 +1979,6 @@ function showDrawingTemplates(){
 }
 
 
-// ── Economic Calendar ────────────────────────────────────
-// Mock data: Saudi market key events
-
-const CALENDAR_MOCK = [
- // Format: {date:'YYYY-MM-DD', time:'HH:MM', title, impact:'high'|'medium'|'low', type}
- // These are recurring patterns — real API will provide exact dates
- {date:'2026-03-20', time:'09:00', title:'افتتاح جلسة تداول', impact:'low', type:'market'},
- {date:'2026-03-20', time:'15:00', title:'إغلاق جلسة تداول', impact:'low', type:'market'},
- {date:'2026-03-22', time:'12:00', title:'اجتماع SAMA الشهري', impact:'high', type:'monetary'},
- {date:'2026-03-25', time:'08:00', title:'إفصاح أرباح أرامكو Q1', impact:'high', type:'earnings'},
- {date:'2026-03-28', time:'08:00', title:'إفصاح أرباح سابك Q1', impact:'high', type:'earnings'},
- {date:'2026-03-30', time:'10:00', title:'بيانات التضخم السعودي', impact:'high', type:'economic'},
- {date:'2026-04-02', time:'14:00', title:'قرار أسعار الفائدة SAMA', impact:'high', type:'monetary'},
- {date:'2026-04-05', time:'08:00', title:'إجازة رسمية — يوم التأسيس', impact:'medium', type:'holiday'},
-];
-
-let calendarData = [...CALENDAR_MOCK];
-let _calendarIsMock = true; // علم: البيانات الحالية تجريبية حتى يصل API
-let showCalendar = false;
-
-async function _loadCalendar(){
- const apiData = await API_CONFIG.fetch('calendar', {market:'SAU'});
- if(apiData && Array.isArray(apiData) && apiData.length){
-  calendarData = apiData; // بيانات حقيقية من API
-  _calendarIsMock = false;
-  if(showCalendar && typeof renderCalendarPanel==='function') renderCalendarPanel();
- }
-}
-
 function _renderCalendarOnChart(ctx, sub, tx, cTop, cH, CW){
  if(!showCalendar) return;
  // Show event markers on chart for current timeframe
