@@ -4372,10 +4372,11 @@ try{
   }
  }
 // STOCHRSI sub-panel -- البنية الصحيحة هي كائن {k, d} وليست مصفوفة واحدة
- if(id==='STOCHRSI'&&ind.stochrsi&&ind.stochrsi.k){
-  const kArr=ind.stochrsi.k, dArr=ind.stochrsi.d;
+ if(id==='STOCHRSI'&&ind.stochrsi){
+  const kArr=ind.stochrsi.k||[], dArr=ind.stochrsi.d||[];
   const vals=kArr.filter(v=>v!=null);
   if(vals.length){
+
    const _panKeySR='sub_'+pi;
    const _customRange=(typeof panelYOverride!=='undefined'&&panelYOverride[_panKeySR]);
    const _mn2=_customRange?_customRange.mn:0;
