@@ -105,14 +105,19 @@ const calcKC=(h,l,c2,n=20,m=1.5)=>{const ma=ema(c2,n);const a=calcATR_data(h.map
 const calcATR_data=(data,n=14)=>{const tr=data.map((d,i)=>i===0?d.hi-d.lo:Math.max(d.hi-d.lo,Math.abs(d.hi-data[i-1].c),Math.abs(d.lo-data[i-1].c)));return sma(tr,n);};
 // Donchian Channel
 const calcDC=(h,l,n=20)=>h.map((_,i)=>{if(i<n-1)return null;return{up:Math.max(...h.slice(i-n+1,i+1)),dn:Math.min(...l.slice(i-n+1,i+1))};});
-// StochRSI
+// StochRSI -- يرجع {k, d} حسب المعيار الأكاديمي القياسي (خطان: %K سريع، %D بطيء)
 const calcStochRSI=(c2,n=14,sk=3,sd=3)=>{
  const r=rsi(c2,n);
  const raw=r.map((_,i)=>{if(i<n-1)return null;const sl=r.slice(i-n+1,i+1).filter(v=>v!=null);if(!sl.length)return null;const mn=Math.min(...sl),mx=Math.max(...sl);return mx===mn?50:(r[i]-mn)/(mx-mn)*100;});
  const rVals=raw.filter(v=>v!=null);
  const kSmooth=sma(rVals,sk);let ki=0;
- return raw.map(v=>v==null?null:(kSmooth[ki++]??null));
+ const k=raw.map(v=>v==null?null:(kSmooth[ki++]??null));
+ const kVals=k.filter(v=>v!=null);
+ const dSmooth=sma(kVals,sd);let di=0;
+ const d=k.map(v=>v==null?null:(dSmooth[di++]??null));
+ return {k,d};
 };
+
 // Aroon
 const calcAroon=(h,l,n=25)=>h.map((_,i)=>{if(i<n)return null;const hIdx=h.slice(i-n,i+1).reduce((bi,v,j)=>v>h[i-n+bi]?j:bi,0);const lIdx=l.slice(i-n,i+1).reduce((bi,v,j)=>v<l[i-n+bi]?j:bi,0);return{up:((n-((n)-hIdx))/n)*100,dn:((n-((n)-lIdx))/n)*100};});
 // TSI
