@@ -9750,7 +9750,6 @@ function _generateChartSnapshotBlob(){
    const tc=tmp.getContext('2d');
    tc.drawImage(cv,0,0);
    const dpr=window.devicePixelRatio||1;
-   tc.scale(dpr,dpr);
    const W=cv.width/dpr,H=cv.height/dpr;
    const sym=state.stk?.sym||'';
    const per=state.per||'';
