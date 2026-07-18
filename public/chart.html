@@ -2309,6 +2309,7 @@ function _drawNoData(W,H){
 }
 
 function render(){
+ ctx._subYAxes=[]; // تصفير قائمة محاور Y الفرعية في بداية كل رندر لمنع التراكم عبر عدة استدعاءات
  try {
  const W=cv.offsetWidth||window.innerWidth;
  const H=cv.offsetHeight||400;
