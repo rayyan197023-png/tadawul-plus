@@ -7613,7 +7613,7 @@ function buildStkList(){
   const up=s.pct>=0;
   const row=document.createElement('button');row.className='srow';
   row.style.background=state.stk.sym===s.sym?'rgba(59,158,255,0.06)':'transparent';
-  row.innerHTML=`<div><span style="font-size:11px;font-weight:700;color:${up?'#22c55e':'#ef4444'}">${up?'+':''}${s.pct}%</span><br><span style="font-size:9px;color:#3a4060">${s.sec}</span></div><div style="text-align:right"><span style="font-size:15px;font-weight:800;color:#f0f2f8">${s.name}</span><br><span style="font-size:10px;color:#3b9eff;font-family:monospace">${s.sym} · ${s.p.toFixed(2)}</span></div>`;
+row.innerHTML=`<div><span style="font-size:9px;color:#3a4060">${s.sec}</span></div><div style="text-align:right"><span style="font-size:15px;font-weight:800;color:#f0f2f8">${s.name}</span><br><span style="font-size:10px;color:#3b9eff;font-family:monospace">${s.sym}</span></div>`;
   row.onclick=()=>{state.stk=s;chartReady=false;showLoader(s.name);loadStk();closeSheet();};
   el.appendChild(row);
  });
