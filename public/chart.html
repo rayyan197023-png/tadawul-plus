@@ -7860,12 +7860,15 @@ function _applyTick(tick){
   const chEl = document.getElementById('pch');
   const pctEl = document.getElementById('ppct');
   if(chEl) { chEl.textContent=(up?'+':'')+Math.abs(tick.ch||0).toFixed(2); chEl.style.color=up?'#22c55e':'#ef4444'; }
-  // احسب النسبة المئوية يدوياً من (التغيّر / السعر السابق) كاحتياطي
-  // في حال كان tick.pct غير موجود أو صفر من مصدر البيانات
+  // احسب النسبة المئوية يدوياً من (التغيّر / الإغلاق السابق الحقيقي) كاحتياطي
+  // نعتمد على state.stk.prevClose أو state.stk.close كمصدر موثوق، بدل prev المحلي
   let pctVal = tick.pct;
-  if(!pctVal && prev>0){
-   const chVal = tick.ch!=null ? tick.ch : (tick.c - prev);
-   pctVal = (chVal/prev)*100;
+  if(!pctVal){
+   const realPrev = state.stk?.prevClose || state.stk?.close || (tick.c - (tick.ch||0));
+   if(realPrev>0){
+    const chVal = tick.ch!=null ? tick.ch : (tick.c - realPrev);
+    pctVal = (chVal/realPrev)*100;
+   }
   }
   if(pctEl) { pctEl.textContent=(up?'+':'')+Math.abs(pctVal||0).toFixed(2)+'%'; pctEl.style.color=up?'#22c55e':'#ef4444'; }
 
