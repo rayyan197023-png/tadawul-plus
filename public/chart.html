@@ -7860,7 +7860,14 @@ function _applyTick(tick){
   const chEl = document.getElementById('pch');
   const pctEl = document.getElementById('ppct');
   if(chEl) { chEl.textContent=(up?'+':'')+Math.abs(tick.ch||0).toFixed(2); chEl.style.color=up?'#22c55e':'#ef4444'; }
-  if(pctEl) { pctEl.textContent=(up?'+':'')+Math.abs(tick.pct||0).toFixed(2)+'%'; pctEl.style.color=up?'#22c55e':'#ef4444'; }
+  // احسب النسبة المئوية يدوياً من (التغيّر / السعر السابق) كاحتياطي
+  // في حال كان tick.pct غير موجود أو صفر من مصدر البيانات
+  let pctVal = tick.pct;
+  if(!pctVal && prev>0){
+   const chVal = tick.ch!=null ? tick.ch : (tick.c - prev);
+   pctVal = (chVal/prev)*100;
+  }
+  if(pctEl) { pctEl.textContent=(up?'+':'')+Math.abs(pctVal||0).toFixed(2)+'%'; pctEl.style.color=up?'#22c55e':'#ef4444'; }
 
   invalidateChart();
   render();
