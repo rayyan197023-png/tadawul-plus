@@ -9665,23 +9665,37 @@ function doSnap(){
   const per=state.per||'';
   const now=new Date();
   const dateStr=now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate()+' '+now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
-  const _isize=18*dpr, _ix=(W-10)*dpr-_isize, _iy=(H-10)*dpr-_isize;
-  tc.save();
-  tc.globalAlpha=0.7;
-  tc.strokeStyle='#3b9eff';
-  tc.lineWidth=1.4*dpr;
-  tc.lineCap='round';tc.lineJoin='round';
-  tc.shadowColor='rgba(0,0,0,0.9)';tc.shadowBlur=6*dpr;
-  const _pts=[[2,14],[6,8],[10,11],[14,4],[18,6]].map(([x,y])=>[_ix+x/20*_isize, _iy+y/16*_isize]);
-  tc.beginPath();_pts.forEach(([x,y],i)=>i?tc.lineTo(x,y):tc.moveTo(x,y));tc.stroke();
-  tc.beginPath();tc.moveTo(_ix+16/20*_isize,_iy+4/16*_isize);tc.lineTo(_ix+_isize,_iy+4/16*_isize);tc.lineTo(_ix+_isize,_iy+8/16*_isize);tc.stroke();
-  tc.restore();
-  tc.font=`600 ${11*dpr}px Cairo,monospace`;
-  tc.textAlign='right';tc.textBaseline='bottom';
-  tc.shadowColor='rgba(0,0,0,0.9)';tc.shadowBlur=8*dpr;
-  tc.fillStyle='rgba(59,158,255,0.8)';
-  tc.fillText(`${sym} · ${per} · ${dateStr}`,(W-34)*dpr,(H-8)*dpr);
-  tc.shadowBlur=0;
+   const name=state.stk?.name||'';
+   // ── شريط معلومات كامل أسفل الصورة (فوتر) ──
+   const barH=54*dpr;
+   const barY=H*dpr-barH;
+   tc.fillStyle='rgba(6,10,20,0.88)';
+   tc.fillRect(0,barY,W*dpr,barH);
+   tc.strokeStyle='rgba(59,158,255,0.25)';
+   tc.lineWidth=1*dpr;
+   tc.beginPath();tc.moveTo(0,barY);tc.lineTo(W*dpr,barY);tc.stroke();
+
+   const pad=14*dpr;
+   tc.textAlign='right';tc.textBaseline='top';
+   tc.font=`700 ${13*dpr}px Cairo,sans-serif`;
+   tc.fillStyle='rgba(240,244,255,0.97)';
+   const topLine=name?`${name} — ${per}`:`${sym} — ${per}`;
+   tc.fillText(topLine,W*dpr-pad,barY+7*dpr);
+
+   const priceStr=state.stk?.p?state.stk.p.toFixed(2):'';
+   const indsStr=(state.inds&&state.inds.length)?state.inds.join(' · '):'';
+   const bottomRight=[priceStr,indsStr].filter(Boolean).join('  ·  ');
+   tc.font=`500 ${10*dpr}px Cairo,monospace`;
+   tc.fillStyle='rgba(59,158,255,0.9)';
+   tc.fillText(bottomRight,W*dpr-pad,barY+27*dpr);
+
+   tc.textAlign='left';
+   tc.fillStyle='rgba(150,165,190,0.85)';
+   tc.fillText(dateStr,pad,barY+27*dpr);
+
+   tc.font=`600 ${9*dpr}px monospace`;
+   tc.fillStyle='rgba(100,115,140,0.7)';
+   tc.fillText(sym,pad,barY+41*dpr);
   tmp.toBlob(blob=>{
    const t=document.getElementById('toast');
    t.textContent='📸 تم حفظ الصورة';
