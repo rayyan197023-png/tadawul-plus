@@ -1468,9 +1468,19 @@ var benchmarkReturn = useMemo(function(){
     };
 
     analysis.chartData = {
-      portfolioValue: (perfHistory && perfHistory.length >= 2)
-        ? generatePortfolioValueChart(perfHistory, coveredValue60)
-        : [],
+      portfolioValue: (function(){
+        if (!perfHistory || perfHistory.length === 0) return [];
+        // لو نقطة وحدة بس، نضيف نقطة "الآن" احتياطياً حتى يظهر الرسم البياني ولو بخط بسيط
+        var ph = perfHistory;
+        if (ph.length === 1) {
+          var todayStr = new Date().toISOString().slice(0,10);
+          if (ph[0].date !== todayStr) {
+            ph = ph.concat([{ date: todayStr, value: coveredValue60, tasi: (tasiBarsState.bars && tasiBarsState.bars.length) ? tasiBarsState.bars[tasiBarsState.bars.length-1].c : ph[0].tasi }]);
+          }
+        }
+        return ph.length >= 2 ? generatePortfolioValueChart(ph, coveredValue60) : [];
+      })(),
+
       drawdown: generateDrawdownChart(positionsWithBars60, 60),
       monthlyReturns: positionsWithBars365.length > 0
         ? generateMonthlyReturnsHeatmap(positionsWithBars365, 365) : { months: [], stats: {} },
