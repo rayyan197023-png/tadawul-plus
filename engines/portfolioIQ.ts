@@ -1443,9 +1443,9 @@ function analyzePortfolioDNA(positions: IQPosition[], base: any): PortfolioDNA {
     const aggScore = Math.min(100, vol * 250);
     dna.defensiveAggressive.score = Math.round(aggScore);
     dna.defensiveAggressive.label = 
-      vol > 0.30 ? 'عدوانية (Aggressive)' :
-      vol < 0.15 ? 'دفاعية (Defensive)' :
-      'متوازنة';
+      vol > 0.30 ? 'مخاطرة عالية بحثاً عن عوائد أكبر' :
+      vol < 0.15 ? 'حذرة وتحافظ على رأس المال' :
+      'متوازنة بين الحذر والمخاطرة';
   }
 
     // 4. Cap Size (Large vs Small)
