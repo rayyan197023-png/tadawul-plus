@@ -2151,6 +2151,14 @@ return result;
               )}
 
 
+              {/* ── تشخيص مؤقت: اعرض حالة البيانات كنص على الشاشة ── */}
+              <div style={{background:"#1a1a2e",border:"2px solid #f0c050",borderRadius:10,padding:12,marginBottom:10,fontSize:11,color:"#fff",fontFamily:"monospace",direction:"ltr",textAlign:"left"}}>
+                <div>perfHistory: {perfHistory ? perfHistory.length : 'undefined'} points</div>
+                <div>chartData exists: {portfolioAnalysis.chartData ? 'yes' : 'no'}</div>
+                <div>portfolioValue: {portfolioAnalysis.chartData && portfolioAnalysis.chartData.portfolioValue ? portfolioAnalysis.chartData.portfolioValue.length : 'undefined'} points</div>
+                <div>coveredValue60 sample: {portfolioAnalysis.chartData && portfolioAnalysis.chartData.portfolioValue && portfolioAnalysis.chartData.portfolioValue[0] ? JSON.stringify(portfolioAnalysis.chartData.portfolioValue[0]) : 'no data'}</div>
+              </div>
+
               {/* 📈 رسم بياني: قيمة المحفظة عبر الزمن */}
 {portfolioAnalysis.chartData && portfolioAnalysis.chartData.portfolioValue && portfolioAnalysis.chartData.portfolioValue.length > 0 && (
 
