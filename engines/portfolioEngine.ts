@@ -3589,36 +3589,47 @@ export function generatePortfolioValueChart(
   var numPoints = Math.min(portfolioReturns.length, tasiReturns.length, days);
   if (numPoints < 2) return [];
 
-  // ✨ نبني المنحنى التراكمي من الماضي للحاضر بشكل طبيعي، ثم نُعايره (rescale)
-  // بحيث ينتهي بالضبط عند القيمة الحقيقية الحالية -- لا يبدأ منها.
-  // البناء القديم كان يبدأ من currentValue عند أقدم نقطة ويمشي للأمام، فتصبح
-  // نقطة "اليوم" قيمة مركّبة وهمية لا تساوي قيمة المحفظة الفعلية.
-  var portfolioCum = [1.0];
-  var tasiCum = [1.0];
-  for (var j = 1; j < numPoints; j++) {
-    portfolioCum.push(portfolioCum[j - 1] * (1 + portfolioReturns[portfolioReturns.length - numPoints + j]));
-    tasiCum.push(tasiCum[j - 1] * (1 + tasiReturns[tasiReturns.length - numPoints + j]));
+/**
+ * توليد بيانات منحنى قيمة المحفظة مقابل تاسي -- بدون أي معايرة قسرية
+ * يعتمد على perfHistory الحقيقية (القيمة الفعلية للمحفظة وتاسي عند كل نقطة تسجيل)
+ * الفترة: من أول نقطة تسجيل فعلية للمحفظة إلى اليوم (مطابقة تماماً، بدون فترة ثابتة مصطنعة)
+ */
+export function generatePortfolioValueChart(perfHistory: any[], currentValue: number): any {
+  if (!perfHistory || perfHistory.length < 2) {
+    return { chartData: [], alpha: 0, portfolioChange: 0, tasiChange: 0 };
   }
 
-  var pScale = currentValue / portfolioCum[portfolioCum.length - 1];
-  var tScale = currentValue / tasiCum[tasiCum.length - 1];
+  // نستخدم القيم الحقيقية مباشرة -- بدون أي rescale أو تحجيم اصطناعي
+  var startEntry = perfHistory[0];
+  var startValue = startEntry.value;
+  var startTasi = startEntry.tasi;
 
-  var chartData = [];
-  for (var k = 0; k < numPoints; k++) {
-    var dateObj = new Date();
-    dateObj.setDate(dateObj.getDate() - (numPoints - k - 1));
-    var pv = portfolioCum[k] * pScale;
-    var tv2 = tasiCum[k] * tScale;
-    chartData.push({
-      date: dateObj.getTime(),
-      dateLabel: (dateObj.getMonth() + 1) + '/' + dateObj.getDate(),
-      portfolio: Math.round(pv),
-      benchmark: Math.round(tv2),
-      alpha: Math.round(pv - tv2),
-    });
+  if (!startValue || !startTasi || startValue <= 0 || startTasi <= 0) {
+    return { chartData: [], alpha: 0, portfolioChange: 0, tasiChange: 0 };
   }
 
-  return chartData;
+  var chartData = perfHistory.map(function(entry) {
+    // عائد كل نقطة كنسبة مئوية من نقطة البداية الحقيقية -- بدون تحجيم
+    var portfolioPct = ((entry.value - startValue) / startValue) * 100;
+    var tasiPct = entry.tasi ? ((entry.tasi - startTasi) / startTasi) * 100 : null;
+    return {
+      date: entry.date,
+      dateLabel: entry.date.slice(5), // MM-DD
+      portfolioValue: Math.round(entry.value),      // القيمة الحقيقية بالريال (للعرض فقط)
+      tasiValue: entry.tasi ? Math.round(entry.tasi) : null, // قيمة تاسي الحقيقية (نقاط المؤشر)
+      portfolioReturn: +portfolioPct.toFixed(2),      // % عائد المحفظة من البداية
+      tasiReturn: tasiPct !== null ? +tasiPct.toFixed(2) : null, // % عائد تاسي من نفس البداية
+      alpha: tasiPct !== null ? +(portfolioPct - tasiPct).toFixed(2) : null, // فرق % (Alpha لحظي تراكمي)
+    };
+  });
+
+  var last = chartData[chartData.length - 1];
+  return {
+    chartData: chartData,
+    portfolioChange: last.portfolioReturn,
+    tasiChange: last.tasiReturn,
+    alpha: last.alpha,
+  };
 }
 
 /**
