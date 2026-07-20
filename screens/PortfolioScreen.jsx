@@ -2124,7 +2124,7 @@ return result;
                   باقي الأسهم ({portfolioAnalysis.dataCoverage.excludedSyms.join('، ')}) لسا بياناتها قيد التحميل
                 </div>
               )}
-              {/* 📈 رسم بياني: قيمة المحفظة عبر الزمن */}
+
 
               {/* 📈 رسم بياني: قيمة المحفظة عبر الزمن */}
 {portfolioAnalysis.chartData && portfolioAnalysis.chartData.portfolioValue && portfolioAnalysis.chartData.portfolioValue.length > 0 && (
