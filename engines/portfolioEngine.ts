@@ -3591,45 +3591,46 @@ export function generatePortfolioValueChart(
 
 /**
  * توليد بيانات منحنى قيمة المحفظة مقابل تاسي -- بدون أي معايرة قسرية
- * يعتمد على perfHistory الحقيقية (القيمة الفعلية للمحفظة وتاسي عند كل نقطة تسجيل)
- * الفترة: من أول نقطة تسجيل فعلية للمحفظة إلى اليوم (مطابقة تماماً، بدون فترة ثابتة مصطنعة)
+ * يعتمد مباشرة على القيم الحقيقية المسجّلة في perfHistory (لا rescale، لا تلاعب رياضي)
+ * الفترة الزمنية: من أول نقطة تسجيل فعلية للمحفظة حتى اليوم
  */
 export function generatePortfolioValueChart(perfHistory: any[], currentValue: number): any {
   if (!perfHistory || perfHistory.length < 2) {
-    return { chartData: [], alpha: 0, portfolioChange: 0, tasiChange: 0 };
+    return [];
   }
 
-  // نستخدم القيم الحقيقية مباشرة -- بدون أي rescale أو تحجيم اصطناعي
+  // نقطة البداية الحقيقية -- كل الحسابات نسبية إليها، بدون أي تحجيم لاحق
   var startEntry = perfHistory[0];
   var startValue = startEntry.value;
   var startTasi = startEntry.tasi;
 
-  if (!startValue || !startTasi || startValue <= 0 || startTasi <= 0) {
-    return { chartData: [], alpha: 0, portfolioChange: 0, tasiChange: 0 };
+  if (!startValue || startValue <= 0) {
+    return [];
   }
 
-  var chartData = perfHistory.map(function(entry) {
-    // عائد كل نقطة كنسبة مئوية من نقطة البداية الحقيقية -- بدون تحجيم
-    var portfolioPct = ((entry.value - startValue) / startValue) * 100;
-    var tasiPct = entry.tasi ? ((entry.tasi - startTasi) / startTasi) * 100 : null;
-    return {
-      date: entry.date,
-      dateLabel: entry.date.slice(5), // MM-DD
-      portfolioValue: Math.round(entry.value),      // القيمة الحقيقية بالريال (للعرض فقط)
-      tasiValue: entry.tasi ? Math.round(entry.tasi) : null, // قيمة تاسي الحقيقية (نقاط المؤشر)
-      portfolioReturn: +portfolioPct.toFixed(2),      // % عائد المحفظة من البداية
-      tasiReturn: tasiPct !== null ? +tasiPct.toFixed(2) : null, // % عائد تاسي من نفس البداية
-      alpha: tasiPct !== null ? +(portfolioPct - tasiPct).toFixed(2) : null, // فرق % (Alpha لحظي تراكمي)
-    };
-  });
+  var chartData: any[] = [];
+  for (var i = 0; i < perfHistory.length; i++) {
+    var entry = perfHistory[i];
+    var dateObj = new Date(entry.date);
 
-  var last = chartData[chartData.length - 1];
-  return {
-    chartData: chartData,
-    portfolioChange: last.portfolioReturn,
-    tasiChange: last.tasiReturn,
-    alpha: last.alpha,
-  };
+    // القيم الحقيقية مباشرة -- بدون أي معايرة أو تحجيم
+    var portfolioVal = entry.value;
+    var tasiVal = (entry.tasi && startTasi) ? entry.tasi : null;
+
+    chartData.push({
+      date: dateObj.getTime(),
+      dateLabel: (dateObj.getMonth() + 1) + '/' + dateObj.getDate(),
+      portfolio: Math.round(portfolioVal),
+      benchmark: tasiVal !== null ? Math.round(tasiVal) : null,
+      // Alpha كنسبة مئوية تراكمية من نفس نقطة البداية -- الطريقة الصحيحة الوحيدة للمقارنة
+      // (فرق % وليس فرق قيم مطلقة، لأن مقياس الريال ومقياس نقاط تاسي مختلفان تماماً)
+      alpha: (tasiVal !== null && startTasi)
+        ? +((((portfolioVal - startValue) / startValue) * 100) - (((tasiVal - startTasi) / startTasi) * 100)).toFixed(2)
+        : null,
+    });
+  }
+
+  return chartData;
 }
 
 /**
