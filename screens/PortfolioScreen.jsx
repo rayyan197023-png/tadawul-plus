@@ -2194,9 +2194,9 @@ return result;
           {tradeLog.length>0&&logStats&&(
             <div className="card-enter" style={{marginBottom:12,background:"linear-gradient(135deg,"+C.layer1+","+C.layer2+")",borderRadius:14,border:"1px solid "+C.line,boxShadow:"0 4px 16px rgba(0,0,0,.3),inset 0 1px 0 "+C.layer3,overflow:"hidden"}}>
               <div style={{padding:"10px 14px 0"}}><span style={{fontSize:11,color:C.gold,fontWeight:700,letterSpacing:"1.5px"}}>إحصائيات التداول</span></div>
-              <div style={{display:"flex",gap:0,padding:"8px 0"}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:0,padding:"8px 0"}}>
                 {logStats.map(function(s,i){return(
-                  <div key={i} style={{flex:1,textAlign:"center",borderRight:i<3?"1px solid "+C.line+"44":"none",padding:"4px 6px"}}>
+                  <div key={i} style={{textAlign:"center",borderRight:(i%3)<2?"1px solid "+C.line+"44":"none",borderTop:i>=3?"1px solid "+C.line+"33":"none",padding:"8px 6px"}}>
                     <div style={{fontSize:11,color:C.smoke,marginBottom:3}}>{s.l}</div>
                     <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:14,fontWeight:900,color:s.c,lineHeight:1}}>{s.v}</div>
                     <div style={{fontSize:11,color:C.ash,marginTop:2}}>{s.sub}</div>
