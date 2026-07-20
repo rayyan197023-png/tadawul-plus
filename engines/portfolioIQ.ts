@@ -1432,9 +1432,9 @@ function analyzePortfolioDNA(positions: IQPosition[], base: any): PortfolioDNA {
     const momScore = Math.min(100, Math.max(0, 50 + (beta - 1) * 100));
     dna.momentumReversion.score = Math.round(momScore);
     dna.momentumReversion.label = 
-      beta > 1.2 ? 'زخم (Momentum)' :
-      beta < 0.8 ? 'عكس الاتجاه (Mean-Reversion)' :
-      'متوازن';
+      beta > 1.2 ? 'يتحرك بقوة مع اتجاه السوق' :
+      beta < 0.8 ? 'يميل للاستقرار عكس تقلبات السوق' :
+      'متوازن مع حركة السوق';
   }
 
   // 3. Defensive vs Aggressive (volatility-based)
