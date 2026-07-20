@@ -1479,7 +1479,7 @@ var benchmarkReturn = useMemo(function(){
           }
         }
         return ph.length >= 2 ? generatePortfolioValueChart(ph, coveredValue60) : [];
-      })(),
+      })(), 
 
       drawdown: generateDrawdownChart(positionsWithBars60, 60),
       monthlyReturns: positionsWithBars365.length > 0
