@@ -1684,6 +1684,8 @@ return result;
     return [
       {l:"صفقات شراء",v:String(buys.length),c:C.mint,sub:Math.round(totalBuyVal/1000)+"K ر"},
       {l:"نسبة الربح",v:(sells.length>0?winRate:"-")+"%",c:winRate>=50?C.mint:C.coral,sub:winTrades+" من "+sells.length},
+      {l:"متوسط الدرجة",v:String(avgScore),c:avgScore>=70?C.mint:avgScore>=50?C.amber:C.coral,sub:"/100"},
+      {l:"مدة الاحتفاظ",v:avgHold,c:C.electric,sub:"متوسط"},
       {l:"ربح محقق",v:(realizedPnl>=0?"+":"")+fmt(Math.round(realizedPnl))+" ر",c:realizedPnl>=0?C.mint:C.coral,sub:sells.length+" صفقة بيع"},
       {l:"ربح غير محقق",v:(unrealizedPnl>=0?"+":"")+fmt(Math.round(unrealizedPnl))+" ر",c:unrealizedPnl>=0?C.mint:C.coral,sub:(positions||[]).length+" مركز مفتوح"},
     ];
