@@ -2270,14 +2270,15 @@ function determinePortfolioPersonality(dna: any): any {
     };
   }
 
-  return {
+    return {
     type: 'balanced_investor',
     label: 'مستثمر متوازن',
     description: 'تجمع بين النمو والأمان',
-    strengths: ['توازن صحي', 'مرونة'],
-    weaknesses: ['لا تتفوق ولا تتخلف بشكل كبير'],
+    strengths: ['توازن صحي بين المخاطرة والاستقرار', 'مرونة في التكيف مع تقلبات السوق'],
+    weaknesses: ['قد لا تحقق عوائد استثنائية في الأسواق الصاعدة بقوة'],
   };
 }
+
 function estimateSellPanicProbability(psyScore: number, currentDD: number): number {
   // Higher drawdown + lower psy score = higher panic probability
   const ddImpact = Math.min(50, Math.abs(currentDD) * 200);
