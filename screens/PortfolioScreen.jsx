@@ -1468,7 +1468,9 @@ var benchmarkReturn = useMemo(function(){
     };
 
     analysis.chartData = {
-      portfolioValue: generatePortfolioValueChart(positionsWithBars60, coveredValue60, 60, tasiBarsState.bars || []),
+      portfolioValue: (typeof perfHistory !== 'undefined' && perfHistory && perfHistory.length >= 2)
+        ? generatePortfolioValueChart(perfHistory, coveredValue60)
+        : [],
       drawdown: generateDrawdownChart(positionsWithBars60, 60),
       monthlyReturns: positionsWithBars365.length > 0
         ? generateMonthlyReturnsHeatmap(positionsWithBars365, 365) : { months: [], stats: {} },
