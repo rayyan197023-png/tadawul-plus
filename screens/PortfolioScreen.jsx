@@ -1470,16 +1470,18 @@ var benchmarkReturn = useMemo(function(){
     analysis.chartData = {
       portfolioValue: (function(){
         if (!perfHistory || perfHistory.length === 0) return [];
-        // لو نقطة وحدة بس، نضيف نقطة "الآن" احتياطياً حتى يظهر الرسم البياني ولو بخط بسيط
+        // لو نقطة وحدة بس (حتى لو نفس تاريخ اليوم)، نضيف نقطة ثانية بقيمة الوقت الحالي
+        // حتى يظهر الرسم البياني بخط ولو بسيط -- بدل ما يختفي تماماً بسبب نقطة وحيدة
         var ph = perfHistory;
         if (ph.length === 1) {
-          var todayStr = new Date().toISOString().slice(0,10);
-          if (ph[0].date !== todayStr) {
-            ph = ph.concat([{ date: todayStr, value: coveredValue60, tasi: (tasiBarsState.bars && tasiBarsState.bars.length) ? tasiBarsState.bars[tasiBarsState.bars.length-1].c : ph[0].tasi }]);
-          }
+          ph = ph.concat([{
+            date: new Date().toISOString().slice(0,10),
+            value: coveredValue60,
+            tasi: (tasiBarsState.bars && tasiBarsState.bars.length) ? tasiBarsState.bars[tasiBarsState.bars.length-1].c : ph[0].tasi
+          }]);
         }
         return ph.length >= 2 ? generatePortfolioValueChart(ph, coveredValue60) : [];
-      })(), 
+      })(),
 
       drawdown: generateDrawdownChart(positionsWithBars60, 60),
       monthlyReturns: positionsWithBars365.length > 0
