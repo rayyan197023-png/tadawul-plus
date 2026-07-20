@@ -3728,7 +3728,6 @@ return result;
                       <button key={s.sym} onClick={function(){setAddSym(s.sym);setAddCost(s.p.toFixed(2));}} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:12,cursor:"pointer",background:isA?"linear-gradient(135deg,"+C.electric+"22,"+C.electric+"0a)":"rgba(255,255,255,.02)",border:"1px solid "+(isA?C.electric+"55":C.line),fontFamily:"Cairo,sans-serif",minHeight:44,transition:"all .15s"}}>
                         <span style={{fontFamily:"IBM Plex Mono,monospace",fontSize:12,fontWeight:800,color:isA?C.snow:C.mist,minWidth:36}}>{s.sym}</span>
                         <span style={{flex:1,fontSize:12,fontWeight:600,color:isA?C.snow:C.smoke,textAlign:"right"}}>{s.name}</span>
-                        {isHalal&&<span style={{fontSize:11,color:C.teal,background:C.teal+"15",borderRadius:5,padding:"1px 5px"}}>حلال</span>}
                         <span style={{fontFamily:"IBM Plex Mono,monospace",fontSize:12,fontWeight:800,color:isA?C.snow:C.mist}}>{s.p.toFixed(2)}</span>
                       </button>
                     );
