@@ -712,12 +712,13 @@ function SnowflakeCard({ stk, scores }) {
     label==="معقول"?C.amber:label==="مرتفع"?C.coral:
     label==="ضعيف"||label==="غالي"||label==="خطر"||label==="منخفض"||label==="سلبي"?C.coral:C.smoke;
 
-  const getLabel = (metric, val) => {
+const getLabel = (metric, val) => {
     if(val==null) return "--";
     if(metric==="pe")     return val<10?"رخيص جداً":val<20?"معقول":val<30?"مرتفع":"غالي";
     if(metric==="growth") return val>20?"ممتاز":val>10?"جيد":val>5?"مقبول":val>0?"ضعيف":"سلبي";
     if(metric==="margin") return val>25?"ممتاز":val>15?"جيد":val>5?"مقبول":"ضعيف";
     if(metric==="cr")     return val>2?"ممتاز":val>1.5?"جيد":val>1?"مقبول":"خطر";
+    if(metric==="de")     return val<0.5?"ممتاز":val<1.0?"جيد":val<2.0?"مقبول":"ضعيف";
     if(metric==="div")    return val>5?"ممتاز":val>3?"جيد":val>1?"مقبول":"منخفض";
     if(metric==="pct")    return val>5?"ممتاز":val>0?"جيد":val>-5?"مقبول":"ضعيف";
     return "--";
