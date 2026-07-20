@@ -1468,7 +1468,7 @@ var benchmarkReturn = useMemo(function(){
     };
 
     analysis.chartData = {
-      portfolioValue: (typeof perfHistory !== 'undefined' && perfHistory && perfHistory.length >= 2)
+      portfolioValue: (perfHistory && perfHistory.length >= 2)
         ? generatePortfolioValueChart(perfHistory, coveredValue60)
         : [],
       drawdown: generateDrawdownChart(positionsWithBars60, 60),
