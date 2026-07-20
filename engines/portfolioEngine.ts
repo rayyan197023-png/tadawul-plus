@@ -3551,45 +3551,6 @@ export function addIntelligenceLayer(
 ═══════════════════════════════════════════════════════════ */
 
 /**
- * توليد بيانات منحنى قيمة المحفظة عبر الزمن
- * 
- * المنهجية:
- * ① حساب عوائد المحفظة اليومية
- * ② بناء منحنى تراكمي من القيمة الحالية للخلف
- * ③ بناء منحنى TASI Synthetic للمقارنة
- * 
- * @param {Array} positions - مع bars لكل سهم
- * @param {number} currentValue - القيمة الحالية للمحفظة
- * @param {number} days - عدد الأيام (افتراضي 60)
- * @returns {Array} [{date, portfolio, benchmark, alpha}]
- */
-export function generatePortfolioValueChart(
-  positions: Position[],
-  currentValue: number,
-  days?: number,
-  tasiBars?: Bar[]
-): any[] {
-  if (!positions || positions.length === 0 || !currentValue) {
-    return [];
-  }
-  days = days || 60;
-
-  var weights: any = {};
-  var totalVal = 0;
-  positions.forEach(function(p) { totalVal += p.value || 0; });
-  positions.forEach(function(p) {
-    weights[p.sym] = (p.value || 0) / totalVal;
-  });
-
-  var portfolioReturns = calcPortfolioReturns(positions, weights);
-  var tasiReturns = (tasiBars && tasiBars.length > 1)
-    ? simpleReturns(tasiBars)
-    : buildTasiSyntheticReturns(positions);
-
-  var numPoints = Math.min(portfolioReturns.length, tasiReturns.length, days);
-  if (numPoints < 2) return [];
-
-/**
  * توليد بيانات منحنى قيمة المحفظة مقابل تاسي -- بدون أي معايرة قسرية
  * يعتمد مباشرة على القيم الحقيقية المسجّلة في perfHistory (لا rescale، لا تلاعب رياضي)
  * الفترة الزمنية: من أول نقطة تسجيل فعلية للمحفظة حتى اليوم
