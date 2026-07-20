@@ -3560,8 +3560,7 @@ export function generatePortfolioValueChart(perfHistory: any[], currentValue: nu
     return [];
   }
 
-  // نقطة البداية الحقيقية -- نبحث عن أول نقطة صالحة (قيمة أكبر من صفر) بدل الاعتماد على أول عنصر دائماً
-  // (بعض التسجيلات الأولى قد تكون بقيمة 0 أو غير صالحة قبل اكتمال بيانات السعر)
+  // نقطة البداية الحقيقية -- نبحث عن أول نقطة صالحة (قيمة أكبر من صفر)
   var startEntry = null;
   for (var si = 0; si < perfHistory.length; si++) {
     if (perfHistory[si].value && perfHistory[si].value > 0) {
@@ -3571,7 +3570,15 @@ export function generatePortfolioValueChart(perfHistory: any[], currentValue: nu
   }
   if (!startEntry) return [];
   var startValue = startEntry.value;
-  var startTasi = startEntry.tasi;
+
+  // نبحث عن أول قيمة تاسي صالحة (أكبر من صفر) بشكل منفصل -- قد لا تتوفر بنفس نقطة startValue
+  var startTasi = null;
+  for (var ti = 0; ti < perfHistory.length; ti++) {
+    if (perfHistory[ti].tasi && perfHistory[ti].tasi > 0) {
+      startTasi = perfHistory[ti].tasi;
+      break;
+    }
+  }
 
   var chartData: any[] = [];
   for (var i = 0; i < perfHistory.length; i++) {
