@@ -1481,7 +1481,7 @@ var benchmarkReturn = useMemo(function(){
     };
 
     return analysis;
-  }, [positions, tasiBarsState, realBarsMap, tv]);
+  }, [positions, tasiBarsState, realBarsMap, tv, perfHistory]);
 
  // ✨ تحليل Portfolio IQ - مع تخزين في useMemo (CRITICAL Performance Fix!)
 
