@@ -1673,13 +1673,22 @@ return result;
       var days=Math.round((new Date(newest)-new Date(oldest))/(86400000));
       if(days>0) avgHold=days+"يوم";
     }
+    // ✨ صافي الربح/الخسارة المحقق -- من صفقات البيع المُغلقة فقط (تُطابق كل صفقة بيع بأقرب صفقة شراء لنفس السهم)
+    var realizedPnl=sells.reduce(function(s,t){
+      var b=tradeLog.find(function(b2){return b2.action==="شراء"&&b2.sym===t.sym;});
+      if(!b) return s;
+      return s+((t.price-b.price)*t.qty);
+    },0);
+    // ✨ صافي الربح/الخسارة غير المحقق -- من المراكز المفتوحة حالياً (يعتمد على positions الحقيقية، مو tradeLog)
+    var unrealizedPnl=(positions||[]).reduce(function(s,p){return s+(p.pnl||0);},0);
     return [
       {l:"صفقات شراء",v:String(buys.length),c:C.mint,sub:Math.round(totalBuyVal/1000)+"K ر"},
       {l:"نسبة الربح",v:(sells.length>0?winRate:"-")+"%",c:winRate>=50?C.mint:C.coral,sub:winTrades+" من "+sells.length},
-      {l:"متوسط الدرجة",v:String(avgScore),c:avgScore>=70?C.mint:avgScore>=50?C.amber:C.coral,sub:"/100"},
-      {l:"مدة الاحتفاظ",v:avgHold,c:C.electric,sub:"متوسط"},
+      {l:"ربح محقق",v:(realizedPnl>=0?"+":"")+fmt(Math.round(realizedPnl))+" ر",c:realizedPnl>=0?C.mint:C.coral,sub:sells.length+" صفقة بيع"},
+      {l:"ربح غير محقق",v:(unrealizedPnl>=0?"+":"")+fmt(Math.round(unrealizedPnl))+" ر",c:unrealizedPnl>=0?C.mint:C.coral,sub:(positions||[]).length+" مركز مفتوح"},
     ];
-  },[tradeLog]);
+  },[tradeLog,positions]);
+
   // ======= بيانات تاسي (مربوطة بـ sahmk عبر fetchTasiBars) =======
   var td_s=useState(function(){
 
