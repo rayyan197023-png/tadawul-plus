@@ -3560,14 +3560,18 @@ export function generatePortfolioValueChart(perfHistory: any[], currentValue: nu
     return [];
   }
 
-  // نقطة البداية الحقيقية -- كل الحسابات نسبية إليها، بدون أي تحجيم لاحق
-  var startEntry = perfHistory[0];
+  // نقطة البداية الحقيقية -- نبحث عن أول نقطة صالحة (قيمة أكبر من صفر) بدل الاعتماد على أول عنصر دائماً
+  // (بعض التسجيلات الأولى قد تكون بقيمة 0 أو غير صالحة قبل اكتمال بيانات السعر)
+  var startEntry = null;
+  for (var si = 0; si < perfHistory.length; si++) {
+    if (perfHistory[si].value && perfHistory[si].value > 0) {
+      startEntry = perfHistory[si];
+      break;
+    }
+  }
+  if (!startEntry) return [];
   var startValue = startEntry.value;
   var startTasi = startEntry.tasi;
-
-  if (!startValue || startValue <= 0) {
-    return [];
-  }
 
   var chartData: any[] = [];
   for (var i = 0; i < perfHistory.length; i++) {
