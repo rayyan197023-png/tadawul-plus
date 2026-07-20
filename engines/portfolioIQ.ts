@@ -1464,10 +1464,11 @@ if (mktCap > 50000000000) { // 50B+ = Large cap
   
   const largeCapPctDna = totalDnaValue > 0 ? largeCapValueDna / totalDnaValue : 0.5;
   dna.capSize.score = Math.round(largeCapPctDna * 100);
-  dna.capSize.label = 
-    largeCapPctDna > 0.7 ? 'كبيرة (Large-cap)' :
-    largeCapPctDna > 0.4 ? 'متنوعة' :
-    'صغيرة (Small-cap)';
+    dna.capSize.label = 
+    largeCapPctDna > 0.7 ? 'شركات كبرى راسخة' :
+    largeCapPctDna > 0.4 ? 'مزيج متنوع من الأحجام' :
+    'شركات صغيرة نامية';
+
 
   // Overall personality
   const personality = determinePortfolioPersonality(dna);
