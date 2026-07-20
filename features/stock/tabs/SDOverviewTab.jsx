@@ -23,6 +23,7 @@ import {
   SHAREHOLDERS, INSIDER_TX,
 } from './StockDetailShared';
 import { ANALYST_EST } from './SDApiEnginesTab';
+import { sahmkFetch } from '../../../services/api/sahmkFundamentalsApi';
 
 function ChartLoader({ sym, base, per, chartType, stk, onExpand }) {
   const [show, setShow] = useState(false);
