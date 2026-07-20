@@ -1377,13 +1377,25 @@ var positionData = {
   // ── مقارنة بالمرجع (Benchmark vs TASI) ──────────────────────────
   // ✨ عائد تاسي الحقيقي (تراكمي) من tasiBarsState.bars -- نفس منهجية حساب tpP للمحفظة
   // إن لم تتوفر بيانات تاسي حقيقية بعد، نُرجع 0 (بدل تقدير اصطناعي مضلِّل)
-  var benchmarkReturn = useMemo(function(){
+var benchmarkReturn = useMemo(function(){
     if(!tasiBarsState.bars || tasiBarsState.bars.length < 2) return 0;
-    var rets = simpleReturns(tasiBarsState.bars);
+    // ── مقارنة عادلة بفترة موحّدة: نقص بيانات تاسي لتبدأ من نفس تاريخ بداية تتبع المحفظة ──
+    // بدل عائد تاسي بفترة ثابتة (سنة) بغض النظر عن متى استثمر المستخدم فعلياً
+    var startDate = (perfHistory && perfHistory.length > 0) ? perfHistory[0].date : null;
+    var barsForCalc = tasiBarsState.bars;
+    if(startDate){
+      var filtered = tasiBarsState.bars.filter(function(b){
+        return b.date >= startDate;
+      });
+      // نحتاج نقطتين على الأقل لحساب عائد؛ لو القص أنقص العدد كثيراً، نستخدم المفلترة على أي حال
+      // (حتى لو نقطة أو نقطتين فقط -- أدق من استخدام فترة سنة كاملة غير متطابقة)
+      if(filtered.length >= 2) barsForCalc = filtered;
+    }
+    var rets = simpleReturns(barsForCalc);
     var cumulative = 1;
     for(var i=0;i<rets.length;i++) cumulative *= (1 + rets[i]);
     return +((cumulative - 1) * 100).toFixed(2);
-  }, [tasiBarsState]);
+  }, [tasiBarsState, perfHistory]);
 
 
   var alpha = +(tpP - benchmarkReturn).toFixed(2); // Alpha vs TASI
