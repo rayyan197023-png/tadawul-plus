@@ -2391,7 +2391,10 @@ if(sub.length>0){
 
  const bw=Math.max(1.5,(CW/(n+_cloudPad))*0.72);
  const drawW=CW-bw*2-16;
- const mv=Math.max(...sub.map(d=>d.v))||1;
+// في وضع المؤشر (تاسي)، الحجم يمثل قيمة تداول كامل السوق (مليارات) -- نطاق مختلف كلياً عن سهم فردي
+// نتأكد من استخدام قيم الحجم الفعلية فقط، ونتجاهل أي قيمة صفرية/غير منطقية بشكل آمن
+const _volsRaw = sub.map(d=>d.v).filter(v=>v!=null && v>0 && isFinite(v));
+const mv = _volsRaw.length ? Math.max(..._volsRaw) : 1;
  const _totalSlots=n+_cloudPad-1;
  const tx=i=>bw*0.5+(_totalSlots<=0?drawW/2:(i/_totalSlots)*(drawW-bw*2));
 
