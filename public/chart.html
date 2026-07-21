@@ -7718,26 +7718,6 @@ async function loadStk(){
   pct.style.background=up?'rgba(34,197,94,0.12)':'rgba(239,68,68,0.12)';
   pct.style.borderColor=up?'rgba(34,197,94,0.28)':'rgba(239,68,68,0.28)';
 
-  // ── وضع المؤشر (تاسي): مسار تحميل منفصل تماماً، بدون أي تعارض مع منطق الأسهم العادي ──
-  if(_isIndexMode){
-   try{
-    const candles=await fetchTasiChartData(state.per);
-    if(candles && candles.length){
-     state.allCandles=candles;
-     const last=candles[candles.length-1];
-     s.p=last.c;
-     document.getElementById('pmain').textContent=last.c.toFixed(2);
-     const rangeToVis2={'أسبوع':7,'شهر':22,'3أشهر':65,'6أشهر':130,'سنة':248,'سنتين':496,'5سنوات':1000,'الكل':1000};
-     state.visible=Math.min(rangeToVis2[state.range]||48, candles.length);
-     state.offset=0;
-     chartReady=true;
-     invalidateChart();render();
-     setTimeout(hideLoader,120);
-     return;
-    }
-   }catch(e){console.warn('[loadStk indexMode]',e);}
-  }
-
   const TF_MINS={'1m':1,'5m':5,'15m':15,'30m':30,'1H':60,'4H':240,'1D':1440,'1W':10080,'1M':43200};
   const PER_COUNT={'1m':200,'5m':180,'15m':160,'30m':150,'1H':140,'4H':130,'1D':130,'1W':104,'1M':96};
   const dv={'1m':80,'5m':70,'15m':65,'30m':60,'1H':55,'4H':50,'1D':55,'1W':40,'1M':45};
