@@ -2383,8 +2383,9 @@ if(sub.length>0){
  if(_indCache.custom){Object.keys(_indCache.custom).forEach(id=>{customIndSliced[id]=_slc(_indCache.custom[id]);});}
 
  // Price range
- const pp=sub.flatMap(d=>[d.hi,d.lo]);
- const rawMn=Math.min(...pp),rawMx=Math.max(...pp),pad=(rawMx-rawMn)*0.06;
+const pp=sub.flatMap(d=>[d.hi,d.lo]).filter(v=>v!=null&&isFinite(v)&&v>0);
+ const rawMn=pp.length?Math.min(...pp):0,rawMx=pp.length?Math.max(...pp):1,pad=(rawMx-rawMn)*0.06;
+
  // Apply Y-axis scale: center zoom on price midpoint
  const mid=(rawMn+rawMx)/2;
  const halfRng=((rawMx-rawMn)*0.5+pad)/Math.max(0.1,yScale);
