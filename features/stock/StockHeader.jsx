@@ -151,9 +151,31 @@ export default function StockHeader({ stk, onClose }) {
                   <span style={{ fontSize: 11, color: C.textSecondary, flexShrink: 0 }}>ر.س</span>
                 </div>
                 <div style={{ display: 'flex', gap: 6 }}>
-                  <button onClick={() => { setAlertSet(true); setAlertOpen(false); }} style={{ flex: 1, padding: '8px', borderRadius: 8, background: C.gold + '22', border: `1px solid ${C.gold}44`, color: C.gold, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Cairo,sans-serif' }}>
-                    تفعيل
-                  </button>
+<button onClick={() => {
+  // ── حفظ فعلي بنظام التنبيهات الموحّد (tadawul_alerts) ──
+  // بدون هذا، التنبيه كان يبقى بذاكرة المكوّن فقط ويختفي عند الخروج من الصفحة
+  try {
+    const existing = JSON.parse(window.localStorage.getItem('tadawul_alerts') || '[]');
+    const newAlert = {
+      id: Date.now(),
+      sym: stk.sym,
+      name: stk.name,
+      type: alertType === 'فوق' ? 'above' : 'below',
+      price: parseFloat(alertPrice),
+      note: '',
+      triggered: false,
+      active: true,
+      priority: 'medium',
+      expiry: null,
+    };
+    const updated = [newAlert].concat(existing);
+    window.localStorage.setItem('tadawul_alerts', JSON.stringify(updated));
+  } catch (e) {}
+  setAlertSet(true);
+  setAlertOpen(false);
+}} style={{ flex: 1, padding: '8px', borderRadius: 8, background: C.gold + '22', border: `1px solid ${C.gold}44`, color: C.gold, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Cairo,sans-serif' }}>
+  تفعيل
+</button>
                   {alertSet && (
                     <button onClick={() => { setAlertSet(false); setAlertOpen(false); }} style={{ padding: '8px 10px', borderRadius: 8, background: C.layer3, border: `1px solid ${C.border}`, color: C.textSecondary, fontSize: 11, cursor: 'pointer', fontFamily: 'Cairo,sans-serif' }}>
                       إلغاء
