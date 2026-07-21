@@ -573,6 +573,38 @@ let state = {
 // ── كشف "وضع المؤشر" (Index Mode) عند فتح الشارت لمؤشر تاسي بدل سهم فردي ──
 // يُستخدم لاحقاً لمعالجة حسابات المحاور (سعر/حجم) بشكل يناسب أرقام المؤشر الكبيرة
 const _isIndexMode = (new URLSearchParams(location.search).get('sym') || '').toUpperCase() === 'TASI';
+
+// ── دالة مخصصة تماماً لجلب بيانات مؤشر تاسي، منفصلة عن مسار الأسهم العادي ──
+// تضمن قيماً منطقية دائماً (بدون تسرب حقول أو تعارض مع منطق الأسهم الفردية)
+async function fetchTasiChartData(period){
+ const periodMap={'1D':'1D','1W':'1W','1M':'1M','3M':'3M','1Y':'1Y'};
+ const sahmkPeriod=periodMap[period]||'1Y';
+ try{
+  const r=await fetch(`/api/sahmkdata?endpoint=ohlcv&sym=TASI&period=${sahmkPeriod}`);
+  const j=await r.json();
+  const raw=j?.data;
+  if(!Array.isArray(raw)||!raw.length) return [];
+
+  const clean=[];
+  for(const b of raw){
+   // نتحقق من صحة كل حقل رقمياً قبل القبول -- نرفض أي شمعة فيها قيمة غير منطقية
+   const o=+b.open, h=+b.high, l=+b.low, c=+b.close, v=+(b.volume ?? b.value ?? 0);
+   const t=b.date || b.t || b.time;
+   const validPrice = [o,h,l,c].every(x=>isFinite(x) && x>0);
+   const validRange = h>=l && h>=o && h>=c && l<=o && l<=c;
+   if(!validPrice || !validRange || !t) continue; // تخطّى أي شمعة فاسدة بدل ما تكسر كل الرسم
+   clean.push({
+    t: new Date(t).getTime(),
+    o, h, l, c,
+    v: (isFinite(v) && v>=0) ? v : 0, // الحجم صفر لو غير متوفر أو فاسد -- أفضل من رقم سالب أو NaN
+   });
+  }
+  return clean;
+ }catch(e){
+  console.warn('[fetchTasiChartData]',e);
+  return [];
+ }
+}
    
 // Pan/pinch drag state
 let drag = { x0:0, off0:0, d0:0, v0:50 };
