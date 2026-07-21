@@ -111,7 +111,7 @@ const fetchOHLCV = async (retryCount = 0) => {
     };
     fetchOHLCV();
   }, [period]);
-  const [chartType, setChartType] = useState('line');  // 'line' | 'candle'
+const chartType = 'line'; // ثابت دائماً على الخط -- البطاقة بالرئيسية للعرض السريع فقط
   const [tooltip,   setTooltip]   = useState(null);
   const svgRef                    = useRef(null);
 
