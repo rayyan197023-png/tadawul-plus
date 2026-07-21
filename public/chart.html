@@ -570,6 +570,11 @@ let state = {
  }catch(e){console.warn('[initFromURL]',e);}
 })();
 
+// ── دالة ديناميكية (مو ثابت) تتحقق من السهم الحالي في كل مرة ──
+// تتفادى مشكلة التعلق على القيمة الأولى عند التنقل بين الأسهم بدون إعادة تحميل الصفحة
+function _isCurrentIndexMode(){
+ return (state?.stk?.sym || '').toUpperCase() === 'TASI';
+}
    
 // Pan/pinch drag state
 let drag = { x0:0, off0:0, d0:0, v0:50 };
