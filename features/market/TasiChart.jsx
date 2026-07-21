@@ -288,15 +288,21 @@ const dayChgVal = +chgVal.toFixed(2);
 
       {/* ── Period Tabs + Chart Type Toggle */}
       <div style={{ display: 'flex', padding: '2px 14px 0', position: 'relative', zIndex: 1, alignItems: 'center' }}>
-        {/* Candlestick / Line toggle */}
+        {/* فتح شارت تاسي الكامل (chart.html) */}
         <button
-          onClick={() => { setChartType(t => t === 'line' ? 'candle' : 'line'); setTooltip(null); }}
-          style={{
-            padding: '4px 8px', background: chartType === 'candle' ? color + '22' : 'none',
-            border: '1px solid ' + color + '44', borderRadius: 6, cursor: 'pointer',
-            fontFamily: 'monospace', fontSize: 9, color: color, marginLeft: 6, flexShrink: 0, minHeight: 28,
+          onClick={() => {
+            window.location.href = '/chart.html?sym=TASI&name=' + encodeURIComponent('مؤشر تاسي');
           }}
-        >{chartType === 'line' ? 'شموع' : 'خط'}</button>
+          style={{
+            padding: '4px 8px', background: 'none',
+            border: '1px solid ' + color + '44', borderRadius: 6, cursor: 'pointer',
+            fontFamily: 'Cairo,sans-serif', fontSize: 9, fontWeight: 700, color: color, marginLeft: 6, flexShrink: 0, minHeight: 28,
+            display: 'flex', alignItems: 'center', gap: 4,
+          }}
+        >
+          <span>📊</span>
+          <span>عرض الشارت</span>
+        </button>
         {PERIODS.map(p => (
           <button key={p} onClick={() => { setPeriod(p); setTooltip(null); }} style={{
             flex: 1, padding: '6px 2px', background: 'none', border: 'none', cursor: 'pointer',
