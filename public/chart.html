@@ -2397,7 +2397,9 @@ if(sub.length>0){
 
  const bw=Math.max(1.5,(CW/(n+_cloudPad))*0.72);
  const drawW=CW-bw*2-16;
-const mv=Math.max(...sub.map(d=>d.v))||1;
+// ── فحص آمن للحجم: نستبعد القيم الفاسدة (خاصة عند وضع المؤشر تاسي) دون أي مسار منفصل ──
+const _volsClean=sub.map(d=>d.v).filter(v=>v!=null && isFinite(v) && v>=0);
+const mv=_volsClean.length ? (Math.max(..._volsClean)||1) : 1;
  const _totalSlots=n+_cloudPad-1;
  const tx=i=>bw*0.5+(_totalSlots<=0?drawW/2:(i/_totalSlots)*(drawW-bw*2));
 
