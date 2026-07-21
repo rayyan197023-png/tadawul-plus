@@ -6393,9 +6393,9 @@ function renderCrosshair(){
  const end=all.length-clampOff,start=Math.max(0,end-VIS);
  const sub=all.slice(start,end),n=sub.length;
  if(!n)return;
- const pp=sub.flatMap(d=>[d.hi,d.lo]);
- const rawMn=Math.min(...pp),rawMx=Math.max(...pp),pad=(rawMx-rawMn)*0.06;
- const mid2=(rawMn+rawMx)/2;
+const pp=sub.flatMap(d=>[d.hi,d.lo]).filter(v=>v!=null&&isFinite(v)&&v>0);
+ const rawMn=pp.length?Math.min(...pp):0,rawMx=pp.length?Math.max(...pp):1,pad=(rawMx-rawMn)*0.06;
+ const mid2=(rawMn+rawMx)/2; 
  const halfRng=((rawMx-rawMn)*0.5+pad)/Math.max(0.1,yScale);
  const mn=mid2-halfRng,mx=mid2+halfRng,rng=mx-mn||1;
  const bw=Math.max(1.5,(CW/n)*0.72);
