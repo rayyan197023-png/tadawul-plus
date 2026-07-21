@@ -6680,8 +6680,8 @@ function _enrichDrawing(d){
     const px2idx=(px)=>Math.round(b.px2idx(px));
 
     // px → price (SAME as render's ty inverse, with yScale)
-    const pp=sub.flatMap(c=>[c.hi,c.lo]);
-    const rawMn=Math.min(...pp),rawMx=Math.max(...pp);
+const pp=sub.flatMap(c=>[c.hi,c.lo]).filter(v=>v!=null && isFinite(v) && v>0);
+    const rawMn=pp.length?Math.min(...pp):0,rawMx=pp.length?Math.max(...pp):1;
     const pad=(rawMx-rawMn)*0.06;
     const mid=(rawMn+rawMx)/2;
     const halfRng=((rawMx-rawMn)*0.5+pad)/Math.max(0.1,yScale);
