@@ -570,6 +570,10 @@ let state = {
  }catch(e){console.warn('[initFromURL]',e);}
 })();
 
+// ── كشف "وضع المؤشر" (Index Mode) عند فتح الشارت لمؤشر تاسي بدل سهم فردي ──
+// يُستخدم لاحقاً لمعالجة حسابات المحاور (سعر/حجم) بشكل يناسب أرقام المؤشر الكبيرة
+const _isIndexMode = (new URLSearchParams(location.search).get('sym') || '').toUpperCase() === 'TASI';
+   
 // Pan/pinch drag state
 let drag = { x0:0, off0:0, d0:0, v0:50 };
 let yScale = 1.0;
