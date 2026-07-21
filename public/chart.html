@@ -10103,8 +10103,8 @@ function _recalcDrawingCoords(){
   // Compute chart bounds same as render
   const W=cv.offsetWidth-38||352;
   const H=cv.offsetHeight||748;
-  const pp=sub.flatMap(d=>[d.hi,d.lo]);
-  const rawMn=Math.min(...pp),rawMx=Math.max(...pp);
+const pp=sub.flatMap(d=>[d.hi,d.lo]).filter(v=>v!=null&&isFinite(v)&&v>0);
+    const rawMn=pp.length?Math.min(...pp):0,rawMx=pp.length?Math.max(...pp):1;
   const pad=(rawMx-rawMn)*0.06;
   const mn=rawMn-pad,rng=(rawMx-rawMn+pad*2)||1;
   const bw=Math.max(1.5,(W/Math.max(1,vis))*0.72);
