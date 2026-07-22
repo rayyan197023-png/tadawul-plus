@@ -2182,7 +2182,8 @@ function render(){
 
  const YW=38, CW=W-YW;
  const OF_H=showOrderFlow?getPanelH('of',H,0.10):0; // order flow panel
- const VOL_H=getPanelH('vol',H,0.14); // volume panel — resizable
+ // بانل الحجم يُخفى بالكامل لمؤشر تاسي -- بيانات الحجم التاريخية غير متوفرة وغير دقيقة للمؤشر
+ const VOL_H=_isCurrentIndexMode() ? 0 : getPanelH('vol',H,0.14); // volume panel — resizable
  if(!state.activeInds) state.activeInds = state.inds || [];
  const SUB_INDS_BASE=['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD'].filter(id=>state.activeInds.includes(id));
 
