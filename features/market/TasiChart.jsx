@@ -291,8 +291,7 @@ const dayChgVal = +chgVal.toFixed(2);
         {/* فتح شارت تاسي الكامل (chart.html) */}
         <button
 onClick={() => {
-  const vol = Math.round(totalValue);
-  window.location.href = '/chart.html?sym=TASI&name=' + encodeURIComponent('مؤشر تاسي') + '&tvol=' + vol;
+  window.location.href = '/chart.html?sym=TASI&name=' + encodeURIComponent('مؤشر تاسي');
 }}
           style={{
             padding: '4px 8px', background: 'none',
