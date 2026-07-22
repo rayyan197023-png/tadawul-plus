@@ -4380,7 +4380,7 @@ if(lastY>=cTop&&lastY<=cBot&&clampOff===0&&sub[n-1]?.c){
    ctx.beginPath();ctx.moveTo(CW,_y);ctx.lineTo(CW+3,_y);ctx.stroke();
    ctx.fillStyle=darkTheme?'#4a6080':'#64748b';
    ctx.font='6.5px monospace';ctx.textAlign='right';ctx.textBaseline='middle';
-   const _lbl=_v>=1000000?((_v/1000000).toFixed(1)+'M'):_v>=1000?((_v/1000).toFixed(0)+'K'):_v.toFixed(0);
+const _lbl=_v>=1000000000?((_v/1000000000).toFixed(2)+'B'):_v>=1000000?((_v/1000000).toFixed(1)+'M'):_v>=1000?((_v/1000).toFixed(0)+'K'):_v.toFixed(0);
    ctx.fillText(_lbl,CW+YW-2,_y);
    ctx.textBaseline='alphabetic';
   });
