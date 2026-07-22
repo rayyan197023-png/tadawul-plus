@@ -554,9 +554,14 @@ let state = {
   const sym=params.get('sym');
   const per=params.get('per');
   const name=params.get('name');
+  const tvol=params.get('tvol');
+  if(tvol && !isNaN(+tvol)){
+   window._tasiTotalVolume = +tvol; // قيمة تداول تاسي الحقيقية (محسوبة مسبقاً من كل الأسهم)
+  }
   if(sym){
    let found=STOCKS.find(s=>s.sym===sym);
    if(!found){
+
     // السهم غير موجود في القائمة الثابتة — أنشئ كائناً مؤقتاً
     // (تُحدَّث تفاصيله تلقائياً عند جلب الشموع الحقيقية من سهمك)
     found={sym,name:name||sym,sec:'',p:0,ch:0,pct:0};
