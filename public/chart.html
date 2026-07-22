@@ -554,10 +554,6 @@ let state = {
   const sym=params.get('sym');
   const per=params.get('per');
   const name=params.get('name');
-  const tvol=params.get('tvol');
-  if(tvol && !isNaN(+tvol)){
-   window._tasiTotalVolume = +tvol; // قيمة تداول تاسي الحقيقية (محسوبة مسبقاً من كل الأسهم)
-  }
   if(sym){
    let found=STOCKS.find(s=>s.sym===sym);
    if(!found){
