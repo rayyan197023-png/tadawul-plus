@@ -4516,7 +4516,8 @@ if(lastY>=cTop&&lastY<=cBot&&clampOff===0&&sub[n-1]?.c){
  const dateLbl=isIntra
  ?dd+'/'+(mm<10?'0':'')+mm+' '+dt.getHours()+':'+(dt.getMinutes()<10?'0':'')+dt.getMinutes()
  :dd+'/'+(mm<10?'0':'')+mm+'/'+yy;
- const volStr=cd.v>=1e6?(cd.v/1e6).toFixed(2)+'M':cd.v>=1e3?(cd.v/1e3).toFixed(1)+'K':cd.v.toFixed(0);
+const volStr=cd.v>=1e9?(cd.v/1e9).toFixed(2)+'B':cd.v>=1e6?(cd.v/1e6).toFixed(2)+'M':cd.v>=1e3?(cd.v/1e3).toFixed(1)+'K':cd.v.toFixed(0);
+
 
  // Card dimensions
  const TW=158, TH=110, R=10, PAD=12;
