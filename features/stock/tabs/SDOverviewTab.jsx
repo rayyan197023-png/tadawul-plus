@@ -970,6 +970,7 @@ function PerDropdown({ per, setPer }) {
 
 // ─── SDOverview ───────────────────────────────────────────────────
 function SDOverview({ stk, per, setPer, onNav, onExpand }) {
+  const isIndex = stk?.sym === 'TASI';
   const [chartType, setChartType] = useState("شموع");
   const [showMore, setShowMore] = useState(false);
   const scores = stk.finScores || FIN_SCORES[stk.sym] || FIN_SCORES.default;
