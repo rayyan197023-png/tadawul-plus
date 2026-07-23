@@ -1114,7 +1114,8 @@ const banks = [];
         </SectionCard>
       )}
 
-      {/* الإحصائيات */}
+      {/* الإحصائيات -- لا تُعرض لمؤشر تاسي (خاصة بشركة فردية) */}
+      {!isIndex && (
       <SectionCard title="الإحصائيات الشاملة" accent={C.electric}>
                 {statRowsMain.map((row, i) => {
           if (row.section) return <Row key={i} section={row.section}/>;
