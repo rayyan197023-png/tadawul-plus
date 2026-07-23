@@ -1160,8 +1160,8 @@ const banks = [];
       </SectionCard>
       )}
 
-      {/* السعر العادل من Sahmk */}
-      {stk.fairPrice && (
+      {/* السعر العادل من Sahmk -- لا يُعرض لمؤشر تاسي */}
+      {!isIndex && stk.fairPrice && (
         <SectionCard title="السعر العادل -- SAHMK AI" accent={C.gold}>
           <div style={{ padding:"12px 14px" }}>
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
