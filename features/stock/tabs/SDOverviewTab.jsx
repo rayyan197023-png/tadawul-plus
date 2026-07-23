@@ -157,7 +157,7 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
   const lastColor=lastCandleUp?C.mint:C.coral;
 
   const YAXIS_W=36, CHART_H_PX=220;
-  const HCHART=174, HVOL=34, padL=8, padR=28, padT=12;
+  const HCHART=174, HVOL=isIndexChart?0:34, padL=8, padR=28, padT=12;
 
   const getW  = ()=> canvasRef.current ? canvasRef.current.offsetWidth  : 400;
   const getH  = ()=> HCHART;
