@@ -221,13 +221,13 @@ const [alertSet, setAlertSet] = useState(() => {
       <div style={{
         display: 'flex', gap: 0, background: C.layer3, borderRadius: 10, overflow: 'hidden',
         border: `1px solid ${C.border}`,
-      }}>
+}}>
         {[
           { l: 'الفتح',       v: stk.o    ?? (+(stk.p - stk.ch).toFixed(2)) }, // open = prev close if not provided
           { l: 'أعلى يومي',   v: stk.hi   ?? stk.p },
           { l: 'أدنى يومي',   v: stk.lo   ?? stk.p },
-          { l: 'الحجم',       v: stk.v ? (stk.v / 1e6).toFixed(1) + 'م' : '—' },
-        ].map((item, i) => (
+          { l: 'الحجم',       v: stk.v ? (stk.v / 1e6).toFixed(1) + 'م' : '--' },
+        ].filter(item => !(stk?.sym === 'TASI' && item.l === 'الحجم')).map((item, i) => (
           <div key={i} style={{ padding: '7px 8px', borderLeft: i ? `1px solid ${C.border}44` : 0, flex: 1, textAlign: 'center' }}>
             <div style={{ fontSize: 10, color: C.textSecondary, marginBottom: 3 }}>{item.l}</div>
             <div style={{ fontFamily: 'monospace', fontSize: 11, fontWeight: 800, color: C.textPrimary }}>
