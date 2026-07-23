@@ -1259,9 +1259,10 @@ const banks = [];
           )}
         </div>
       </SectionCard>
+      )}
 
-      {/* مقارنة الأقران */}
-      {peers.length > 0 && (
+      {/* مقارنة الأقران -- لا تُعرض لمؤشر تاسي */}
+      {!isIndex && peers.length > 0 && (
         <SectionCard title="مقارنة بأقران القطاع" accent={C.teal}>
           <div style={{ overflowX:"auto" }}>
             <div style={{ minWidth:480 }}>
