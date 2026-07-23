@@ -36,13 +36,19 @@ export default function StockDetail({ stk: baseStk, onClose }) {
   const { stk, loading, lastFetch, apiStatus, apiError } = useSahmkData(baseStk);
 
   // التبويبات
-  const tabs = [
+// التبويبات
+  const isIndex = stk?.sym === 'TASI';
+  const allTabs = [
     { id: "overview",     label: "نظرة عامة", icon: "📊" },
     { id: "technical",    label: "تقني",       icon: "📈" },
     { id: "fundamental",  label: "أساسي",      icon: "💰" },
     { id: "shareholders", label: "الملاك",     icon: "👥" },
     { id: "engines",      label: "محركات",     icon: "⚡" },
   ];
+  // لمؤشر تاسي: نخفي "أساسي" و"الملاك" -- مالهم معنى لمؤشر (خاصة بالشركات الفردية)
+  const tabs = isIndex
+    ? allTabs.filter(t => t.id !== "fundamental" && t.id !== "shareholders")
+    : allTabs;
 
   // Animations
   useEffect(() => {
