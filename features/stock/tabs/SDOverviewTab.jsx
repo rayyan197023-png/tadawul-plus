@@ -41,8 +41,10 @@ function ChartLoader({ sym, base, per, chartType, stk, onExpand }) {
 }
 
 function CChart({ sym, base, per, chartType, stk, onExpand }) {
+  const isIndexChart = stk?.sym === 'TASI';
   // جلب الشموع الحقيقية من sahmk
   const [sahmkBars, setSahmkBars] = useState([]);
+
   const [sahmkLoading, setSahmkLoading] = useState(false);
 
     // sahmk فترات مدعومة فعلياً: 1D, 1W, 1Y فقط (الباقي يرجع ~3 أشهر افتراضياً)
