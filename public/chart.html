@@ -7858,6 +7858,11 @@ function _applyTick(tick){
       state.visible=state.allCandles.length;
     }
   }
+  // ── إعادة رسم الشارت فوراً بعد كل تحديث تيك ──
+  // بدون هذا، البيانات تتحدث بالذاكرة لكن الشاشة تبقى ثابتة حتى يحدث render() لسبب آخر
+  invalidateChart();
+  render();
+}
 
   // Update header price display
   const pEl = document.getElementById('pmain');
