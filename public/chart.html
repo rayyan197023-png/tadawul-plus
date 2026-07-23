@@ -7814,7 +7814,7 @@ if(!raw) return;
     pct: +(raw.changePct || raw.changePercent || raw.pct || 0),
   };
 
-  if(tick.c > 0) _applyTick(tick);
+  if(tick.c > 0) { _applyTick(tick); invalidateChart(); render(); }
 }
 
 
