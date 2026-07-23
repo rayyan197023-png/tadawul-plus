@@ -15,7 +15,7 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { colors } from '../../theme/tokens';
 import { HISTORICAL_SERIES } from '../../hooks/useMarketEngine'; // constants only — live data via prop
-import { useNav } from '../../store/navstore';
+import { useNav } from '../../store/navStore';
 
 const C = colors;
 
