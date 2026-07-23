@@ -293,8 +293,16 @@ const dayChgVal = +chgVal.toFixed(2);
         {/* فتح شارت تاسي الكامل (chart.html) */}
         <button
 onClick={() => {
-  window.location.href = '/chart.html?sym=TASI&name=' + encodeURIComponent('مؤشر تاسي');
+  openStock({
+    sym: 'TASI',
+    name: 'مؤشر تاسي',
+    p: idx,
+    ch: chgVal,
+    pct: chgP,
+    sec: 'مؤشر',
+  }, 'market');
 }}
+
           style={{
             padding: '4px 8px', background: 'none',
             border: '1px solid ' + color + '44', borderRadius: 6, cursor: 'pointer',
