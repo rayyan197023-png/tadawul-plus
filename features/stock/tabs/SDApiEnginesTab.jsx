@@ -13,14 +13,14 @@ import { NLPLoader, OrderBookLoader, TickLoader } from './SDSubComponents';
 import { C, Skeleton } from './StockDetailShared';
 
 function SDApiEngines({ stk }) {
+  const isIndex = stk?.sym === 'TASI';
 
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
 
-
-      <OrderBookLoader stk={stk}/>
-      <TickLoader      stk={stk}/>
-      <NLPLoader       stk={stk}/>
+      {!isIndex && <OrderBookLoader stk={stk}/>}
+      <TickLoader stk={stk}/>
+      {!isIndex && <NLPLoader stk={stk}/>}
     </div>
   );
 }
