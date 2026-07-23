@@ -1192,14 +1192,16 @@ const banks = [];
         </SectionCard>
       )}
 
-      {/* درجات الصحة المالية */}
-      <HealthScores scores={scores} scoreLabel={scoreLabel} scoreColor={scoreColor}/>
+      {/* درجات الصحة المالية -- لا تُعرض لمؤشر تاسي */}
+      {!isIndex && <HealthScores scores={scores} scoreLabel={scoreLabel} scoreColor={scoreColor}/>}
 
-      {/* Snowflake */}
-      <SnowflakeCard stk={stk} scores={scores}/>
+      {/* Snowflake -- لا يُعرض لمؤشر تاسي */}
+      {!isIndex && <SnowflakeCard stk={stk} scores={scores}/>}
 
-      {/* تقييمات المحللين */}
+      {/* تقييمات المحللين -- لا تُعرض لمؤشر تاسي */}
+      {!isIndex && (
       <SectionCard title="تقييمات المحللين" accent={aColor} badge={banks.length>0?{text:banks.length+" بنك",color:C.electric}:null}>
+
         <div style={{ padding:"8px 16px 0", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
 <div style={{ fontSize:10, color:C.smoke, lineHeight:1.5 }}>
   {est?.numAnalysts > 0 ? `✓ ${est.numAnalysts} محلل -- SAHMK` : "بيانات المحللين من SAHMK"}
