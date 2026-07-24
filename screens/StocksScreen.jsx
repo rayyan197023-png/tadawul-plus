@@ -448,7 +448,7 @@ const liquidityFetched = useRef(new Set());
           </div>
 
           {/* الفلاتر النشطة */}
-          {(tab !== "all" || sortBy !== "ch") && (
+          {(tab !== "all" || sortBy !== "all") && (
             <div className="fade-in" style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 6, flexWrap: "wrap" }}>
               {tab !== "all" && (
                 <div style={{ display: "flex", alignItems: "center", gap: 4, background: C.layer2, border: `1px solid ${SECTOR_COLORS[tab] || C.line}55`, borderRadius: 8, padding: "4px 10px" }}>
@@ -456,10 +456,10 @@ const liquidityFetched = useRef(new Set());
                   <button onClick={() => changeTab("all")} style={{ background: "none", border: "none", color: C.ash, fontSize: 13, cursor: "pointer", padding: 0, lineHeight: 1 }}>×</button>
                 </div>
               )}
-              {sortBy !== "ch" && (
+              {sortBy !== "all" && (
                 <div style={{ display: "flex", alignItems: "center", gap: 4, background: C.layer2, border: `1px solid ${C.electric}55`, borderRadius: 8, padding: "4px 10px" }}>
-                  <span style={{ fontSize: 11, color: C.electric, fontWeight: 700 }}>{sortBy === "vol" ? "الحجم" : "الكل"}</span>
-                  <button onClick={() => changeSortBy("ch")} style={{ background: "none", border: "none", color: C.ash, fontSize: 13, cursor: "pointer", padding: 0, lineHeight: 1 }}>×</button>
+                  <span style={{ fontSize: 11, color: C.electric, fontWeight: 700 }}>{sortBy === "vol" ? "الحجم" : sortBy === "ch" ? "التغيّر" : sortBy}</span>
+                  <button onClick={() => changeSortBy("all")} style={{ background: "none", border: "none", color: C.ash, fontSize: 13, cursor: "pointer", padding: 0, lineHeight: 1 }}>×</button>
                 </div>
               )}
             </div>
