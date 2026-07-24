@@ -7291,14 +7291,16 @@ cv.addEventListener('touchmove',e=>{
   return;
  }
 
- // Pinch zoom: requires EXACTLY 2 fingers (no single-finger zoom)
- if(e.touches.length===2){
+// Pinch zoom: requires EXACTLY 2 fingers (no single-finger zoom)
+ // لا تفعّل الزوم إذا كان الـ crosshair نشطاً (ضغطة مطوّلة) -- يمنع الزوم المفاجئ غير المقصود
+ if(e.touches.length===2&&!_chActive){
  const d=getTD(e);
  if(drag.d0>0){document.title='[ZOOM-1] vis='+state.visible+' touches='+e.touches.length;state.visible=Math.min(state.allCandles.length,Math.max(6,Math.round(drag.v0*drag.d0/Math.max(d,1))));}
 
  const cx=(e.touches[0].clientX+e.touches[1].clientX)/2;
  doPan(cx-drag.x0);render();return;
  }
+
  // If drMode='pinch' but only 1 finger now (one finger lifted), clear it
  if(drMode==='pinch'&&e.touches.length<2){drMode=null;}
 
