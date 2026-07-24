@@ -287,7 +287,8 @@ const liquidityFetched = useRef(new Set());
   const timeStr = now.toLocaleTimeString("ar-SA", { hour: "2-digit", minute: "2-digit" });
   const fmtVol  = v => v >= 1_000_000 ? (v / 1_000_000).toFixed(1) + "م" : v >= 1000 ? (v / 1000).toFixed(0) + "k" : String(v || 0);
   const listKey = `${tab}-${sortBy}`;
-  const activeFiltersCount = (tab !== "all" ? 1 : 0) + (sortBy !== "ch" ? 1 : 0);
+  const activeFiltersCount = (tab !== "all" ? 1 : 0) + (sortBy !== "all" ? 1 : 0);
+
 
   // ── فتح التفاصيل ─────────────────────────────────────────
   const openDetail = useCallback(sym => {
