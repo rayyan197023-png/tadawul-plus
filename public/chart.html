@@ -4413,11 +4413,11 @@ const _lbl=_v>=1000000000?((_v/1000000000).toFixed(2)+'B'):_v>=1000000?((_v/1000
   }
  }
 
- // X axis labels
+// X axis labels
  ctx.fillStyle='#070b12';ctx.fillRect(0,H-PB,CW,PB);
  const months=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
  const tfMins=TF_MINS[state.per]||1440;
- ctx.fillStyle='#1a2838';ctx.font='8px monospace';ctx.textAlign='center';
+ ctx.fillStyle=darkTheme?'#8a9cb8':'#4a5568';ctx.font='8px monospace';ctx.textAlign='center';
  for(let i=0;i<=Math.min(5,n-1);i++){
  const idx=Math.round(i*(n-1)/Math.min(5,n-1));
  const t=sub[idx]?.t;if(!t)continue;
