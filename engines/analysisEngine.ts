@@ -921,59 +921,6 @@ function calcEMA(vs: number[], p: number): number {
 
 
 /**
- * ✨ VWAP (Volume Weighted Average Price)
- * 
- * Mathematical Foundation:
- * VWAP = Σ(Typical Price × Volume) / Σ(Volume)
- * Typical Price = (High + Low + Close) / 3
- * 
- * Used for:
- * - Institutional benchmark
- * - Support/Resistance levels
- * - Mean reversion target
- */
-function calcVWAPFull(bars: any[]): number {
-  if (!bars || bars.length === 0) return 0;
-  
-  // Helper to extract values
-  const getC = (b: any) => typeof b.c === 'number' ? b.c : (typeof b.close === 'number' ? b.close : 0);
-const getH = (b: any) => typeof b.hi === 'number' ? b.hi : (typeof b.high === 'number' ? b.high : 0);
-const getL = (b: any) => typeof b.lo === 'number' ? b.lo : (typeof b.low === 'number' ? b.low : 0);
-const getV = (b: any) => typeof b.vol === 'number' && b.vol > 0 ? b.vol : 0;
-  
-  let sumPV = 0;  // Σ(price × volume)
-  let sumV = 0;   // Σ(volume)
-  let validBars = 0;
-  
-  for (const b of bars) {
-    const hi = getH(b);
-    const lo = getL(b);
-    const c = getC(b);
-    const v = getV(b);
-    
-    if (hi === null || lo === null || c === null || v === 0) continue;
-    
-    const typicalPrice = (hi + lo + c) / 3;
-    sumPV += typicalPrice * v;
-    sumV += v;
-    validBars++;
-  }
-  
-  // Edge case: no valid bars or zero volume
-  if (validBars === 0 || sumV === 0) {
-    // Fallback: return simple average of closes
-    let sum = 0, count = 0;
-    for (const b of bars) {
-      const c = getC(b);
-      if (c !== null) { sum += c; count++; }
-    }
-    return count > 0 ? +(sum / count).toFixed(4) : 0;
-  }
-  
-  return +(sumPV / sumV).toFixed(4);
-}
-
-/**
  * ✨ CMF (Chaikin Money Flow) - Marc Chaikin Original
  * 
  * Mathematical Foundation:
