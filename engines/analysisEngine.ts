@@ -921,69 +921,6 @@ function calcEMA(vs: number[], p: number): number {
 
 
 /**
- * ✨ CMF (Chaikin Money Flow) - Marc Chaikin Original
- * 
- * Mathematical Foundation:
- * Money Flow Multiplier = ((Close - Low) - (High - Close)) / (High - Low)
- * Money Flow Volume = Money Flow Multiplier × Volume
- * CMF = Σ(MFV) over period / Σ(Volume) over period
- * 
- * Range: [-1, +1]
- * Interpretation:
- * - > 0.05: Buying pressure (accumulation)
- * - < -0.05: Selling pressure (distribution)
- * - Otherwise: Neutral
- */
-function calcCMFFull(bars: any[], period?: number): any {
-  if (!bars || bars.length === 0) return 0;
-  
-  // Helper functions
-  const getC = (b: any) => typeof b.c === 'number' ? b.c : (typeof b.close === 'number' ? b.close : 0);
-const getH = (b: any) => typeof b.hi === 'number' ? b.hi : (typeof b.high === 'number' ? b.high : 0);
-const getL = (b: any) => typeof b.lo === 'number' ? b.lo : (typeof b.low === 'number' ? b.low : 0);
-const getV = (b: any) => typeof b.vol === 'number' && b.vol > 0 ? b.vol : 0;
-  
-  // Adaptive period: 10-20 days based on data
-  const n = bars.length;
-  period = period || Math.min(20, Math.max(10, Math.round(n * 0.20)));
-  if (period < 2) period = Math.min(10, n);
-  
-  const slice = bars.slice(-period);
-  let sumMFV = 0;  // Σ Money Flow Volume
-  let sumV = 0;    // Σ Volume
-  
-  for (const b of slice) {
-    const hi = getH(b);
-    const lo = getL(b);
-    const c = getC(b);
-    const v = getV(b);
-    
-    if (hi === null || lo === null || c === null || v === 0) continue;
-    
-    const range = hi - lo;
-    
-    // Edge case: high == low (no movement) → skip bar
-    if (range === 0) continue;
-    
-    // Money Flow Multiplier (bound [-1, +1])
-    const mfm = ((c - lo) - (hi - c)) / range;
-    
-    // Money Flow Volume
-    const mfv = mfm * v;
-    
-    sumMFV += mfv;
-    sumV += v;
-  }
-  
-  if (sumV === 0) return 0;
-  
-  // CMF in range [-1, +1]
-  const cmf = sumMFV / sumV;
-  
-  return +Math.max(-1, Math.min(1, cmf)).toFixed(4);
-}
-
-/**
  * ✨ OBV (On-Balance Volume) - Joe Granville 1963
  * 
  * Mathematical Foundation:
