@@ -2444,11 +2444,25 @@ const mv=_volsClean.length ? (Math.max(..._volsClean)||1) : 1;
    // Skip recalc during active drag/resize — use current pixel coords directly
     if(drSelId===d.id&&(drMode==='drag'||drMode==='resize')){
      // keep d.p1 and d.p2 as-is (they're being modified by touch handler)
-    } else {
+} else {
      const p1pr=d._p1price??d._p1_price;
      const p1gi=d._p1idx??d._p1_idx;
      if(p1pr!=null&&p1gi!=null){
-      d.p1={x:tx(p1gi-start),y:ty(p1pr)};
+      const _newY=ty(p1pr);
+      if(!window._debugShown){
+       window._debugShown=true;
+       alert(
+        '=== DEBUG render() ===\n'+
+        'p1pr (السعر المخزّن)= '+p1pr.toFixed(3)+'\n'+
+        'p1gi (فهرس الشمعة)= '+p1gi+' | start= '+start+' | p1gi-start= '+(p1gi-start)+'\n'+
+        'cTop= '+cTop+' | cBot= '+cBot+' | cH= '+cH.toFixed(2)+'\n'+
+        'mn= '+mn.toFixed(3)+' | mx= '+mx.toFixed(3)+' | rng= '+rng.toFixed(3)+'\n'+
+        'y القديمة (d.p1.y الحالية قبل التحديث)= '+d.p1.y.toFixed(2)+'\n'+
+        'y الجديدة (من ty(p1pr))= '+_newY.toFixed(2)+'\n'+
+        'الفرق= '+(_newY-d.p1.y).toFixed(2)+' بكسل'
+       );
+      }
+      d.p1={x:tx(p1gi-start),y:_newY};
      }
      const p2pr=d._p2price??d._p2_price;
      const p2gi=d._p2idx??d._p2_idx;
