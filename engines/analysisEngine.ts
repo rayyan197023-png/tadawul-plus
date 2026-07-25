@@ -920,41 +920,6 @@ function calcEMA(vs: number[], p: number): number {
 }
 
 
-function calcLiqSweepFull(bars: any[], atr: number): any {
-  const cur=bars[bars.length-1].close;
-  const avgVol=bars.reduce((s: number, b: any)=>s+b.vol,0)/bars.length;
-  const sweeps: any[] = [];
-  const lb=Math.min(20,Math.max(10,Math.round(bars.length*0.20)));
-  for(let i=lb;i<bars.length-1;i++){
-    const b=bars[i],win=bars.slice(i-lb,i);
-    const pH=Math.max(...win.map((x: any)=>x.hi));
-const pL=Math.min(...win.map((x: any)=>x.lo));
-    const volOk=b.vol>avgVol*1.5;
-    const nx=bars[i+1];
-    if(b.hi>pH&&b.close<pH&&(b.hi-pH)>=atr*0.5){
-      const conf=nx&&nx.close<nx.open;
-      const eq=win.filter((x: any)=>Math.abs(x.hi-pH)/pH<0.0015).length>=2;
-      sweeps.push({type:"BSL",q:(volOk?1:0)+(eq?1:0)+(conf?1:0)});
-    }
-    if(b.lo<pL&&b.close>pL&&(pL-b.lo)>=atr*0.5){
-      const conf=nx&&nx.close>nx.open;
-      const eq=win.filter((x: any)=>Math.abs(x.lo-pL)/pL<0.0015).length>=2;
-      sweeps.push({type:"SSL",q:(volOk?1:0)+(eq?1:0)+(conf?1:0)});
-    }
-  }
-  const ssls=sweeps.filter((s: any)=>s.type==="SSL");
-const bsls=sweeps.filter((s: any)=>s.type==="BSL");
-  const bestSSL=ssls[ssls.length-1];
-  const recSSL=ssls.length>0;
-  const q=bestSSL?(bestSSL.q||0):0;
-  let score=3;
-  if(recSSL){score=Math.round(Math.min(20,Math.max(6,6+10*Math.tanh(q/1.2)+Math.min(4,ssls.length*0.8))));}
-  else if(ssls.length>0){score=5;}
-  return{recoveredSSL:recSSL,sslCount:ssls.length,bslCount:bsls.length,sslQuality:q,score:Math.min(20,score),
-    label:recSSL&&q===3?"اصطياد مثالي ✓✓✓":recSSL&&q===2?"اصطياد قوي ✓✓":recSSL?"تعافٍ من الاصطياد":ssls.length>0?"اصطياد حديث":"لا اصطياد"};
-}
-
-
 /* ══ المحركات الرئيسية ══ */
 function calcTasiContext(stk: any, bars: any[], allStocks: any[] = []): any {
   // ① TASI Dominance Score
