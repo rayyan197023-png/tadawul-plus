@@ -7,7 +7,7 @@
 // 
 const FUTURE_PAD=26; // مساحة ثابتة يمين الشارت لغيمة إيشيموكو المستقبلية -- ثابت عام مشترك
 
-function chartBounds(){
+function chartBounds(forceN){
  const W=cv.offsetWidth||1,H=cv.offsetHeight||1,YW=38,CW=W-YW;
  const SUB_IDS=['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD'];
  const subInds=SUB_IDS.filter(id=>state.inds.includes(id));
