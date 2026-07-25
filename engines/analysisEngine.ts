@@ -4786,8 +4786,8 @@ function scoreWord(score: number): string {
 export {
   seedRng, genBars,
   calcEMA,
-calcOBVFull, calcStoch,
-calcSMA, calcVPVR,
+calcStoch,
+calcSMA, calcVPVR
 calcMarketStructureFull,
 calcOrderBlocksFull, calcLiqSweepFull,
   calcIVWAP, generateBarsRadar, analyzeStockRadar, calc9Layers,
