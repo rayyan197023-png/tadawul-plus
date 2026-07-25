@@ -2392,8 +2392,8 @@ const ls   = calcLiqSweep(rBars, atr);
   // ════════════════════════════════════════
   //  الطبقة ٤ -- القوة النسبية + VWAP (مفصولة لدالة calculateLayer4)
   // ════════════════════════════════════════
-  const { L4, mktWtd } = calculateLayer4(stk, vi, tc_tasi, radarVI);
 
+  const { L4, mktWtd, rscRaw } = calculateLayer4(stk, vi, tc_tasi, radarVI);
 
   // ════════════════════════════════════════
   //  الطبقة ٥ — التقاطع: RSI + MACD + ADX (مستمر وليس متقطع)
