@@ -2568,67 +2568,9 @@ const ls   = calcLiqSweep(rBars, atr);
 
   
   // ════════════════════════════════════════
-  //  الطبقة ٧ — البايزي الحقيقي
-  //  Prior = احتمال مبدئي من L1-L6
-  //  Likelihood = شواهد سيولة + أنماط حجم + CMF
-  //  Posterior = التحديث البايزي الكامل → يُستخدم كمضاعف وليس درجة عادية
+  //  الطبقة ٧ -- البايزي الحقيقي (مفصولة لدالة calculateLayer7)
   // ════════════════════════════════════════
-  // ════════════════════════════════════════
-  //  ✨ prior الجديد -- مقياس اتساق الطبقات (بدل المرآة)
-  //  المنطق: بدل قراءة قيم L1/L4/L5 كدرجة (تكرار مباشر)،
-  //  نقرأ مدى اتفاقها (تشتّتها). إجماع (تشتّت منخفض) → prior
-  //  مرتفع | تضارب → منخفض. الاتساق بُعد جديد لا تقيسه أي طبقة.
-  //  نستخدم L1/L4/L5 لأنّها الوحيدة المحسوبة قبل L7 (الترتيب).
-  // ════════════════════════════════════════
-  const _consMean = (L1 + L4 + L5) / 3;
-  const _consStd  = Math.sqrt(
-    ((L1-_consMean)**2 + (L4-_consMean)**2 + (L5-_consMean)**2) / 3
-  );
-  // اتساق: تشتّت 0 → 1.0 | تشتّت 40+ → 0.0
-  const _consistency = Math.max(0, 1 - _consStd/40);
-  // الاتجاه: هل الإجماع صعودي أم هبوطي؟ (المتوسط فوق/تحت 50)
-  const _consDir = _consMean >= 50 ? 1 : 0.55;
-  // prior = اتساق موجّه: إجماع صعودي قوي → عالٍ، تضارب → ~0.5
-  const priorRaw = 0.30 + _consistency * 0.45 * _consDir;
-  // سقف Prior عند 0.75 — يمنع Posterior من الوصول إلى 1 دائماً
-  // عند Prior>0.75 يفقد Bayesian قيمته التمييزية
-  const prior     = Math.min(0.75, Math.max(0.08, priorRaw));
-
-  // Likelihood مُعزَّزة بـ 6 شواهد مستقلة
-  const veL       = last10.filter(b=>b.vol>avgVol*1.3).length/10;
-  const volPersist=bars.length>=10?(function(){
-    var hv=bars.slice(-10).filter(function(b){return b.vol>avgVol*1.1;});
-    var cc=0,mx=0;
-    bars.slice(-10).forEach(function(b){if(b.vol>avgVol*1.0){cc++;mx=Math.max(mx,cc);}else cc=0;});
-    return Math.min(1.0,mx/5+hv.length/20);
-  })():0.5;
-  const cmfFactor = cmf>0.15?0.92:cmf>0.05?0.78:cmf>0?0.62:cmf>-0.1?0.42:0.22;
-  const volDir    = last5.filter(b=>b.vol>avgVol*1.2&&b.pct>0).length -
-                    last5.filter(b=>b.vol>avgVol*1.2&&b.pct<0).length;
-  const volDirFactor = volDir>0?0.85:volDir<0?0.35:0.60;
-  // OBV: rising + obvZ (z-score) للتحقق من قوة الاتجاه
-  const obvFactor = obv.rising&&obv.obvZ>0.5?0.88:obv.rising?0.75:obv.obvZ>0?0.55:0.28;
-  // ⑥ Price Momentum 10 يوم — مقياس مستقل عن الحجم
-  const priceMom10 = bars.length>=10
-    ? (bars[bars.length-1].c-bars[bars.length-10].c)/bars[bars.length-10].c
-    : 0;
-  const priceMomFactor = priceMom10>0.03?0.85:priceMom10>0?0.65:priceMom10>-0.03?0.40:0.20;
-  const likel     = Math.min(0.92, Math.max(0.08,
-    veL*0.08 + volPersist*0.22 + cmfFactor*0.22 + volDirFactor*0.14 +
-    obvFactor*0.22 + priceMomFactor*0.12
-  ));
-
-
-  // Posterior بايزي حقيقي
-  const post      = (prior*likel) / (prior*likel + (1-prior)*(1-likel));
-
-  // L7 = درجة [0,100] + يُستخدم كمضاعف خارجي في الدرجة الكلية
-  // + radarMC (الاقتصاد الكلي /5) → وزن 25%
-  const _L7bayesRaw = Math.round(post*100);
-  const L7        = Math.min(100, Math.max(0, _L7bayesRaw + Math.round((radarMC/5*100 - 50) * 0.25)));
-  // bayesMult مُحجَّم: 0.93-1.07 بدل 0.88-1.12
-  // يُميّز بين الحالات بدل تضخيم درجة مرتفعة أصلاً
-  const bayesMult = Math.min(1.07, Math.max(0.93, 0.93 + post*0.14));
+  const { L7, bayesMult } = calculateLayer7(L1, L4, L5, last10, last5, avgVol, bars, cmf, obv, radarMC);
 
   // ════════════════════════════════════════
   //  الطبقة ٨ — رادار مستقل: تقييم جوهري + Macro
