@@ -2060,6 +2060,28 @@ function _emptyHealthResult(){
     tasiCtx: null as any,
   };
 }
+/**
+ * ✨ Layer 2 -- الجهد/النتيجة + OBV (Effort vs Result)
+ * مستقلة تماماً عن باقي الطبقات -- لا تعتمد على L1 أو أي طبقة أخرى
+ * 
+ * @param last10 - آخر 10 شموع
+ * @param avgVol - متوسط الحجم لكل الشموع
+ * @param obv - نتيجة calcOBV (تحتوي .rising)
+ * @param radarMO - درجة الزخم من رادار الفرص (0-15)
+ * @returns L2 score (0-100)
+ */
+function calculateLayer2(last10: any[], avgVol: number, obv: any, radarMO: number): { L2: number; harm: number; div: number } {
+  let harm = 0, div = 0;
+  last10.forEach(b => {
+    const er = b.vol / avgVol, mv = Math.abs(b.pct);
+    if (er > 1.3 && mv > 0.5) harm++;
+    else if (er > 1.4 && mv < 0.2) div++;
+  });
+  const obvBonus = obv.rising ? 10 : -5;
+  const radarL2Bonus = Math.round((radarMO / 15) * 20 - 10);
+  const L2 = Math.round(Math.min(100, Math.max(0, 50 + harm * 9 - div * 12 + obvBonus + radarL2Bonus * 0.25)));
+  return { L2, harm, div };
+}
 
 function calc9Layers(stk: any, bars: any[]): any {
   // ✨ Validation - حماية من Edge Cases
