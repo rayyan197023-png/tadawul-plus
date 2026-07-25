@@ -2263,6 +2263,66 @@ function calculateLayer4(stk: any, vi: any, tc_tasi: any, radarVI: number): { L4
   return { L4, mktWtd, rscRaw };
 }
 
+/**
+ * ✨ Layer 5 -- التقاطع: RSI + MACD + ADX (مستمر وليس متقطع)
+ * ⚠️ ترجع L5 + triOk (مؤكد استخدامها في extras) + باقي المتغيرات
+ * احتياطاً (rsiScore, macdScore, adxScore, stochV, smaBonus, stochBonus)
+ *
+ * @param bars - كل الشموع
+ * @param rBars - الشموع بصيغة dual-format
+ * @param rsiV - قيمة RSI
+ * @param macdH - قيمة MACD histogram
+ * @param macdBull - هل MACD صاعد
+ * @param adxV - قيمة ADX
+ * @param adxBull - هل ADX صاعد
+ * @param stk - بيانات السهم
+ * @param radarTR - درجة الترند من الرادار (0-15)
+ */
+function calculateLayer5(
+  bars: any[], rBars: any[], rsiV: number, macdH: number, macdBull: boolean,
+  adxV: number, adxBull: boolean, stk: any, radarTR: number
+): {
+  L5: number; triOk: number; rsiScore: number; macdScore: number;
+  adxScore: number; stochV: number; smaBonus: number; stochBonus: number;
+} {
+  const rsiOvSoldThr = bars.length >= 20 ? (function () {
+    const gains = bars.slice(-30).map(function (b) { return b.pct > 0 ? b.pct : 0; });
+    const avgG = gains.reduce(function (s, v) { return s + v; }, 0) / gains.length || 0.5;
+    return Math.max(20, Math.min(35, 30 - avgG * 2));
+  })() : 30;
+  const rsiOvBghtThr = Math.max(68, Math.min(82, 75 + (rsiOvSoldThr - 30) * 0.5));
+  let rsiScore;
+  if (rsiV < rsiOvSoldThr) { rsiScore = Math.round(68 - (rsiOvSoldThr - rsiV) * 0.35); }
+  else if (rsiV <= 50) { rsiScore = Math.round(67 - (rsiV - rsiOvSoldThr) * 0.85 * (17 / Math.max(1, 50 - rsiOvSoldThr))); }
+  else if (rsiV <= rsiOvBghtThr) { rsiScore = Math.round(50 + (rsiV - 50) * 1.35 * (35 / Math.max(1, rsiOvBghtThr - 50))); }
+  else { rsiScore = Math.round(85 - (rsiV - rsiOvBghtThr) * 1.50); }
+  rsiScore = Math.min(90, Math.max(10, rsiScore));
+
+  const macdMag = Math.abs(macdH) / (bars[bars.length - 1].c * 0.001 + 0.001);
+  const macdScore = macdBull
+    ? Math.round(Math.min(90, 52 + 38 * Math.tanh(macdMag / 3)))
+    : Math.round(Math.max(12, 48 - 36 * Math.tanh(macdMag / 3)));
+
+  const adxStr = adxV;
+  const adxScore = adxV > 25
+    ? (adxBull ? Math.round(50 + adxStr * 0.40) : Math.round(50 - adxStr * 0.35))
+    : Math.round(50 - (25 - adxV) * 1.2);
+
+  const triOk = [rsiV > 52, macdBull, adxV > 25 && adxBull].filter(Boolean).length;
+  const _L5raw = Math.round(
+    Math.min(100, Math.max(0,
+      rsiScore * 0.40 + macdScore * 0.35 + adxScore * 0.25
+    ))
+  );
+  const stochV = calcStoch(rBars, 14);
+  const sma20v = calcSMA(rBars, 20), sma50v = calcSMA(rBars, 50);
+  const smaBonus = (stk.p > sma20v && stk.p > sma50v) ? 4 : (stk.p > sma20v || stk.p > sma50v) ? 2 : -2;
+  const stochBonus = stochV < 20 ? 5 : stochV < 35 ? 3 : stochV > 80 ? -5 : stochV > 65 ? -2 : 0;
+  const L5 = Math.min(100, Math.max(0, _L5raw + Math.round((radarTR / 15 * 100 - 50) * 0.2) + smaBonus + stochBonus));
+
+  return { L5, triOk, rsiScore, macdScore, adxScore, stochV, smaBonus, stochBonus };
+}
+
 function calc9Layers(stk: any, bars: any[]): any {
   // ✨ Validation - حماية من Edge Cases
   if (!stk || typeof stk !== 'object') {
