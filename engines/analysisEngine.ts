@@ -4787,7 +4787,7 @@ export {
   seedRng, genBars,
   calcEMA,
 calcStoch,
-calcSMA, calcVPVR
+calcSMA, calcVPVR,
 calcMarketStructureFull,
 calcOrderBlocksFull, calcLiqSweepFull,
   calcIVWAP, generateBarsRadar, analyzeStockRadar, calc9Layers,
