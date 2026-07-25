@@ -2083,6 +2083,32 @@ function calculateLayer2(last10: any[], avgVol: number, obv: any, radarMO: numbe
   return { L2, harm, div };
 }
 
+/**
+ * ✨ Layer 3 -- Shannon Entropy مُعزَّز بوزن الحجم والتحيّز الزمني
+ * مستقلة تماماً -- لا تعتمد على أي طبقة أخرى محسوبة
+ * 
+ * @param last20 - آخر 20 شمعة
+ * @param last5 - آخر 5 شموع
+ * @param avgVol - متوسط الحجم لكل الشموع
+ * @returns L3 score (0-100) + entr (قيمة entropy الخام، تُستخدم لاحقاً في extras)
+ */
+function calculateLayer3(last20: any[], last5: any[], avgVol: number): { L3: number; entr: number } {
+  const last20pcts = last20.slice(1).map((b, i, arr) => {
+    const dir = b.c - last20[i].c > 0 ? 1 : -1;
+    const recencyW = 1 + i / arr.length;
+    return dir * Math.abs(b.pct) * recencyW * (b.vol / avgVol);
+  });
+  const totalAbsMag = last20pcts.reduce((s, p) => s + Math.abs(p), 0) || 1;
+  const pUpW = last20pcts.filter(p => p > 0).reduce((s, p) => s + p, 0) / totalAbsMag;
+  const pDnW = Math.max(0.001, 1 - Math.max(0.001, pUpW));
+  const pUpC = Math.max(0.001, pUpW);
+  const entr = -(pUpC * Math.log2(pUpC) + pDnW * Math.log2(pDnW));
+  const dirSign = pUpW > 0.5 ? 1 : -1;
+  const recentConsist = last5.every(b => b.pct > 0) ? 8 : last5.every(b => b.pct < 0) ? -8 : 0;
+  const L3 = Math.round(Math.min(100, Math.max(0, 50 + dirSign * (1 - entr) * 65 + recentConsist)));
+  return { L3, entr };
+}
+
 function calc9Layers(stk: any, bars: any[]): any {
   // ✨ Validation - حماية من Edge Cases
   if (!stk || typeof stk !== 'object') {
