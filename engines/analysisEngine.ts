@@ -2298,18 +2298,10 @@ const ls   = calcLiqSweep(rBars, atr);
   )));
 
   // ════════════════════════════════════════
-  //  الطبقة ٢ — الجهد/النتيجة + OBV
+  //  الطبقة ٢ -- الجهد/النتيجة + OBV (مفصولة لدالة calculateLayer2)
   // ════════════════════════════════════════
-  let harm=0,div=0;
-  last10.forEach(b=>{
-    const er=b.vol/avgVol,mv=Math.abs(b.pct);
-    if(er>1.3&&mv>0.5)harm++;
-    else if(er>1.4&&mv<0.2)div++;
-  });
-  const obvBonus = obv.rising?10:-5;
-  // + radarMO (زخم الرادار /15) — وزن 25%
-  const radarL2Bonus = Math.round((radarMO/15)*20 - 10);  // -10 to +10
-  const L2 = Math.round(Math.min(100,Math.max(0, 50+harm*9-div*12+obvBonus + radarL2Bonus*0.25)));
+  const { L2, harm, div } = calculateLayer2(last10, avgVol, obv, radarMO);
+
 
   // ════════════════════════════════════════
   //  الطبقة ٣ — Shannon Entropy مُعزَّز بوزن الحجم والتحيّز الزمني
