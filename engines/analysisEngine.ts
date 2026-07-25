@@ -2335,7 +2335,8 @@ function calculateLayer5(
  */
 function calculateLayer6(
   bars: any[], vr: number, mc: any, stk: any, radarVA: number
-): { L6: number; kelly: number } {
+): { L6: number; kelly: number; p_adj: number } {
+
   const kellyBars = bars.slice(-Math.min(bars.length, 100));
   const recent20 = kellyBars.slice(-20);
   const older80 = kellyBars.slice(0, -20);
