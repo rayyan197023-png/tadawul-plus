@@ -500,6 +500,22 @@ button{font-family:'Cairo',sans-serif;cursor:pointer;outline:none}
 
 <script>
 
+// ── منع تكبير الصفحة (viewport zoom) من iOS/Safari الأصلي ──
+// المشكلة: Safari بإصدارات iOS الحديثة يتجاهل user-scalable=no بالـmeta tag،
+// ويستخدم مركز الشاشة كنقطة ارتكاز افتراضية عند أي touchmove طويل بإصبع واحد
+// (خاصة أثناء ضغطة مطوّلة + تحريك، بغض النظر عن مكان اللمس الفعلي).
+document.addEventListener('touchmove', function(e){
+  if(e.scale !== undefined && e.scale !== 1){
+    e.preventDefault();
+  }
+}, {passive:false});
+
+// طبقة حماية إضافية: منع touchstart بإصبعين فأكثر من التسبب بزوم صفحة
+document.addEventListener('touchstart', function(e){
+  if(e.touches.length > 1){
+    e.preventDefault();
+  }
+}, {passive:false});
 
 // ── roundRect polyfill for Safari/iOS ─
 
