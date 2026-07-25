@@ -2256,9 +2256,10 @@ function calculateLayer4(stk: any, vi: any, tc_tasi: any, radarVI: number): { L4
 
   const pifL4Bonus = tc_tasi.pifBoost;
   const _L4raw = Math.round(_clamp(rscScore * 0.50 + vwapScore * 0.30 + sectorScore * 0.20 + pifL4Bonus, 0, 100));
+
   const L4 = Math.min(100, Math.max(0, _L4raw + Math.round((radarVI / 10 * 100 - 50) * 0.2)));
 
-  return { L4, mktWtd };
+  return { L4, mktWtd, rscRaw };
 }
 
 function calc9Layers(stk: any, bars: any[]): any {
