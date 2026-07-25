@@ -2502,36 +2502,10 @@ const ls   = calcLiqSweep(rBars, atr);
 
 
   // ════════════════════════════════════════
-  //  الطبقة ٦ — Kelly + Macro
+  //  الطبقة ٦ -- Kelly + Macro (مفصولة لدالة calculateLayer6)
   // ════════════════════════════════════════
-  //  الطبقة ٦ — Kelly مُعزَّز بـ Adaptive Win Rate
-  // ════════════════════════════════════════
-  const kellyBars = bars.slice(-Math.min(bars.length,100));
-  // Win Rate تراكمي: الـ 20 الأخيرة تُعطى ضعف الوزن
-  const recent20 = kellyBars.slice(-20);
-  const older80  = kellyBars.slice(0,-20);
-  const wrRecent = recent20.filter(b=>b.pct>0).length/Math.max(recent20.length,1);
-  const wrOlder  = older80.length>0 ? older80.filter(b=>b.pct>0).length/older80.length : wrRecent;
-  const histWinRate = wrRecent*0.65 + wrOlder*0.35; // تحيّز للأحدث
+  const { L6, kelly } = calculateLayer6(bars, vr, mc, stk, radarVA);
 
-  const sectorWinAdj=({"الطاقة":0.02,"البنوك":0.01,"التطبيقات وخدمات التقنية":0.03,"المواد الأساسية":-0.01,"إنتاج الأغذية":0.02} as any)[stk.sec]||0;
-
-  const volSignal  = vr>1.3?0.10:vr>1.0?0.05:vr<0.7?-0.05:0;
-  const macroSignal= mc.score>14?0.08:mc.score>8?0.04:mc.score<4?-0.05:0;
-  // تعديل oilCorr: الأسهم المرتبطة بالنفط تكسب أكثر عند ارتفاع النفط
-  const oilWinAdj  = (stk.oilCorr||0)*((MACRO.oilPrice-MACRO.oilTarget)/MACRO.oilTarget)*0.05;
-  const p_adj = Math.min(0.85,Math.max(0.15, histWinRate+sectorWinAdj+volSignal+macroSignal+oilWinAdj));
-  const wins_b   = kellyBars.filter(b=>b.pct>0);
-  const losses_b = kellyBars.filter(b=>b.pct<=0);
-  const aW = wins_b.length?wins_b.reduce((s,b)=>s+b.pct,0)/wins_b.length:0.5;
-  const aL = losses_b.length?Math.abs(losses_b.reduce((s,b)=>s+b.pct,0)/losses_b.length):0.5;
-  const b_ratio = aL>0?aW/aL:1;
-  const kelly = Math.max(0, p_adj-(1-p_adj)/b_ratio);
-  const kellyScore = Math.round(Math.min(100,kelly*200));
-  const macroBonus = Math.round(mc.score/20*5);
-  const _L6raw = Math.min(100,Math.round(kellyScore*0.92+macroBonus));
-  // + radarVA (القيمة الأساسية /5) → وزن 25%
-  const L6 = Math.min(100, Math.max(0, _L6raw + Math.round((radarVA/5*100 - 50) * 0.25)));
   
   // ════════════════════════════════════════
   //  الطبقة ٧ — البايزي الحقيقي
