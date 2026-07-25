@@ -2456,49 +2456,9 @@ const ls   = calcLiqSweep(rBars, atr);
   const { L4, mktWtd, rscRaw } = calculateLayer4(stk, vi, tc_tasi, radarVI);
 
   // ════════════════════════════════════════
-  //  الطبقة ٥ — التقاطع: RSI + MACD + ADX (مستمر وليس متقطع)
-  //  كل مؤشر له وزن مختلف بناءً على قدرته التنبؤية
-  //  RSI: 40% — MACD: 35% — ADX: 25%
+  //  الطبقة ٥ -- RSI + MACD + ADX (مفصولة لدالة calculateLayer5)
   // ════════════════════════════════════════
-  // RSI Score: continuous [0,100]
-  // RSI<30=ذروة بيع(+)، RSI>70=ذروة شراء(-)، 50-65=منطقة صاعدة
-  const rsiOvSoldThr=bars.length>=20?(function(){
-    var gains=bars.slice(-30).map(function(b){return b.pct>0?b.pct:0;});
-    var avgG=gains.reduce(function(s,v){return s+v;},0)/gains.length||0.5;
-    return Math.max(20,Math.min(35,30-avgG*2));
-  })():30;
-  const rsiOvBghtThr=Math.max(68,Math.min(82,75+(rsiOvSoldThr-30)*0.5));
-  var rsiScore;
-  if(rsiV<rsiOvSoldThr){rsiScore=Math.round(68-(rsiOvSoldThr-rsiV)*0.35);}
-  else if(rsiV<=50){rsiScore=Math.round(67-(rsiV-rsiOvSoldThr)*0.85*(17/Math.max(1,50-rsiOvSoldThr)));}
-  else if(rsiV<=rsiOvBghtThr){rsiScore=Math.round(50+(rsiV-50)*1.35*(35/Math.max(1,rsiOvBghtThr-50)));}
-  else{rsiScore=Math.round(85-(rsiV-rsiOvBghtThr)*1.50);}
-  rsiScore=Math.min(90,Math.max(10,rsiScore));
-
-  // MACD Score: مدى المسافة عن الصفر يهم، ليس الاتجاه فقط
-  const macdMag  = Math.abs(macdH) / (bars[bars.length-1].c * 0.001 + 0.001);
-  const macdScore = macdBull
-    ? Math.round(Math.min(90, 52 + 38*Math.tanh(macdMag/3)))
-    : Math.round(Math.max(12, 48 - 36*Math.tanh(macdMag/3)));  // هابط: كلما أبعد كان أضعف
-
-  // ADX Score: قوة الاتجاه × الاتجاه
-  const adxStr   = adxV;
-  const adxScore = adxV>25
-    ? (adxBull ? Math.round(50+adxStr*0.40) : Math.round(50-adxStr*0.35))
-    : Math.round(50 - (25-adxV)*1.2);
-
-  const triOk=[rsiV>52,macdBull,adxV>25&&adxBull].filter(Boolean).length; // للعرض
-  const _L5raw = Math.round(
-    Math.min(100,Math.max(0,
-      rsiScore*0.40 + macdScore*0.35 + adxScore*0.25
-    ))
-  );
-  // + radarTR (الاتجاه /15) + calcStoch + calcSMA → وزن 20%
-  const stochV = calcStoch(rBars, 14);
-  const sma20v = calcSMA(rBars, 20), sma50v = calcSMA(rBars, 50);
-  const smaBonus = (stk.p > sma20v && stk.p > sma50v) ? 4 : (stk.p > sma20v || stk.p > sma50v) ? 2 : -2;
-  const stochBonus = stochV < 20 ? 5 : stochV < 35 ? 3 : stochV > 80 ? -5 : stochV > 65 ? -2 : 0;
-  const L5 = Math.min(100, Math.max(0, _L5raw + Math.round((radarTR/15*100 - 50) * 0.2) + smaBonus + stochBonus));
+  const { L5, triOk } = calculateLayer5(bars, rBars, rsiV, macdH, macdBull, adxV, adxBull, stk, radarTR);
 
 
   // ════════════════════════════════════════
