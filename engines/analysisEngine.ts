@@ -2222,6 +2222,45 @@ function calculateLayer1(
   return { L1, spring, sos, upth, wyPhase, patternBonus };
 }
 
+/**
+ * ✨ Layer 4 -- القوة النسبية + VWAP المؤسسي + Sector Momentum
+ * ⚠️ ترجع L4 + mktWtd (مُستخدمة لاحقاً في detectMarketRegime وفي extras.mktMomentum)
+ *
+ * @param stk - بيانات السهم
+ * @param vi - نتيجة calcIVWAP
+ * @param tc_tasi - نتيجة calcTasiContext
+ * @param radarVI - درجة VWAP المؤسسي من الرادار (0-10)
+ */
+function calculateLayer4(stk: any, vi: any, tc_tasi: any, radarVI: number): { L4: number; mktWtd: number } {
+  const mktWtd = STOCKS.reduce((s, x) => s + x.ch * ((x as any).mktCap || 50), 0) /
+                 STOCKS.reduce((s, x) => s + ((x as any).mktCap || 50), 0);
+  const rscRaw = stk.ch - mktWtd;
+  const mktVar = STOCKS.reduce((s, x) => s + Math.pow(x.ch - mktWtd, 2), 0) / STOCKS.length;
+  const rscZ = mktVar > 0 ? rscRaw / Math.sqrt(mktVar) : 0;
+  const rscScore = Math.round(Math.min(100, Math.max(0, 50 + rscZ * 18)));
+  const vwapScore = Math.round(vi.score / 20 * 100);
+
+  const sectorPeers = STOCKS.filter(function (x) { return x.sec === stk.sec && x.sym !== stk.sym; });
+  const sectorAvgCh = sectorPeers.length > 0
+    ? sectorPeers.reduce(function (s, x) { return s + x.ch; }, 0) / sectorPeers.length
+    : mktWtd;
+  const sectorRel = stk.ch - sectorAvgCh;
+  let oilWarBonus = 0;
+  if (MACRO.oilWarPremium) {
+    const oilImpact = stk.oilCorr || (OIL_SENS as any)[stk.sec] || 0.5;
+    const oilDeltaL4 = (MACRO.oilPrice - MACRO.oilTarget) / MACRO.oilTarget;
+    oilWarBonus = Math.round(oilImpact * oilDeltaL4 * 18);
+    oilWarBonus = Math.max(-10, Math.min(18, oilWarBonus));
+  }
+  const sectorScore = Math.round(Math.min(100, Math.max(0, 50 + sectorRel * 8 + oilWarBonus)));
+
+  const pifL4Bonus = tc_tasi.pifBoost;
+  const _L4raw = Math.round(_clamp(rscScore * 0.50 + vwapScore * 0.30 + sectorScore * 0.20 + pifL4Bonus, 0, 100));
+  const L4 = Math.min(100, Math.max(0, _L4raw + Math.round((radarVI / 10 * 100 - 50) * 0.2)));
+
+  return { L4, mktWtd };
+}
+
 function calc9Layers(stk: any, bars: any[]): any {
   // ✨ Validation - حماية من Edge Cases
   if (!stk || typeof stk !== 'object') {
