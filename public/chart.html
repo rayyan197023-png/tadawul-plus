@@ -7205,13 +7205,13 @@ cv.addEventListener('touchmove',e=>{
 
  
  // ── Crosshair active: ONLY update crosshair, block all other actions ──
- if(_chActive&&e.touches.length===1){
+if(_chActive&&e.touches.length===1){
+  document.title='CH-ACTIVE ✓ touches=1 vis='+state.visible;
   e.preventDefault();
   const _r1c=cv.getBoundingClientRect();
   const _cpx=e.touches[0].clientX-_r1c.left;
   const _cpy=e.touches[0].clientY-_r1c.top;
   const _CW1=(cv.offsetWidth||390)-38;
-  // Clamp to chart bounds (don't exit if finger drifts outside)
   const _ccpx=Math.max(0,Math.min(_CW1,_cpx));
   const _ccpy=Math.max(8,Math.min(cv.offsetHeight-45,_cpy));
   const _VIS1=Math.min(Math.max(8,state.visible),state.allCandles.length);
@@ -7222,7 +7222,7 @@ cv.addEventListener('touchmove',e=>{
   cv._lastTouchPos={x:_ccpx,y:_ccpy};
   renderCrosshair();
   return; // ⚠️ critical: block all subsequent logic
- }
+}
 
  // Panel drag
  if(drMode==='panelYZoom'&&_panelYDrag&&e.touches.length===1){
