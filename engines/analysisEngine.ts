@@ -18,9 +18,8 @@
  */
 
 import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
-import { calcRSI, calcATR, calcVWAP, calcCMF, calcOBV, calcMACD, calcMarketStructure } from './technicalEngine';
+import { calcRSI, calcATR, calcVWAP, calcCMF, calcOBV, calcMACD, calcMarketStructure, calcIVWAP } from './technicalEngine';
 import { calcOrderBlocks, calcLiqSweep } from './radarEngine';
-
 
 /**
  * ✨ Macro Score - النسخة الموسّعة للرادار
