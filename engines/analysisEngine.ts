@@ -2388,40 +2388,10 @@ const ls   = calcLiqSweep(rBars, atr);
   const { L3, entr } = calculateLayer3(last20, last5, avgVol);
 
   // ════════════════════════════════════════
-  //  الطبقة ٤ — القوة النسبية + VWAP المؤسسي + Sector Momentum
-  //  مدمج: RSC مرجّح بالقيمة السوقية + VWAP Score + أداء داخل القطاع
+  //  الطبقة ٤ -- القوة النسبية + VWAP (مفصولة لدالة calculateLayer4)
   // ════════════════════════════════════════
+  const { L4, mktWtd } = calculateLayer4(stk, vi, tc_tasi, radarVI);
 
-  const mktWtd = STOCKS.reduce((s,x)=>s+x.ch*((x as any).mktCap||50),0)/
-                 STOCKS.reduce((s,x)=>s+((x as any).mktCap||50),0);
-  const rscRaw = stk.ch - mktWtd;
-  const mktVar = STOCKS.reduce((s,x)=>s+Math.pow(x.ch-mktWtd,2),0)/STOCKS.length;
-  const rscZ   = mktVar>0?rscRaw/Math.sqrt(mktVar):0;
-  const rscScore = Math.round(Math.min(100,Math.max(0,50+rscZ*18)));
-  const vwapScore= Math.round(vi.score/20*100);
-
-  // Sector Momentum — مقارنة السهم بأقرانه في نفس القطاع
-  const sectorPeers = STOCKS.filter(function(x){ return x.sec===stk.sec && x.sym!==stk.sym; });
-  const sectorAvgCh = sectorPeers.length>0
-    ? sectorPeers.reduce(function(s,x){ return s+x.ch; },0)/sectorPeers.length
-    : mktWtd;
-  const sectorRel   = stk.ch - sectorAvgCh; // تفوق على القطاع
-  var oilWarBonus=0;
-  if(MACRO.oilWarPremium){
-    // oilCorr الفعلي من STOCKS يُحسّن دقة تأثير النفط على كل سهم تحديداً
-  const oilImpact = stk.oilCorr||(OIL_SENS as any)[stk.sec]||0.5;
-    const oilDeltaL4 = (MACRO.oilPrice-MACRO.oilTarget)/MACRO.oilTarget;
-    oilWarBonus = Math.round(oilImpact * oilDeltaL4 * 18); // أقصى ±18 نقطة
-    oilWarBonus = Math.max(-10, Math.min(18, oilWarBonus));
-  }
-  const sectorScore = Math.round(Math.min(100,Math.max(0,50+sectorRel*8+oilWarBonus)));
-
-
-  // L4 المحسّن: RSC 50% + VWAP 30% + Sector 20% + PIF Bonus
-  const pifL4Bonus = tc_tasi.pifBoost; // إعلانات صندوق الثروة السيادية
-  const _L4raw = Math.round(_clamp(rscScore*0.50 + vwapScore*0.30 + sectorScore*0.20 + pifL4Bonus, 0, 100));
-  // + radarVI (VWAP مؤسسي /10) → وزن 20%
-  const L4 = Math.min(100, Math.max(0, _L4raw + Math.round((radarVI/10*100 - 50) * 0.2)));
 
   // ════════════════════════════════════════
   //  الطبقة ٥ — التقاطع: RSI + MACD + ADX (مستمر وليس متقطع)
