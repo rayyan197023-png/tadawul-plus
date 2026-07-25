@@ -2364,6 +2364,65 @@ function calculateLayer6(
   return { L6, kelly, p_adj };
 }
 
+/**
+ * ✨ Layer 7 -- البايزي الحقيقي (Prior/Likelihood/Posterior)
+ * ⚠️ تعتمد على L1, L4, L5 (يجب حسابها قبل استدعاء هذه الدالة)
+ * ترجع L7 + bayesMult (مضاعف خارجي، مؤكد استخدامه) + متغيرات احتياطية
+ *
+ * @param L1, L4, L5 - نتائج الطبقات السابقة
+ * @param last10, last5 - آخر الشموع
+ * @param avgVol - متوسط الحجم
+ * @param bars - كل الشموع
+ * @param cmf - قيمة CMF
+ * @param obv - نتيجة calcOBV
+ * @param radarMC - درجة الاقتصاد الكلي من الرادار (0-5)
+ */
+function calculateLayer7(
+  L1: number, L4: number, L5: number,
+  last10: any[], last5: any[], avgVol: number, bars: any[], cmf: number, obv: any, radarMC: number
+): {
+  L7: number; bayesMult: number; prior: number; likel: number; post: number;
+  consistency: number;
+} {
+  const _consMean = (L1 + L4 + L5) / 3;
+  const _consStd = Math.sqrt(
+    ((L1 - _consMean) ** 2 + (L4 - _consMean) ** 2 + (L5 - _consMean) ** 2) / 3
+  );
+  const _consistency = Math.max(0, 1 - _consStd / 40);
+  const _consDir = _consMean >= 50 ? 1 : 0.55;
+  const priorRaw = 0.30 + _consistency * 0.45 * _consDir;
+  const prior = Math.min(0.75, Math.max(0.08, priorRaw));
+
+  const veL = last10.filter(b => b.vol > avgVol * 1.3).length / 10;
+  const volPersist = bars.length >= 10 ? (function () {
+    const hv = bars.slice(-10).filter(function (b) { return b.vol > avgVol * 1.1; });
+    let cc = 0, mx = 0;
+    bars.slice(-10).forEach(function (b) { if (b.vol > avgVol * 1.0) { cc++; mx = Math.max(mx, cc); } else cc = 0; });
+    return Math.min(1.0, mx / 5 + hv.length / 20);
+  })() : 0.5;
+  const cmfFactor = cmf > 0.15 ? 0.92 : cmf > 0.05 ? 0.78 : cmf > 0 ? 0.62 : cmf > -0.1 ? 0.42 : 0.22;
+  const volDir = last5.filter(b => b.vol > avgVol * 1.2 && b.pct > 0).length -
+                 last5.filter(b => b.vol > avgVol * 1.2 && b.pct < 0).length;
+  const volDirFactor = volDir > 0 ? 0.85 : volDir < 0 ? 0.35 : 0.60;
+  const obvFactor = obv.rising && obv.obvZ > 0.5 ? 0.88 : obv.rising ? 0.75 : obv.obvZ > 0 ? 0.55 : 0.28;
+  const priceMom10 = bars.length >= 10
+    ? (bars[bars.length - 1].c - bars[bars.length - 10].c) / bars[bars.length - 10].c
+    : 0;
+  const priceMomFactor = priceMom10 > 0.03 ? 0.85 : priceMom10 > 0 ? 0.65 : priceMom10 > -0.03 ? 0.40 : 0.20;
+  const likel = Math.min(0.92, Math.max(0.08,
+    veL * 0.08 + volPersist * 0.22 + cmfFactor * 0.22 + volDirFactor * 0.14 +
+    obvFactor * 0.22 + priceMomFactor * 0.12
+  ));
+
+  const post = (prior * likel) / (prior * likel + (1 - prior) * (1 - likel));
+
+  const _L7bayesRaw = Math.round(post * 100);
+  const L7 = Math.min(100, Math.max(0, _L7bayesRaw + Math.round((radarMC / 5 * 100 - 50) * 0.25)));
+  const bayesMult = Math.min(1.07, Math.max(0.93, 0.93 + post * 0.14));
+
+  return { L7, bayesMult, prior, likel, post, consistency: _consistency };
+}
+
 function calc9Layers(stk: any, bars: any[]): any {
   // ✨ Validation - حماية من Edge Cases
   if (!stk || typeof stk !== 'object') {
