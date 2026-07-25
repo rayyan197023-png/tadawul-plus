@@ -6673,10 +6673,6 @@ function _enrichDrawing(d){
     const n=all.length;
     if(!n)return;
 
-    // ── نفس منطق render() بالضبط لحساب نافذة الشموع المرئية ──
-    // render() يستخدم VIS مبني على state.visible، ثم يقيّد offset (clampOff)
-    // بين 0 و maxOff قبل حساب end/start. لازم نطابق هذا تماماً هنا
-    // وإلا يصير فرق بسيط في start/end يسبب انزياح فوري للرسمة بعد الحفظ.
     const VIS=Math.min(Math.max(8,state.visible),n);
     const maxOff=Math.max(0,n-VIS);
     const clampOff=Math.min(maxOff,Math.max(0,state.offset));
@@ -6686,15 +6682,10 @@ function _enrichDrawing(d){
     const sub=all.slice(start,end2);
     if(!sub.length)return;
 
-    // مرّر _subLen الفعلي (طول sub.length بعد القص) بدل ما نخلي chartBounds
-    // تعيد اشتقاقه من state.visible من جديد -- هذا هو مصدر الانزياح الأساسي
     const b=chartBounds(_subLen);
-
-    // px → candle index (نفس معادلة tx تماماً من render()، عبر chartBounds بنفس n)
     const px2idx=(px)=>Math.round(b.px2idx(px));
 
-    // px → price (SAME as render's ty inverse, with yScale)
-const pp=sub.flatMap(c=>[c.hi,c.lo]).filter(v=>v!=null && isFinite(v) && v>0);
+    const pp=sub.flatMap(c=>[c.hi,c.lo]).filter(v=>v!=null && isFinite(v) && v>0);
     const rawMn=pp.length?Math.min(...pp):0,rawMx=pp.length?Math.max(...pp):1;
     const pad=(rawMx-rawMn)*0.06;
     const mid=(rawMn+rawMx)/2;
@@ -6704,6 +6695,23 @@ const pp=sub.flatMap(c=>[c.hi,c.lo]).filter(v=>v!=null && isFinite(v) && v>0);
     const rng=mx-mn||1;
     const cH=b.cBot-b.cTop;
     const py2price=(py)=>mn+((b.cBot-py)/cH)*rng;
+
+    // ── DEBUG: طباعة القيم الفعلية للمقارنة ──
+    if(d.p1){
+      const testPrice=py2price(d.p1.y);
+      const testY_back=b.cTop+cH-((testPrice-mn)/rng)*cH;
+      alert(
+        '=== DEBUG _enrichDrawing ===\\n'+
+        'd.p1.y (الأصلي)= '+d.p1.y.toFixed(2)+'\\n'+
+        'b.cTop= '+b.cTop+' | b.cBot= '+b.cBot+' | cH= '+cH.toFixed(2)+'\\n'+
+        'cv.offsetHeight= '+cv.offsetHeight+'\\n'+
+        'mn= '+mn.toFixed(3)+' | mx= '+mx.toFixed(3)+' | rng= '+rng.toFixed(3)+'\\n'+
+        'yScale= '+yScale+'\\n'+
+        'السعر المحسوب= '+testPrice.toFixed(3)+'\\n'+
+        'الرجوع لبكسل (يجب يطابق d.p1.y)= '+testY_back.toFixed(2)+'\\n'+
+        'الفرق (الانزياح المتوقع)= '+(testY_back-d.p1.y).toFixed(2)+' بكسل'
+      );
+    }
 
     if(d.p1){
       const ci=Math.max(0,Math.min(_subLen-1,px2idx(d.p1.x)));
@@ -6715,7 +6723,7 @@ const pp=sub.flatMap(c=>[c.hi,c.lo]).filter(v=>v!=null && isFinite(v) && v>0);
       d._p2_price=py2price(d.p2.y);
       d._p2_idx=start+ci;
     }
-  }catch(e){}
+  }catch(e){alert('خطأ بـ_enrichDrawing: '+e.message);}
 }
 
 
