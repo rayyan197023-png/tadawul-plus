@@ -2323,28 +2323,6 @@ function calculateLayer5(
   return { L5, triOk, rsiScore, macdScore, adxScore, stochV, smaBonus, stochBonus };
 }
 
-/**
- * ✨ Layer 6 -- القيمة السوقية (P/E) + Macro Context
- * ⚠️ ترجع L6 + المتغيرات المحلية احتياطاً (peScore, secAvgPE, peRel)
- * حتى لو لم تُستخدم لاحقاً -- أسلوب آمن يعتمد على TypeScript للتحقق
- *
- * @param stk - بيانات السهم
- * @param mc - نتيجة calcMacroFull (تحتوي .score)
- * @param radarVA - درجة التقييم من الرادار (0-10)
- */
-function calculateLayer6(
-  stk: any, mc: any, radarVA: number
-): { L6: number; peScore: number; secAvgPE: number; peRel: number; macroScore: number } {
-  const secAvgPE = (RADAR_SECTOR_PE as any)[stk.sec] || 18;
-  const peRel = stk.pe > 0 ? secAvgPE / stk.pe : 1;
-  const peScore = Math.round(Math.min(100, Math.max(0, 50 + (peRel - 1) * 45)));
-
-  const macroScore = mc.score;
-  const _L6raw = Math.round(_clamp(peScore * 0.55 + macroScore * 0.45, 0, 100));
-  const L6 = Math.min(100, Math.max(0, _L6raw + Math.round((radarVA / 10 * 100 - 50) * 0.2)));
-
-  return { L6, peScore, secAvgPE, peRel, macroScore };
-}
 
 function calc9Layers(stk: any, bars: any[]): any {
   // ✨ Validation - حماية من Edge Cases
