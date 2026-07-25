@@ -2423,6 +2423,37 @@ function calculateLayer7(
   return { L7, bayesMult, prior, likel, post, consistency: _consistency };
 }
 
+/**
+ * ✨ Layer 8 -- رادار مستقل: تقييم جوهري + Macro
+ * ⚠️ ترجع L8 + pricePos + valScore (مؤكد استخدامهما في extras
+ * بناءً على ما لاحظناه سابقاً بجانب p_adj)
+ *
+ * @param stk - بيانات السهم
+ * @param radarLQ - درجة السيولة الذكية من الرادار (0-10)
+ */
+function calculateLayer8(
+  stk: any, radarLQ: number
+): { L8: number; pricePos: number; valScore: number } {
+  const w52h = stk.w52h || stk.hi;
+  const w52l = stk.w52l || stk.lo;
+  const pricePos = w52h > w52l ? Math.round((stk.p - w52l) / (w52h - w52l) * 100) : 50;
+  const pbRatio = stk.bookValue && stk.bookValue > 0 ? stk.p / stk.bookValue : 2.0;
+  const valScore = Math.round(Math.min(90, Math.max(10,
+    50 - 28 * Math.tanh((stk.pe - 18) / 15) - 10 * Math.tanh((pbRatio - 2) / 2)
+  )));
+  const oilSensW = (stk.oilCorr || 0) > 0.5 ? 0.12 : 0.10;
+  const _L8raw = Math.round(
+    (valScore / 100) * 45 +
+    (stk.rating / 100) * 30 +
+    ((100 - pricePos) / 100) * 15 +
+    (oilSensW * MACRO.oilPrice / 100) * 10
+  );
+
+  const L8 = Math.min(100, Math.max(0, _L8raw + Math.round((radarLQ / 10 * 100 - 50) * 0.2)));
+
+  return { L8, pricePos, valScore };
+}
+
 function calc9Layers(stk: any, bars: any[]): any {
   // ✨ Validation - حماية من Edge Cases
   if (!stk || typeof stk !== 'object') {
