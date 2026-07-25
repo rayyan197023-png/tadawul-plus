@@ -6683,12 +6683,10 @@ function updateP2(pt) {
 
 
 function _enrichDrawing(d){
-  // Store price-based coordinates for persistence across sessions
   try{
     const all=state.allCandles;
     const n=all.length;
     if(!n)return;
-
     const VIS=Math.min(Math.max(8,state.visible),n);
     const maxOff=Math.max(0,n-VIS);
     const clampOff=Math.min(maxOff,Math.max(0,state.offset));
@@ -6697,10 +6695,8 @@ function _enrichDrawing(d){
     const _subLen=end2-start;
     const sub=all.slice(start,end2);
     if(!sub.length)return;
-
     const b=chartBounds(_subLen);
     const px2idx=(px)=>Math.round(b.px2idx(px));
-
     const pp=sub.flatMap(c=>[c.hi,c.lo]).filter(v=>v!=null && isFinite(v) && v>0);
     const rawMn=pp.length?Math.min(...pp):0,rawMx=pp.length?Math.max(...pp):1;
     const pad=(rawMx-rawMn)*0.06;
@@ -6711,7 +6707,6 @@ function _enrichDrawing(d){
     const rng=mx-mn||1;
     const cH=b.cBot-b.cTop;
     const py2price=(py)=>mn+((b.cBot-py)/cH)*rng;
-
     if(d.p1){
       const ci=Math.max(0,Math.min(_subLen-1,px2idx(d.p1.x)));
       d._p1_price=py2price(d.p1.y);
