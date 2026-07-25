@@ -918,48 +918,7 @@ function calcEMA(vs: number[], p: number): number {
   for(let i=1;i<vs.length;i++)e=vs[i]*k+e*(1-k);
   return e;
 }
-function calcOrderBlocksFull(bars: any[], atr: number): any {
-  const obs: any[] = [];const cur=bars[bars.length-1].close;const n=bars.length;
-  const recentVolatility=bars.length>=20?bars.slice(-20).reduce((s: number, b: any)=>s+Math.abs(b.pct),0)/20:1.5;
-  const atrMult=Math.max(1.2,Math.min(2.0,1.5*recentVolatility/1.5));
-  for(let i=1;i<n-2;i++){
-    const b=bars[i];
-    if(b.close<b.open){
-      const imp=Math.max(
-        bars[i+1]?bars[i+1].close-b.close:0,
-        bars[i+2]?bars[i+2].close-b.close:0,
-        bars[i+3]&&i+3<n?bars[i+3].close-b.close:0
-      );
-      if(imp>=atr*atrMult){
-        const fresh=cur>b.lo,inOB=cur>=b.lo&&cur<=b.hi;
-        const inRef=cur>=b.lo&&cur<=(b.hi+b.lo)/2;
-        const fvg=i+2<n&&bars[i].hi<bars[i+2].lo;
-        obs.push({type:"bull",hi:b.hi,lo:b.lo,mid:(b.hi+b.lo)/2,strength:+(imp/atr).toFixed(2),fresh,inOB,inRef,fvg});
-      }
-    }
-    if(b.close>b.open){
-      const imp=Math.max(
-        bars[i+1]?b.close-bars[i+1].close:0,
-        bars[i+2]?b.close-bars[i+2].close:0,
-        bars[i+3]&&i+3<n?b.close-bars[i+3].close:0
-      );
-      if(imp>=atr*atrMult){
-        const fresh=cur<b.hi,inOB=cur>=b.lo&&cur<=b.hi;
-        obs.push({type:"bear",hi:b.hi,lo:b.lo,fresh,inOB,strength:+(imp/atr).toFixed(2)});
-      }
-    }
-  }
-  const bulls=obs.filter((o: any)=>o.type==="bull"&&o.fresh).sort((a: any, b: any)=>(b.strength+(b.fvg?2:0))-(a.strength+(a.fvg?2:0)));
-  const best=bulls[0]||null;
-  const inBullOB=!!(best&&best.inOB),inRef=!!(best&&best.inRef),hasFVG=!!(best&&best.fvg);
-  const strength=best?best.strength:0;
-  const baseScore = bulls.length>0
-    ? Math.round(2 + 14*Math.tanh(strength/2.5) + (inRef?3:inBullOB?1.5:0))
-    : 2;
-  let score=Math.round(Math.min(20,Math.max(2, baseScore + (hasFVG?2:0))));
-  return{inBullOB,inRef,hasFVG,bullCount:bulls.length,score:Math.min(20,score),
-    label:inRef?"منطقة شراء قوية ✓":inBullOB&&hasFVG?"منطقة شراء مع فجوة":inBullOB?"داخل منطقة شراء":bulls.length>0?"منطقة شراء متاحة":"لا منطقة شراء"};
-}
+
 
 function calcLiqSweepFull(bars: any[], atr: number): any {
   const cur=bars[bars.length-1].close;
