@@ -7200,6 +7200,7 @@ _chLongTimer=setTimeout(()=>{
 },{passive:false});
 
 cv.addEventListener('touchmove',e=>{
+ document.title='TM touches='+e.touches.length+' chActive='+_chActive+' drMode='+drMode+' vis='+state.visible;
 
  if(menuDrag.active)return; // let document handler move the toolbar
 
@@ -7210,7 +7211,7 @@ if(_chActive&&e.touches.length===1){
   e.preventDefault();
   const _r1c=cv.getBoundingClientRect();
   const _cpx=e.touches[0].clientX-_r1c.left;
-  const _cpy=e.touches[0].clientY-_r1c.top;
+  const _cpy=e.touches[0].clientY-_r1c.top;    
   const _CW1=(cv.offsetWidth||390)-38;
   const _ccpx=Math.max(0,Math.min(_CW1,_cpx));
   const _ccpy=Math.max(8,Math.min(cv.offsetHeight-45,_cpy));
