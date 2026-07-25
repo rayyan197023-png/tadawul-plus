@@ -2330,111 +2330,12 @@ const ls   = calcLiqSweep(rBars, atr);
   const adxBull=plusDI>minusDI;
 
   // ════════════════════════════════════════
-  //  الطبقة ١ — وايكوف محسّن + هيكل السوق + OB + Pattern Recognition
-  //  معاير على البيانات الحقيقية الـ 100 شمعة
+  //  الطبقة ١ -- وايكوف + هيكل السوق + OB (مفصولة لدالة calculateLayer1)
   // ════════════════════════════════════════
-  const upBars = last10.filter(b=>b.pct>0);
-  const dnBars = last10.filter(b=>b.pct<=0);
-  const avgUpV = upBars.length?upBars.reduce((s,b)=>s+b.vol,0)/upBars.length:0;
-  const avgDnV = dnBars.length?dnBars.reduce((s,b)=>s+b.vol,0)/dnBars.length:1;
-  const recentLow  = Math.min(...last10.map(b=>b.lo));
-  const recentHigh = Math.max(...last10.map(b=>b.hi));
-  const range60Low  = bars.length>=60?Math.min(...bars.slice(-60).map(b=>b.lo)):recentLow;
-  const range60High = bars.length>=60?Math.max(...bars.slice(-60).map(b=>b.hi)):recentHigh;
+  const { L1, spring, sos, upth, wyPhase, patternBonus } = calculateLayer1(
+    bars, last5, last10, last20, avgVol, ms, ob, ls, adxV, adxBull, radarMS, radarOB, radarLS
+  );
 
-  // ── وايكوف: كشف المرحلة من البيانات الحقيقية ──
-  const spring  = last5.some(b=>b.lo<=recentLow*1.005&&b.c>b.o&&b.vol>avgVol*1.2);
-  const sos     = last5.filter(b=>b.pct>0.8&&b.vol>avgVol*1.4).length>=2;
-  const upth    = last5.filter(b=>{
-    const isBreak=b.hi>Math.max(...last20.slice(0,-5).map(x=>x.hi))*0.99;
-    return isBreak&&b.c<b.o&&b.c<(b.hi+b.lo)/2;
-  }).length>=1;
-  const accumBars = last10.filter(b=>b.vol>avgVol*1.1&&Math.abs(b.pct)<0.3).length;
-
-  // مرحلة وايكوف المعايرة: A=تراكم، B=ارتفاع، C=توزيع، D=هبوط
-  const pricePos60 = (bars[bars.length-1].c - range60Low)/(range60High-range60Low+0.001);
-  const volTrend = bars.length>=20 ?
-    bars.slice(-5).reduce((s,b)=>s+b.vol,0)/5 / (bars.slice(-20,-5).reduce((s,b)=>s+b.vol,0)/15) : 1;
-
-  var wyBase=Math.round(50+40*Math.tanh((pricePos60-0.5)*3));
-  var wyAdj=(spring&&sos)?+20:sos?+12:spring?+10:0;
-  wyAdj+=upth&&pricePos60>0.75?-25:0;
-  wyAdj+=accumBars>=3&&pricePos60<0.35&&volTrend<0.9?+10:0;
-  wyAdj+=avgUpV>avgDnV*1.3?+8:avgDnV>avgUpV*1.3?-8:0;
-  wyAdj+=volTrend>1.2?+5:volTrend<0.8?-5:0;
-  var wyScore=Math.min(95,Math.max(10,wyBase+wyAdj));
-  var wyPhase=wyScore>=82?"تراكم نشط":wyScore>=70?"ارتفاع قوي":wyScore>=55?"صاعد":wyScore>=45?"محايد":wyScore>=32?"هابط":"توزيع محتمل";
-
-  // ── Pattern Recognition من البيانات الحقيقية ──
-  // نموذج تنبؤي: يقيّم احتمال الصعود بناءً على أنماط الشموع
-  var patternBonus = 0;
-  if(bars.length >= 3){
-    const c0 = bars[bars.length-1]; // اليوم
-    const c1 = bars[bars.length-2]; // الأمس
-    const c2 = bars[bars.length-3]; // قبل الأمس
-    const body0 = Math.abs(c0.c-c0.o);
-    const body1 = Math.abs(c1.c-c1.o);
-    const range0 = c0.hi-c0.lo||0.001;
-
-    // Hammer — ذيل طويل أسفل، جسم صغير أعلى
-    const isHammer = c0.lo<c1.lo && body0<range0*0.3 && (c0.c-c0.lo)>range0*0.6;
-    // Bullish Engulfing — الشمعة الحالية تبتلع السابقة صعوداً
-    const isBullEngulf = c0.c>c0.o && c1.c<c1.o && c0.c>c1.o && c0.o<c1.c;
-    // Bearish Engulfing
-    const isBearEngulf = c0.c<c0.o && c1.c>c1.o && c0.c<c1.o && c0.o>c1.c;
-    // Doji — جسم صغير جداً
-    const isDoji = body0 < range0*0.1;
-    // Three White Soldiers — 3 شموع خضراء متتالية
-    const is3WS = c0.c>c0.o && c1.c>c1.o && c2.c>c2.o && c0.c>c1.c && c1.c>c2.c;
-    // Morning Star
-    const isMorningStar = c2.c<c2.o && isDoji && c0.c>c0.o && c0.c>(c2.o+c2.c)/2;
-
-    if(isHammer)       patternBonus += 8;
-    if(isBullEngulf)   patternBonus += 10;
-    if(isBearEngulf)   patternBonus -= 10;
-    if(is3WS)          patternBonus += 12;
-    if(isMorningStar)  patternBonus += 10;
-    if(isDoji&&pricePos60>0.7) patternBonus -= 5; // Doji عند القمة = تحذير
-
-    // Mean Reversion Signal — السهم بعيد عن متوسطه؟
-    const ma20 = bars.slice(-20).reduce((s,b)=>s+b.c,0)/20;
-    const devFromMa = (c0.c - ma20)/ma20*100;
-    if(devFromMa < -8 && volTrend > 1.2) patternBonus += 8;  // مبالغة في الهبوط + حجم
-    if(devFromMa > 10)                   patternBonus -= 5;  // مبالغة في الصعود
-
-    // Volume Divergence — السعر يرتفع لكن الحجم يتراجع = إشارة ضعف
-    if(c0.pct>0.5&&c0.vol<avgVol*0.7) patternBonus -= 6;
-    if(c0.pct<-0.5&&c0.vol<avgVol*0.7) patternBonus += 4;  // هبوط على حجم منخفض = ضعيف
-  }
-  patternBonus = Math.min(20, Math.max(-20, patternBonus));
-
-  const msBonus  = ms.bos&&ms.bosBull?15:ms.trend==="صاعد"?10:ms.trend==="صاعد محايد"?5:0;
-  const obBonus  = ob.inRef?15:ob.inBullOB?10:ob.bullCount>0?5:0;
-  const sslBonus = ls.recoveredSSL&&ls.sslQuality>=2?10:ls.recoveredSSL?6:0;
-
-  // Pivot Points: أعلى وأدنى آخر 5 شموع كمستويات دعم/مقاومة
-  const pivot5High = Math.max(...last5.map(b=>b.hi));
-  const pivot5Low  = Math.min(...last5.map(b=>b.lo));
-  const curClose   = bars[bars.length-1].c;
-  const abovePivot = curClose > (pivot5High+pivot5Low)/2;  // فوق المنتصف = صعودي
-  const pivotBonus = abovePivot ? 4 : -4;
-
-  // ADX Trend Strength: اتجاه قوي يُعزز L1
-  const adxBonus = adxV>35&&adxBull ? 6 : adxV>25&&adxBull ? 3
-                 : adxV>35&&!adxBull ? -6 : adxV>25&&!adxBull ? -3 : 0;
-
-  // L1 سقف 85 — منع التضخم في الصعود القوي
-  // + radar sub-scores: radarMS/radarOB/radarLS → يُدمج كـ مدخل إضافي (وزن 20%)
-  const radarL1Bonus = Math.round(
-    (radarMS/15)*8 +   // Market Structure /15 → max +8
-    (radarOB/15)*6 +   // Order Blocks /15    → max +6
-    (radarLS/10)*4     // Liquidity Sweeps /10 → max +4
-  );  // max +18
-  const L1 = Math.min(85, Math.max(0, Math.round(
-    wyScore*0.38 + msBonus*(25/15) + obBonus*(20/15) + sslBonus + patternBonus
-    + pivotBonus + adxBonus
-    + radarL1Bonus * 0.3  // وزن 30% للرادار في L1
-  )));
 
   // ════════════════════════════════════════
   //  الطبقة ٢ -- الجهد/النتيجة + OBV (مفصولة لدالة calculateLayer2)
