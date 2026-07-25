@@ -1402,40 +1402,7 @@ const bsls=sweeps.filter((s: any)=>s.type==="BSL");
   return{recoveredSSL:recSSL,sslCount:ssls.length,bslCount:bsls.length,sslQuality:q,score:Math.min(20,score),
     label:recSSL&&q===3?"اصطياد مثالي ✓✓✓":recSSL&&q===2?"اصطياد قوي ✓✓":recSSL?"تعافٍ من الاصطياد":ssls.length>0?"اصطياد حديث":"لا اصطياد"};
 }
-function calcIVWAP(bars: any[], stk?: any): any {
-  const cur=bars[bars.length-1].close;
-  const vwW=calcVWAPFull(bars.slice(-5));
-  const vwM=calcVWAPFull(bars.slice(-20));
-  const vwQ=calcVWAPFull(bars);
-  // loIdx مقيّد بآخر 60 يوم — منع AVWAP من التأثر بقيعان قديمة جداً
-  const bars60 = bars.slice(-Math.min(bars.length,60));
-  const loIdx60 = bars60.reduce((mi,b,i)=>b.lo<bars60[mi].lo?i:mi,0);
-  const avwap = calcVWAPFull(bars60.slice(loIdx60));
-  let sumVV=0,sumV=0;
-  for(const b of bars){const tp=(b.hi+b.lo+b.close)/3;sumVV+=b.vol*(tp-vwQ)**2;sumV+=b.vol;}
-  const std=sumV>0?Math.sqrt(sumVV/sumV):0;
-  const b1Lo=vwQ-std,b2Lo=vwQ-2*std;
-  const aboveAVWAP=cur>avwap;
-  const belowB1=cur<b1Lo,belowB2=cur<b2Lo;
-  const pctM=(cur-vwM)/vwM*100;
-  const above3=[vwW,vwM,vwQ].filter((v: number)=>cur>v).length;
-  const vwapDev=std>0?(cur-vwQ)/std:0;
-  let score=4;
-  if(belowB2&&aboveAVWAP)      score=20;
-  else if(belowB2)             score=Math.round(10+3*Math.tanh(-vwapDev-1));
-  else if(belowB1&&aboveAVWAP) score=Math.round(14+Math.tanh(-vwapDev)*2);
-  else if(belowB1)             score=Math.round(10+Math.tanh(-vwapDev));
-  else if(above3===3)          score=Math.round(6-Math.tanh(vwapDev)*2);
-  else if(above3>=2)           score=Math.round(8-Math.tanh(vwapDev));
-  else if(pctM>-1.5&&pctM<0)  score=10;
-  else score=Math.round(Math.max(2,8-Math.abs(vwapDev)*2));
-  return{vwapMonth:+vwM.toFixed(2),avwap:+avwap.toFixed(2),
-    vwapDev:std>0?+((cur-vwQ)/std).toFixed(2):0,
-    aboveAVWAP,belowB1,belowB2,above3,score:Math.min(20,score),
-    label:belowB2&&aboveAVWAP?"تحت -2σ + فوق AVWAP ✓":
-          belowB1?"تحت VWAP -1σ":above3===3?"فوق 3 VWAPs":
-          aboveAVWAP?"فوق AVWAP":"تحت AVWAP"};
-}
+
 
 /* ══ المحركات الرئيسية ══ */
 function calcTasiContext(stk: any, bars: any[], allStocks: any[] = []): any {
