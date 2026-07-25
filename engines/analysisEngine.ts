@@ -2361,7 +2361,7 @@ function calculateLayer6(
   const _L6raw = Math.min(100, Math.round(kellyScore * 0.92 + macroBonus));
   const L6 = Math.min(100, Math.max(0, _L6raw + Math.round((radarVA / 5 * 100 - 50) * 0.25)));
 
-  return { L6, kelly };
+  return { L6, kelly, p_adj };
 }
 
 function calc9Layers(stk: any, bars: any[]): any {
