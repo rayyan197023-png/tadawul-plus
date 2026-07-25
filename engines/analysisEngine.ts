@@ -4932,7 +4932,7 @@ function scoreWord(score: number): string {
    ══════════════════════════════════════════════════════════ */
 export {
   seedRng, genBars,
-  calcEMA, calcVWAPFull,
+  calcEMA,
   calcCMFFull, calcOBVFull, calcStoch, calcSMA, calcVPVR,
   calcMarketStructureFull, calcOrderBlocksFull, calcLiqSweepFull,
   calcIVWAP, generateBarsRadar, analyzeStockRadar, calc9Layers,
@@ -4941,7 +4941,7 @@ export {
   calcInsiderTransactions, calcAlternativeData,
   calcRiskAttribution, calcIntermarket, calcMicrostructure,
   calcPositionSize, calcRiskGateLevel, checkCorrelationGuard,
-  calcPortfolioSharpe, calcAdaptiveThreshold,
+  calcPortfolioSharpe, calcAdaptiveThreshold, 
   calcTasiContext, calcMacroFull, applyMacroGate,
   detectMarketRegime, buildDynamicWeights, reduceCorrelation,
   calcConflictPenalty, stockHealth, ensembleVote,
