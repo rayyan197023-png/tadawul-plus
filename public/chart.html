@@ -7307,9 +7307,12 @@ if(_chActive&&e.touches.length===1){
 // Pinch zoom: requires EXACTLY 2 fingers (no single-finger zoom)
  // لا تفعّل الزوم إذا كان الـ crosshair نشطاً (ضغطة مطوّلة) -- يمنع الزوم المفاجئ غير المقصود
 if(e.touches.length===2&&!_chActive){
- document.title='PINCH-ZOOM ✓ touches=2 chActive='+_chActive;
+ const _dbg3=document.getElementById('toast');
  const d=getTD(e);
- if(drag.d0>0){state.visible=Math.min(state.allCandles.length,Math.max(6,Math.round(drag.v0*drag.d0/Math.max(d,1))));}
+ if(drag.d0>0){
+  if(_dbg3)_dbg3.textContent='🔴 PINCH ZOOM FIRED!\ntouches=2\nd0='+drag.d0.toFixed(1)+'\nd='+d.toFixed(1)+'\nvis_old='+state.visible.toFixed(1);
+  state.visible=Math.min(state.allCandles.length,Math.max(6,Math.round(drag.v0*drag.d0/Math.max(d,1))));
+ }
  const cx=(e.touches[0].clientX+e.touches[1].clientX)/2;
  doPan(cx-drag.x0);render();return;
 }
