@@ -2109,6 +2109,119 @@ function calculateLayer3(last20: any[], last5: any[], avgVol: number): { L3: num
   return { L3, entr };
 }
 
+/**
+ * ✨ Layer 1 -- وايكوف محسّن + هيكل السوق + OB + Pattern Recognition
+ * ⚠️ الأكثر تعقيداً بين الطبقات -- ترجع L1 + 5 مخرجات جانبية
+ * (spring, sos, upth, wyPhase, patternBonus) تُستخدم لاحقاً في extras
+ *
+ * @param bars - كل الشموع
+ * @param last5 - آخر 5 شموع
+ * @param last10 - آخر 10 شموع
+ * @param last20 - آخر 20 شمعة
+ * @param avgVol - متوسط الحجم
+ * @param ms - نتيجة calcMarketStructure
+ * @param ob - نتيجة calcOrderBlocks
+ * @param ls - نتيجة calcLiqSweep
+ * @param adxV - قيمة ADX
+ * @param adxBull - هل ADX صاعد
+ * @param radarMS - درجة هيكل السوق من الرادار (0-15)
+ * @param radarOB - درجة Order Blocks من الرادار (0-15)
+ * @param radarLS - درجة Liquidity Sweeps من الرادار (0-10)
+ */
+function calculateLayer1(
+  bars: any[], last5: any[], last10: any[], last20: any[], avgVol: number,
+  ms: any, ob: any, ls: any, adxV: number, adxBull: boolean,
+  radarMS: number, radarOB: number, radarLS: number
+): { L1: number; spring: boolean; sos: boolean; upth: boolean; wyPhase: string; patternBonus: number } {
+  const upBars = last10.filter(b => b.pct > 0);
+  const dnBars = last10.filter(b => b.pct <= 0);
+  const avgUpV = upBars.length ? upBars.reduce((s, b) => s + b.vol, 0) / upBars.length : 0;
+  const avgDnV = dnBars.length ? dnBars.reduce((s, b) => s + b.vol, 0) / dnBars.length : 1;
+  const recentLow = Math.min(...last10.map(b => b.lo));
+  const recentHigh = Math.max(...last10.map(b => b.hi));
+  const range60Low = bars.length >= 60 ? Math.min(...bars.slice(-60).map(b => b.lo)) : recentLow;
+  const range60High = bars.length >= 60 ? Math.max(...bars.slice(-60).map(b => b.hi)) : recentHigh;
+
+  const spring = last5.some(b => b.lo <= recentLow * 1.005 && b.c > b.o && b.vol > avgVol * 1.2);
+  const sos = last5.filter(b => b.pct > 0.8 && b.vol > avgVol * 1.4).length >= 2;
+  const upth = last5.filter(b => {
+    const isBreak = b.hi > Math.max(...last20.slice(0, -5).map(x => x.hi)) * 0.99;
+    return isBreak && b.c < b.o && b.c < (b.hi + b.lo) / 2;
+  }).length >= 1;
+  const accumBars = last10.filter(b => b.vol > avgVol * 1.1 && Math.abs(b.pct) < 0.3).length;
+
+  const pricePos60 = (bars[bars.length - 1].c - range60Low) / (range60High - range60Low + 0.001);
+  const volTrend = bars.length >= 20
+    ? bars.slice(-5).reduce((s, b) => s + b.vol, 0) / 5 / (bars.slice(-20, -5).reduce((s, b) => s + b.vol, 0) / 15)
+    : 1;
+
+  let wyBase = Math.round(50 + 40 * Math.tanh((pricePos60 - 0.5) * 3));
+  let wyAdj = (spring && sos) ? +20 : sos ? +12 : spring ? +10 : 0;
+  wyAdj += upth && pricePos60 > 0.75 ? -25 : 0;
+  wyAdj += accumBars >= 3 && pricePos60 < 0.35 && volTrend < 0.9 ? +10 : 0;
+  wyAdj += avgUpV > avgDnV * 1.3 ? +8 : avgDnV > avgUpV * 1.3 ? -8 : 0;
+  wyAdj += volTrend > 1.2 ? +5 : volTrend < 0.8 ? -5 : 0;
+  const wyScore = Math.min(95, Math.max(10, wyBase + wyAdj));
+  const wyPhase = wyScore >= 82 ? "تراكم نشط" : wyScore >= 70 ? "ارتفاع قوي" : wyScore >= 55 ? "صاعد" : wyScore >= 45 ? "محايد" : wyScore >= 32 ? "هابط" : "توزيع محتمل";
+
+  let patternBonus = 0;
+  if (bars.length >= 3) {
+    const c0 = bars[bars.length - 1];
+    const c1 = bars[bars.length - 2];
+    const c2 = bars[bars.length - 3];
+    const body0 = Math.abs(c0.c - c0.o);
+    const body1 = Math.abs(c1.c - c1.o);
+    const range0 = c0.hi - c0.lo || 0.001;
+
+    const isHammer = c0.lo < c1.lo && body0 < range0 * 0.3 && (c0.c - c0.lo) > range0 * 0.6;
+    const isBullEngulf = c0.c > c0.o && c1.c < c1.o && c0.c > c1.o && c0.o < c1.c;
+    const isBearEngulf = c0.c < c0.o && c1.c > c1.o && c0.c < c1.o && c0.o > c1.c;
+    const isDoji = body0 < range0 * 0.1;
+    const is3WS = c0.c > c0.o && c1.c > c1.o && c2.c > c2.o && c0.c > c1.c && c1.c > c2.c;
+    const isMorningStar = c2.c < c2.o && isDoji && c0.c > c0.o && c0.c > (c2.o + c2.c) / 2;
+
+    if (isHammer) patternBonus += 8;
+    if (isBullEngulf) patternBonus += 10;
+    if (isBearEngulf) patternBonus -= 10;
+    if (is3WS) patternBonus += 12;
+    if (isMorningStar) patternBonus += 10;
+    if (isDoji && pricePos60 > 0.7) patternBonus -= 5;
+
+    const ma20 = bars.slice(-20).reduce((s, b) => s + b.c, 0) / 20;
+    const devFromMa = (c0.c - ma20) / ma20 * 100;
+    if (devFromMa < -8 && volTrend > 1.2) patternBonus += 8;
+    if (devFromMa > 10) patternBonus -= 5;
+
+    if (c0.pct > 0.5 && c0.vol < avgVol * 0.7) patternBonus -= 6;
+    if (c0.pct < -0.5 && c0.vol < avgVol * 0.7) patternBonus += 4;
+  }
+  patternBonus = Math.min(20, Math.max(-20, patternBonus));
+
+  const msBonus = ms.bos && ms.bosBull ? 15 : ms.trend === "صاعد" ? 10 : ms.trend === "صاعد محايد" ? 5 : 0;
+  const obBonus = ob.inRef ? 15 : ob.inBullOB ? 10 : ob.bullCount > 0 ? 5 : 0;
+  const sslBonus = ls.recoveredSSL && ls.sslQuality >= 2 ? 10 : ls.recoveredSSL ? 6 : 0;
+
+  const pivot5High = Math.max(...last5.map(b => b.hi));
+  const pivot5Low = Math.min(...last5.map(b => b.lo));
+  const curClose = bars[bars.length - 1].c;
+  const abovePivot = curClose > (pivot5High + pivot5Low) / 2;
+  const pivotBonus = abovePivot ? 4 : -4;
+
+  const adxBonus = adxV > 35 && adxBull ? 6 : adxV > 25 && adxBull ? 3
+    : adxV > 35 && !adxBull ? -6 : adxV > 25 && !adxBull ? -3 : 0;
+
+  const radarL1Bonus = Math.round(
+    (radarMS / 15) * 8 + (radarOB / 15) * 6 + (radarLS / 10) * 4
+  );
+  const L1 = Math.min(85, Math.max(0, Math.round(
+    wyScore * 0.38 + msBonus * (25 / 15) + obBonus * (20 / 15) + sslBonus + patternBonus
+    + pivotBonus + adxBonus
+    + radarL1Bonus * 0.3
+  )));
+
+  return { L1, spring, sos, upth, wyPhase, patternBonus };
+}
+
 function calc9Layers(stk: any, bars: any[]): any {
   // ✨ Validation - حماية من Edge Cases
   if (!stk || typeof stk !== 'object') {
