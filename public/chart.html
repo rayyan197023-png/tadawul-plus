@@ -6710,23 +6710,6 @@ function _enrichDrawing(d){
     const cH=b.cBot-b.cTop;
     const py2price=(py)=>mn+((b.cBot-py)/cH)*rng;
 
-    // ── DEBUG: طباعة القيم الفعلية للمقارنة ──
-    if(d.p1){
-      const testPrice=py2price(d.p1.y);
-      const testY_back=b.cTop+cH-((testPrice-mn)/rng)*cH;
-      alert(
-        '=== DEBUG _enrichDrawing ===\\n'+
-        'd.p1.y (الأصلي)= '+d.p1.y.toFixed(2)+'\\n'+
-        'b.cTop= '+b.cTop+' | b.cBot= '+b.cBot+' | cH= '+cH.toFixed(2)+'\\n'+
-        'cv.offsetHeight= '+cv.offsetHeight+'\\n'+
-        'mn= '+mn.toFixed(3)+' | mx= '+mx.toFixed(3)+' | rng= '+rng.toFixed(3)+'\\n'+
-        'yScale= '+yScale+'\\n'+
-        'السعر المحسوب= '+testPrice.toFixed(3)+'\\n'+
-        'الرجوع لبكسل (يجب يطابق d.p1.y)= '+testY_back.toFixed(2)+'\\n'+
-        'الفرق (الانزياح المتوقع)= '+(testY_back-d.p1.y).toFixed(2)+' بكسل'
-      );
-    }
-
     if(d.p1){
       const ci=Math.max(0,Math.min(_subLen-1,px2idx(d.p1.x)));
       d._p1_price=py2price(d.p1.y);
@@ -6737,9 +6720,8 @@ function _enrichDrawing(d){
       d._p2_price=py2price(d.p2.y);
       d._p2_idx=start+ci;
     }
-  }catch(e){alert('خطأ بـ_enrichDrawing: '+e.message);}
+  }catch(e){}
 }
-
 
 function finishDrawing(pt) {
  // Pattern tool: add point
