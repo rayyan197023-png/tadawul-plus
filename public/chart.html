@@ -7218,7 +7218,8 @@ cv.addEventListener('touchmove',e=>{
  
  // ── Crosshair active: ONLY update crosshair, block all other actions ──
 if(_chActive&&e.touches.length===1){
-  document.title='CH-ACTIVE ✓ touches=1 vis='+state.visible;
+  const _dbg2=document.getElementById('toast');
+  if(_dbg2)_dbg2.textContent='✅ CROSSHAIR MODE\ntouches=1\nvis='+state.visible.toFixed(1);
   e.preventDefault();
   const _r1c=cv.getBoundingClientRect();
   const _cpx=e.touches[0].clientX-_r1c.left;
