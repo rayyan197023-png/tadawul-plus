@@ -18,14 +18,18 @@ function chartBounds(forceN){
  const getPH=(typeof getPanelH==='function')
    ?getPanelH
    :(_key,h,frac)=>Math.round(h*frac);
- const VOL_H=getPH('vol',H,0.14);
+ // بانل الحجم يُخفى بالكامل لمؤشر تاسي -- يجب مطابقة نفس الاستثناء الموجود في render()
+ // وإلا يصير فرق ثابت في cBot بين وقت حفظ الرسمة ووقت رسمها، فتنزاح عمودياً بمقدار ثابت
+ const _isTasiMode=(typeof _isCurrentIndexMode==='function')?_isCurrentIndexMode():false;
+ const VOL_H=_isTasiMode?0:getPH('vol',H,0.14);
  const SUB_H=hasSub?allSubs.reduce((sum,_,pi)=>sum+getPH('sub_'+pi,H,0.09),0):0;
  const OF_H=(typeof showOrderFlow!=='undefined'&&showOrderFlow)?getPH('of',H,0.10):0;
  const cTop=12;
  const cBot=H-22-3-VOL_H-(hasSub?SUB_H+3:0)-(OF_H?OF_H+3:0);
 
-const VIS=(forceN!=null)?Math.max(1,forceN):Math.min(Math.max(8,state.visible),Math.max(1,state.allCandles.length));
-
+ // إذا مُرِّر forceN (طول sub.length الفعلي من render())، نستخدمه كمصدر وحيد للحقيقة
+ // بدل إعادة اشتقاق VIS من state.visible، لأن الاثنين قد يختلفا عند حواف البيانات
+ const VIS=(forceN!=null)?Math.max(1,forceN):Math.min(Math.max(8,state.visible),Math.max(1,state.allCandles.length));
  // نفس منطق حجز مساحة الغيمة المستقبلية -- شرطي بـ offset===0 وتفعيل المؤشر
  const _ichiActive=(typeof state!=='undefined'&&Array.isArray(state.inds)&&state.inds.includes('ICHIMOKU'));
  const _atRightEdge=(state.offset===0);
