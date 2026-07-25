@@ -7211,18 +7211,7 @@ _chLongTimer=setTimeout(()=>{
 },{passive:false});
 
 cv.addEventListener('touchmove',e=>{
- // ── DEBUG: عرض حي داخل الشارت ──
- (function(){
-  const _dbg=document.getElementById('toast');
-  if(_dbg){
-   _dbg.style.display='block';
-   _dbg.style.opacity='1';
-   _dbg.style.zIndex='9999';
-   _dbg.style.fontSize='10px';
-   _dbg.style.whiteSpace='pre-line';
-   _dbg.textContent='touches='+e.touches.length+'\nchActive='+_chActive+'\ndrMode='+drMode+'\nvis='+state.visible.toFixed(1);
-  }
- })();
+
 
  if(menuDrag.active)return; // let document handler move the toolbar
 
