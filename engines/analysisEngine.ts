@@ -920,51 +920,6 @@ function calcEMA(vs: number[], p: number): number {
 }
 
 
-function calcMarketStructureFull(bars: any[]): any {
-
-if(bars.length<10)return{trend:"محايد",bos:false,choch:false,score:5,label:"هيكل محايد"};
-
-  // ✨ حارس توافق: نضمن وجود close في كل شمعة (genBars يُنتج c فقط).
-  // يمنع كسراً صامتاً حين تُستدعى الدالة ببارات لا تحوي close.
-  bars = bars.map(function(b: any){
-    return (b.close !== undefined) ? b : Object.assign({}, b, { close: b.c });
-  });
-
-  // window ديناميكي من ATR السهم:
-  // تقلب عالٍ → نافذة أضيق (2) للاستجابة السريعة
-  // تقلب منخفض → نافذة أوسع (4) لتصفية الضوضاء
-  const recentRng = bars.length>=10
-    ? bars.slice(-10).reduce((s:  number, b: any)=>s+Math.abs(b.pct),0)/10
-    : 1.5;
-  const swWin = recentRng > 2.5 ? 2 : recentRng > 1.0 ? 3 : 4;
-
-  const swings: any[] = [];
-  for(let i=swWin;i<bars.length-swWin;i++){
-    if(bars.slice(i-swWin,i).every((b: any)=>b.hi<=bars[i].hi)&&bars.slice(i+1,i+1+swWin).every((b: any)=>b.hi<=bars[i].hi))
-      swings.push({i,type:"H",val:bars[i].hi});
-    if(bars.slice(i-swWin,i).every((b: any)=>b.lo>=bars[i].lo)&&bars.slice(i+1,i+1+swWin).every((b: any)=>b.lo>=bars[i].lo))
-      swings.push({i,type:"L",val:bars[i].lo});
-  }
-  const highs=swings.filter((s: any)=>s.type==="H").slice(-4);
-const lows =swings.filter((s: any)=>s.type==="L").slice(-4);
-  let hhC=0,hlC=0,lhC=0,llC=0;
-  for(let i=1;i<highs.length;i++)highs[i].val>highs[i-1].val?hhC++:lhC++;
-  for(let i=1;i<lows.length;i++) lows[i].val>lows[i-1].val?hlC++:llC++;
-  const bull=hhC>0&&hlC>0,bear=lhC>0&&llC>0;
-  const trend=bull&&!bear?"صاعد":bear&&!bull?"هابط":hhC>lhC?"صاعد محايد":"هابط محايد";
-  const cur=bars[bars.length-1].close;
-  const lastH = highs.length>0 ? highs[highs.length-1].val : Infinity;
-  const lastL = lows.length>0  ? lows[lows.length-1].val  : 0;
-  const bosBull=cur>lastH, bosBear=cur<lastL;
-  const bos=bosBull||bosBear;
-  const choch=(bull&&bosBear)||(bear&&bosBull);
-  const trendStrength=hhC+hlC-lhC-llC;
-  let score=Math.round(Math.min(20,Math.max(2,10+trendStrength*2.5+(bosBull?4:0)+(choch&&bosBull?2:0)-(bosBear?4:0))));
-  return{trend,bos,choch,bosBull,bosBear,hhC,hlC,lhC,llC,score,
-    label:bosBull?"كسر هيكل صاعد BOS↑":bosBear?"كسر هيكل هابط BOS↓":
-          choch?"تغيّر طابع CHOCH":trend==="صاعد"?"هيكل HH/HL صاعد":
-          trend==="هابط"?"هيكل LH/LL هابط":"هيكل محايد"};
-}
 function calcOrderBlocksFull(bars: any[], atr: number): any {
   const obs: any[] = [];const cur=bars[bars.length-1].close;const n=bars.length;
   const recentVolatility=bars.length>=20?bars.slice(-20).reduce((s: number, b: any)=>s+Math.abs(b.pct),0)/20:1.5;
