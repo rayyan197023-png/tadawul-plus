@@ -2505,7 +2505,7 @@ const ls   = calcLiqSweep(rBars, atr);
   // ════════════════════════════════════════
   //  الطبقة ٦ -- Kelly + Macro (مفصولة لدالة calculateLayer6)
   // ════════════════════════════════════════
-  const { L6, kelly } = calculateLayer6(bars, vr, mc, stk, radarVA);
+  const { L6, kelly, p_adj } = calculateLayer6(bars, vr, mc, stk, radarVA);
 
   
   // ════════════════════════════════════════
