@@ -4664,7 +4664,6 @@ export {
   calcEMA,
 calcStoch,
 calcSMA, calcVPVR,
-calcLiqSweepFull,
   calcIVWAP, generateBarsRadar, analyzeStockRadar, calc9Layers,
   calcFactorModel, calcEarningsModel,   calcDCF,
   calcEarningsQuality,
