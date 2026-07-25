@@ -6672,15 +6672,25 @@ function _enrichDrawing(d){
     const all=state.allCandles;
     const n=all.length;
     if(!n)return;
-    // Use SAME bounds/tx calculation as render() -- مصدر وحيد للحقيقة عبر chartBounds()
-    const b=chartBounds();
-    const start=Math.max(0,n-b.VIS-state.offset);
-    const end2=n-state.offset;
+
+    // ── نفس منطق render() بالضبط لحساب نافذة الشموع المرئية ──
+    // render() يستخدم VIS مبني على state.visible، ثم يقيّد offset (clampOff)
+    // بين 0 و maxOff قبل حساب end/start. لازم نطابق هذا تماماً هنا
+    // وإلا يصير فرق بسيط في start/end يسبب انزياح فوري للرسمة بعد الحفظ.
+    const VIS=Math.min(Math.max(8,state.visible),n);
+    const maxOff=Math.max(0,n-VIS);
+    const clampOff=Math.min(maxOff,Math.max(0,state.offset));
+    const end2=n-clampOff;
+    const start=Math.max(0,end2-VIS);
     const _subLen=end2-start;
     const sub=all.slice(start,end2);
     if(!sub.length)return;
 
-    // px → candle index (نفس معادلة tx تماماً من chartBounds)
+    // مرّر _subLen الفعلي (طول sub.length بعد القص) بدل ما نخلي chartBounds
+    // تعيد اشتقاقه من state.visible من جديد -- هذا هو مصدر الانزياح الأساسي
+    const b=chartBounds(_subLen);
+
+    // px → candle index (نفس معادلة tx تماماً من render()، عبر chartBounds بنفس n)
     const px2idx=(px)=>Math.round(b.px2idx(px));
 
     // px → price (SAME as render's ty inverse, with yScale)
