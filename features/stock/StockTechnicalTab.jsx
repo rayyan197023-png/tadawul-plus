@@ -105,12 +105,14 @@ export default function StockTechnicalTab({ stk }) {
       })
 
       .catch(err => {
+        alert('فشل تحميل البيانات الحقيقية!\nالخطأ: ' + (err?.message || err));
         console.error('فشل تحميل البيانات الحقيقية، استخدام بيانات احتياطية:', err);
         if (!cancelled) {
           setBars(generateOHLCBars(stk, 80));
           setBarsLoading(false);
         }
       });
+
     return () => { cancelled = true; };
   }, [stk.sym]);
 
