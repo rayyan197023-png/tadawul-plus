@@ -19,8 +19,8 @@ export const LAYER_WEIGHTS = {
 // ── Gate Thresholds ───────────────────────────────────────────────
 export const GATE_THRESHOLDS = {
   LIQUIDITY_MIN:  55,    // L9 ≥ 55 للبوابة الأولى
-  STRUCTURE_MIN:  50,    // L1/MS ≥ 50 للبوابة الثانية
-  MOMENTUM_MIN:   45,    // ADX/MACD ≥ 45 للبوابة الثالثة
+  STRUCTURE_MIN:  50,    // L1 ≥ 50 للبوابة الثانية
+  MOMENTUM_MIN:   50,    // (L4+L5)/2 ≥ 50 للبوابة الثالثة (مصحَّحة لتطابق القيمة الفعلية المستخدمة)
 };
 
 // ── Signal Score Boundaries ───────────────────────────────────────
