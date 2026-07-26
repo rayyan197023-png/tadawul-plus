@@ -3020,7 +3020,7 @@ const ls   = calcLiqSweep(rBars, atr);
   //  🎯 FINAL SCORE -- Applied ONCE
   // ════════════════════════════════════════════════════════════
   const score = _clamp(Math.round(baseScore * adjustmentFactor), 0, 100);
-  const grade = score>=85?"S":score>=75?"A":score>=65?"B":score>=55?"C":score>=45?"D":"F";
+const grade = score>=GRADE_THRESHOLDS.S?"S":score>=GRADE_THRESHOLDS.A?"A":score>=GRADE_THRESHOLDS.B?"B":score>=GRADE_THRESHOLDS.C?"C":score>=GRADE_THRESHOLDS.D?"D":"F";
 
 
     // ════════════════════════════════════════════════════════
