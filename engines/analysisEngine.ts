@@ -1992,7 +1992,7 @@ const mc   = calcMacroScore(stk);
   return{
     stk,total,scoreCol,cats,
     target,stop,atrPct:+atrPct.toFixed(2),
-ms,ob,ls,vi,vwapDev,mc,
+ms,ob,ls,vi,vwapDev,vwapD:vwapDev,mc,
     trend:{bull:trendBull,maCount,adxP:+adxP.toFixed(0),score:trScore},
     mom:{rsi,macd:(macd as any).bull,stoch,oversold,overbought,score:moScore},
     liq:{obv:(obv as any).signal,cmf:+cmf.toFixed(3),rvNorm:+rvNorm.toFixed(2),smDetected,score:lqScore},
