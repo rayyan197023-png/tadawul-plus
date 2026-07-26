@@ -86,23 +86,23 @@ function RSIGauge({ value }) {
 
 export default function StockTechnicalTab({ stk }) {
   const [bars, setBars] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [barsLoading, setBarsLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
+    setBarsLoading(true);
     fetchStockHistory(stk.sym, '6M')
       .then(data => {
         if (!cancelled) {
           setBars(data);
-          setLoading(false);
+          setBarsLoading(false);
         }
       })
       .catch(err => {
-        console.error('فشل تحميل بيانات السهم:', err);
+        console.error('فشل تحميل البيانات الحقيقية، استخدام بيانات احتياطية:', err);
         if (!cancelled) {
-          setBars(generateOHLCBars(stk, 80)); // fallback للبيانات الوهمية عند فشل الشبكة
-          setLoading(false);
+          setBars(generateOHLCBars(stk, 80));
+          setBarsLoading(false);
         }
       });
     return () => { cancelled = true; };
