@@ -2695,35 +2695,9 @@ const ls   = calcLiqSweep(rBars, atr);
   const { L9, smartMoney } = calculateLayer9(cmf, bars, obv, vr, stk, vi);
 
   // ════════════════════════════════════════
-  //  L10 -- كفاءة السيولة (Liquidity Efficiency)
-  //  معكوس نسبة Amihud للاسيولة: متوسط(|عائد| / حجم)
-  //  يقيس عمق السيولة -- كم يتحرّك السعر لكل وحدة حجم (بُعد متعامد)
-  //  سيولة عميقة (حركة هادئة بحجم كبير) → عالٍ | هشاشة → منخفض
+  //  L10 -- كفاءة السيولة (مفصولة لدالة calculateLayer10)
   // ════════════════════════════════════════
-  const _l10win = bars.slice(-20);
-  let L10 = 50;
-  if (_l10win.length >= 10) {
-    const _amihud = [];
-    for (const _b of _l10win) {
-      const _volM = (_b.vol || 0) / 1e6;            // الحجم بالملايين
-      const _ret = Math.abs(_b.pct || 0) / 100;     // |العائد|
-      if (_volM > 0) _amihud.push(_ret / _volM);    // أثر السعر لكل وحدة حجم
-    }
-    if (_amihud.length >= 5) {
-      _amihud.sort((a,b)=>a-b);
-      // الوسيط (median) أمتن من المتوسط ضدّ القيم الشاذة
-      const _mid = Math.floor(_amihud.length / 2);
-      const _medianIlliq = _amihud.length % 2
-        ? _amihud[_mid]
-        : (_amihud[_mid-1] + _amihud[_mid]) / 2;
-      // تحويل لوغاريتمي ثم عكس: لا سيولة عالية → درجة منخفضة
-      // المعايرة: نطاق نموذجي للاسيولة في تاسي ~ 0.0001 إلى 0.05
-      const _logIlliq = Math.log10(Math.max(_medianIlliq, 1e-6));
-      // _logIlliq يتراوح تقريباً [-4, -1.3]؛ نعكسه ونطبّعه
-      L10 = Math.round(_clamp(50 - (_logIlliq + 2.7) * 22, 0, 100));
-    }
-  }
-
+  const L10 = calculateLayer10(bars);
 
   // ════════════════════════════════════════
   //  ① Regime Detection الموسّع (4 حالات)
