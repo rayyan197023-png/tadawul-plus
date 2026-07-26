@@ -18,6 +18,7 @@
  */
 
 import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
+import { GATE_THRESHOLDS as GATE_THRESHOLDS_CONFIG } from '../constants/analysisConstants';
 import { calcRSI, calcATR, calcVWAP, calcCMF, calcOBV, calcMACD, calcMarketStructure, calcIVWAP } from './technicalEngine';
 import { calcOrderBlocks, calcLiqSweep } from './radarEngine';
 
