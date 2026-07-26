@@ -2660,49 +2660,10 @@ const ls   = calcLiqSweep(rBars, atr);
   // ════════════════════════════════════════
   const { L8, pricePos, valScore } = calculateLayer8(stk, radarLQ);
 
+    // ════════════════════════════════════════
+  //  الطبقة ٩ -- السيولة الذكية المُعزَّزة (مفصولة لدالة calculateLayer9)
   // ════════════════════════════════════════
-  //  الطبقة ٩ — السيولة الذكية المُعزَّزة
-  //  CMF + OBV + Volume + Direction + VWAP Deviation
-  // ════════════════════════════════════════
-  const cmfScore  = Math.round(50 + 45*Math.tanh(cmf*8));
-
-  // OBV: اتجاه + slope خطي (أدق من moment فقط)
-  const obvMoment = bars.length>=10
-    ? (bars[bars.length-1].c - bars[bars.length-10].c) / bars[bars.length-10].c
-    : 0;
-  // OBV slope من آخر 5 قيم (اتجاه قصير الأمد)
-  const obvArr = (function(){
-    let o=0; const arr=[0];
-    for(let i=1;i<bars.length;i++){
-      if(bars[i].c>bars[i-1].c)o+=bars[i].vol;
-      else if(bars[i].c<bars[i-1].c)o-=bars[i].vol;
-      arr.push(o);
-    }
-    return arr;
-  })();
-  const obvSlope5 = obvArr.length>=5
-    ? (obvArr[obvArr.length-1]-obvArr[obvArr.length-5]) / (Math.abs(obvArr[obvArr.length-5])||1)
-    : 0;
-  const obvScore  = Math.round(50 + 40*Math.tanh(
-    (obv.rising?1:-1) * (0.4 + Math.abs(obvMoment)*4 + Math.abs(obvSlope5)*2)
-  ));
-
-  const volScore  = Math.round(50 + 40*Math.tanh((vr-1)*1.8));
-
-  const ret5dir = bars.length>=5
-    ? bars.slice(-5).reduce((s,b)=>s+b.pct,0)/5
-    : stk.ch;
-  const dirScore  = Math.round(50 + 35*Math.tanh(ret5dir*0.6));
-
-  // ⑤ VWAP Deviation — مقياس مستقل: السعر بعيد عن VWAP = معلومة إضافية
-  // vi.vwapDev موجود من calcIVWAP: (price-VWAP)/std
-  // سلبي = تحت VWAP (فرصة شراء)، إيجابي = فوق VWAP (تحذير)
-  const vwapDevScore = Math.round(50 - 25*Math.tanh((vi.vwapDev||0)*0.8));
-
-  const smartMoney= Math.round(
-    cmfScore*0.26 + obvScore*0.24 + volScore*0.22 + dirScore*0.16 + vwapDevScore*0.12
-  );
-  const L9=Math.min(100,Math.max(0,smartMoney));
+  const { L9, smartMoney } = calculateLayer9(cmf, bars, obv, vr, stk, vi);
 
   // ════════════════════════════════════════
   //  L10 -- كفاءة السيولة (Liquidity Efficiency)
