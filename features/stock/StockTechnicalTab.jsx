@@ -89,6 +89,7 @@ export default function StockTechnicalTab({ stk }) {
   const [barsLoading, setBarsLoading] = useState(true);
 
   useEffect(() => {
+    alert('useEffect بدأ! stk.sym = ' + stk.sym);
     let cancelled = false;
     setBarsLoading(true);
     fetchStockHistory(stk.sym, '6M')
