@@ -85,7 +85,29 @@ function RSIGauge({ value }) {
 }
 
 export default function StockTechnicalTab({ stk }) {
-  const bars = useMemo(() => generateOHLCBars(stk, 80), [stk.sym]);
+  const [bars, setBars] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    fetchStockHistory(stk.sym, '6M')
+      .then(data => {
+        if (!cancelled) {
+          setBars(data);
+          setLoading(false);
+        }
+      })
+      .catch(err => {
+        console.error('فشل تحميل بيانات السهم:', err);
+        if (!cancelled) {
+          setBars(generateOHLCBars(stk, 80)); // fallback للبيانات الوهمية عند فشل الشبكة
+          setLoading(false);
+        }
+      });
+    return () => { cancelled = true; };
+  }, [stk.sym]);
+
 
   const analysis = useMemo(() => {
     if (!bars.length) return null;
