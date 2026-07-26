@@ -3097,7 +3097,7 @@ const ls   = calcLiqSweep(rBars, atr);
       msLabel:ms.label, bosBull:ms.bosBull,
       obLabel:ob.label, inBullOB:ob.inBullOB,
       sslLabel:ls.label, recoveredSSL:ls.recoveredSSL,
-      vwapDev:vi.vwapDev, belowB1:vi.belowB1, belowB2:vi.belowB2,
+vwapDev, vwapD:vwapDev, belowB1:vi.belowB1, belowB2:vi.belowB2,
       macroEnv:mc.env, macroScore:mc.score,
     }
   };
