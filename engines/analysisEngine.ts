@@ -2775,11 +2775,11 @@ const ls   = calcLiqSweep(rBars, atr);
   //  ✓ سهولة الفهم والصيانة
   // ════════════════════════════════════════════════════════
   
-  // ─── عتبات Professional Grade (ثابتة) ───
+  // ─── عتبات Professional Grade (من constants/analysisConstants.ts) ───
   const GATE_THRESHOLDS = {
-    liquidity: 55,    // L9 >= 55
-    structure: 50,    // L1 >= 50
-    momentum:  50,    // (L4+L5)/2 >= 50
+    liquidity: GATE_THRESHOLDS_CONFIG.LIQUIDITY_MIN,
+    structure: GATE_THRESHOLDS_CONFIG.STRUCTURE_MIN,
+    momentum:  GATE_THRESHOLDS_CONFIG.MOMENTUM_MIN,
   };
   
   // ─── حساب البوابات ───
