@@ -6,8 +6,8 @@
  * Displays: MAs, RSI, MACD, Bollinger, Market Structure, IVWAP
  */
 
-import { useMemo }            from 'react';
-import { generateOHLCBars }   from '../../services/api/stocksApi';
+import { useState, useEffect, useMemo } from 'react';
+import { generateOHLCBars, fetchStockHistory } from '../../services/api/stocksApi';
 import {
   calcRSI, calcATR, calcMACD,
   calcBollingerBands, calcMarketStructure, calcIVWAP,
