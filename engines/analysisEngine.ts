@@ -2604,34 +2604,9 @@ const ls   = calcLiqSweep(rBars, atr);
   const { L7, bayesMult } = calculateLayer7(L1, L4, L5, last10, last5, avgVol, bars, cmf, obv, radarMC);
 
   // ════════════════════════════════════════
-  //  الطبقة ٨ — رادار مستقل: تقييم جوهري + Macro
-  //  valScore مستمر بناءً على PE — لا step functions
+  //  الطبقة ٨ -- رادار مستقل: تقييم جوهري (مفصولة لدالة calculateLayer8)
   // ════════════════════════════════════════
-  // استخدام 52-week high/low إذا متوفر — أدق من hi/lo اليومي
-  const w52h = stk.w52h || stk.hi;
-  const w52l = stk.w52l || stk.lo;
-  const pricePos  = w52h>w52l ? Math.round((stk.p-w52l)/(w52h-w52l)*100) : 50;
-  // valScore: tanh — PE منخفض جيد، مع تعديل P/B من bookValue الفعلي
-  const pbRatio   = stk.bookValue&&stk.bookValue>0 ? stk.p/stk.bookValue : 2.0;
-  const valScore  = Math.round(Math.min(90, Math.max(10,
-    50 - 28*Math.tanh((stk.pe-18)/15) - 10*Math.tanh((pbRatio-2)/2)
-  )));
-  // oilCorr يُعدّل وزن L8 في قطاعات الطاقة
-  const oilSensW  = (stk.oilCorr||0) > 0.5 ? 0.12 : 0.10;
-  // L8 -- طبقة الأساسيات الخالصة (متعامدة عن التقنية)
-  // لا تُعيد تدوير L1..L6؛ تقرأ فقط: التقييم + الموقع + الحساسية للنفط
-  // valScore: PE + P/B | rating: تقييم السهم | pricePos: الموقع ضمن نطاق 52 أسبوع
-  const _L8raw = Math.round(
-    (valScore/100)*45 +
-    (stk.rating/100)*30 +
-    ((100-pricePos)/100)*15 +
-    (oilSensW*MACRO.oilPrice/100)*10
-  );
-
-
-
-  // + radarLQ (السيولة الذكية /10) → وزن 20%
-  const L8 = Math.min(100, Math.max(0, _L8raw + Math.round((radarLQ/10*100 - 50) * 0.2)));
+  const { L8, pricePos, valScore } = calculateLayer8(stk, radarLQ);
 
   // ════════════════════════════════════════
   //  الطبقة ٩ — السيولة الذكية المُعزَّزة
