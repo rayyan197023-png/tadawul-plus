@@ -31,6 +31,16 @@ export const SIGNAL_LEVELS = {
   REDUCE:         0,     // تخفيف (أقل من 45)
 };
 
+// ── Grade Thresholds (S/A/B/C/D/F) -- نظام calc9Layers/stockHealth الفعلي ──
+export const GRADE_THRESHOLDS = {
+  S: 85,   // ممتاز
+  A: 75,   // جيد جداً
+  B: 65,   // جيد
+  C: 55,   // مقبول
+  D: 45,   // ضعيف (أقل من هذا = F)
+};
+
+
 // ── Kelly Position Sizing ─────────────────────────────────────────
 export const KELLY = {
   HALF_FACTOR:    0.5,   // Half-Kelly (المعيار المؤسسي)
