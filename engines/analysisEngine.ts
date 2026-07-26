@@ -2506,6 +2506,35 @@ function calculateLayer9(
   return { L9, smartMoney };
 }
 
+/**
+ * ✨ Layer 10 -- كفاءة السيولة (Liquidity Efficiency / Amihud Illiquidity)
+ * مستقلة تماماً -- تعتمد فقط على bars، لا تحتاج أي طبقة سابقة
+ *
+ * @param bars - كل الشموع
+ */
+function calculateLayer10(bars: any[]): number {
+  const _l10win = bars.slice(-20);
+  let L10 = 50;
+  if (_l10win.length >= 10) {
+    const _amihud: number[] = [];
+    for (const _b of _l10win) {
+      const _volM = (_b.vol || 0) / 1e6;
+      const _ret = Math.abs(_b.pct || 0) / 100;
+      if (_volM > 0) _amihud.push(_ret / _volM);
+    }
+    if (_amihud.length >= 5) {
+      _amihud.sort((a, b) => a - b);
+      const _mid = Math.floor(_amihud.length / 2);
+      const _medianIlliq = _amihud.length % 2
+        ? _amihud[_mid]
+        : (_amihud[_mid - 1] + _amihud[_mid]) / 2;
+      const _logIlliq = Math.log10(Math.max(_medianIlliq, 1e-6));
+      L10 = Math.round(_clamp(50 - (_logIlliq + 2.7) * 22, 0, 100));
+    }
+  }
+  return L10;
+}
+
 function calc9Layers(stk: any, bars: any[]): any {
   // ✨ Validation - حماية من Edge Cases
   if (!stk || typeof stk !== 'object') {
