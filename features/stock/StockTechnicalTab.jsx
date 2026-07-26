@@ -94,10 +94,16 @@ export default function StockTechnicalTab({ stk }) {
     fetchStockHistory(stk.sym, '6M')
       .then(data => {
         if (!cancelled) {
+          // ── DEBUG مؤقت ──
+          if (!window._barsDebugShown) {
+            window._barsDebugShown = true;
+            alert('DEBUG bars[0]:\n' + JSON.stringify(data[0], null, 2) + '\n\nطول البيانات: ' + data.length);
+          }
           setBars(data);
           setBarsLoading(false);
         }
       })
+
       .catch(err => {
         console.error('فشل تحميل البيانات الحقيقية، استخدام بيانات احتياطية:', err);
         if (!cancelled) {
