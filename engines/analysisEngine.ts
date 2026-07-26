@@ -1867,8 +1867,25 @@ function analyzeStockRadar(stk: any, pastBars?: any[]): any {
   const ms  =calcMarketStructure(bars);
   const ob  =calcOrderBlocks(bars,atr);
   const ls  =calcLiqSweep(bars,atr);
-  const vi  =calcIVWAP(bars);
-  const mc  =calcMacroScore(stk);
+const vi   = calcIVWAP(bars);
+
+  // ✨ vwapDev: انحراف السعر الحالي عن VWAP الفصلي بوحدات الانحراف المعياري
+  // (كانت موجودة بالنسخة المحلية القديمة من calcIVWAP، أُعيد حسابها هنا
+  // بعد توحيد المصدر على technicalEngine.ts التي لا ترجع هذا الحقل)
+  const vwapDev = (function () {
+    let sumVV = 0, sumV = 0;
+    for (const b of bars) {
+      const tp = (b.hi + b.lo + b.c) / 3;
+      sumVV += b.vol * (tp - vi.vwQ) ** 2;
+      sumV += b.vol;
+    }
+    const std = sumV > 0 ? Math.sqrt(sumVV / sumV) : 0;
+    const cur = bars[bars.length - 1].c;
+    return std > 0 ? +((cur - vi.vwQ) / std).toFixed(2) : 0;
+  })();
+
+const mc   = calcMacroScore(stk);
+
 
   /* ═════════════════════════════════
      عامل 1: هيكل السوق /15
