@@ -2584,8 +2584,25 @@ const rBars = bars.map(function(b){
 const ob   = calcOrderBlocks(rBars, atr);
 const ls   = calcLiqSweep(rBars, atr);
   const vi   = calcIVWAP(rBars,stk);
+
+  // ✨ vwapDev: انحراف السعر الحالي عن VWAP الفصلي بوحدات الانحراف المعياري
+  // (كانت موجودة بالنسخة المحلية القديمة من calcIVWAP، أُعيد حسابها هنا
+  // بعد توحيد المصدر على technicalEngine.ts التي لا ترجع هذا الحقل)
+  const vwapDev = (function () {
+    let sumVV = 0, sumV = 0;
+    for (const b of rBars) {
+      const tp = (b.hi + b.lo + b.c) / 3;
+      sumVV += b.vol * (tp - vi.vwQ) ** 2;
+      sumV += b.vol;
+    }
+    const std = sumV > 0 ? Math.sqrt(sumVV / sumV) : 0;
+    const cur = rBars[rBars.length - 1].c;
+    return std > 0 ? +((cur - vi.vwQ) / std).toFixed(2) : 0;
+  })();
+
   const mc   = calcMacroFull(stk);
   const tc_tasi = calcTasiContext(stk, bars, STOCKS);
+
 
   // ── رادار الفرص (SMC) — 9 عوامل    مدمجة ──────────────────────
   // analyzeStockRadar يُشغّل محرك SMC الكامل:
