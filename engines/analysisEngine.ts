@@ -78,33 +78,6 @@ function calcMacroScore(stk: any): any {
   };
 }
 
-
-
-
-
-// ── Color tokens used in analysis output (signals, labels)
-const G      = "#1ee68a";
-const R      = "#ff5f6a";
-const BLUE   = "#4d9fff";
-const GOLD   = "#f0c050";
-const CYAN   = "#22d3ee";
-const LIME   = "#a3e635";
-const ORANGE = "#fb923c";
-const PU     = "#a78bfa";
-const T2     = "#8a90a8";
-
-const C = {
-  mint:     '#1ee68a',
-  coral:    '#ff5f6a',
-  amber:    '#fbbf24',
-  teal:     '#22d3ee',
-  electric: '#4d9fff',
-  gold:     '#f0c050',
-  smoke:    '#6b7280',
-  plasma:   '#a78bfa',
-};
-
-
 /* ══ بيانات تاريخية حقيقية ══ */
 const HISTORICAL = {
   "2222": [
@@ -114,7 +87,7 @@ const HISTORICAL = {
     {d:"2025-10-30",o:26.20,hi:26.50,lo:26.10,c:26.42,vol:9100000},
     {d:"2025-11-02",o:26.42,hi:26.76,lo:26.30,c:26.60,vol:9600000},
     {d:"2025-11-03",o:26.60,hi:26.82,lo:26.40,c:26.50,vol:9300000},
-    {d:"2025-11-04",o:26.50,hi:26.78,lo:26.30,c:26.70,vol:9800000},
+     {d:"2025-11-04",o:26.50,hi:26.78,lo:26.30,c:26.70,vol:9800000},
     {d:"2025-11-05",o:26.70,hi:26.90,lo:26.50,c:26.76,vol:10200000},
     {d:"2025-11-06",o:26.76,hi:26.82,lo:26.60,c:26.68,vol:9500000},
     {d:"2025-11-09",o:26.68,hi:26.80,lo:26.44,c:26.62,vol:9100000},
