@@ -303,7 +303,7 @@ const ohlcvCache = useOHLCVCache(syms, '3M');
     // 🔍 مؤقّت: عدّ الأسهم الحقيقية vs الملفّقة (يُحذف بعد القياس)
     var _realCount = 0, _fakeCount = 0;
 const result = liveStocks.map(stk=>{ 
-      // ✨ تحقق من صحة bars من الكاش - إن كانت ناقصة/فاسدة، استخدم genBars
+      // ✨ نستخدم فقط البيانات الحقيقية من الكاش -- لا يوجد fallback وهمي
       var cached = ohlcvCache[stk.sym];
       var bars;
       var isRealData = false;
@@ -314,17 +314,13 @@ const result = liveStocks.map(stk=>{
         isRealData = true;
         _realCount++;
       } else {
-        bars = genBars(stk);
+        bars = [];
         _fakeCount++;
       }
 
-      // مرّر liveMACRO إلى stockHealth
-      var h = stockHealth(stk, bars, liveMACRO);
-      // ✨ حماية: إن كان score غير صالح، استخدم fallback
-      if (!h || !isFinite(h.score)) {
-        h = stockHealth(stk, genBars(stk), liveMACRO);
-      }
-return {stk, bars, health:h, isRealData}; 
+      // مرّر liveMACRO إلى stockHealth (فقط إذا توفرت بيانات حقيقية كافية)
+      var h = bars.length >= 20 ? stockHealth(stk, bars, liveMACRO) : null;
+return {stk, bars, health:h, isRealData};
     });
     if (typeof window !== 'undefined') {
       window.__tadawulCounts = { real: _realCount, fake: _fakeCount, total: result.length };
