@@ -23,6 +23,7 @@ import { GRADE_THRESHOLDS } from '../constants/analysisConstants';
 import { RISK } from '../constants/analysisConstants';
 import { calcRSI, calcATR, calcVWAP, calcCMF, calcOBV, calcMACD, calcMarketStructure, calcIVWAP } from './technicalEngine';
 import { calcOrderBlocks, calcLiqSweep } from './radarEngine';
+import { OIL_SENS, RATE_SENS, TASI_CORR_GROUPS, KELLY_CONFIG, RISK_GATE } from './marketConstants';
 
 /**
  * ✨ Macro Score - النسخة الموسّعة للرادار
