@@ -1989,8 +1989,8 @@ const mc   = calcMacroScore(stk);
   if(!cats.length)     cats.push({l:"مراقبة",       c:T2});
 
   /* ─── الهدف والإيقاف بـ ATR ─── */
-  const target=+(p+2.5*atr).toFixed(2);
-  const stop  =+(p-1.5*atr).toFixed(2);
+const target=+(p+RISK.ATR_TARGET_MULT*atr).toFixed(2);
+const stop  =+(p-RISK.ATR_STOP_MULT*atr).toFixed(2);
 
   return{
     stk,total,scoreCol,cats,
