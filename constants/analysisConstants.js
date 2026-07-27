@@ -53,9 +53,9 @@ export const KELLY = {
 // ── Risk Parameters ───────────────────────────────────────────────
 export const RISK = {
   RISK_FREE_RATE: 0.055, // معدل الخلو من المخاطر (5.5% SAIBOR)
-  ATR_TARGET_MULT: 2.5,  // مضاعف ATR للهدف (target) -- مصحَّح من ATR_STOP_MULT
+  ATR_TARGET_MULT: 2.5,  // مضاعف ATR للهدف (target)
   ATR_STOP_MULT:  1.5,   // مضاعف ATR لوقف الخسارة (stop) -- مصحَّح من 2.5
-  ATR_TRAIL_MULT: 1.8,   // مضاعف ATR للـ trailing stop (غير مستخدم فعلياً حالياً -- راجع قبل الاستخدام)
+  ATR_TRAIL_MULT: 1.8,   // مضاعف ATR للـ trailing stop (غير مستخدم فعلياً حالياً)
   STRESS_OIL_DRP: 0.30,  // سيناريو انهيار النفط 30%
   STRESS_TASI_DRP:0.15,  // سيناريو انهيار تاسي 15%
 };
