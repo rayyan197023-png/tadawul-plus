@@ -3,19 +3,6 @@
  * @description ثوابت محرك التحليل — مستخرجة من الكود لتحسين القراءة والصيانة
  */
 
-// ── Layer Weights (افتراضية — تُعدَّل بـ buildDynamicWeights) ──────
-export const LAYER_WEIGHTS = {
-  L1_STRUCTURE:   0.21,  // هيكل السوق
-  L2_FLOW:        0.14,  // تدفق السيولة
-  L3_ENTROPY:     0.08,  // كثافة المعلومات
-  L4_RELATIVE:    0.12,  // القوة النسبية
-  L5_MOMENTUM:    0.09,  // الزخم
-  L6_VALUE:       0.10,  // التقييم
-  L7_MACRO:       0.08,  // الاقتصاد الكلي
-  L8_RISK:        0.07,  // المخاطر
-  L9_LIQUIDITY:   0.11,  // السيولة (بوابة)
-};
-
 // ── Gate Thresholds ───────────────────────────────────────────────
 export const GATE_THRESHOLDS = {
   LIQUIDITY_MIN:  55,    // L9 ≥ 55 للبوابة الأولى
@@ -40,15 +27,6 @@ export const GRADE_THRESHOLDS = {
   D: 45,   // ضعيف (أقل من هذا = F)
 };
 
-
-// ── Kelly Position Sizing ─────────────────────────────────────────
-export const KELLY = {
-  HALF_FACTOR:    0.5,   // Half-Kelly (المعيار المؤسسي)
-  MAX_POSITION:   0.15,  // الحد الأقصى 15% من المحفظة
-  MIN_POSITION:   0.02,  // الحد الأدنى 2%
-  RR_DEFAULT:     1.5,   // نسبة المكسب/الخسارة الافتراضية
-  RR_STRONG:      1.8,   // R:R للإشارات القوية
-};
 
 // ── Risk Parameters ───────────────────────────────────────────────
 export const RISK = {
