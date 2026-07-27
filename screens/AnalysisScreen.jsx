@@ -19,12 +19,13 @@ import { useOHLCVCache } from '../hooks/useOHLCVCache';
 
 // ── المحركات الحسابية
 import {
-  stockHealth, scoreWord, calc9Layers,
-  MACRO, OIL_SENS, RATE_SENS,
+  genBars, stockHealth, scoreWord, calc9Layers,
+  MACRO, HISTORICAL, OIL_SENS, RATE_SENS,
   TASI_CORR_GROUPS, KELLY_CONFIG, RISK_GATE,
   applyFeedbackToWeights, loadFeedbackState,
   saveFeedbackState, getAdaptiveWeightAdjustment,
 } from '../engines/analysisEngine';
+
 import { calcSmartStopLoss, calcSmartTakeProfit } from '../engines/positionEngine';
 
 // ── مكونات UI المساعدة
