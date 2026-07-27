@@ -24,6 +24,7 @@ import { RISK } from '../constants/analysisConstants';
 import { calcRSI, calcATR, calcVWAP, calcCMF, calcOBV, calcMACD, calcMarketStructure, calcIVWAP } from './technicalEngine';
 import { calcOrderBlocks, calcLiqSweep } from './radarEngine';
 import { OIL_SENS, RATE_SENS, TASI_CORR_GROUPS, KELLY_CONFIG, RISK_GATE } from './marketConstants';
+import { G, R, BLUE, GOLD, CYAN, LIME, ORANGE, PU, T2, C } from './colorTokens';
 
 /**
  * ✨ Macro Score - النسخة الموسّعة للرادار
