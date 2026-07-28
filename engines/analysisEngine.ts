@@ -28,6 +28,17 @@ import { calcFactorModel, calcEarningsModel, calcDCF, calcEarningsQuality } from
 import { calcBehavioralPressure, calcInsiderTransactions, calcAlternativeData } from './behavioralEngines';
 import { calcRiskAttribution, calcIntermarket, calcMicrostructure } from './riskMicrostructure';
 import { detectMarketRegime, buildDynamicWeights, reduceCorrelation, applyMacroGate, calcConflictPenalty, _clamp, _softmax3 } from './regimeWeighting';
+import {
+  ensembleVote,
+  calcConfidenceThreshold,
+  loadWinnerStrategy,
+  applyWinnerWeights,
+  loadFeedbackState,
+  saveFeedbackState,
+  getAdaptiveWeightAdjustment,
+  recordFeedback,
+  applyFeedbackToWeights,
+} from './feedbackLearning';
 import { G, R, BLUE, GOLD, CYAN, LIME, ORANGE, PU, T2, C } from './colorTokens';
 
 /**
