@@ -993,35 +993,6 @@ var totalVol=profile.reduce(function(s: number, p:any){return s+p.vol;},0);
     posInVA:cur>=vaLow&&cur<=vaHigh?"داخل Value Area":cur>vaHigh?"فوق Value Area":"تحت Value Area"};
 }
 
-
-/* ══ Insider Transactions ══ */
-function calcInsiderTransactions(stk: any, bars: any[]): any {
-  var n=bars?bars.length:0;
-  var avgVol60=n>0?bars.reduce(function(s: number, b: any){return s+b.vol;},0)/n:stk.avgV||1800000;
-var recentVol=n>=5?bars.slice(-5).reduce(function(s: number, b: any){return s+b.vol;},0)/5:avgVol60;
-  var volRatio=recentVol/avgVol60;
-  var priceMove=n>=10?(bars[n-1].c-bars[n-10].c)/bars[n-10].c*100:stk.ch;
-  var valueDip=stk.pe>0&&stk.pe<15?1:0;
-  var quietAccum=volRatio<0.9&&priceMove<0;
-  var fundStrong=stk.roe>15&&stk.debt<0.35;
-    var nearLow=n>=60?bars[n-1].c<=Math.min(...bars.slice(-60).map((b: any)=>b.lo))*1.05:false;
-  var highValuation=stk.pe>25;
-  var highPrice=n>=60?bars[n-1].c>=Math.max(...bars.slice(-60).map((b: any)=>b.hi))*0.95:false;
-  var peaking=volRatio>1.4&&priceMove>5;
-  var buySignals=(valueDip?15:0)+(quietAccum?20:0)+(fundStrong?10:0)+(nearLow?25:0);
-  var sellSignals=(highValuation?15:0)+(highPrice?20:0)+(peaking?15:0);
-  if(stk.epsGrw>10)buySignals+=15; else if(stk.epsGrw<0)sellSignals+=15;
-  var netScore=Math.min(95,Math.max(5,50+buySignals-sellSignals));
-  var isBuyDom=netScore>=50;
-  var netBuy=(netScore-50)*stk.mktCap*1e6*0.0001;
-  var signal=netScore>=75?"تراكم داخلي قوي":netScore>=60?"شراء داخلي معتدل":netScore<=25?"تصريف داخلي":netScore<=40?"بيع داخلي معتدل":"محايد";
-  // ✨ transactions أُفرغت -- كانت تخترع أسماء مناصب وكميات وتواريخ لصفقات لم تحدث.
-  // score (المستخدَم في LC) يبقى من المنطق الكمي (الحجم/السعر) -- لا يُمَسّ.
-  var transactions: any[] = [];
-  return{transactions,netBuy,buyValue:isBuyDom?Math.abs(netBuy):0,sellValue:isBuyDom?0:Math.abs(netBuy),
-    signal,sentColor:isBuyDom?"#10c97e":"#f04f5a",score:netScore};
-}
-
 /* ══ Alternative Data ══ */
 function calcAlternativeData(stk: any, bars: any[], macroData: { oilPrice: number; saudiRepoRate: number; cpi: number } = { oilPrice: 80, saudiRepoRate: 4, cpi: 2 }): any {
   var sectorStocks=STOCKS.filter(function(x: any){return x.sec===stk.sec;});
