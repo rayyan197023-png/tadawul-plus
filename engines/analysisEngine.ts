@@ -3031,8 +3031,8 @@ var dcf = calcDCF(stk, MACRO.gdpGrowth);
 
 
   // ── D) المضاعفات الخارجية
-  var risk  = calcRiskAttribution(stk, bars);
-  var inter = calcIntermarket(stk);
+var risk  = calcRiskAttribution(stk, bars, MACRO.saudiRepoRate);
+var inter = calcIntermarket(stk, { oilPrice: MACRO.oilPrice, oilTarget: MACRO.oilTarget, saudiRepoRate: MACRO.saudiRepoRate, cpi: MACRO.cpi, vix: MACRO.vix, gdpGrowth: MACRO.gdpGrowth, m2Growth: MACRO.m2Growth });
   var micro = calcMicrostructure(stk, bars);
   var riskMult = risk.sortino>2.0 ? 1.07 : risk.sortino>1.0 ? 1.03 : risk.sharpe>0.5 ? 1.00 : risk.sharpe>0 ? 0.96 : 0.89;
   var finalMult = _clamp(riskMult * inter.multiplier * (micro ? micro.multiplier : 1.0), 0.70, 1.30);
