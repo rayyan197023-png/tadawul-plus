@@ -2347,7 +2347,7 @@ const ls   = calcLiqSweep(rBars, atr);
   //  ① Regime Detection الموسّع (4 حالات)
   // ════════════════════════════════════════
   const mktBreadth  = STOCKS.filter(x=>x.ch>0).length/STOCKS.length;
-  const regimeData  = detectMarketRegime(bars, adxV, mktWtd, mktBreadth, atr, stk);
+const regimeData  = detectMarketRegime(bars, adxV, mktWtd, mktBreadth, atr, stk, MACRO.vix);
   const regime      = regimeData.regime;
 
   // ════════════════════════════════════════
