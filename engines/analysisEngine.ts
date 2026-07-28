@@ -1026,8 +1026,8 @@ function calcRiskAttribution(stk: any, bars: any[], saudiRepoRate: number = 4.25
 }
 
 /* ══ Intermarket ══ */
-function calcIntermarket(stk: any): any {
-  var m=MACRO;
+function calcIntermarket(stk: any, macroData: { oilPrice: number; oilTarget: number; saudiRepoRate: number; cpi: number; vix: number; gdpGrowth: number; m2Growth: number }): any {
+  var m=macroData;
   var oS=(OIL_SENS as any)[stk.sec]||0.8,rS=(RATE_SENS as any)[stk.sec]||0.3;
   var oilDelta=(m.oilPrice-m.oilTarget)/m.oilTarget;
   // oilCorr الفعلي من STOCKS أدق من OIL_SENS القطاعي العام
