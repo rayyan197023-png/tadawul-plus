@@ -1026,7 +1026,7 @@ var ret3M_comp=bars.slice(-60).reduce(function(prod: number, b: any){return prod
 }
 
 /* ══ Earnings Model (2-Stage DDM) ══ */
-function calcEarningsModel(stk: any): any {
+function calcEarningsModel(stk: any, gdpGrowth: number = 4.0): any {
   // ✨ Validation
   if (!stk) return {eps: 0, ddmValue: 0, peValue: 0, targetPrice: 0, upside: 0, signal: "بيانات غير كافية"};
   
