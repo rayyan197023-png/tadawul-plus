@@ -3085,7 +3085,7 @@ var dcf = calcDCF(stk, MACRO.gdpGrowth);
   // ── C) المحرك السلوكي المُعزَّز
   var opt = calcBehavioralPressure(stk, bars);
   var ins = calcInsiderTransactions(stk, bars);
-  var alt = calcAlternativeData(stk, bars);
+  var alt = calcAlternativeData(stk, bars, { oilPrice: MACRO.oilPrice, saudiRepoRate: MACRO.saudiRepoRate, cpi: MACRO.cpi });
   var optScore = _clamp(Math.round(80 - (opt.pressureRatio-0.7)*60 + (opt.unusualActivity && opt.pressureRatio<0.9 ? 10 : 0)), 0, 100);
 
   // Earnings Surprise
