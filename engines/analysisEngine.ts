@@ -1079,9 +1079,9 @@ function calcAlternativeData(stk: any, bars: any[], macroData: { oilPrice: numbe
 var sectorAvgCh=sectorStocks.reduce(function(s: number, x: any){return s+x.ch;},0)/sectorStocks.length;
   var sectorMom=Math.round(50+35*Math.tanh(sectorAvgCh*0.8));
   var commodityScore=50;
-  if(stk.sec==="الطاقة"||stk.sec==="المواد الأساسية"){commodityScore=Math.round(50+30*Math.tanh((MACRO.oilPrice-80)/20));}
-  else if(stk.sec==="البنوك"){commodityScore=MACRO.saudiRepoRate>4?72:55;}
-  else if(stk.sec==="إنتاج الأغذية"){commodityScore=MACRO.cpi<2?70:MACRO.cpi<4?55:38;}
+  if(stk.sec==="الطاقة"||stk.sec==="المواد الأساسية"){commodityScore=Math.round(50+30*Math.tanh((macroData.oilPrice-80)/20));}
+  else if(stk.sec==="البنوك"){commodityScore=macroData.saudiRepoRate>4?72:55;}
+  else if(stk.sec==="إنتاج الأغذية"){commodityScore=macroData.cpi<2?70:macroData.cpi<4?55:38;}
   var relPerf=stk.ch-sectorAvgCh;
   var competitorScore=Math.round(50+35*Math.tanh(relPerf*0.6));
   var n=bars?bars.length:0;
