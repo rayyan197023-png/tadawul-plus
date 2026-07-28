@@ -1104,7 +1104,7 @@ function detectMarketRegime(bars: any[], adxV: number, mktWtd: any, mktBreadth: 
   const avgVol = bars.reduce((s,b)=>s+b.vol,0)/n;
   const vol5   = bars.length>=5 ? bars.slice(-5).reduce((s,b)=>s+b.vol,0)/5 : avgVol;
   const volRatio = avgVol>0 ? vol5/avgVol : 1;
-  const isNewsdriven = MACRO.vix > 28 && volRatio > 1.6;
+  const isNewsdriven = vix > 28 && volRatio > 1.6;
 
   // سوق صاعد/هابط
   const isTrending = adxV > 28 && Math.abs(mktWtd) > 0.25;
