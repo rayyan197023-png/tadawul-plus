@@ -1066,7 +1066,8 @@ function calcEarningsModel(stk: any): any {
 }
 
 /* ══ DCF ══ */
-function calcDCF(stk: any): any {
+function calcDCF(stk: any, gdpGrowth: number = 4.0): any {
+
   // ✨ Validation
   if (!stk) return {intrinsic: 0, upside: 0, wacc: 8, dcfScore: 50, signal: "بيانات غير كافية", rating: "احتفاظ"};
   
