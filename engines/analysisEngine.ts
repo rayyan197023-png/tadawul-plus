@@ -992,38 +992,6 @@ var totalVol=profile.reduce(function(s: number, p:any){return s+p.vol;},0);
     posInVA:cur>=vaLow&&cur<=vaHigh?"داخل Value Area":cur>vaHigh?"فوق Value Area":"تحت Value Area"};
 }
 
-/* ══ Factor Model ══ */
-function calcFactorModel(stk: any, bars: any[]): any {
-  // ✨ Validation
-  if (!stk) return {composite: 50, factors: {}, alpha: 0, beta: 1, grade: "D", signal: "بيانات غير كافية"};
-  bars = Array.isArray(bars) ? bars : [];
-
-
-  var sectorStocksForPE=STOCKS.filter(function(x: any){return x.sec===stk.sec&&x.pe>0&&x.pe<60;});
-var benchPE=sectorStocksForPE.length>=2?  sectorStocksForPE.reduce(function(s: number, x: any){return s+x.pe;},0)/sectorStocksForPE.length:((RADAR_SECTOR_PE as any)[stk.sec]||18);
-  var valueScore=stk.pe>0?Math.round(Math.min(95,Math.max(5,50-45*Math.tanh((stk.pe/benchPE-1)*1.5)))):50;
-  var ret1M_comp=bars.slice(-20).reduce(function(prod: number, b: any){return prod*(1+b.pct/100);},1)-1;
-var ret3M_comp=bars.slice(-60).reduce(function(prod: number, b: any){return prod*(1+b.pct/100);},1)-1;
-  var momScore=Math.round(Math.min(100,Math.max(0,50+ret1M_comp*100*1.5+ret3M_comp*100*0.4)));
-  // P/B ratio من bookValue الفعلي يُحسّن qualScore
-  var pbPenalty = 0;
-  if(stk.bookValue && stk.bookValue > 0){
-    var pb = stk.p / stk.bookValue; // Price-to-Book
-    // P/B منخفض = رخيص، P/B مرتفع = غالٍ
-    pbPenalty = Math.round(Math.tanh((pb-2.5)/2)*(-8)); // P/B=1→+6، P/B=4→-6
-  }
-  var qualScore=Math.round(Math.min(100,Math.max(0,(stk.roe||10)*1.8+(1-(stk.debt||0.3))*28+Math.min(15,(stk.epsGrw||3)*1.5)+pbPenalty)));
-  var sizeScore=Math.round(Math.min(85,Math.max(35,80-40*Math.tanh((stk.mktCap||50-100)/150))));
-  var divScore=Math.round(Math.min(90,Math.max(0,(stk.divY||0)*14)));
-  var growScore=Math.round(Math.min(100,Math.max(0,50+(stk.revGrw||3)*2.5)));
-  var composite=Math.round(valueScore*0.20+momScore*0.25+qualScore*0.25+sizeScore*0.10+divScore*0.10+growScore*0.10);
-  var mktAvgCh=STOCKS.reduce(function(s: number, x: any){return s+x.ch;},0)/STOCKS.length;
-  var alpha=+(stk.ch-mktAvgCh).toFixed(2);
-  return{composite,factors:{value:Math.round(valueScore),momentum:Math.round(momScore),quality:Math.round(qualScore),size:Math.round(sizeScore),dividend:Math.round(divScore),growth:Math.round(growScore)},
-    alpha,beta:+(stk.sector_beta||1).toFixed(2),
-    grade:composite>=80?"S":composite>=70?"A":composite>=60?"B":composite>=50?"C":"D",
-    signal:composite>=70&&alpha>0?"إشارة قوية":composite>=60?"إشارة معتدلة":"ضعيف"};
-}
 
 /* ══ Earnings Model (2-Stage DDM) ══ */
 function calcEarningsModel(stk: any, gdpGrowth: number = 4.0): any {
