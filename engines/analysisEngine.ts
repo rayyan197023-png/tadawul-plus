@@ -1033,7 +1033,7 @@ function calcEarningsModel(stk: any, gdpGrowth: number = 4.0): any {
   var eps=stk.eps||stk.p/(stk.pe||15);
 
   var g1=Math.min((stk.epsGrw||3)/100,0.15);
-  var g2=Math.min(g1*0.4,MACRO.gdpGrowth/100||0.03);
+var g2=Math.min(g1*0.4,gdpGrowth/100||0.03);
   var ke=0.08+(stk.sector_beta||1)*0.055;
   var dps=stk.divY>0?(stk.divY/100)*stk.p:0;
   var payoutNow=eps>0&&dps>0?Math.min(0.90,dps/eps):0.30;
