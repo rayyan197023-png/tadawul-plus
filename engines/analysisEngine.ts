@@ -3236,8 +3236,8 @@ function stockHealth(stk: any, bars: any[], macroOverride?: any): any {
 
   // ── B) المحرك الأساسي
   var fm  = calcFactorModel(stk, bars);
-  var em  = calcEarningsModel(stk);
-  var dcf = calcDCF(stk);
+var em  = calcEarningsModel(stk, MACRO.gdpGrowth);
+var dcf = calcDCF(stk, MACRO.gdpGrowth);
   var eq  = calcEarningsQuality(stk);
   var dcfScore = Math.round(_clamp(100/(1+Math.exp(-0.06*(dcf.upside-5))), 10, 95));
   var emScore  = Math.round(_clamp(100/(1+Math.exp(-0.05*(em.upside-8))),  10, 95));
