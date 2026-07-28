@@ -993,32 +993,6 @@ var totalVol=profile.reduce(function(s: number, p:any){return s+p.vol;},0);
     posInVA:cur>=vaLow&&cur<=vaHigh?"داخل Value Area":cur>vaHigh?"فوق Value Area":"تحت Value Area"};
 }
 
-/* ══ Alternative Data ══ */
-function calcAlternativeData(stk: any, bars: any[], macroData: { oilPrice: number; saudiRepoRate: number; cpi: number } = { oilPrice: 80, saudiRepoRate: 4, cpi: 2 }): any {
-  var sectorStocks=STOCKS.filter(function(x: any){return x.sec===stk.sec;});
-var sectorAvgCh=sectorStocks.reduce(function(s: number, x: any){return s+x.ch;},0)/sectorStocks.length;
-  var sectorMom=Math.round(50+35*Math.tanh(sectorAvgCh*0.8));
-  var commodityScore=50;
-  if(stk.sec==="الطاقة"||stk.sec==="المواد الأساسية"){commodityScore=Math.round(50+30*Math.tanh((macroData.oilPrice-80)/20));}
-  else if(stk.sec==="البنوك"){commodityScore=macroData.saudiRepoRate>4?72:55;}
-  else if(stk.sec==="إنتاج الأغذية"){commodityScore=macroData.cpi<2?70:macroData.cpi<4?55:38;}
-  var relPerf=stk.ch-sectorAvgCh;
-  var competitorScore=Math.round(50+35*Math.tanh(relPerf*0.6));
-  var n=bars?bars.length:0;
-  var volStab=50;
-  if(n>=20){
-    var vols=bars.slice(-20).map(function(b: any){return b.vol;});
-var avgV=vols.reduce(function(s: number, v: number){return s+v;},0)/20;
-var varV=vols.reduce(function(s: number, v: number){return s+Math.pow(v-avgV,2);},0)/20;
-    var cvV=avgV>0?Math.sqrt(varV)/avgV:1;
-    volStab=cvV<0.3?75:cvV<0.5?60:cvV<0.8?45:30;
-  }
-  var composite=Math.round(sectorMom*0.30+commodityScore*0.30+competitorScore*0.25+volStab*0.15);
-  return{composite,sentimentScore:sectorMom,searchTrend:competitorScore,
-    socialScore:Math.round((sectorMom+competitorScore)/2),supplyChain:volStab,
-    signal:composite>=70?"إشارة إيجابية":composite>=50?"محايد":"إشارة سلبية",
-    grade:composite>=80?"A":composite>=60?"B":composite>=40?"C":"D"};
-}
 
 /* ══ Risk Attribution ══ */
 function calcRiskAttribution(stk: any, bars: any[]): any {
