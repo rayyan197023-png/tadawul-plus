@@ -996,7 +996,7 @@ var totalVol=profile.reduce(function(s: number, p:any){return s+p.vol;},0);
 
 
 /* ══ Risk Attribution ══ */
-function calcRiskAttribution(stk: any, bars: any[]): any {
+function calcRiskAttribution(stk: any, bars: any[], saudiRepoRate: number = 4.25): any {
   var volBars=bars.slice(-Math.min(bars.length,100));
   var n=volBars.length||1;
   var avgRet=volBars.reduce(function(s,b){return s+b.pct/100;},0)/n;
