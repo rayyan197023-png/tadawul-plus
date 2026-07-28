@@ -26,6 +26,7 @@ import { calcOrderBlocks, calcLiqSweep } from './radarEngine';
 import { OIL_SENS, RATE_SENS, TASI_CORR_GROUPS, KELLY_CONFIG, RISK_GATE, RADAR_SECTOR_PE } from './marketConstants';
 import { calcFactorModel, calcEarningsModel, calcDCF, calcEarningsQuality } from './fundamentalModels';
 import { calcBehavioralPressure, calcInsiderTransactions, calcAlternativeData } from './behavioralEngines';
+import { calcRiskAttribution, calcIntermarket, calcMicrostructure } from './riskMicrostructure';
 import { G, R, BLUE, GOLD, CYAN, LIME, ORANGE, PU, T2, C } from './colorTokens';
 
 /**
