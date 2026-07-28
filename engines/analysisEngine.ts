@@ -994,57 +994,6 @@ var totalVol=profile.reduce(function(s: number, p:any){return s+p.vol;},0);
 }
 
 
-/* ══ Behavioral Pressure -- مؤشر ضغط السوق السلوكي ══
-   ملاحظة صدق: السوق السعودي (تاسي) لا يملك سوق خيارات فردية،
-   فهذا ليس "تدفّق خيارات" بل مقياس ضغط شراء/بيع سلوكي مُستنتَج
-   من الزخم والحجم والأساسيات. الحقلان pressureRatio/unusualActivity
-   يُستخدمان في حساب LC (المحرك السلوكي) داخل stockHealth. */
-function calcBehavioralPressure(stk: any, bars: any[]): any {
-  var n=bars.length;
-  if(!n)return{pressureRatio:1.0,sentiment:"محايد",signal:"محايد",unusualActivity:false,score:50};
-    
-  // مؤشرات من السلوك الفعلي للسهم
-  var momentum5  = bars.slice(-5).reduce(function(s: number, b: any){return s+b.pct;},0)/5;
-var momentum20 = bars.slice(-20).reduce(function(s: number, b: any){return s+b.pct;},0)/20;
-var avgVol20 = bars.slice(-20).reduce(function(s: number, b: any){return s+b.vol;},0)/20||1;
-var recentVol= bars.slice(-5).reduce(function(s: number, b: any){return s+b.vol;},0)/5;
-var volRatio = recentVol/avgVol20;
-var vol30pct = bars.slice(-30).reduce(function(s: number, b: any){return s+Math.abs(b.pct);},0)/30;
-  var iv = +(vol30pct*14+8).toFixed(1);
-
-  // ضغط السوق السلوكي -- مُستنتَج من الزخم والحجم والأساسيات
-  // pressureRatio > 1 = ضغط بيعي | < 1 = ضغط شرائي (مقياس داخلي، ليس خيارات)
-  var pressureBase = 1.0;
-
-  // زخم إيجابي قوي → ضغط شرائي → يخفض النسبة
-  if(momentum5 > 3)       pressureBase -= 0.15;
-  else if(momentum5 > 1)  pressureBase -= 0.08;
-  else if(momentum5 < -3) pressureBase += 0.20;
-  else if(momentum5 < -1) pressureBase += 0.10;
-
-  // سيولة عالية مع صعود → تجميع → يخفض النسبة أكثر
-  if(volRatio > 2.5 && stk.ch > 0) pressureBase -= 0.15;
-  else if(volRatio > 1.5 && stk.ch > 0) pressureBase -= 0.08;
-  // سيولة عالية مع هبوط → ضغط بيعي
-  else if(volRatio > 2.0 && stk.ch < -3) pressureBase += 0.20;
-
-  // أساسيات قوية → ثقة المستثمرين → يخفض النسبة
-  if(stk.roe > 20) pressureBase -= 0.08;
-  else if(stk.roe < 5) pressureBase += 0.12;
-
-  // قطاع المواد الأساسية (تعدين/بتروكيماويات) يرى ضغطاً بيعياً أعلى عند الهبوط
-  if(stk.sec === "المواد الأساسية" && stk.ch < 0) pressureBase += 0.10;
-
-  var pressureRatio = +Math.min(2.0,Math.max(0.3,pressureBase)).toFixed(2);
-  var unusualActivity = volRatio > 1.8 && Math.abs(stk.ch) > 2.0;
-  var sentiment = pressureRatio<0.6?"صعودي قوي":pressureRatio<0.8?"صعودي":pressureRatio<1.1?"محايد":pressureRatio<1.4?"هبوطي":"هبوطي قوي";
-  var pressureScore = Math.round(Math.min(100,Math.max(0,80-(pressureRatio-0.7)*60+(unusualActivity&&stk.ch>0?10:0))));
-
-  return{pressureRatio,realizedVol:iv,
-    unusualActivity,sentiment,score:pressureScore,
-    signal:unusualActivity&&pressureRatio<0.8?"نشاط استثنائي صعودي":unusualActivity&&pressureRatio>1.3?"نشاط استثنائي هبوطي":sentiment};
-}
-
 /* ══ Insider Transactions ══ */
 function calcInsiderTransactions(stk: any, bars: any[]): any {
   var n=bars?bars.length:0;
