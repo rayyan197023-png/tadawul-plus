@@ -993,46 +993,6 @@ var totalVol=profile.reduce(function(s: number, p:any){return s+p.vol;},0);
 }
 
 
-/* ══ Earnings Model (2-Stage DDM) ══ */
-function calcEarningsModel(stk: any, gdpGrowth: number = 4.0): any {
-  // ✨ Validation
-  if (!stk) return {eps: 0, ddmValue: 0, peValue: 0, targetPrice: 0, upside: 0, signal: "بيانات غير كافية"};
-  
-  var eps=stk.eps||stk.p/(stk.pe||15);
-
-  var g1=Math.min((stk.epsGrw||3)/100,0.15);
-var g2=Math.min(g1*0.4,gdpGrowth/100||0.03);
-  var ke=0.08+(stk.sector_beta||1)*0.055;
-  var dps=stk.divY>0?(stk.divY/100)*stk.p:0;
-  var payoutNow=eps>0&&dps>0?Math.min(0.90,dps/eps):0.30;
-  var payoutStable=Math.min(0.85,payoutNow+(1-payoutNow)*0.5);
-  var ddm2Stage=0;
-  if(g1<ke&&eps>0){
-    for(var yr=1;yr<=5;yr++){ddm2Stage+=eps*Math.pow(1+g1,yr)*payoutNow/Math.pow(1+ke,yr);}
-    var eps5=eps*Math.pow(1+g1,5);
-    var div6=eps5*(1+g2)*payoutStable;
-    var tv=g2<ke?div6/(ke-g2):eps5*15;
-    ddm2Stage+=tv/Math.pow(1+ke,5);
-  } else {ddm2Stage=stk.p;}
-  var epsFwd=eps*(1+g1);
-  var peFwd=stk.pe>0?stk.pe/(1+g1):15;
-  var peVal=+(epsFwd*peFwd).toFixed(2);
-  var peg=stk.pe>0&&stk.epsGrw>0?+(stk.pe/stk.epsGrw).toFixed(2):null;
-  // دمج Analyst Target Price إذا متوفر (يُحسّن دقة التقييم)
-  var targetAvg;
-  if(stk.target && stk.target>0){
-    targetAvg=+((peVal*0.40 + ddm2Stage*0.35 + stk.target*0.25)).toFixed(2);
-  } else {
-    targetAvg=+((peVal+ddm2Stage)/2).toFixed(2);
-  }
-  var upside=+((targetAvg/stk.p-1)*100).toFixed(1);
-  return{eps:eps.toFixed(2),ddmValue:+ddm2Stage.toFixed(2),peValue:peVal,targetPrice:targetAvg,upside,
-    payout:+(payoutNow*100).toFixed(1),peg,
-    pegSignal:peg?(peg<1?"رخيص جداً":peg<1.5?"رخيص":peg<2?"عادل":"غالٍ"):"غير محدد",
-    ke:+(ke*100).toFixed(1),g2:+(g2*100).toFixed(1),
-    signal:upside>15?"مقيّم بأقل من قيمته":upside>5?"عادل":"مقيّم بأعلى من قيمته"};
-}
-
 /* ══ DCF ══ */
 function calcDCF(stk: any, gdpGrowth: number = 4.0): any {
 
