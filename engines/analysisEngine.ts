@@ -39,6 +39,7 @@ import {
   recordFeedback,
   applyFeedbackToWeights,
 } from './feedbackLearning';
+import { calcRiskGateLevel, calcAdaptiveThreshold, calcPortfolioSharpe } from './riskGating';
 import { G, R, BLUE, GOLD, CYAN, LIME, ORANGE, PU, T2, C } from './colorTokens';
 
 /**
