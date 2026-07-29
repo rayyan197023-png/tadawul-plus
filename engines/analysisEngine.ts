@@ -53,7 +53,8 @@ import { G, R, BLUE, GOLD, CYAN, LIME, ORANGE, PU, T2, C } from './colorTokens';
  * - GDP Growth
  * - PE Ratio
  */
-function calcMacroScore(stk: any): any {
+function calcMacroScore(stk: any, macroData: { oilPrice: number; oilTarget: number; saudiRepoRate: number; cpi: number; vix: number; gdpGrowth: number } = { oilPrice: 80, oilTarget: 80, saudiRepoRate: 4.25, cpi: 2, vix: 20, gdpGrowth: 4 }): any {
+
   // ① PE component (40%)
   const pe = stk.pe || 20;
   const peScore = Math.max(0, Math.min(100, 100 - (pe - 15) * 2));
