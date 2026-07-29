@@ -2547,9 +2547,7 @@ function checkCorrelationGuard(sym: string, activePositions: any[]): any {
 
 
 /* ③ Dynamic Risk Gate */
-function calcRiskGateLevel(): any {
-  var vix     = MACRO.vix || 20;
-  var breadth = STOCKS.filter(function(x){return x.ch>0;}).length / STOCKS.length;
+function calcRiskGateLevel(vix: number = 20, breadth: number = 0.5): any {
 
   // DANGER: VIX>30 أو اتساع سلبي حاد
   if(vix>30 || breadth<0.20) return "DANGER";
