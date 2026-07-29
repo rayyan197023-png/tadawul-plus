@@ -3305,14 +3305,6 @@ var riskGateLevel = calcRiskGateLevel(MACRO.vix, STOCKS.filter(x=>x.ch>0).length
   }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   stockHealthV3 — يدمج الـ 3 أنظمة الجديدة
-══════════════════════════════════════════════════════════════ */
-function scoreWord(score: number): string {
-  return score>=80?"ممتاز":score>=70?"قوي":score>=60?"جيد":score>=50?"متوسط":score>=40?"ضعيف":"ضعيف جداً";
-}
-
-
 /* ══════════════════════════════════════════════════════════
    الصادرات — exported for use by AnalysisScreen and others
    ══════════════════════════════════════════════════════════ */
