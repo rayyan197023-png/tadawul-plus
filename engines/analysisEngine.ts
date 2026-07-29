@@ -2557,15 +2557,12 @@ function calcRiskGateLevel(vix: number = 20, breadth: number = 0.5): any {
 }
 
 /* ④ Adaptive Signal Threshold */
-function calcAdaptiveThreshold(allHealthData: any[]): any {
+function calcAdaptiveThreshold(allHealthData: any[], breadth: number = 0.5, vix: number = 20): any {
   if(!allHealthData||!allHealthData.length) return 45;
 
   var avgADX = allHealthData.reduce(function(s,h){
     return s+(h.layers&&h.layers.L1?h.layers.L1:50);
   },0)/allHealthData.length;
-
-  var breadth = STOCKS.filter(function(x){return x.ch>0;}).length/STOCKS.length;
-  var vix = MACRO.vix||20;
 
   // سوق صاعد قوي → عتبة أخفض (المزيد من الإشارات)
   if(avgADX>65 && breadth>0.60 && vix<20) return 38;
