@@ -3188,7 +3188,7 @@ var inter = calcIntermarket(stk, { oilPrice: MACRO.oilPrice, oilTarget: MACRO.oi
     // ════════════════════════════════════════════════
   //  STEP 8: Portfolio Engine
   // ════════════════════════════════════════════════
-  var riskGateLevel = calcRiskGateLevel();
+var riskGateLevel = calcRiskGateLevel(MACRO.vix, STOCKS.filter(x=>x.ch>0).length / STOCKS.length);
   (merged as any).positionSize = calcPositionSize(merged, riskGateLevel);
   (merged as any).correlationGuard = checkCorrelationGuard(stk.sym, []);
   (merged as any).riskGate = riskGateLevel;
