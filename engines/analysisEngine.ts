@@ -70,7 +70,7 @@ function calcMacroScore(stk: any, macroData: { oilPrice: number; oilTarget: numb
   const rateScore = Math.max(0, Math.min(100, 50 + rateSens * (realRate - 1.5) * 15));
   
   // ④ VIX component (10%) - inverse
-  const vixScore = Math.max(0, Math.min(100, 100 - (MACRO.vix - 20) * 3));
+  const vixScore = Math.max(0, Math.min(100, 100 - (macroData.vix - 20) * 3));
   
   // ⑤ GDP component (10%)
   const gdpScore = Math.max(0, Math.min(100, 50 + (MACRO.gdpGrowth - 2.5) * 15));
