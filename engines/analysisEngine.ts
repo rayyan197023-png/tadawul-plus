@@ -1219,7 +1219,7 @@ const vi   = calcIVWAP(bars);
     return std > 0 ? +((cur - vi.vwQ) / std).toFixed(2) : 0;
   })();
 
-const mc   = calcMacroScore(stk);
+const mc = calcMacroScore(stk, { oilPrice: MACRO.oilPrice, oilTarget: MACRO.oilTarget, saudiRepoRate: MACRO.saudiRepoRate, cpi: MACRO.cpi, vix: MACRO.vix, gdpGrowth: MACRO.gdpGrowth });
 
 
   /* ═════════════════════════════════
