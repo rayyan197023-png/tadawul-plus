@@ -2574,12 +2574,12 @@ function calcAdaptiveThreshold(allHealthData: any[], breadth: number = 0.5, vix:
 }
 
 /* ⑤ Sharpe Ratio Tracker */
-function calcPortfolioSharpe(allHealthData: any[]): any {
+function calcPortfolioSharpe(allHealthData: any[], saudiRepoRate: number = 4.25): any {
   if(!allHealthData||allHealthData.length<2) return null;
   var scores = allHealthData.map(function(h){return h.score||50;});
   var avg    = scores.reduce(function(s,v){return s+v;},0)/scores.length;
   var std    = Math.sqrt(scores.reduce(function(s,v){return s+Math.pow(v-avg,2);},0)/scores.length);
-  var rf     = (MACRO.saudiRepoRate||4.25)/252; // يومي
+  var rf     = (saudiRepoRate||4.25)/252;
   var sharpe = std>0 ? +((avg/100*0.15 - rf) / (std/100)).toFixed(2) : 0;
   return {
     avg:+avg.toFixed(1), std:+std.toFixed(1), sharpe,
