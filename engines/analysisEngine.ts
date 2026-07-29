@@ -66,7 +66,7 @@ function calcMacroScore(stk: any, macroData: { oilPrice: number; oilTarget: numb
   
   // ③ Rate component (15%) - للبنوك والقطاعات
   const rateSens = (RATE_SENS as any)[stk.sec] || 0.3;
-  const realRate = MACRO.saudiRepoRate - MACRO.cpi;
+  const realRate = macroData.saudiRepoRate - macroData.cpi;
   const rateScore = Math.max(0, Math.min(100, 50 + rateSens * (realRate - 1.5) * 15));
   
   // ④ VIX component (10%) - inverse
