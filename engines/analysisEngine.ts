@@ -61,7 +61,7 @@ function calcMacroScore(stk: any, macroData: { oilPrice: number; oilTarget: numb
   
   // ② Oil component (25%) - للقطاعات الحساسة
    const oilSens = (OIL_SENS as any)[stk.sec] || 0.5;
-  const oilDelta = (MACRO.oilPrice - MACRO.oilTarget) / MACRO.oilTarget;
+  const oilDelta = (macroData.oilPrice - macroData.oilTarget) / macroData.oilTarget;
   const oilScore = Math.max(0, Math.min(100, 50 + oilSens * oilDelta * 80));
   
   // ③ Rate component (15%) - للبنوك والقطاعات
