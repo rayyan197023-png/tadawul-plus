@@ -73,7 +73,7 @@ function calcMacroScore(stk: any, macroData: { oilPrice: number; oilTarget: numb
   const vixScore = Math.max(0, Math.min(100, 100 - (macroData.vix - 20) * 3));
   
   // ⑤ GDP component (10%)
-  const gdpScore = Math.max(0, Math.min(100, 50 + (MACRO.gdpGrowth - 2.5) * 15));
+  const gdpScore = Math.max(0, Math.min(100, 50 + (macroData.gdpGrowth - 2.5) * 15));
   
   // ⑥ Composite score (weighted)
   const score = Math.round(
