@@ -55,7 +55,7 @@ function calcIntermarket(stk: any, macroData: { oilPrice: number; oilTarget: num
 }
 
 /* ══ Microstructure ══ */
-function calcMicrostructure(stk: any, bars: any[]): any {
+function calcMicrostructure(stk: any, bars: Bar[]): any {
   if(!bars||bars.length<10)return null;
   var ofi=0,totalVol=0;
   for(var i=1;i<bars.length;i++){
