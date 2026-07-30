@@ -724,15 +724,7 @@ function restoreMacro(previous: any): void {
 function seedRng(s: number): () => number { let x=s; return()=>{ x=(x*1664525+1013904223)&0xffffffff; return(x>>>0)/0xffffffff; }; }
 function genBars(stk: any, n: number = 60): any[] {
   n = n||100;
-  const hist = (HISTORICAL as any)[stk.sym];
-  if(hist && hist.length>=n){
-    return hist.slice(-n).map(function(b: any, i: number, arr: any[]){
-
-      const prev = i>0?arr[i-1].c:b.o;
-      const pct  = prev>0?(b.c-prev)/prev*100:0;
-      return{o:b.o,hi:b.hi,lo:b.lo,c:b.c,vol:b.vol,pct:+pct.toFixed(3)};
-    });
-  }
+  // ✨ HISTORICAL حُذفت (كانت بيانات وهمية يدوية لسهم واحد فقط) -- التوليد العشوائي أدناه هو المسار الوحيد المتبقي
   
   
   /* ════════════════════════════════════════════════════════════════
