@@ -19,7 +19,7 @@ import { useOHLCVCache } from '../hooks/useOHLCVCache';
 
 // ── المحركات الحسابية
 import {
-  genBars, stockHealth, scoreWord, calc9Layers,
+  stockHealth, scoreWord, calc9Layers,
   MACRO, HISTORICAL, OIL_SENS, RATE_SENS,
   TASI_CORR_GROUPS, KELLY_CONFIG, RISK_GATE,
   applyFeedbackToWeights, loadFeedbackState,
