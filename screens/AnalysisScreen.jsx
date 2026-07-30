@@ -24,8 +24,8 @@ import {
   TASI_CORR_GROUPS, KELLY_CONFIG, RISK_GATE,
   applyFeedbackToWeights, loadFeedbackState,
   saveFeedbackState, getAdaptiveWeightAdjustment,
+  _emptyHealthResult,
 } from '../engines/analysisEngine';
-
 import { calcSmartStopLoss, calcSmartTakeProfit } from '../engines/positionEngine';
 
 // ── مكونات UI المساعدة
