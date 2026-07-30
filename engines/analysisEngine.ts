@@ -846,7 +846,7 @@ function calculateLayer3(last20: any[], last5: any[], avgVol: number): { L3: num
  * @param radarLS - درجة Liquidity Sweeps من الرادار (0-10)
  */
 function calculateLayer1(
-  bars: any[], last5: any[], last10: any[], last20: any[], avgVol: number,
+  bars: Bar[], last5: Bar[], last10: Bar[], last20: Bar[], avgVol: number,
   ms: any, ob: any, ls: any, adxV: number, adxBull: boolean,
   radarMS: number, radarOB: number, radarLS: number
 ): { L1: number; spring: boolean; sos: boolean; upth: boolean; wyPhase: string; patternBonus: number } {
