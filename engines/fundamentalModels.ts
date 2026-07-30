@@ -6,9 +6,10 @@
 
 import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
 import { RADAR_SECTOR_PE } from './marketConstants';
+import type { Bar } from './types';
 
 /* ══ Factor Model ══ */
-function calcFactorModel(stk: any, bars: any[]): any {
+function calcFactorModel(stk: any, bars: Bar[]): any {
   // ✨ Validation
   if (!stk) return {composite: 50, factors: {}, alpha: 0, beta: 1, grade: "D", signal: "بيانات غير كافية"};
   bars = Array.isArray(bars) ? bars : [];
