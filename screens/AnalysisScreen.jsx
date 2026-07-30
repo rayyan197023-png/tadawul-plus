@@ -309,24 +309,23 @@ const result = liveStocks.map(stk=>{
       var bars;
       var isRealData = false;
 
+      var h;
       if (cached && Array.isArray(cached) && cached.length >= 20 &&
           cached.every(b => b && isFinite(b.c) && isFinite(b.vol))) {
         bars = cached;
         isRealData = true;
         _realCount++;
+        h = stockHealth(stk, bars, liveMACRO);
+        // حماية: إن كان score غير صالح رغم البيانات الحقيقية، استخدم نتيجة محايدة آمنة
+        if (!h || !isFinite(h.score)) {
+          h = _emptyHealthResult();
+        }
       } else {
-        bars = genBars(stk);
+        bars = [];
         _fakeCount++;
-      }
-
-      // مرّر liveMACRO إلى stockHealth
-      var h = stockHealth(stk, bars, liveMACRO);
-      // ✨ حماية: إن كان score غير صالح، استخدم fallback
-      if (!h || !isFinite(h.score)) {
-        h = stockHealth(stk, genBars(stk), liveMACRO);
+        h = _emptyHealthResult();
       }
 return {stk, bars, health:h, isRealData};
-
     });
     if (typeof window !== 'undefined') {
       window.__tadawulCounts = { real: _realCount, fake: _fakeCount, total: result.length };
