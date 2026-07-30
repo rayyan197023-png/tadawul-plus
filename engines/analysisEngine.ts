@@ -787,7 +787,7 @@ ms,ob,ls,vi,vwapDev,vwapD:vwapDev,mc,
  * @param radarMO - درجة الزخم من رادار الفرص (0-15)
  * @returns L2 score (0-100)
  */
-function calculateLayer2(last10: any[], avgVol: number, obv: any, radarMO: number): { L2: number; harm: number; div: number } {
+function calculateLayer2(last10: Bar[], avgVol: number, obv: any, radarMO: number): { L2: number; harm: number; div: number } {
   let harm = 0, div = 0;
   last10.forEach(b => {
     const er = b.vol / avgVol, mv = Math.abs(b.pct);
