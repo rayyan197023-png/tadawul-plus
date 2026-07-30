@@ -3,7 +3,6 @@
  * @description محرك التحليل الكامل — مستخرج من AnalysisScreen
  *
  * يحتوي على:
- * - البيانات التاريخية (HISTORICAL)
  * - ثوابت الاقتصاد الكلي (MACRO, OIL_SENS, RATE_SENS)
  * - مولّد الشموع (seedRng, genBars)
  * - المؤشرات التقنية (RSI, ATR, EMA, VWAP, CMF, OBV)
