@@ -3327,7 +3327,7 @@ calcSMA, calcVPVR,
   calcConfidenceThreshold, applyFeedbackToWeights,
   loadFeedbackState, saveFeedbackState,
   getAdaptiveWeightAdjustment, recordFeedback,
-  scoreWord,
+scoreWord, _emptyHealthResult,
   MACRO, HISTORICAL, OIL_SENS, RATE_SENS,
   TASI_CORR_GROUPS, KELLY_CONFIG, RISK_GATE,
 };
