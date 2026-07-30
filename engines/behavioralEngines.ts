@@ -5,13 +5,15 @@
  */
 
 import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
+import type { Bar } from './types';
 
 /* ══ Behavioral Pressure -- مؤشر ضغط السوق السلوكي ══
    ملاحظة صدق: السوق السعودي (تاسي) لا يملك سوق خيارات فردية،
    فهذا ليس "تدفّق خيارات" بل مقياس ضغط شراء/بيع سلوكي مُستنتَج
    من الزخم والحجم والأساسيات. الحقلان pressureRatio/unusualActivity
    يُستخدمان في حساب LC (المحرك السلوكي) داخل stockHealth. */
-function calcBehavioralPressure(stk: any, bars: any[]): any {
+function calcBehavioralPressure(stk: any, bars: Bar[]): any {
+
   var n=bars.length;
   if(!n)return{pressureRatio:1.0,sentiment:"محايد",signal:"محايد",unusualActivity:false,score:50};
     
@@ -50,7 +52,8 @@ var vol30pct = bars.slice(-30).reduce(function(s: number, b: any){return s+Math.
 }
 
 /* ══ Insider Transactions ══ */
-function calcInsiderTransactions(stk: any, bars: any[]): any {
+function calcInsiderTransactions(stk: any, bars: Bar[]): any {
+
   var n=bars?bars.length:0;
   var avgVol60=n>0?bars.reduce(function(s: number, b: any){return s+b.vol;},0)/n:stk.avgV||1800000;
 var recentVol=n>=5?bars.slice(-5).reduce(function(s: number, b: any){return s+b.vol;},0)/5:avgVol60;
@@ -76,7 +79,8 @@ var recentVol=n>=5?bars.slice(-5).reduce(function(s: number, b: any){return s+b.
 }
 
 /* ══ Alternative Data ══ */
-function calcAlternativeData(stk: any, bars: any[], macroData: { oilPrice: number; saudiRepoRate: number; cpi: number } = { oilPrice: 80, saudiRepoRate: 4, cpi: 2 }): any {
+function calcAlternativeData(stk: any, bars: Bar[], macroData: { oilPrice: number; saudiRepoRate: number; cpi: number } = { oilPrice: 80, saudiRepoRate: 4, cpi: 2 }): any {
+
   var sectorStocks=STOCKS.filter(function(x: any){return x.sec===stk.sec;});
 var sectorAvgCh=sectorStocks.reduce(function(s: number, x: any){return s+x.ch;},0)/sectorStocks.length;
   var sectorMom=Math.round(50+35*Math.tanh(sectorAvgCh*0.8));
