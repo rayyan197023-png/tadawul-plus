@@ -3,6 +3,7 @@
  * @description كشف حالة السوق، الأوزان الديناميكية، ضبط الارتباط، وعقوبات التعارض
  * (منقول من analysisEngine.ts كجزء من تقسيم الملف لموديولات)
  */
+import type { Bar } from './types';
 
 /* ── مساعد: clamp + sigmoid + softmax ── */
 function _clamp(v: number, lo: number, hi: number): number { return Math.min(hi,Math.max(lo,v)); }
@@ -49,7 +50,8 @@ function _softmax3(a: number, b: number, c: number): any {
 }
 
 /* ── 1) detectMarketRegime الموسّع ── */
-function detectMarketRegime(bars: any[], adxV: number, mktWtd: any, mktBreadth: any, atr: number, stk: any, vix: number = 20): any {
+function detectMarketRegime(bars: Bar[], adxV: number, mktWtd: any, mktBreadth: any, atr: number, stk: any, vix: number = 20): any {
+
   const n = bars.length||1;
   const atrPct = atr / (bars[n-1].c||1) * 100;
   const ret5 = bars.length>=5 ? bars.slice(-5).reduce((s,b)=>s+b.pct,0)/5 : 0;
