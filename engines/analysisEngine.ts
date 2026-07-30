@@ -809,7 +809,7 @@ function calculateLayer2(last10: Bar[], avgVol: number, obv: any, radarMO: numbe
  * @param avgVol - متوسط الحجم لكل الشموع
  * @returns L3 score (0-100) + entr (قيمة entropy الخام، تُستخدم لاحقاً في extras)
  */
-function calculateLayer3(last20: any[], last5: any[], avgVol: number): { L3: number; entr: number } {
+function calculateLayer3(last20: Bar[], last5: Bar[], avgVol: number): { L3: number; entr: number } {
   const last20pcts = last20.slice(1).map((b, i, arr) => {
     const dir = b.c - last20[i].c > 0 ? 1 : -1;
     const recencyW = 1 + i / arr.length;
