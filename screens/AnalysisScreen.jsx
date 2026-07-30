@@ -26,7 +26,7 @@ import {
   saveFeedbackState, getAdaptiveWeightAdjustment,
   _emptyHealthResult,
 } from '../engines/analysisEngine';
-import { calcSmartStopLoss, calcSmartTakeProfit } from '../engines/positionEngine';
+import { calcSmartStopLoss, calcSmartTakeProfit } from '../engines/positionEngine'; 
 
 // ── مكونات UI المساعدة
 import {
