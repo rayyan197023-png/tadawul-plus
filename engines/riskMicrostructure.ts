@@ -6,7 +6,7 @@
 
 import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
 import { OIL_SENS, RATE_SENS } from './marketConstants';
-import type { Bar } from './types';
+import type { Bar, MacroData } from './types';
 
 /* ══ Risk Attribution ══ */
 function calcRiskAttribution(stk: any, bars: Bar[], saudiRepoRate: number = 4.25): any {
