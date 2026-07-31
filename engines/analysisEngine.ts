@@ -997,7 +997,7 @@ function calculateLayer4(stk: Stock, vi: any, tc_tasi: any, radarVI: number): { 
  */
 function calculateLayer5(
   bars: Bar[], rBars: Bar[], rsiV: number, macdH: number, macdBull: boolean,
-  adxV: number, adxBull: boolean, stk: any, radarTR: number
+  adxV: number, adxBull: boolean, stk: Stock, radarTR: number
 ): {
 
   L5: number; triOk: number; rsiScore: number; macdScore: number;
