@@ -37,7 +37,7 @@ function calcRiskAttribution(stk: any, bars: Bar[], saudiRepoRate: number = 4.25
 }
 
 /* ══ Intermarket ══ */
-function calcIntermarket(stk: any, macroData: { oilPrice: number; oilTarget: number; saudiRepoRate: number; cpi: number; vix: number; gdpGrowth: number; m2Growth: number }): any {
+function calcIntermarket(stk: any, macroData: MacroData): any {
   var m=macroData;
   var oS=(OIL_SENS as any)[stk.sec]||0.8,rS=(RATE_SENS as any)[stk.sec]||0.3;
   var oilDelta=(m.oilPrice-m.oilTarget)/m.oilTarget;
