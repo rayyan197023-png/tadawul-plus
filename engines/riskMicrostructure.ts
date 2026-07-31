@@ -6,10 +6,10 @@
 
 import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
 import { OIL_SENS, RATE_SENS } from './marketConstants';
-import type { Bar, MacroData } from './types';
+import type { Bar, MacroData, Stock } from './types';
 
 /* ══ Risk Attribution ══ */
-function calcRiskAttribution(stk: any, bars: Bar[], saudiRepoRate: number = 4.25): any {
+function calcRiskAttribution(stk: Stock, bars: Bar[], saudiRepoRate: number = 4.25): any {
   var volBars=bars.slice(-Math.min(bars.length,100));
   var n=volBars.length||1;
   var avgRet=volBars.reduce(function(s,b){return s+b.pct/100;},0)/n;
