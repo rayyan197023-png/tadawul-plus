@@ -79,7 +79,7 @@ var recentVol=n>=5?bars.slice(-5).reduce(function(s: number, b: any){return s+b.
 }
 
 /* ══ Alternative Data ══ */
-function calcAlternativeData(stk: any, bars: Bar[], macroData: Pick<MacroData, 'oilPrice' | 'saudiRepoRate' | 'cpi'> = { oilPrice: 80, saudiRepoRate: 4, cpi: 2 }): any {
+function calcAlternativeData(stk: Stock, bars: Bar[], macroData: Pick<MacroData, 'oilPrice' | 'saudiRepoRate' | 'cpi'> = { oilPrice: 80, saudiRepoRate: 4, cpi: 2 }): any {
 
   var sectorStocks=STOCKS.filter(function(x: any){return x.sec===stk.sec;});
 var sectorAvgCh=sectorStocks.reduce(function(s: number, x: any){return s+x.ch;},0)/sectorStocks.length;
