@@ -5,14 +5,14 @@
  */
 
 import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
-import type { Bar, MacroData } from './types';
+import type { Bar, MacroData, Stock } from './types';
 
 /* ══ Behavioral Pressure -- مؤشر ضغط السوق السلوكي ══
    ملاحظة صدق: السوق السعودي (تاسي) لا يملك سوق خيارات فردية،
    فهذا ليس "تدفّق خيارات" بل مقياس ضغط شراء/بيع سلوكي مُستنتَج
    من الزخم والحجم والأساسيات. الحقلان pressureRatio/unusualActivity
    يُستخدمان في حساب LC (المحرك السلوكي) داخل stockHealth. */
-function calcBehavioralPressure(stk: any, bars: Bar[]): any {
+function calcBehavioralPressure(stk: Stock, bars: Bar[]): any {
 
   var n=bars.length;
   if(!n)return{pressureRatio:1.0,sentiment:"محايد",signal:"محايد",unusualActivity:false,score:50};
