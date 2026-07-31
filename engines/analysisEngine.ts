@@ -948,7 +948,7 @@ function calculateLayer1(
  * @param tc_tasi - نتيجة calcTasiContext
  * @param radarVI - درجة VWAP المؤسسي من الرادار (0-10)
  */
-function calculateLayer4(stk: any, vi: any, tc_tasi: any, radarVI: number): { L4: number; mktWtd: number; rscRaw: number } {
+function calculateLayer4(stk: Stock, vi: any, tc_tasi: any, radarVI: number): { L4: number; mktWtd: number; rscRaw: number } {
 
   const mktWtd = STOCKS.reduce((s, x) => s + x.ch * ((x as any).mktCap || 50), 0) /
                  STOCKS.reduce((s, x) => s + ((x as any).mktCap || 50), 0);
