@@ -594,7 +594,7 @@ function calcSMA(bars: any[], period: number): number {
    BOS = Break of Structure  → كسر الهيكل
    CHOCH = Change of Character → تغيّر طابع السوق
 ══════════════════════════════════════════════════════════════ */
-function analyzeStockRadar(stk: Stock, pastBars?: Bar[]): any {
+function analyzeStockRadar(stk: Stock, pastBars?: Bar[], precomputed?: { atr: number; rsi: number; cmf: number; obv: any; ms: any; ob: any; ls: any; vi: any }): any {
   /* ─── البيانات: نستخدم الشموع الماضية الحقيقية إن مُرِّرت (يمنع تسرّب المستقبل في الباك-تيست)،
      وإلا نولّد للعرض الحيّ فقط ─── */
     const bars = (pastBars && pastBars.length >= 15)
