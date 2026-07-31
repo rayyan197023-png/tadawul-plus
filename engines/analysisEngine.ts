@@ -996,9 +996,10 @@ function calculateLayer4(stk: any, vi: any, tc_tasi: any, radarVI: number): { L4
  * @param radarTR - درجة الترند من الرادار (0-15)
  */
 function calculateLayer5(
-  bars: any[], rBars: any[], rsiV: number, macdH: number, macdBull: boolean,
+  bars: Bar[], rBars: Bar[], rsiV: number, macdH: number, macdBull: boolean,
   adxV: number, adxBull: boolean, stk: any, radarTR: number
 ): {
+
   L5: number; triOk: number; rsiScore: number; macdScore: number;
   adxScore: number; stochV: number; smaBonus: number; stochBonus: number;
 } {
