@@ -1231,7 +1231,7 @@ function calculateLayer9(
  *
  * @param bars - كل الشموع
  */
-function calculateLayer10(bars: any[]): number {
+function calculateLayer10(bars: Bar[]): number {
   const _l10win = bars.slice(-20);
   let L10 = 50;
   if (_l10win.length >= 10) {
