@@ -1328,7 +1328,7 @@ const ls   = calcLiqSweep(rBars, atr);
   // analyzeStockRadar يُشغّل محرك SMC الكامل:
   // MS/OB/LS/IVWAP/Trend/Momentum/Liquidity/Value/Macro
   // نتائجه تُدمج كـ sub-scores في الطبقات 1-9
-  const radar = analyzeStockRadar(stk, rBars);
+const radar = analyzeStockRadar(stk, rBars, { atr, rsi: rsiV, cmf, obv, ms, ob, ls, vi });
 
   // sub-scores: 0-100 normalized من RadarTab
   const radarMS  = radar.factors.find((f: any)=>f.k==="ms")?.s  || 0;  // /15
