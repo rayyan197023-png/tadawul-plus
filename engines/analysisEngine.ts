@@ -1254,7 +1254,7 @@ function calculateLayer10(bars: Bar[]): number {
   return L10;
 }
 
-function calc9Layers(stk: any, bars: Bar[]): any {
+function calc9Layers(stk: Stock, bars: Bar[]): any {
   // ✨ Validation - حماية من Edge Cases
   if (!stk || typeof stk !== 'object') {
     return _emptyHealthResult();
