@@ -56,3 +56,4 @@ export interface HealthScore {
   regime: string;
   [key: string]: any;
 }
+
