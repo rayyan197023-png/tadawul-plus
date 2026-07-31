@@ -44,3 +44,15 @@ export interface Stock {
   [key: string]: any;
 }
 
+/**
+ * نتيجة stockHealth -- نوع "متدرّج" (progressive typing)
+ * يوثّق الحقول الأساسية المؤكدة (من _emptyHealthResult)، ويسمح بالباقي عبر [key: string]: any
+ */
+export interface HealthScore {
+  score: number;
+  grade: string;
+  sig: string;
+  sigC: string;
+  regime: string;
+  [key: string]: any;
+}
