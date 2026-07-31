@@ -52,7 +52,7 @@ var vol30pct = bars.slice(-30).reduce(function(s: number, b: any){return s+Math.
 }
 
 /* ══ Insider Transactions ══ */
-function calcInsiderTransactions(stk: any, bars: Bar[]): any {
+function calcInsiderTransactions(stk: Stock, bars: Bar[]): any {
 
   var n=bars?bars.length:0;
   var avgVol60=n>0?bars.reduce(function(s: number, b: any){return s+b.vol;},0)/n:stk.avgV||1800000;
