@@ -3,7 +3,7 @@
  * @description كشف حالة السوق، الأوزان الديناميكية، ضبط الارتباط، وعقوبات التعارض
  * (منقول من analysisEngine.ts كجزء من تقسيم الملف لموديولات)
  */
-import type { Bar } from './types';
+import type { Bar, Stock } from './types';
 
 /* ── مساعد: clamp + sigmoid + softmax ── */
 function _clamp(v: number, lo: number, hi: number): number { return Math.min(hi,Math.max(lo,v)); }
