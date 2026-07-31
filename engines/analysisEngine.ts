@@ -1052,7 +1052,7 @@ function calculateLayer5(
  * @param radarVA - درجة التقييم من الرادار (0-10)
  */
 function calculateLayer6(
-  bars: any[], vr: number, mc: any, stk: any, radarVA: number
+  bars: Bar[], vr: number, mc: any, stk: any, radarVA: number
 ): { L6: number; kelly: number; p_adj: number } {
 
   const kellyBars = bars.slice(-Math.min(bars.length, 100));
