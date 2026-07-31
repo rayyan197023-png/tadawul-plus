@@ -1184,7 +1184,7 @@ function calculateLayer8(
  * @param vi - نتيجة calcIVWAP (تحتوي .vwapDev)
  */
 function calculateLayer9(
-  cmf: number, bars: Bar[], obv: any, vr: number, stk: any, vi: any
+  cmf: number, bars: Bar[], obv: any, vr: number, stk: Stock, vi: any
 ): { L9: number; smartMoney: number } {
 
   const cmfScore = Math.round(50 + 45 * Math.tanh(cmf * 8));
