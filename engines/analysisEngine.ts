@@ -1097,7 +1097,7 @@ function calculateLayer6(
  */
 function calculateLayer7(
   L1: number, L4: number, L5: number,
-  last10: any[], last5: any[], avgVol: number, bars: any[], cmf: number, obv: any, radarMC: number
+  last10: Bar[], last5: Bar[], avgVol: number, bars: Bar[], cmf: number, obv: any, radarMC: number
 ): {
   L7: number; bayesMult: number; prior: number; likel: number; post: number;
   consistency: number;
