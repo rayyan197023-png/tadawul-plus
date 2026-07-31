@@ -54,7 +54,7 @@ import type { Bar, MacroData } from './types';
  * - GDP Growth
  * - PE Ratio
  */
-function calcMacroScore(stk: any, macroData: { oilPrice: number; oilTarget: number; saudiRepoRate: number; cpi: number; vix: number; gdpGrowth: number } = { oilPrice: 80, oilTarget: 80, saudiRepoRate: 4.25, cpi: 2, vix: 20, gdpGrowth: 4 }): any {
+function calcMacroScore(stk: any, macroData: MacroData = { oilPrice: 80, oilTarget: 80, saudiRepoRate: 4.25, cpi: 2, vix: 20, gdpGrowth: 4 }): any {
 
   // ① PE component (40%)
   const pe = stk.pe || 20;
