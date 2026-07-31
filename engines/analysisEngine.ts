@@ -1915,7 +1915,7 @@ function checkCorrelationGuard(sym: string, activePositions: any[]): any {
 }
 
 
-function stockHealth(stk: any, bars: any[], macroOverride?: any): any {
+function stockHealth(stk: any, bars: Bar[], macroOverride?: any): any {
   // ✨ Validation - حماية من Edge Cases
   if (!stk || typeof stk !== 'object') {
     return _emptyHealthResult();
