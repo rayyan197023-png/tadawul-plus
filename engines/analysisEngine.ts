@@ -41,7 +41,7 @@ import {
 import { calcRiskGateLevel, calcAdaptiveThreshold, calcPortfolioSharpe } from './riskGating';
 import { _emptyHealthResult, scoreWord } from './helpers';
 import { G, R, BLUE, GOLD, CYAN, LIME, ORANGE, PU, T2, C } from './colorTokens';
-import type { Bar } from './types';
+import type { Bar, MacroData } from './types';
 
 /**
  * ✨ Macro Score - النسخة الموسّعة للرادار
