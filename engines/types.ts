@@ -30,3 +30,17 @@ export interface MacroData {
   gdpGrowth: number;
   m2Growth?: number;
 }
+
+/**
+ * بيانات السهم -- نوع "متدرّج" (progressive typing)
+ * يوثّق الحقول الأساسية المؤكدة، ويسمح بأي حقل إضافي عبر [key: string]: any
+ * (بدل تصميم شامل دفعة واحدة قد يكسر دوال تستخدم حقولاً غير موثّقة بعد)
+ */
+export interface Stock {
+  sym: string;
+  p: number;
+  ch: number;
+  sec: string;
+  [key: string]: any;
+}
+
