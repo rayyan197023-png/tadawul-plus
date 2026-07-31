@@ -50,7 +50,7 @@ function _softmax3(a: number, b: number, c: number): any {
 }
 
 /* ── 1) detectMarketRegime الموسّع ── */
-function detectMarketRegime(bars: Bar[], adxV: number, mktWtd: any, mktBreadth: any, atr: number, stk: any, vix: number = 20): any {
+function detectMarketRegime(bars: Bar[], adxV: number, mktWtd: any, mktBreadth: any, atr: number, stk: Stock, vix: number = 20): any {
 
   const n = bars.length||1;
   const atrPct = atr / (bars[n-1].c||1) * 100;
