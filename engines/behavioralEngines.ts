@@ -5,7 +5,7 @@
  */
 
 import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
-import type { Bar } from './types';
+import type { Bar, MacroData } from './types';
 
 /* ══ Behavioral Pressure -- مؤشر ضغط السوق السلوكي ══
    ملاحظة صدق: السوق السعودي (تاسي) لا يملك سوق خيارات فردية،
