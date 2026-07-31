@@ -1150,7 +1150,7 @@ function calculateLayer7(
  * @param radarLQ - درجة السيولة الذكية من الرادار (0-10)
  */
 function calculateLayer8(
-  stk: any, radarLQ: number
+  stk: Stock, radarLQ: number
 ): { L8: number; pricePos: number; valScore: number } {
   const w52h = stk.w52h || stk.hi;
   const w52l = stk.w52l || stk.lo;
