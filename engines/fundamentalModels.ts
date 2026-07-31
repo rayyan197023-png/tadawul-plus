@@ -6,7 +6,7 @@
 
 import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
 import { RADAR_SECTOR_PE } from './marketConstants';
-import type { Bar } from './types';
+import type { Bar, Stock } from './types';
 
 /* ══ Factor Model ══ */
 function calcFactorModel(stk: any, bars: Bar[]): any {
