@@ -615,12 +615,12 @@ function analyzeStockRadar(stk: Stock, pastBars?: Bar[], precomputed?: { atr: nu
   const distLo=lo52>0?(p-lo52)/lo52*100:10;
 
   /* ─── المؤشرات الأساسية ─── */
-  const rsi  =calcRSI(bars,14);
-  const atr  =calcATR(bars,14);
+  const rsi  = precomputed?.rsi ?? calcRSI(bars,14);
+  const atr  = precomputed?.atr ?? calcATR(bars,14);
   const atrPct=p>0?atr/p*100:2;
   const vwap =calcVWAP(bars);
-  const cmf  =calcCMF(bars,20);
-  const obv  =calcOBV(bars);
+  const cmf  = precomputed?.cmf ?? calcCMF(bars,20);
+  const obv  = precomputed?.obv ?? calcOBV(bars);
   const macd =calcMACD(bars);
   const stoch=calcStoch(bars,14);
   const sma20=calcSMA(bars,20);
@@ -628,10 +628,11 @@ function analyzeStockRadar(stk: Stock, pastBars?: Bar[], precomputed?: { atr: nu
   const rvNorm=((stk.v+(stk.avgVol||stk.v))/2)/(stk.avgVol||stk.v||1);
 
   /* ─── المحركات المتقدمة ─── */
-  const ms  =calcMarketStructure(bars);
-  const ob  =calcOrderBlocks(bars,atr);
-  const ls  =calcLiqSweep(bars,atr);
-const vi   = calcIVWAP(bars);
+  const ms  = precomputed?.ms ?? calcMarketStructure(bars);
+  const ob  = precomputed?.ob ?? calcOrderBlocks(bars,atr);
+  const ls  = precomputed?.ls ?? calcLiqSweep(bars,atr);
+const vi   = precomputed?.vi ?? calcIVWAP(bars);
+
 
   // ✨ vwapDev: انحراف السعر الحالي عن VWAP الفصلي بوحدات الانحراف المعياري
   // (كانت موجودة بالنسخة المحلية القديمة من calcIVWAP، أُعيد حسابها هنا
