@@ -20,3 +20,13 @@ export interface Bar {
   pct?: number;
   t?: Date | string;
 }
+
+export interface MacroData {
+  oilPrice: number;
+  oilTarget: number;
+  saudiRepoRate: number;
+  cpi: number;
+  vix: number;
+  gdpGrowth: number;
+  m2Growth?: number;
+}
