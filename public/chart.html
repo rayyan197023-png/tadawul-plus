@@ -6691,11 +6691,7 @@ function _enrichDrawing(d){
   }catch(e){}
 }
 
- if(d.tool==='text'||d.tool==='callout'){
-  setTimeout(()=>showTextEditor(d),100);
- }
-
-}
+function finishDrawing(pt) {
 
 
  // Pattern tool: add point
@@ -6719,7 +6715,7 @@ function _enrichDrawing(d){
  if(!state.live)return;
  const d=state.live;
  if(pt){const _fp=snapPt(pt);d.p2={x:_fp.x,y:_fp.y};}
- const singlePt=['hline','vline','hbrush'];
+ const singlePt=['hline','vline','hbrush','text','callout'];
  const dist=Math.hypot(d.p2.x-d.p1.x,d.p2.y-d.p1.y);
  if(singlePt.includes(d.tool)){
  if(d.tool==='hline'){d.p1.x=0;d.p2={x:cv.offsetWidth-38,y:d.p1.y};}
