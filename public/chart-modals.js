@@ -66,3 +66,50 @@ function showDeltaHelp(){
  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove();});
  overlay.addEventListener('touchstart',e=>e.stopPropagation(),{passive:false});
 }
+
+// ── Camera Menu Help ────────────────────────────────────────
+const _camHelpData={
+ png:{
+  icon:'📸',title:'تصدير PNG',color:'#22c55e',
+  desc:'يصوّر الشارت الحالي كاملاً ويحفظه كصورة على جهازك.',
+  steps:['يأخذ لقطة من الشارت مع كل الرسومات والمؤشرات','يضيف علامة مائية صغيرة: اسم السهم + الفريم + التاريخ','يحفظ الملف باسم: تداول_سابك_1D_2026-03-21.png'],
+  tip:'مفيد لمشاركة تحليلك مع الآخرين أو حفظه كمرجع'
+ },
+ export:{
+  icon:'☁',title:'تصدير الرسومات JSON',color:'#3b9eff',
+  desc:'يحفظ جميع رسوماتك وتنبيهاتك ومؤشراتك في ملف JSON.',
+  steps:['يجمع كل الرسومات (خطوط، مستويات، أشكال)','يضيف التنبيهات والمؤشرات المفعّلة ونوع الشارت','يحمّل ملف .json يمكن نقله بين الأجهزة'],
+  tip:'احتفظ بنسخة احتياطية من تحليلاتك قبل تغيير الجهاز'
+ },
+ share:{
+  icon:'🔗',title:'مشاركة الشارت',color:'#3b9eff',
+  desc:'ينشئ رابطاً يحتوي على الشارت الكامل مع رسوماتك.',
+  steps:['يُشفّر السهم والفريم والرسومات كـ Base64','يضعها في URL: tadawul.html#share=...','ينسخ الرابط تلقائياً إلى الحافظة (Clipboard)'],
+  tip:'أي شخص يفتح هذا الرابط سيرى نفس شارتك مع نفس الرسومات'
+ },
+ save:{
+  icon:'💾',title:'حفظ',color:'#a78bfa',
+  desc:'يحفظ رسوماتك أو إعدادات مؤشراتك للاستخدام لاحقاً.',
+  steps:['رسومات JSON -- يحفظ كل خطوطك ومستوياتك وأشكالك في ملف .json','قالب المؤشرات -- يحفظ المؤشرات المفعّلة ونوع الشارت كقالب','القالب محفوظ على الجهاز، الـ JSON يمكن نقله بين الأجهزة'],
+  tip:'استخدم JSON للنسخ الاحتياطي، واستخدم القالب لتطبيق إعداداتك بسرعة'
+ },
+ import:{
+  icon:'📂',title:'استيراد',color:'#f59e0b',
+  desc:'يسترجع رسومات أو إعدادات محفوظة مسبقاً.',
+  steps:['رسومات JSON -- يفتح ملف .json ويدمج رسوماته مع الشارت الحالي','قالب المؤشرات -- يعرض القوالب المحفوظة ويطبّق المختار فوراً','كلاهما يعمل بشكل مستقل -- يمكنك استيراد الرسومات دون تغيير المؤشرات'],
+  tip:'شارك ملف JSON مع زميل ليرى نفس التحليل، أو حمّل قالب جلستك الجديدة'
+ }
+};
+function showCamHelp(key){
+ const d=_camHelpData[key];if(!d)return;
+ const existing=document.getElementById('cam-help-overlay');
+ if(existing)existing.remove();
+ const ov=document.createElement('div');
+ ov.id='cam-help-overlay';
+ ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.65);display:flex;align-items:flex-end;justify-content:center;z-index:10999;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);';
+ const stepsHtml=d.steps.map((s,i)=>`<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:8px;direction:rtl"><div style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;color:#94a3b8;font-family:monospace">${i+1}</div><div style="font-size:11px;color:#94a3b8;line-height:1.6;text-align:right">${s}</div></div>`).join('');
+ ov.innerHTML=`<div style="background:rgba(6,10,22,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:20px 20px 0 0;padding:20px 18px 36px;width:100%;max-width:480px;font-family:Cairo,sans-serif"><div style="width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:0 auto 16px"></div><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;direction:rtl"><div style="width:40px;height:40px;border-radius:12px;background:${d.color}18;border:1px solid ${d.color}35;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${d.icon}</div><div style="text-align:right"><div style="font-size:15px;font-weight:700;color:#f0f4ff">${d.title}</div></div></div><div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:12px 14px;margin-bottom:12px"><div style="font-size:11px;color:#c8d8f0;line-height:1.7;text-align:right">${d.desc}</div></div><div style="margin-bottom:12px"><div style="font-size:10px;color:#4a6080;margin-bottom:8px;text-align:right">كيف يعمل:</div>${stepsHtml}</div><div style="background:${d.color}10;border:1px solid ${d.color}25;border-radius:10px;padding:10px 14px;margin-bottom:16px;direction:rtl;display:flex;gap:8px;align-items:flex-start"><span style="font-size:14px;flex-shrink:0">💡</span><div style="font-size:10px;color:${d.color};line-height:1.6;text-align:right">${d.tip}</div></div><button onclick="document.getElementById('cam-help-overlay').remove()" style="width:100%;height:44px;background:rgba(59,158,255,0.12);border:1px solid rgba(59,158,255,0.3);border-radius:12px;color:#3b9eff;font-size:14px;font-weight:700;font-family:Cairo,sans-serif;cursor:pointer">فهمت ✓</button></div>`;
+ document.body.appendChild(ov);
+ ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+ ov.addEventListener('touchstart',e=>e.stopPropagation(),{passive:false});
+}
