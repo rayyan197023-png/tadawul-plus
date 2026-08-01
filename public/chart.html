@@ -6726,16 +6726,16 @@ function finishDrawing(pt) {
  }
  state.live=null;state.tool=null;drawPhase=0;drMode=null;
  updateDrawBtn();showDrawToolbar();saveDrawings();_updateUndoButtons();render();
- // Auto-open editors for relevant tools
- if(d.tool==='text'||d.tool==='callout'){
+if(d.tool==='text'||d.tool==='callout'){
+  alert('reached: '+d.tool);
   setTimeout(()=>showTextEditor(d),100);
- }
+}
 
 }
 
 function cancelDrawing() {
  state.live=null;state.tool=null;drawPhase=0;drMode=null;
- patPts=[];patTool=null;updateDrawBtn();render();
+ patPts=[];patTool=null;updateDrawBtn(); render();
 }
 
 // Prevent Safari iOS browser zoom (gestures + double-tap + canvas)
