@@ -6691,7 +6691,11 @@ function _enrichDrawing(d){
   }catch(e){}
 }
 
-function finishDrawing(pt) {
+ if(d.tool==='text'||d.tool==='callout'){
+  setTimeout(()=>showTextEditor(d),100);
+ }
+
+}
 
 
  // Pattern tool: add point
