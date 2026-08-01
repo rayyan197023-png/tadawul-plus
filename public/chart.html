@@ -6692,6 +6692,8 @@ function _enrichDrawing(d){
 }
 
 function finishDrawing(pt) {
+ alert('FINISH: '+(state.live?state.live.tool:'no-live'));
+
  // Pattern tool: add point
  if((isPatternTool(state.tool))&&state.live){
  if(pt)patPts.push({x:pt.x,y:pt.y});
