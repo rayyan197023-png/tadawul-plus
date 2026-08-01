@@ -6727,9 +6727,12 @@ function finishDrawing(pt) {
  _hist();state.drawings.push(d);_enrichDrawing(d);drSelId=d.id;
  }
  state.live=null;state.tool=null;drawPhase=0;drMode=null;
- updateDrawBtn();showDrawToolbar();saveDrawings();_updateUndoButtons();render();
+ try{
+  updateDrawBtn();showDrawToolbar();saveDrawings();_updateUndoButtons();render();
+ }catch(err){ alert('ERR: '+err.message); }
+
  // Auto-open editors for relevant tools
- alert('REACHED END: '+d.tool);
+
  if(d.tool==='text'||d.tool==='callout'){
   setTimeout(()=>showTextEditor(d),100);
  }
