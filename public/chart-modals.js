@@ -190,3 +190,75 @@ function showTextEditor(dr){
  overlay.addEventListener('touchstart',e=>e.stopPropagation(),{passive:false});
 }
 
+function _dtplClose(){const _m=document.getElementById('draw-tpl-modal');if(_m)_m._close();}
+function showDrawingTemplates(){
+ let m=document.getElementById('draw-tpl-modal');
+ if(m)m.remove();
+ m=document.createElement('div');
+ m.id='draw-tpl-modal';
+ m.style.cssText='position:fixed;inset:0;background:rgba(4,7,18,0.88);z-index:10002;display:flex;align-items:flex-end;justify-content:center;padding-bottom:20px';
+ const _sbg=document.getElementById('sbg');if(_sbg)_sbg.style.pointerEvents='none';
+ const closeM=()=>{const _s=document.getElementById('sbg');if(_s)_s.style.pointerEvents='';m.remove();};
+
+ const card=document.createElement('div');
+ card.style.cssText='background:linear-gradient(145deg,#0d1628,#060c18);border:1.5px solid rgba(59,158,255,0.3);border-radius:20px;padding:20px;width:calc(100% - 32px);max-width:380px;max-height:70vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(0,0,0,0.9)';
+ card.onclick=e=>e.stopPropagation();
+
+ const hdr=document.createElement('div');
+ hdr.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:16px';
+ hdr.innerHTML='<button onclick="_dtplClose()" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:8px;width:28px;height:28px;color:#ef4444;font-size:16px;cursor:pointer">×</button><span style="font-family:Cairo,sans-serif;font-size:15px;font-weight:800;color:#e0eaf8">قوالب الرسومات</span>';
+ card.appendChild(hdr);
+ m._close=closeM;
+
+ const rebuild=()=>{
+  const list=card.querySelector('#dtpl-list')||document.createElement('div');
+  list.id='dtpl-list';list.innerHTML='';
+  if(!drawingTemplates.length){
+   list.innerHTML='<div style="font-size:11px;color:#2a3a5a;font-family:Cairo,sans-serif;text-align:center;padding:16px">لا توجد قوالب محفوظة</div>';
+  } else {
+   drawingTemplates.forEach((tpl,i)=>{
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.07);margin-bottom:6px';
+    row.innerHTML=`
+     <div style="flex:1">
+      <div style="font-size:12px;color:#c0d0e8;font-family:Cairo,sans-serif;font-weight:700">${tpl.name}</div>
+      <div style="font-size:9px;color:#3a4a6a;font-family:monospace;margin-top:2px">${tpl.drawings.length} رسمة · ${tpl.date}</div>
+     </div>
+     <button data-load="${i}" style="background:rgba(59,158,255,0.1);border:1px solid rgba(59,158,255,0.25);border-radius:7px;color:#3b9eff;font-size:10px;padding:4px 10px;cursor:pointer;font-family:Cairo,sans-serif">تحميل</button>
+     <button data-del="${i}" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:7px;color:#ef4444;font-size:10px;padding:4px 8px;cursor:pointer">×</button>
+    `;
+    list.appendChild(row);
+   });
+  }
+  list.onclick=e=>{
+   const lb=e.target.closest('[data-load]');
+   const db=e.target.closest('[data-del]');
+   if(lb){
+    const idx=parseInt(lb.dataset.load);
+    const tpl=drawingTemplates[idx];
+    if(tpl){
+     _hist();
+     state.drawings=[...state.drawings,...tpl.drawings.map(d=>({...d,id:Date.now()+Math.random(),pts:d.pts?[...d.pts]:undefined}))];
+     saveDrawings();updateDrawBtn();invalidateChart();render();
+     const t=document.getElementById('toast');
+     if(t){t.textContent='✓ تم تحميل: '+tpl.name;t.style.display='block';t.classList.add('show');setTimeout(()=>{t.classList.remove('show');t.style.display='none';},2000);}
+     closeM();
+    }
+   }
+   if(db){drawingTemplates.splice(parseInt(db.dataset.del),1);saveSettings();rebuild();}
+  };
+  if(!card.querySelector('#dtpl-list'))card.appendChild(list);
+ };
+ rebuild();
+
+ // Save current button
+ const saveBtn=document.createElement('button');
+ saveBtn.style.cssText='width:100%;margin-top:12px;padding:12px;background:linear-gradient(135deg,#1a3a6e,#0d2248);border:1.5px solid rgba(59,158,255,0.4);border-radius:12px;color:#3b9eff;font-family:Cairo,sans-serif;font-size:13px;font-weight:700;cursor:pointer';
+ saveBtn.textContent='حفظ الرسومات الحالية كقالب';
+ saveBtn.onclick=()=>{closeM();setTimeout(saveDrawingTemplate,100);};
+ card.appendChild(saveBtn);
+
+ m.appendChild(card);
+ m.onclick=e=>{if(e.target===m)closeM();};
+ document.body.appendChild(m);
+}
