@@ -6727,7 +6727,6 @@ function finishDrawing(pt) {
  state.live=null;state.tool=null;drawPhase=0;drMode=null;
  updateDrawBtn();showDrawToolbar();saveDrawings();_updateUndoButtons();render();
 if(d.tool==='text'||d.tool==='callout'){
-  alert('reached: '+d.tool);
   setTimeout(()=>showTextEditor(d),100);
 }
 
