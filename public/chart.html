@@ -10146,50 +10146,6 @@ function toggleCamSub(id){
  }
 }
 
-
-// ── Brush Editor ─────────────────────────────────────────────
-function showBrushEditor(dr){
- const ex=document.getElementById('brush-editor-ov');if(ex)ex.remove();
- const ov=document.createElement('div');
- ov.id='brush-editor-ov';
- ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:flex-end;justify-content:center;z-index:9999;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);';
- const colors=['#fbbf24','#22c55e','#ef4444','#3b9eff','#a78bfa','#f472b6','#67e8f9','#fb923c','#ffffff','#64748b'];
- const curCol=dr.brushColor||'#fbbf24';
- const curAlpha=dr.brushAlpha||0.15;
- const colBtns=colors.map(c=>`<button onclick="document.getElementById('be-col').value='${c}';document.querySelectorAll('.be-cb').forEach(b=>{b.style.outline='none';b.style.transform='scale(1)'});this.style.outline='2px solid #fff';this.style.transform='scale(1.3)'" class="be-cb" style="width:28px;height:28px;border-radius:6px;background:${c};border:none;cursor:pointer;transform:${c===curCol?'scale(1.3)':'scale(1)'};outline:${c===curCol?'2px solid #fff':'none'};transition:transform 0.15s;flex-shrink:0"></button>`).join('');
- ov.innerHTML=`
-  <div style="background:rgba(6,10,22,0.98);border-radius:20px 20px 0 0;padding:20px 16px 36px;width:100%;max-width:480px;font-family:Cairo,sans-serif">
-   <div style="width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:0 auto 14px"></div>
-   <div style="text-align:center;font-size:14px;font-weight:700;color:#e0eaf8;margin-bottom:16px">${dr.tool==='hbrush'?'🎨 تمييز أفقي':'🎨 تمييز منطقة'}</div>
-   <div style="margin-bottom:14px">
-    <div style="font-size:10px;color:#4a6080;margin-bottom:8px;text-align:right">اللون</div>
-    <div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end">${colBtns}</div>
-    <input type="hidden" id="be-col" value="${curCol}">
-   </div>
-   <div style="margin-bottom:16px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-     <span id="be-alpha-val" style="font-size:11px;color:#3b9eff;font-family:monospace">${Math.round(curAlpha*100)}%</span>
-     <span style="font-size:10px;color:#4a6080">الشفافية</span>
-    </div>
-    <input id="be-alpha" type="range" min="5" max="60" value="${Math.round(curAlpha*100)}" oninput="document.getElementById('be-alpha-val').textContent=this.value+'%'" style="width:100%;accent-color:#3b9eff">
-   </div>
-   <div style="display:flex;gap:10px">
-    <button onclick="document.getElementById('brush-editor-ov').remove()" style="flex:1;height:44px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#94a3b8;font-size:13px;font-family:Cairo,sans-serif;cursor:pointer">إلغاء</button>
-    <button id="be-save" style="flex:2;height:44px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);border-radius:12px;color:#fbbf24;font-size:14px;font-weight:700;font-family:Cairo,sans-serif;cursor:pointer">تطبيق ✓</button>
-   </div>
-  </div>
- `;
- document.body.appendChild(ov);
- document.getElementById('be-save').onclick=()=>{
-  dr.brushColor=document.getElementById('be-col').value;
-  dr.brushAlpha=parseInt(document.getElementById('be-alpha').value)/100;
-  dr.color=dr.brushColor;
-  saveDrawings();render();ov.remove();
- };
- ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
- ov.addEventListener('touchstart',e=>e.stopPropagation(),{passive:false});
-}
-
 // ── Multi-Condition Alert System ─────────────────────────────
 function showMultiAlertModal(){
  const ex=document.getElementById('multi-alert-ov');if(ex)ex.remove();
