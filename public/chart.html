@@ -4818,21 +4818,7 @@ const volStr=cd.v>=1e9?(cd.v/1e9).toFixed(2)+'B':cd.v>=1e6?(cd.v/1e6).toFixed(2)
   };
   if(_dcr2.rsi){
    const _rsiDivs=_calcDivergences(_fp2,_dcr2.rsi,'RSI');
-   // ── تشخيص مؤقت: اطبع نوع كل نقطة (قمة أو قاع فعلياً) للتأكد ──
-   if(_rsiDivs.length && !window._divDebugPrinted){
-    window._divDebugPrinted=true;
-    const dbg=_rsiDivs.map(d=>{
-     const p1=_fp2[d.i1],  p2=_fp2[d.i2];
-     const prevP1=_fp2[d.i1-1], nextP1=_fp2[d.i1+1];
-     const prevP2=_fp2[d.i2-1], nextP2=_fp2[d.i2+1];
-     const p1IsHigh = p1>prevP1 && p1>nextP1;
-     const p1IsLow = p1<prevP1 && p1<nextP1;
-     const p2IsHigh = p2>prevP2 && p2>nextP2;
-     const p2IsLow = p2<prevP2 && p2<nextP2;
-     return `${d.type}: i1=${d.i1}(${p1IsHigh?'H':p1IsLow?'L':'?'},v=${p1.toFixed(2)}) i2=${d.i2}(${p2IsHigh?'H':p2IsLow?'L':'?'},v=${p2.toFixed(2)})`;
-    }).join('\n');
-    alert('DEBUG RSI DIVS:\n'+dbg);
-   }
+
    _drawDivs(_rsiDivs,'RSI');
   }
   if(_indCache.mcd&&_indCache.mcd.hist)_drawDivs(_calcDivergences(_fp2,_indCache.mcd.hist,'MACD'),'MACD');
