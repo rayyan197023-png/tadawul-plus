@@ -2275,7 +2275,7 @@ const vmx=mv;
   const maxBin=Math.max(...binsTotal)||1;
   const totalVol=binsTotal.reduce((s,v)=>s+v,0);
   // Value Area (70% of volume around POC)
-  const pocIdx=binsTotal.indexOf(Math.max(...binsTotal));
+  const pocIdx=binsTotal.indexOf(maxBin);
   let vaVol=binsTotal[pocIdx],vaLo=pocIdx,vaHi=pocIdx;
   const VA_PCT=0.70;
   while(vaVol<totalVol*VA_PCT&&(vaLo>0||vaHi<BINS-1)){
