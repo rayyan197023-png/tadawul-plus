@@ -739,10 +739,11 @@ function _drawCM(){
 
  // Action buttons 
  const btns=[
- {icon:'', label:'لون', bg:[255,255,255], a:0.06, bc:[255,255,255], ba:0.12, tc:[200,210,230]},
- {icon:'', label:'نسخ', bg:[59,158,255], a:0.1, bc:[59,158,255], ba:0.3, tc:[59,158,255]},
- {icon:'⌫', label:'حذف', bg:[239,68,68], a:0.1, bc:[239,68,68], ba:0.3, tc:[239,68,68]},
+ {label:'لون', bg:[255,255,255], a:0.06, bc:[255,255,255], ba:0.12, tc:[200,210,230]},
+ {label:'نسخ', bg:[59,158,255], a:0.1, bc:[59,158,255], ba:0.3, tc:[59,158,255]},
+ {label:'حذف', bg:[239,68,68], a:0.1, bc:[239,68,68], ba:0.3, tc:[239,68,68]},
  ];
+
  const pad=6,gap=5;
  const totalGap=gap*(btns.length-1)+pad*2;
  const bw=(w-totalGap)/btns.length;
