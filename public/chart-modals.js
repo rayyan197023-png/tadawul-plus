@@ -665,5 +665,229 @@ function showIndSettings(id, label, defColor){
  document.body.appendChild(modal);
 }
 
+function showCustomIndModal(){
+ let m = document.getElementById('custom-ind-modal');
+ if(m) m.remove();
+ m = document.createElement('div');
+ m.id = 'custom-ind-modal';
+ m.style.cssText = 'position:fixed;inset:0;background:rgba(4,7,18,0.92);z-index:10002;display:flex;flex-direction:column;padding:0';
+ const _sbg = document.getElementById('sbg');
+ if(_sbg) _sbg.style.pointerEvents = 'none';
+
+ const closeModal = () => {
+  const _s=document.getElementById('sbg');if(_s)_s.style.pointerEvents='';
+  m.remove();
+ };
+
+ m.innerHTML = `
+  <div style="background:linear-gradient(145deg,#0a0f1e,#050810);border-bottom:1px solid rgba(59,158,255,0.2);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+   <button onclick="document.getElementById('custom-ind-modal')._close()" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:8px;width:28px;height:28px;color:#ef4444;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
+   <span style="font-family:Cairo,sans-serif;font-size:16px;font-weight:800;color:#e0eaf8">مؤشر مخصص</span>
+   <svg viewBox="0 0 22 22" fill="none" width="20" height="20"><polyline points="2,16 6,8 10,11 14,4 18,8" stroke="#3b9eff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="18" cy="8" r="2" stroke="#3b9eff" stroke-width="1.3" fill="none"/></svg>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px">
+
+   <!-- Active custom indicators -->
+   <div>
+    <div style="font-size:10px;color:#4a6080;font-family:Cairo,sans-serif;margin-bottom:8px;text-align:right">المؤشرات النشطة</div>
+    <div id="cind-active-list" style="display:flex;flex-direction:column;gap:6px"></div>
+   </div>
+
+   <!-- Separator -->
+   <div style="height:1px;background:rgba(255,255,255,0.06)"></div>
+
+   <!-- Presets -->
+   <div>
+    <div style="font-size:10px;color:#4a6080;font-family:Cairo,sans-serif;margin-bottom:8px;text-align:right">قوالب جاهزة</div>
+    <div id="cind-presets" style="display:flex;flex-direction:column;gap:5px"></div>
+   </div>
+
+   <!-- Separator -->
+   <div style="height:1px;background:rgba(255,255,255,0.06)"></div>
+
+   <!-- New indicator form -->
+   <div>
+    <div style="font-size:10px;color:#4a6080;font-family:Cairo,sans-serif;margin-bottom:8px;text-align:right">إنشاء مؤشر جديد</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+     <input id="cind-name" placeholder="اسم المؤشر" style="background:#070b14;border:1.5px solid #1e2d45;border-radius:10px;color:#f0f2f8;font-size:13px;padding:10px 12px;font-family:Cairo,sans-serif;text-align:right;outline:none">
+     <textarea id="cind-formula" placeholder="المعادلة -- مثال: EMA(RSI(close,14),3)" rows="3" style="background:#070b14;border:1.5px solid #1e2d45;border-radius:10px;color:#f0f2f8;font-size:12px;padding:10px 12px;font-family:monospace;direction:ltr;resize:none;outline:none;line-height:1.6"></textarea>
+     <div style="display:flex;gap:8px;align-items:center">
+      <select id="cind-type" style="flex:1;background:#070b14;border:1.5px solid #1e2d45;border-radius:10px;color:#f0f2f8;font-size:12px;padding:8px 10px;font-family:Cairo,sans-serif;outline:none">
+       <option value="overlay">على الشارت الرئيسي</option>
+       <option value="subpanel">بانل منفصل (أسفل)</option>
+      </select>
+      <input id="cind-color" type="color" value="#3b9eff" style="width:40px;height:38px;border-radius:8px;cursor:pointer;border:1.5px solid rgba(59,158,255,0.3);background:transparent;flex-shrink:0">
+     </div>
+     <!-- Reference guide -->
+     <div style="background:rgba(59,158,255,0.06);border:1px solid rgba(59,158,255,0.15);border-radius:10px;padding:10px;font-size:10px;line-height:1.9;direction:ltr">
+      <div style="color:#3b9eff;font-family:monospace;font-weight:700;margin-bottom:4px">📚 دوال المصادر</div>
+      <div style="color:#67e8f9;font-family:monospace">close · open · high · low · volume · hl2 · hlc3 · ohlc4</div>
+      <div style="color:#3b9eff;font-family:monospace;font-weight:700;margin:6px 0 4px">📈 المتوسطات</div>
+      <div style="color:#a5f3fc;font-family:monospace">SMA(src,n) · EMA(src,n) · WMA(src,n) · DEMA(src,n) · TEMA(src,n) · HULL(src,n)</div>
+      <div style="color:#3b9eff;font-family:monospace;font-weight:700;margin:6px 0 4px">⚡ مؤشرات الزخم</div>
+      <div style="color:#a5f3fc;font-family:monospace">RSI(src,n) · STOCH(k,d) · CCI(n) · MOM(src,n) · ROC(src,n) · CMO(src,n)</div>
+      <div style="color:#3b9eff;font-family:monospace;font-weight:700;margin:6px 0 4px">📊 مؤشرات الحجم</div>
+      <div style="color:#a5f3fc;font-family:monospace">OBV() · MFI(n) · CMF(n) · VWAP() · PVI() · NVI()</div>
+      <div style="color:#3b9eff;font-family:monospace;font-weight:700;margin:6px 0 4px">🔧 العمليات</div>
+      <div style="color:#a5f3fc;font-family:monospace">ADD(a,b) · SUB(a,b) · MUL(a,b) · DIV(a,b) · ABS(a) · SQRT(a) · MAX(a,b) · MIN(a,b)</div>
+      <div style="color:#3b9eff;font-family:monospace;font-weight:700;margin:6px 0 4px">🔀 التحويل</div>
+      <div style="color:#a5f3fc;font-family:monospace">ADDK(a,k) · MULK(a,k) · SHIFT(a,n) · CROSS(a,b) · HIGHEST(src,n) · LOWEST(src,n) · STDEV(src,n)</div>
+     </div>
+     <div id="cind-error" style="display:none;color:#ef4444;font-size:10px;font-family:Cairo,sans-serif;text-align:right"></div>
+     <div style="display:flex;gap:8px">
+      <button id="cind-test" style="flex:1;padding:10px;background:rgba(59,158,255,0.08);border:1.5px solid rgba(59,158,255,0.25);border-radius:10px;color:#3b9eff;font-family:Cairo,sans-serif;font-size:12px;cursor:pointer">اختبار</button>
+      <button id="cind-add" style="flex:2;padding:10px;background:linear-gradient(135deg,#1a3a6e,#0d2248);border:1.5px solid rgba(59,158,255,0.4);border-radius:10px;color:#3b9eff;font-family:Cairo,sans-serif;font-size:13px;font-weight:700;cursor:pointer">إضافة للشارت</button>
+     </div>
+    </div>
+   </div>
+  </div>
+ `;
+
+ m._close = closeModal;
+
+ // Render active list
+ const renderActive = () => {
+  const el = document.getElementById('cind-active-list');
+  if(!el) return;
+  el.innerHTML = '';
+  // Show ALL active indicators (built-in + custom)
+  const IND_COLORS={RSI:'#22c55e',MACD:'#38bdf8',BB:'#818cf8',ATR:'#facc15',STD:'#fde68a',
+   ADX:'#e879f9',PSAR:'#f0abfc',SUPERTREND:'#4ade80',ICHIMOKU:'#34d399',OBV:'#67e8f9',
+   MFI:'#38bdf8',STOCH:'#f472b6',STOCHRSI:'#ec4899',VWAP:'#fb923c',KC:'#22d3ee',
+   DC:'#818cf8',PIVOT:'#f59e0b',VOL_MA:'#94a3b8',HTF_EMA:'#f472b6',VWAP_D:'#fb923c',VP:'#22d3ee'};
+  const activeBuiltIn=state.inds||[];
+  const totalActive=activeBuiltIn.length+customInds.length;
+  if(!totalActive){
+   el.innerHTML='<div style="font-size:10px;color:#2a3a5a;font-family:Cairo,sans-serif;text-align:center;padding:10px">لا توجد مؤشرات نشطة</div>';
+   return;
+  }
+  // Built-in indicators
+  activeBuiltIn.forEach(id=>{
+   const def=ALL_IND?.find(d=>d.id===id)||{id,l:id,c:IND_COLORS[id]||'#94a3b8'};
+   const row=document.createElement('div');
+   row.style.cssText='display:flex;align-items:center;gap:8px;padding:7px 10px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.06);margin-bottom:4px';
+   row.innerHTML=`
+    <div style="width:9px;height:9px;border-radius:50%;background:${def.c||IND_COLORS[id]||'#94a3b8'};flex-shrink:0"></div>
+    <span style="flex:1;font-size:11px;color:#c0d0e8;font-family:Cairo,sans-serif">${def.l||id}</span>
+    <span style="font-size:8px;color:#3a4a6a;background:rgba(255,255,255,0.04);border-radius:4px;padding:1px 5px">مدمج</span>
+    <button data-blt="${id}" class="cind-blt-del" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15);border-radius:6px;color:#ef4444;font-size:10px;padding:2px 7px;cursor:pointer">✕</button>
+   `;
+   el.appendChild(row);
+  });
+  // Custom indicators
+  customInds.forEach((ci,i)=>{
+   const row=document.createElement('div');
+   row.style.cssText='display:flex;align-items:center;gap:8px;padding:7px 10px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.06);margin-bottom:4px';
+   row.innerHTML=`
+    <div style="width:9px;height:9px;border-radius:50%;background:${ci.color};flex-shrink:0"></div>
+    <span style="flex:1;font-size:11px;color:#c0d0e8;font-family:Cairo,sans-serif">${ci.name}</span>
+    <span style="font-size:8px;color:#3a4a6a;background:rgba(59,158,255,0.08);border-radius:4px;padding:1px 5px;color:#3b9eff">مخصص</span>
+    <button data-ci="${i}" class="cind-del" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15);border-radius:6px;color:#ef4444;font-size:10px;padding:2px 7px;cursor:pointer">✕</button>
+   `;
+   el.appendChild(row);
+  });
+  // Delete delegation
+  el.onclick=e=>{
+   const btn=e.target.closest('.cind-del');
+   const blt=e.target.closest('.cind-blt-del');
+   if(btn){customInds.splice(parseInt(btn.dataset.ci),1);saveSettings();invalidateChart();renderActive();render();}
+   if(blt){
+    const id=blt.dataset.blt;
+    state.inds=state.inds.filter(x=>x!==id);
+    saveSettings();updateIndBadge();invalidateChart();renderActive();render();
+   }
+  };
+ };
+
+ m.onclick = e => { if(e.target===m) closeModal(); };
+ document.body.appendChild(m); // Must be in DOM before renderActive/presets
+ renderActive();
+ // Render presets
+ const presetsEl = document.getElementById('cind-presets');
+ if(presetsEl){
+  CUSTOM_PRESETS.forEach(p=>{
+   const b = document.createElement('button');
+   b.style.cssText = 'display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;cursor:pointer;text-align:right;width:100%;box-sizing:border-box;direction:rtl;transition:border-color 0.15s';
+   // Mini sparkline SVG based on shape type
+   const sparklines={
+    line:`<svg viewBox="0 0 40 20" width="40" height="20"><polyline points="2,14 8,10 14,12 20,6 26,8 32,4 38,7" stroke="${p.color}" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    oscillator:`<svg viewBox="0 0 40 20" width="40" height="20"><line x1="2" y1="10" x2="38" y2="10" stroke="rgba(255,255,255,0.1)" stroke-width="0.8"/><polyline points="2,16 6,8 10,14 14,4 18,12 22,6 26,14 30,8 34,12 38,10" stroke="${p.color}" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    histogram:`<svg viewBox="0 0 40 20" width="40" height="20"><line x1="2" y1="10" x2="38" y2="10" stroke="rgba(255,255,255,0.1)" stroke-width="0.8"/><rect x="3" y="6" width="4" height="4" fill="${p.color}" opacity="0.7"/><rect x="9" y="12" width="4" height="2" fill="${p.color}" opacity="0.4"/><rect x="15" y="5" width="4" height="5" fill="${p.color}" opacity="0.8"/><rect x="21" y="11" width="4" height="3" fill="${p.color}" opacity="0.5"/><rect x="27" y="4" width="4" height="6" fill="${p.color}" opacity="0.9"/><rect x="33" y="12" width="4" height="2" fill="${p.color}" opacity="0.4"/></svg>`,
+    area:`<svg viewBox="0 0 40 20" width="40" height="20"><path d="M2,16 L8,10 L14,12 L20,5 L26,8 L32,4 L38,7 L38,18 L2,18 Z" fill="${p.color}" opacity="0.2"/><polyline points="2,16 8,10 14,12 20,5 26,8 32,4 38,7" stroke="${p.color}" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+   };
+   const spark=sparklines[p.shape]||sparklines.line;
+   const typeBadge=p.type==='overlay'?
+    `<span style="font-size:8px;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);border-radius:4px;padding:1px 5px">overlay</span>`:
+    `<span style="font-size:8px;background:rgba(59,158,255,0.12);color:#3b9eff;border:1px solid rgba(59,158,255,0.25);border-radius:4px;padding:1px 5px">بانل</span>`;
+   b.innerHTML = `
+    <div style="flex:1;min-width:0">
+     <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+      <div style="width:8px;height:8px;border-radius:50%;background:${p.color};flex-shrink:0"></div>
+      <span style="font-size:12px;color:#c0d0e8;font-family:Cairo,sans-serif;font-weight:600">${p.name}</span>
+      ${typeBadge}
+     </div>
+     <div style="font-size:10px;color:#4a6080;font-family:Cairo,sans-serif;line-height:1.4">${p.desc||''}</div>
+    </div>
+    <div style="flex-shrink:0;opacity:0.8;margin-top:2px">${spark}</div>
+   `;
+   b.onmouseenter=()=>{b.style.borderColor=p.color+'55';};
+   b.onmouseleave=()=>{b.style.borderColor='rgba(255,255,255,0.08)';};
+   b.onclick = () => {
+    const nameEl = document.getElementById('cind-name');
+    const fEl = document.getElementById('cind-formula');
+    const tEl = document.getElementById('cind-type');
+    const cEl = document.getElementById('cind-color');
+    if(nameEl) nameEl.value = p.name;
+    if(fEl) fEl.value = p.formula;
+    if(tEl) tEl.value = p.type;
+    if(cEl) cEl.value = p.color;
+    // Highlight selected
+    presetsEl.querySelectorAll('button').forEach(bb=>bb.style.borderColor='rgba(255,255,255,0.08)');
+    b.style.borderColor=p.color;
+    b.style.background='rgba(255,255,255,0.06)';
+   };
+   presetsEl.appendChild(b);
+  });
+ }
+
+ const testBtn = document.getElementById('cind-test');
+ if(testBtn) testBtn.onclick = () => {
+  const formula = document.getElementById('cind-formula')?.value?.trim();
+  const errEl = document.getElementById('cind-error');
+  if(!formula){ if(errEl){errEl.style.display='block';errEl.textContent='أدخل معادلة أولاً';} return; }
+  const all = state.allCandles;
+  if(!all.length){ if(errEl){errEl.style.display='block';errEl.textContent='لا توجد بيانات';} return; }
+  const allC2=all.map(d=>d.c), allH2=all.map(d=>d.hi), allL2=all.map(d=>d.lo), allV2=all.map(d=>d.v);
+  const result = _evalCustomInd(formula, allC2, allH2, allL2, allV2);
+  if(!result){ if(errEl){errEl.style.display='block';errEl.textContent='خطأ في المعادلة -- تحقق من الصيغة';} return; }
+  const valid = result.filter(v=>v!=null);
+  if(!valid.length){ if(errEl){errEl.style.display='block';errEl.textContent='المعادلة تعطي قيماً فارغة';} return; }
+  if(errEl){errEl.style.display='block';errEl.style.color='#22c55e';errEl.textContent=`✓ صحيح -- ${valid.length} قيمة، آخرها: ${valid[valid.length-1].toFixed(4)}`;}
+  setTimeout(()=>{if(errEl){errEl.style.color='#ef4444';}},3000);
+ };
+
+ // Add button
+ const addBtn = document.getElementById('cind-add');
+ if(addBtn) addBtn.onclick = () => {
+  const name = document.getElementById('cind-name')?.value?.trim() || 'مؤشر مخصص';
+  const formula = document.getElementById('cind-formula')?.value?.trim();
+  const type = document.getElementById('cind-type')?.value || 'subpanel';
+  const color = document.getElementById('cind-color')?.value || '#3b9eff';
+  const errEl = document.getElementById('cind-error');
+  if(!formula){ if(errEl){errEl.style.display='block';errEl.textContent='أدخل معادلة أولاً';} return; }
+  // Quick validate
+  const all = state.allCandles;
+  if(all.length){
+   const result = _evalCustomInd(formula, all.map(d=>d.c), all.map(d=>d.hi), all.map(d=>d.lo), all.map(d=>d.v));
+   if(!result || !result.filter(v=>v!=null).length){
+    if(errEl){errEl.style.display='block';errEl.textContent='خطأ في المعادلة';} return;
+   }
+  }
+  customInds.push({id:'cind_'+Date.now(), name, formula, type, color, lineWidth:1.4});
+  saveSettings(); invalidateChart(); renderActive(); render();
+ };
+
+}
+
 
 
