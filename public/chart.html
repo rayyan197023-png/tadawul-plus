@@ -1983,9 +1983,7 @@ const lastC=sub[n-1]?.c||0;
  // Background
  ctx.fillStyle=darkTheme?'#050810':'#f0f4fb';
  ctx.fillRect(0,vTop,CW,VOL_H);
- // Top separator line
- ctx.strokeStyle='#1a2535';ctx.lineWidth=1;
- ctx.beginPath();ctx.moveTo(0,vTop);ctx.lineTo(CW,vTop);ctx.stroke();
+
  // VOL label
  ctx.fillStyle='#3a4a60';ctx.font='bold 8px monospace';ctx.textAlign='left';
  ctx.fillText('VOL',4,vTop+10);
