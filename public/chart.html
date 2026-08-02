@@ -2572,10 +2572,8 @@ const vmx=mv;
  else if(tool==='breakout_arrow'){
   if(dr._boIdx===undefined||dr._boIdx===null)return;
   const _VIS2=sub.length;
-  const _endI2=state.allCandles.length-Math.min(Math.max(0,state.offset),state.allCandles.length-_VIS2);
-  const _startI2=Math.max(0,_endI2-_VIS2);
-  const _relIdx=dr._boIdx-_startI2;
-  if(_relIdx<0||_relIdx>=_VIS2)return;
+  const _relIdx=dr._boIdx-start;
+  if(_relIdx<0||_relIdx>=n)return;
   const ax=tx(_relIdx);
   const isUp=dr._boDir===1;
   const aCol=col;
