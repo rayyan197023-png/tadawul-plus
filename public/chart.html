@@ -2863,7 +2863,6 @@ const vmx=mv;
  const slope=(totalDy*r)/dx;
  ctx.strokeStyle=fc[ri];
  ctx.lineWidth=r===1.0?1.2:0.9;
- ctx.setLineDash(r===1.0?[]:[]);
  ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(CW,p1.y+(CW-p1.x)*slope);ctx.stroke();
  ctx.setLineDash([]);
  // Label at p2.x distance
