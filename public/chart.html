@@ -8088,7 +8088,8 @@ function _checkMultiAlerts(sub,ind){
         osc.connect(gain);gain.connect(ac.destination);
         osc.frequency.setValueAtTime(660,ac.currentTime);
 
-        osc.frequency.exponentialRampToValueAtTime(alertType==='above'?1320:220,ac.currentTime+0.3);
+        osc.frequency.exponentialRampToValueAtTime(990,ac.currentTime+0.3);
+
         gain.gain.setValueAtTime(0.4,ac.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.8);
         osc.start(ac.currentTime);osc.stop(ac.currentTime+0.8);
