@@ -5465,6 +5465,7 @@ arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),ty(v)),f=false):ctx.li
   if(lm!=null){ctx.fillStyle='#38bdf8';ctx.fillText('MACD '+lm.toFixed(2),4,mpTop+8);}
   if(ls!=null){ctx.fillStyle='#f59e0b';ctx.fillText('SIG '+ls.toFixed(2),4,mpTop+17);}
   ctx.restore();
+  }
  }}catch(_e_MACD_STR){console.error('MACD_STR error:',_e_MACD_STR.message,_e_MACD_STR.stack);}
 
  // ══ MA Cross Strategy ═════════════════════════════════════════
