@@ -1758,6 +1758,7 @@ if(sub.length>0){
   _indCache.key=_indCacheKey();
   _indCache.allC=allC; _indCache.allH=allH; _indCache.allL=allL; _indCache.allV=allV;
   const _fi=arr=>arr; // store full arrays in cache (slicing happens on read)
+  const _srsi=hasInd('STOCHRSI')?calcStochRSI(allC):null;
   const _r={
  // Moving Averages
  ma5: _fi(hasInd('MA5') ?sma(allC,getIS('MA5').period||5) :null),
@@ -1792,8 +1793,8 @@ if(sub.length>0){
  std: _fi(hasInd('STD') ?calcSTD(allC,getIS('STD').period||20):null),
  // Momentum
  rsi: _fi(hasInd('RSI') ?rsi(allC, getIS('RSI').period||14) :null),
- stochrsiK:_fi(hasInd('STOCHRSI')?calcStochRSI(allC).k:null),
- stochrsiD:_fi(hasInd('STOCHRSI')?calcStochRSI(allC).d:null),
+  stochrsiK:_fi(_srsi?_srsi.k:null),
+ stochrsiD:_fi(_srsi?_srsi.d:null),
  roc: _fi(hasInd('ROC') ?calcROC(allC):null),
  mom: _fi(hasInd('MOM') ?calcMOM(allC):null),
  ao: _fi(hasInd('AO') ?calcAO(allH,allL):null),
