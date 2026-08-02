@@ -6259,6 +6259,8 @@ cv.addEventListener('dragstart',e=>e.preventDefault(),{passive:false});
  const _vp=document.querySelector('meta[name=viewport]');
  if(!_vp)return;
  const _reset=()=>{
+  const t=document.getElementById('toast');
+  if(t){t.textContent='scale:'+(window.visualViewport?window.visualViewport.scale.toFixed(2):'?')+' dpr:'+window.devicePixelRatio;t.style.display='block';t.classList.add('show');}
   _vp.setAttribute('content','width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,viewport-fit=cover');
  };
  document.addEventListener('touchend',()=>{setTimeout(_reset,50);},{passive:true});
