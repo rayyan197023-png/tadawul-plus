@@ -2885,7 +2885,7 @@ const vmx=mv;
  else if((tool==='pitchfork'||tool==='schiff')&&dr.pts&&dr.pts.length>=2){
   // ── Andrews Pitchfork / Schiff Pitchfork ─────────────────
   const pts=dr.pts;
-  const A=pts[0],B=pts[1],C=pts[2]||pts[1];
+  const A=pts[0],B=pts[1],C=pts[2];
   if(pts.length>=3){
    // Median line: from A to midpoint of BC
    const midBC={x:(B.x+C.x)/2, y:(B.y+C.y)/2};
