@@ -2402,9 +2402,7 @@ const vmx=mv;
  if(dr._ai){
   if(dr.tool==='wave_dot'&&dr._price!=null){
    // wave_dot: position at specific candle index
-   const _wdEnd=state.allCandles.length-Math.min(Math.max(0,state.offset),state.allCandles.length-sub.length);
-   const _wdStart=Math.max(0,_wdEnd-sub.length);
-   const _wdCI=Math.max(0,Math.min(sub.length-1,(dr._p1_idx||0)-_wdStart));
+   const _wdCI=Math.max(0,Math.min(sub.length-1,(dr._p1_idx||0)-start));
    dr.p1={x:tx(_wdCI), y:ty(dr._price)};
    dr.p2={x:tx(_wdCI), y:ty(dr._price)};
   } else if(dr._price!=null){
