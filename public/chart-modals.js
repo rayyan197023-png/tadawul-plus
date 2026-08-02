@@ -586,5 +586,84 @@ function showIndAlertModal(){
  document.body.appendChild(m);
 }
 
+function showIndSettings(id, label, defColor){
+ const cfg={...IND_DEFAULTS[id],...(indSettings[id]||{})};
+ // Build modal
+ let existing=document.getElementById('ind-settings-modal');
+ if(existing)existing.remove();
+ const modal=document.createElement('div');
+ modal.id='ind-settings-modal';
+ modal.style.cssText='position:fixed;inset:0;background:rgba(4,7,18,0.88);z-index:10000;display:flex;align-items:flex-end;justify-content:center;padding-bottom:20px';
+ // Disable sbg so sheet doesn't close when interacting with modal
+ const _sbg=document.getElementById('sbg');
+ if(_sbg)_sbg.style.pointerEvents='none';
+ const card=document.createElement('div');
+ card.style.cssText='background:linear-gradient(145deg,#0d1628,#060c18);border:1.5px solid rgba(59,158,255,0.3);border-radius:20px;padding:20px;width:calc(100% - 32px);max-width:380px;box-shadow:0 -8px 40px rgba(0,0,0,0.9)';
+ card.onclick=(e)=>e.stopPropagation();
+ // Header
+ const hdr=document.createElement('div');
+ hdr.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:16px';
+ hdr.innerHTML=`<span style="font-family:Cairo,sans-serif;font-size:15px;font-weight:800;color:#e0eaf8">إعدادات ${label}</span><button onclick="const _sbg4=document.getElementById('sbg');if(_sbg4)_sbg4.style.pointerEvents='';document.getElementById('ind-settings-modal').remove()" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:8px;width:28px;height:28px;color:#ef4444;font-size:16px;cursor:pointer">×</button>`;
+ card.appendChild(hdr);
+ // Build fields
+ const fields=[];
+ if(cfg.period!=null)fields.push({key:'period',label:'الفترة',min:2,max:200,step:1,val:cfg.period});
+ if(cfg.fast!=null)  fields.push({key:'fast',  label:'سريع',  min:2,max:50, step:1,val:cfg.fast});
+ if(cfg.slow!=null)  fields.push({key:'slow',  label:'بطيء',  min:5,max:200,step:1,val:cfg.slow});
+ if(cfg.signal!=null)fields.push({key:'signal',label:'إشارة', min:2,max:50, step:1,val:cfg.signal});
+ if(cfg.stddev!=null)fields.push({key:'stddev',label:'الانحراف',min:0.5,max:4,step:0.5,val:cfg.stddev});
+ const vals={...cfg};
+ fields.forEach(f=>{
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px';
+  const lbl=document.createElement('span');
+  lbl.style.cssText='font-family:Cairo,sans-serif;font-size:12px;color:#8aa0c0;flex-shrink:0;min-width:52px;text-align:right';
+  lbl.textContent=f.label;
+  const numDisp=document.createElement('span');
+  numDisp.style.cssText='font-family:monospace;font-size:13px;font-weight:700;color:#3b9eff;min-width:28px;text-align:center';
+  numDisp.textContent=f.val;
+  const slider=document.createElement('input');
+  slider.type='range';slider.min=f.min;slider.max=f.max;slider.step=f.step;slider.value=f.val;
+  slider.style.cssText='flex:1;height:4px;accent-color:#3b9eff;cursor:pointer';
+  slider.oninput=()=>{numDisp.textContent=slider.value;vals[f.key]=Number(slider.value);};
+  row.appendChild(lbl);row.appendChild(numDisp);row.appendChild(slider);
+  card.appendChild(row);
+ });
+ // Color picker
+ const colorRow=document.createElement('div');
+ colorRow.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:12px';
+ const colorLbl=document.createElement('span');
+ colorLbl.style.cssText='font-family:Cairo,sans-serif;font-size:12px;color:#8aa0c0;flex-shrink:0;min-width:52px;text-align:right';
+ colorLbl.textContent='اللون';
+ const colorInp=document.createElement('input');
+ colorInp.type='color';colorInp.value=cfg.color||defColor;
+ colorInp.style.cssText='width:44px;height:28px;border-radius:6px;cursor:pointer;border:1px solid rgba(59,158,255,0.3);background:transparent;flex-shrink:0';
+ colorInp.oninput=()=>{vals.color=colorInp.value;};
+ colorRow.appendChild(colorLbl);colorRow.appendChild(colorInp);
+ card.appendChild(colorRow);
+ // Apply button
+ const applyBtn=document.createElement('button');
+ applyBtn.style.cssText='width:100%;padding:12px;background:linear-gradient(135deg,#1a3a6e,#0d2248);border:1.5px solid rgba(59,158,255,0.4);border-radius:12px;color:#3b9eff;font-family:Cairo,sans-serif;font-size:14px;font-weight:700;cursor:pointer';
+ applyBtn.textContent='تطبيق';
+ applyBtn.onclick=()=>{
+  if(!indSettings[id])indSettings[id]={};
+  Object.assign(indSettings[id],vals);
+  saveSettings();invalidateChart();render();
+  const _sbg3=document.getElementById('sbg');
+  if(_sbg3)_sbg3.style.pointerEvents='';
+  document.getElementById('ind-settings-modal').remove();
+ };
+ card.appendChild(applyBtn);
+ modal.appendChild(card);
+ modal.onclick=(e)=>{
+  if(e.target===modal){
+   const _sbg2=document.getElementById('sbg');
+   if(_sbg2)_sbg2.style.pointerEvents='';
+   modal.remove();
+  }
+ };
+ document.body.appendChild(modal);
+}
+
 
 
