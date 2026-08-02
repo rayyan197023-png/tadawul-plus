@@ -1990,7 +1990,7 @@ const lastC=sub[n-1]?.c||0;
  ctx.beginPath();ctx.rect(0,vTop+1,CW,VOL_H-1);ctx.clip();
 
  // Volume bars — height proportional to max volume
- const vmx=Math.max(...sub.map(d=>d.v))||1;
+const vmx=mv;
  const _volZoom=panelYZoom['vol']||1; // Y-zoom for volume panel
  const _vmxZ=vmx/_volZoom; // zoom in = smaller effective max = taller bars
  const PAD_TOP=6; // pixels from vTop to tallest bar top
