@@ -5428,7 +5428,7 @@ arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),ty(v)),f=false):ctx.li
   const mpTop=cBot-mpH-2, mpBot=cBot-2;
   const mpMid=mpTop+mpH/2;
   const _mVals=[..._mmS,..._msS,..._mhS].filter(v=>v!=null);
-  if(_mVals.length<2){return;}
+  if(_mVals.length>=2){
   const mpMax=Math.max(..._mVals.map(Math.abs))||1;
   const tyM=v=>mpMid-((v||0)/mpMax)*(mpH/2*0.9);
 
