@@ -709,7 +709,8 @@ function _drawCM(){
 
  // Title bar 
  ctx.fillStyle='rgba(59,158,255,0.06)';
- ctx.beginPath();ctx.roundRect(x,y,w,36,{upperLeft:R,upperRight:R,lowerLeft:0,lowerRight:0});ctx.fill();
+ ctx.beginPath();ctx.roundRect(x,y,w,36,R);ctx.fill();
+
 
  // Separator 
  ctx.strokeStyle='rgba(59,158,255,0.14)';ctx.lineWidth=0.7;
