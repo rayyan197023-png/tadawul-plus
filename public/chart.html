@@ -991,8 +991,6 @@ ohlc4: allH.map((h,i)=>((allC[i-1]??allC[i])+h+allL[i]+allC[i])/4),
    SQRT: (a)=>Array.isArray(a)?a.map(v=>v==null?null:Math.sqrt(Math.abs(v))):Math.sqrt(Math.abs(a)),
    MAX: (a,b)=>Array.isArray(a)?a.map((v,i)=>v==null||(Array.isArray(b)&&b[i]==null)?null:Math.max(v,Array.isArray(b)?b[i]:b)):Math.max(a,b),
    MIN: (a,b)=>Array.isArray(a)?a.map((v,i)=>v==null||(Array.isArray(b)&&b[i]==null)?null:Math.min(v,Array.isArray(b)?b[i]:b)):Math.min(a,b),
-   // Number of candles
-   N: allC.length,
   };
 
   // Build function from formula
