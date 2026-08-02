@@ -1502,7 +1502,7 @@ function _renderOrderFlow(ctx, sub, tx, top, ph, CW, bw){
 
  // Cumulative delta value (bottom right)
  const cumLast=of[of.length-1].cumDelta;
- const cc=cumLast>=0?'rgba(251,191,36,0.8)':'rgba(251,191,36,0.8)';
+ const cc='rgba(251,191,36,0.8)';
  ctx.fillStyle=cc;ctx.font='6.5px monospace';ctx.textAlign='right';
  ctx.fillText('Σ'+(cumLast>=0?'+':'')+fmt(cumLast),CW-4,top+ph-4);
 
