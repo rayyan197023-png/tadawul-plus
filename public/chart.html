@@ -2343,7 +2343,7 @@ const vmx=mv;
  let drawSub=sub;
  if(state.chartType==='renko'&&renkoSub&&renkoSub!==sub){
   drawSub=renkoSub;
- } if(state.chartType==='heikin'&&sub.length>0){
+ } else if(state.chartType==='heikin'&&sub.length>0){
  const ha=[];
  sub.forEach((d,i)=>{
  const haC=(d.o+d.hi+d.lo+d.c)/4;
