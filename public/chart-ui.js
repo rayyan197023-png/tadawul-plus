@@ -71,3 +71,153 @@ function _applyTheme(){
     themeBtn.style.borderColor=D?'#2a3a55':'#c5d0e0';
   }
 }
+
+function toggleReplay(){
+  if(replayMode){_stopReplay();return;}
+  _startReplay();
+}
+function _startReplay(){
+  replayMode=true;
+  const total=state.allCandles.length;
+  replayIdx=Math.max(10,Math.floor(total*0.35));
+  const vis=Math.min(30,replayIdx);
+  state.visible=vis;
+  state.offset=total-replayIdx; // newest revealed candle on RIGHT
+  const btn=document.getElementById('btn-replay');
+  if(btn){btn.classList.add('active');btn.style.borderColor='#ef4444';}
+  _showReplayBar();
+  const pos=document.getElementById('replay-pos');
+  if(pos){
+   const d0=state.allCandles[replayIdx-1];
+   const dt0=d0&&d0.t?new Date(d0.t).toLocaleDateString('ar-SA-u-nu-latn',{year:'numeric',month:'short',day:'numeric',weekday:'short'}):'-';
+   pos.textContent=dt0+' | '+replayIdx+' / '+total;
+   pos.style.cssText='font-size:9px;color:#a78bfa;font-family:Cairo,monospace;flex:1;text-align:center;font-weight:600';
+  }
+  render();
+}
+function _stopReplay(){
+  if(replayTimer){clearInterval(replayTimer);replayTimer=null;}
+  replayMode=false;
+  // Restore full chart view
+  state.visible=Math.min(50,state.allCandles.length);
+  state.offset=0;
+  const btn=document.getElementById('btn-replay');
+  if(btn){btn.classList.remove('active');btn.style.borderColor='';}
+  _hideReplayBar();render();
+}
+function _replayStep(dir){
+  if(!replayMode)return;
+  const total=state.allCandles.length;
+  replayIdx=Math.max(10,Math.min(total,replayIdx+dir));
+  // Show candles 0..replayIdx, anchored so newest revealed is on RIGHT
+  const vis=Math.min(50,replayIdx);
+  state.visible=vis;
+  // offset = how many candles from END are hidden
+  // We want to show up to candle[replayIdx-1] on right edge
+  state.offset=total-replayIdx;
+  // Update position label
+  const pos=document.getElementById('replay-pos');
+  if(pos){
+   const d=state.allCandles[replayIdx-1];
+   const dt=d&&d.t?new Date(d.t).toLocaleDateString('ar-SA-u-nu-latn',{year:'numeric',month:'short',day:'numeric',weekday:'short'}):'-';
+   const tm=d&&d.t?new Date(d.t).toLocaleTimeString('ar-SA-u-nu-latn',{hour:'2-digit',minute:'2-digit',hour12:false}):'';
+   pos.textContent=dt+(tm?' '+tm:'')+' | '+replayIdx+'/'+total;
+   pos.style.cssText='font-size:9px;color:#a78bfa;font-family:Cairo,monospace;flex:1;text-align:center;font-weight:600';
+  }
+  // Stop at last candle
+  if(replayIdx>=total&&replayTimer){
+    clearInterval(replayTimer);replayTimer=null;
+    const pauseBtn=document.getElementById('replay-pause');
+    if(pauseBtn)pauseBtn.textContent='انتهى';
+  }
+  render();
+}
+function _replayPlay(spd){
+  if(replayTimer){clearInterval(replayTimer);replayTimer=null;}
+  const total=state.allCandles.length;
+  replayTimer=setInterval(()=>{
+    if(replayIdx>=total){
+      clearInterval(replayTimer);replayTimer=null;
+      return;
+    }
+    _replayStep(1);
+  },spd);
+}
+function _showReplayBar(){
+  let bar=document.getElementById('replay-bar');
+  if(!bar){
+    bar=document.createElement('div');
+    bar.id='replay-bar';
+    bar.style.cssText='position:fixed;bottom:0;left:0;right:0;background:rgba(6,10,22,0.97);border-top:1px solid rgba(167,139,250,0.3);padding:6px 12px;z-index:800;display:flex;align-items:center;gap:8px;-webkit-user-select:none';
+    // Step buttons
+    const stepBack=document.createElement('button');
+    stepBack.textContent='‹';
+    stepBack.style.cssText='background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#e0eaf8;font-size:16px;width:36px;height:34px;cursor:pointer;flex-shrink:0';
+    stepBack.onclick=()=>_replayStep(1);
+    bar.appendChild(stepBack);
+
+    // Speed selector
+    const speeds=[{l:'×½',v:1200},{l:'×1',v:700},{l:'×2',v:350},{l:'×4',v:150}];
+    let activeSpd=speeds[1];
+    const spdWrap=document.createElement('div');
+    spdWrap.style.cssText='display:flex;gap:4px;flex-shrink:0';
+    speeds.forEach(spd=>{
+      const b=document.createElement('button');
+      b.textContent=spd.l;
+      b.style.cssText='background:'+(spd===activeSpd?'rgba(167,139,250,0.25)':'rgba(167,139,250,0.08)')+';border:1px solid rgba(167,139,250,'+(spd===activeSpd?'0.5':'0.2')+');border-radius:8px;color:#a78bfa;font-size:11px;width:36px;height:34px;cursor:pointer;font-family:monospace;flex-shrink:0;font-weight:700';
+      b.id='replay-spd-'+spd.v;
+      b.onclick=()=>{
+        activeSpd=spd;
+        spdWrap.querySelectorAll('button').forEach(bb=>{
+          const isActive=bb.id==='replay-spd-'+spd.v;
+          bb.style.background=isActive?'rgba(167,139,250,0.25)':'rgba(167,139,250,0.08)';
+          bb.style.borderColor=isActive?'rgba(167,139,250,0.5)':'rgba(167,139,250,0.2)';
+        });
+        if(replayTimer)_replayPlay(spd.v);
+      };
+      spdWrap.appendChild(b);
+    });
+    bar.appendChild(spdWrap);
+
+    // Play / Pause
+    const playBtn=document.createElement('button');
+    playBtn.id='replay-playbtn';
+    playBtn.innerHTML='<svg viewBox="0 0 16 16" fill="none" width="14" height="14"><polygon points="3,2 13,8 3,14" fill="currentColor"/></svg>';
+    playBtn.style.cssText='background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;color:#a78bfa;font-size:12px;width:36px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0';
+    let _playing=false;
+    playBtn.onclick=()=>{
+      _playing=!_playing;
+      if(_playing){
+        _replayPlay(activeSpd.v);
+        playBtn.innerHTML='<svg viewBox="0 0 16 16" fill="none" width="14" height="14"><rect x="2" y="2" width="4" height="12" fill="currentColor"/><rect x="10" y="2" width="4" height="12" fill="currentColor"/></svg>';
+      } else {
+        if(replayTimer){clearInterval(replayTimer);replayTimer=null;}
+        playBtn.innerHTML='<svg viewBox="0 0 16 16" fill="none" width="14" height="14"><polygon points="3,2 13,8 3,14" fill="currentColor"/></svg>';
+      }
+    };
+    bar.appendChild(playBtn);
+
+    // Step forward
+    const stepFwd=document.createElement('button');
+    stepFwd.textContent='›';
+    stepFwd.style.cssText='background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#e0eaf8;font-size:16px;width:36px;height:34px;cursor:pointer;flex-shrink:0';
+    stepFwd.onclick=()=>_replayStep(-1);
+    bar.appendChild(stepFwd);
+    const pos=document.createElement('span');
+    pos.id='replay-pos';
+    pos.style.cssText='font-size:9px;color:#4a6080;font-family:monospace;flex:1;text-align:center';
+    bar.appendChild(pos);
+    const stopB=document.createElement('button');
+    stopB.textContent='إنهاء';
+    stopB.onclick=_stopReplay;
+    stopB.style.cssText='background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:8px;color:#ef4444;font-size:11px;padding:0 12px;height:34px;cursor:pointer;font-family:Cairo,sans-serif;flex-shrink:0';
+    bar.appendChild(stopB);
+    document.body.appendChild(bar);
+  }
+  bar.style.display='flex';
+}
+function _hideReplayBar(){
+  const bar=document.getElementById('replay-bar');
+  if(bar)bar.style.display='none';
+}
+
