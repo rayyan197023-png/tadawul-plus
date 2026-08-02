@@ -6260,7 +6260,17 @@ document.documentElement.style.touchAction='manipulation';
 cv.addEventListener('contextmenu',e=>e.preventDefault(),{passive:false});
 cv.addEventListener('selectstart',e=>e.preventDefault(),{passive:false});
 cv.addEventListener('dragstart',e=>e.preventDefault(),{passive:false});
- 
+ // ── إصلاح تكبير iOS: إعادة ضبط الـviewport قسراً ──
+(function(){
+ const _vp=document.querySelector('meta[name=viewport]');
+ if(!_vp)return;
+ const _reset=()=>{
+  _vp.setAttribute('content','width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,viewport-fit=cover');
+ };
+ document.addEventListener('touchend',()=>{setTimeout(_reset,50);},{passive:true});
+ window.addEventListener('scroll',()=>{window.scrollTo(0,0);},{passive:true});
+})();
+
 // MOUSE 
 cv.addEventListener('mousedown', e => {
  if(e.button===2){e.preventDefault();const hi=dFind(...Object.values(getPt(e)));if(hi>=0){drSelId=state.drawings[hi].id;}return;}
