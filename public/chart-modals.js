@@ -339,4 +339,110 @@ function showCompareModal(){
  document.body.appendChild(m);
 }
 
+// ── Multi-Condition Alert System ─────────────────────────────
+function showMultiAlertModal(){
+ const ex=document.getElementById('multi-alert-ov');if(ex)ex.remove();
+ const ov=document.createElement('div');
+ ov.id='multi-alert-ov';
+ ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:flex-end;justify-content:center;z-index:9999;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);';
+ if(!state.alerts)state.alerts=[];
+
+ const buildList=()=>{
+  const list=ov.querySelector('#ma-list');if(!list)return;
+  if(!state.alerts.length){
+   list.innerHTML='<div style="text-align:center;color:#2a3a5a;font-size:11px;font-family:Cairo,sans-serif;padding:14px">لا توجد تنبيهات متعددة بعد</div>';return;
+  }
+  list.innerHTML=state.alerts.map((a,i)=>`
+   <div style="background:rgba(255,255,255,0.04);border:1px solid ${a.active?(a.fired?'rgba(34,197,94,0.4)':'rgba(251,191,36,0.3)'):'rgba(255,255,255,0.08)'};border-radius:10px;padding:10px 12px;margin-bottom:6px">
+    <div style="display:flex;align-items:center;justify-content:space-between;direction:rtl">
+     <div style="font-size:12px;font-weight:700;color:${a.fired?'#22c55e':a.active?'#fbbf24':'#64748b'};font-family:Cairo,sans-serif">${a.fired?'✓ ':''} ${a.name}</div>
+     <div style="display:flex;gap:5px">
+      <button onclick="_maToggle(${i})" style="background:rgba(59,158,255,0.1);border:1px solid rgba(59,158,255,0.2);border-radius:6px;color:#3b9eff;font-size:10px;padding:3px 8px;cursor:pointer;font-family:Cairo,sans-serif">${a.active?'إيقاف':'تفعيل'}</button>
+      <button onclick="_maDel(${i})" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:6px;color:#ef4444;font-size:11px;padding:3px 7px;cursor:pointer">✕</button>
+     </div>
+    </div>
+    <div style="font-size:9px;color:#4a6080;margin-top:4px;font-family:monospace;direction:ltr;text-align:left">${a.conditions.map(c=>c.type+' '+c.op+' '+c.value).join(' <span style="color:#a78bfa">'+a.logic+'</span> ')}</div>
+   </div>
+  `).join('');
+ };
+
+ ov.innerHTML=`
+  <div style="background:rgba(6,10,22,0.98);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:82vh;display:flex;flex-direction:column;font-family:Cairo,sans-serif">
+   <div style="padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+    <button onclick="document.getElementById('multi-alert-ov').remove()" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:8px;color:#ef4444;width:28px;height:28px;cursor:pointer;font-size:14px">×</button>
+    <span style="font-size:14px;font-weight:700;color:#e0eaf8">تنبيهات متعددة الشروط</span>
+    <div style="width:28px"></div>
+   </div>
+   <div style="flex:1;overflow-y:auto;padding:12px 14px">
+    <div id="ma-list" style="margin-bottom:14px"></div>
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px">
+     <div style="font-size:11px;font-weight:700;color:#c8d8f0;margin-bottom:12px;text-align:right">+ إضافة تنبيه جديد</div>
+     <input id="ma-name" placeholder="اسم التنبيه (مثال: اختراق RSI 70)" style="width:100%;background:#070b14;border:1px solid #1e2d45;border-radius:8px;color:#f0f2f8;font-size:12px;padding:9px 12px;font-family:Cairo,sans-serif;text-align:right;outline:none;box-sizing:border-box;margin-bottom:10px">
+     <div style="font-size:10px;color:#4a6080;margin-bottom:8px;text-align:right">الشروط</div>
+     <div id="ma-conds"></div>
+     <button onclick="_maAddRow()" style="width:100%;background:rgba(34,197,94,0.06);border:1px dashed rgba(34,197,94,0.25);border-radius:8px;color:#22c55e;font-size:11px;padding:7px;cursor:pointer;font-family:Cairo,sans-serif;margin-bottom:10px">+ إضافة شرط آخر</button>
+     <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;direction:rtl">
+      <div style="font-size:10px;color:#4a6080;flex-shrink:0">منطق الشروط:</div>
+      <button id="ma-and-btn" onclick="window._maLogic='AND';this.style.background='rgba(59,158,255,0.2)';this.style.borderColor='rgba(59,158,255,0.4)';document.getElementById('ma-or-btn').style.background='transparent';document.getElementById('ma-or-btn').style.borderColor='rgba(255,255,255,0.1)'" style="background:rgba(59,158,255,0.2);border:1px solid rgba(59,158,255,0.4);border-radius:6px;color:#3b9eff;font-size:10px;padding:4px 12px;cursor:pointer;font-weight:700">AND</button>
+      <button id="ma-or-btn" onclick="window._maLogic='OR';this.style.background='rgba(167,139,250,0.2)';this.style.borderColor='rgba(167,139,250,0.4)';document.getElementById('ma-and-btn').style.background='transparent';document.getElementById('ma-and-btn').style.borderColor='rgba(255,255,255,0.1)'" style="background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:#a78bfa;font-size:10px;padding:4px 12px;cursor:pointer;font-weight:700">OR</button>
+      <span style="font-size:9px;color:#2a3a5a;margin-right:auto">AND = كل الشروط يجب أن تتحقق</span>
+     </div>
+     <button onclick="_maSave()" style="width:100%;height:44px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.35);border-radius:12px;color:#fbbf24;font-size:14px;font-weight:700;font-family:Cairo,sans-serif;cursor:pointer">🔔 حفظ التنبيه</button>
+    </div>
+   </div>
+  </div>
+ `;
+ document.body.appendChild(ov);
+ window._maLogic='AND';
+ _maAddRow();
+ buildList();
+ ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+ ov.addEventListener('touchstart',e=>e.stopPropagation(),{passive:false});
+ ov._refresh=buildList;
+}
+
+function _maRowHTML(){
+ return `<div class="ma-row" style="display:grid;grid-template-columns:1fr auto 1fr auto;gap:5px;align-items:center;margin-bottom:6px">
+  <select class="ma-type" style="background:#070b14;border:1px solid #1e2d45;border-radius:7px;color:#f0f2f8;font-size:11px;padding:7px 6px;font-family:Cairo,sans-serif;outline:none">
+   <option value="price">السعر</option>
+   <option value="rsi">RSI</option>
+   <option value="macd_hist">MACD Hist</option>
+   <option value="volume">الحجم</option>
+   <option value="bb_upper">بولينجر أعلى</option>
+   <option value="bb_lower">بولينجر أدنى</option>
+   <option value="adx">ADX</option>
+   <option value="pct_change">تغيير %</option>
+  </select>
+  <select class="ma-op" style="background:#070b14;border:1px solid #1e2d45;border-radius:7px;color:#f0f2f8;font-size:11px;padding:7px 4px;font-family:Cairo,sans-serif;outline:none">
+   <option value="above">أعلى</option>
+   <option value="below">أدنى</option>
+   <option value="cross_up">يتجاوز↑</option>
+   <option value="cross_dn">يهبط↓</option>
+  </select>
+  <input class="ma-val" type="number" placeholder="القيمة" style="background:#070b14;border:1px solid #1e2d45;border-radius:7px;color:#f0f2f8;font-size:12px;padding:7px 6px;text-align:center;outline:none;font-family:monospace">
+  <button onclick="this.closest('.ma-row').remove()" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:6px;color:#ef4444;font-size:11px;width:26px;height:30px;cursor:pointer;flex-shrink:0">✕</button>
+ </div>`;
+}
+function _maAddRow(){const c=document.getElementById('ma-conds');if(c)c.insertAdjacentHTML('beforeend',_maRowHTML());}
+function _maToggle(i){if(!state.alerts)return;state.alerts[i].active=!state.alerts[i].active;state.alerts[i].fired=false;const ov=document.getElementById('multi-alert-ov');if(ov&&ov._refresh)ov._refresh();}
+function _maDel(i){if(!state.alerts)return;state.alerts.splice(i,1);const ov=document.getElementById('multi-alert-ov');if(ov&&ov._refresh)ov._refresh();}
+function _maSave(){
+ const name=(document.getElementById('ma-name').value||'').trim()||'تنبيه '+(state.alerts.length+1);
+ const rows=[...document.querySelectorAll('.ma-row')];
+ const conditions=rows.map(r=>({
+  type:r.querySelector('.ma-type').value,
+  op:r.querySelector('.ma-op').value,
+  value:parseFloat(r.querySelector('.ma-val').value)||0
+ })).filter(c=>c.value||c.op.startsWith('cross'));
+ if(!conditions.length){alert('أضف شرطاً واحداً على الأقل');return;}
+ if(!state.alerts)state.alerts=[];
+ state.alerts.push({id:Date.now(),name,conditions,logic:window._maLogic||'AND',active:true,fired:false,createdAt:new Date().toISOString()});
+ document.getElementById('ma-name').value='';
+ document.getElementById('ma-conds').innerHTML='';
+ _maAddRow();
+ const ov=document.getElementById('multi-alert-ov');
+ if(ov&&ov._refresh)ov._refresh();
+}
+
+
 
