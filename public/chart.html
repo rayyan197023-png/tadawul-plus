@@ -3925,12 +3925,6 @@ const _lbl=_v>=1000000000?((_v/1000000000).toFixed(2)+'B'):_v>=1000000?((_v/1000
  ctx.fillStyle='#0a1020';ctx.fillRect(4,H-2,CW-8,2);
  ctx.fillStyle='#1db88a';ctx.fillRect(4+(clampOff/maxOff)*(CW-8)*0.55,H-2,(CW-8)*0.45,2);
  }
- // ── تشخيص مؤقت ──
- ctx.save();
- ctx.fillStyle='#ff0';ctx.font='bold 11px monospace';ctx.textAlign='left';
- ctx.fillText('vis:'+state.visible+' d0:'+Math.round(drag.d0)+' v0:'+drag.v0+' mode:'+drMode+' ch:'+_chActive,4,cTop+60);
- ctx.restore();
- // ── نهاية التشخيص ──
 
  // Watermark — SVG-style chart icon (matches button aesthetic)
  ctx.save();
