@@ -1222,7 +1222,8 @@ function _showWavePopup(dot, tapX, tapY){
  setTimeout(()=>{
   const closer=e=>{
    const p=document.getElementById('wave-popup');
-   if(p&&!p.contains(e.target)){p.remove();_wavePopupActive=false;document.removeEventListener('touchstart',closer);document.removeEventListener('mousedown',closer);}
+   if(!p){document.removeEventListener('touchstart',closer);document.removeEventListener('mousedown',closer);return;}
+   if(!p.contains(e.target)){p.remove();_wavePopupActive=false;document.removeEventListener('touchstart',closer);document.removeEventListener('mousedown',closer);}
   };
   document.addEventListener('touchstart',closer,{passive:true});
   document.addEventListener('mousedown',closer);
