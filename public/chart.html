@@ -2815,11 +2815,11 @@ const vmx=mv;
  ctx.setLineDash([]);
  // Helper: pixel x → candle date
  function xToDate(px){
- const candleW=drawW/(n>1?n-1:1);
- const ci=Math.round((px-bw)/Math.max(0.1,candleW));
- const d=sub[Math.max(0,Math.min(n-1,ci))]; // ci=0→oldest(left), ci=n-1→newest(right)
+ const ci=Math.round(((px-bw*0.5)/Math.max(1,drawW-bw*2))*Math.max(1,_totalSlots));
+ const d=sub[Math.max(0,Math.min(n-1,ci))];
  return d?new Date(d.t):null;
  }
+
  function fmtDate(dt){
  if(!dt)return'';
  const dd=dt.getDate(), mm=dt.getMonth()+1, yy=(dt.getFullYear()+'').slice(2);
