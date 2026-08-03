@@ -3316,10 +3316,10 @@ try{
     ];
   } else if(pvType==='camarilla'){
     // Camarilla Pivot Points — for intraday, tighter levels
-    const R4=pC+(rng*1.1/2), R3=pC+(rng*1.1/4);
-    const R2=pC+(rng*1.1/6), R1=pC+(rng*1.1/12);
-    const S1=pC-(rng*1.1/12), S2=pC-(rng*1.1/6);
-    const S3=pC-(rng*1.1/4), S4=pC-(rng*1.1/2);
+    const R4=pC+(pRng*1.1/2), R3=pC+(pRng*1.1/4);
+    const R2=pC+(pRng*1.1/6), R1=pC+(pRng*1.1/12);
+    const S1=pC-(pRng*1.1/12), S2=pC-(pRng*1.1/6);
+    const S3=pC-(pRng*1.1/4), S4=pC-(pRng*1.1/2);
     levels=[
      {l:'R4',v:R4,clr:'#dc2626',lw:1.4},{l:'R3',v:R3,clr:'#ef4444',lw:1.0},
      {l:'R2',v:R2,clr:'#f87171',lw:0.8},{l:'R1',v:R1,clr:'#fca5a5',lw:0.7},
