@@ -4249,7 +4249,8 @@ const volStr=cd.v>=1e9?(cd.v/1e9).toFixed(2)+'B':cd.v>=1e6?(cd.v/1e6).toFixed(2)
 
 
     // ── Divergence on main chart ─────────────────────────────────
- if((state.inds.includes('RSI')||state.inds.includes('MACD'))&&_indCache.results){
+ if((state.inds.includes('RSI')||state.inds.includes('MACD')||state.inds.includes('STOCH'))&&_indCache.results){
+
   const _fp2=state.allCandles.map(d=>d.c);
   const _dcr2=_indCache.results;
   const _drawDivs=(arr,prefix)=>{
