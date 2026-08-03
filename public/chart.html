@@ -3758,8 +3758,7 @@ const visStart=Math.max(0,all.length-1-_pvN);
  ctx.fillText(cfg.l,CW+3,top+9);
  // Scale labels — computed dynamically after indicator rendered
  // Store range info for Y axis in _subYAxis[pi]
- if(!ctx._subYAxis)ctx._subYAxis={};
- ctx._subYAxis[pi]={top,ph,id};
+
   // Custom sub-panel indicators
   const _cind=customInds.find(ci=>ci.id===id);
   if(_cind&&customIndSliced[id]){
