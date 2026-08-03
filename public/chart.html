@@ -3088,10 +3088,7 @@ const vmx=mv;
  window._elliottDotsThisFrame=[];
  _wdPending.forEach(({dr,col})=>{
   if(!dr._price||dr._price<=0)return;
-  const _wVIS=sub.length;
-  const _wEnd=state.allCandles.length-Math.min(Math.max(0,state.offset),state.allCandles.length-_wVIS);
-  const _wStart=Math.max(0,_wEnd-_wVIS);
-  const _wCI=Math.max(0,Math.min(_wVIS-1,(dr._p1_idx||0)-_wStart));
+  const _wCI=Math.max(0,Math.min(n-1,(dr._p1_idx||0)-start));
   const wx=tx(_wCI);
   const wy=dr.p1?dr.p1.y:ty(dr._price);
   if(wy<cTop-20||wy>cBot+20)return; // truly off screen
