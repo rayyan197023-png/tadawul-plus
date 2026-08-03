@@ -3408,7 +3408,7 @@ try{
  });
  ctx.fillStyle='rgba(129,140,248,0.05)';ctx.beginPath();
  dcU.forEach((v,i)=>{if(v!=null)ctx.lineTo(tx(i),ty(v));});
- dcU.slice().reverse().forEach((v,i)=>{const ri=dcU.length-1-i;if(dcD[ri]!=null)ctx.lineTo(tx(ri),ty(dcD[ri]));});
+ for(let ri=dcU.length-1;ri>=0;ri--){if(dcD[ri]!=null)ctx.lineTo(tx(ri),ty(dcD[ri]));}
  ctx.fill();
  ctx.fillStyle='#818cf8';ctx.font='bold 7px monospace';ctx.textAlign='left';ctx.fillText('DC('+nDC+')',2,cTop+20);
  }
