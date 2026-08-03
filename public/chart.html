@@ -4410,7 +4410,7 @@ arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),ty(v)),f=false):ctx.li
    const c1=d,c2=sub[i-1],c3=sub[i-2],c4=sub[i-3],c5=sub[i-4];
    const b1=Math.abs(c1.c-c1.o),b2=Math.abs(c2.c-c2.o),b3=Math.abs(c3.c-c3.o);
    const r1=c1.hi-c1.lo||0.001,r2=c2.hi-c2.lo||0.001;
-   const bull1=c1.c>c1.o,bull2=c2.c>c2.o,bull3=c3.c>c3.o,bull4=c4.c>c4.o,bull5=c5.c>c5.o;
+   const bull1=c1.c>c1.o,bull2=c2.c>c2.o,bull3=c3.c>c3.o,bull4=c4.c>c4.o;
    const lw1=Math.min(c1.c,c1.o)-c1.lo; // lower wick c1
    const uw1=c1.hi-Math.max(c1.c,c1.o); // upper wick c1
    const lw2=Math.min(c2.c,c2.o)-c2.lo;
