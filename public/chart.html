@@ -4168,8 +4168,8 @@ const volStr=cd.v>=1e9?(cd.v/1e9).toFixed(2)+'B':cd.v>=1e6?(cd.v/1e6).toFixed(2)
  const lp=state.live.p2;
  if(lp.y>cTop&&lp.y<cBot&&lp.x>0&&lp.x<CW){
  ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=0.5;ctx.setLineDash([3,3]);
- ctx.beginPath();ctx.moveTo(lp.x,b.cTop);ctx.lineTo(lp.x,b.cBot);ctx.stroke();
- ctx.beginPath();ctx.moveTo(0,lp.y);ctx.lineTo(b.CW,lp.y);ctx.stroke();
+ ctx.beginPath();ctx.moveTo(lp.x,cTop);ctx.lineTo(lp.x,cBot);ctx.stroke();
+ ctx.beginPath();ctx.moveTo(0,lp.y);ctx.lineTo(CW,lp.y);ctx.stroke();
  ctx.setLineDash([]);
  const _snp=snapPt({x:lp.x,y:lp.y});
  const _isSnapped=magnetMode&&(_snp.x!==lp.x||_snp.y!==lp.y);
