@@ -4542,7 +4542,7 @@ arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),ty(v)),f=false):ctx.li
    else{ctx.moveTo(tx(i),sy+ah);ctx.lineTo(tx(i)-aw,sy);ctx.lineTo(tx(i)+aw,sy);}
    ctx.fill();
    // Volume multiplier badge
-   const mult=(d.v/avg).toFixed(1)+'x';
+   const mult=vRatio.toFixed(1)+'x';
    const by=isUp?sy-ah-11:sy+ah+11;
    ctx.fillStyle=clr+'33';ctx.strokeStyle=clr;ctx.lineWidth=0.8;
    ctx.beginPath();ctx.roundRect(tx(i)-15,by-7,30,13,4);ctx.fill();ctx.stroke();
