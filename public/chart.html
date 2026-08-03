@@ -3121,21 +3121,6 @@ const vmx=mv;
  });
  window._elliottDotsArr=[...(window._elliottDotsThisFrame||[])];
 
-
- // SELECTION HANDLES 
- if (drSelId != null) {
- const selDr = state.drawings.find(d=>d.id===drSelId);
- if (selDr) {
- const handles = dHandles(selDr);
- handles.forEach((h,hi)=>{
- ctx.beginPath();ctx.arc(h.x,h.y,8+4,0,Math.PI*2);
- ctx.fillStyle='rgba(59,158,255,0.18)';ctx.fill();
- ctx.beginPath();ctx.arc(h.x,h.y,8,0,Math.PI*2);
- ctx.fillStyle=hi===0?'#3b9eff':'#ffffff';ctx.fill();
- ctx.strokeStyle='#3b9eff';ctx.lineWidth=2;ctx.stroke();
- });
- }
- }
  // LIVE PREVIEW 
  if (state.live && state.live.p2) {
  const dr2=state.live;
