@@ -3451,9 +3451,7 @@ try{
   const _fullRsi=_indCache.results?_indCache.results.rsi:null;
   const _fullPricesR=state.allCandles.map(d=>d.c);
   const _allDivsR=_fullRsi?_calcDivergences(_fullPricesR,_fullRsi,'RSI'):[];
-  const VIS_R=sub.length;
-  const end_R=state.allCandles.length-Math.min(Math.max(0,state.offset),Math.max(0,state.allCandles.length-VIS_R));
-  const start_R=Math.max(0,end_R-VIS_R);
+  const start_R=start,end_R=end;
   const _divsVis=_allDivsR.filter(dv=>dv.i1>=start_R&&dv.i2<end_R).map(dv=>({...dv,i1:dv.i1-start_R,i2:dv.i2-start_R}));
   // فصل صارم: أقوى إشارة هبوطية + أقوى إشارة صعودية فقط -- لا اختلاط بين النوعين
   const _bestBearR=_divsVis.filter(d=>d.type==='bearish').sort((a,b)=>b.score-a.score)[0];
