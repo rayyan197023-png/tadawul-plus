@@ -3520,9 +3520,7 @@ try{
    const _fullPrices=state.allCandles.map(d=>d.c);
    const _allDivs2=_fullHist?_calcDivergences(_fullPrices,_fullHist,'MACD'):[];
    // Convert full-array indices to viewport indices
-   const VIS2=sub.length;
-   const end2=state.allCandles.length-Math.min(Math.max(0,state.offset),Math.max(0,state.allCandles.length-VIS2));
-   const start2=Math.max(0,end2-VIS2);
+   const start2=start,end2=end;
    const _divs2Vis=_allDivs2.filter(dv=>dv.i1>=start2&&dv.i2<end2).map(dv=>({...dv,i1:dv.i1-start2,i2:dv.i2-start2}));
    // فصل صارم: أقوى هبوطية + أقوى صعودية فقط
    const _bestBearM=_divs2Vis.filter(d=>d.type==='bearish').sort((a,b)=>b.score-a.score)[0];
