@@ -3701,7 +3701,7 @@ const visStart=Math.max(0,all.length-1-_pvN);
  if(id==='OBV'&&ind.obv){
   const vals=ind.obv.filter(v=>v!=null);
   if(vals.length){
-   const _obvVis=ind.obv.slice(0,sub.length).filter(v=>v!=null);
+   const _obvVis=ind.obv.filter(v=>v!=null);
    const _obvRef=_obvVis.length?_obvVis:vals;
    const mn2=Math.min(..._obvRef),mx2=Math.max(..._obvRef);
    const _rng=mx2-mn2; const _pad=_rng*0.1||1;
