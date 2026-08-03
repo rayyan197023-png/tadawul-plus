@@ -3697,29 +3697,6 @@ try{
    const cur=vals[vals.length-1];
    ctx.fillStyle='#f472b6';ctx.font='bold 7px monospace';ctx.textAlign='left';ctx.fillText('Stoch '+cur.toFixed(0),4,top+10);
    _renderDivOnPanel(ctx,_indCache.stochD,_divPrices,'#f472b6',tyS,tx,top,ph,_divStart,_divEnd,0,100);
-   ctx.save();ctx.beginPath();ctx.rect(0,cTop,CW,cH);ctx.clip();
-   (function(){
-    const _ds=_calcDivergences(_divPrices,_indCache.stochD,'');
-    const _dv=_ds.filter(d=>d.i1>=start&&d.i2<end).map(d=>({...d,i1:d.i1-start,i2:d.i2-start}));
-    const _b1=_dv.filter(d=>d.type==='bearish').sort((a,b)=>b.score-a.score)[0];
-    const _b2=_dv.filter(d=>d.type==='bullish').sort((a,b)=>b.score-a.score)[0];
-    [_b1,_b2].filter(Boolean).forEach(d=>{
-     const _k=d.type==='bearish'?'hi':'lo';
-     const _c1=sub[d.i1],_c2=sub[d.i2];
-     if(!_c1||!_c2)return;
-     const _y1=ty(_c1[_k]??_c1.c),_y2=ty(_c2[_k]??_c2.c);
-     const _x1=tx(d.i1),_x2=tx(d.i2);
-     const _cl=d.type==='bullish'?'#22c55e':'#ef4444';
-     ctx.strokeStyle=_cl+'99';ctx.lineWidth=1.5;ctx.setLineDash([6,3]);
-     ctx.beginPath();ctx.moveTo(_x1,_y1);ctx.lineTo(_x2,_y2);ctx.stroke();ctx.setLineDash([]);
-     const _a=Math.atan2(_y2-_y1,_x2-_x1);
-     ctx.beginPath();ctx.moveTo(_x2,_y2);
-     ctx.lineTo(_x2-8*Math.cos(_a-0.4),_y2-8*Math.sin(_a-0.4));
-     ctx.lineTo(_x2-8*Math.cos(_a+0.4),_y2-8*Math.sin(_a+0.4));
-     ctx.closePath();ctx.fillStyle=_cl+'99';ctx.fill();
-    });
-   })();
-   ctx.restore();
 
    if(!ctx._subYAxes)ctx._subYAxes=[];ctx._subYAxes.push({top,ph,mn2:0,mx2:100,color:'#f472b6',panKey:'sub_'+pi});
   }
