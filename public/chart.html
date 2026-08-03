@@ -4819,8 +4819,6 @@ const weakVol=d.v<vma*1.1;
    if(wyS==='SOS'&&arHigh&&d.c>arHigh*1.08&&bigVol){
     wyS='none';scLow=null;arHigh=null;stLow=null;
    }
-   // إعادة تصفير عند التعليق الطويل بلا اكتمال الدورة
-   if(wyS!=='none'&&wyS!=='SOS'&&gi-scGi>120){wyS='none';scLow=null;arHigh=null;stLow=null;}
   }
 
  ctx.save();ctx.beginPath();ctx.rect(0,cTop,CW,cH+1);ctx.clip();
