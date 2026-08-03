@@ -3607,7 +3607,7 @@ const visStart=Math.max(0,all.length-1-_pvN);
  // ATR sub-panel
  if(id==='ATR'&&ind.atr){
   // Use VISIBLE range for proper scaling
-  const _atrVis=ind.atr.slice(0,sub.length).filter(v=>v!=null);
+  const _atrVis=ind.atr.filter(v=>v!=null);
   const _atrAll=ind.atr.filter(v=>v!=null);
   if(_atrAll.length){
    const mn2=0;
