@@ -3387,7 +3387,7 @@ try{
  });
  ctx.fillStyle='rgba(34,211,238,0.05)';ctx.beginPath();
  kE.forEach((v,i)=>{if(v!=null&&kA[i]!=null)ctx.lineTo(tx(i),ty(v+2*kA[i]));});
- kE.slice().reverse().forEach((v,i)=>{const ri=kE.length-1-i;if(kE[ri]!=null&&kA[ri]!=null)ctx.lineTo(tx(ri),ty(kE[ri]-2*kA[ri]));});
+ for(let ri=kE.length-1;ri>=0;ri--){if(kE[ri]!=null&&kA[ri]!=null)ctx.lineTo(tx(ri),ty(kE[ri]-2*kA[ri]));}
  ctx.fill();
  ctx.fillStyle='#22d3ee';ctx.font='bold 7px monospace';ctx.textAlign='left';ctx.fillText('KC',2,cTop+10);
  }
