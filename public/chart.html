@@ -4324,7 +4324,7 @@ arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),ty(v)),f=false):ctx.li
  // Fill band
  ctx.beginPath();
  ind.strBB.forEach((v,i)=>{if(v&&v.up!=null)ctx.lineTo(tx(i),ty(v.up));});
- ind.strBB.slice().reverse().forEach((v,i)=>{const ri=ind.strBB.length-1-i;if(ind.strBB[ri]&&ind.strBB[ri].dn!=null)ctx.lineTo(tx(ri),ty(ind.strBB[ri].dn));});
+ for(let ri=ind.strBB.length-1;ri>=0;ri--){if(ind.strBB[ri]&&ind.strBB[ri].dn!=null)ctx.lineTo(tx(ri),ty(ind.strBB[ri].dn));}
  ctx.fillStyle='rgba(96,128,160,0.04)';ctx.fill();
  // Signals
  sub.forEach((d,i)=>{
