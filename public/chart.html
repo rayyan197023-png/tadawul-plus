@@ -4825,7 +4825,8 @@ const weakVol=d.v<vma*1.1;
   // ── RENDER: SC/AR horizontal zones ──────────
   if(scLow!=null){
    ctx.fillStyle='rgba(239,68,68,0.07)';
-   ctx.fillRect(0,ty(scLow*(arHigh?1:1.02)),CW,ty(scLow*0.97)-ty(scLow*(arHigh?1:1.02)));
+   const _scY=ty(scLow*(arHigh?1:1.02));
+   ctx.fillRect(0,_scY,CW,ty(scLow*0.97)-_scY);
    ctx.strokeStyle='rgba(239,68,68,0.5)';ctx.lineWidth=1;ctx.setLineDash([5,3]);
    ctx.beginPath();ctx.moveTo(0,ty(scLow));ctx.lineTo(CW,ty(scLow));ctx.stroke();
    ctx.fillStyle='#ef4444';ctx.font='bold 7px monospace';ctx.textAlign='left';ctx.textBaseline='middle';
