@@ -3146,8 +3146,7 @@ const vmx=mv;
  ctx.beginPath();ctx.arc(dr2.p2.x,dr2.p2.y,5,0,Math.PI*2);
  ctx.fillStyle='#3b9eff';ctx.fill();
  // Price label
- const prv2=mn+((cBot-dr2.p2.y)/cH)*rng;
- // Price label for live drawing point
+ 
  if(dr2.p2.y>cTop+2&&dr2.p2.y<cBot-2){
   const _prv2=mn+((cBot-dr2.p2.y)/cH)*rng;
   ctx.fillStyle='rgba(59,158,255,0.85)';
