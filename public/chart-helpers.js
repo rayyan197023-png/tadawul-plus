@@ -498,7 +498,8 @@ function _renderDivOnPanel(ctx,indArr,priceArr,indColor,tyS,tx,top,ph,start,end,
     ctx.beginPath();ctx.roundRect(mx-tw/2,labelY-7,tw,13,3);ctx.fill();ctx.stroke();
     ctx.fillStyle=clr;ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText(lbl,mx,labelY);ctx.textBaseline='alphabetic';
-  });
+    });
+  ctx.restore();
 }
 
 
