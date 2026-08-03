@@ -3696,7 +3696,7 @@ try{
    ctx.stroke();
    const cur=vals[vals.length-1];
    ctx.fillStyle='#f472b6';ctx.font='bold 7px monospace';ctx.textAlign='left';ctx.fillText('Stoch '+cur.toFixed(0),4,top+10);
-_renderDivOnPanel(ctx,_indCache.stochD,_divPrices,'#f472b6',tyS,tx,top,ph,_divStart,_divEnd,0,100);
+   _renderDivOnPanel(ctx,_indCache.stochD,_divPrices,'#f472b6',tyS,tx,top,ph,_divStart,_divEnd,0,100,{sub,ty,cTop,cH,CW});
 
    if(!ctx._subYAxes)ctx._subYAxes=[];ctx._subYAxes.push({top,ph,mn2:0,mx2:100,color:'#f472b6',panKey:'sub_'+pi});
   }
