@@ -1818,6 +1818,8 @@ if(sub.length>0){
  volma: _fi(hasInd('VOL_MA')?sma(allV,getIS('VOL_MA').period||20) :null),
  mfi: _fi(hasInd('MFI') ?calcMFI(allH,allL,allC,allV,getIS('MFI').period||14):null),
  cmf: _fi(hasInd('CMF') ?calcCMF(allH,allL,allC,allV):null),
+  kcE: _fi(hasInd('KC')?ema(allC,getIS('KC').period||20):null),
+ kcA: _fi(hasInd('KC')?calcATR_data(allC.map((_,i)=>({hi:allH[i],lo:allL[i],c:allC[i]})),10):null),
  };
     if(_r.ichi)_r.ichi={tenkan:_r.ichi.tenkan,kijun:_r.ichi.kijun,senkouA:_r.ichi.senkouA,senkouB:_r.ichi.senkouB,chikou:_r.ichi.chikou};
 
