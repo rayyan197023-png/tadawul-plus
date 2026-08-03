@@ -3376,8 +3376,7 @@ try{
 
  // Keltner Channel 
  if(hasInd('KC')){
- const kcE=ema(allC,getIS('KC').period||20),atrA=calcATR_data(allC.map((_,i)=>({hi:allH[i],lo:allL[i],c:allC[i]})),10);
- const kE=slc(kcE),kA=slc(atrA);
+ const kE=ind.kcE,kA=ind.kcA;
  ctx.strokeStyle='#22d3ee';
  [[2,'up'],[0,'mid'],[-2,'dn']].forEach(([m,t])=>{
  ctx.lineWidth=t==='mid'?1:0.8;ctx.globalAlpha=t==='mid'?0.5:0.85;
