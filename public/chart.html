@@ -3637,7 +3637,7 @@ const visStart=Math.max(0,all.length-1-_pvN);
  }
  // STD sub-panel
  if(id==='STD'&&ind.std){
-  const _stdVis=ind.std.slice(0,sub.length).filter(v=>v!=null);
+  const _stdVis=ind.std.filter(v=>v!=null);
   const _stdAll=ind.std.filter(v=>v!=null);
   if(_stdAll.length){
    const mn2=0,mx2=Math.max(...(_stdVis.length?_stdVis:_stdAll))*1.2||1;
