@@ -499,10 +499,6 @@ function _renderDivOnPanel(ctx,indArr,priceArr,indColor,tyS,tx,top,ph,start,end,
     ctx.fillStyle=clr;ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText(lbl,mx,labelY);ctx.textBaseline='alphabetic';
 
-    if(mirror){
-      ctx.fillStyle='#ff0';ctx.font='bold 10px monospace';ctx.textAlign='left';
-      ctx.fillText('M:'+(!!mirror.sub)+' '+(!!mirror.ty)+' '+(!!mirror.cTop),x1,top+30);
-    }
     if(mirror&&mirror.sub&&mirror.ty){
       const _k=dv.type==='bearish'?'hi':'lo';
       const _c1=mirror.sub[dv.i1],_c2=mirror.sub[dv.i2];
