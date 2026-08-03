@@ -3082,8 +3082,6 @@ const vmx=mv;
  });
  ctx.restore();
  // Save Elliott wave dots for tap detection
- window._elliottDotsArr=[...(window._elliottDotsThisFrame||[])];
-
  const _wdPending=(window._elliottDotsThisFrame||[]).filter(e=>e.dr);
  window._elliottDotsThisFrame=[];
  _wdPending.forEach(({dr,col})=>{
