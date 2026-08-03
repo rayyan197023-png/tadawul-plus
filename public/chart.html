@@ -4581,7 +4581,7 @@ arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),ty(v)),f=false):ctx.li
    ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
    const last=arr.filter(v=>v!=null).pop();
 
-   if(last){ctx.fillStyle=clr;ctx.font='bold 7px monospace';ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillText(lbl+' '+last.toFixed(2),CW-4,ty(last));ctx.  textBaseline='alphabetic';}
+   if(last){ctx.fillStyle=clr;ctx.font='bold 7px monospace';ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillText(lbl+' '+last.toFixed(2),CW-4,ty(last));ctx.textBaseline='alphabetic';}
   });
   // Signals
   sub.forEach((d,i)=>{
