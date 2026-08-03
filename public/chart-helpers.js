@@ -454,7 +454,7 @@ function _drawSubYAxis(ctx, top, ph, mn2, mx2, CW, YW, color, darkTheme, panKey)
 }
 
 // ── Auto Divergence Helper for Sub-Panels ─────────────────────
-function _renderDivOnPanel(ctx,indArr,priceArr,indColor,tyS,tx,top,ph,start,end,mn2,mx2){
+function _renderDivOnPanel(ctx,indArr,priceArr,indColor,tyS,tx,top,ph,start,end,mn2,mx2,mirror){
   if(!indArr||!priceArr||indArr.length<20)return;
   const fullPrices=priceArr;
   const divs=_calcDivergences(fullPrices,indArr,'');
