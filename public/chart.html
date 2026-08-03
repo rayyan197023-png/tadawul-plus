@@ -4290,6 +4290,7 @@ const volStr=cd.v>=1e9?(cd.v/1e9).toFixed(2)+'B':cd.v>=1e6?(cd.v/1e6).toFixed(2)
    _drawDivs(_rsiDivs,'RSI');
   }
   if(_indCache.mcd&&_indCache.mcd.hist)_drawDivs(_calcDivergences(_fp2,_indCache.mcd.hist,'MACD'),'MACD');
+    if(state.inds.includes('STOCH')&&_indCache.stochD)_drawDivs(_calcDivergences(_fp2,_indCache.stochD,'STOCH'),'STOCH');
  }
 
 
