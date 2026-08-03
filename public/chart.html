@@ -4024,7 +4024,7 @@ const volStr=cd.v>=1e9?(cd.v/1e9).toFixed(2)+'B':cd.v>=1e6?(cd.v/1e6).toFixed(2)
  grad.addColorStop(0,accentA+'0.9)');
  grad.addColorStop(1,accentA+'0.1)');
  ctx.fillStyle=grad;
- ctx.beginPath();ctx.roundRect(tx2,ty2,TW,4,{upperLeft:R,upperRight:R,lowerLeft:0,lowerRight:0});ctx.fill();
+ ctx.beginPath();ctx.roundRect(tx2,ty2,TW,4,R);ctx.fill();
 
  // Border
  ctx.strokeStyle=accentA+'0.35)';ctx.lineWidth=1;
