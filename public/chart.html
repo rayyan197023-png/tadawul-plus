@@ -3608,12 +3608,6 @@ const visStart=Math.max(0,all.length-1-_pvN);
  // Histogram (AO)
  const y0=tyS2(0);
  cfg2.d.forEach((v,i)=>{if(v==null)return;const yy=tyS2(v);ctx.fillStyle=v>=0?'rgba(34,197,94,0.7)':'rgba(239,68,68,0.7)';ctx.fillRect(tx(i)-bw/2,Math.min(y0,yy),bw,Math.max(0.5,Math.abs(y0-yy)));});
- } else if(cfg2.dual&&ind.aroon){
- // Aroon dual lines
- const upPts=ind.aroon.map((v,i)=>v?[tx(i),tyS2(v.up)]:null).filter(Boolean);
- const dnPts=ind.aroon.map((v,i)=>v?[tx(i),tyS2(v.dn)]:null).filter(Boolean);
- ctx.strokeStyle='#22c55e';ctx.lineWidth=1.2;ctx.beginPath();upPts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();
- ctx.strokeStyle='#ef4444';ctx.lineWidth=1.2;ctx.beginPath();dnPts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();
  } else {
  ctx.strokeStyle=cfg2.c;ctx.lineWidth=1.4;ctx.beginPath();let fst=true;
  cfg2.d.forEach((v,i)=>{if(v==null||isNaN(v))return;fst?(ctx.moveTo(tx(i),tyS2(v)),fst=false):ctx.lineTo(tx(i),tyS2(v));});
