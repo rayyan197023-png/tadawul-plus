@@ -3417,8 +3417,8 @@ try{
  // Sub panels
  if(hasSubPanel){
  // Divergence shared vars
- const _divStart=Math.max(0,state.allCandles.length-sub.length-Math.min(Math.max(0,state.offset),state.allCandles.length-sub.length));
- const _divEnd=_divStart+sub.length;
+ const _divStart=start;
+ const _divEnd=end;
  const _divPrices=state.allCandles.map(d=>d.c);
  SUB_INDS.forEach((id,pi)=>{
  // Cumulative top based on individual panel heights
