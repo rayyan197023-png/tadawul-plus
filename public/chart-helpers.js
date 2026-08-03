@@ -465,7 +465,9 @@ function _renderDivOnPanel(ctx,indArr,priceArr,indColor,tyS,tx,top,ph,start,end,
   // فصل صارم: أقوى إشارة هبوطية + أقوى إشارة صعودية فقط -- لا اختلاط بين النوعين
   const bestBear=vis.filter(dv=>dv.type==='bearish').sort((a,b)=>b.score-a.score)[0];
   const bestBull=vis.filter(dv=>dv.type==='bullish').sort((a,b)=>b.score-a.score)[0];
+  ctx.save();ctx.beginPath();ctx.rect(0,top,ctx.canvas.width,ph);ctx.clip();
   [bestBear,bestBull].filter(Boolean).forEach(dv=>{
+
     const x1=tx(dv.i1),x2=tx(dv.i2);
     const iy1=tyS(dv.ii1,mn2,mx2), iy2=tyS(dv.ii2,mn2,mx2);
     const clr=dv.type==='bullish'?'#22c55e':'#ef4444';
