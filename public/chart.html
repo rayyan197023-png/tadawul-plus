@@ -3292,7 +3292,8 @@ try{
  if(hasInd('PIVOT')&&all.length>=2){
   // Pivot Points — 3 types: Traditional / Fibonacci / Camarilla
   // Previous session: last complete period
-  const visStart=Math.max(0,all.length-state.visible-1);
+const _pvN=state.per==='1D'?20:state.per==='1W'?4:22;
+const visStart=Math.max(0,all.length-1-_pvN);
   const refSlice=all.slice(visStart,all.length-1);
   const pH=Math.max(...refSlice.map(d=>d.hi));
   const pL=Math.min(...refSlice.map(d=>d.lo));
