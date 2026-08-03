@@ -498,9 +498,28 @@ function _renderDivOnPanel(ctx,indArr,priceArr,indColor,tyS,tx,top,ph,start,end,
     ctx.beginPath();ctx.roundRect(mx-tw/2,labelY-7,tw,13,3);ctx.fill();ctx.stroke();
     ctx.fillStyle=clr;ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText(lbl,mx,labelY);ctx.textBaseline='alphabetic';
-    });
+
+    if(mirror&&mirror.sub&&mirror.ty){
+      const _k=dv.type==='bearish'?'hi':'lo';
+      const _c1=mirror.sub[dv.i1],_c2=mirror.sub[dv.i2];
+      const _v1=_c1?(_c1[_k]??_c1.c):null,_v2=_c2?(_c2[_k]??_c2.c):null;
+      if(_v1&&_v2){
+        const _y1=mirror.ty(_v1),_y2=mirror.ty(_v2);
+        ctx.save();ctx.beginPath();ctx.rect(0,mirror.cTop,mirror.CW,mirror.cH);ctx.clip();
+        ctx.strokeStyle=clr+'99';ctx.lineWidth=1.5;ctx.setLineDash([6,3]);
+        ctx.beginPath();ctx.moveTo(x1,_y1);ctx.lineTo(x2,_y2);ctx.stroke();ctx.setLineDash([]);
+        const _ang=Math.atan2(_y2-_y1,x2-x1);
+        ctx.beginPath();ctx.moveTo(x2,_y2);
+        ctx.lineTo(x2-8*Math.cos(_ang-0.4),_y2-8*Math.sin(_ang-0.4));
+        ctx.lineTo(x2-8*Math.cos(_ang+0.4),_y2-8*Math.sin(_ang+0.4));
+        ctx.closePath();ctx.fillStyle=clr+'99';ctx.fill();
+        ctx.restore();
+      }
+    }
+  });
   ctx.restore();
 }
+
 
 
   
