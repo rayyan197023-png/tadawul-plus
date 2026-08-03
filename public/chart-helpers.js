@@ -486,7 +486,9 @@ function _renderDivOnPanel(ctx,indArr,priceArr,indColor,tyS,tx,top,ph,start,end,
       });
     });
     // Label
-    const mx=(x1+x2)/2, labelY=Math.min(iy1,iy2)-10;
+    const mx=(x1+x2)/2;
+    const labelY=Math.max(top+9,Math.min(top+ph-9,(dv.type==='bearish'?Math.max(iy1,iy2)+12:Math.min(iy1,iy2)-10)));
+
     const lbl=dv.type==='bullish'?'↑ تباعد إيجابي':'↓ تباعد سلبي';
     ctx.font='bold 7px Cairo,sans-serif';
     const tw=ctx.measureText(lbl).width+10;
