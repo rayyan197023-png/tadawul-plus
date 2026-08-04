@@ -6811,8 +6811,8 @@ if(drMode==='drag'&&drSelId!=null&&drDragP1){const d=state.drawings.find(d=>d.id
    // Fast path: blit chart + crosshair only (no full recalc)
    renderCrosshair();
    return;
-  }
  } else if(!_chActive&&_chLongTimer&&e.touches.length===1){
+
   // If finger moved significantly before long-press fires → cancel crosshair timer
   const _r1=cv.getBoundingClientRect();
   const _mx=e.touches[0].clientX-_r1.left;
