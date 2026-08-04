@@ -6187,7 +6187,7 @@ function finishDrawing(pt) {
  // Auto-open editors for relevant tools
 
  if(d.tool==='text'||d.tool==='callout'){
-  setTimeout(()=>{try{showTextEditor(d);}catch(err){alert('EDITOR ERR: '+err.message);}},100);
+  setTimeout(()=>showTextEditor(d),100);
  }
 
 }
