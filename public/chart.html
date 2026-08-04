@@ -6183,7 +6183,7 @@ function finishDrawing(pt) {
  _hist();state.drawings.push(d);_enrichDrawing(d);drSelId=d.id;
  }
  state.live=null;state.tool=null;drawPhase=0;drMode=null;
- updateDrawBtn();showDrawToolbar();saveDrawings();_updateUndoButtons();render();
+ alert('A');updateDrawBtn();alert('B');showDrawToolbar();alert('C');saveDrawings();alert('D');_updateUndoButtons();alert('E');render();alert('F');
 
  // Auto-open editors for relevant tools
 
