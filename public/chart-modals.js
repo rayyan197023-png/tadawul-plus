@@ -403,7 +403,7 @@ function showMultiAlertModal(){
 
 function _maRowHTML(){
  return `<div class="ma-row" style="display:grid;grid-template-columns:1fr auto 1fr auto;gap:5px;align-items:center;margin-bottom:6px">
-  <select class="ma-type" style="background:#070b14;border:1px solid #1e2d45;border-radius:7px;color:#f0f2f8;font-size:11px;padding:7px 6px;font-family:Cairo,sans-serif;outline:none">
+   <select class="ma-type" style="background:#070b14;border:1px solid #1e2d45;border-radius:7px;color:#f0f2f8;font-size:16px;padding:7px 6px;font-family:Cairo,sans-serif;outline:none">
    <option value="price">السعر</option>
    <option value="rsi">RSI</option>
    <option value="macd_hist">MACD Hist</option>
