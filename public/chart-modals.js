@@ -377,7 +377,7 @@ function showMultiAlertModal(){
     <div id="ma-list" style="margin-bottom:14px"></div>
     <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px">
      <div style="font-size:11px;font-weight:700;color:#c8d8f0;margin-bottom:12px;text-align:right">+ إضافة تنبيه جديد</div>
-     <input id="ma-name" placeholder="اسم التنبيه (مثال: اختراق RSI 70)" style="width:100%;background:#070b14;border:1px solid #1e2d45;border-radius:8px;color:#f0f2f8;font-size:12px;padding:9px 12px;font-family:Cairo,sans-serif;text-align:right;outline:none;box-sizing:border-box;margin-bottom:10px">
+<input id="ma-name" placeholder="اسم التنبيه (مثال: اختراق RSI 70)" style="width:100%;background:#070b14;border:1px solid #1e2d45;border-radius:8px;color:#f0f2f8;font-size:16px;padding:9px 12px;font-family:Cairo,sans-serif;text-align:right;outline:none;box-sizing:border-box;margin-bottom:10px">
      <div style="font-size:10px;color:#4a6080;margin-bottom:8px;text-align:right">الشروط</div>
      <div id="ma-conds"></div>
      <button onclick="_maAddRow()" style="width:100%;background:rgba(34,197,94,0.06);border:1px dashed rgba(34,197,94,0.25);border-radius:8px;color:#22c55e;font-size:11px;padding:7px;cursor:pointer;font-family:Cairo,sans-serif;margin-bottom:10px">+ إضافة شرط آخر</button>
