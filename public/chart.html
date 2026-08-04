@@ -6804,7 +6804,7 @@ if(drMode==='drag'&&drSelId!=null&&drDragP1){const d=state.drawings.find(d=>d.id
    const VIS2=Math.min(Math.max(8,state.visible),state.allCandles.length);
    const bw2=Math.max(1.5,(CW2/Math.max(1,VIS2))*0.72);
    const drawW2=CW2-bw2*2-16;
-   const ci2=Math.max(0,Math.min(VIS2-1,Math.round((_touches.x-bw2)/Math.max(0.1,drawW2/(VIS2>1?VIS2-1:1)))));
+   const ci2=Math.max(0,Math.min(VIS2-1,Math.round((cpx-bw2)/Math.max(0.1,drawW2/(VIS2>1?VIS2-1:1)))));
 
    crosshair={x:cpx,y:cpy,ci:ci2};
    cv._lastTouchPos={x:cpx,y:cpy};
