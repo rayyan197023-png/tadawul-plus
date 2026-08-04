@@ -7320,8 +7320,6 @@ function _applyTick(tick){
 async function loadStockList(){
   if(!API_CONFIG.enabled || !API_CONFIG.endpoints.stocks) return;
   const raw = await API_CONFIG.fetch('stocks');
-  
-  // ── نهاية التشخيص ──
 
   if(!raw || !Array.isArray(raw)) return;
     // تطبيع قائمة شركات سهمك — الحقول: symbol, name_ar, name_en, market, status
