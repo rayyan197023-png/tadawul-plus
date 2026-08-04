@@ -314,7 +314,7 @@ const STRATEGIES=[
  tags:['حجم','اختراق','زخم']}
 ];
 
-const PATTERN_PTS={xabcd:5,abcd:4,hs:7,elliott:5,cypher:5,text:1,callout:1,pitchfork:3,schiff:3};
+const PATTERN_PTS={xabcd:5,abcd:4,hs:7,elliott:5,cypher:5,pitchfork:3,schiff:3};
 const PATTERN_LBL={
  xabcd:['X','A','B','C','D'],
  pitchfork:['A','B','C'],
