@@ -7359,26 +7359,6 @@ async function loadStockList(){
   }
 }
 
-// ── Load economic calendar from API ──────────────────────────
-async function loadCalendarFromAPI(){
-  if(!API_CONFIG.enabled || !API_CONFIG.endpoints.calendar) return;
-  const raw = await API_CONFIG.fetch('calendar', {
-    from: new Date(Date.now()-7*86400000).toISOString().split('T')[0],
-    to:   new Date(Date.now()+30*86400000).toISOString().split('T')[0],
-    market: 'SA'
-  });
-  if(!raw || !Array.isArray(raw)) return;
-  // Normalize calendar events
-  window._apiCalendar = raw.map(ev=>({
-    date:  ev.date || ev.eventDate || '',
-    time:  ev.time || ev.eventTime || '',
-    title: ev.title || ev.titleAr || ev.name || '',
-    impact: ev.impact || ev.importance || 'low',
-    actual:   ev.actual   !== undefined ? String(ev.actual)   : '',
-    forecast: ev.forecast !== undefined ? String(ev.forecast) : '',
-    previous: ev.previous !== undefined ? String(ev.previous) : '',
-  }));
-}
 
 // ── Initialize API on page load ───────────────────────────────
 function initAPI(){
