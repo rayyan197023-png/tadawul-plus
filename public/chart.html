@@ -4992,19 +4992,19 @@ const weakVol=d.v<vma*1.1;
 
     // Fill
     ctx.fillStyle=`rgba(${rgb},${fresh?0.13:0.07})`;
-    ctx.fillRect(0,y1,CW-38,zh);
+    ctx.fillRect(0,y1,CW-YW,zh);
 
     // Top line (main boundary)
     ctx.strokeStyle=`rgba(${rgb},${fresh?0.9:0.5})`;
     ctx.lineWidth=fresh?1.8:1.0;
     ctx.setLineDash([]);
-    ctx.beginPath();ctx.moveTo(0,y1);ctx.lineTo(CW-38,y1);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,y1);ctx.lineTo(CW-YW,y1);ctx.stroke();
 
     // Bottom line (subtle)
     ctx.strokeStyle=`rgba(${rgb},0.2)`;
     ctx.lineWidth=0.5;
     ctx.setLineDash([3,3]);
-    ctx.beginPath();ctx.moveTo(0,y2);ctx.lineTo(CW-38,y2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,y2);ctx.lineTo(CW-YW,y2);ctx.stroke();
     ctx.setLineDash([]);
 
     // Label
