@@ -5822,15 +5822,13 @@ function renderCrosshair(){
  // Now re-draw only the crosshair section
  // We need dimensions to compute chart bounds
  const YW=38, CW=W-YW;
- const VOL_H=_isCurrentIndexMode()?0:getPanelH('vol',H,0.14);
- const _SUB_BASE=['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD'].filter(id=>state.activeInds.includes(id));
- const _subB2=(activeStrategy==='TRIPLE_SCR'&&!_SUB_BASE.includes('MACD'))?['MACD',..._SUB_BASE]:_SUB_BASE;
- const SUB_INDS=[..._subB2,...customInds.filter(ci=>ci.type==='subpanel').map(ci=>ci.id)];
+ const VOL_H=Math.round(H*0.14);
+ const SUB_INDS=['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD'].filter(id=>state.activeInds.includes(id));
  const hasSubPanel=SUB_INDS.length>0;
- const SUB_H=hasSubPanel?SUB_INDS.reduce((a,_,pi)=>a+getPanelH('sub_'+pi,H,0.09),0):0;
- const OF_H=showOrderFlow?getPanelH('of',H,0.10):0;
+ const SUB_H=hasSubPanel?Math.round(H*Math.min(0.28,SUB_INDS.length*0.09)):0;
  const PB=22,PT=12,SEP=3;
- const cTop=PT,cBot=H-PB-SEP-VOL_H-(hasSubPanel?SUB_H+SEP:0)-(OF_H?OF_H+SEP:0),cH=cBot-cTop;
+ const cTop=PT,cBot=H-PB-SEP-VOL_H-(hasSubPanel?SUB_H+SEP:0),cH=cBot-cTop;
+
  if(crosshair.x<0||crosshair.x>CW||crosshair.y<cTop||crosshair.y>cBot)return;
  const cx=crosshair.x,cy=crosshair.y;
  const all=state.allCandles;
