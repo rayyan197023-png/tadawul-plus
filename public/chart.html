@@ -6168,7 +6168,7 @@ function finishDrawing(pt) {
  }
  render();return;
  }
- if(!state.live)return;
+ if(!state.live){alert('NO LIVE');return;}
  const d=state.live;
  if(pt){const _fp=snapPt(pt);d.p2={x:_fp.x,y:_fp.y};}
  const singlePt=['hline','vline','hbrush','text','callout'];
