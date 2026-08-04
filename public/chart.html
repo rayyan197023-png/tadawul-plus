@@ -7001,6 +7001,7 @@ function setCT(t){
 document.addEventListener('click',e=>{
  if(!e.target.closest('#per-btn')&&!e.target.closest('#per-menu'))if(openPer){document.getElementById('per-menu').classList.remove('open');document.getElementById('per-btn').classList.remove('open');openPer=false;}
  if(!e.target.closest('#ct-btn')&&!e.target.closest('#ct-menu'))if(openCT){document.getElementById('ct-menu').classList.remove('open');document.getElementById('ct-btn').classList.remove('open');openCT=false;}
+  if(!e.target.closest('#range-btn')&&!e.target.closest('#range-menu'))if(openRange){document.getElementById('range-menu').classList.remove('open');document.getElementById('range-btn').classList.remove('open');openRange=false;}
 });
 
 // SHEETS
