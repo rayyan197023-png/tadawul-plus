@@ -6570,7 +6570,7 @@ cv.addEventListener('touchstart',e=>{
 
  // DRAWING MODE 
  if(state.tool&&inChart(pt)){
- const singlePt=['hline','vline'];
+ const singlePt=['hline','vline','text','callout'];
  if(singlePt.includes(state.tool)){
   startDrawing(pt);finishDrawing(null);
  } else if(drawPhase===1&&state.live&&!isPatternTool(state.tool)){
