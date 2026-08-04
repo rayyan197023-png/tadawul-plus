@@ -5584,7 +5584,7 @@ arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),ty(v)),f=false):ctx.li
   sub.forEach((d,i)=>{
    const gi=start+i;
    if(gi<PLB||gi>=all.length-PLB)return;
-   const isH=all.slice(gi-PLB,gi+PLB+1).every((x,j)=>j===PLB||all[gi].hi>=x.hi);
+   const isH=all.slice(gi-PLB,gi+PLB+1).every((x,j)=>j===PLB||all[gi].hi>x.hi);
    const isL=all.slice(gi-PLB,gi+PLB+1).every((x,j)=>j===PLB||all[gi].lo<=x.lo);
    if(isH){
     ctx.fillStyle='#ef4444';
