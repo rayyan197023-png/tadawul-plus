@@ -6660,6 +6660,7 @@ if(_chActive&&e.touches.length===1){
   const _drawW1=_CW1-_bw1*2-16;
   const _ci1=Math.max(0,Math.min(_VIS1-1,Math.round(((_ccpx-_bw1*0.5)/Math.max(1,_drawW1-_bw1*2))*Math.max(1,_VIS1-1))));
   crosshair={x:_ccpx,y:_ccpy,ci:_ci1};
+    document.title='ci:'+_ci1+' bw:'+_bw1.toFixed(1)+' dW:'+_drawW1.toFixed(0)+' x:'+_ccpx.toFixed(0)+' vis:'+_VIS1;
   cv._lastTouchPos={x:_ccpx,y:_ccpy};
   renderCrosshair();
   return; // ⚠️ critical: block all subsequent logic
