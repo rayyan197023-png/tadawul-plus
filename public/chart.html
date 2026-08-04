@@ -6992,7 +6992,7 @@ function setPer(p){
 }
 function setCT(t){
  state.chartType=t;saveSettings();
- const labs={candle:'شموع',hollow:'فارغة',line:'خط',ohlc:'OHLC',heikin:'هيكن أشي'};
+ const labs={candle:'شموع',hollow:'فارغة',line:'خط',ohlc:'OHLC',heikin:'هيكن أشي',renko:'رينكو'};
  document.getElementById('ct-btn').textContent=labs[t]||t;
  document.querySelectorAll('.ctitem').forEach(el=>el.classList.toggle('active',el.querySelector('span').textContent===labs[t]));
  closeMenus();render();
