@@ -5722,7 +5722,7 @@ arr.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),ty(v)),f=false):ctx.li
 
  // Price Labels on drawings (Y-axis) — enhanced
  ctx.save();
- const _drawPriceTag=(y, price, color, side='right')=>{
+ const _drawPriceTag=(y, price, color)=>{
   if(y<cTop+2||y>cBot-2)return;
   const dc=color||'#3b9eff';
   const tw=YW-2, th=16, tx3=CW+1, ty3=y-th/2;
