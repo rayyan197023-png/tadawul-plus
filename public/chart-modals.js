@@ -413,13 +413,13 @@ function _maRowHTML(){
    <option value="adx">ADX</option>
    <option value="pct_change">تغيير %</option>
   </select>
-  <select class="ma-op" style="background:#070b14;border:1px solid #1e2d45;border-radius:7px;color:#f0f2f8;font-size:11px;padding:7px 4px;font-family:Cairo,sans-serif;outline:none">
+  <select class="ma-op" style="background:#070b14;border:1px solid #1e2d45;border-radius:7px;color:#f0f2f8;font-size:16px;padding:7px 4px;font-family:Cairo,sans-serif;outline:none">
    <option value="above">أعلى</option>
    <option value="below">أدنى</option>
    <option value="cross_up">يتجاوز↑</option>
    <option value="cross_dn">يهبط↓</option>
   </select>
-  <input class="ma-val" type="number" placeholder="القيمة" style="background:#070b14;border:1px solid #1e2d45;border-radius:7px;color:#f0f2f8;font-size:12px;padding:7px 6px;text-align:center;outline:none;font-family:monospace">
+  <input class="ma-val" type="number" placeholder="القيمة" style="background:#070b14;border:1px solid #1e2d45;border-radius:7px;color:#f0f2f8;font-size:16px;padding:7px 6px;text-align:center;outline:none;font-family:monospace">
   <button onclick="this.closest('.ma-row').remove()" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:6px;color:#ef4444;font-size:11px;width:26px;height:30px;cursor:pointer;flex-shrink:0">✕</button>
  </div>`;
 }
