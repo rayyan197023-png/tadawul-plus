@@ -2650,15 +2650,7 @@ const vmx=mv;
  ctx.beginPath();ctx.moveTo(p2.x,p2.y);ctx.lineTo(p2.x-al*Math.cos(ang-0.4),p2.y-al*Math.sin(ang-0.4));ctx.lineTo(p2.x-al*Math.cos(ang+0.4),p2.y-al*Math.sin(ang+0.4));ctx.closePath();ctx.fillStyle=col;ctx.fill();
  dot(p1.x,p1.y,3);
  }
- else if(tool==='callout'&&p2){
- const bw2=72,bh=20,bx=p2.x-bw2/2,by=p2.y-bh-10;
- ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.stroke();ctx.setLineDash([]);
- ctx.fillStyle='#0d1420';ctx.strokeStyle=col;ctx.lineWidth=1;
- ctx.fillRect(bx,by,bw2,bh);ctx.strokeRect(bx,by,bw2,bh);
- ctx.fillStyle=col;ctx.font='8px monospace';ctx.textAlign='center';
- ctx.fillText(px2price(p1.y).toFixed(2),p2.x,by+13);
- dot(p1.x,p1.y,3);
- }
+ 
  else if(tool==='fib'&&p2){
  const fibs=[0,0.236,0.382,0.5,0.618,0.786,1];
  const fc=['#22c55e','#38bdf8','#a78bfa','#f59e0b','#a78bfa','#38bdf8','#ef4444'];
