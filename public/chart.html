@@ -6494,12 +6494,16 @@ cv.addEventListener('touchstart',e=>{
    const _pp2=_sub2.flatMap(d=>[d.hi,d.lo]);
    const _mn2=Math.min(..._pp2),_mx2=Math.max(..._pp2);
    const _pad2=(_mx2-_mn2)*0.06;
-   const _VOL2=Math.round((_H-22-3)*0.11);
-   const _hasSub=['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD'].some(id=>state.inds.includes(id));
-   const _SUB2=_hasSub?Math.round(_H*0.25):0;
-   const _cH2=_H-22-3-_VOL2-(_hasSub?_SUB2+3:0)-12-3;
-   const _rng2=(_mx2-_mn2+_pad2*2)||1;
-   const _alertY=12+_cH2-((state.alert-(_mn2-_pad2))/_rng2)*_cH2;
+   const _VOL2=_isCurrentIndexMode()?0:getPanelH('vol',_H,0.14);
+   const _SUB_B=[...['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD'].filter(id=>state.inds.includes(id)),...customInds.filter(ci=>ci.type==='subpanel').map(ci=>ci.id)];
+   const _hasSub=_SUB_B.length>0;
+   const _SUB2=_hasSub?_SUB_B.reduce((a,_,pi)=>a+getPanelH('sub_'+pi,_H,0.09),0):0;
+   const _OF2=showOrderFlow?getPanelH('of',_H,0.10):0;
+   const _cH2=_H-22-3-_VOL2-(_hasSub?_SUB2+3:0)-(_OF2?_OF2+3:0)-12;
+   const _mid2=(_mn2+_mx2)/2;
+   const _half2=((_mx2-_mn2)*0.5+_pad2)/Math.max(0.1,yScale);
+   const _lo2=_mid2-_half2,_rng2=(_mid2+_half2-_lo2)||1;
+   const _alertY=12+_cH2-((state.alert-_lo2)/_rng2)*_cH2;
    if(Math.abs(_tpy-_alertY)<24){
     if(_alertLongTimer)clearTimeout(_alertLongTimer);
     _alertLongTimer=setTimeout(()=>{
