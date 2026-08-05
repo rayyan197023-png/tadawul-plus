@@ -7519,7 +7519,7 @@ function cancelAlert(){
   const ar=document.getElementById('alert-active-row');
   if(ar)ar.style.display='none';
   const toast=document.getElementById('toast');
-  if(toast){toast.textContent='تم إلغاء التنبيه';toast.style.opacity='1';setTimeout(()=>toast.style.opacity='0',2000);}
+  if(toast){toast.textContent='تم إلغاء التنبيه';toast.style.display='block';toast.classList.add('show');setTimeout(()=>{toast.classList.remove('show');toast.style.display='none';},2000);}
   closeSheet();
   setTimeout(()=>{sizeChart();render();},280);
 }
