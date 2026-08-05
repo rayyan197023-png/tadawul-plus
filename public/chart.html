@@ -1086,7 +1086,7 @@ function _updateZoomCtrlPos(){
  const zc = document.getElementById('zoom-ctrl');
  if(!zc) return;
  const H = cv.offsetHeight || 400;
- const VOL_H = getPanelH('vol', H, 0.14);
+ const VOL_H = _isCurrentIndexMode()?0:getPanelH('vol', H, 0.14);
  const _subIds = [...['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD'].filter(id=>state.inds.includes(id)),...customInds.filter(ci=>ci.type==='subpanel').map(ci=>ci.id)];
  const hasSub = _subIds.length > 0;
  const SUB_H = hasSub ? _subIds.reduce((a,_,pi)=>a+getPanelH('sub_'+pi,H,0.09),0) : 0;
@@ -6527,7 +6527,7 @@ cv.addEventListener('touchstart',e=>{
  const tvy2=e.touches[0].clientY-r2.top;
  // Recalculate vol bounds — must match render() exactly
  const H2=cv.offsetHeight||748, CW2=(cv.offsetWidth||390)-38;
- const VOL_H2=getPanelH('vol',H2,0.14);
+ const VOL_H2=_isCurrentIndexMode()?0:getPanelH('vol',H2,0.14);
  const _subIds2=[...['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD'].filter(id=>state.inds.includes(id)),...customInds.filter(ci=>ci.type==='subpanel').map(ci=>ci.id)];
  const hasSub2=_subIds2.length>0;
  const SUB_H2=hasSub2?_subIds2.reduce((a,_,pi)=>a+getPanelH('sub_'+pi,H2,0.09),0):0;
