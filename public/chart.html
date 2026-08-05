@@ -7902,56 +7902,6 @@ function loadDrawings(){
 }
 loadSettings();loadDrawings();
 
-function _recalcDrawingCoords(){
-  // Convert stored price/index coords back to pixels after loading
-  // Only needed after page reload when p1.x/y are 0
-  if(!state.allCandles||!state.allCandles.length)return;
-  const all=state.allCandles;
-  const n=all.length;
-  const vis=state.visible,off=state.offset;
-  const start=Math.max(0,n-vis-off);
-  const sub=all.slice(start,n-off);
-  if(!sub.length)return;
-  // Compute chart bounds same as render
-  const W=cv.offsetWidth-38||352;
-  const H=cv.offsetHeight||748;
-const pp=sub.flatMap(d=>[d.hi,d.lo]).filter(v=>v!=null&&isFinite(v)&&v>0);
-    const rawMn=pp.length?Math.min(...pp):0,rawMx=pp.length?Math.max(...pp):1;
-  const pad=(rawMx-rawMn)*0.06;
-  const mn=rawMn-pad,rng=(rawMx-rawMn+pad*2)||1;
-  const bw=Math.max(1.5,(W/Math.max(1,vis))*0.72);
-  const drawW=W-bw*2-16;
-  const VOL_H=Math.round((H-22-3)*0.11);
-  const hasSub=['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD'].some(id=>state.inds.includes(id));
-  const SUB_H=hasSub?Math.round(H*0.25):0;
-  const cH=H-22-3-VOL_H-(hasSub?SUB_H+3:0)-12-3;
-  const cTop=12;
-  const ty2=v=>cTop+cH-((v-mn)/rng)*cH;
-  const tx2=i=>bw+(sub.length<=1?drawW/2:(i/(sub.length-1))*(drawW));
-
-  state.drawings.forEach(d=>{
-    if(!d._p1_price||d._ai)return;
-    // Only recalc if pixels are 0,0 (freshly loaded)
-    if(d.p1&&d.p1.x===0&&d.p1.y===0){
-      const ci1=Math.max(0,Math.min(sub.length-1,d._p1_idx-start));
-      if(d.tool==='hline'){
-        d.p1.y=ty2(d._p1_price);
-        d.p2={x:W,y:d.p1.y};
-      } else if(d.tool==='vline'){
-        d.p1.x=tx2(ci1);
-        d.p2={x:d.p1.x,y:H};
-      } else {
-        d.p1.x=tx2(ci1);d.p1.y=ty2(d._p1_price);
-        if(d.p2&&d._p2_price!=null){
-          const ci2=Math.max(0,Math.min(sub.length-1,d._p2_idx-start));
-          d.p2.x=tx2(ci2);d.p2.y=ty2(d._p2_price);
-        }
-      }
-    }
-  });
-}
-
-_recalcDrawingCoords();
 function toggleCamSub(id){
  const el=document.getElementById(id);if(!el)return;
  const open=el.style.display==='block';
