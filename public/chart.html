@@ -6050,8 +6050,10 @@ function snapPt(pt) {
  const end = all.length - off, start = Math.max(0, end - VIS);
  const sub = all.slice(start, end), n = sub.length;
  if(!n) return pt;
- const drawW = b.CW - b.bw*2 - 16;
- const tx = i => b.bw + (n<=1 ? drawW/2 : (i/(n-1))*(drawW-b.bw));
+ const b2 = chartBounds(n);
+ const drawW = b2.CW - b2.bw*2 - 16;
+ const tx = i => b2.bw*0.5 + (n<=1 ? drawW/2 : (i/(n-1))*(drawW-b2.bw*2));
+
  // Price range (linear only for snap)
  const pp = sub.flatMap(d=>[d.hi,d.lo]);
  const rawMn=Math.min(...pp), rawMx=Math.max(...pp), pad=(rawMx-rawMn)*0.06;
