@@ -6542,9 +6542,9 @@ cv.addEventListener('touchstart',e=>{
  const start2=Math.max(0,end2-VIS2);
  const sub2=state.allCandles.slice(start2,end2);
  const n2=sub2.length;
- const bw2=Math.max(2,(CW2/Math.max(1,VIS2))*0.75);
+ const bw2=Math.max(1.5,(CW2/Math.max(1,VIS2))*0.72);
  const drawW2=CW2-bw2*2-16;
- const ci=Math.round((tvx-bw2)/Math.max(0.1,drawW2/(n2>1?n2-1:1)));
+ const ci=Math.round(((tvx-bw2*0.5)/Math.max(1,drawW2-bw2*2))*Math.max(1,n2-1));
  const cd=sub2[Math.max(0,Math.min(n2-1,ci))];
  if(cd){volTip={show:true,i:ci,x:tvx,y:tvy2,d:cd};render();return;}
  } else if(volTip.show&&tvy2<cBot2-10){
