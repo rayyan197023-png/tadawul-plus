@@ -7977,7 +7977,6 @@ function _checkMultiAlerts(sub,ind){
  const rsiLast=ind.rsi?.[ind.rsi.length-1];
  const _mh=_indCache.mcd?.hist;
  const macdLast=_mh?_mh[_mh.length-1]:null;
-  {const _qd=document.getElementById('toast');if(_qd){_qd.textContent='mcd:'+(_indCache.mcd?'YES':'NO')+' val:'+(macdLast==null?'null':macdLast.toFixed(3))+' alerts:'+(state.alerts?state.alerts.length:0);_qd.style.display='block';_qd.classList.add('show');}}
  const bbUp=ind.bb?.[ind.bb.length-1]?.up;
  const bbDn=ind.bb?.[ind.bb.length-1]?.dn;
  const adxLast=ind.adx?.[ind.adx.length-1]?.adx;
