@@ -6531,7 +6531,7 @@ cv.addEventListener('touchstart',e=>{
  const _subIds2=[...['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD'].filter(id=>state.inds.includes(id)),...customInds.filter(ci=>ci.type==='subpanel').map(ci=>ci.id)];
  const hasSub2=_subIds2.length>0;
  const SUB_H2=hasSub2?_subIds2.reduce((a,_,pi)=>a+getPanelH('sub_'+pi,H2,0.09),0):0;
- const OF_H2=showOrderFlow?Math.round(H2*0.10):0;
+ const OF_H2=showOrderFlow?getPanelH('of',H2,0.10):0;
  const cBot2=H2-22-3-VOL_H2-(hasSub2?SUB_H2+3:0)-(OF_H2?OF_H2+3:0);
  const vTop2=cBot2+3, vBot2=vTop2+VOL_H2;
  if(tvx>=0&&tvx<CW2&&tvy2>=vTop2-5&&tvy2<=vBot2){
