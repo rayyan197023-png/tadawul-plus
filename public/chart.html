@@ -6039,7 +6039,7 @@ let magnetMode = true; // on by default
 const MAGNET_RADIUS = 18; // pixels
 
 function snapPt(pt) {
- if(!magnetMode || !state.tool) return pt;
+ if(!magnetMode) return pt;
  const b = chartBounds();
  if(pt.x < 0 || pt.x > b.CW || pt.y < b.cTop || pt.y > b.cBot) return pt;
  const all = state.allCandles;
