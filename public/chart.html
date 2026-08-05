@@ -6505,11 +6505,9 @@ cv.addEventListener('touchstart',e=>{
    const _lo2=_mid2-_half2,_rng2=(_mid2+_half2-_lo2)||1;
    const _alertY=12+_cH2-((state.alert-_lo2)/_rng2)*_cH2;
    if(Math.abs(_tpy-_alertY)<24){
-    {const _q=document.getElementById('toast');if(_q){_q.textContent='HIT — بدأ المؤقت';_q.style.display='block';_q.classList.add('show');}}
     if(_alertLongTimer)clearTimeout(_alertLongTimer);
     _alertLongTimer=setTimeout(()=>{
      _alertDrag=true;
-     {const _q2=document.getElementById('toast');if(_q2){_q2.textContent='FIRED — تفعّل السحب';}}
      _alertLongTimer=null;
      if(navigator.vibrate)navigator.vibrate([30,20,30]);
      const _t=document.getElementById('toast');
