@@ -6504,8 +6504,6 @@ cv.addEventListener('touchstart',e=>{
    const _half2=((_mx2-_mn2)*0.5+_pad2)/Math.max(0.1,yScale);
    const _lo2=_mid2-_half2,_rng2=(_mid2+_half2-_lo2)||1;
    const _alertY=12+_cH2-((state.alert-_lo2)/_rng2)*_cH2;
-      const _t0=document.getElementById('toast');
-   if(_t0){_t0.textContent='Y:'+Math.round(_alertY)+' tap:'+Math.round(_tpy)+' d:'+Math.round(Math.abs(_tpy-_alertY));_t0.style.display='block';_t0.classList.add('show');}
    if(Math.abs(_tpy-_alertY)<24){
     if(_alertLongTimer)clearTimeout(_alertLongTimer);
     _alertLongTimer=setTimeout(()=>{
