@@ -6716,13 +6716,16 @@ if(_chActive&&e.touches.length===1){
    const _pp3=_sub3.flatMap(d=>[d.hi,d.lo]);
    const _mn3=Math.min(..._pp3),_mx3=Math.max(..._pp3);
    const _pad3=(_mx3-_mn3)*0.06;
-   const _VOL3=Math.round((_H3-22-3)*0.11);
-   const _hasSub2=['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD'].some(id=>state.inds.includes(id));
-   const _SUB3=_hasSub2?Math.round(_H3*0.25):0;
-   const _cH3=_H3-22-3-_VOL3-(_hasSub2?_SUB3+3:0)-12-3;
-   const _rng3=(_mx3-_mn3+_pad3*2)||1;
-   // Convert Y to price: price = mn + ((cTop+cH - y) / cH) * rng
-   const _newP=(_mn3-_pad3)+(( 12+_cH3-_tpy2)/_cH3)*_rng3;
+   const _VOL3=_isCurrentIndexMode()?0:getPanelH('vol',_H3,0.14);
+   const _SUB_A=[...['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD'].filter(id=>state.inds.includes(id)),...customInds.filter(ci=>ci.type==='subpanel').map(ci=>ci.id)];
+   const _hasSub2=_SUB_A.length>0;
+   const _SUB3=_hasSub2?_SUB_A.reduce((a,_,pi)=>a+getPanelH('sub_'+pi,_H3,0.09),0):0;
+   const _OF3=showOrderFlow?getPanelH('of',_H3,0.10):0;
+   const _cH3=_H3-22-3-_VOL3-(_hasSub2?_SUB3+3:0)-(_OF3?_OF3+3:0)-12;
+   const _mid3=(_mn3+_mx3)/2;
+   const _half3=((_mx3-_mn3)*0.5+_pad3)/Math.max(0.1,yScale);
+   const _lo3=_mid3-_half3,_rng3b=(_mid3+_half3-_lo3)||1;
+   const _newP=_lo3+((12+_cH3-_tpy2)/_cH3)*_rng3b;
    if(_newP>0){
     state.alert=+_newP.toFixed(2);
     state._alertFired=false;
