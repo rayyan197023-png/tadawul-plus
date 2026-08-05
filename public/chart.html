@@ -8028,19 +8028,8 @@ function _checkMultiAlerts(sub,ind){
  });
 }
 
-
-_updateUndoButtons();
-initAPI();
-loadShareFromURL(); // load shared chart from URL if any
-// Auto-save after each drawing action
-const _origFinish=finishDrawing;
 window.addEventListener('resize',()=>setTimeout(sizeChart,100));
-_initToolbar();
-initMenuDrag();
-setTimeout(startOnboarding, 800);
-  _initThemeBtn();
-  _initR2Touch();
-  _updateThemeIcon();
+_updateThemeIcon();
 window.addEventListener('orientationchange',()=>setTimeout(sizeChart,300));
 document.fonts.ready.then(()=>{[0,100,300].forEach(t=>setTimeout(sizeChart,t));});
 
