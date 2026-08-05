@@ -7975,7 +7975,8 @@ function _checkMultiAlerts(sub,ind){
  const last=sub[sub.length-1];
  const prev=sub[sub.length-2]||last;
  const rsiLast=ind.rsi?.[ind.rsi.length-1];
- const macdLast=ind.macd?.hist?.[ind.macd.hist.length-1];
+ const _mh=_indCache.mcd?.hist;
+ const macdLast=_mh?_mh[_mh.length-1]:null;
  const bbUp=ind.bb?.[ind.bb.length-1]?.up;
  const bbDn=ind.bb?.[ind.bb.length-1]?.dn;
  const adxLast=ind.adx?.[ind.adx.length-1]?.adx;
@@ -7997,7 +7998,7 @@ function _checkMultiAlerts(sub,ind){
   switch(type){
    case 'price': return prev.c;
    case 'rsi': return ind.rsi?.[ind.rsi.length-2];
-   case 'macd_hist': return ind.macd?.hist?.[ind.macd.hist.length-2];
+   case 'macd_hist': return _mh?_mh[_mh.length-2]:null;
    default: return getVal(type);
   }
  };
