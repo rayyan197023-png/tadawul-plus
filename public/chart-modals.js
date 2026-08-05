@@ -709,7 +709,7 @@ function showCustomIndModal(){
    <div>
     <div style="font-size:10px;color:#4a6080;font-family:Cairo,sans-serif;margin-bottom:8px;text-align:right">إنشاء مؤشر جديد</div>
     <div style="display:flex;flex-direction:column;gap:10px">
-     <input id="cind-name" placeholder="اسم المؤشر" style="background:#070b14;border:1.5px solid #1e2d45;border-radius:10px;color:#f0f2f8;font-size:13px;padding:10px 12px;font-family:Cairo,sans-serif;text-align:right;outline:none">
+<input id="cind-name" placeholder="اسم المؤشر" style="background:#070b14;border:1.5px solid #1e2d45;border-radius:10px;color:#f0f2f8;font-size:16px;padding:10px 12px;font-family:Cairo,sans-serif;text-align:right;outline:none">
      <textarea id="cind-formula" placeholder="المعادلة -- مثال: EMA(RSI(close,14),3)" rows="3" style="background:#070b14;border:1.5px solid #1e2d45;border-radius:10px;color:#f0f2f8;font-size:12px;padding:10px 12px;font-family:monospace;direction:ltr;resize:none;outline:none;line-height:1.6"></textarea>
      <div style="display:flex;gap:8px;align-items:center">
       <select id="cind-type" style="flex:1;background:#070b14;border:1.5px solid #1e2d45;border-radius:10px;color:#f0f2f8;font-size:12px;padding:8px 10px;font-family:Cairo,sans-serif;outline:none">
