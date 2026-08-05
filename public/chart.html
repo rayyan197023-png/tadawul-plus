@@ -3177,13 +3177,13 @@ try{
       // Browser notification
       const dir=alertType==='above'?'↑ اختراق صعود':'↓ هبوط تحت';
       sendNotif('تنبيه — '+state.stk.name,state.stk.sym+' '+dir+' '+alertPrice.toFixed(2)+' ر.س');
-      // On-screen toast
       const toast=document.getElementById('toast');
       if(toast){
         toast.textContent='⬤ '+state.stk.name+' '+dir+' '+alertPrice.toFixed(2);
         toast.style.background=alertType==='above'?'#22c55e':'#ef4444';
-        toast.style.opacity='1';
-        setTimeout(()=>{toast.style.opacity='0';toast.style.background='';},4000);
+        toast.style.display='block';
+        toast.classList.add('show');
+        setTimeout(()=>{toast.classList.remove('show');toast.style.display='none';toast.style.background='';},4000);
       }
     }
   }
