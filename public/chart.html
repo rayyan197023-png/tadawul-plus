@@ -6509,6 +6509,7 @@ cv.addEventListener('touchstart',e=>{
     if(_alertLongTimer)clearTimeout(_alertLongTimer);
     _alertLongTimer=setTimeout(()=>{
      _alertDrag=true;
+     {const _q2=document.getElementById('toast');if(_q2){_q2.textContent='FIRED — تفعّل السحب';}}
      _alertLongTimer=null;
      if(navigator.vibrate)navigator.vibrate([30,20,30]);
      const _t=document.getElementById('toast');
