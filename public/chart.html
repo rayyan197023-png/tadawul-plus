@@ -7496,7 +7496,7 @@ function setAlert(){
   if(at)at.textContent=(_alertType==='above'?'▲ اختراق صعود فوق ':'▼ هبوط تحت ')+v.toFixed(2)+' ر.س';
   // Toast
   const toast=document.getElementById('toast');
-  if(toast){toast.textContent='🔔 تنبيه نشط عند '+v.toFixed(2)+' ر.س';toast.style.opacity='1';setTimeout(()=>toast.style.opacity='0',2500);}
+  if(toast){toast.textContent='🔔 تنبيه نشط عند '+v.toFixed(2)+' ر.س';toast.style.display='block';toast.classList.add('show');setTimeout(()=>{toast.classList.remove('show');toast.style.display='none';},2500);}
   closeSheet();
   setTimeout(()=>{sizeChart();render();},280);
 }
