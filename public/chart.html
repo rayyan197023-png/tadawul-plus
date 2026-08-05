@@ -7281,7 +7281,7 @@ function _applyTick(tick){
       last.hi = Math.max(last.hi, tick.c);
       last.lo = Math.min(last.lo, tick.c);
       if(tick.v) last.v = tick.v;
-    } else {
+    } else if(_isMarketOpen()){
       // آخر شمعة قديمة (بيانات 5Y/الكل غير محدّثة حتى اليوم)
       // افتتاح شمعة اليوم الجديدة: نستخدم إغلاق آخر شمعة كسعر افتتاح
       // (أدق من افتراض o=hi=lo=c، ويمنع ظهور الشمعة كخط رفيع بلا جسم)
