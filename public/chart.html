@@ -6784,8 +6784,8 @@ if(e.touches.length===2&&!_chActive&&drMode==='pinch'){
  const nx=-dy/len,ny=dx/len;
  const mx=(d.p1.x+d.p2.x)/2,my=(d.p1.y+d.p2.y)/2;
  d.width=Math.max(5,Math.abs((pt.x-mx)*nx+(pt.y-my)*ny));
- } else if(drResH===0){d.p1={x:pt.x,y:pt.y};}
- else{if(d.tool==='hline')d.p1.y=pt.y;else d.p2={x:pt.x,y:pt.y};}
+ } else if(drResH===0){const _sr=snapPt(pt);d.p1={x:_sr.x,y:_sr.y};}
+ else{const _sr2=snapPt(pt);if(d.tool==='hline')d.p1.y=_sr2.y;else d.p2={x:_sr2.x,y:_sr2.y};}
  if(typeof _enrichDrawing==='function')_enrichDrawing(d);
  render();
  }return;
