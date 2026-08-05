@@ -5813,7 +5813,7 @@ function renderCrosshair(){
  // Now re-draw only the crosshair section
  // We need dimensions to compute chart bounds
  const YW=38, CW=W-YW;
- const VOL_H=Math.round(H*0.14);
+ const VOL_H=_isCurrentIndexMode()?0:getPanelH('vol',H,0.14);
  const SUB_INDS=['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD'].filter(id=>state.activeInds.includes(id));
  const hasSubPanel=SUB_INDS.length>0;
  const SUB_H=hasSubPanel?Math.round(H*Math.min(0.28,SUB_INDS.length*0.09)):0;
