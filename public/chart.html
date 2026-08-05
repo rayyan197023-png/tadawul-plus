@@ -7258,6 +7258,15 @@ if(!raw) return;
   if(tick.c > 0) { _applyTick(tick); invalidateChart(); render(); }
 }
 
+// السوق السعودي: الأحد–الخميس، 10:00–15:00 بتوقيت الرياض
+function _isMarketOpen(){
+ const n=new Date();
+ const d=n.getDay(); // 0=أحد ... 4=خميس، 5=جمعة، 6=سبت
+ if(d===5||d===6)return false;
+ const h=n.getHours(),m=n.getMinutes();
+ const mins=h*60+m;
+ return mins>=600&&mins<=900; // 10:00 إلى 15:00
+}
 
 function _applyTick(tick){
   if(!tick || !tick.c || tick.c <= 0) return;
