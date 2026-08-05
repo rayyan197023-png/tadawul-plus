@@ -6629,6 +6629,7 @@ deselectDrawing();drMode='pan';drag.x0=e.touches[0].clientX;drag.off0=state.offs
  const _chPt=pt;
 _chLongTimer=setTimeout(()=>{
   _chLongTimer=null;
+    if(_alertDrag)return;
   // Only activate if still panning (not drawing)
   if(drMode!=='pan'&&drMode!==null) return;
   _chActive=true;
