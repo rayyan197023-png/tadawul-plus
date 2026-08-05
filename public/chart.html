@@ -6511,7 +6511,7 @@ cv.addEventListener('touchstart',e=>{
      _alertLongTimer=null;
      if(navigator.vibrate)navigator.vibrate([30,20,30]);
      const _t=document.getElementById('toast');
-     if(_t){_t.textContent='🔔 اسحب لتعديل سعر التنبيه';_t.style.opacity='1';setTimeout(()=>_t.style.opacity='0',2000);}
+     if(_t){_t.textContent='🔔 اسحب لتعديل سعر التنبيه';_t.style.display='block';_t.classList.add('show');setTimeout(()=>{_t.classList.remove('show');_t.style.display='none';},2000);}
      render();
     },500);
    }
