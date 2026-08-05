@@ -6706,7 +6706,11 @@ if(_chActive&&e.touches.length===1){
  }
  if(drLong){clearTimeout(drLong);drLong=null;}
  // Cancel alert long press if user moved significantly
- if(_alertLongTimer&&!_alertDrag){clearTimeout(_alertLongTimer);_alertLongTimer=null;}
+ if(_alertLongTimer&&!_alertDrag&&e.touches.length===1){
+  const _ra=cv.getBoundingClientRect();
+  const _ax=e.touches[0].clientX-_ra.left,_ay=e.touches[0].clientY-_ra.top;
+  if(cv._lastTouchPos&&Math.hypot(_ax-cv._lastTouchPos.x,_ay-cv._lastTouchPos.y)>12){clearTimeout(_alertLongTimer);_alertLongTimer=null;}
+ }
 
  // ── Alert line drag ──────────────────────────
  if(_alertDrag&&state.alert!=null&&e.touches.length===1){
