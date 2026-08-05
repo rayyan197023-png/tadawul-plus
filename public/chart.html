@@ -6367,7 +6367,6 @@ cv.addEventListener('touchstart',e=>{
   const _py0=e.touches[0].clientY-_r0.top;
   const _H0=cv.offsetHeight||400;
   // Check hit on handles — quick scan of separator positions
-  const _CW0=_H0*(_r0.width/(_r0.height||1)); // approx CW
   const _chkHandle=(panKey,sepY,panTop,panBot)=>{
    // Hit: left handle strip OR full right Y-axis column of this panel
    const hitLeft=Math.abs(_py0-sepY)<=16&&_px0<=50;
@@ -7789,7 +7788,6 @@ function sizeChart(){
 // Map new state keys to what render() expects internally
 Object.defineProperty(state,'activeInds',{get(){return this.inds;},set(v){this.inds=v;}});
 Object.defineProperty(state,'activeTool',{get(){return this.tool;},set(v){this.tool=v;}});
-Object.defineProperty(state,'liveDrawing',{get(){return this.live;},set(v){this.live=v;}});
 Object.defineProperty(state,'chartType',{get(){return this.ct;},set(v){this.ct=v;}});
 
 function deselectDrawing(){drSelId=null;CM.userMoved=false;CM.lastId=null;cmHide();}
