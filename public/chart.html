@@ -7670,6 +7670,7 @@ async function _startCompare(sym,name){
  try{
   if(API_CONFIG.enabled && API_CONFIG.endpoints.candles){
    const tf=API_CONFIG.tfMap[state.per]||state.per;
+      const PER_COUNT={'1m':200,'5m':180,'15m':160,'30m':150,'1H':140,'4H':130,'1D':130,'1W':104,'1M':96};
    const raw=await API_CONFIG.fetch('candles',{symbol:sym,interval:tf,limit:PER_COUNT[state.per]||130});
    if(raw && Array.isArray(raw) && raw.length>5) cmp=normalizeCandles(raw);
   }
