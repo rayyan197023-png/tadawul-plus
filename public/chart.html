@@ -6672,7 +6672,7 @@ if(_chActive&&!_alertDrag&&e.touches.length===1){
   const _ci1=Math.max(0,Math.min(_n1-1,Math.round(_frac1*_slots1)));
   crosshair={x:_ccpx,y:_ccpy,ci:_ci1};
   cv._lastTouchPos={x:_ccpx,y:_ccpy};
-  renderCrosshair();
+  render();
   return; // ⚠️ critical: block all subsequent logic
 }
  
