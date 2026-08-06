@@ -3573,6 +3573,7 @@ const visStart=Math.max(0,all.length-1-_pvN);
  DPO:{d:ind.dpo,mn:null,mx:null,c:'#06b6d4',l:'DPO',lvls:[0]},
  };
  if(OHLCV_DATA[id]){
+   if(id==='ROC'||id==='CMF'){const _q=document.getElementById('toast');if(_q){_q.textContent=id+' d:'+(OHLCV_DATA[id].d?'YES len'+OHLCV_DATA[id].d.length:'NO');_q.style.display='block';_q.classList.add('show');}}
  const cfg2=OHLCV_DATA[id];
  const vals=cfg2.d?(Array.isArray(cfg2.d)?cfg2.d:cfg2.d.up||[]).filter(v=>v!=null&&!isNaN(v)):[];
  if(vals.length){
