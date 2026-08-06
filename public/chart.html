@@ -6663,9 +6663,9 @@ if(_chActive&&!_alertDrag&&e.touches.length===1){
   const _ccpy=Math.max(8,Math.min(cv.offsetHeight-45,_cpy));
   const _VIS1=Math.min(Math.max(8,state.visible),state.allCandles.length);
   const _n1=Math.max(1,Math.min(_VIS1,state.allCandles.length-Math.min(Math.max(0,state.offset),Math.max(0,state.allCandles.length-_VIS1))));
-  const _bw1=Math.max(1.5,(_CW1/Math.max(1,_VIS1))*0.72);
+  const _bw1=Math.max(1.5,(_CW1/Math.max(1,_n1+_cp1))*0.72);
   const _drawW1=_CW1-_bw1*2-16;
-  const _ci1=Math.max(0,Math.min(_n1-1,Math.round(((_ccpx-_bw1*0.5)/Math.max(1,_drawW1-_bw1*2))*Math.max(1,_n1-1))));
+  const _ci1=Math.max(0,Math.min(_n1-1,Math.round(((_ccpx-_bw1*0.5)/Math.max(1,_drawW1-_bw1*2))*Math.max(1,_n1+_cp1-1))));
   crosshair={x:_ccpx,y:_ccpy,ci:_ci1};
   cv._lastTouchPos={x:_ccpx,y:_ccpy};
   renderCrosshair();
