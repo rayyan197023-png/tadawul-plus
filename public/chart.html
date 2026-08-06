@@ -1678,7 +1678,7 @@ function render(){
  // بانل الحجم يُخفى بالكامل لمؤشر تاسي -- بيانات الحجم التاريخية غير متوفرة وغير دقيقة للمؤشر
  const VOL_H=_isCurrentIndexMode() ? 0 : getPanelH('vol',H,0.14); // volume panel — resizable
  if(!state.activeInds) state.activeInds = state.inds || [];
- const SUB_INDS_BASE=['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD'].filter(id=>state.activeInds.includes(id));
+ const SUB_INDS_BASE=['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD','ROC','CMF'].filter(id=>state.activeInds.includes(id));
 
   // Auto-add MACD panel when TRIPLE_SCR strategy is active
   const _subBase=(activeStrategy==='TRIPLE_SCR'&&!SUB_INDS_BASE.includes('MACD'))
