@@ -5844,6 +5844,7 @@ const tx=i=>bw*0.5+((n+_cloudPad-1)<=0?drawW/2:(i/(n+_cloudPad-1))*(drawW-bw*2))
 
  const px2price=y=>mn+((cBot-y)/cH)*rng;
  const cd=crosshair.ci>=0&&_lastRenderedSub?_lastRenderedSub[Math.min(crosshair.ci,_lastRenderedSub.length-1)]:null;
+  {const _w=document.getElementById('toast');if(_w){_w.textContent='ci:'+crosshair.ci+' subLen:'+(_lastRenderedSub?_lastRenderedSub.length:0)+' n:'+n+' cp:'+_cloudPad+' t:'+(cd&&cd.t?new Date(cd.t).getDate()+'/'+(new Date(cd.t).getMonth()+1):'-');_w.style.display='block';_w.classList.add('show');}}
  const isUp=cd?cd.c>=cd.o:true;
  const accentC=isUp?'#22c55e':'#ef4444';
  const accentA=isUp?'rgba(34,197,94,':'rgba(239,68,68,';
