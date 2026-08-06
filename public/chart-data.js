@@ -35,6 +35,8 @@ const STOCKS=[
  {id:'MACD', l:'MACD', cat:'الزخم',c:'#38bdf8'},
  {id:'STOCH', l:'Stochastic', cat:'الزخم',c:'#f472b6'},
  {id:'STOCHRSI',l:'Stoch RSI', cat:'الزخم',c:'#ec4899'},
+  {id:'ROC', l:'ROC معدل التغير', cat:'الزخم',c:'#7c3aed'},
+
  // الاتجاه
  {id:'ADX', l:'ADX', cat:'الاتجاه',c:'#e879f9'},
  {id:'PSAR', l:'Parabolic SAR',cat:'الاتجاه',c:'#f0abfc'},
@@ -45,6 +47,7 @@ const STOCKS=[
  {id:'VP', l:'Volume Profile', cat:'الحجم',c:'#22d3ee'},
  {id:'VOL_MA',l:'Vol MA', cat:'الحجم',c:'#94a3b8'},
  {id:'MFI', l:'MFI', cat:'الحجم',c:'#38bdf8'},
+  {id:'CMF', l:'CMF تدفق الأموال', cat:'الحجم',c:'#0ea5e9'},
  {id:'PIVOT', l:'Pivot Points', cat:'الاتجاه',c:'#f59e0b'},
  {id:'KC', l:'Keltner Channel',cat:'التقلب', c:'#22d3ee'},
  {id:'DC', l:'Donchian Channel',cat:'التقلب',c:'#818cf8'},
