@@ -153,33 +153,4 @@ const calcIchi=(h,l,c2)=>{
 // STD
 const calcSTD=(d,n=20)=>{const ma=sma(d,n);return d.map((_,i)=>ma[i]==null?null:Math.sqrt(d.slice(i-n+1,i+1).reduce((s,v)=>s+(v-ma[i])**2,0)/n));};
 
-// ── ROC: معدل التغير ──────────────────────────────
-// النسبة المئوية لتغير السعر خلال n فترة
-function calcROC(src,n=12){
- if(!Array.isArray(src))return [];
- return src.map((v,i)=>{
-  if(i<n||v==null||src[i-n]==null||src[i-n]===0)return null;
-  return ((v-src[i-n])/src[i-n])*100;
- });
-}
-
-// ── CMF: تدفق أموال تشايكن ────────────────────────
-// يقيس ضغط الشراء/البيع عبر موضع الإغلاق داخل نطاق الشمعة مرجّحاً بالحجم
-function calcCMF(hi,lo,close,vol,n=20){
- if(!Array.isArray(close)||!Array.isArray(hi))return [];
- const mfv=close.map((c,i)=>{
-  const h=hi[i],l=lo[i],v=vol[i]||0;
-  if(h==null||l==null||c==null)return 0;
-  const rng=h-l;
-  if(rng<=0)return 0;
-  return (((c-l)-(h-c))/rng)*v;
- });
- return close.map((_,i)=>{
-  if(i<n-1)return null;
-  let sm=0,sv=0;
-  for(let k=i-n+1;k<=i;k++){sm+=mfv[k];sv+=(vol[k]||0);}
-  return sv===0?0:sm/sv;
- });
-}
-
 
