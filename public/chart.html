@@ -1833,6 +1833,12 @@ if(sub.length>0){
   _indCache.results=_r;
   _indCache.mcd=_mcd;
   _indCache.stochD=_stochD;
+    {const _fp=all.map(d=>d.c);_indCache.divs={
+   rsi:_r.rsi?_calcDivergences(_fp,_r.rsi,'RSI'):null,
+   macd:_mcd?_calcDivergences(_fp,_mcd.hist,'MACD'):null,
+   stoch:_stochD?_calcDivergences(_fp,_stochD,'STOCH'):null
+  };}
+
   // Custom indicators — computed fresh (formula may change anytime)
   _indCache.custom={};
   customInds.forEach(ci=>{
