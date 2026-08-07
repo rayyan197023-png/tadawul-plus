@@ -6381,8 +6381,8 @@ cv.addEventListener('touchstart',e=>{
   };
   // Need to compute separator Y positions (approximate without full render)
   const _VOL_H0=_isCurrentIndexMode()?0:getPanelH('vol',_H0,0.14);
-  const _hasSub0=state.inds.some(id=>['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD'].includes(id))||customInds.some(ci=>ci.type==='subpanel');
-  const _SUB_INDS0=[...['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD'].filter(id=>state.inds.includes(id)),...customInds.filter(ci=>ci.type==='subpanel').map(ci=>ci.id)];
+
+  const _SUB_INDS0=[...['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD','ROC','CMF'].filter(id=>state.inds.includes(id)),...customInds.filter(ci=>ci.type==='subpanel').map(ci=>ci.id)];
   const _OF0=showOrderFlow?getPanelH('of',_H0,0.10):0;
   const _cBot0=_H0-22-3-_VOL_H0-(_hasSub0?_SUB_INDS0.reduce((a,_,pi)=>a+getPanelH('sub_'+pi,_H0,0.09),0)+3:0)-(_OF0?_OF0+3:0);
   const _vTop0=_cBot0+3;
