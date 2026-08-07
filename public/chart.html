@@ -3432,7 +3432,7 @@ const visStart=Math.max(0,all.length-1-_pvN);
  if(state.inds.includes('RSI')){
   const _fullRsi=_indCache.results?_indCache.results.rsi:null;
   const _fullPricesR=state.allCandles.map(d=>d.c);
-  const _allDivsR=_fullRsi?_calcDivergences(_fullPricesR,_fullRsi,'RSI'):[];
+   const _allDivsR=_indCache.divs?.rsi||[];
   const start_R=start,end_R=end;
   const _divsVis=_allDivsR.filter(dv=>dv.i1>=start_R&&dv.i2<end_R).map(dv=>({...dv,i1:dv.i1-start_R,i2:dv.i2-start_R}));
   // فصل صارم: أقوى إشارة هبوطية + أقوى إشارة صعودية فقط -- لا اختلاط بين النوعين
@@ -3500,7 +3500,8 @@ const visStart=Math.max(0,all.length-1-_pvN);
    // Use full cached arrays for better pivot detection (not just viewport slice)
    const _fullHist=_indCache.mcd?_indCache.mcd.hist:null;
    const _fullPrices=state.allCandles.map(d=>d.c);
-   const _allDivs2=_fullHist?_calcDivergences(_fullPrices,_fullHist,'MACD'):[];
+   const _allDivs2=_indCache.divs?.macd||[];
+
    // Convert full-array indices to viewport indices
    const start2=start,end2=end;
    const _divs2Vis=_allDivs2.filter(dv=>dv.i1>=start2&&dv.i2<end2).map(dv=>({...dv,i1:dv.i1-start2,i2:dv.i2-start2}));
