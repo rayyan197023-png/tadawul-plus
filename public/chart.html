@@ -3493,7 +3493,8 @@ const visStart=Math.max(0,all.length-1-_pvN);
   mcd.hist.forEach((v,i)=>{if(v==null)return;const yy=tyS(v,mn2,mx2);ctx.fillStyle=v>=0?'rgba(34,197,94,0.7)':'rgba(239,68,68,0.7)';ctx.fillRect(tx(i)-bw/2,Math.min(y0,yy),bw,Math.max(1,Math.abs(y0-yy)));});
   [{d:mcd.macd,c:getIS('MACD').color||'#38bdf8',w:1.3},{d:mcd.signal,c:'#f59e0b',w:1,dash:[4,2]}].forEach(({d,c:lc,w,dash})=>{if(!d)return;ctx.strokeStyle=lc;ctx.lineWidth=w;ctx.setLineDash(dash||[]);ctx.beginPath();let f=true;d.forEach((v,i)=>{if(v==null)return;f?(ctx.moveTo(tx(i),tyS(v,mn2,mx2)),f=false):ctx.lineTo(tx(i),tyS(v,mn2,mx2));});ctx.stroke();ctx.setLineDash([]);});
   const cur=histVals[histVals.length-1];
-  ctx.fillStyle='#38bdf8';ctx.font='bold 7px monospace';ctx.textAlign='left';ctx.fillText('MACD '+(cur?.toFixed?.(2)||''),4,top+10);
+  const _lmm=mcd.macd?mcd.macd.filter(v=>v!=null).pop():null;
+  ctx.fillStyle='#38bdf8';ctx.font='bold 7px monospace';ctx.textAlign='left';ctx.fillText('MACD '+(_lmm!=null?_lmm.toFixed(2):''),4,top+10);
   if(!ctx._subYAxes)ctx._subYAxes=[];ctx._subYAxes.push({top,ph,mn2,mx2,color:'#38bdf8',panKey:'sub_'+pi});
   // MACD Divergence overlay — enhanced visual
   if(state.inds.includes('MACD')&&mcd.hist){
