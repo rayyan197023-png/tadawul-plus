@@ -945,58 +945,6 @@ const PANEL_MAX_PCT = 0.45;  // maximum 45% of H
 
 let _panelDrag = null; // {panel, startY, startPct, H}
 
-function getPanelH(key, H, defaultPct){
- const pct = panelSizes[key] !== undefined ? panelSizes[key] : defaultPct;
- return Math.round(H * Math.max(PANEL_MIN_PCT, Math.min(PANEL_MAX_PCT, pct)));
-}
-
-function _drawPanelHandle(ctx, x, y, CW){
- // Small grey square centered ON the separator line (half above, half below)
- const hw=14, hh=8, hx=x+4, hy=y-hh/2;
- ctx.fillStyle='rgba(90,105,125,0.85)';
- ctx.beginPath();
- ctx.roundRect(hx, hy, hw, hh, 2);
- ctx.fill();
- // 3 horizontal dots centered vertically
- ctx.fillStyle='rgba(190,200,220,0.8)';
- for(let i=0;i<3;i++){
-  ctx.beginPath();
-  ctx.arc(hx+3+i*4, y, 1.2, 0, Math.PI*2);
-  ctx.fill();
- }
-}
-
-function _hitPanelHandle(px, py, hx, hy){
- // Hit area: wider for easy touch
- return px>=hx && px<=hx+40 && py>=hy-10 && py<=hy+10;
-}
-
-function _startPanelDrag(panel, startY, H){
- _panelDrag = {panel, startY, H,
-  startPct: panelSizes[panel] !== undefined ? panelSizes[panel] :
-   (panel==='vol' ? 0.14 : 0.09)
- };
-}
-function _movePanelDrag(currentY){
- if(!_panelDrag) return false;
- const {panel, startY, H, startPct} = _panelDrag;
- const dy = startY - currentY; // dragging up = increase, down = decrease
- const dpct = dy / H;
- const newPct = Math.max(PANEL_MIN_PCT, Math.min(PANEL_MAX_PCT, startPct + dpct));
- panelSizes[panel] = newPct;
- invalidateChart();
- render();
- return true;
-}
-
-function _endPanelDrag(){
- if(_panelDrag){
-  _panelDrag = null;
-  saveSettings();
-  return true;
- }
- return false;
-}
 
 // ── Dynamic Zoom Controls Position ──────────────────
 function _updateZoomCtrlPos(){
