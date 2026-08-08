@@ -6172,41 +6172,6 @@ document.addEventListener('click',e=>{
 });
 
 
-// ── تجميع الشموع اليومية إلى أسبوعية/شهرية ──────────────────────
-// سهمك يوفّر بيانات يومية فقط (endpoint: historical).
-// للفريمات الأكبر نجمّع محلياً: فتح أول يوم، إغلاق آخر يوم، أعلى/أدنى الكل، مجموع الحجم.
-function _aggregateCandles(daily, mode){
- if((mode!=='1W' && mode!=='1M') || !Array.isArray(daily) || daily.length<2) return daily;
- const groups={};
- const order=[];
- daily.forEach(c=>{
-  const dt = c.t instanceof Date ? c.t : new Date(c.t);
-  if(isNaN(dt)) return;
-  let key;
-  if(mode==='1W'){
-   // مفتاح الأسبوع: السنة + رقم الأسبوع (ISO تقريبي)
-   const onejan=new Date(dt.getFullYear(),0,1);
-   const week=Math.ceil((((dt-onejan)/86400000)+onejan.getDay()+1)/7);
-   key=dt.getFullYear()+'-W'+week;
-  } else {
-   key=dt.getFullYear()+'-'+dt.getMonth();
-  }
-  if(!groups[key]){ groups[key]=[]; order.push(key); }
-  groups[key].push(c);
- });
- return order.map(k=>{
-  const g=groups[k];
-  return {
-   o:  g[0].o,
-   c:  g[g.length-1].c,
-   hi: Math.max(...g.map(x=>x.hi)),
-   lo: Math.min(...g.map(x=>x.lo)),
-   v:  g.reduce((s,x)=>s+(x.v||0),0),
-   t:  g[g.length-1].t
-  };
- });
-}
-
 async function loadStk(){
 
   showLoader(state.stk.name+' — '+state.per);
