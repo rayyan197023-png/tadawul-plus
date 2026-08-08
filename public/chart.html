@@ -7289,6 +7289,8 @@ async function loadStockList(){
   const raw = await API_CONFIG.fetch('stocks');
 
   if(!raw || !Array.isArray(raw)) return;
+    {const _s=document.getElementById('toast');if(_s){_s.textContent='API:'+raw.length+' → STOCKS:'+STOCKS.length;_s.style.display='block';_s.classList.add('show');setTimeout(()=>{_s.classList.remove('show');_s.style.display='none';},6000);}}
+
     // تطبيع قائمة شركات سهمك — الحقول: symbol, name_ar, name_en, market, status
     // استبعاد صناديق الريت وحقوق الأولوية من قائمة الشارت
   const _isReitOrRights=(s)=>{
