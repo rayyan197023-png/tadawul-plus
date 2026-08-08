@@ -213,3 +213,24 @@ function toggleRangeMenu(){
  m.classList.add('open');b.classList.add('open');openRange=true;
 }
 
+function setRange(r){
+ state.range=r;
+ state._rangeManual=true;
+ chartReady=false;
+ document.getElementById('range-btn').textContent=r;
+ document.querySelectorAll('#range-menu .pmenu-item').forEach(el=>el.classList.toggle('active',el.textContent.trim()===r));
+ closeMenus();
+const rangeToVis={'أسبوع':7,'شهر':22,'3أشهر':65,'6أشهر':130,'سنة':248,'سنتين':496,'5سنوات':1000,'الكل':1000};
+
+const newVis=Math.min(rangeToVis[r]||248, state.allCandles.length);
+if(state.allCandles&&state.allCandles.length>0){
+state.visible=newVis;
+
+state.offset=0;
+  invalidateChart();
+  render();
+ } else {
+  loadStk();
+ }
+}
+
