@@ -6659,34 +6659,6 @@ cv.addEventListener('touchend',e=>{
 },{passive:false});
 
 
-// MENUS
-// 
-function closeMenus(){
- if(openPer){document.getElementById('per-menu').classList.remove('open');document.getElementById('per-btn').classList.remove('open');openPer=false;}
- if(openCT){document.getElementById('ct-menu').classList.remove('open');document.getElementById('ct-btn').classList.remove('open');openCT=false;}
- if(openRange){document.getElementById('range-menu').classList.remove('open');document.getElementById('range-btn').classList.remove('open');openRange=false;}
-}
-function togglePerMenu(){
- const m=document.getElementById('per-menu'),b=document.getElementById('per-btn');
- if(openPer){m.classList.remove('open');b.classList.remove('open');openPer=false;return;}
- closeMenus();
- const r=b.getBoundingClientRect();
- m.style.top=(r.bottom+6)+'px';m.style.right=Math.max(4,window.innerWidth-r.right)+'px';m.style.left='auto';
- m.classList.add('open');b.classList.add('open');openPer=true;
-}
-
-const RANGE_DAYS={'أسبوع':7,'شهر':30,'3أشهر':90,'6أشهر':182,'سنة':365,'سنتين':730,'5سنوات':1825,'الكل':3650};
-
-
-function toggleRangeMenu(){
- const m=document.getElementById('range-menu'),b=document.getElementById('range-btn');
- if(openRange){m.classList.remove('open');b.classList.remove('open');openRange=false;return;}
- closeMenus();
- const r=b.getBoundingClientRect();
- m.style.top=(r.bottom+6)+'px';m.style.right=Math.max(4,window.innerWidth-r.right)+'px';m.style.left='auto';
- m.classList.add('open');b.classList.add('open');openRange=true;
-}
-
 function setRange(r){
  state.range=r;
  state._rangeManual=true;
