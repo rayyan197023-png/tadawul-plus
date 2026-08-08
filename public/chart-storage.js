@@ -109,4 +109,28 @@ function loadSettings(){try{const s=JSON.parse(localStorage.getItem(LS_SET)||'{}
  if(s.activeStrategy)activeStrategy=s.activeStrategy;
  if(s.indSettings&&typeof s.indSettings==='object')indSettings={...s.indSettings}; if(s.customInds&&Array.isArray(s.customInds))customInds=s.customInds; if(s.drawingTemplates&&Array.isArray(s.drawingTemplates))drawingTemplates=s.drawingTemplates; if(s.panelSizes&&typeof s.panelSizes==='object')panelSizes={...s.panelSizes};}catch(e){}}
  
+ function deselectDrawing(){drSelId=null;CM.userMoved=false;CM.lastId=null;cmHide();}
  
+ 
+function saveDrawings(){
+ try{
+  // Only save manual drawings (not AI-generated ones)
+  const data=state.drawings
+    .filter(d=>!d._ai)
+    .map(d=>({...d,pts:d.pts?[...d.pts]:undefined}));
+  localStorage.setItem(LS_KEY,JSON.stringify(data));
+ }catch(e){}
+}
+function loadDrawings(){
+ try{
+  const raw=localStorage.getItem(LS_KEY);
+  if(raw){
+   const arr=JSON.parse(raw);
+   if(Array.isArray(arr))
+    // Filter out any old _ai drawings that were saved before this fix
+    state.drawings=arr.filter(d=>!d._ai);
+  }
+ }catch(e){}
+}
+
+

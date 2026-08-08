@@ -6277,32 +6277,10 @@ Object.defineProperty(state,'activeInds',{get(){return this.inds;},set(v){this.i
 Object.defineProperty(state,'activeTool',{get(){return this.tool;},set(v){this.tool=v;}});
 Object.defineProperty(state,'chartType',{get(){return this.ct;},set(v){this.ct=v;}});
 
-function deselectDrawing(){drSelId=null;CM.userMoved=false;CM.lastId=null;cmHide();}
 // localStorage 
 const LS_KEY='tadawul_drawings_v1';
 const LS_SET='tadawul_settings_v1';
 
-
-function saveDrawings(){
- try{
-  // Only save manual drawings (not AI-generated ones)
-  const data=state.drawings
-    .filter(d=>!d._ai)
-    .map(d=>({...d,pts:d.pts?[...d.pts]:undefined}));
-  localStorage.setItem(LS_KEY,JSON.stringify(data));
- }catch(e){}
-}
-function loadDrawings(){
- try{
-  const raw=localStorage.getItem(LS_KEY);
-  if(raw){
-   const arr=JSON.parse(raw);
-   if(Array.isArray(arr))
-    // Filter out any old _ai drawings that were saved before this fix
-    state.drawings=arr.filter(d=>!d._ai);
-  }
- }catch(e){}
-}
 loadSettings();loadDrawings();
 
 function toggleCamSub(id){
