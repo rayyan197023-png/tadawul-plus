@@ -18,8 +18,15 @@ function _showComparePicker(){
  const _cmpRow=s=>`<button onclick="_startCompare('${s.sym}','${(s.name||'').replace(/'/g,"\\'")}')" style="display:flex;align-items:center;justify-content:space-between;width:100%;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.04);padding:11px 16px;cursor:pointer;direction:rtl"><span style="font-size:12px;color:#e0eaf8;font-family:Cairo,sans-serif">${s.name}</span><span style="font-size:11px;color:#4a6080;font-family:monospace">${s.sym}</span></button>`;
  const _cmpAll=STOCKS.filter(s=>s.sym!==state.stk.sym);
  const rows=_cmpAll.map(_cmpRow).join('');
- ov.innerHTML=`<div style="background:rgba(6,10,22,0.98);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:70vh;display:flex;flex-direction:column"><div style="padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:space-between"><button onclick="document.getElementById('compare-picker').remove()" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);border-radius:8px;color:#ef4444;font-size:13px;width:28px;height:28px;cursor:pointer">×</button><span style="font-family:Cairo,sans-serif;font-size:14px;font-weight:700;color:#e0eaf8">اختر سهم للمقارنة</span><div style="width:28px"></div></div><div style="overflow-y:auto;flex:1">${rows}</div></div>`;
+ ov.innerHTML=`<div style="background:rgba(6,10,22,0.98);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:70vh;display:flex;flex-direction:column"><div style="padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:space-between"><button onclick="document.getElementById('compare-picker').remove()" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);border-radius:8px;color:#ef4444;font-size:13px;width:28px;height:28px;cursor:pointer">×</button><span style="font-family:Cairo,sans-serif;font-size:14px;font-weight:700;color:#e0eaf8">اختر سهم للمقارنة</span><div style="width:28px"></div></div><div style="padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.05)"><input id="cmp-search" placeholder="ابحث بالاسم أو الرمز..." style="width:100%;background:#070b14;border:1px solid #1e2d45;border-radius:10px;color:#f0f2f8;font-size:16px;padding:10px 12px;font-family:Cairo,sans-serif;text-align:right;outline:none;box-sizing:border-box"></div><div id="cmp-rows" style="overflow-y:auto;flex:1">${rows}</div></div>`;
  document.body.appendChild(ov);
+ {const _si=ov.querySelector('#cmp-search'),_sr=ov.querySelector('#cmp-rows');
+  if(_si&&_sr){_si.addEventListener('input',()=>{
+   const q=(_si.value||'').trim().toLowerCase();
+   const f=!q?_cmpAll:_cmpAll.filter(s=>((s.name||'').toLowerCase().includes(q))||((s.name_en||'').toLowerCase().includes(q))||((s.sym||'').toLowerCase().includes(q)));
+   _sr.innerHTML=f.length?f.map(_cmpRow).join(''):'<div style="text-align:center;padding:24px;color:#3a4060;font-size:12px;font-family:Cairo,sans-serif">لا توجد نتائج</div>';
+  });}
+ }
  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
 }
 
