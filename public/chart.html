@@ -7327,74 +7327,9 @@ function initAPI(){
   loadStockList();
   _startLiveTicker();
 }
-
-
 let _alertType='above';
 
 
-// 
-function buildDrawSheet(){
-
- // Active bar
- // Clear all button
- const clearBtn=document.getElementById('draw-clear-all');
- if(clearBtn)clearBtn.onclick=()=>{if(confirm('حذف جميع الرسومات؟ لا يمكن التراجع بعد المسح الكامل.')){_hist();clearDrawings();}};
- const ab=document.getElementById('draw-active-bar');
- if(state.tool){
- const t=DRAW_TOOLS_LIST.find(t=>t.id===state.tool);
- ab.style.display='block';
- ab.textContent='الأداة النشطة: '+(t?t.l:state.tool);
- } else ab.style.display='none';
- // Categories
- const el=document.getElementById('draw-cats-el');el.innerHTML='';
- DRAW_CATS.forEach(cat=>{
- const hasActive=cat.tools.some(t=>t.id===state.tool);
- const hdr=document.createElement('button');hdr.className='dcat'+(hasActive?' open':'');
- hdr.innerHTML='<span class="dcat-a">‹</span><span class="dcat-t">'+(hasActive?'<span style="color:#3b9eff"></span>':'')+cat.title+'</span>';
- const items=document.createElement('div');items.className='ditems'+(hasActive?' open':'');
- cat.tools.forEach(t=>{
- const active=state.tool===t.id;
- const btn=document.createElement('button');btn.className='dtool'+(active?' active':'');
- btn.innerHTML='<div class="dtool-l"><span class="dtool-ic" style="display:flex;align-items:center;justify-content:center;color:'+(active?'#3b9eff':'#7090b0')+';width:18px;height:18px">'+(DRAW_ICON_MAP[t.id]||'<span style="font-size:13px">'+t.icon+'</span>')+'</span><span class="dtool-n">'+t.l+'</span></div><span style="color:#3b9eff;font-size:12px">'+(active?'✓':'')+'</span>';
- btn.onclick=()=>{state.tool=active?null:t.id;updateDrawBtn();if(!active)closeSheet();else buildDrawSheet();};
- items.appendChild(btn);
- });
- hdr.onclick=()=>{hdr.classList.toggle('open');items.classList.toggle('open');};
- el.appendChild(hdr);el.appendChild(items);
- });
-}
-function updateDrawBtn(){
-  // Update draw badge count
-  const db=document.getElementById('draw-badge');
-  if(db){
-    const n=state.drawings.length;
-    db.textContent=n;
-    db.style.display=n>0?'inline':'none';
-  }
-
- const btnDraw=document.getElementById('btn-draw');
- btnDraw.classList.toggle('active',!!state.tool);
- // Show drawing count badge
- const cnt=state.drawings.length;
- let badge=document.getElementById('draw-count-badge');
- if(!badge){badge=document.createElement('span');badge.id='draw-count-badge';badge.style.cssText='position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;border-radius:50%;width:14px;height:14px;font-size:8px;display:flex;align-items:center;justify-content:center;font-weight:700';btnDraw.style.position='relative';btnDraw.appendChild(badge);}
- badge.style.display=cnt>0?'flex':'none';
- badge.textContent=cnt>9?'9+':cnt;
- const ind=document.getElementById('draw-indicator');
- const nm=document.getElementById('draw-tool-name');
- if(state.tool){
- const t=DRAW_TOOLS_LIST.find(t=>t.id===state.tool);
- let ph='';
- if(isPatternTool(state.tool)){
- const total=(PATTERN_PTS[state.tool]||2);
- const lbls=(PATTERN_LBL[state.tool]||[]);
- const done=patPts.length;
- ph=' — نقطة '+(done+1)+'/'+total+(lbls[done]?' ('+lbls[done]+')':'');
- } else if(drawPhase===1) ph=' ← اضغط النقطة الثانية';
- if(nm)nm.textContent=(t?t.l:state.tool)+ph;
- if(ind)ind.style.display='block';
- } else {if(ind)ind.style.display='none';}
-}
 function _updateUndoButtons(){
   const bu=document.getElementById('btn-undo'),br=document.getElementById('btn-redo');
   if(bu)bu.style.opacity=_undo.length?'1':'0.35';
