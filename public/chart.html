@@ -946,25 +946,6 @@ const PANEL_MAX_PCT = 0.45;  // maximum 45% of H
 let _panelDrag = null; // {panel, startY, startPct, H}
 
 
-// ── Dynamic Zoom Controls Position ──────────────────
-function _updateZoomCtrlPos(){
- const zc = document.getElementById('zoom-ctrl');
- if(!zc) return;
- const H = cv.offsetHeight || 400;
- const VOL_H = _isCurrentIndexMode()?0:getPanelH('vol', H, 0.14);
- const _subIds = [...['RSI','MACD','STOCH','STOCHRSI','OBV','MFI','ADX','ATR','STD','ROC','CMF'].filter(id=>state.inds.includes(id)),...customInds.filter(ci=>ci.type==='subpanel').map(ci=>ci.id)];
- const hasSub = _subIds.length > 0;
- const SUB_H = hasSub ? _subIds.reduce((a,_,pi)=>a+getPanelH('sub_'+pi,H,0.09),0) : 0;
- const OF_H = showOrderFlow ? getPanelH('of',H,0.10) : 0;
- const cBot = H - 22 - 3 - VOL_H - (hasSub?SUB_H+3:0) - (OF_H?OF_H+3:0);
- // Position buttons ON the separator line between chart and volume panel
- const btnH = 48;
- const topPos = cBot - btnH/2 + 3;
- zc.style.top = Math.max(10, topPos) + 'px';
- zc.style.bottom = 'auto';
-}
-
-
 // ── Chart Loading Indicator ──────────────────────────
 function showLoader(txt='جاري التحميل...'){
  const l=document.getElementById('chart-loader');
