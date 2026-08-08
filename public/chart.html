@@ -6281,11 +6281,6 @@ function deselectDrawing(){drSelId=null;CM.userMoved=false;CM.lastId=null;cmHide
 // localStorage 
 const LS_KEY='tadawul_drawings_v1';
 const LS_SET='tadawul_settings_v1';
-function saveSettings(){try{localStorage.setItem(LS_SET,JSON.stringify({inds:state.inds,per:state.per,ct:state.chartType,drawColor:state.drawColor,logScale,yScale,darkTheme,activeStrategy,indSettings,customInds,drawingTemplates,panelSizes}));}catch(e){}}
-function loadSettings(){try{const s=JSON.parse(localStorage.getItem(LS_SET)||'{}');if(s.inds)state.inds=s.inds;if(s.per)state.per=s.per;if(s.ct)state.chartType=s.ct;if(s.drawColor)state.drawColor=s.drawColor;if(typeof s.logScale==='boolean')logScale=s.logScale;if(typeof s.yScale==='number')yScale=s.yScale;
- if(typeof s.darkTheme==='boolean')darkTheme=s.darkTheme;
- if(s.activeStrategy)activeStrategy=s.activeStrategy;
- if(s.indSettings&&typeof s.indSettings==='object')indSettings={...s.indSettings}; if(s.customInds&&Array.isArray(s.customInds))customInds=s.customInds; if(s.drawingTemplates&&Array.isArray(s.drawingTemplates))drawingTemplates=s.drawingTemplates; if(s.panelSizes&&typeof s.panelSizes==='object')panelSizes={...s.panelSizes};}catch(e){}}
 
 
 function saveDrawings(){
