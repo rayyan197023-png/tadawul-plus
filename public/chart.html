@@ -6272,45 +6272,6 @@ return;
   hideLoader(); _updateUndoButtons();
 }
 
-// ── Load full stock list from API ─────────────────────────────
-async function loadStockList(){
-  if(!API_CONFIG.enabled || !API_CONFIG.endpoints.stocks) return;
-  const raw = await API_CONFIG.fetch('stocks');
-
-  if(!raw || !Array.isArray(raw)) return;
-
-    // تطبيع قائمة شركات سهمك — الحقول: symbol, name_ar, name_en, market, status
-    // استبعاد صناديق الريت وحقوق الأولوية من قائمة الشارت
-  const _isReitOrRights=(s)=>{
-   const ar=' '+(s.name_ar||'')+' ';
-   const en=(s.name_en||'').toLowerCase();
-   // ريت ككلمة منفصلة (يتجنّب "ريتيل") أو REIT بالإنجليزية
-   const isReit=/\sريت\s/.test(ar) || /\breit\b/.test(en);
-   // حقوق الأولوية: "حقوق" أو "أولوية" بالعربية، rights بالإنجليزية
-   const isRights=/حقوق|أولوية|اولوية/.test(ar) || /\brights?\b/.test(en);
-   return isReit || isRights;
-  };
-  const normalized = raw
-    .filter(s=>s.status!=='suspended' && (s.symbol||s.sym) && !_isReitOrRights(s))
-    .map(s=>({
-      sym:  s.symbol || s.sym || '',
-      name: s.name_ar || s.nameAr || s.name || s.name_en || s.symbol || '',
-      name_en: s.name_en || '',
-      sec:  s.sector || s.market || 'عام',
-      p:    0, ch:0, pct:0, // الأسعار تأتي عند فتح السهم عبر loadStk
-    }))
-    .filter(s=>s.sym);
-  if(normalized.length > 0){ 
-    // Merge with STOCKS array (API takes priority)
-    normalized.forEach(ns=>{
-      const existing = STOCKS.findIndex(s=>s.sym===ns.sym);
-      if(existing>=0) STOCKS[existing]={...STOCKS[existing],...ns};
-      else STOCKS.push(ns);
-    });
-    // Refresh stock list UI if open
-    if(typeof buildStkList==='function' && openSht==='stock') buildStkList();
-  }
-}
 
 // ── Initialize API on page load ───────────────────────────────
 function initAPI(){
