@@ -521,5 +521,17 @@ function _renderDivOnPanel(ctx,indArr,priceArr,indColor,tyS,tx,top,ph,start,end,
 }
 
 
+// ── Chart Loading Indicator ──────────────────────────
+function showLoader(txt='جاري التحميل...'){
+ const l=document.getElementById('chart-loader');
+ const t=document.getElementById('chart-loader-txt');
+ if(l){l.classList.add('visible');if(t)t.textContent=txt;}
+}
+function hideLoader(){
+ const l=document.getElementById('chart-loader');
+ if(l)l.classList.remove('visible');
+}
+
+
 
   

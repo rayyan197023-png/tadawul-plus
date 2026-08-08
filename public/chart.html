@@ -742,17 +742,6 @@ const PANEL_MAX_PCT = 0.45;  // maximum 45% of H
 
 let _panelDrag = null; // {panel, startY, startPct, H}
 
-
-// ── Chart Loading Indicator ──────────────────────────
-function showLoader(txt='جاري التحميل...'){
- const l=document.getElementById('chart-loader');
- const t=document.getElementById('chart-loader-txt');
- if(l){l.classList.add('visible');if(t)t.textContent=txt;}
-}
-function hideLoader(){
- const l=document.getElementById('chart-loader');
- if(l)l.classList.remove('visible');
-}
 // ── Session Highlights ──────────────────────────────────
 
 
