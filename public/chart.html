@@ -7285,7 +7285,6 @@ function _applyTick(tick){
 
 // ── Load full stock list from API ─────────────────────────────
 async function loadStockList(){
-  {const _s=document.getElementById('toast');if(_s){_s.textContent='en:'+API_CONFIG.enabled+' ep:'+(API_CONFIG.endpoints.stocks?'YES':'NO');_s.style.display='block';_s.classList.add('show');setTimeout(()=>{_s.classList.remove('show');_s.style.display='none';},6000);}}
   if(!API_CONFIG.enabled || !API_CONFIG.endpoints.stocks) return;
   const raw = await API_CONFIG.fetch('stocks');
 
