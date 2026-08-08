@@ -308,7 +308,7 @@ function showCompareModal(){
     <div style="font-size:12px;color:${isActive?'#f59e0b':'#c0d0e8'};font-family:Cairo,sans-serif;font-weight:700">${s.name}</div>
     <div style="font-size:9px;color:#4a6080;font-family:monospace">${s.sym}</div>
    </div>
-   <div style="font-size:12px;color:${s.pct>=0?'#22c55e':'#ef4444'};font-family:monospace">${s.p.toFixed(2)}</div>
+   <div style="font-size:10px;color:#4a6080;font-family:Cairo,sans-serif;max-width:90px;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.sec||''}</div>
   `;
     b.onclick=async()=>{
    // جلب شموع حقيقية للسهم من سهمك
