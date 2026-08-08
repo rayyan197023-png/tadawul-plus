@@ -285,6 +285,7 @@ function showCompareModal(){
    <svg viewBox="0 0 20 20" fill="none" width="18" height="18"><polyline points="2,14 6,7 10,10 14,4 18,6" stroke="#f59e0b" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><polyline points="2,16 6,12 10,14 14,9 18,11" stroke="#3b9eff" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3,2"/></svg>
   </div>
   <div style="font-size:10px;color:#4a6080;font-family:Cairo,sans-serif;margin-bottom:10px;text-align:right">اختر سهماً للمقارنة (خط منقط أصفر)</div>
+    <input id="cmp-q" placeholder="ابحث بالاسم أو الرمز..." style="width:100%;background:#070b14;border:1px solid #1e2d45;border-radius:10px;color:#f0f2f8;font-size:16px;padding:9px 12px;font-family:Cairo,sans-serif;text-align:right;outline:none;box-sizing:border-box;margin-bottom:8px">
   <div id="cmp-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-left:4px;touch-action:pan-y"></div>
 
   ${showCompare?'<button id="cmp-remove" style="width:100%;padding:10px;background:rgba(239,68,68,0.08);border:1.5px solid rgba(239,68,68,0.3);border-radius:12px;color:#ef4444;font-family:Cairo,sans-serif;font-size:12px;cursor:pointer">إزالة المقارنة</button>':''}
@@ -293,7 +294,12 @@ function showCompareModal(){
 
  // Build stock list
  const listEl=card.querySelector('#cmp-list');
- STOCKS.filter(s=>s.sym!==state.stk.sym).forEach(s=>{
+ const _buildCmp=(q)=>{
+  listEl.innerHTML='';
+  const _qq=(q||'').trim().toLowerCase();
+  const _list=STOCKS.filter(s=>s.sym!==state.stk.sym).filter(s=>!_qq||((s.name||'').toLowerCase().includes(_qq))||((s.name_en||'').toLowerCase().includes(_qq))||((s.sym||'').toLowerCase().includes(_qq)));
+  if(!_list.length){listEl.innerHTML='<div style="text-align:center;padding:20px;color:#3a4060;font-size:11px;font-family:Cairo,sans-serif">لا توجد نتائج</div>';return;}
+  _list.forEach(s=>{
   const b=document.createElement('button');
   const isActive=compareStk&&compareStk.sym===s.sym;
   b.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 12px;background:'+(isActive?'rgba(245,158,11,0.1)':'rgba(255,255,255,0.03)')+';border:1px solid '+(isActive?'rgba(245,158,11,0.4)':'rgba(255,255,255,0.07)')+';border-radius:10px;cursor:pointer;width:100%;text-align:right';
