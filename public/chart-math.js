@@ -153,4 +153,92 @@ const calcIchi=(h,l,c2)=>{
 // STD
 const calcSTD=(d,n=20)=>{const ma=sma(d,n);return d.map((_,i)=>ma[i]==null?null:Math.sqrt(d.slice(i-n+1,i+1).reduce((s,v)=>s+(v-ma[i])**2,0)/n));};
 
+// ── Custom Indicator System ─────────────────────────────
+let customInds = []; // [{id,name,color,formula,type,lineWidth}]
+
+// Safe formula evaluator -- sandboxed, only math + indicator functions
+function _evalCustomInd(formula, allC, allH, allL, allV){
+ try {
+  // Build sandbox with available data + functions
+  const _sandbox = {
+   close: allC, high: allH, low: allL, volume: allV,
+   // Math helpers
+   abs: Math.abs, max: Math.max, min: Math.min,
+   sqrt: Math.sqrt, pow: Math.pow, log: Math.log,
+   // Indicator functions (all return arrays same length as input)
+   SMA: (src,n)=>sma(src,n),
+   EMA: (src,n)=>ema(src,n),
+   RSI: (src,n=14)=>rsi(src,n),
+   BB:  (src,n=20,k=2)=>bb(src,n,k),
+   ATR: (n=14)=>calcATR_data({map:(fn)=>allC.map((_,i)=>({c:allC[i],hi:allH[i],lo:allL[i]}))},n),
+   OBV: ()=>obv(allC,allV),
+   MACD:(src,f=12,s=26,sg=9)=>macd(src,f,s,sg),
+   // Arithmetic on arrays
+   ADD: (a,b)=>a.map((v,i)=>v==null||b[i]==null?null:v+b[i]),
+   SUB: (a,b)=>a.map((v,i)=>v==null||b[i]==null?null:v-b[i]),
+   MUL: (a,b)=>a.map((v,i)=>v==null||b[i]==null?null:v*b[i]),
+   DIV: (a,b)=>a.map((v,i)=>v==null||b[i]==null||b[i]===0?null:v/b[i]),
+   // Scalar operations
+   ADDK: (a,k)=>a.map(v=>v==null?null:v+k),
+   MULK: (a,k)=>a.map(v=>v==null?null:v*k),
+   // Shift array
+   SHIFT: (a,n)=>a.map((_,i)=>i<n?null:a[i-n]),
+   // Cross detection (returns 1 on cross up, -1 on cross down, 0 otherwise)
+   CROSS: (a,b)=>a.map((_,i)=>{
+    if(i===0||a[i]==null||b[i]==null||a[i-1]==null||b[i-1]==null)return 0;
+    if(a[i-1]<=b[i-1]&&a[i]>b[i])return 1;
+    if(a[i-1]>=b[i-1]&&a[i]<b[i])return -1;
+    return 0;
+   }),
+   // Clamp array values
+   CLAMP: (a,mn,mx)=>a.map(v=>v==null?null:Math.max(mn,Math.min(mx,v))),
+   // Number of candles
+   N: allC.length,
+   // Derived price sources
+   hl2: allH.map((h,i)=>(h+allL[i])/2),
+   hlc3: allH.map((h,i)=>(h+allL[i]+allC[i])/3),
+ohlc4: allH.map((h,i)=>((allC[i-1]??allC[i])+h+allL[i]+allC[i])/4),
+
+   // More MA types
+   WMA: (src,n)=>src.map((_,i)=>i<n-1?null:src.slice(i-n+1,i+1).reduce((s,v,j)=>s+v*(j+1),0)/(n*(n+1)/2)),
+   DEMA: (src,n)=>{const e1=ema(src,n);const e2=ema(e1,n);return e1.map((v,i)=>v==null||e2[i]==null?null:2*v-e2[i]);},
+   TEMA: (src,n)=>{const e1=ema(src,n);const e2=ema(e1,n);const e3=ema(e2,n);return e1.map((v,i)=>v==null||e2[i]==null||e3[i]==null?null:3*v-3*e2[i]+e3[i]);},
+   HULL: (src,n)=>{const w=Math.round(Math.sqrt(n));const h=ema(src.map((_,i)=>i<n-1?null:2*(ema(src,Math.floor(n/2))[i]??0)-(ema(src,n)[i]??0)),w);return h;},
+   // Momentum indicators
+   MOM: (src,n=10)=>src.map((v,i)=>i<n||v==null||src[i-n]==null?null:v-src[i-n]),
+   ROC: (src,n=10)=>src.map((v,i)=>i<n||v==null||src[i-n]==null||src[i-n]===0?null:(v-src[i-n])/src[i-n]*100),
+   CCI: (n=20)=>{const tp=allH.map((h,i)=>(h+allL[i]+allC[i])/3);return tp.map((_,i)=>{if(i<n-1)return null;const sl=tp.slice(i-n+1,i+1);const m=sl.reduce((a,b)=>a+b,0)/n;const d=sl.reduce((a,v)=>a+Math.abs(v-m),0)/n;return d===0?0:(tp[i]-m)/(0.015*d);});},
+   CMO: (src,n=14)=>src.map((_,i)=>{if(i<n)return null;let u=0,d=0;for(let k=i-n+1;k<=i;k++){const diff=src[k]-(src[k-1]??src[k]);diff>0?u+=diff:d-=diff;}return u+d===0?0:(u-d)/(u+d)*100;}),
+   // Volume indicators
+   CMF: (n=20)=>{const mf=allH.map((h,i)=>{const r=h-allL[i]||0.001;return((allC[i]-allL[i])-(h-allC[i]))/r*allV[i];});return mf.map((_,i)=>{if(i<n-1)return null;const sv=allV.slice(i-n+1,i+1).reduce((a,b)=>a+b,0);return sv===0?0:mf.slice(i-n+1,i+1).reduce((a,b)=>a+b,0)/sv;});},
+   // Statistical
+   STDEV: (src,n=20)=>src.map((_,i)=>{if(i<n-1)return null;const sl=src.slice(i-n+1,i+1).filter(v=>v!=null);const m=sl.reduce((a,b)=>a+b,0)/sl.length;return Math.sqrt(sl.reduce((a,v)=>a+(v-m)**2,0)/sl.length);}),
+   HIGHEST: (src,n=20)=>src.map((_,i)=>i<n-1?null:Math.max(...src.slice(i-n+1,i+1).filter(v=>v!=null))),
+   LOWEST: (src,n=20)=>src.map((_,i)=>i<n-1?null:Math.min(...src.slice(i-n+1,i+1).filter(v=>v!=null))),
+   ABS: (a)=>Array.isArray(a)?a.map(v=>v==null?null:Math.abs(v)):Math.abs(a),
+   SQRT: (a)=>Array.isArray(a)?a.map(v=>v==null?null:Math.sqrt(Math.abs(v))):Math.sqrt(Math.abs(a)),
+   MAX: (a,b)=>Array.isArray(a)?a.map((v,i)=>v==null||(Array.isArray(b)&&b[i]==null)?null:Math.max(v,Array.isArray(b)?b[i]:b)):Math.max(a,b),
+   MIN: (a,b)=>Array.isArray(a)?a.map((v,i)=>v==null||(Array.isArray(b)&&b[i]==null)?null:Math.min(v,Array.isArray(b)?b[i]:b)):Math.min(a,b),
+  };
+
+  // Build function from formula
+  // ── Security: blacklist dangerous patterns ──
+  const dangerousPatterns = /\b(fetch|XMLHttpRequest|import|eval|Function|require|process|window|document|globalThis|self|parent|top|location|navigator|localStorage|sessionStorage|indexedDB|cookie|alert|prompt|confirm|setTimeout|setInterval|Worker|postMessage|FileReader|Blob)\b/i;
+  if(dangerousPatterns.test(formula)) return null;
+  // Limit formula length
+  if(formula.length > 500) return null;
+  
+  const keys = Object.keys(_sandbox);
+  const vals = Object.keys(_sandbox).map(k=>_sandbox[k]);
+  const fn = new Function(...keys, `"use strict"; return (${formula});`);
+  const result = fn(...vals);
+
+  // Result must be an array
+  if(!Array.isArray(result)) return null;
+  return result;
+ } catch(e) {
+  return null; // silent fail
+ }
+}
+
 
