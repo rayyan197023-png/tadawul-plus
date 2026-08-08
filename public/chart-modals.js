@@ -335,7 +335,11 @@ function showCompareModal(){
    closeM();
   };
   listEl.appendChild(b);
- });
+  });
+ };
+ _buildCmp('');
+ {const _q=card.querySelector('#cmp-q');
+  if(_q)_q.addEventListener('input',()=>_buildCmp(_q.value));}
 
  const remBtn=card.querySelector('#cmp-remove');
  if(remBtn)remBtn.onclick=()=>{compareStk=null;showCompare=false;invalidateChart();render();closeM();};
