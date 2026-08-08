@@ -7681,7 +7681,8 @@ function _checkMultiAlerts(sub,ind){
   }
  });
 }
-
+initAPI();
+loadShareFromURL();
 window.addEventListener('resize',()=>setTimeout(sizeChart,100));
 _updateThemeIcon();
 window.addEventListener('orientationchange',()=>setTimeout(sizeChart,300));
