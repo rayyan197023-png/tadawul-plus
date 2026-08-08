@@ -234,3 +234,51 @@ state.offset=0;
  }
 }
 
+
+function toggleCtMenu(){
+ const m=document.getElementById('ct-menu'),b=document.getElementById('ct-btn');
+ if(openCT){m.classList.remove('open');b.classList.remove('open');openCT=false;return;}
+ closeMenus();
+ const r=b.getBoundingClientRect();
+ m.style.top=(r.bottom+6)+'px';m.style.right=Math.max(4,window.innerWidth-r.right)+'px';m.style.left='auto';
+ m.classList.add('open');b.classList.add('open');openCT=true;
+}
+function setPer(p){
+ state.per=p;chartReady=false;
+ // ضبط المدى تلقائياً حسب الفريم -- ما لم يغيّره المستخدم يدوياً
+ if(!state._rangeManual){
+  const autoRange = (p==='1M')?'الكل' : (p==='1W')?'5سنوات' : 'سنة';
+  state.range=autoRange;
+  const rb=document.getElementById('range-btn');
+  if(rb) rb.textContent=autoRange;
+  document.querySelectorAll('#range-menu .pmenu-item').forEach(el=>el.classList.toggle('active',el.textContent.trim()===autoRange));
+ }
+ saveSettings();showLoader(state.stk.name+' -- '+p);
+
+ const b=document.getElementById('per-btn');b.innerHTML=p+' <span style="font-size:9px;opacity:0.5"></span>';
+ document.querySelectorAll('.pmenu-item').forEach(el=>el.classList.toggle('active',el.textContent.trim()===p));
+ // Clear AI drawings when period changes
+ state.drawings=state.drawings.filter(d=>!d._ai);
+ // Reset ALL backtest panels so user re-tests on new timeframe
+ document.querySelectorAll('[id^="bt-"]').forEach(el=>{
+  if(el.style)el.style.display='none';
+ });
+ document.querySelectorAll('[data-bt]').forEach(btn=>{
+  btn.textContent='اختبر';
+ });
+ closeMenus();loadStk();
+ // Redraw AI analysis after data loads if mode was active
+ if(_aiDrawMode){
+  setTimeout(()=>{
+   if(state.allCandles&&state.allCandles.length>30)_buildAndDrawAIAnnotations(_aiDrawMode);
+  },600);
+ }
+}
+function setCT(t){
+ state.chartType=t;saveSettings();
+ const labs={candle:'شموع',hollow:'فارغة',line:'خط',ohlc:'OHLC',heikin:'هيكن أشي',renko:'رينكو'};
+ document.getElementById('ct-btn').textContent=labs[t]||t;
+ document.querySelectorAll('.ctitem').forEach(el=>el.classList.toggle('active',el.querySelector('span').textContent===labs[t]));
+ closeMenus();render();
+}
+
