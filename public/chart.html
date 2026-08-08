@@ -7287,6 +7287,7 @@ function _applyTick(tick){
 async function loadStockList(){
   if(!API_CONFIG.enabled || !API_CONFIG.endpoints.stocks) return;
   const raw = await API_CONFIG.fetch('stocks');
+  {const _s2=document.getElementById('toast');if(_s2){_s2.textContent='raw:'+(raw?(Array.isArray(raw)?raw.length:typeof raw):'null');_s2.style.display='block';_s2.classList.add('show');setTimeout(()=>{_s2.classList.remove('show');_s2.style.display='none';},8000);}}
 
   if(!raw || !Array.isArray(raw)) return;
 
