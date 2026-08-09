@@ -231,7 +231,7 @@ ohlc4: allH.map((h,i)=>((allC[i-1]??allC[i])+h+allL[i]+allC[i])/4),
   if(formula.length > 500) return null;
   
   const keys = Object.keys(_sandbox);
-  const vals = Object.keys(_sandbox).map(k=>_sandbox[k]);
+  const vals = keys.map(k=>_sandbox[k]);
   const fn = new Function(...keys, `"use strict"; return (${formula});`);
   const result = fn(...vals);
 
