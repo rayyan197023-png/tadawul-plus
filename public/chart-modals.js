@@ -732,7 +732,7 @@ function showCustomIndModal(){
       <div style="color:#3b9eff;font-family:monospace;font-weight:700;margin-bottom:4px">📚 دوال المصادر</div>
       <div style="color:#67e8f9;font-family:monospace">close · open · high · low · volume · hl2 · hlc3 · ohlc4</div>
       <div style="color:#3b9eff;font-family:monospace;font-weight:700;margin:6px 0 4px">📈 المتوسطات</div>
-      <div style="color:#a5f3fc;font-family:monospace">SMA(src,n) · EMA(src,n) · WMA(src,n) · DEMA(src,n) · TEMA(src,n) · HULL(src,n)</div>
+<div style="color:#a5f3fc;font-family:monospace">SMA(src,n) · EMA(src,n) · WMA(src,n) · DEMA(src,n) · TEMA(src,n)</div>
       <div style="color:#3b9eff;font-family:monospace;font-weight:700;margin:6px 0 4px">⚡ مؤشرات الزخم</div>
       <div style="color:#a5f3fc;font-family:monospace">RSI(src,n) · STOCH(k,d) · CCI(n) · MOM(src,n) · ROC(src,n) · CMO(src,n)</div>
       <div style="color:#3b9eff;font-family:monospace;font-weight:700;margin:6px 0 4px">📊 مؤشرات الحجم</div>
