@@ -85,7 +85,8 @@ const tema=(d,n)=>{const e1=ema(d,n);const e1f=e1.filter(v=>v!=null);const e2=em
 // HMA - Hull Moving Average
 const hma=(d,n)=>{const half=Math.floor(n/2);const sq=Math.round(Math.sqrt(n));const w1=wma(d,half);const w2=wma(d,n);const diff=d.map((_,i)=>w1[i]!=null&&w2[i]!=null?2*w1[i]-w2[i]:null);return wma(diff.filter(v=>v!=null),sq).reduce((arr,v,i)=>{arr[i+diff.filter(v=>v==null).length]=v;return arr;},Array(d.length).fill(null));};
 // VWMA
-const vwma=(p,v,n)=>p.map((_,i)=>{if(i<n-1)return null;const ps=p.slice(i-n+1,i+1),vs=v.slice(i-n+1,i+1);return ps.reduce((s,pv,j)=>s+pv*vs[j],0)/vs.reduce((s,vv)=>s+vv,0);});
+const vwma=(p,v,n)=>p.map((_,i)=>{if(i<n-1)return null;const ps=p.slice(i-n+1,i+1),vs=v.slice(i-n+1,i+1);const tv=vs.reduce((s,vv)=>s+vv,0);return tv?ps.reduce((s,pv,j)=>s+pv*vs[j],0)/tv:null;});
+
 // CCI
 const calcCCI=(h,l,c2,n=20)=>c2.map((_,i)=>{if(i<n-1)return null;const tp=c2.slice(i-n+1,i+1).map((_2,j)=>(h[i-n+1+j]+l[i-n+1+j]+c2[i-n+1+j])/3);const m=tp.reduce((s,v)=>s+v,0)/n;const d2=tp.reduce((s,v)=>s+Math.abs(v-m),0)/n;return d2===0?0:(tp[n-1]-m)/(0.015*d2);});
 // Williams %R
