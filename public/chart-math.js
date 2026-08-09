@@ -170,7 +170,7 @@ function _evalCustomInd(formula, allC, allH, allL, allV){
    EMA: (src,n)=>ema(src,n),
    RSI: (src,n=14)=>rsi(src,n),
    BB:  (src,n=20,k=2)=>bb(src,n,k),
-   ATR: (n=14)=>calcATR_data({map:(fn)=>allC.map((_,i)=>({c:allC[i],hi:allH[i],lo:allL[i]}))},n),
+   ATR: (n=14)=>calcATR_data(allC.map((_,i)=>({c:allC[i],hi:allH[i],lo:allL[i]})),n),
    OBV: ()=>obv(allC,allV),
    MACD:(src,f=12,s=26,sg=9)=>macd(src,f,s,sg),
    // Arithmetic on arrays
