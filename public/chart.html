@@ -1567,8 +1567,9 @@ const vmx=mv;
  drawSub.forEach((d,i)=>i?ctx.lineTo(tx(i),ty(d.c)):ctx.moveTo(tx(i),ty(d.c)));
  ctx.stroke();
  } else {
+ const _isRk=state.chartType==='renko'&&drawSub!==sub;
+ const _txD=_isRk?(i=>bw*0.5+((drawSub.length<=1)?drawW/2:(i/(drawSub.length-1))*(drawW-bw*2))):tx;
  drawSub.forEach((d,i)=>{
- const up='_haUp' in d?d._haUp:d.c>=d.o,cc=up?'#22c55e':'#ef4444';
  const cy1=ty(Math.max(d.o,d.c)),cy2=ty(Math.min(d.o,d.c)),bh=Math.max(1.5,cy2-cy1);
  // Wick (no wick for renko bricks)
  if(state.chartType!=='renko'){
