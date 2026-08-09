@@ -25,6 +25,7 @@ const STOCKS=[
  {id:'EMA50', l:'EMA 50', cat:'المتوسطات',c:'#ea580c'},
  {id:'EMA200',l:'EMA 200',cat:'المتوسطات',c:'#c2410c'},
  {id:'EMA_RIBBON',l:'EMA Ribbon',cat:'المتوسطات',c:'#6366f1'},
+  {id:'HMA', l:'HMA هال', cat:'المتوسطات',c:'#059669'},
  {id:'VWAP', l:'VWAP', cat:'المتوسطات',c:'#fdba74'},
  // التقلب
  {id:'BB', l:'بولينجر باندز', cat:'التقلب',c:'#818cf8'},
