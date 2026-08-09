@@ -922,12 +922,13 @@ if(sub.length>0){
   });
   // Now slice the same visible window from the full renko array
   if(renkoAll.length>0){
-   const renkoVIS=Math.min(Math.max(8,state.visible),renkoAll.length);
-   const renkoMaxOff=Math.max(0,renkoAll.length-renkoVIS);
-   const renkoOff=Math.min(renkoMaxOff,Math.max(0,state.offset));
-   const renkoEnd=renkoAll.length-renkoOff;
-   const renkoStart=Math.max(0,renkoEnd-renkoVIS);
-   renkoSub=renkoAll.slice(renkoStart,renkoEnd);
+   // مطابقة نافذة رينكو بالنطاق الزمني للشموع المرئية لا بعددها
+   const _t0=sub[0]?.t?+new Date(sub[0].t):null;
+   const _t1=sub[n-1]?.t?+new Date(sub[n-1].t):null;
+   if(_t0!=null&&_t1!=null){
+    renkoSub=renkoAll.filter(b=>{const bt=+new Date(b.t);return bt>=_t0&&bt<=_t1;});
+   }
+   if(!renkoSub||!renkoSub.length)renkoSub=renkoAll.slice(-Math.min(state.visible,renkoAll.length));
   }
  }
  if(!renkoSub)renkoSub=sub;
