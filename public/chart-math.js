@@ -203,7 +203,7 @@ ohlc4: allH.map((h,i)=>((allC[i-1]??allC[i])+h+allL[i]+allC[i])/4),
    WMA: (src,n)=>src.map((_,i)=>i<n-1?null:src.slice(i-n+1,i+1).reduce((s,v,j)=>s+v*(j+1),0)/(n*(n+1)/2)),
    DEMA: (src,n)=>{const e1=ema(src,n);const e2=ema(e1,n);return e1.map((v,i)=>v==null||e2[i]==null?null:2*v-e2[i]);},
    TEMA: (src,n)=>{const e1=ema(src,n);const e2=ema(e1,n);const e3=ema(e2,n);return e1.map((v,i)=>v==null||e2[i]==null||e3[i]==null?null:3*v-3*e2[i]+e3[i]);},
-   HULL: (src,n)=>{const w=Math.max(1,Math.round(Math.sqrt(n)));const eh=ema(src,Math.max(1,Math.floor(n/2))),ef=ema(src,n);const raw=src.map((_,i)=>(eh[i]==null||ef[i]==null)?null:2*eh[i]-ef[i]);const cl=raw.filter(v=>v!=null);const sm=ema(cl,w);let si=0;return raw.map(v=>v==null?null:(sm[si++]??null));},
+   HULL: (src,n)=>{const w=Math.round(Math.sqrt(n));const h=ema(src.map((_,i)=>i<n-1?null:2*(ema(src,Math.floor(n/2))[i]??0)-(ema(src,n)[i]??0)),w);return h;},
 
    // Momentum indicators
    MOM: (src,n=10)=>src.map((v,i)=>i<n||v==null||src[i-n]==null?null:v-src[i-n]),
