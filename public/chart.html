@@ -1570,7 +1570,9 @@ const vmx=mv;
  const _isRk=state.chartType==='renko'&&drawSub!==sub;
  const _txD=_isRk?(i=>bw*0.5+((drawSub.length<=1)?drawW/2:(i/(drawSub.length-1))*(drawW-bw*2))):tx;
  drawSub.forEach((d,i)=>{
+ const up='_haUp' in d?d._haUp:d.c>=d.o,cc=up?'#22c55e':'#ef4444';
  const cy1=ty(Math.max(d.o,d.c)),cy2=ty(Math.min(d.o,d.c)),bh=Math.max(1.5,cy2-cy1);
+
  // Wick (no wick for renko bricks)
  if(state.chartType!=='renko'){
   ctx.strokeStyle=state.chartType==='ohlc'?cc:(darkTheme?'#2a3a55':'#8a9ab5');ctx.lineWidth=0.9;
