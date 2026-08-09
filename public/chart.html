@@ -1574,18 +1574,18 @@ const vmx=mv;
  // Wick (no wick for renko bricks)
  if(state.chartType!=='renko'){
   ctx.strokeStyle=state.chartType==='ohlc'?cc:(darkTheme?'#2a3a55':'#8a9ab5');ctx.lineWidth=0.9;
-  ctx.beginPath();ctx.moveTo(tx(i),ty(d.hi));ctx.lineTo(tx(i),ty(d.lo));ctx.stroke();
+  ctx.beginPath();ctx.moveTo(_txD(i),ty(d.hi));ctx.lineTo(_txD(i),ty(d.lo));ctx.stroke();
  }
  if(state.chartType==='ohlc'){
  const tk=Math.max(2,bw*0.5);
  ctx.strokeStyle=cc;ctx.lineWidth=1.2;
- ctx.beginPath();ctx.moveTo(tx(i)-tk,ty(d.o));ctx.lineTo(tx(i),ty(d.o));ctx.stroke();
- ctx.beginPath();ctx.moveTo(tx(i),ty(d.c));ctx.lineTo(tx(i)+tk,ty(d.c));ctx.stroke();
+ ctx.beginPath();ctx.moveTo(_txD(i)-tk,ty(d.o));ctx.lineTo(_txD(i),ty(d.o));ctx.stroke();
+ ctx.beginPath();ctx.moveTo(_txD(i),ty(d.c));ctx.lineTo(_txD(i)+tk,ty(d.c));ctx.stroke();
  } else {
  ctx.fillStyle=state.chartType==='hollow'?(up?'transparent':cc):cc;
  ctx.globalAlpha=up?0.93:0.86;
- if(state.chartType==='hollow'){ctx.strokeStyle=cc;ctx.lineWidth=1;ctx.strokeRect(tx(i)-bw/2,cy1,bw,bh);}
- else ctx.fillRect(tx(i)-bw/2,cy1,bw,bh);
+ if(state.chartType==='hollow'){ctx.strokeStyle=cc;ctx.lineWidth=1;ctx.strokeRect(_txD(i)-bw/2,cy1,bw,bh);}
+ else ctx.fillRect(_txD(i)-bw/2,cy1,bw,bh);
  ctx.globalAlpha=1;
  }
  });
