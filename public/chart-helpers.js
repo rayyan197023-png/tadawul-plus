@@ -574,13 +574,21 @@ if(!raw) return;
 }
 
 // السوق السعودي: الأحد–الخميس، 10:00–15:00 بتوقيت الرياض
+// السوق السعودي: الأحد–الخميس، 10:00–15:00 بتوقيت الرياض
 function _isMarketOpen(){
- const n=new Date();
- const d=n.getDay(); // 0=أحد ... 4=خميس، 5=جمعة، 6=سبت
- if(d===5||d===6)return false;
- const h=n.getHours(),m=n.getMinutes();
- const mins=h*60+m;
- return mins>=600&&mins<=900; // 10:00 إلى 15:00
+ try{
+  const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Riyadh',weekday:'short',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date());
+  const g=t=>p.find(x=>x.type===t)?.value;
+  const wd=g('weekday');
+  if(wd==='Fri'||wd==='Sat')return false;
+  const mins=(+g('hour'))*60+(+g('minute'));
+  return mins>=600&&mins<=900; // 10:00 إلى 15:00
+ }catch(e){
+  const n=new Date(),d=n.getDay();
+  if(d===5||d===6)return false;
+  const mins=n.getHours()*60+n.getMinutes();
+  return mins>=600&&mins<=900;
+ }
 }
 
 function _applyTick(tick){
