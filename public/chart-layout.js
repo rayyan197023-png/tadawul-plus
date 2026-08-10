@@ -32,7 +32,7 @@ function chartBounds(forceN){
  // نفس منطق حجز مساحة الغيمة المستقبلية -- شرطي بـ offset===0 وتفعيل المؤشر
  const _ichiActive=(typeof state!=='undefined'&&Array.isArray(state.inds)&&state.inds.includes('ICHIMOKU'));
  const _atRightEdge=(state.offset===0);
- const _cloudPad=(_ichiActive&&_atRightEdge)?26:0;
+ const _cloudPad=(_ichiActive&&_atRightEdge)?FUTURE_PAD:0;
 
  const bw=Math.max(1.5,(CW/(VIS+_cloudPad))*0.72);
  const drawW=CW-bw*2-16;
