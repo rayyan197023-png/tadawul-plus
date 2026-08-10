@@ -6150,7 +6150,7 @@ function _drawCompareOverlay(ctx,sub,tx,ty,cTop,cH,CW,mn,mx,darkTheme){
 
  // Normalize comparison to % change from first visible bar
  const baseMain=sub[0].c||1;
- const baseComp=compSub[0].c||1;
+ const baseComp=(compSub.find(Boolean)||{c:1}).c||1;
  ctx.save();
  ctx.beginPath();ctx.rect(0,cTop,CW,cH);ctx.clip();
  ctx.strokeStyle='rgba(251,191,36,0.75)';ctx.lineWidth=1.4;ctx.setLineDash([]);
@@ -6164,7 +6164,7 @@ function _drawCompareOverlay(ctx,sub,tx,ty,cTop,cH,CW,mn,mx,darkTheme){
  });
  ctx.stroke();
  // Label at end
- const lastComp=compSub[compSub.length-1];
+ const lastComp=[...compSub].reverse().find(Boolean)||{c:baseComp};
  const lastMain=sub[sub.length-1];
  const compPct=((lastComp.c-baseComp)/baseComp*100).toFixed(2);
  const mainPct=((lastMain.c-baseMain)/baseMain*100).toFixed(2);
