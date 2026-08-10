@@ -270,10 +270,6 @@ async fetch(type, params={}) {
       let qs = '';
 
       if(type === 'candles') {
-        const days = params.rangeDays || 365;
-        const toD = new Date();
-        const fromD = new Date(Date.now() - days*86400000);
-        const fmt = d => d.toISOString().slice(0,10);
         const _per = params.period || '1D';
         const _intradayPers = ['1H','4H'];
         if(_intradayPers.includes(_per)){
