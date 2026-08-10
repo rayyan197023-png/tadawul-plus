@@ -577,7 +577,7 @@ function _applyTick(tick){
     pEl.textContent = tick.c.toFixed(2);
     const up = tick.c >= prev;
     pEl.style.color = up ? '#22c55e' : '#ef4444';
-    setTimeout(()=>pEl.style.color='', 600);
+    setTimeout(()=>pEl.style.color=darkTheme?'#f0f2f8':'#1a2340', 600);
   }
   const up = (tick.pct || tick.ch || 0) >= 0;
   const chEl = document.getElementById('pch');
