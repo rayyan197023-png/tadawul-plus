@@ -570,7 +570,7 @@ if(!raw) return;
     pct: +(raw.changePct || raw.changePercent || raw.pct || 0),
   };
 
-  if(tick.c > 0) { _applyTick(tick); invalidateChart(); render(); }
+  if(tick.c > 0) _applyTick(tick);
 }
 
 // السوق السعودي: الأحد–الخميس، 10:00–15:00 بتوقيت الرياض
