@@ -6132,12 +6132,22 @@ let _alertType='above';
 // Called from render() to draw comparison overlay
 function _drawCompareOverlay(ctx,sub,tx,ty,cTop,cH,CW,mn,mx,darkTheme){
  if(!_compareMode||!_compareData.length)return;
- const total=state.allCandles.length;
- const vis=state.visible;
- const off=state.offset;
- const start=Math.max(0,total-vis-off);
- const compSub=_compareData.slice(start,start+sub.length);
- if(compSub.length<2)return;
+ const _t0=sub[0]&&sub[0].t?+new Date(sub[0].t):null;
+ const _t1=sub[sub.length-1]&&sub[sub.length-1].t?+new Date(sub[sub.length-1].t):null;
+ if(_t0==null||_t1==null)return;
+ const _cmap=new Map();
+ _compareData.forEach(d=>{const k=+new Date(d.t);if(k>=_t0&&k<=_t1)_cmap.set(k,d);});
+ if(_cmap.size<2)return;
+ const _ck=[..._cmap.keys()].sort((a,b)=>a-b);
+ const compSub=sub.map(c=>{
+  const k=+new Date(c.t);
+  if(_cmap.has(k))return _cmap.get(k);
+  let best=null,bd=Infinity;
+  for(const kk of _ck){const dd=Math.abs(kk-k);if(dd<bd){bd=dd;best=kk;}}
+  return bd<=86400000*4?_cmap.get(best):null;
+ });
+ if(compSub.filter(Boolean).length<2)return;
+
  // Normalize comparison to % change from first visible bar
  const baseMain=sub[0].c||1;
  const baseComp=compSub[0].c||1;
@@ -6146,6 +6156,7 @@ function _drawCompareOverlay(ctx,sub,tx,ty,cTop,cH,CW,mn,mx,darkTheme){
  ctx.strokeStyle='rgba(251,191,36,0.75)';ctx.lineWidth=1.4;ctx.setLineDash([]);
  ctx.beginPath();let ff=true;
  compSub.forEach((d,i)=>{
+  if(!d)return;
   const pctChg=(d.c-baseComp)/baseComp;
   const mappedPrice=baseMain*(1+pctChg);
   const y=ty(mappedPrice);
