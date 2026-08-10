@@ -339,16 +339,6 @@ if(typeof state!=='undefined'&&!state.pivotType){
   state.pivotType='traditional';
 }
 
-function cyclePivotType(){
-  const types=['traditional','fibonacci','camarilla'];
-  const cur=types.indexOf(state.pivotType||'traditional');
-  state.pivotType=types[(cur+1)%types.length];
-  saveSettings&&saveSettings();
-  const lbl={'traditional':'تقليدي','fibonacci':'فيبوناتشي','camarilla':'كامارا'};
-  const t=document.getElementById('toast');
-  if(t){t.textContent='Pivot Points: '+lbl[state.pivotType];t.style.display='block';t.classList.add('show');setTimeout(()=>{t.classList.remove('show');t.style.display='none';},2000);}
-  invalidateChart();render();
-}
 function _zoomIn(){
  state.visible=Math.max(8,Math.floor(state.visible*0.75));
  if(navigator.vibrate)navigator.vibrate(15);
