@@ -64,7 +64,7 @@ function doPan(dx){
  const b=chartBounds();
  const VIS=Math.min(Math.max(8,state.visible),state.allCandles.length);
  const maxOff=Math.max(0,state.allCandles.length-VIS);
- const drawW=b.CW-b.bw*2-16, ppx=drawW/(VIS-1||1);
+ const ppx=(b.drawW-b.bw*2)/Math.max(1,b.totalSlots);
  state.offset=Math.min(maxOff,Math.max(0,drag.off0+Math.round(dx/(ppx||8))));
 }
 
