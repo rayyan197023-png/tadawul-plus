@@ -346,7 +346,7 @@ function cyclePivotType(){
   saveSettings&&saveSettings();
   const lbl={'traditional':'تقليدي','fibonacci':'فيبوناتشي','camarilla':'كامارا'};
   const t=document.getElementById('toast');
-  if(t){t.textContent='Pivot Points: '+lbl[state.pivotType];t.style.display='block';t.style.opacity='1';setTimeout(()=>t.style.opacity='0',2000);}
+  if(t){t.textContent='Pivot Points: '+lbl[state.pivotType];t.style.display='block';t.classList.add('show');setTimeout(()=>{t.classList.remove('show');t.style.display='none';},2000);}
   invalidateChart();render();
 }
 function _zoomIn(){
