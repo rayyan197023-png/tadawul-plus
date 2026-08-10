@@ -331,51 +331,6 @@ return merged.filter(d=>{
     }
   },
 
-  // ── جلب شموع OHLCV على دفعات لتجاوز حد 1000 سجل لكل طلب ─────
-  async _fetchCandlesPaginated(symbol, fromD, toD) {
-    const fmt = d => d.toISOString().slice(0,10);
-    const toStr = fmt(toD);
-    let curFrom = fromD;
-    let merged = [];
-    let lastSeen = null;
-    const MAX_LOOPS = 8; // حماية من حلقة لا نهائية (8×1000 = 8000 شمعة كحد أقصى)
-
-    for (let i = 0; i < MAX_LOOPS; i++) {
-      const qs = `?endpoint=ohlcv&sym=${symbol}&period=5Y`;
-
-      let data;
-      try {
-        const r = await fetch(this.endpoints.candles + qs, {
-          headers: this.headers,
-          signal: AbortSignal.timeout(10000)
-        });
-        if (!r.ok) break;
-        data = await r.json();
-      } catch (e) {
-        console.warn('[sahmk API] candles page', e.message);
-        break;
-      }
-
-      const arr = data.bars || data.data || data.ohlcv || (Array.isArray(data) ? data : []);
-      if (!Array.isArray(arr) || !arr.length) break;
-      merged = merged.concat(arr);
-
-      break; // sahmk يرجع كل البيانات المتاحة في طلب واحد
-    }
-    // إزالة التكرارات (تواريخ متطابقة من تداخل الدفعات) وترتيب زمني تصاعدي
-    const seen = new Set();
-    merged = merged
-      .filter(d => {
-        const key = d.date || d.t || (d.timestamp ?? JSON.stringify(d));
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      })
-      .sort((a,b) => new Date(a.date||a.t||a.timestamp) - new Date(b.date||b.t||b.timestamp));
-
-    return merged;
-  },
-
 
   // ── WebSocket (sahmk doesn't support WS -- polling only) ─────
   _ws: null,
