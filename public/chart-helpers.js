@@ -315,8 +315,6 @@ return merged.filter(d=>{
       });
 
       if(!r.ok) throw new Error('HTTP '+r.status);
- 
-      if(!r.ok) throw new Error('HTTP '+r.status);
       const data = await r.json();
 
       const unwrap = {
