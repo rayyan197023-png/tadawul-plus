@@ -51,6 +51,10 @@ function _applyTheme(){
     rngBtn.style.borderColor=D?'#2a3a55':'#c5d0e0';
     rngBtn.style.color=D?'#c0d0e8':'#1a2340';
   }
+  // Main price
+  const pm=document.getElementById('pmain');
+  if(pm&&!pm.style.color) pm.style.color=D?'#f0f2f8':'#1a2340';
+
 
   // Per button
   const perBtn=document.getElementById('per-btn');
