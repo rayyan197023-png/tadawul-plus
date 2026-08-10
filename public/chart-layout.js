@@ -166,14 +166,6 @@ function _calcOrderFlow(candles){
  });
 }
 
-async function _fetchOrderFlow(sym, per){
- // Try real API first
- const apiData = await API_CONFIG.fetch('orderflow', {sym, per});
- if(apiData) return apiData;
- // Fallback to calculated estimate
- return _calcOrderFlow(state.allCandles);
-}
-
 function _renderOrderFlow(ctx, sub, tx, top, ph, CW, bw){
  if(!showOrderFlow) return;
  const of = _calcOrderFlow(sub);
