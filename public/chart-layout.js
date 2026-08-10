@@ -197,7 +197,7 @@ function _renderOrderFlow(ctx, sub, tx, top, ph, CW, bw){
  ctx.beginPath();ctx.moveTo(0,midY);ctx.lineTo(CW,midY);ctx.stroke();
 
  // Find threshold for label display (top 30% bars)
- const sortedAbs=[...of.map(d=>Math.abs(d.delta))].sort((a,b)=>b-a);
+ const sortedAbs=of.map(d=>Math.abs(d.delta)).sort((a,b)=>b-a);
  const labelThreshold=sortedAbs[Math.max(0,Math.floor(n*0.08))]||maxAbs*0.7; // top 8% only
 
  // Delta bars with + / - labels
