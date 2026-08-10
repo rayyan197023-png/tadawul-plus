@@ -75,8 +75,6 @@ const IND_DEFAULTS = {
  STOCH:{period:14, color:'#f472b6'},
  STOCHRSI:{period:14, color:'#ec4899'},
  MFI:  {period:14, color:'#38bdf8'},
-  CMF:  {period:20, color:'#0ea5e9'},
- ROC:  {period:12, color:'#7c3aed'},
  OBV:   {period:0,  color:'#67e8f9'},
  STD:   {period:20, color:'#fde68a'},
  VWAP:  {period:0,  color:'#fdba74'},
