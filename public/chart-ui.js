@@ -44,6 +44,14 @@ function _applyTheme(){
   if(symCode){symCode.style.color=D?'#4ab0ff':'#1d4ed8';}
   const symSar=document.getElementById('sym-sar');
   if(symSar){symSar.style.color=D?'#0e3560':'#6b7280';}
+    // Range button
+  const rngBtn=document.getElementById('range-btn');
+  if(rngBtn){
+    rngBtn.style.background=D?'#1a2235':'#e2e8f2';
+    rngBtn.style.borderColor=D?'#2a3a55':'#c5d0e0';
+    rngBtn.style.color=D?'#c0d0e8':'#1a2340';
+  }
+
   // Per button
   const perBtn=document.getElementById('per-btn');
   if(perBtn){
