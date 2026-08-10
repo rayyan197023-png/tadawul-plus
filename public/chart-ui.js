@@ -51,6 +51,15 @@ function _applyTheme(){
     rngBtn.style.borderColor=D?'#2a3a55':'#c5d0e0';
     rngBtn.style.color=D?'#c0d0e8':'#1a2340';
   }
+    // Zoom control buttons
+  const zc=document.getElementById('zoom-ctrl');
+  if(zc){
+    zc.querySelectorAll('button').forEach(b=>{
+      b.style.background=D?'rgba(60,65,80,0.12)':'rgba(140,150,170,0.10)';
+      b.style.color=D?'rgba(220,225,235,0.6)':'rgba(40,50,70,0.55)';
+    });
+  }
+
   // Main price
   const pm=document.getElementById('pmain');
   if(pm&&!pm.style.color) pm.style.color=D?'#f0f2f8':'#1a2340';
