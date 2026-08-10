@@ -6138,7 +6138,6 @@ function _drawCompareOverlay(ctx,sub,tx,ty,cTop,cH,CW,mn,mx,darkTheme){
  const _cmap=new Map();
  _compareData.forEach(d=>{const k=+new Date(d.t);if(k>=_t0&&k<=_t1)_cmap.set(k,d);});
  if(_cmap.size<2)return;
-  {const _q=document.getElementById('toast');if(_q){_q.textContent='sub:'+sub.length+' cmp:'+_compareData.length+' map:'+_cmap.size+' off:'+state.offset;_q.style.display='block';_q.classList.add('show');}}
  const _ck=[..._cmap.keys()].sort((a,b)=>a-b);
  const compSub=sub.map(c=>{
   const k=+new Date(c.t);
