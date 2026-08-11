@@ -38,6 +38,7 @@ import {
 import { savePredictions, evaluatePredictions } from '../engines/predictionTracker';
 import Tooltip from '../components/Tooltip';
 import ErrorBoundary from '../components/ErrorBoundary';
+import { shareStockCard } from '../utils/shareStockCard';
 import { useHaptic } from '../hooks/useHaptic';
 
 
@@ -1603,8 +1604,7 @@ return(
                           onClick={function(e){
                             e.stopPropagation();
                             haptic.tap();
-                            var card = e.currentTarget.closest('[data-stock-card]');
-                            shareStockCard(card, stk.sym, stk.name, stk.p.toFixed(2), stk.ch.toFixed(2));
+                            shareStockCard(allData.find(function(d){ return d && d.stk && d.stk.sym === stk.sym; }), stk.sym, stk.name, stk.p.toFixed(2), stk.ch.toFixed(2));
                           }}
                           style={{
                             width:36,height:36,
