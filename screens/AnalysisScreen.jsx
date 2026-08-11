@@ -91,7 +91,6 @@ function AnalysisScreenInner({ commData: extCommData } = {}) {
   const [cardExpanded,setCardExpanded]= useState(false);
   const [rareAlert,   setRareAlert]   = useState(null);
   const [liveTime,    setLiveTime]    = useState(new Date());
-  const [tick,        setTick]        = useState(0);
   const [discovered,  setDiscovered]  = useState([]);
   const [cardLevel,   setCardLevel]   = useState({});
   const [flashCard,   setFlashCard]   = useState(null);
@@ -128,15 +127,10 @@ const [filters, setFilters] = useState({
   // عداد ثانية للساعة الحية فقط
   useEffect(()=>{
     // ✨ تحديث كل ثانية للعداد، لكن liveTime كل 30 ثانية
-    var counter = 0;
     const t = setInterval(function(){ 
-      counter++;
-      setTick(function(n){ return n+1; });
-      // حدّث liveTime فقط كل 30 ثانية
-      if (counter % 30 === 0) {
-        setLiveTime(new Date());
-      }
-    }, 1000);
+      setLiveTime(new Date());
+    }, 30000);
+
     return function(){ clearInterval(t); };
   },[]);
   
