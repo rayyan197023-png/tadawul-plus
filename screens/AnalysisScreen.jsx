@@ -843,7 +843,6 @@ animation:'shimmer 1.4s ease infinite',
                   </span>
                 </div>
               </div>
-              <style>{`@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}`}</style>
             </div>
           )}
 
