@@ -479,7 +479,7 @@ const avgChange = (liveStocks && liveStocks.length > 0)
   ],[]);
 
   // ألوان Light Mode
-  const LC = darkMode ? C : {
+  const LC = useMemo(()=> darkMode ? C : {
     ink:"#f0f4ff",   deep:"#e8edf8",  void:"#dde4f5",
     layer1:"#ffffff", layer2:"#f4f7ff", layer3:"#eaeffa",
     edge:"#dde4f8",   line:"#c8d3ee",  ash:"#b0bedd",
