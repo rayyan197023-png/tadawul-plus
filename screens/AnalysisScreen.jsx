@@ -874,9 +874,8 @@ async function shareStockCard(cardElement, stockSym, stockName, price, change) {
         const tempOpacity = "0.018";
 
         // ٣ — Glanceable Dashboard
-const best3 = allData.length > 0
-  ? [...allData].sort(function(a,b){ return ((b&&b.health&&b.health.score)||0) - ((a&&a.health&&a.health.score)||0); }).slice(0,1)[0]
-  : null;
+const best3 = sortedByScore.length > 0 ? sortedByScore[0] : null;
+
                 // 🎯 معايرة: 55 بدلاً من 60
         const mktOk  = avgHealth >= 55;
         return(
