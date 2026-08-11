@@ -488,7 +488,8 @@ const avgChange = (liveStocks && liveStocks.length > 0)
     electric:"#1a6fd4",
     mint:"#0aaa66",   coral:"#d93545",
     amber:C.amber,    teal:"#0596b0",  plasma:C.plasma,
-  };
+  },[darkMode]);
+
     // ── دالة مشاركة بطاقة السهم كصورة ──
 async function shareStockCard(cardElement, stockSym, stockName, price, change) {
   try {
