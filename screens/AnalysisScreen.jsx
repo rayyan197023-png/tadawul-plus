@@ -848,12 +848,12 @@ animation:'shimmer 1.4s ease infinite',
           )}
 
           {/* ══ Glanceable Dashboard -- نظرة واحدة تكفي ══ */}
-          {!loading&&(
+{!loading&&(
 <div style={{
     margin:"10px 16px 4px",
-    background:'linear-gradient(90deg,#111827 25%,#1a2332 50%,#111827 75%)',
-    backgroundSize:'200% 100%',
-    animation:'shimmer 1.4s ease infinite',
+    background:"linear-gradient(135deg," + C.layer1 + "," + C.layer2 + ")",
+    borderRadius:14,padding:"10px 14px",
+    border:"1px solid " + tempColor + "22",
     borderRadius:14,padding:"10px 14px",
     border:"1px solid " + tempColor + "22",
     display:"flex",alignItems:"center",
