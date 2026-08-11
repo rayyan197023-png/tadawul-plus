@@ -710,7 +710,7 @@ async function shareStockCard(cardElement, stockSym, stockName, price, change) {
     >
 
       {/* ══ CSS الأساسي ══ */}
-      <style>{`
+           <style>{useMemo(()=>`
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -815,7 +815,7 @@ async function shareStockCard(cardElement, stockSym, stockName, price, change) {
         @keyframes particle3{0%,100%{transform:translate(0%,0%) scale(1)}50%{transform:translate(-8%,-10%) scale(.92)}}
         @keyframes particle4{0%,100%{transform:translate(0%,0%) scale(1)}50%{transform:translate(5%,7%) scale(1.08)}}
         @keyframes particle5{0%,100%{transform:translate(0%,0%) scale(1)}50%{transform:translate(-4%,9%) scale(.95)}}
-      `}</style>
+      `,[])}</style>
 
       {/* ══ خلفية الجسيمات المتحركة ══ */}
       <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0,overflow:"hidden"}}>
