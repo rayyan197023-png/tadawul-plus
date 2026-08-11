@@ -781,8 +781,6 @@ async function shareStockCard(cardElement, stockSym, stockName, price, change) {
           80%{transform:scale(.98) translateY(1px)}
           100%{opacity:1;transform:scale(1) translateY(0)}
         }
-        @keyframes skeletonPulse{0%,100%{opacity:.4}50%{opacity:.8}}
-        .skeleton{animation:skeletonPulse 1.4s ease infinite}
         @keyframes flashPulse{0%{opacity:1}30%{opacity:.5}100%{opacity:1}}
         @keyframes rankUp{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
         @keyframes skeletonPulse{0%,100%{opacity:.35}50%{opacity:.75}}
