@@ -902,10 +902,10 @@ animation:'shimmer 1.4s ease infinite',
           {/* ─── البطاقة العلوية — قسمان + زر طي ─── */}
           {(()=>{
             const totalN     = allData.length;
-            const buyN       = allData.filter(d=>d.health.score>=75).length;
-            const watchN     = allData.filter(d=>d.health.score>=60&&d.health.score<75).length;
-            const reduceN    = allData.filter(d=>d.health.score<45).length;
-            const noSigN     = totalN-buyN-watchN-reduceN;
+            const buyN       = signalCounts.buy;
+            const watchN     = signalCounts.watch;
+            const reduceN    = signalCounts.reduce;
+            const noSigN     = signalCounts.neutral;
                         const avgHealth  = totalN>0 ? Math.round(allData.reduce((s,d)=>s+((d&&d.health&&isFinite(d.health.score))?d.health.score:0),0)/totalN) : 50;
             const avgConf    = totalN>0 ? Math.round(allData.reduce((s,d)=>s+(((d&&d.health&&isFinite(d.health.score))?d.health.score:0)*.9),0)/totalN) : 50;
             const avgRadar   = totalN>0 ? Math.round(allData.reduce((s,d)=>s+((d&&d.stk&&isFinite(d.stk.rating))?d.stk.rating:0),0)/totalN) : 50;
