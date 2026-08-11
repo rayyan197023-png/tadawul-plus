@@ -1280,14 +1280,6 @@ return(
                             <div style={{textAlign:"center"}}>
                               <div className="num-lg glow-white" style={{fontSize:11,fontWeight:900,color:health.sigC,lineHeight:1}}>{health.score}</div>
                               <div style={{fontSize:7,fontWeight:700,color:health.sigC,marginTop:1}}>{scoreWord(health.score)}</div>
-                              <div style={{display:"flex",alignItems:"flex-end",gap:1,justifyContent:"center",marginTop:3,height:6}}>
-                                {(function(){
-                                  var base=health.score,trend=stk.ch>0?1:-1;
-                                  var vals=[Math.max(20,base-8+trend*2),Math.max(20,base-5+trend*3),Math.max(20,base-2+trend*1),Math.max(20,base+trend*2),base];
-                                  var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals),rng=mx-mn||1;
-                                  return vals.map(function(v,i){return(<div key={i} style={{width:3,height:2+((v-mn)/rng)*4,borderRadius:1,background:i===vals.length-1?health.sigC:health.sigC+"55"}}/>);});
-                                })()}
-                              </div>
                             </div>
                           </ArcRing>
                           {(function(){
