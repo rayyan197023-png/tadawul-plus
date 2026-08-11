@@ -377,6 +377,11 @@ return {stk, bars, health:h, isRealData};
       return sb - sa; 
     });
   },[allData,tab]); 
+  const sortedByScore = useMemo(() => {
+    if (!allData || !Array.isArray(allData) || allData.length === 0) return [];
+    return [...allData].sort((a,b) => (((b&&b.health&&b.health.score)||0) - ((a&&a.health&&a.health.score)||0)));
+  }, [allData]);
+
 
   const rankMap = useMemo(() => {
     // ✨ Safety check
