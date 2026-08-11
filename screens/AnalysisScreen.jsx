@@ -578,16 +578,15 @@ const best3 = sortedByScore.length > 0 ? sortedByScore[0] : null;
                     var stLabel = isOpen ? "مباشر" : "مغلق";
                     return (
                       <>
-                        {[4,8,12,6,10].map(function(barH, i){
-                          var active = isOpen && (tick % 5 === i);
+{[4,8,12,6,10].map(function(barH, i){
                           return (
                             <div key={i} style={{
                               width:3,
-                              height: active ? barH + 4 : barH,
+                              height: barH,
                               borderRadius:2,
                               background: stColor,
-                              opacity: active ? 1 : (isOpen ? 0.22 : 0.4),
-                              transition:"height .25s ease, opacity .25s ease",
+                              opacity: isOpen ? 0.35 : 0.4,
+                              animation: isOpen ? "pulse 1.5s ease-in-out "+(i*0.3)+"s infinite" : "none",
                             }}/>
                           );
                         })}
