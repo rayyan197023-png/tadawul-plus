@@ -37,6 +37,7 @@ import {
 
 import { savePredictions, evaluatePredictions } from '../engines/predictionTracker';
 import Tooltip from '../components/Tooltip';
+import ErrorBoundary from '../components/ErrorBoundary';
 import { useHaptic } from '../hooks/useHaptic';
 
 
