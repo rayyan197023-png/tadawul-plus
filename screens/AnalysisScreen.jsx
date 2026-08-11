@@ -41,51 +41,6 @@ import ErrorBoundary from '../components/ErrorBoundary';
 import { useHaptic } from '../hooks/useHaptic';
 
 
-// ══ Error Boundary ══
-class AnalysisErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
-  }
-  componentDidCatch(error, errorInfo) {
-    // ✨ Console errors only in development
-    if (typeof window !== 'undefined' && 
-        (window.location.hostname === 'localhost' || 
-         window.location.hostname.includes('vercel.app'))) {
-      console.error('🚨 ERROR:', error);
-      console.error('🚨 STACK:', errorInfo.componentStack);
-    }
-    this.setState({ errorInfo });
-  }
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div style={{padding:20,background:'#0f1628',minHeight:'100vh',color:'#fff',fontFamily:'monospace',direction:'ltr'}}>
-          <h2 style={{color:'#ff5f6a'}}>🚨 ERROR DETECTED</h2>
-          <div style={{background:'rgba(255,0,0,0.1)',padding:12,borderRadius:8,marginTop:12}}>
-            <strong>Error Message:</strong>
-            <pre style={{whiteSpace:'pre-wrap',fontSize:11,marginTop:8}}>
-              {this.state.error && this.state.error.toString()}
-            </pre>
-          </div>
-          <div style={{background:'rgba(255,255,255,0.05)',padding:12,borderRadius:8,marginTop:12}}>
-            <strong>Component Stack:</strong>
-            <pre style={{whiteSpace:'pre-wrap',fontSize:9,marginTop:8,color:'#90a4c8'}}>
-              {this.state.errorInfo && this.state.errorInfo.componentStack}
-            </pre>
-          </div>
-          <button onClick={()=>window.location.reload()} style={{marginTop:16,padding:'10px 20px',background:'#1a6fd4',color:'#fff',border:'none',borderRadius:8,cursor:'pointer'}}>
-            Reload
-          </button>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
 // ✨ Component منفصل للـ AddStock (إصلاح Rules of Hooks)
 function AddStockForm({ STOCKS, setPort, setPortSheet, haptic, C }) {
   const [addSym, setAddSym] = useState("");
