@@ -526,7 +526,7 @@ function _isMarketOpen(){
   const n=new Date(),d=n.getDay();
   if(d===5||d===6)return false;
   const mins=n.getHours()*60+n.getMinutes();
-  return mins>=600&&mins<=900;
+  return mins>=570&&mins<=930; // 9:30 إلى 15:30 (يشمل المزادات)
  }
 }
 
