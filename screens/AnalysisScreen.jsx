@@ -1680,18 +1680,6 @@ return(
                                        : windowMins <= 20 ? "قريب"
                                        : "متاح";
 
-                          // العداد يعتمد على حجم النافذة
-                          var totalSecs = windowMins * 60;
-                          var elapsed   = tick % totalSecs;
-                          var remaining = totalSecs - elapsed;
-                          var remMins   = Math.floor(remaining / 60);
-                          var remSecs   = remaining % 60;
-
-                          var barPct = (function(){
-                            var p = (remaining / totalSecs) * 100;
-                            return p.toFixed(1) + "%";
-                          })();
-
                           return(
                             <div style={{
                               flexShrink:0,width:56,
@@ -1703,27 +1691,12 @@ return(
                               alignItems:"center",justifyContent:"center",gap:2,
                               position:"relative",
                             }}>
-                              {/* شريط التقدم مبني على الحجم */}
-                              <div style={{
-                                position:"absolute",bottom:0,left:0,right:0,height:3,
-                                background:"rgba(255,255,255,.06)",
-                              }}>
-                                <div style={{
-                                  height:"100%",background:urgColor,
-                                  width:barPct,
-                                  transition:"width 1s linear",borderRadius:2,
-                                }}/>
-                              </div>
+
                               <div style={{
                                 fontSize:7,color:urgColor,fontWeight:800,lineHeight:1,
                                 background:urgColor+"18",borderRadius:4,padding:"1px 5px",
                               }}>{urgLabel}</div>
-                              <div style={{
-                                fontSize:12,fontWeight:900,
-                                color:urgColor,lineHeight:1,direction:"ltr",
-                              }}>
-                                {String(remMins).padStart(2,"0") + ":" + String(remSecs).padStart(2,"0")}
-                              </div>
+
                               <div style={{fontSize:6.5,color:C.smoke,lineHeight:1.3}}>
                                 {windowMins + "د نافذة"}
                               </div>
