@@ -512,8 +512,7 @@ if(!raw) return;
   if(tick.c > 0) _applyTick(tick);
 }
 
-// السوق السعودي: الأحد–الخميس، 10:00–15:00 بتوقيت الرياض
-// السوق السعودي: الأحد–الخميس، 10:00–15:00 بتوقيت الرياض
+// السوق السعودي: الأحد–الخميس، 9:30–15:30 بتوقيت الرياض (يشمل المزادات)
 function _isMarketOpen(){
  try{
   const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Riyadh',weekday:'short',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date());
