@@ -384,23 +384,13 @@ return {stk, bars, health:h, isRealData};
 
 
   const rankMap = useMemo(() => {
-    // ✨ Safety check
-    if (!allData || !Array.isArray(allData) || allData.length === 0) return {};
-    
-    const sorted = [...allData].sort((a,b) => {
-      var sa = (a && a.health && a.health.score) || 0;
-      var sb = (b && b.health && b.health.score) || 0;
-      return sb - sa;
-    });
     const map = {};
-    sorted.forEach((d, i) => { 
-      if (d && d.stk && d.stk.sym) {
-        map[d.stk.sym] = i + 1; 
-      }
+    sortedByScore.forEach((d, i) => { 
+      if (d && d.stk && d.stk.sym) map[d.stk.sym] = i + 1; 
     });
     return map;
-  }, [allData]);
-  
+  }, [sortedByScore]);
+
   // ✨ Stock Screener - filtered2 useMemo (Performance Fix)
   const filtered2 = useMemo(function() {
     if (!allData || !Array.isArray(allData) || allData.length === 0) return [];
