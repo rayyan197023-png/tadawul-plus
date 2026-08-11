@@ -740,4 +740,6 @@ export {
   CorrelationMatrix,
   MemoLayerIcon as LayerIcon,
   C,
+  AddStockForm,
 };
+
