@@ -922,8 +922,6 @@ const mktIcon = avgHealth>=65
   ? <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={mktColor} strokeWidth={2} strokeLinecap="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
   : <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={mktColor} strokeWidth={2} strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>;
 
-            const breadthPct = Math.round(allData.filter(d=>d.health.score>=50).length/totalN*100);
-            const bColor     = breadthPct>=65?C.mint:breadthPct>=50?C.electric:breadthPct>=35?C.amber:C.coral;
 const best = sortedByScore.length > 0 ? sortedByScore[0] : null;
 
             return(
