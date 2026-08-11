@@ -447,16 +447,6 @@ const avgChange = (liveStocks && liveStocks.length > 0)
     amber:C.amber,    teal:"#0596b0",  plasma:C.plasma,
   },[darkMode]);
 
-    // ── دالة مشاركة بطاقة السهم كصورة ──
-async function shareStockCard(cardElement, stockSym, stockName, price, change) {
-  try {
-    // نحصل على البيانات من allData
-    var stockData = allData.find(function(d){ return d.stk.sym === stockSym; });
-    if(!stockData) {
-      alert('بيانات السهم غير متاحة');
-      return;
-    }
-
 
      return(
     <div style={{
