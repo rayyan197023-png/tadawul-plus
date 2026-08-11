@@ -505,7 +505,7 @@ async function shareStockCard(cardElement, stockSym, stockName, price, change) {
     }
     var stk = stockData.stk;
     var health = stockData.health;
-    var tp = health.tradingPlan || {};
+
     // ✨ موحَّد: نفس uStop/uTargets المعروضة في بطاقة خطة التداول
     var shareStop = calcSmartStopLoss(stk.p, stk.p, health, stockData.bars);
     var shareTargets = calcSmartTakeProfit(stk.p, shareStop.stopPrice, health, stockData.bars);
