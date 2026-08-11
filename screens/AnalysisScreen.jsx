@@ -1352,36 +1352,7 @@ return(
                             why    = "حجم بيع عالٍ بـ " + volPct + "% -- راقب الإغلاق";
                             icon   = "👁";  urgency = "راقب"; whyColor = C.amber;
                           }
-                        } else if(vr >= 1.4 && ch < 0 && isWeak){
-                          // ─── سهم ضعيف + حجم بيع = خروج مؤسسي حقيقي ───
-                          why      = "حجم بيع مرتفع بـ " + volPct + "% -- خروج مؤسسي محتمل";
-                          icon     = "⚠";  urgency = "تحذير"; whyColor = C.coral;
-                        } else if(vr >= 1.4 && ch < 0 && isStrong){
-                          // ─── سهم قوي + حجم عالٍ + ch سلبي = تصحيح صحي ───
-                          // عادةً: profit-taking في bull market
-                          var cmfPos = (health.extras && health.extras.cmf > 0.05);
-                          if(cmfPos){
-                            why    = "حجم عالٍ مع تصحيح -- جني أرباح طبيعي";
-                            icon   = "💧"; urgency = "صحي"; whyColor = C.amber;
-                          } else {
-                            why    = "حجم بيع عالٍ بـ " + volPct + "% -- راقب الإغلاق";
-                            icon   = "👁";  urgency = "راقب"; whyColor = C.amber;
-                          }
-                        } else if(vr >= 1.4 && ch < 0 && isWeak){
-                          // ─── سهم ضعيف + حجم بيع = خروج مؤسسي حقيقي ───
-                          why      = "حجم بيع مرتفع بـ " + volPct + "% -- خروج مؤسسي محتمل";
-                          icon     = "⚠";  urgency = "تحذير"; whyColor = C.coral;
-                        } else if(vr >= 1.4 && ch < 0 && isStrong){
-                          // ─── سهم قوي + حجم عالٍ + ch سلبي = تصحيح صحي ───
-                          // عادةً: profit-taking في bull market
-                          var cmfPos = (health.extras && health.extras.cmf > 0.05);
-                          if(cmfPos){
-                            why    = "حجم عالٍ مع تصحيح -- جني أرباح طبيعي";
-                            icon   = "💧"; urgency = "صحي"; whyColor = C.amber;
-                          } else {
-                            why    = "حجم بيع عالٍ بـ " + volPct + "% -- راقب الإغلاق";
-                            icon   = "👁";  urgency = "راقب"; whyColor = C.amber;
-                          }
+
                         } else if(vr >= 1.4 && ch < 0){
                           // ─── الحالة العامة (سهم متوسط) ───
                           why      = "حجم بيع مرتفع بـ " + volPct + "% -- خروج مؤسسي محتمل";
