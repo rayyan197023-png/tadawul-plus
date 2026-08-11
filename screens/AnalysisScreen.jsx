@@ -4739,12 +4739,12 @@ function getTooltipKey(title) {
   );
 }
 
-
 // ══ Default Export with Error Boundary ══
 export default function AnalysisScreen(props) {
   return (
-    <AnalysisErrorBoundary>
+    <ErrorBoundary label="لوحة التحليل">
       <AnalysisScreenInner {...props} />
-    </AnalysisErrorBoundary>
+    </ErrorBoundary>
   );
 }
+
