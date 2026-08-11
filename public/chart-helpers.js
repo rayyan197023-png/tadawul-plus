@@ -521,7 +521,7 @@ function _isMarketOpen(){
   const wd=g('weekday');
   if(wd==='Fri'||wd==='Sat')return false;
   const mins=(+g('hour'))*60+(+g('minute'));
-  return mins>=600&&mins<=900; // 10:00 إلى 15:00
+  return mins>=570&&mins<=930; // 9:30 إلى 15:30 (يشمل المزادات)
  }catch(e){
   const n=new Date(),d=n.getDay();
   if(d===5||d===6)return false;
