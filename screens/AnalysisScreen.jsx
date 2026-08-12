@@ -3488,7 +3488,7 @@ function getTooltipKey(title) {
                     boxShadow: i<2
                       ? `inset 0 1px 0 ${C.layer3}, 0 4px 20px ${ly.color}18`
                       : `inset 0 1px 0 ${C.layer3}`,
-                    animation:`fadeSlideUp .4s cubic-bezier(.16,1,.3,1) ${i*.05}s both`,
+                    animation:`springIn .4s cubic-bezier(.16,1,.3,1) ${i*.05}s both`,
                     position:"relative",overflow:"hidden",
                   }}>
                     {/* شريط الترتيب للطبقتين الأهم */}
