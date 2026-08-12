@@ -99,7 +99,14 @@ function AnalysisScreenInner({ commData: extCommData } = {}) {
   const [searchOpen, setSearchOpen] = useState(false);
 const [searchQuery, setSearchQuery] = useState("");
   // ── محفظة المستخدم ──
-  const [port,        setPort]        = useState([]); // [{sym, qty, avgCost}]
+  const [port,        setPort]        = useState(function(){
+    try{
+      if(typeof window==='undefined') return [];
+      var raw = window.localStorage.getItem('tp_port');
+      var arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    }catch(e){ return []; }
+  }); // [{sym, qty, avgCost}]
   const [portSheet,   setPortSheet]   = useState(null); // "add" | sym
   const [portSrch,    setPortSrch]    = useState("");
 const [screenerOpen, setScreenerOpen] = useState(false);
