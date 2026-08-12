@@ -155,7 +155,7 @@ function getTooltipKey(title) {
             WebkitBackdropFilter:"blur(14px)",
             display:"flex",alignItems:"flex-end",justifyContent:"center",
             animation:"fadeIn .25s ease both",
-                    }} onClick={()=>{ haptic.tap(); setFullAnalysis(null); }}>
+}} onClick={()=>{ haptic.tap(); onClose(); }}>
             {/* الدرج المنزلق من الأسفل */}
             <div
               onClick={e=>e.stopPropagation()}
@@ -179,7 +179,7 @@ function getTooltipKey(title) {
                 padding:"10px 16px 0",
               }}>
                                 <button
-                  onClick={()=>{ haptic.tap(); setFullAnalysis(null); }}
+                  onClick={()=>{ haptic.tap(); onClose(); }}
                   style={{
                     width:44,height:44,borderRadius:12,border:"1px solid " + C.line,
                     background:C.layer3,color:C.mist,fontSize:18,cursor:"pointer",
