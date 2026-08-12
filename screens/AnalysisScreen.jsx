@@ -229,6 +229,27 @@ return {stk, bars, health:h, isRealData};
       return sb - sa; 
     });
   },[allData,tab]); 
+    const handleCardClick = useCallback(function(sym, isRare){
+    haptic.tap();
+    setFlashCard(sym);
+    setTimeout(function(){ setFlashCard(null); }, 350);
+    setSel(function(prev){
+      if(prev===sym){ setRareAlert(null); return null; }
+      if(isRare) setRareAlert(sym);
+      return sym;
+    });
+  },[haptic]);
+
+  const handleFullAnalysis = useCallback(function(sym){
+    haptic.strong();
+    setFullAnalysis(sym);
+    setDiscovered(function(prev){
+      if(prev.indexOf(sym) !== -1) return prev;
+      return prev.concat([sym]);
+    });
+  },[haptic]);
+
+
     const marketAverages = useMemo(() => {
     if (!allData || !allData.length) return { health:50, conf:50, radar:50 };
     var sH=0, sR=0, n=allData.length;
