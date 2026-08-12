@@ -223,6 +223,17 @@ return {stk, bars, health:h, isRealData};
       return sb - sa; 
     });
   },[allData,tab]); 
+    const marketAverages = useMemo(() => {
+    if (!allData || !allData.length) return { health:50, conf:50, radar:50 };
+    var sH=0, sR=0, n=allData.length;
+    allData.forEach(function(d){
+      if(d && d.health && isFinite(d.health.score)) sH += d.health.score;
+      if(d && d.stk && isFinite(d.stk.rating)) sR += d.stk.rating;
+    });
+    var h = Math.round(sH/n);
+    return { health:h, conf:Math.round(h*0.9), radar:Math.round(sR/n) };
+  }, [allData]);
+
   const sortedByScore = useMemo(() => {
     if (!allData || !Array.isArray(allData) || allData.length === 0) return [];
     return [...allData].sort((a,b) => (((b&&b.health&&b.health.score)||0) - ((a&&a.health&&a.health.score)||0)));
