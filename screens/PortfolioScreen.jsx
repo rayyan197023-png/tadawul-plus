@@ -733,7 +733,7 @@ strokeLinecap="round" style={{filter:"drop-shadow(0 0 6px "+gradeColor+"aa)",tra
             {p.health&&p.health.positionSize&&p.health.positionSize.pct>0&&(
               <span style={{fontSize:12,color:C.electric,background:C.electric+"12",borderRadius:8,padding:"3px 9px",border:"1px solid "+C.electric+"25"}}>حجم مثالي {p.health.positionSize.pct}%</span>
             )}
-            {p.value>0&&p.pnlPct<=-7&&(
+            {p.value>0&&d.smartData&&d.smartData.stopPct&&p.pnlPct<=-Math.abs(d.smartData.stopPct)&&(
               <span className="danger-pulse" style={{fontSize:12,color:C.coral,background:C.coral+"18",borderRadius:8,padding:"3px 9px",border:"1px solid "+C.coral+"44",fontWeight:800}}>وقف الخسارة</span>
             )}
             {p.value>0&&p.pnlPct>=20&&(
