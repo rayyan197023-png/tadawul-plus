@@ -32,7 +32,7 @@ import { calcSmartStopLoss, calcSmartTakeProfit } from '../engines/positionEngin
 import {
   ParticleCanvas, ArcRing, KPIChip, MiniChart, StoryChart,
   Icon, SignalsPanel, BreadthTooltip, CorrelationMatrix, LayerIcon,
-  C, AddStockForm,
+  C,
 } from '../components/analysis/AnalysisHelpers';
 
 import { savePredictions, evaluatePredictions } from '../engines/predictionTracker';
@@ -99,16 +99,6 @@ function AnalysisScreenInner({ commData: extCommData } = {}) {
   const [searchOpen, setSearchOpen] = useState(false);
 const [searchQuery, setSearchQuery] = useState("");
   // ── محفظة المستخدم ──
-  const [port,        setPort]        = useState(function(){
-    try{
-      if(typeof window==='undefined') return [];
-      var raw = window.localStorage.getItem('tp_port');
-      var arr = raw ? JSON.parse(raw) : [];
-      return Array.isArray(arr) ? arr : [];
-    }catch(e){ return []; }
-  }); // [{sym, qty, avgCost}]
-  const [portSheet,   setPortSheet]   = useState(null); // "add" | sym
-  const [portSrch,    setPortSrch]    = useState("");
 const [screenerOpen, setScreenerOpen] = useState(false);
 const [filters, setFilters] = useState({
   minScore:0, maxScore:100,
