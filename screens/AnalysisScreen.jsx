@@ -42,6 +42,7 @@ import FullAnalysisModal from '../components/analysis/FullAnalysisModal';
 import { ANALYSIS_CSS } from '../components/analysis/analysisStyles';
 import SignalsPage from '../components/analysis/SignalsPage';
 import MarketOverviewCard from '../components/analysis/MarketOverviewCard';
+import StockCard from '../components/analysis/StockCard';
 import { shareStockCard } from '../utils/shareStockCard';
 import { useHaptic } from '../hooks/useHaptic';
 
