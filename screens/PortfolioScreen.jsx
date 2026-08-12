@@ -353,8 +353,6 @@ function SummaryCard(props) {
           </div>
         </div>
       )}
-      <div style={{display:"flex",gap:8}}>
-      </div>
     </div>
   );
 } 
