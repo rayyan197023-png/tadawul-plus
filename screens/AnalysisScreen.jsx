@@ -2044,7 +2044,7 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
 
                                 
                                 {/* Worst Case */}
-                                {tp.worstCase && (
+  {uStop && (
                                   <div style={{
                                     background:"rgba(245,158,11,.06)",
                                     border:"1px solid rgba(245,158,11,.2)",
@@ -2130,7 +2130,7 @@ var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
                                 borderRadius:8,padding:"3px 10px",
                               }}>
                                 <span style={{fontSize:8,fontWeight:800,color:opp.color||C.smoke}}>
-                                  {opp.matrix||"—"}
+                                  {opp.matrix||"--"}
                                 </span>
                               </div>
                             </div>
