@@ -31,21 +31,8 @@ return(
     data-stock-card
     className="card-enter"
     style={{animationDelay:`${idx*.07}s`}}
-    onClick={function(){
-    haptic.tap();
-    // Micro-feedback -- وميض لحظي
-    setFlashCard(stk.sym);
-    setTimeout(function(){ setFlashCard(null); }, 350);
-    // Progressive Disclosure -- تقدّم في المستويات
-    if(selected){
-      setSel(null);
-      setRareAlert(null);
-    } else {
-      setSel(stk.sym);
-      setSel(stk.sym);
-      if(isRare) setRareAlert(stk.sym);
-    }
-  }}
+    onClick={function(){ onCardClick(stk.sym, isRare); }}
+
                 >
                   {/* ─ البطاقة الرئيسية ─ */}
                   <div
