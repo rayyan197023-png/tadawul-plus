@@ -3841,7 +3841,7 @@ function getTooltipKey(title) {
                         <span style={{fontSize:12,fontWeight:700,color:health.sigC}}>{health.sig}</span>
                       </div>
                       <div style={{fontSize:10,color:C.mist}}>
-                        ثقة: <span style={{fontWeight:700,color:finalColor}}>{finalScore}%</span>
+                        الدرجة: <span style={{fontWeight:700,color:finalColor}}>{finalScore}</span>
                         {" · "}رادار: <span style={{fontWeight:700,color:radarColor}}>{L8}/100</span>
                       </div>
                     </div>
