@@ -1587,14 +1587,9 @@ return(
     );
   }
 
-  // ─── فحص حالة السوق السعودي ───
-  var nowD = new Date();
-
-                          var utc = nowD.getTime() + (nowD.getTimezoneOffset() * 60000);
-                          var ksa = new Date(utc + 3 * 3600000);
-                          var ksaDay = ksa.getDay();
-                          var ksaMin = ksa.getHours()*60 + ksa.getMinutes();
-                          var isOpen = (ksaDay>=0 && ksaDay<=4) && (ksaMin>=570 && ksaMin<=930);
+                          // ─── فحص حالة السوق السعودي ───
+                          var _mk = getKsaMarket();
+                          var ksaDay = _mk.day, ksaMin = _mk.mins, isOpen = _mk.isOpen;
 
                           // ─── السوق مغلق: حسب الوقت المتبقّي للافتتاح ───
                           if(!isOpen){
