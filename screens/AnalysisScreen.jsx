@@ -44,16 +44,6 @@ import SignalsPage from '../components/analysis/SignalsPage';
 import { shareStockCard } from '../utils/shareStockCard';
 import { useHaptic } from '../hooks/useHaptic';
 
-// حالة السوق السعودي: الأحد–الخميس، 9:30–15:30 بتوقيت الرياض
-function getKsaMarket(){
-  var now = new Date();
-  var utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-  var ksa = new Date(utc + 3 * 3600000);
-  var day = ksa.getDay();
-  var mins = ksa.getHours()*60 + ksa.getMinutes();
-  var isOpen = (day>=0 && day<=4) && (mins>=570 && mins<=930);
-  return { ksa:ksa, day:day, mins:mins, isOpen:isOpen };
-}
 
 
 function AnalysisScreenInner({ commData: extCommData } = {}) {
