@@ -946,12 +946,8 @@ const best = sortedByScore.length > 0 ? sortedByScore[0] : null;
 <span style={{display:"flex",alignItems:"center"}}>{mktIcon}</span>
                           <span style={{fontSize:16,fontWeight:900,color:mktColor,letterSpacing:"-.3px"}}>{mktLabel}</span>
                           {(function(){
-                            var now = new Date();
-                            var utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-                            var ksa = new Date(utc + 3 * 3600000);
-                            var day = ksa.getDay();
-                            var timeInMin = ksa.getHours() * 60 + ksa.getMinutes();
-                            var isOpen = (day >= 0 && day <= 4) && (timeInMin >= 570 && timeInMin <= 930);
+                            var isOpen = getKsaMarket().isOpen;
+
                             var stCol = isOpen ? mktColor : C.coral;
                             var stLbl = isOpen ? "مباشر" : "مغلق";
                             return (
