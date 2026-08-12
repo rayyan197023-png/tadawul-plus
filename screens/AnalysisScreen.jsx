@@ -790,6 +790,8 @@ animation:'shimmer 1.4s ease infinite',
           {/* ─── المحتوى الرئيسي — يظهر بعد التحليل ─── */}
           {!loading&&(
           <div>
+          
+          {/* ─── البطاقة العلوية -- قسمان + زر طي ─── */}
           <MarketOverviewCard
             allData={allData}
             signalCounts={signalCounts}
