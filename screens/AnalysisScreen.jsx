@@ -3041,9 +3041,9 @@ var neut = normalizeProb(prob.neutral);
           <SignalsPanel allData={allData} C={C} LC={C} scoreWord={scoreWord}/>
 
           {/* ══ فلاتر الفرز المتقدمة — Stock Screener ══ */}
-          {(function(){
-            return(
+          {(
               <div style={{marginBottom:16}}>
+ 
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
                                     <button onClick={function(){ haptic.toggle(); setScreenerOpen(function(v){return !v;});}} style={{
                     display:"flex",alignItems:"center",gap:6,padding:"7px 14px",
