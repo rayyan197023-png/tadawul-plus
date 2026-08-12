@@ -328,11 +328,6 @@ const avgChange = (liveStocks && liveStocks.length > 0)
   const tasi = market?.indices?.find(i => i.id === 'tasi');
   const tasiVal = tasi?.value || 0;
   const tasiPct = tasi?.pct || 0;
-  const navItems = useMemo(()=>[
-    { id:"home",      icon:"⌂",  label:"الرئيسية" },
-    { id:"portfolio", icon:"◎",  label:"محفظتي"   },
-    { id:"profile",   icon:"◈",  label:"حسابي"   },
-  ],[]);
 
   // ألوان Light Mode
   const LC = useMemo(()=> darkMode ? C : {
