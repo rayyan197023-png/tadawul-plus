@@ -255,7 +255,9 @@ return {stk, bars, health:h, isRealData};
       return true;
     }
     
-    return allData.filter(applyFilter);
+    return allData.filter(applyFilter).sort(function(a,b){
+      return (((b&&b.health&&b.health.score)||0) - ((a&&a.health&&a.health.score)||0));
+    });
   }, [allData, filters]);
 
   const sectorList = useMemo(function() {
@@ -3129,7 +3131,7 @@ var neut = normalizeProb(prob.neutral);
           })()}
 
           {/* بطاقات الإشارات */}
-          {[...filtered2].sort((a,b)=>b.health.score-a.health.score).map(({stk,bars,health},i)=>(
+          {filtered2.map(({stk,bars,health},i)=>(
             <div key={stk.sym} className="card-enter" style={{animationDelay:`${i*.06}s`,marginBottom:10}}>
               <div style={{
                 background:`linear-gradient(135deg,${C.layer1},${C.layer2})`,
