@@ -845,12 +845,11 @@ function SellSheet(props) {
         else                            actualOutcome = -2.0;
         
         var signalTaken = pnlPctLearning >= 0 ? 'شراء قوي' : 'تخفيف';
-        var layersUsed = sellSheet.layersAtEntry || {
-          L1: 60, L2: 60, L3: 60, L4: 60, L5: 60,
-          L6: 60, L7: 60, L8: 60, L9: 60
-        };
-        
-        recordFeedback(sellSheet.sym, signalTaken, layersUsed, actualOutcome);
+        var layersUsed = sellSheet.layersAtEntry;
+        // لا نُغذّي نظام التعلّم بطبقات مُختلقة -- نتخطّى المراكز التي لم تُسجَّل طبقاتها
+        if (layersUsed) {
+          recordFeedback(sellSheet.sym, signalTaken, layersUsed, actualOutcome);
+        }
       }
     } catch (e) {
       console.error('[Learning Error]', e);
