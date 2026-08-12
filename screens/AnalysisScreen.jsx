@@ -2935,7 +2935,7 @@ var neut = normalizeProb(prob.neutral);
           haptic={haptic}
         />
       )}
-
+ 
 
       {/* ══ شريط الحالة العلوي ══ */}
       <div style={{
