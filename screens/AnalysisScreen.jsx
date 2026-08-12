@@ -3222,8 +3222,8 @@ var neut = normalizeProb(prob.neutral);
         const pC = up?C.mint:C.coral;
 
         // استخدام البيانات المحسوبة مسبقاً من calc9Layers
-        const {L1,L2,L3,L4,L5,L6,L7,L8,L9} = health.layers;
-        const ex = health.extras;
+        const {L1=0,L2=0,L3=0,L4=0,L5=0,L6=0,L7=0,L8=0,L9=0} = health.layers || {};
+        const ex = health.extras || {};
 
         // ألوان كل طبقة
         const lc = v => v>=70?C.mint:v>=50?C.amber:C.coral;
