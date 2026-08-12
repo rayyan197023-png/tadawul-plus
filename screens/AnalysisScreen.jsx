@@ -38,6 +38,7 @@ import {
 import { savePredictions, evaluatePredictions } from '../engines/predictionTracker';
 import Tooltip from '../components/Tooltip';
 import ErrorBoundary from '../components/ErrorBoundary';
+import FullAnalysisModal from '../components/analysis/FullAnalysisModal';
 import { shareStockCard } from '../utils/shareStockCard';
 import { useHaptic } from '../hooks/useHaptic';
 
