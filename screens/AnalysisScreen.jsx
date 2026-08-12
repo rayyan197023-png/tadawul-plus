@@ -3273,9 +3273,10 @@ var neut = normalizeProb(prob.neutral);
         const liqType  = L9>=75&&up?"مؤسسي":L9>=55&&up?"جيد":stk.ch<-1.5&&ex.vr>1.2?"تصريف":"محايد";
         const liqColor = liqType==="مؤسسي"?C.electric:liqType==="جيد"?C.mint:liqType==="تصريف"?C.coral:C.smoke;
         const liqDesc  = liqType==="مؤسسي"
-          ? `حجم التداول أعلى بـ ${Math.round((ex.vr-1)*100)}% — المال الكبير يدخل ✅`
+          ? `حجم التداول أعلى بـ ${Math.round(((ex.vr||1)-1)*100)}% -- المال الكبير يدخل ✅`
           : liqType==="جيد"
-          ? `سيولة إيجابية — الحجم فوق المعدل بـ ${Math.round((ex.vr-1)*100)}%`
+          ? `سيولة إيجابية -- الحجم فوق المعدل بـ ${Math.round(((ex.vr||1)-1)*100)}%`
+
           : liqType==="تصريف"
           ? `⚠ ضغط بيعي — حجم عالٍ مع هبوط السعر`
           : `سيولة عادية — لا توجد حركة مؤسسية واضحة`;
