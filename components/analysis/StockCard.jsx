@@ -1668,7 +1668,7 @@ var neut = normalizeProb(prob.neutral);
                         <div style={{padding:"14px 16px"}}>
 
                         {/* ══ لحظة "فرصة نادرة" -- تظهر فقط للدرجات العالية ══ */}
-                        {isRare&&rareAlert===stk.sym&&(
+                        {isRare&&selected&&(
                           <div style={{
                             marginBottom:12,
                             background:"linear-gradient(135deg,rgba(212,168,67,.18),rgba(212,168,67,.08))",
