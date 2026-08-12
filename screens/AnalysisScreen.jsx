@@ -575,15 +575,8 @@ const best3 = sortedByScore.length > 0 ? sortedByScore[0] : null;
                   border:"1px solid rgba(16,201,126,.18)",
                 }}>
 {(function(){
-                    // فحص حالة السوق السعودي (KSA UTC+3)
-                    var now = new Date();
-                    var utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-                    var ksa = new Date(utc + 3 * 3600000);
-                    var day = ksa.getDay();
-                    var timeInMin = ksa.getHours() * 60 + ksa.getMinutes();
-                    var isWeekday = day >= 0 && day <= 4;
-                    var isMarketHours = timeInMin >= 570 && timeInMin <= 930;
-                    var isOpen = isWeekday && isMarketHours;
+                    var isOpen = getKsaMarket().isOpen;
+
                     var stColor = isOpen ? C.mint : C.coral;
                     var stLabel = isOpen ? "مباشر" : "مغلق";
                     return (
