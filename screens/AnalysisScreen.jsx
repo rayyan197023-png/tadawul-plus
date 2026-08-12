@@ -1647,7 +1647,8 @@ return(
                             );
                           }
 
-                          // ─── السوق مفتوح: العدّاد التَنازلي الأصلي ───
+// ─── السوق مفتوح: نافذة الفرصة حسب الحجم ───
+
                           var vr   = (health.extras && health.extras.vr) || 1;
                           var L9   = (health.layers && health.layers.L9)  || 50;
 
