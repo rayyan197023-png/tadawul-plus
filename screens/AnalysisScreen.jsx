@@ -1722,7 +1722,7 @@ var unifiedTargets = calcSmartTakeProfit(stk.p, unifiedStop.stopPrice, health, b
 
 var stop = unifiedStop.stopPrice.toFixed(2);
 var tgt  = unifiedTargets ? unifiedTargets.t1.price.toFixed(2) : stop;
-var alert= (stk.p * (1 + alertPct/100)).toFixed(2);
+var alertPrice = (stk.p * (1 + alertPct/100)).toFixed(2);
                         
 
                         // ✨ Action Plan مع وعي بـ RSI و regime -- لون النص متّسق دائماً مع الخلفية
