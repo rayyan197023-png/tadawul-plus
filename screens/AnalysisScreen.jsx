@@ -3562,7 +3562,7 @@ function getTooltipKey(title) {
                           </div>
                           {/* مؤشر الوزن النسبي */}
                           <div style={{
-                            position:"absolute",top:0,left:`${ly.weight*4}%`,
+                            position:"absolute",top:0,left:`${Math.min(98,ly.weight*4)}%`, 
                             width:1.5,height:"100%",
                             background:C.smoke+"88",
                             borderRadius:1,
