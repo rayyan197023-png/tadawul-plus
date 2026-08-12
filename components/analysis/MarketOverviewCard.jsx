@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { C } from './AnalysisHelpers';
+import { C, getKsaMarket } from './AnalysisHelpers';
 import { scoreWord } from '../../engines/analysisEngine';
 
 export default function MarketOverviewCard({ allData, signalCounts, marketAverages, sortedByScore }) {
