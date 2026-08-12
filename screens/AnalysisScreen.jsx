@@ -3117,14 +3117,6 @@ var neut = normalizeProb(prob.neutral);
                           style={{accentColor:C.mint}}/>
                         <span style={{fontSize:9,color:C.smoke}}>البوابات الثلاث ✅ فقط</span>
                       </label>
-                      <div style={{flex:1,minWidth:100}}>
-                        <select value={filters.regime} onChange={function(e){setFilters(function(f){return Object.assign({},f,{regime:e.target.value});});}}
-                          style={{background:C.layer3,border:"1px solid "+C.line,borderRadius:6,padding:"3px 6px",color:C.snow,fontSize:9}}>
-                          {[
-                            {v:'all',l:'كل الأنظمة'},{v:'trend',l:'اتجاهي'},{v:'chop',l:'عرضي'},{v:'reversal',l:'انعكاسي'},
-                          ].map(function(o){return(<option key={o.v} value={o.v}>{o.l}</option>);})}
-                        </select>
-                      </div>
                                             <button onClick={function(){ haptic.tap(); setFilters({minScore:0,maxScore:100,sig:'all',sector:'all',minPE:0,maxPE:200,minDivY:0,minROE:0,minUpside:-100,regime:'all',gatesAll:false});}}
                         style={{padding:"3px 10px",borderRadius:6,background:"none",border:"1px solid "+C.line,color:C.smoke,fontSize:9,cursor:"pointer"}}>
                         إعادة ضبط
