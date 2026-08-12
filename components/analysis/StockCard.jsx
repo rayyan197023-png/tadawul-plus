@@ -1645,10 +1645,9 @@ var neut = normalizeProb(prob.neutral);
                                                 <button
                           onClick={function(e){
                             e.stopPropagation();
-                            haptic.tap();
-                            setSel(null);
-                            setRareAlert(null);
+                            onCardClick(stk.sym, isRare);
                           }}
+
                           style={{
                             width:"100%",padding:"8px",
                             background:"rgba(255,255,255,.03)",
