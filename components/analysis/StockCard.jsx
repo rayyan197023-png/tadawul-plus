@@ -1840,7 +1840,8 @@ var neut = normalizeProb(prob.neutral);
 
                         {/* ══ زر التحليل الكامل -- بارز دائماً ══ */}
                                                 <button
-                          onClick={e=>{ e.stopPropagation(); haptic.strong(); setFullAnalysis(stk.sym); }}
+                          onClick={e=>{ e.stopPropagation(); haptic.strong(); onFullAnalysis(stk.sym); }}
+
                           style={{
                             width:"100%",padding:"13px",borderRadius:12,cursor:"pointer",
                             fontFamily:"Cairo,sans-serif",fontSize:13,fontWeight:800,
