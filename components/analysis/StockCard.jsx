@@ -115,8 +115,9 @@ return(
                             )}
                             <span style={{fontSize:9,fontWeight:800,color:globalRank<=3?C.gold:globalRank<=5?C.mint:C.mist}}>{
                               globalRank === 1 ? "الأول" :
-                              globalRank <= 3 ? "أعلى " + Math.min(99, Math.round((allData.length-globalRank)/allData.length*100)) + "%" :
-                              Math.min(99, Math.round((allData.length-globalRank)/allData.length*100)) + "%"
+                              globalRank <= 3 ? "أعلى " + Math.min(99, Math.round(((allData&&allData.length?allData.length:1)-globalRank)/(allData&&allData.length?allData.length:1)*100)) + "%" :
+
+                              Math.min(99, Math.round(((allData&&allData.length?allData.length:1)-globalRank)/(allData&&allData.length?allData.length:1)*100)) + "%"
                             }</span>
                             <span style={{fontSize:8,color:C.smoke}}>من السوق</span>
                             {globalRank<=3&&<span style={{fontSize:9}}>🔥</span>}
@@ -1684,7 +1685,7 @@ var neut = normalizeProb(prob.neutral);
                               <div style={{fontSize:10,color:C.mist,lineHeight:1.5}}>
                                 {globalRank === 1 
                                   ? "هذا السهم الأول في السوق -- الإشارة استثنائية"
-                                  : "هذا السهم في أعلى " + Math.min(99, Math.round((1-globalRank/allData.length)*100)) + "% من السوق -- الإشارة استثنائية"
+                                  : "هذا السهم في أعلى " + Math.min(99, Math.round((1-globalRank/(allData&&allData.length?allData.length:1))*100)) + "% من السوق -- الإشارة استثنائية"
                                 }
                               </div>
                             </div>
