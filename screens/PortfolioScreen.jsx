@@ -323,26 +323,11 @@ function PerfChart(props) {
 }
 
 function SummaryCard(props) {
-  var positions=props.positions, tv=props.tv, tp=props.tp, tpP=props.tpP, dp=props.dp, capital=props.capital, tradeLog=props.tradeLog;
-  
-  // ✨ استقبل nowT من الأب بدلاً من إنشاء setInterval جديد
-  var nowT = props.nowT || new Date();
-  // تَحويل لِـ KSA (UTC+3)
-  var _utc = nowT.getTime() + (nowT.getTimezoneOffset() * 60000);
-  var _ksa = new Date(_utc + 3 * 3600000);
-  var _day = _ksa.getDay();
-  var hour=_ksa.getHours(), min=_ksa.getMinutes();
-  var timeVal=hour*60+min;
-  // الأحد-الخميس فقط (0-4)
-  var isWeekday = _day >= 0 && _day <= 4;
-  var isSession = isWeekday && (timeVal>=10*60&&timeVal<15*60);
-  var isPreOpen = isWeekday && (timeVal>=9*60+30&&timeVal<10*60);
-  var sessionLabel=isSession?"الجلسة مفتوحة":isPreOpen?"ما قبل الفتح":"الجلسة مغلقة"; 
-  var sessionColor=isSession?"#1ee68a":isPreOpen?"#fbbf24":"#ff5f6a";
-  var fmt=function(n){return n.toLocaleString("en-US",{maximumFractionDigits:0});};
-  var capitalUsed=tv, capitalFree=Math.max(0,capital-capitalUsed);
-  var alpha=props.alpha||0, benchmarkReturn=props.benchmarkReturn||0;
+  var tpP = props.tpP || 0;
+  var alpha = props.alpha || 0;
+  var benchmarkReturn = props.benchmarkReturn || 0;
   return (
+
     <div>
       {/* ── Alpha vs TASI ── */}
       {(tpP!==0||benchmarkReturn!==0)&&(
