@@ -11,7 +11,7 @@ export default function SignalsPage({
   return (
         <div style={{padding:"90px 20px 90px",position:"relative",zIndex:1}}>
 
-<button onClick={()=>{ haptic.tap(); setPage("home"); }} style={{
+<button onClick={()=>{ haptic.tap(); onBack(); }} style={{
   position:"absolute",top:52,right:16,
   background:C.layer2,border:"1px solid "+C.line,
   borderRadius:10,padding:"7px 14px",
