@@ -3251,7 +3251,7 @@ var neut = normalizeProb(prob.neutral);
           ? "مؤشران من ثلاثة — إشارة جزئية، انتظر تأكيداً"
           : "المؤشرات متضاربة — لا توجد إشارة واضحة ⚠";
 
-        const kelAdj   = ex.kelly*.5;
+        const kelAdj   = (ex.kelly||0)*.5;
         const kelDesc  = kelAdj>=.08
           ? `نسبة الدخول المثلى: ${(kelAdj*100).toFixed(1)}% من المحفظة — الصفقة مبررة رياضياً ✅`
           : `نسبة الدخول: ${(kelAdj*100).toFixed(1)}% — صغيرة جداً، المخاطرة أكبر من العائد ❌`;
@@ -3268,7 +3268,8 @@ var neut = normalizeProb(prob.neutral);
         const radarColor = L8>=75?C.mint:L8>=60?C.amber:L8>=45?C.teal:C.coral;
         const radarDesc  = `مجموع نقاط الفرصة: ${L8}/100 — تصنيف ${radarGrade} ${L8>=75?"✅":L8>=50?"⚠":"❌"}`;
 
-        const lpi      = Math.round((ex.vr-1)*40);
+        const lpi      = Math.round(((ex.vr||1)-1)*40);
+
         const liqType  = L9>=75&&up?"مؤسسي":L9>=55&&up?"جيد":stk.ch<-1.5&&ex.vr>1.2?"تصريف":"محايد";
         const liqColor = liqType==="مؤسسي"?C.electric:liqType==="جيد"?C.mint:liqType==="تصريف"?C.coral:C.smoke;
         const liqDesc  = liqType==="مؤسسي"
