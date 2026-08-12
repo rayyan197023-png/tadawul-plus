@@ -892,9 +892,9 @@ animation:'shimmer 1.4s ease infinite',
             const watchN     = signalCounts.watch;
             const reduceN    = signalCounts.reduce;
             const noSigN     = signalCounts.neutral;
-                        const avgHealth  = totalN>0 ? Math.round(allData.reduce((s,d)=>s+((d&&d.health&&isFinite(d.health.score))?d.health.score:0),0)/totalN) : 50;
-            const avgConf    = totalN>0 ? Math.round(allData.reduce((s,d)=>s+(((d&&d.health&&isFinite(d.health.score))?d.health.score:0)*.9),0)/totalN) : 50;
-            const avgRadar   = totalN>0 ? Math.round(allData.reduce((s,d)=>s+((d&&d.stk&&isFinite(d.stk.rating))?d.stk.rating:0),0)/totalN) : 50;
+            const avgHealth  = marketAverages.health;
+            const avgConf    = marketAverages.conf;
+            const avgRadar   = marketAverages.radar;
             const mktLabel   = "المؤشر العام";
             // 🎯 معايرة علمية: 65/55/45/38
             const mktColor = avgHealth>=65?C.mint:avgHealth>=55?C.electric:avgHealth>=45?C.amber:avgHealth>=38?"#c0392b":"#a93226"
