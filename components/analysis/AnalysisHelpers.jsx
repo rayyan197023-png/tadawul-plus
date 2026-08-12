@@ -364,10 +364,15 @@ function Icon({ name, size=14, color="currentColor", style:extraStyle }){
 /* ══ SignalsPanel ══ */
 function SignalsPanel({allData, C, LC, scoreWord}){
   var [show, setShow] = React.useState(false);
-  var signalData = [...allData].sort(function(a,b){ return b.health.score-a.health.score; });
-  var buyN   = allData.filter(function(d){ return d.health.score>=75; }).length;
-  var watchN = allData.filter(function(d){ return d.health.score>=60&&d.health.score<75; }).length;
-  var reduceN= allData.filter(function(d){ return d.health.score<45; }).length;
+  var signalData = React.useMemo(function(){
+    return [...allData].sort(function(a,b){ return ((b&&b.health&&b.health.score)||0)-((a&&a.health&&a.health.score)||0); });
+  },[allData]);
+  var buyN=0, watchN=0, reduceN=0;
+  allData.forEach(function(d){
+    if(!d||!d.health) return;
+    var s=d.health.score;
+    if(s>=65) buyN++; else if(s>=55) watchN++; else if(s<45) reduceN++;
+  });
   return(
     <div style={{padding:"0 16px 10px"}}>
       <button
