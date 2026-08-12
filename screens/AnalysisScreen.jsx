@@ -3127,8 +3127,7 @@ var neut = normalizeProb(prob.neutral);
                   </div>
                 )}
               </div>
-            );
-          })()}
+          )}
 
           {/* بطاقات الإشارات */}
           {filtered2.map(({stk,bars,health},i)=>(
