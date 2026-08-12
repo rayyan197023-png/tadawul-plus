@@ -447,7 +447,7 @@ function EditModal(props) {
             {[{l:"الكمية الجديدة",v:eQty,set:setEQty,ph:String(pos.qty)},{l:"سعر الشراء الجديد",v:eCost,set:setECost,ph:pos.avgCost.toFixed(2)}].map(function(f,i){return(
               <div key={i} style={{flex:1}}>
                 <div style={{fontSize:12,color:C.smoke,fontWeight:700,marginBottom:5}}>{f.l}</div>
-                <input type="number" value={f.v} onChange={function(e){f.set(e.target.value);}} placeholder={f.ph} style={{width:"100%",boxSizing:"border-box",background:C.layer3,border:"1px solid "+C.line,borderRadius:10,padding:"11px",fontSize:15,color:C.snow,fontFamily:"IBM Plex Mono,monospace",outline:"none",textAlign:"center"}} onKeyDown={function(e){if(e.key==="Enter"){haptic.tap();e.target.blur();}}} />
+                <input type="number" value={f.v} onChange={function(e){f.set(e.target.value);}} placeholder={f.ph} style={{width:"100%",boxSizing:"border-box",background:C.layer3,border:"1px solid "+C.line,borderRadius:10,padding:"11px",fontSize:15,color:C.snow,fontFamily:"IBM Plex Mono,monospace",outline:"none",textAlign:"center"}} onKeyDown={function(e){if(e.key==="Enter"){e.target.blur();}}} />
               </div>
             );}) }
           </div>
