@@ -32,7 +32,7 @@ import { calcSmartStopLoss, calcSmartTakeProfit } from '../engines/positionEngin
 import {
   ParticleCanvas, ArcRing, KPIChip, MiniChart, StoryChart,
   Icon, SignalsPanel, BreadthTooltip, CorrelationMatrix, LayerIcon,
-  C,
+  C, getKsaMarket,
 } from '../components/analysis/AnalysisHelpers';
 
 import { savePredictions, evaluatePredictions } from '../engines/predictionTracker';
