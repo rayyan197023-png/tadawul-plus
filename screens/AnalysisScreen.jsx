@@ -1757,7 +1757,7 @@ var alertPrice = (stk.p * (1 + alertPct/100)).toFixed(2);
                           }
                         } else if(health.score >= 55){
                           icon  = "🔔";
-                          line1 = "اضبط تنبيهاً عند " + alert;
+                          line1 = "اضبط تنبيهاً عند " + alertPrice;
                           line2 = "انتظر تأكيد الحجم قبل الشراء";
                           bg    = "rgba(245,158,11,.08)";
                           border= "rgba(245,158,11,.22)";
