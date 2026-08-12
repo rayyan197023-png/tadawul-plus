@@ -1594,11 +1594,8 @@ var neut = normalizeProb(prob.neutral);
                             onClick={function(e){
                               e.stopPropagation();
                               haptic.strong();
-                              setFullAnalysis(stk.sym);
-                              setDiscovered(function(prev){
-                                if(prev.indexOf(stk.sym) !== -1) return prev;
-                                return prev.concat([stk.sym]);
-                              });
+                              onFullAnalysis(stk.sym);
+
                             }}
                             style={{
                               display:"flex",alignItems:"center",gap:5,
