@@ -19,7 +19,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useHaptic } from '../hooks/useHaptic';
-import { genBars, stockHealth, recordFeedback } from '../engines/analysisEngine';
+import { stockHealth, recordFeedback } from '../engines/analysisEngine';
 import { fetchEngineBars } from '../utils/historicalData';
 import { calcSmartAction } from '../engines/positionEngine';
 import { analyzePortfolio, addIntelligenceLayer, generatePortfolioValueChart, generateDrawdownChart, generateMonthlyReturnsHeatmap, generateRiskReturnScatter, generateCorrelationHeatmap, generateVaRDistribution } from '../engines/portfolioEngine';
@@ -1237,16 +1237,6 @@ useEffect(() => {
   }, [port, addSym]);
 
 
-  // ✨ المرحلة 1: مُحدِّد مصدر البارات -- حقيقي إن توفّر بطول كافٍ، وإلا genBars (آمن)
-  // ⚠️ يجب أن يُرجع طولاً ثابتاً = count دائماً، حتى لا تختلف نوافذ التحليل بين الأسهم
-  function getBars(sym, stk, count) {
-    count = count || 60;
-    var real = realBarsMap[sym];
-    if (real && real.length >= count) {
-      return real.slice(-count);
-    }
-    return genBars(stk, count);
-  }
 
   // ✨ المرحلة 1: صحة حقيقية لأسهم المحفظة فقط (من بياناتها المجلوبة)
   // الـ 273 سهماً في allData تبقى genBars (تفادي 429)؛ نحسب الحقيقي فقط لما في المحفظة
