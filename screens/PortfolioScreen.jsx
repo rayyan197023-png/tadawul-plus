@@ -1800,11 +1800,6 @@ return result;
   </div>
 ) : (
   <>
-    <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0,overflow:"hidden"}}>
-        {[{w:300,h:300,t:"-8%",r:"-15%",c:C.gold+"08",dur:"18s",an:"particle0"},{w:240,h:240,t:"55%",r:"-8%",c:C.gold+"06",dur:"22s",an:"particle1"},{w:260,h:260,t:"25%",r:"65%",c:C.electric+"07",dur:"16s",an:"particle2"},{w:180,h:180,t:"75%",r:"18%",c:C.electric+"05",dur:"24s",an:"particle3"}].map(function(pp,i){return(
-          <div key={i} style={{position:"absolute",width:pp.w,height:pp.h,borderRadius:"50%",background:"radial-gradient(circle,"+pp.c+" 0%,transparent 70%)",top:pp.t,right:pp.r,animation:pp.an+" "+pp.dur+" ease-in-out infinite"}}/>
-        );})}
-      </div>
       <div style={{position:"sticky",top:0,zIndex:50,background:"linear-gradient(180deg,"+C.void+"fa 0%,"+C.void+"e0 100%)",backdropFilter:"blur(24px)",borderBottom:"1px solid "+C.line+"55",padding:"calc(env(safe-area-inset-top, 0px) + 28px) 16px 0"}}>
         {/* الصف العلوي: زرّ + + مقبض + جلسة */}
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",paddingBottom:8}}>
