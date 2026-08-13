@@ -970,7 +970,6 @@ function SellSheet(props) {
 export default function PortfolioScreen() {
   const { openStock, setTab } = useNav();
 
-  var stocks = STOCKS;
 const [isLoading, setIsLoading] = useState(true);
 const [showAdvanced, setShowAdvanced] = useState(false);
 useEffect(() => {
@@ -1075,12 +1074,12 @@ useEffect(() => {
  
   // دمج الأسعار الحية مع STOCKS
   var sl=useMemo(function(){
-    var base=stocks.length?stocks:STOCKS;
+    var base=STOCKS;
     return base.map(function(s){
       var live=livePrices[s.sym];
       return live?Object.assign({},s,{p:live.p,ch:live.ch}):s;
     });
-  },[stocks,livePrices]);
+  },[livePrices]);
 
   var prevDecisions_s=useState({}); var prevDecisions=prevDecisions_s[0], setPrevDecisions=prevDecisions_s[1];
   var prevPnlMap_s=useState({}); var prevPnlMap=prevPnlMap_s[0], setPrevPnlMap=prevPnlMap_s[1];
