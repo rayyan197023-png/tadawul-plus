@@ -1766,11 +1766,10 @@ return result;
     };
   },[positions,tpP,tradeLog,tv,capital,benchmarkReturn,tasiBarsState]);
 
-  var foundStk = sl.find(function(s){return s.sym===addSym;});
   var foundRealBars = addSym ? realBarsMap[addSym] : null;
   var foundHasReal = !!(foundRealBars && foundRealBars.length >= 30);
-  var foundHealth = (foundStk && foundHasReal) ? (function(){
-    try { return stockHealth(foundStk, foundRealBars); } catch(e){ return null; }
+  var foundHealth = (found && foundHasReal) ? (function(){
+    try { return stockHealth(found, foundRealBars); } catch(e){ return null; }
   })() : null;
 
   var foundHealthColor=foundHealth?foundHealth.sig==="شراء قوي"?C.mint:foundHealth.sig==="تخفيف"?C.coral:foundHealth.sig==="مراقبة"?C.amber:C.smoke:C.smoke;
