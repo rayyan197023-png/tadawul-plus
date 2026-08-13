@@ -1880,31 +1880,7 @@ return result;
           </div>
             </div>
           </div>
-
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,marginTop:6,paddingTop:6,borderTop:"1px solid "+C.line+"44"}}>
-
-              {(function(){
-              var capitalUsed=tv;
-              var capitalFree=Math.max(0,capital-capitalUsed);
-              var usedPct=capital>0?Math.round(capitalUsed/capital*100):0;
-              return [
-              ].map(function(s,i){return(
-
-                <div key={i} style={{
-                  background:s.bg+"08",
-                  border:"1px solid "+s.bg+"22",
-                  borderRadius:10,
-                  padding:"6px 8px",
-                  textAlign:"center",
-                }}>
-                  <div style={{fontSize:9,color:C.smoke,marginBottom:3,fontWeight:600}}>{s.l}</div>
-                  <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:12,fontWeight:900,color:s.c,lineHeight:1}}>{s.v}</div>
-                  <div style={{fontSize:9,color:s.c,marginTop:2,fontWeight:700,opacity:.7}}>{s.u}</div>
-                </div>
-              );});
-            })()}
-          </div>
-        </div>
+        </div> 
         )}
         {!headerMin && (
           <div style={{display:"flex",gap:6,marginTop:8,marginBottom:4}}>
