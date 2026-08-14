@@ -2479,7 +2479,7 @@ export function calcKellyCriterion(
       fullKelly: 0,
       safeKelly: 0,
       edge: 0,
-      recommendation: 'bdata-غير-كافية',
+      recommendation: 'بيانات غير كافية',
       amountSAR: 0,
       classification: 'unknown',
       label: 'بيانات غير كافية',
