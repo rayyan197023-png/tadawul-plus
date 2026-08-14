@@ -331,7 +331,7 @@ export function analyzePortfolio(positions: Position[], tasiBars: Bar[]): Portfo
           validPositions++;
         }
       }
-      avgPrice = validPositions > 0 ? avgPrice / validPositions : 50;
+      avgPrice = validPositions > 0 ? avgPrice / validPositions : 0;
 
       var twoPercentResult = calcTwoPercentRule(
         totalValue,
