@@ -289,10 +289,9 @@ function HealthScoreCard({ score }) {
   };
 
   const getLabel = (s) => {
-    if (s >= 90) return '🏆 ممتازة';
-    if (s >= 70) return '✅ جيدة';
-    if (s >= 50) return '⚠️ متوسطة';
-    if (s >= 30) return '⚠️ ضعيفة';
+    if (s >= 80) return '🏆 ممتازة';
+    if (s >= 60) return '✅ جيدة';
+    if (s >= 40) return '⚠️ متوسطة';
     return '🚨 حرجة';
   };
 
