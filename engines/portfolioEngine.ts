@@ -1482,7 +1482,6 @@ export function calcCVaR(returns: number[], confidence?: number, portfolioValue?
   dailySAR: number;
   weeklySAR: number;
   monthlySAR: number;
-  worstDays?: number[];
   worstDaysCount?: number;
   confidence: number;
   classification: string;
@@ -1500,7 +1499,6 @@ export function calcCVaR(returns: number[], confidence?: number, portfolioValue?
       dailySAR: 0,
       weeklySAR: 0,
       monthlySAR: 0,
-      worstDays: [],
       confidence: confidence,
       classification: 'unknown',
       label: 'بيانات غير كافية',
@@ -1607,7 +1605,7 @@ export function calcCVaR(returns: number[], confidence?: number, portfolioValue?
  * @returns {Object} {value, classification, label, interpretation}
  */
 export function calcCalmarRatio(annualReturn: number, maxDrawdown: number): {
-  value: number;
+  value: number | null;
   classification: string;
   label: string;
   interpretation: string;
