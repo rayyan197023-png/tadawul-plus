@@ -1375,31 +1375,8 @@ var benchmarkReturn = useMemo(function(){
 
 
   // ✨ هل بيانات كل أسهم المحفظة الحقيقية وصلت؟ (لمعالجة الوميض)
-  // مهلة أمان: بعد 8 ثوانٍ نُظهر التحليل حتى لو لم تكتمل (يسقط لـ genBars بإفصاح)
-  var tmo_s = useState(false); var fetchTimedOut = tmo_s[0], setFetchTimedOut = tmo_s[1];
-  useEffect(function(){
-    if (!port.length) return;
-    setFetchTimedOut(false);
-    var t = setTimeout(function(){ setFetchTimedOut(true); }, 8000);
-    return function(){ clearTimeout(t); };
-  }, [port]);
 
-  var barsReady = useMemo(function(){
-    if (!port.length) return true; // محفظة فارغة -- لا انتظار
-    if (fetchTimedOut) return true; // انتهت المهلة -- أظهر ما لدينا
-    // جاهز إن كان كل سهم له بيانات حقيقية في الخريطة
-    return port.every(function(pp){
-      var r = realBarsMap[pp.sym];
-      return r && r.length >= 30;
-    });
-  }, [port, realBarsMap, fetchTimedOut]);
 
-  // مصدر بيانات التحليل (للإفصاح): حقيقي إن جاهز بلا مهلة، وإلا صناعي
-  var analysisDataSource = useMemo(function(){
-    if (!port.length) return 'empty';
-    var allReal = port.every(function(pp){ var r = realBarsMap[pp.sym]; return r && r.length >= 30; });
-    return allReal ? 'real' : (fetchTimedOut ? 'synthetic-timeout' : 'pending');
-  }, [port, realBarsMap, fetchTimedOut]);
   // ═══ تحليل المحفظة الشامل -- بيانات حقيقية فقط، بدون genBars إطلاقاً ═══
   var portfolioAnalysis = useMemo(function() {
     if (!positions || positions.length === 0) return null;
