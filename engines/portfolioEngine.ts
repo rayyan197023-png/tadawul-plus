@@ -1002,7 +1002,7 @@ export function calcPortfolioBeta(portfolioReturns: number[], marketReturns: num
   if (!portfolioReturns || !marketReturns ||
       portfolioReturns.length < 2 || marketReturns.length < 2) {
     return {
-      value: 1.0,
+      value: null,
       classification: 'unknown',
       label: 'بيانات غير كافية',
       interpretation: 'لا يمكن حساب Beta بدون بيانات تاريخية كافية',
