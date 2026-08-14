@@ -3873,6 +3873,9 @@ export function generateCorrelationHeatmap(positions: Position[]): any {
       var corr;
       if (i === j) {
         corr = 1.0; // السهم مع نفسه
+      } else if (j < i && matrix[j] && matrix[j][i] !== undefined) {
+        // ✨ استغلال التناظر: ρ(A,B) = ρ(B,A) -- نصف عدد الحسابات
+        corr = matrix[j][i];
       } else {
         // مزامنة الطول
         var minLen = Math.min(allReturns[i].length, allReturns[j].length);
