@@ -23,7 +23,6 @@
 
 import {
   mean,
-  variance,
   std,
   downsideDeviation,
   simpleReturns,
