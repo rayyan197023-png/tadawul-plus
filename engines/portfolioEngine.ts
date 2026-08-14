@@ -411,10 +411,13 @@ export function analyzePortfolio(positions: Position[], tasiBars: Bar[]): Portfo
         // Stress Tests -- الخطوة 24 ✅
         stressTests: (function() {
       var portfolioReturns = sharedReturns;
-      var marketReturns = buildTasiSyntheticReturns(positions);
+      var marketReturns = (tasiBars && tasiBars.length > 1)
+        ? simpleReturns(tasiBars)
+        : buildTasiSyntheticReturns(positions);
       var betaResult = calcPortfolioBeta(portfolioReturns, marketReturns);
-      return runStressTests(totalValue, betaResult.value);
+      return runStressTests(totalValue, betaResult.value != null ? betaResult.value : 1.0);
     })(),
+
        // التقييم النهائي (سيُضاف عبر addIntelligenceLayer)
     layersIntelligence: null,
     finalRecommendation: null,
