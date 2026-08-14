@@ -642,15 +642,7 @@ function ImpactSummary({ impact }) {
         }}>
           <div style={{flex: 1, fontSize: 11, color: C.mist, fontFamily: "Cairo,sans-serif", display: "flex", alignItems: "center", gap: 4}}>
             {row.label}
-            <Tooltip 
-              termKey={
-                row.label === "Health Score" ? "Health Score" :
-                row.label === "Sharpe Ratio" ? "Sharpe Ratio" :
-                row.label === "Max Drawdown" ? "Maximum Drawdown" :
-                row.label
-              } 
-              size="small"
-            />
+            <Tooltip termKey={row.label === "Max Drawdown" ? "Maximum Drawdown" : row.label} size="small"/>
           </div>
           <div style={{
             fontSize: 12,
