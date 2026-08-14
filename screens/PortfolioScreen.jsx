@@ -1968,9 +1968,6 @@ return result;
                 </div>
               </div>
  
-               
-
-                             {/* ═══ لوحة المخاطر الشاملة (قابلة للطي) ═══ */}
               
              {sorted.map(function(p,i){return <Card key={p.sym} p={p} i={i} capital={capital} setSellSheet={setSellSheet} onEdit={function(pos){setEditPos(pos);}}/>;}) }
 
@@ -3691,7 +3688,7 @@ return result;
                 <div style={{display:"flex",flexDirection:"column",gap:5,maxHeight:260,overflowY:"auto",WebkitOverflowScrolling:"touch",border:"1px solid "+C.line+"33",borderRadius:12,padding:6,background:"rgba(0,0,0,.15)"}}>
                   {sl.filter(function(s){return !stockSrch||(s.sym.includes(stockSrch)||s.name.includes(stockSrch));}).map(function(s){
                     var isA=addSym===s.sym;
-                    var isHalal=s.sec!=="بنوك";
+
                     return(
                       <button key={s.sym} onClick={function(){setAddSym(s.sym);setAddCost(s.p.toFixed(2));}} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:12,cursor:"pointer",background:isA?"linear-gradient(135deg,"+C.electric+"22,"+C.electric+"0a)":"rgba(255,255,255,.02)",border:"1px solid "+(isA?C.electric+"55":C.line),fontFamily:"Cairo,sans-serif",minHeight:44,transition:"all .15s"}}>
                         <span style={{fontFamily:"IBM Plex Mono,monospace",fontSize:12,fontWeight:800,color:isA?C.snow:C.mist,minWidth:36}}>{s.sym}</span>
