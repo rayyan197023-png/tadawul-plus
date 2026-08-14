@@ -16,7 +16,6 @@ import {
   addIntelligenceLayer,
 } from './portfolioEngine';
 import { stockHealth } from './analysisEngine';
-import { genBars } from './analysisEngine';
 import { STOCKS, SECTORS } from '../constants/stocksData';
 
 // ─── الثوابت الذكية ──────────────────────────
@@ -42,7 +41,7 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
 
   // ✨ بناء positionsWithBars للتحليل الكامل
   const positionsWithBars = positions.map((p: any) => {
-    const bars = p.bars || (p.stk ? genBars(p.stk, 60) : []);
+    const bars = (p.bars && p.bars.length >= 30) ? p.bars : [];
     return {
       sym: p.sym,
       stk: p.stk,
