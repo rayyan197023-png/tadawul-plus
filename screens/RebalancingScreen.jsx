@@ -746,10 +746,11 @@ export default function RebalancingScreen() {
   const barsReady = portSyms.length === 0 || portSyms.every(s => realBars[s] && realBars[s].length >= 30);
 
   const analysis = useMemo(() => {
+    if (!barsReady) return null;
     return analyzePortfolio(positions);
-  }, [positions]);
+  }, [positions, barsReady]);
 
-  if (analysis.isEmpty) {
+  if (!analysis || analysis.isEmpty) {
     return (
       <div style={{
         background: C.ink,
