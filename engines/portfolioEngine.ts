@@ -566,12 +566,11 @@ export function calcReturnsMetrics(portfolioReturns: number[]): {
   // ✨ حارس المدد القصيرة: التحويل السنوي عند n<126 يوماً (نصف سنة) يضخّم العائد
   // بشكل مضلِّل (الأس 252/n يصبح كبيراً). دون نصف سنة: نعرض التراكمي دون تسنية.
   var annualFromCumulative;
-  var annualIsExtrapolated = false;
+
   if (n >= 126) {
     annualFromCumulative = Math.pow(1 + cumulative, 252 / n) - 1;
   } else {
     annualFromCumulative = cumulative; // مدة قصيرة -- العائد التراكمي دون تسنية
-    annualIsExtrapolated = false;
   }
 
   // Method 2: من العائد اليومي (بديل للفترات الطويلة)
