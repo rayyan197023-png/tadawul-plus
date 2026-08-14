@@ -2970,48 +2970,7 @@ export function calcATRStopLoss(
   };
 }
 
-/**
- * حساب Trailing Stop Loss (Chandelier Exit)
- * يتحرك مع السعر صعوداً فقط
- *
- * Chandelier Exit = Highest High - (ATR × Multiplier)
- *
- * @param {Array} bars
- * @param {number} multiplier
- * @returns {Object}
- */
-export function calcTrailingStop(bars: Bar[], multiplier?: number): any {
-  if (multiplier === undefined) multiplier = 3.0;
 
-  if (!bars || bars.length < 15) {
-    return {
-      trailingStop: 0,
-      highestHigh: 0,
-      currentPrice: 0,
-    };
-  }
-
-  // أعلى قمة في آخر 22 يوم
-  var lookback = Math.min(22, bars.length);
-  var recentBars = bars.slice(-lookback);
-  var highestHigh = (recentBars[0] as any).hi;
-for (var i = 1; i < recentBars.length; i++) {
-  if ((recentBars[i] as any).hi > highestHigh) highestHigh = (recentBars[i] as any).hi;
-}
-
-  // ATR
-  var atrResult = calcATR(bars, 14);
-  var trailingStop = highestHigh - (atrResult.atr * multiplier);
-
-  return {
-    trailingStop: +trailingStop.toFixed(2),
-    highestHigh: +highestHigh.toFixed(2),
-    currentPrice: atrResult.currentPrice,
-    atr: atrResult.atr,
-    multiplier: multiplier,
-    distanceFromPrice: +(atrResult.currentPrice - trailingStop).toFixed(2),
-  };
-}
 /* ══════════════════════════════════════════════════════════
    ㉒ Stress Tests -- اختبارات الإجهاد
    سيناريوهات تاريخية كارثية للسوق السعودي
