@@ -3862,7 +3862,7 @@ export function generateCorrelationHeatmap(positions: Position[]): any {
   });
 
   // ② بناء المصفوفة
-  var matrix = [];
+  var matrix: number[][] = [];
   var highCorrelations = [];
   var sumCorrelations = 0;
   var pairCount = 0;
