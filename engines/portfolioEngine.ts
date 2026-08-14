@@ -3117,12 +3117,6 @@ export function runStressTests(portfolioValue: number, portfolioBeta?: number): 
   return results;
 }
 
-/**
- * الحصول على السيناريوهات المتاحة
- */
-export function getStressScenarios(): any[] {
-  return STRESS_SCENARIOS;
-}
 /* ══════════════════════════════════════════════════════════
    ㉓ Portfolio Intelligence -- ربط الطبقات التسع
    الخطوة 25: الختام الملحمي
