@@ -2061,7 +2061,6 @@ return result;
                   <div style={{fontSize:11, color:C.smoke, lineHeight:1.6}}>
                     التحليل يظهر فقط بعد توفّر بيانات حقيقية -- لا أرقام تقديرية
                   </div>
-                  <style>{"@keyframes spin{to{transform:rotate(360deg)}}"}</style>
                 </div>
               )}
               {showAdvanced && portfolioAnalysis && (
@@ -2186,10 +2185,16 @@ return result;
                             <span style={{fontSize:13,fontWeight:900,color:C.snow}}>{t.name}</span>
                             <span style={{fontSize:11,fontWeight:700,color:sigCol,background:sigCol+"15",borderRadius:5,padding:"1px 6px",border:"1px solid "+sigCol+"25"}}>{t.signal}</span>
                           </div>
+                          {isBuy ? (
                           <div style={{textAlign:"left"}}>
                             <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:13,fontWeight:900,color:pnlPct>=0?C.mint:C.coral,lineHeight:1}}>{pnlPct>=0?"+":""}{pnlPct.toFixed(1)}%</div>
                             <div style={{fontFamily:"IBM Plex Mono,monospace",fontSize:11,color:pnlPct>=0?C.mint:C.coral,marginTop:2}}>{pnlAmt>=0?"+":""}{Math.round(pnlAmt).toLocaleString("en-US")} ر</div>
                           </div>
+                          ) : (
+                          <div style={{textAlign:"left"}}>
+                            <div style={{fontSize:10,color:C.smoke,fontWeight:700}}>صفقة مُغلقة</div>
+                          </div>
+                          )}
                         </div>
                         <div style={{display:"flex",gap:0,background:"rgba(255,255,255,.03)",borderRadius:9,overflow:"hidden",marginBottom:t.score>0?7:0}}>
                           {[{l:isBuy?"دخول":"خروج",v:t.price.toFixed(2),c:isBuy?C.mint:C.coral},{l:"الآن",v:curPrice.toFixed(2),c:C.mist},{l:"الكمية",v:t.qty.toLocaleString("en-US"),c:C.mist},{l:"القيمة",v:Math.round(t.qty*t.price/1000)+"K",c:C.electric}].map(function(s,j){return(
