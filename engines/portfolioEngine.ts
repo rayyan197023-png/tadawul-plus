@@ -792,7 +792,7 @@ export function calcSharpeRatio(annualReturn: number, annualVolatility: number, 
  * @returns {Object} {value, classification, label, downsideDeviationAnnual}
  */
 export function calcSortinoRatio(portfolioReturns: number[], annualReturn: number, riskFreeRate?: number): {
-  value: number;
+    value: number | null;
   downsideDeviationAnnual: number;
   classification: string;
   label: string;
@@ -995,7 +995,7 @@ export function buildTasiSyntheticReturns(stocksWithBars: Position[]): number[] 
  * @returns {Object} {value, classification, label, interpretation}
  */
 export function calcPortfolioBeta(portfolioReturns: number[], marketReturns: number[]): {
-  value: number;
+    value: number | null;
   classification: string;
   label: string;
   interpretation: string;
