@@ -3603,7 +3603,13 @@ export function generateMonthlyReturnsHeatmap(positions: Position[], days?: numb
   for (var i = 0; i < portfolioReturns.length; i++) {
     var daysAgo = portfolioReturns.length - 1 - i;
     var date = new Date(today);
-    date.setDate(date.getDate() - daysAgo);
+    // ✨ العد بأيام التداول فقط (الأحد–الخميس) -- تخطي الجمعة والسبت
+    var counted = 0;
+    while (counted < daysAgo) {
+      date.setDate(date.getDate() - 1);
+      var dow = date.getDay();
+      if (dow !== 5 && dow !== 6) counted++;
+    }
     dailyData.push({
       date: date,
       return: portfolioReturns[i],
