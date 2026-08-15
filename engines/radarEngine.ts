@@ -30,7 +30,11 @@ import {
  * Bear OB: institutional sell zone
  */
 export function calcOrderBlocks(bars: any[], atr: number): any {
+  if (!bars || bars.length < 15 || !atr || atr <= 0) {
+    return { inBullOB:false, inRef:false, hasFVG:false, inBearOB:false, bullCount:0, bearCount:0, score:2, label:'بيانات غير كافية' };
+  }
   const obs: any[] = [], cur = bars[bars.length - 1].c, n = bars.length;
+
 const recentVol = bars.length >= 20 ? bars.slice(-20).reduce((s: number, b: any) => s + Math.abs(b.pct ?? 0), 0) / 20 : 1.5;
   const atrMult   = Math.max(1.2, Math.min(2.0, 1.5 * recentVol / 1.5));
 
