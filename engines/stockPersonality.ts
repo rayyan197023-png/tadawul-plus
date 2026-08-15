@@ -88,29 +88,41 @@ function calcTrendStrength(bars: any[]): number {
 
 function calcQualityScore(stk: any): number {
   let score = 0;
-  const roe = stk.roe || 0;
-  if (roe >= 20) score += 30;
-  else if (roe >= 15) score += 25;
-  else if (roe >= 10) score += 20;
-  else if (roe >= 5) score += 10;
-  
-  const debt = stk.debt || 0.5;
-  if (debt <= 0.2) score += 25;
-  else if (debt <= 0.4) score += 20;
-  else if (debt <= 0.6) score += 10;
-  
-  const pe = stk.pe || 20;
-  if (pe > 0 && pe <= 15) score += 20;
-  else if (pe > 0 && pe <= 25) score += 15;
-  else if (pe > 0 && pe <= 35) score += 5;
-  
-  const epsGrw = stk.epsGrw || 0;
-  if (epsGrw >= 15) score += 25;
-  else if (epsGrw >= 10) score += 20;
-  else if (epsGrw >= 5) score += 10;
-  else if (epsGrw >= 0) score += 5;
-  
-  return Math.min(100, score);
+  let available = 0;
+
+  if (stk.roe != null) {
+    available += 30;
+    if (stk.roe >= 20) score += 30;
+    else if (stk.roe >= 15) score += 25;
+    else if (stk.roe >= 10) score += 20;
+    else if (stk.roe >= 5) score += 10;
+  }
+
+  if (stk.debt != null) {
+    available += 25;
+    if (stk.debt <= 0.2) score += 25;
+    else if (stk.debt <= 0.4) score += 20;
+    else if (stk.debt <= 0.6) score += 10;
+  }
+
+  if (stk.pe != null && stk.pe > 0) {
+    available += 20;
+    if (stk.pe <= 15) score += 20;
+    else if (stk.pe <= 25) score += 15;
+    else if (stk.pe <= 35) score += 5;
+  }
+
+  if (stk.epsGrw != null) {
+    available += 25;
+    if (stk.epsGrw >= 15) score += 25;
+    else if (stk.epsGrw >= 10) score += 20;
+    else if (stk.epsGrw >= 5) score += 10;
+    else if (stk.epsGrw >= 0) score += 5;
+  }
+
+  // ✨ تطبيع على المتاح فعلياً -- لا نعاقب على بيانات غائبة
+  if (available === 0) return 0;
+  return Math.min(100, Math.round((score / available) * 100));
 }
 
 function calcToxicityScore(stk: any, bars: any[]): number {
