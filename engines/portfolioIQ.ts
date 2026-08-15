@@ -1400,10 +1400,9 @@ function analyzePortfolioDNA(positions: IQPosition[], base: any): PortfolioDNA {
     const gv = (growthScore / totalWeight) * 100;
     dna.growthValue.score = Math.round(gv);
     dna.growthValue.label = 
-      gv > 65 ? 'يميل لأسهم النمو السريع' :
-      gv < 35 ? 'يميل لأسهم القيمة المستقرة' :
-      'متوازن بين النمو والقيمة';
-  }
+      gv > 65 ? 'أسهمك في زخم صاعد حالياً' :
+      gv < 35 ? 'أسهمك في زخم هابط أو تصحيح' :
+      'زخم متوازن';
 
   // 2. Momentum vs Mean-Reversion (based on portfolio beta)
   if (base.performance && base.performance.beta) {
