@@ -1234,6 +1234,7 @@ layers.sector.sectorIssues.forEach((issue: any) => {
   };
 }
 
+export const _PROBE = 1;
 
   /* ═══════════════════════════════════════════════════════════
    🧠 INNOVATION #1 - PSYRISK SCORE™
