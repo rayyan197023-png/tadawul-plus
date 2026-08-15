@@ -1658,9 +1658,9 @@ function calculateSmartStops(positions: IQPosition[]): SmartStopsAnalysis {
     let multiplier = 2.0;
     const sector = (p.stk && p.stk.sec) || p.sec;
     
-    if (sector === 'البنوك' || sector === 'المرافق' || sector === 'بنوك') {
+    if (sector === 'البنوك' || sector === 'المرافق العامة' || sector === 'التأمين') {
       multiplier = 1.5;
-    } else if (sector === 'البتروكيماويات' || sector === 'الطاقة' || sector === 'طاقة') {
+    } else if (sector === 'المواد الأساسية' || sector === 'الطاقة') {
       multiplier = 2.5;
     }
 
