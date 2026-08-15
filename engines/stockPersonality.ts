@@ -363,7 +363,13 @@ export function detectStockPersonality(stk: any, bars: any[]): PersonalityResult
   };
   
   const reasons: string[] = [];
-  
+
+  // ✨ هل تتوفر بيانات أساسية؟ (الـAPI الحالي لا يوفّرها -- كلها null)
+  const hasFundamentals = stk.roe != null || stk.pe != null || stk.divY != null || stk.epsGrw != null;
+  if (!hasFundamentals) {
+    reasons.push('تصنيف سعري -- البيانات الأساسية غير متاحة');
+  }
+
   // ═══ ① AVOID Check (الأولويّة العليا) ═══
   if (toxicityScore >= 55) {
     reasons.push(`درجة سمّيّة عالية (${toxicityScore}/100)`);
