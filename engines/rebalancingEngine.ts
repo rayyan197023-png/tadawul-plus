@@ -311,7 +311,7 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
   }
 
   // ⑩ فحص Beta
-  if (performance.beta !== undefined && Math.abs(performance.beta - 1) > 0.5) {
+  if (performance.beta != null && Math.abs(performance.beta - 1) > 0.5) {
     if (performance.beta > 1.5) {
       issues.push({
         id: 'beta-high',
