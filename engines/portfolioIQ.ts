@@ -1066,7 +1066,7 @@ function runSectorLayer(positions: IQPosition[], base: any): SectorLayer {
   const effectiveSectors = sectorHHI > 0 ? 10000 / sectorHHI : 0;
 
   // Missing important sectors (Saudi market)
-  const importantSectors = ['البنوك', 'البتروكيماويات', 'الاتصالات', 'المرافق', 'العقارات'];
+  const importantSectors = ['البنوك', 'المواد الأساسية', 'الإتصالات', 'المرافق العامة', 'إدارة وتطوير العقارات'];
   const missingSectors = importantSectors.filter(
     s => !sectorList.find(sec => sec.name === s)
   );
