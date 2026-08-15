@@ -1932,19 +1932,6 @@ function calculateIQScore(layers: any): number {
     sector: 0.20,
   };
 
-   🛠️ HELPER FUNCTIONS
-═══════════════════════════════════════════════════════════ */
-
-function calculateIQScore(layers: any): number {
-  // Weighted IQ score
-  const weights = {
-    diagnostic: 0.20,
-    risk: 0.25,
-    behavioral: 0.15,
-    factor: 0.10,
-    sector: 0.20,
-  };
-
   let score = 0;
   score += (layers.diagnostic.healthScore || 50) * weights.diagnostic;
   score += (layers.risk.score || 50) * weights.risk;
