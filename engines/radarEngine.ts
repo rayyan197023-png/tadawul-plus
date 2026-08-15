@@ -176,7 +176,7 @@ export function calcLiqSweep(bars: any[], atr: number): any {
 /**
  * ✨ Wyckoff phase detection - WITH DYNAMIC CONFIDENCE
  */
-function calcWyckoff(bars: any[], atr: number): any {
+function calcWyckoff(bars: any[]): any {
   const n   = bars.length;
   const cur = bars[n - 1].c;
   const rng = bars.slice(-20);
