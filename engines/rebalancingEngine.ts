@@ -384,8 +384,6 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
     stockQuality: layersIntel.weightedScore || 0,
   });
 
-  // ─── حساب التأثير المتوقع ────────
-  const impactSummary = calculateExpectedImpact(issues, healthScore, performance, risk);
 
   return {
     healthScore,
@@ -411,7 +409,6 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
       weightPct: (val / totalValue) * 100,
     })),
     weightedPositions: positionsWithBars,
-    impactSummary,
     fullAnalysis: analysis, // ✨ إعادة كل تحليل portfolioEngine
     isEmpty: false,
   };
@@ -467,39 +464,6 @@ function calculateHealthScore({ diversificationScore, sharpe, maxDrawdown, stock
   return +score.toFixed(1);
 }
 
-// ─── Helper: التأثير المتوقع ──────────────────
-function calculateExpectedImpact(issues: any[], currentHealth: number, performance: any, risk: any): any {
-  const criticalIssues = issues.filter((i: any) => i.severity === 'high').length;
-  const mediumIssues = issues.filter((i: any) => i.severity === 'medium').length;
-  const totalIssues = criticalIssues + mediumIssues * 0.5;
-  
-  // تحسن متوقع (محسوب علمياً)
-  const healthImprovement = Math.min(15, totalIssues * 1.5);
-  const sharpeImprovement = (performance.sharpe || 0) + (totalIssues * 0.15);
-  const drawdownImprovement = (risk.maxDrawdown || -0.20) * 0.7; // تحسن بنسبة 30%
-  
-  return {
-    before: {
-      healthScore: currentHealth,
-      sharpe: performance.sharpe || 0,
-      maxDD: risk.maxDrawdown || 0,
-      diversification: performance.diversificationScore || 0,
-    },
-    after: {
-      healthScore: Math.min(100, currentHealth + healthImprovement),
-      sharpe: +sharpeImprovement.toFixed(2),
-      maxDD: +drawdownImprovement.toFixed(4),
-      diversification: Math.min(100, (performance.diversificationScore || 0) + 15),
-    },
-    improvements: {
-      healthScore: +healthImprovement.toFixed(1),
-      sharpe: +(sharpeImprovement - (performance.sharpe || 0)).toFixed(2),
-      maxDD: +((risk.maxDrawdown || 0) - drawdownImprovement).toFixed(4),
-    },
-    estimatedActions: criticalIssues + mediumIssues,
-    estimatedTime: '15-30 دقيقة',
-  };
-}
 
 // ─── Helper: اقتراحات القطاعات (مشتقّة من البيانات الحقيقية) ────
 // أسباب دفاعية/تنويعية لكل قطاع (للعرض فقط) -- مفاتيح = أسماء SECTORS الفعلية
@@ -565,7 +529,6 @@ function getEmptyAnalysis(): any {
     },
     sectors: [] as any[],
     weightedPositions: [] as any[],
-    impactSummary: null as any,
     fullAnalysis: null as any,
     isEmpty: true,
   };
