@@ -2837,7 +2837,7 @@ return result;
         marginBottom:14,
       }}>
         {[
-          {key:"growthValue", icon:"📈", label:"النمو/القيمة"},
+          {key:"growthValue", icon:"📈", label:"الزخم الحالي"},
           {key:"momentumReversion", icon:"⚡", label:"الزخم"},
           {key:"defensiveAggressive", icon:"🛡️", label:"دفاعي/عدواني"},
           {key:"capSize", icon:"🏢", label:"حجم الشركات"},
