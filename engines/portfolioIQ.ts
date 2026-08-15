@@ -1355,7 +1355,6 @@ function calculatePsyRiskScore(positions: IQPosition[], base: any, options: IQOp
     sellPanicProbability: estimateSellPanicProbability(score, maxDD),
   };
 }
-export const _PROBE3 = 1;
 
 /* ═══════════════════════════════════════════════════════════
    🧬 INNOVATION #2 - PORTFOLIO DNA™
