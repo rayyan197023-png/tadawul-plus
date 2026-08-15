@@ -2837,8 +2837,8 @@ return result;
         marginBottom:14,
       }}>
         {[
-          {key:"growthValue", icon:"📈", label:"الزخم الحالي"},
-          {key:"momentumReversion", icon:"⚡", label:"الزخم"},
+          {key:"growthValue", icon:"📈", label:"زخم أسهمك"},
+          {key:"momentumReversion", icon:"⚡", label:"حساسية السوق"},
           {key:"defensiveAggressive", icon:"🛡️", label:"دفاعي/عدواني"},
           {key:"capSize", icon:"🏢", label:"حجم الشركات"},
         ].map(function(dim,i){
