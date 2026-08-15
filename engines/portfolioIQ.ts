@@ -1234,7 +1234,6 @@ layers.sector.sectorIssues.forEach((issue: any) => {
   };
 }
 
-export const _PROBE = 1;
 
   /* ═══════════════════════════════════════════════════════════
    🧠 INNOVATION #1 - PSYRISK SCORE™
@@ -1461,6 +1460,7 @@ if (mktCap > 50000000000) { // 50B+ = Large cap
     weaknesses: personality.weaknesses,
   };
 }
+export const _PROBE2 = 1;
 
 /* ═══════════════════════════════════════════════════════════
    🔮 INNOVATION #3 - CRYSTAL BALL™
