@@ -362,51 +362,6 @@ export function calcSmartTakeProfit(
   };
 }
 
-// ═══════════════════════════════════════════════════════
-// 📈 TRAILING STOP
-// ═══════════════════════════════════════════════════════
-
-/**
- * ✨ Trailing Stop Dynamic
- * 
- * يتحرك مع السعر صعوداً، لا يتحرك هبوطاً
- * يحمي الأرباح المُحققة
- */
-export function calcTrailingStop(
-  entryPrice: number,
-  currentPrice: number,
-  highestSinceEntry: number | null,
-  health: Health | null
-): TrailingStopResult | null {
-  if (!entryPrice || !currentPrice) {
-    return null;
-  }
-  
-  const atr = health?.extras?.atrPct 
-    ? (health.extras.atrPct / 100) * currentPrice 
-    : currentPrice * 0.015;
-  const profit = ((currentPrice - entryPrice) / entryPrice) * 100;
-  
-  if (profit < 2) return null;
-  
-  let trailMultiplier: number;
-  if (profit >= 15) trailMultiplier = 1.5;
-  else if (profit >= 10) trailMultiplier = 2.0;
-  else if (profit >= 5) trailMultiplier = 2.5;
-  else trailMultiplier = 3.0;
-  
-  const high = highestSinceEntry || currentPrice;
-  const trailStop = high - (atr * trailMultiplier);
-  const trailPct = ((trailStop - entryPrice) / entryPrice) * 100;
-  
-  return {
-    price: +trailStop.toFixed(2),
-    pct: +trailPct.toFixed(1),
-    distance: +(((currentPrice - trailStop) / currentPrice) * 100).toFixed(1),
-    locked: trailStop > entryPrice ? '✓ مؤمّن' : 'لم يُفعّل بعد',
-    isLocked: trailStop > entryPrice,
-  };
-}
 
 // ═══════════════════════════════════════════════════════
 // 🏔️ PROFESSIONAL TRAILING STOP -- Chandelier Exit
