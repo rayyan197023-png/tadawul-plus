@@ -1611,33 +1611,6 @@ for (let s = 0; s < sims; s++) {
 }
 
 
-/**
- * Calculate ATR (Average True Range)
- */
-function calculateATR(bars: any[], period: number = 14): number {
-  if (!bars || bars.length < period + 1) return 0;
-  const trs: any[] = [];
-  
-  for (let i = 1; i < bars.length; i++) {
-    // ✨ نقبل كل صيغ الحقول (hi/h، lo/l) -- يمنع سقوط TR لصفر صامتاً
-    const high = bars[i].hi != null ? bars[i].hi : (bars[i].h != null ? bars[i].h : bars[i].c);
-    const low = bars[i].lo != null ? bars[i].lo : (bars[i].l != null ? bars[i].l : bars[i].c);
-    const prevClose = bars[i - 1].c;
-    
-    const tr = Math.max(
-      high - low,
-      Math.abs(high - prevClose),
-      Math.abs(low - prevClose)
-    );
-    trs.push(tr);
-  }
-
-  // Take last 'period' values
-  const recent = trs.slice(-period);
-  const sum = recent.reduce((a, b) => a + b, 0);
-  return sum / recent.length;
-}
-
 /* ═══════════════════════════════════════════════════════════
    🔄 INNOVATION #5 - RECOVERY PATH™
    Drawdown Recovery Optimization
