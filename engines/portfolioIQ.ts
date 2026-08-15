@@ -282,24 +282,6 @@ export interface CrystalBallAnalysis {
   disclaimer?: string;
 }
 
-export interface SmartStop {
-  sym: string;
-  currentPrice: number;
-  suggestedStop: number | null;
-  stopPercent?: number;
-  atr?: number;
-  method: string;
-  multiplier?: number;
-  riskPerShare?: number;
-  totalRisk?: number;
-  message?: string;
-}
-
-export interface SmartStopsAnalysis {
-  stops: SmartStop[];
-  totalRiskSAR: number;
-  methodology: string;
-}
 
 export interface RecoveryAction {
   type: string;
@@ -374,7 +356,6 @@ export interface IQAnalysis {
   psyRisk: PsyRiskAnalysis;
   dna: PortfolioDNA;
   crystalBall: CrystalBallAnalysis | null;
-  smartStops: SmartStopsAnalysis;
   recoveryPath: RecoveryPathAnalysis | null;
   recommendations: RecommendationsAnalysis;
   summary: IQSummary;
@@ -2190,7 +2171,6 @@ function emptyAnalysis(): IQAnalysis {
     psyRisk: { score: 0 } as any,
     dna: { personality: 'unknown' } as any,
     crystalBall: null,
-    smartStops: { stops: [], totalRiskSAR: 0, methodology: '' },
     recoveryPath: null,
     recommendations: { total: 0, critical: 0, high: 0, medium: 0, low: 0, items: [] },
     summary: { 
