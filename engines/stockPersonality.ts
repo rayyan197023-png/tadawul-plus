@@ -137,9 +137,10 @@ function calcToxicityScore(stk: any, bars: any[]): number {
     else if (totalReturn < -10) score += 5;
   }
   
-  const epsGrw = stk.epsGrw || 0;
-  if (epsGrw < -20) score += 20;
-  else if (epsGrw < -10) score += 10;
+  if (stk.epsGrw != null) {
+    if (stk.epsGrw < -20) score += 20;
+    else if (stk.epsGrw < -10) score += 10;
+  }
   
   return Math.min(100, score);
 }
