@@ -702,7 +702,7 @@ function runRiskLayer(positions: IQPosition[], base: any): RiskLayer {
 
   const dimensions = {
     // Market risk (Beta-based)
-    marketRisk: scoreMarketRisk(base.performance ? base.performance.beta : 1),
+    marketRisk: scoreMarketRisk((base.performance && base.performance.beta != null) ? base.performance.beta : 1),
     
     // Volatility risk
     volatilityRisk: scoreVolatilityRisk(base.performance ? base.performance.volatility : 0.2),
