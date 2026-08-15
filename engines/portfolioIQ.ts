@@ -1936,7 +1936,7 @@ function calculateIQScore(layers: any): number {
   score += (layers.diagnostic.healthScore || 50) * weights.diagnostic;
   score += (layers.risk.score || 50) * weights.risk;
   score += (layers.behavioral.behavioralScore || 50) * weights.behavioral;
-  score += (layers.behavioral.behavioralScore || 50) * weights.behavioral;
+
   // ✨ درجة العوامل من المحسوب فعليا فقط (القيمة والجودة null لغياب البيانات الأساسية)
   var _fs = layers.factor && layers.factor.factors ? layers.factor.factors : null;
   var _fVals = _fs ? [_fs.size, _fs.momentum, _fs.volatility]
@@ -1946,7 +1946,6 @@ function calculateIQScore(layers: any): number {
     ? _fVals.reduce(function(a, b){ return a + b; }, 0) / _fVals.length
     : 50;
   score += _fAvg * weights.factor;
-  score += (layers.sector.diversificationScore || 50) * weights.sector;
   score += (layers.sector.diversificationScore || 50) * weights.sector;
 
   return Math.round(Math.max(0, Math.min(100, score)));
