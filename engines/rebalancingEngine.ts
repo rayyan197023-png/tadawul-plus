@@ -159,7 +159,7 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
         message: 'أضف أسهماً من قطاعات غير مرتبطة',
       },
     });
-  } else if (diversification.avgCorrelation < IDEAL_CORRELATION) {
+  } else if (positionsWithBars.length >= 3 && diversification.avgCorrelation > 0 && diversification.avgCorrelation < IDEAL_CORRELATION) {
     issues.push({
       id: 'correlation-good',
       severity: 'good',
