@@ -120,7 +120,7 @@ function calcToxicityScore(stk: any, bars: any[]): number {
     if (stk.roe < 0) score += 35;
     else if (stk.roe < 3) score += 25;
     else if (stk.roe < 5) score += 15;
-  }
+  } 
 
   if (stk.debt != null) {
     if (stk.debt > 0.8) score += 30;
