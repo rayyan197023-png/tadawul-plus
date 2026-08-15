@@ -109,7 +109,11 @@ const recentVol = bars.length >= 20 ? bars.slice(-20).reduce((s: number, b: any)
  * BSL: Buy-Side Liquidity (above resistance)
  */
 export function calcLiqSweep(bars: any[], atr: number): any {
+  if (!bars || bars.length < 15 || !atr || atr <= 0) {
+    return { recoveredSSL:false, recoveredBSL:false, sslCount:0, bslCount:0, sslQuality:0, score:3, label:'بيانات غير كافية' };
+  }
   const cur    = bars[bars.length - 1].c;
+
   const avgVol = bars.reduce((s: number, b: any) => s + b.vol, 0) / bars.length;
   const sweeps: any[] = [];
   const lb     = Math.min(20, Math.max(10, Math.round(bars.length * 0.20)));
