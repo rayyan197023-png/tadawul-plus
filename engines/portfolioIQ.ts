@@ -117,7 +117,7 @@ export interface BehavioralLayer {
 }
 
 export interface FactorScore {
-  score: number;
+  score: number | null;
   classification: string;
 }
 
