@@ -1355,6 +1355,7 @@ function calculatePsyRiskScore(positions: IQPosition[], base: any, options: IQOp
     sellPanicProbability: estimateSellPanicProbability(score, maxDD),
   };
 }
+export const _PROBE3 = 1;
 
 /* ═══════════════════════════════════════════════════════════
    🧬 INNOVATION #2 - PORTFOLIO DNA™
@@ -1460,7 +1461,7 @@ if (mktCap > 50000000000) { // 50B+ = Large cap
     weaknesses: personality.weaknesses,
   };
 }
-export const _PROBE2 = 1;
+
 
 /* ═══════════════════════════════════════════════════════════
    🔮 INNOVATION #3 - CRYSTAL BALL™
