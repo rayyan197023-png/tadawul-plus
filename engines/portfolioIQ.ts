@@ -529,7 +529,6 @@ export function analyzePortfolioIQ(
   const psyRisk = calculatePsyRiskScore(positions, baseAnalysis, options);
   const dna = analyzePortfolioDNA(positions, baseAnalysis);
   const crystalBall = runCrystalBall(positions, baseAnalysis);
-  const smartStops = calculateSmartStops(positions);
   const recoveryPath = generateRecoveryPath(positions, baseAnalysis);
 
   return {
@@ -555,7 +554,6 @@ export function analyzePortfolioIQ(
     psyRisk,
     dna,
     crystalBall,
-    smartStops,
     recoveryPath,
 
     // Recommendations
