@@ -335,7 +335,7 @@ export function calcRadarScore(stk: any, bars: any[]): any {
   const obvScore = Math.max(3, Math.min(18, obvBase + obvBonus));
 
   // ── Layer 8: Wyckoff
-  const wyckoff = calcWyckoff(bars, atr);
+  const wyckoff = calcWyckoff(bars);
   const wyckoffScore = wyckoff.phase.includes('Spring')      ? 17
                      : wyckoff.phase.includes('Markup')       ? 15
                      : wyckoff.phase.includes('Consolidation')? 11
