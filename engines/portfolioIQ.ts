@@ -1992,43 +1992,6 @@ function calculateDiagnosticScore(issues: any[], strengths: any[]): number {
   return Math.max(0, Math.min(100, score));
 }
 
-function getHealthGrade(score: number): any {
-  if (score >= 90) return { grade: 'AAA', label: 'استثنائي', color: '#1ee68a' };
-  if (score >= 85) return { grade: 'AA', label: 'ممتاز', color: '#1ee68a' };
-  if (score >= 80) return { grade: 'A', label: 'جيد جداً', color: '#34d399' };
-  if (score >= 75) return { grade: 'BBB', label: 'جيد', color: '#22d3ee' };
-  if (score >= 70) return { grade: 'BB', label: 'مقبول', color: '#a78bfa' };
-  if (score >= 60) return { grade: 'B', label: 'متوسط', color: '#fbbf24' };
-  if (score >= 50) return { grade: 'CCC', label: 'ضعيف', color: '#f97316' };
-  return { grade: 'D', label: 'حرج', color: '#ff5f6a' };
-}
-
-function severityScore(severity: string): number {
-  const scores = { critical: 4, high: 3, medium: 2, low: 1 };
-  return (scores as any)[severity] || 0;
-}
-
-function priorityScore(priority: any): number {
-  const scores = {
-    [PRIORITY.CRITICAL]: 4,
-    [PRIORITY.HIGH]: 3,
-    [PRIORITY.MEDIUM]: 2,
-    [PRIORITY.LOW]: 1,
-  };
-  return (scores as any)[priority] || 0;
-}
-
-function calculateDiagnosticScore(issues: any[], strengths: any[]): number {
-  let score = 70;
-  issues.forEach(i => {
-    if (i.severity === 'critical') score -= 15;
-    else if (i.severity === 'high') score -= 10;
-    else if (i.severity === 'medium') score -= 5;
-    else score -= 2;
-  });
-  strengths.forEach(s => score += 5);
-  return Math.max(0, Math.min(100, score));
-}
 
 function scoreMarketRisk(beta: number): number {
   if (beta < 0.8) return 85;
