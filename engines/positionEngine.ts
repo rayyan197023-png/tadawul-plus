@@ -84,13 +84,6 @@ export interface TakeProfitResult {
   weightedRR?: string;
 }
 
-export interface TrailingStopResult {
-  price: number;
-  pct: number;
-  distance: number;
-  locked: string;
-  isLocked: boolean;
-}
 
 export interface PositionHealthComponents {
   signal: number;
@@ -134,28 +127,6 @@ export interface SmartActionResult {
   };
 }
 
-export interface BalanceIssue {
-  severity: 'low' | 'medium' | 'high';
-  type: string;
-  sym?: string;
-  message: string;
-}
-
-export interface BalanceRecommendation {
-  sym?: string;
-  action: string;
-  message: string;
-}
-
-export interface PortfolioBalanceResult {
-  score: number;
-  grade: string;
-  label: string;
-  issues: BalanceIssue[];
-  recommendations: BalanceRecommendation[];
-  sectorBreakdown: { [sector: string]: number };
-  positionCount: number;
-}
 
 // ═══════════════════════════════════════════════════════
 // 🛑 SMART STOP LOSS
