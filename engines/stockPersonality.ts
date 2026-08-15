@@ -416,6 +416,7 @@ export function detectStockPersonality(stk: any, bars: any[]): PersonalityResult
   
   // ═══ ④ DIVIDEND Check (Aristocrat) ═══
   const isDividend = 
+    hasFundamentals &&
     dividendScore >= 60 &&
     toxicityScore < 30 &&
     avgDailyMove < 2;
@@ -433,6 +434,7 @@ export function detectStockPersonality(stk: any, bars: any[]): PersonalityResult
   
   // ═══ ⑤ TURNAROUND Check (Fallen Angel) ═══
   const isTurnaround = 
+    hasFundamentals &&
     turnaroundScore >= 55 &&
     toxicityScore < 45 &&
     (stk.epsGrw || 0) > 15;
@@ -450,6 +452,7 @@ export function detectStockPersonality(stk: any, bars: any[]): PersonalityResult
   
   // ═══ ⑥ LEADER Check ═══
   const isLeader = 
+    hasFundamentals &&
     avgDailyMove < 1.8 &&
     qualityScore >= 60 &&
     toxicityScore < 30 &&
