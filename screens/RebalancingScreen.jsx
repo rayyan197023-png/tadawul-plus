@@ -894,9 +894,6 @@ export default function RebalancingScreen() {
         </>
       )}
 
-      {analysis.issues.length > 0 && analysis.impactSummary && (
-        <ImpactSummary impact={analysis.impactSummary}/>
-      )}
 
       {analysis.issues.length > 0 && (
         <button
