@@ -120,36 +120,6 @@ function IssueCard({ issue, index }) {
         </div>
       </div>
 
-      {/* التأثير */}
-      {issue.impact && (
-        <div style={{marginBottom: 10}}>
-          <div style={{
-            fontSize: 10,
-            color: C.gold,
-            fontWeight: 800,
-            marginBottom: 6,
-            letterSpacing: "1px",
-          }}>
-            📈 التأثير المتوقع
-          </div>
-          <div style={{display: "flex", gap: 8, flexWrap: "wrap"}}>
-            {Object.entries(issue.impact).map(([key, value]) => (
-              <div key={key} style={{
-                padding: "4px 10px",
-                background: C.mint + "18",
-                border: "1px solid " + C.mint + "44",
-                borderRadius: 8,
-                fontSize: 10,
-                color: C.mint,
-                fontWeight: 800,
-                fontFamily: "IBM Plex Mono,monospace",
-              }}>
-                {key}: {value}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* الحل المقترح ✨ مُصلح ✨ */}
       {issue.solution && (
