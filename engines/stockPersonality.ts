@@ -398,6 +398,7 @@ export function detectStockPersonality(stk: any, bars: any[]): PersonalityResult
   
   // ═══ ③ VALUE Check (Fama-French) ═══
   const isValue = 
+    hasFundamentals &&
     valueScore >= 55 &&
     toxicityScore < 35 &&
     qualityScore >= 40;  // ليس "value trap"
