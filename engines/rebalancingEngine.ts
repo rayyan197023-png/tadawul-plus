@@ -120,7 +120,7 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
       },
       solution: {
         action: 'diversify',
-        message: `أضف ${5 - diversification.stockCount} أسهم على الأقل`,
+        message: `وزّع المحفظة على أسهم أكثر لتقليل التركيز`,
       },
     });
   }
