@@ -462,8 +462,8 @@ export function calcRadarScore(stk: any, bars: any[]): any {
       method: `ATR × ${stopMultiplier} (${wyckoff.phase})`,
     },
     targets,
-    // متوسط R:R مرجّح بنسب البيع -- ليس "عائداً متوقعاً" احتمالياً
-    weightedRR: +((targets[0].rr * 0.33 + targets[1].rr * 0.33 + targets[2].rr * 0.34)).toFixed(1),
+
+
     // متوسط R:R مرجّح بنسب البيع -- ليس "عائداً متوقعاً" احتمالياً
     weightedRR: +((targets[0].rr * 0.33 + targets[1].rr * 0.33 + targets[2].rr * 0.34)).toFixed(1),
     expectedRR: +((targets[0].rr * 0.33 + targets[1].rr * 0.33 + targets[2].rr * 0.34)).toFixed(1),
