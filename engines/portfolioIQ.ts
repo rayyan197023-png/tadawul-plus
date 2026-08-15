@@ -953,16 +953,16 @@ function runMacroLayer(positions: IQPosition[], base: any): MacroLayer {
     const weight = p.value || 0;
 
     // Sector-based macro exposure (Saudi market)
-    if (sector === 'الطاقة' || sector === 'البتروكيماويات') {
+    if (sector === 'الطاقة' || sector === 'المواد الأساسية') {
       exposures.oilPrice += weight * 0.9;
-    } else if (sector === 'البنوك' || sector === 'التأمين') {
+    } else if (sector === 'البنوك' || sector === 'التأمين' || sector === 'الخدمات المالية') {
       exposures.interestRate += weight * 0.7;
-    } else if (sector === 'العقارات' || sector === 'البنية التحتية') {
+    } else if (sector === 'إدارة وتطوير العقارات' || sector === 'السلع الرأسمالية') {
       exposures.governmentSpending += weight * 0.8;
       exposures.interestRate += weight * 0.4;
-    } else if (sector === 'السلع الاستهلاكية' || sector === 'تجارة التجزئة') {
+    } else if (sector === 'التجزئة' || sector === 'تجزئة الأغذية' || sector === 'إنتاج الأغذية' || sector === 'الخدمات الإستهلاكية') {
       exposures.inflation += weight * 0.5;
-    } else if (sector === 'المرافق' || sector === 'الاتصالات') {
+    } else if (sector === 'المرافق العامة' || sector === 'الإتصالات') {
       exposures.governmentSpending += weight * 0.4;
     }
   });
