@@ -115,15 +115,18 @@ function calcQualityScore(stk: any): number {
 
 function calcToxicityScore(stk: any, bars: any[]): number {
   let score = 0;
-  const roe = stk.roe || 0;
-  if (roe < 0) score += 35;
-  else if (roe < 3) score += 25;
-  else if (roe < 5) score += 15;
-  
-  const debt = stk.debt || 0;
-  if (debt > 0.8) score += 30;
-  else if (debt > 0.65) score += 20;
-  else if (debt > 0.5) score += 10;
+  // ✨ لا نعاقب على بيانات غائبة -- نتخطّى بدل افتراض الأسوأ
+  if (stk.roe != null) {
+    if (stk.roe < 0) score += 35;
+    else if (stk.roe < 3) score += 25;
+    else if (stk.roe < 5) score += 15;
+  }
+
+  if (stk.debt != null) {
+    if (stk.debt > 0.8) score += 30;
+    else if (stk.debt > 0.65) score += 20;
+    else if (stk.debt > 0.5) score += 10;
+  }
   
   if (bars && bars.length >= 60) {
     const firstPrice = bars[0].c;
