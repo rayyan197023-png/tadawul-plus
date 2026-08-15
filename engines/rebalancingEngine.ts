@@ -88,11 +88,7 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
       ideal: `الوزن المثالي: ${(IDEAL_POSITION * 100)}-${(MAX_SINGLE_POSITION * 100)}%`,
       currentValue: diversification.largestPosition.toFixed(1) + '%',
       idealValue: (IDEAL_POSITION * 100) + '%',
-      impact: {
-        sharpe: '+33%',
-        risk: '-25%',
-        diversification: '+40%',
-      },
+
       solution: {
         action: 'sell',
         symbol: largestSym.sym,
@@ -114,10 +110,6 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
       ideal: 'المثالي: HHI < 1500 (متنوعة)',
       currentValue: diversification.hhi,
       idealValue: '<1500',
-      impact: {
-        diversification: '+50%',
-        risk: '-30%',
-      },
       solution: {
         action: 'diversify',
         message: `وزّع المحفظة على أسهم أكثر لتقليل التركيز`,
@@ -143,10 +135,6 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
       ideal: `المثالي: ${IDEAL_SECTORS} قطاعات متنوعة`,
       currentValue: numSectors,
       idealValue: IDEAL_SECTORS,
-      impact: {
-        diversification: `+${(IDEAL_SECTORS - numSectors) * 20}%`,
-        risk: '-25%',
-      },
       solution: {
         action: 'add_sector',
         suggestions: getSectorSuggestions(Object.keys(sectorMap)),
@@ -166,10 +154,6 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
       currentValue: diversification.avgCorrelation.toFixed(2),
       idealValue: '<' + IDEAL_CORRELATION,
       highCorrelations: diversification.highCorrelations || [],
-      impact: {
-        diversification: '-30%',
-        risk: '+20%',
-      },
       solution: {
         action: 'diversify_correlation',
         message: 'أضف أسهماً من قطاعات غير مرتبطة',
@@ -201,10 +185,6 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
       ideal: `المثالي: ${IDEAL_SHARPE}+`,
       currentValue: performance.sharpe.toFixed(2),
       idealValue: '+' + IDEAL_SHARPE,
-      impact: {
-        efficiency: `+${Math.round((IDEAL_SHARPE - performance.sharpe) * 50)}%`,
-        returns: '+15%',
-      },
       solution: {
         action: 'optimize',
         message: 'استبدل الأسهم ضعيفة الأداء بأسهم ذات Sharpe أعلى',
@@ -236,9 +216,6 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
       ideal: 'المثالي: 1.0+',
       currentValue: performance.sortino.toFixed(2),
       idealValue: '+1.0',
-      impact: {
-        downside_risk: '-40%',
-      },
       solution: {
         action: 'reduce_downside',
         message: 'قلّل التعرض للأسهم عالية التقلب السلبي',
@@ -257,10 +234,6 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
       ideal: 'المثالي: > -15%',
       currentValue: (risk.maxDrawdown * 100).toFixed(1) + '%',
       idealValue: '>-15%',
-      impact: {
-        psychological: '+50%',
-        capital_preservation: '+35%',
-      },
       solution: {
         action: 'reduce_risk',
         message: 'استخدم Stop Loss + قلّل التركيز',
@@ -279,9 +252,6 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
       ideal: 'المثالي: < 2%',
       currentValue: (risk.var95Daily * 100).toFixed(2) + '%',
       idealValue: '<2%',
-      impact: {
-        daily_risk: '-30%',
-      },
       solution: {
         action: 'reduce_volatility',
         message: 'قلّل التعرض للأسهم عالية التذبذب',
@@ -300,9 +270,6 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
       ideal: 'المثالي: 1.0+',
       currentValue: risk.calmar.toFixed(2),
       idealValue: '+1.0',
-      impact: {
-        risk_reward: '+40%',
-      },
       solution: {
         action: 'rebalance',
         message: 'استبدل الأسهم ذات التراجعات الكبيرة',
@@ -322,9 +289,6 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
         ideal: 'المثالي: 0.8-1.2',
         currentValue: performance.beta.toFixed(2),
         idealValue: '0.8-1.2',
-        impact: {
-          stability: '+25%',
-        },
         solution: {
           action: 'add_defensive',
           message: 'أضف أسهماً دفاعية من قطاعات مستقرّة (الاتصالات، الرعاية الصحية، المرافق العامة)',
@@ -348,10 +312,6 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
         .filter((s: any) => s.score < 50)
         .slice(0, 3)
         .map((s: any) => s.sym),
-      impact: {
-        quality: '+30%',
-        returns: '+20%',
-      },
       solution: {
         action: 'replace_weak',
         message: 'استبدل الأسهم ذات Health Score منخفض',
@@ -370,10 +330,6 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
       ideal: 'المثالي: 5-10 أسهم',
       currentValue: positions.length,
       idealValue: '5-10',
-      impact: {
-        diversification: '+50%',
-        risk: '-35%',
-      },
       solution: {
         action: 'add',
         message: `أضف ${5 - positions.length} أسهم على الأقل`,
@@ -389,9 +345,6 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
       ideal: 'المثالي: 10-20 سهم',
       currentValue: positions.length,
       idealValue: '10-20',
-      impact: {
-        focus: '+30%',
-      },
       solution: {
         action: 'consolidate',
         message: 'ركّز على أفضل 15 سهم',
@@ -416,9 +369,6 @@ export function analyzePortfolio(positions: any[], marketData?: any): any {
       ideal: 'تقليل التعرض للسيناريوهات الكارثية',
       currentValue: catastrophicScenarios.length,
       idealValue: '0',
-      impact: {
-        catastrophic_loss: '-50%',
-      },
       solution: {
         action: 'hedge',
         message: 'أضف أسهماً دفاعية + قلّل البيتا',
