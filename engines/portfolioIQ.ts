@@ -1404,6 +1404,7 @@ function analyzePortfolioDNA(positions: IQPosition[], base: any): PortfolioDNA {
       gv > 65 ? 'أسهمك في زخم صاعد حالياً' :
       gv < 35 ? 'أسهمك في زخم هابط أو تصحيح' :
       'زخم متوازن';
+  }
 
   // 2. Momentum vs Mean-Reversion (based on portfolio beta)
   if (base.performance && base.performance.beta) {
