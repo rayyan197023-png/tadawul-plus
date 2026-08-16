@@ -258,11 +258,7 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
         var stockData = stockScores.find(function(s: any) { return s.sym === sym; });
         if (stockData) {
           currentScore = stockData.score;
-          // 🆕 كشف الشخصيّة
-          try {
-            var personalityResult = detectStockPersonality(stockData.stk, stockData.stk.bars);
-            currentPersonality = personalityResult.personality;
-          } catch (e) {}
+          currentPersonality = stockData.personality || 'NEUTRAL';
         }
         
         // 🆕 تكييف config حسب الشخصيّة
