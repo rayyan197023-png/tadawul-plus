@@ -652,7 +652,7 @@ function calcInsiderTransactions(stk: any, bars: any[]): any {
   else if (stk.epsGrw < 0) sellSignals += 15;
   const netScore = Math.min(95, Math.max(5, 50 + buySignals - sellSignals));
   const isBuyDom = netScore >= 50;
-  const netBuy = (netScore - 50) * stk.mktCap * 1e6 * 0.0001;
+  const netBuy = (netScore - 50) * (stk.mktCap || 0) * 1e6 * 0.0001;
   const signal = netScore >= 75 ? "تراكم داخلي قوي" : netScore >= 60 ? "شراء داخلي معتدل" : netScore <= 25 ? "تصريف داخلي" : netScore <= 40 ? "بيع داخلي معتدل" : "محايد";
   return {
     transactions: [] as any[],
