@@ -1199,12 +1199,13 @@ function analyzeStockRadar(stk: any, pastBars?: any[]): any {
   const smDetected = (rvNorm > 2 && (stk.pct || 0) > 0) || (rvNorm > 1.5 && cmf > 0.05);
 
   const secPE = RADAR_SECTOR_PE[stk.sec] || 15.5;
-  const peR = stk.pe / secPE;
-  const ey = stk.pb > 0 ? stk.roe / stk.pb : stk.roe;
+  // ✨ لا نمنح نقاط تقييم بلا بيانات أساسية -- null يعني "غير متاح" لا "رخيص"
+  const peR = (stk.pe != null && stk.pe > 0) ? stk.pe / secPE : null;
+  const ey = (stk.roe != null) ? (stk.pb > 0 ? stk.roe / stk.pb : stk.roe) : null;
   const vwapD2 = vwap > 0 ? (p - vwap) / vwap * 100 : 0;
   const vaScore = Math.min(5,
-    (peR < 0.75 ? 2 : peR < 0.90 ? 1 : 0) +
-    (ey > 0.10 ? 2 : ey > 0.08 ? 1 : 0) +
+    (peR != null ? (peR < 0.75 ? 2 : peR < 0.90 ? 1 : 0) : 0) +
+    (ey != null ? (ey > 0.10 ? 2 : ey > 0.08 ? 1 : 0) : 0) +
     (vwapD2 < -2 ? 1 : 0));
 
   const mcScore = Math.min(5, Math.round(mc.score * 5 / 20));
