@@ -455,6 +455,12 @@ function calcFactorModel(stk: any, bars: any[], allStocks: any[]): any {
  */
 function calcEarningsModel(stk: any): any {
   if (!stk) return { eps: 0, ddmValue: 0, peValue: 0, targetPrice: 0, upside: 0, signal: "بيانات غير كافية" };
+    // ✨ بلا أساسيات لا معنى لنموذج أرباح -- محايد صريح
+  if (stk.pe == null && stk.eps == null) {
+    return { eps: 0, ddmValue: stk.p, peValue: stk.p, targetPrice: stk.p, upside: 0,
+             payout: 0, peg: null, pegSignal: "غير محدد", ke: 0, g2: 0,
+             signal: "لا بيانات أساسية -- النموذج غير متاح" };
+  }
   const eps = stk.eps || stk.p / (stk.pe || 15);
   const g1 = Math.min((stk.epsGrw || 3) / 100, 0.15);
   const g2 = Math.min(g1 * 0.4, MACRO.gdpGrowth / 100 || 0.03);
