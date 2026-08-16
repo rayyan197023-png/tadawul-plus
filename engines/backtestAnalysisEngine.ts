@@ -1511,7 +1511,8 @@ function calc9Layers(stk: any, bars: any[], allStocks: any[]): any {
   const macroFactor = macroScore100 < 25 ? 0.85 : macroScore100 < 40 ? 0.92 : macroScore100 > 75 ? 1.08 : macroScore100 > 60 ? 1.04 : 1.0;
   const tasiFactor = tc_tasi.tasiRegime === "CRASH" ? 0.88 : tc_tasi.tasiRegime === "DIVERGE" ? 0.94 : tc_tasi.tasiRegime === "RALLY" ? 1.06 : 1.0;
   const gateFactor = gatesPassed === 3 ? 1.10 : gatesPassed === 2 ? 1.00 : gatesPassed === 1 ? 0.90 : 0.80;
-  const momentumBayesFactor = _clamp(1.0, 0.85, 1.10);
+  // ✨ رُبط بـ bayesMult المحسوب في L7 بدل ثابت 1.0 المعطّل
+  const momentumBayesFactor = _clamp(bayesMult, 0.85, 1.10);
   const adjustmentFactor = _clamp(
     conflictFactor * 0.25 + macroFactor * 0.20 + tasiFactor * 0.20 + gateFactor * 0.20 + momentumBayesFactor * 0.15,
     0.70, 1.15
