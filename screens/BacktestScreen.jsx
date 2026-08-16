@@ -19,7 +19,6 @@ import Tooltip from '../components/Tooltip';
 import { useHaptic } from '../hooks/useHaptic';
 import StrategyLabTab from '../utils/StrategyLabTab';
 import { evaluateAndApplyWinner, loadCurrentWinner } from '../engines/winnerManager';
-import { backtestStockHealth as recordFeedbackEngine } from '../engines/backtestAnalysisEngine';
 var C = {
   ink: "#06080f", deep: "#090c16", void: "#0c1020",
   layer1: "#141d2b", layer2: "#1e2d42",
