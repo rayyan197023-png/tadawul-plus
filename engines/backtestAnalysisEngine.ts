@@ -17,7 +17,6 @@
  */
 
 import { calcRSI, calcATR, calcVWAP, calcCMF, calcOBV, calcMACD, calcMarketStructure } from './technicalEngine';
-import { calcOrderBlocks, calcLiqSweep } from './radarEngine';
 
 // ════════════════════════════════════════════════════════════
 //  ثوابت أساسية -- نسخة من analysisEngine
