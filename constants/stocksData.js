@@ -330,19 +330,29 @@ export const STOCKS_MAP = Object.fromEntries(STOCKS.map(s => [s.sym, s]));
  * @returns {Array} - مصفوفة من ٥٠ سهم
  */
 export function buildDiverseUniverse(seed) {
-  // فرز الأسهم حسب التقييم
   const leaders = STOCKS.filter(s => s.rating >= 75);
   const quality = STOCKS.filter(s => s.rating >= 70 && s.rating < 75);
   const medium = STOCKS.filter(s => s.rating >= 65 && s.rating < 70);
   const growth = STOCKS.filter(s => s.rating >= 60 && s.rating < 65);
   const oilLinked = STOCKS.filter(s => (s.oilCorr || 0) >= 0.55);
-  
-  // دالّة عشوائيّة بسيطة
-  function pickRandom(arr, count) {
-    const shuffled = [...arr].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, count);
+
+  // ✨ مولّد عشوائي ببذرة ثابتة (LCG -- Knuth) -- نفس البذرة تُنتج نفس العالم دائماً
+  let _s = (typeof seed === 'number' && seed > 0) ? Math.floor(seed) : 20260101;
+  function rnd() {
+    _s = (_s * 1664525 + 1013904223) % 4294967296;
+    return _s / 4294967296;
   }
-  
+
+  // ✨ Fisher-Yates -- خلط غير منحاز (sort بـrandom يعطي توزيعاً مشوّهاً)
+  function pickRandom(arr, count) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(rnd() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a.slice(0, count);
+  }
+
   const selected = [
     ...pickRandom(leaders, 10),
     ...pickRandom(quality, 10),
@@ -350,48 +360,21 @@ export function buildDiverseUniverse(seed) {
     ...pickRandom(growth, 10),
     ...pickRandom(oilLinked, 10),
   ];
-  
-  // إزالة المكرّرات (لأنّ oilLinked قد يحوي أسهماً من الفئات السابقة)
+
   const seen = new Set();
   const unique = selected.filter(s => {
     if (seen.has(s.sym)) return false;
     seen.add(s.sym);
     return true;
   });
-  
-  // إن أقلّ من ٥٠، نُكمل من بقيّة STOCKS
+
   if (unique.length < 50) {
     const remaining = STOCKS.filter(s => !seen.has(s.sym));
     const fill = pickRandom(remaining, 50 - unique.length);
     return [...unique, ...fill];
   }
-  
-  // إن أكثر من ٥٠، نأخذ أوّل ٥٠
+
   return unique.slice(0, 50);
-}
-
-export const STOCK_CATEGORIES = {
-  diverse: {
-    id: 'diverse',
-    name: 'السوق المتنوّع',
-    icon: '🌍',
-    description: '٥٠ سهم متنوّعة (يتغيّر كل تشغيل)',
-    color: '#10b981',
-    filter: null,
-  },
-};
-
-// دالة جلب أسهم فئة معينة
-export function getStocksByCategory(categoryId) {
-  const category = STOCK_CATEGORIES[categoryId];
-  if (!category) return [];
-  
-  // الفئة المتنوّعة تستعمل buildDiverseUniverse
-  if (categoryId === 'diverse') {
-    return buildDiverseUniverse();
-  }
-  
-  return STOCKS.filter(category.filter);
 }
 
 // ═══════════════════════════════════════════════════════════
