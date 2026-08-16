@@ -1773,7 +1773,8 @@ export function stockHealth(stk: any, bars: any[], allStocks?: any[], macroOverr
   const sectorRot = sectorAvgCh - mktAvgCh;
   const sectorRotScore = _clamp(Math.round(50 + sectorRot * 15), 0, 100);
   
-  const LC = Math.round(optScore * 0.30 + ins.score * 0.30 + alt.composite * 0.15 + 50 * 0.15 + sectorRotScore * 0.10);
+  // ✨ حُذف ثابت 50×0.15 (مكان محجوز لمكوّن غير منفّذ) -- الوزن أُعيد توزيعه على المكوّنات الفعلية
+  const LC = Math.round(optScore * 0.35 + ins.score * 0.35 + alt.composite * 0.18 + sectorRotScore * 0.12);
   
   // STEP 4: المضاعفات الخارجية
   const risk = calcRiskAttribution(stk, bars, stocks);
