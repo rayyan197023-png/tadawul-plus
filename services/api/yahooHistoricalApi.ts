@@ -278,7 +278,7 @@ export async function generateDataFromYahoo(
         // ✨ لا نختلق أساسيات -- الغائب يبقى null فتتخطّاه المحرّكات بدل تشويهها
         const dPE = stk.pe != null ? stk.pe : null;
         const dROE = stk.roe != null ? stk.roe : null;
-        const dCap = stk.cap != null ? stk.cap : null;
+        const dCap = stk.cap || (bar.c * 1e9);
         const dDY = (stk.dy != null ? stk.dy : (stk.div != null ? stk.div : null));
         const dPB = stk.pb != null ? stk.pb : null;
         const dDE = stk.de != null ? stk.de : null;
