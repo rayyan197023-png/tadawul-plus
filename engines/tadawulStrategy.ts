@@ -387,11 +387,15 @@ function shouldSell(position: any, currentPrice: number, currentScore: number, c
     return 'Weak Score (' + currentScore + ')';
   }
 
-  // ④ Max Hold Period
-  if (position.entryDay !== undefined) {
-    var holdDays = dayIndex - position.entryDay;
-    if (holdDays > config.maxHoldDays) {
-      return 'Max Hold (' + holdDays + ' days)';
+  // ④ Max Hold Period -- نحسب من entryDate (المحفوظ فعلياً في backtestEngine)
+  if (position.entryDate && currentDate) {
+    var _d1 = new Date(position.entryDate).getTime();
+    var _d2 = new Date(currentDate).getTime();
+    if (!isNaN(_d1) && !isNaN(_d2)) {
+      var holdDays = Math.floor((_d2 - _d1) / 86400000);
+      if (holdDays > config.maxHoldDays) {
+        return 'Max Hold (' + holdDays + ' days)';
+      }
     }
   }
 
