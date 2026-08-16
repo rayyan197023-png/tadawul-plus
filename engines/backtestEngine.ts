@@ -840,64 +840,6 @@ function generateInterpretation(mean: number, median: number, probProfit: number
 ═══════════════════════════════════════════════════════════ */
 
 /**
- * توليد بيانات Backtest من المحفظة الحالية
- * Mode 1: Buy & Hold للأسهم الموجودة في المحفظة
- * 
- * @param {Array} positions - مصفوفة المراكز الحالية
- * @param {Function} genBarsFn - دالة genBars من analysisEngine
- * @param {number} days - عدد الأيام
- * @returns {Array} historical data
- */
-export function generateDataFromPortfolio(positions: any[], genBarsFn: any, days?: number): any[] {
-  if (!positions || positions.length === 0) {
-    return [];
-  }
-  days = days || 252;
-
-  // توليد bars لكل سهم في المحفظة
-  var stocksBars: any = {};
-  positions.forEach(function(p: any) {
-    var seed = p.sym || (p.stk ? p.stk.seed : p.sym);
-    stocksBars[p.sym] = genBarsFn(seed, days);
-  });
-
-  var data: any[] = [];
-  var today = new Date();
-
-  for (var i = 0; i < days; i++) {
-    var date = new Date(today);
-    date.setDate(date.getDate() - (days - i - 1));
-    
-    var prices: any = {};
-    var stocksData: any[] = [];
-    
-    positions.forEach(function(p: any) {
-      var bars = stocksBars[p.sym];
-      if (bars && bars[i]) {
-        prices[p.sym] = bars[i].c;
-        stocksData.push({
-          sym: p.sym,
-          name: p.stk ? p.stk.name : p.sym,
-          sector: p.stk ? p.stk.sector : '',
-          bars: bars.slice(0, i + 1),
-          currentPrice: bars[i].c,
-          // نضيف الوزن للمحفظة (للاستراتيجية)
-          targetWeight: p.weight || (1 / positions.length),
-        });
-      }
-    });
-
-    data.push({
-      date: date.toISOString().split('T')[0],
-      prices: prices,
-      stocksData: stocksData,
-    });
-  }
-
-  return data;
-}
-
-/**
  * توليد بيانات Backtest من قائمة أسهم (التحليل)
  * Mode 2: استراتيجية Tadawul على مجموعة مختارة
  * 
