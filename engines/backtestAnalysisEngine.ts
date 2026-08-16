@@ -1817,8 +1817,11 @@ export function stockHealth(stk: any, bars: any[], allStocks?: any[], macroOverr
   // STEP 8: تجميع النتيجة
   const merged: any = { ...tech };
   
-  // إشارة نهائية بناءً على score
-  const score = merged.score;
+  // ✨ الدرجة النهائية من المحرّكات الثلاثة (LA/LB/LC) لا من التقني وحده
+  //    conviction محسوب أصلاً بأوزان النظام -- نستخدمه بدل إهماله
+  const score = conviction;
+  merged.score = score;
+  merged.grade = score >= 85 ? "S" : score >= 75 ? "A" : score >= 65 ? "B" : score >= 55 ? "C" : score >= 45 ? "D" : "F";
   let sig, sigC;
   if (score >= 65 && tech.gates.passed >= 2) { sig = "شراء قوي"; sigC = "#10c97e"; }
   else if (score >= 55 && tech.gates.passed >= 1) { sig = "مراقبة"; sigC = "#f59e0b"; }
