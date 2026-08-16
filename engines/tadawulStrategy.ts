@@ -294,13 +294,8 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
       if (slotsAvailable > 0 && state.cash > config.minPositionValue) {
         var topStocks = stockScores
           .filter(function(s) {
-            // 🆕 كشف شخصيّة السهم
-            var personality: any = 'NEUTRAL';
-            try {
-              var personalityResult = detectStockPersonality(s.stk, s.stk.bars);
-              personality = personalityResult.personality;
-              s.personality = personality;  // حفظ للاستعمال لاحقاً
-            } catch (e) {}
+            // ✨ الشخصيّة محسوبة مسبقاً عند بناء stockScores
+            var personality: any = s.personality || 'NEUTRAL';
             
             // 🆕 رفض AVOID تماماً
             if (personality === 'AVOID') return false;
