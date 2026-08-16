@@ -431,11 +431,16 @@ function calcFactorModel(stk: any, bars: any[], allStocks: any[]): any {
     const pb = stk.p / stk.bookValue;
     pbPenalty = Math.round(Math.tanh((pb - 2.5) / 2) * (-8));
   }
-  const qualScore = Math.round(Math.min(100, Math.max(0, (stk.roe || 10) * 1.8 + (1 - (stk.debt || 0.3)) * 28 + Math.min(15, (stk.epsGrw || 3) * 1.5) + pbPenalty)));
-  const sizeScore = Math.round(Math.min(85, Math.max(35, 80 - 40 * Math.tanh(((stk.mktCap || 50) - 100) / 150))));
-  const divScore = Math.round(Math.min(90, Math.max(0, (stk.divY || 0) * 14)));
-  const growScore = Math.round(Math.min(100, Math.max(0, 50 + (stk.revGrw || 3) * 2.5)));
-  const composite = Math.round(valueScore * 0.20 + momScore * 0.25 + qualScore * 0.25 + sizeScore * 0.10 + divScore * 0.10 + growScore * 0.10);
+  // ✨ العوامل الأساسية تُحسب فقط عند توفّر بياناتها -- وإلا نُعيد التوزيع على المتاح
+  const hasFund = stk.roe != null || stk.pe != null || stk.divY != null;
+  const qualScore = hasFund ? Math.round(Math.min(100, Math.max(0, (stk.roe || 10) * 1.8 + (1 - (stk.debt || 0.3)) * 28 + Math.min(15, (stk.epsGrw || 3) * 1.5) + pbPenalty))) : 50;
+  const sizeScore = stk.mktCap != null ? Math.round(Math.min(85, Math.max(35, 80 - 40 * Math.tanh((stk.mktCap - 100) / 150)))) : 50;
+  const divScore = stk.divY != null ? Math.round(Math.min(90, Math.max(0, stk.divY * 14))) : 50;
+  const growScore = stk.revGrw != null ? Math.round(Math.min(100, Math.max(0, 50 + stk.revGrw * 2.5))) : 50;
+  // بلا أساسيات: الزخم السعري وحده يحرّك المركّب
+  const composite = hasFund
+    ? Math.round(valueScore * 0.20 + momScore * 0.25 + qualScore * 0.25 + sizeScore * 0.10 + divScore * 0.10 + growScore * 0.10)
+    : Math.round(momScore);
   const mktAvgCh = allStocks.length > 0
     ? allStocks.reduce((s: number, x: any) => s + (x.ch || 0), 0) / allStocks.length
     : 0;
