@@ -228,12 +228,16 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
                 try {
           // 🆕 نُمرّر weightsOverride للمحرّك (Strategy Lab)
           var health = healthFn(stk, stk.bars, allStocksForToday, _macroOverride, _weightsOverride);
+          // ✨ نكشف الشخصيّة مرة واحدة هنا بدل مرتين (بيع + شراء)
+          var _pers = 'NEUTRAL';
+          try { _pers = detectStockPersonality(stk, stk.bars).personality; } catch (e) {}
           stockScores.push({
             sym: stk.sym,
             stk: stk,
             score: health.score || 0,
             health: health,
             price: day.prices[stk.sym],
+            personality: _pers,
           });
         } catch (err) {
           // تجاهل الأخطاء
