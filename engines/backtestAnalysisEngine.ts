@@ -1800,7 +1800,17 @@ export function stockHealth(stk: any, bars: any[], allStocks?: any[], macroOverr
   const ensemble = ensembleVote(LA, LB, LC, regime, tech.gates ? tech.gates.passed : 0, layers);
   
   // STEP 7: Conviction
-  const baseConviction = LA * wA + LB * wB + LC * wC;
+  // ✨ إن كان المحرّك الأساسي محايداً (لا بيانات أساسية)، نُعيد توزيع وزنه على LA/LC
+  //    بدل أن يسحب الدرجة للأسفل بقيمة محايدة ثابتة
+  const _fundAvailable = stk.pe != null || stk.roe != null || stk.divY != null;
+  let _wA = wA, _wB = wB, _wC = wC;
+  if (!_fundAvailable) {
+    const _redistribute = wB;
+    _wB = 0;
+    _wA = wA + _redistribute * (wA / (wA + wC));
+    _wC = wC + _redistribute * (wC / (wA + wC));
+  }
+  const baseConviction = LA * _wA + LB * _wB + LC * _wC;
   const lbLcGap = Math.abs(LB - LC);
   const lbLcConflict = lbLcGap >= 25 ? Math.min(8, Math.round((lbLcGap - 20) / 3.5)) : 0;
   const ensembleConflict = lbLcConflict + fundConflict;
