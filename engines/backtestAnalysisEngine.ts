@@ -554,6 +554,11 @@ function calcDCF(stk: any): any {
  * Earnings Quality
  */
 function calcEarningsQuality(stk: any): any {
+  // ✨ بلا أساسيات لا تُقاس جودة الأرباح -- محايد صريح
+  if (stk.pe == null && stk.eps == null && stk.roe == null) {
+    return { composite: 50, grade: "-", signal: "لا بيانات أساسية -- الجودة غير متاحة",
+             components: { accruals: 50, consistency: 50, debt: 50, dividend: 50, pe: 50 } };
+  }
   const eps = stk.eps || stk.p / (stk.pe || 15);
   const roe = stk.roe || 10, debt = stk.debt || 0.3;
   const epsGrw = stk.epsGrw || 0, revGrw = stk.revGrw || 0;
