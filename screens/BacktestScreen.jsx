@@ -810,11 +810,11 @@ export default function BacktestScreen() {
 disabled={isRunning}
           style={{
             width: "100%", padding: "12px",
-            background: isRunning || (config.mode === 'portfolio' && !hasPortfolio)
+            background: isRunning
               ? C.line 
               : "linear-gradient(135deg," + C.gold + "," + C.goldL + ")",
             border: "none", borderRadius: 10,
-            color: isRunning || (config.mode === 'portfolio' && !hasPortfolio) ? C.smoke : C.ink,
+            color: isRunning ? C.smoke : C.ink,
             fontSize: 13, fontWeight: 900,
             cursor: isRunning ? "not-allowed" : "pointer",
             boxShadow: isRunning ? "none" : "0 4px 12px " + C.gold + "33",
