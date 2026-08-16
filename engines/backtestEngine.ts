@@ -125,7 +125,7 @@ export function backtest(strategy: any, historicalData: any[], options?: any): a
     // ٢.٥ حساب العائد اليومي
     if (i > 0) {
       var prevValue = equityCurve[i - 1].value;
-      var dailyRet = (totalValue - prevValue) / prevValue;
+      var dailyRet = prevValue > 0 ? (totalValue - prevValue) / prevValue : 0;
       dailyReturns.push(dailyRet);
     }
 
@@ -337,12 +337,10 @@ function calcPerformanceMetrics(equityCurve: any[], dailyReturns: number[], trad
   // ✨ حارس المدد القصيرة: التحويل السنوي عند years<0.5 يُضخّم العائد بشكل مضلِّل.
   // دون نصف سنة: نعرض العائد الكلي دون تحويل سنوي، مع علَم للإفصاح.
   var annualReturn;
-  var annualReturnIsExtrapolated = false;
   if (years >= 0.5) {
     annualReturn = Math.pow(1 + totalReturn, 1 / years) - 1;
   } else {
     annualReturn = totalReturn; // مدة قصيرة جداً -- لا نُسنوِيه
-    annualReturnIsExtrapolated = false;
   }
 
   // ② التذبذب
