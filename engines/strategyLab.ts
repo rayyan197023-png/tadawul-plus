@@ -150,7 +150,7 @@ export const MODE_CONFIGS: Record<LabMode, Omit<LabConfig, 'targetType'>> = {
     eliteCount: 3,
     mutationRate: 0.15,
     trainPct: 0.6,
-    minTradesRequired: 5,      // حد أدنى للوضع السريع (deep=25, ultra=30)
+    minTradesRequired: 10,
     abortOnError: false,
   },
   deep: { 
