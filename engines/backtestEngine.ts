@@ -295,12 +295,11 @@ function executeSell(signal: any, state: any, prices: any, trades: any[], date: 
       
       var signalTaken = pnlPct >= 0 ? 'شراء قوي' : 'تخفيف';
       
-      var layersUsed = position.layersAtEntry || {
-        L1: 60, L2: 60, L3: 60, L4: 60, L5: 60,
-        L6: 60, L7: 60, L8: 60, L9: 60
-      };
-      
-      recordFeedback(signal.sym, signalTaken, layersUsed, actualOutcome);
+      var layersUsed = position.layersAtEntry;
+      // لا نُغذّي نظام التعلّم بطبقات مُختلقة -- نتخطّى الصفقات غير الموثّقة
+      if (layersUsed) {
+        recordFeedback(signal.sym, signalTaken, layersUsed, actualOutcome);
+      }
     }
   } catch (e) {
     // فشل صامت
