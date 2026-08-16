@@ -727,7 +727,6 @@ export default function BacktestScreen() {
           <div style={{ fontSize: 10, color: C.smoke, marginBottom: 4 }}>📅 الفترة</div>
           <div style={{ display: "flex", gap: 6 }}>
                         {[
-              { days: 60, label: '٣ أشهر' },
               { days: 252, label: 'سنة' },
               { days: 504, label: 'سنتان 🆕' },
               { days: 1260, label: '٥ سنوات 🆕' },
