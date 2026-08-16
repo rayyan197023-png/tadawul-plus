@@ -1230,7 +1230,7 @@ function analyzeStockRadar(stk: any, pastBars?: any[]): any {
     trend: { bull: trendBull, maCount, adxP: +adxP.toFixed(0), score: trScore },
     mom: { rsi, macd: (macd as any).bull, stoch, oversold, overbought, score: moScore },
     liq: { obv: (obv as any).signal, cmf: +cmf.toFixed(3), rvNorm: +rvNorm.toFixed(2), smDetected, score: lqScore },
-    val: { peR: +peR.toFixed(2), ey: +(ey * 100).toFixed(1), vwapD: +vwapD2.toFixed(1), score: vaScore },
+    val: { peR: peR != null ? +peR.toFixed(2) : null, ey: ey != null ? +(ey * 100).toFixed(1) : null, vwapD: +vwapD2.toFixed(1), score: vaScore },
     pfl: +pfl.toFixed(0),
     factors: [
       { k: "ms", l: "هيكل السوق", max: 15, s: msScore, c: "#a3e635" },
