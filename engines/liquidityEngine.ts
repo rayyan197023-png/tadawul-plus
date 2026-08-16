@@ -7,7 +7,7 @@
  * Pure functions — no React, no UI.
  */
 
-import { calcCMF, calcVWAP, calcOBV, calcATR } from './technicalEngine';
+import { calcCMF, calcOBV } from './technicalEngine';
 
 /**
  * Detect institutional vs retail volume
@@ -22,7 +22,6 @@ export function classifyLiquidity(bars: any[], stk: any): any {
   // Use 3-bar average to reduce single-bar noise (institutional activity spans multiple bars)
   const recentVol   = bars.slice(-3).reduce((s: number, b: any) => s + b.vol, 0) / 3;
   const volumeRatio = recentVol / (avgVol || 1);
-  const cur         = bars[bars.length - 1];
 
   const BLUE  = '#4d9fff';
   const GREEN = '#1ee68a';
