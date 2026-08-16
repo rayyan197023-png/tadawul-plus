@@ -840,67 +840,6 @@ function generateInterpretation(mean: number, median: number, probProfit: number
 ═══════════════════════════════════════════════════════════ */
 
 /**
- * توليد بيانات Backtest من قائمة أسهم (التحليل)
- * Mode 2: استراتيجية Tadawul على مجموعة مختارة
- * 
- * @param {Array} stocksList - قائمة الأسهم (من STOCKS)
- * @param {Function} genBarsFn - دالة genBars
- * @param {number} days - عدد الأيام
- * @param {number} maxStocks - أقصى عدد أسهم (افتراضي 15)
- * @returns {Array} historical data
- */
-export function generateDataFromStockList(stocksList: any[], genBarsFn: any, days?: number, maxStocks?: number): any[] {
-  if (!stocksList || stocksList.length === 0) {
-    return [];
-  }
-  days = days || 252;
-  maxStocks = maxStocks || 15;
-
-  // اختيار أول N سهم
-  var selectedStocks = stocksList.slice(0, maxStocks);
-
-  // توليد bars لكل سهم
-  var stocksBars: any = {};
-  selectedStocks.forEach(function(stk: any) {
-    var seed = stk.seed || stk.sym;
-    stocksBars[stk.sym] = genBarsFn(seed, days);
-  });
-
-  var data: any[] = [];
-  var today = new Date();
-
-  for (var i = 0; i < days; i++) {
-    var date = new Date(today);
-    date.setDate(date.getDate() - (days - i - 1));
-    
-    var prices: any = {};
-    var stocksData: any[] = [];
-    
-    selectedStocks.forEach(function(stk: any) {
-      var bars = stocksBars[stk.sym];
-      if (bars && bars[i]) {
-        prices[stk.sym] = bars[i].c;
-        stocksData.push({
-          sym: stk.sym,
-          name: stk.name,
-          sector: stk.sector,
-          bars: bars.slice(0, i + 1),
-          currentPrice: bars[i].c,
-        });
-      }
-    });
-
-    data.push({
-      date: date.toISOString().split('T')[0],
-      prices: prices,
-      stocksData: stocksData,
-    });
-  }
-
-  return data;
-}
-
-/**
  * توليد بيانات Backtest من السوق بالكامل
  * Mode 3: استراتيجية Tadawul مع Sector Rotation
  * 
