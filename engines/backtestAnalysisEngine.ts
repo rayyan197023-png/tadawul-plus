@@ -1810,16 +1810,7 @@ export function stockHealth(stk: any, bars: any[], allStocks?: any[], macroOverr
     _wA = wA + _redistribute * (wA / (wA + wC));
     _wC = wC + _redistribute * (wC / (wA + wC));
   }
-  // ✨ إن غابت البيانات الأساسية، LB محايد ثابت -- نُعيد توزيع وزنه على LA/LC
-  //    بدل أن يسحب الدرجة للأسفل بقيمة لا تحمل معلومة
-  const _fundAvailable = stk.pe != null || stk.roe != null || stk.divY != null;
-  let _wA = wA, _wB = wB, _wC = wC;
-  if (!_fundAvailable) {
-    const _redist = wB;
-    _wB = 0;
-    _wA = wA + _redist * (wA / (wA + wC));
-    _wC = wC + _redist * (wC / (wA + wC));
-  }
+ 
   const baseConviction = LA * _wA + LB * _wB + LC * _wC;
   const lbLcGap = Math.abs(LB - LC);
   const lbLcConflict = lbLcGap >= 25 ? Math.min(8, Math.round((lbLcGap - 20) / 3.5)) : 0;
