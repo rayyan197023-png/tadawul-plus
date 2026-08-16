@@ -102,6 +102,8 @@ export default function BacktestScreen() {
   var [activeTab, setActiveTab] = useState('run'); // 'run' | 'lab'
   var [labHistoricalData, setLabHistoricalData] = useState(null);
   var [labDataInfo, setLabDataInfo] = useState(null);
+  // ✨ FRED تُجلب مرة واحدة وتُخزَّن (كانت تُجلب لكل استراتيجية في المختبر)
+  var labFredRef = React.useRef(null);
 
   async function runBacktest() {
     setIsRunning(true);
@@ -280,16 +282,20 @@ export default function BacktestScreen() {
   async function runBacktestForLab(strategy, historicalData) {
     try {
       // جلب FRED Macro
-      var fredMacro = null;
-      try {
-        var fredRes = await fetch('/api/freddata');
-        if (fredRes.ok) {
-          var fredData = await fredRes.json();
-          if (fredData && (typeof fredData.oilPrice === 'number' || typeof fredData.vix === 'number')) {
-            fredMacro = fredData;
+      var fredMacro = labFredRef.current;
+      if (fredMacro === null) {
+        try {
+          var fredRes = await fetch('/api/freddata');
+          if (fredRes.ok) {
+            var fredData = await fredRes.json();
+            if (fredData && (typeof fredData.oilPrice === 'number' || typeof fredData.vix === 'number')) {
+              fredMacro = fredData;
+            }
           }
-        }
-      } catch(e) {}
+        } catch(e) {}
+        labFredRef.current = fredMacro || false;
+      }
+      if (fredMacro === false) fredMacro = null;
       
       // wrapper للمحرّك
       var wrapper = function(stk, bars, allStocks, macro, weightsOv) {
