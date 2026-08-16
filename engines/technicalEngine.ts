@@ -86,7 +86,7 @@ export function calcRSIFull(bars: any[], period: number = 14): {
     const d = closes[i] - closes[i - 1];
     ag = (ag * (period - 1) + (d > 0 ? d : 0)) / period;
     al = (al * (period - 1) + (d < 0 ? -d : 0)) / period;
-    rsiSeries.push(al === 0 ? 100 : parseFloat((100 - 100 / (1 + ag / al)).toFixed(1)));
+    rsiSeries.push((ag === 0 && al === 0) ? 50 : al === 0 ? 100 : parseFloat((100 - 100 / (1 + ag / al)).toFixed(1)));
   }
 
   const value  = rsiSeries[rsiSeries.length - 1];
