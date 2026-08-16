@@ -1830,7 +1830,9 @@ export function stockHealth(stk: any, bars: any[], allStocks?: any[], macroOverr
   // STEP 8: تجميع النتيجة
   const merged: any = { ...tech };
   // اختبار مؤقّت: نعود للدرجة التقنية (LA) للتحقّق من سبب الفجوات
-  const score = merged.score;
+  const score = conviction;
+  merged.score = score;
+  merged.grade = score >= 85 ? "S" : score >= 75 ? "A" : score >= 65 ? "B" : score >= 55 ? "C" : score >= 45 ? "D" : "F";
 
   let sig, sigC;
   if (score >= 65 && tech.gates.passed >= 2) { sig = "شراء قوي"; sigC = "#10c97e"; }
