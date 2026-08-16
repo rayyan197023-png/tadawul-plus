@@ -503,6 +503,7 @@ function calcEarningsModel(stk: any): any {
 /**
  * DCF Calculation
  */
+
 function calcDCF(stk: any): any {
   if (!stk) return { intrinsic: 0, upside: 0, wacc: 8, dcfScore: 50, signal: "بيانات غير كافية", rating: "احتفاظ" };
   const eps = stk.eps || stk.p / (stk.pe || 15);
