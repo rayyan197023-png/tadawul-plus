@@ -361,6 +361,22 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
             var _passSlope = s.score >= 55 && (s.scoreSlope || 0) >= 8;
             if (!_passLevel && !_passSlope) return false;
 
+            // ✨ بوابة التأكيد السعري -- لا نُمسك سكيناً هابطة
+            //    الشرط: السعر فوق متوسط 20 يوماً + المتوسط نفسه صاعد
+            //    (65 من 109 صفقة كانت تهبط للوقف مباشرة بعد الشراء)
+            var _bars = s.stk && s.stk.bars ? s.stk.bars : null;
+            if (!_bars || _bars.length < 25) return false;
+            var _n = _bars.length;
+            var _ma20 = 0;
+            for (var _i = _n - 20; _i < _n; _i++) _ma20 += _bars[_i].c;
+            _ma20 /= 20;
+            var _ma20prev = 0;
+            for (var _j = _n - 25; _j < _n - 5; _j++) _ma20prev += _bars[_j].c;
+            _ma20prev /= 20;
+            var _cur = _bars[_n - 1].c;
+            if (_cur < _ma20) return false;          // السعر تحت المتوسط
+            if (_ma20 <= _ma20prev) return false;    // المتوسط نفسه هابط
+
             // ليس مملوكاً بالفعل
             if (state.positions[s.sym]) return false;
             // له سعر صالح
