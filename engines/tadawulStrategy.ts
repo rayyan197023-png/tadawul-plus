@@ -194,7 +194,7 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
   var lastRebalanceDay = 0;
   var marketRegime = 'bull'; // bull / bear / neutral
     // ✨ ذاكرة الدرجات -- للدخول على الميل الصاعد بدل المستوى المرتفع
-  var scoreHistory = {};   // { sym: [أقدم ... أحدث] }
+  var scoreHistory: any = {};   // { sym: [أقدم ... أحدث] }
   var _macroOverride = macroOverride || null;
   // 🆕 weights override لـ Strategy Lab
   var _weightsOverride = weightsOverride || null;
