@@ -376,6 +376,29 @@ export function buildDiverseUniverse(seed) {
 
   return unique.slice(0, 50);
 }
+export const STOCK_CATEGORIES = {
+  diverse: {
+    id: 'diverse',
+    name: 'السوق المتنوّع',
+    icon: '🌍',
+    description: '٥٠ سهم متنوّعة (ثابتة لنفس البذرة)',
+    color: '#10b981',
+    filter: null,
+  },
+};
+
+// دالة جلب أسهم فئة معينة
+export function getStocksByCategory(categoryId, seed) {
+  const category = STOCK_CATEGORIES[categoryId];
+  if (!category) return [];
+
+  // ✨ نمرّر البذرة لضمان قابلية التكرار
+  if (categoryId === 'diverse') {
+    return buildDiverseUniverse(seed);
+  }
+
+  return STOCKS.filter(category.filter);
+}
 
 // ═══════════════════════════════════════════════════════════
 // 🏭 SECTORS -- القطاعات الرسمية من تاسي
