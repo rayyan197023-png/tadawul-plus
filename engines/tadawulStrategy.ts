@@ -107,7 +107,7 @@ function adaptParamsToPersonality(baseConfig: any, personality: string): any {
 
 export var STRATEGY_DEFAULTS = {
   // معايير الشراء - معايرة علمية متطابقة مع التحليل الاحترافي
-  buyScoreThreshold: 76,       // اختبار: انتقائية قصوى
+  buyScoreThreshold: 72,
   maxPositions: 8,             // أقصى عدد مراكز
   maxPositionWeight: 0.20,     // أقصى وزن 20% لكل سهم
   minPositionValue: 5000,      // أقل قيمة صفقة 5,000 ر.س
