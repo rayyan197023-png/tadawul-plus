@@ -93,6 +93,7 @@ export default function BacktestScreen() {
     runMonteCarlo: true,
     monteCarloIterations: 5000,
     useWinner: true,  // 🆕 استعمال Winner المُطبَّق
+    seed: 20260101,   // ✨ بذرة اختيار الأسهم -- نفس البذرة = نفس العالم (قابلية التكرار)
   });
 
   var [isRunning, setIsRunning] = useState(false);
@@ -151,7 +152,7 @@ export default function BacktestScreen() {
 
       if (config.mode === 'analysis') {
         var category = STOCK_CATEGORIES[config.category];
-        var categoryStocks = getStocksByCategory(config.category);
+        var categoryStocks = getStocksByCategory(config.category, config.seed);
         modeLabel = `${category.icon} ${category.name} (${categoryStocks.length} سهم)`;
         
         if (categoryStocks.length === 0) {
