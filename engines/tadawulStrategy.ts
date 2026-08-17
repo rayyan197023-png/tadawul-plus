@@ -140,9 +140,9 @@ export var STRATEGY_DEFAULTS = {
  * ⚠️ حاسم: بعد T1 يُرفع الوقف إلى التعادل -- تصبح المخاطرة صفراً
  */
 export var PROFIT_LADDER = [
-  { at: 0.07, sell: 0.33, label: 'T1' },
-  { at: 0.11, sell: 0.33, label: 'T2' },
-  { at: 0.15, sell: 1.00, label: 'T3' },   // 1.00 = ما تبقّى
+  { at: 0.09, sell: 0.25, label: 'T1' },   // ربع عند +9% -- تغطية التكلفة
+  { at: 0.15, sell: 0.35, label: 'T2' },   // ثلث عند +15%
+  { at: 0.24, sell: 1.00, label: 'T3' },   // الباقي عند +24%
 ];
 
 /**
