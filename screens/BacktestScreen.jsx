@@ -167,7 +167,10 @@ export default function BacktestScreen() {
         });
         
         // 🆕 ٥٠ سهم للـ Diverse Universe، ١٥ للفئات الأخرى
-        var sampleSize = config.category === 'diverse' ? 50 : 15;
+        // ✨ نقلّل عدد الأسهم للفترات الطويلة -- 50 سهماً × 1260 يوماً يستنفد ذاكرة الجوال
+        var sampleSize = config.category === 'diverse'
+          ? (config.days >= 1260 ? 20 : config.days >= 504 ? 35 : 50)
+          : 15;
         historicalData = await generateDataFromYahoo(enrichedStocks.slice(0, sampleSize), config.days);
         
         if (!historicalData || historicalData.length === 0 || !historicalData[0] || !historicalData[0].stocksData || historicalData[0].stocksData.length === 0) {
