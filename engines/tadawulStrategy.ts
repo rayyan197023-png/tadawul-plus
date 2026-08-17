@@ -129,6 +129,23 @@ export var STRATEGY_DEFAULTS = {
 };
 
 /**
+ * ✨ سلّم جني الأرباح (Scaling Out)
+ * المرجع: Van Tharp (1998), Turtle Trading System (Dennis & Eckhardt 1983)
+ *
+ * المبدأ: تأمين الأرباح على مراحل بدل هدف واحد بعيد
+ * - T1 عند +7%  → بيع 33% (تغطية التكاليف + تأمين نفسي)
+ * - T2 عند +11% → بيع 33% (تثبيت الربح)
+ * - T3 عند +15% → بيع 34% (إغلاق)
+ *
+ * ⚠️ حاسم: بعد T1 يُرفع الوقف إلى التعادل -- تصبح المخاطرة صفراً
+ */
+export var PROFIT_LADDER = [
+  { at: 0.07, sell: 0.33, label: 'T1' },
+  { at: 0.11, sell: 0.33, label: 'T2' },
+  { at: 0.15, sell: 1.00, label: 'T3' },   // 1.00 = ما تبقّى
+];
+
+/**
  * استراتيجية الطبقات التسع
  * 
  * @param {Object} healthFn - دالة stockHealth من analysisEngine
