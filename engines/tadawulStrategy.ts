@@ -304,8 +304,8 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
             var adaptedConfig = adaptParamsToPersonality(config, personality);
             
             // شرط Health Score المُكيَّف
-            // اختبار تشخيصي: عكس الإشارة
-            if (s.score > 45) return false;
+            if (s.score < adaptedConfig.buyScoreThreshold) return false;
+
             // ليس مملوكاً بالفعل
             if (state.positions[s.sym]) return false;
             // له سعر صالح
