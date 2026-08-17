@@ -109,7 +109,7 @@ export var STRATEGY_DEFAULTS = {
   // معايير الشراء - معايرة علمية متطابقة مع التحليل الاحترافي
   buyScoreThreshold: 72,
   maxPositions: 8,             // أقصى عدد مراكز
-  maxPositionWeight: 0.12,     // كان 0.20
+  maxPositionWeight: 0.20,
   minPositionValue: 5000,      // أقل قيمة صفقة 5,000 ر.س
   
   // معايير البيع - معايرة علمية
