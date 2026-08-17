@@ -195,6 +195,10 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
   var marketRegime = 'bull'; // bull / bear / neutral
     // ✨ ذاكرة الدرجات -- للدخول على الميل الصاعد بدل المستوى المرتفع
   var scoreHistory: any = {};   // { sym: [أقدم ... أحدث] }
+    // ✨ Scaling Out -- تتبّع الشرائح المُباعة لكل مركز
+  //    المنهجية: Van Tharp "Trade Your Way to Financial Freedom" + Turtle Traders
+  //    المبدأ: تأمين الأرباح تدريجياً + رفع الوقف للتعادل بعد الشريحة الأولى
+  var soldTranches: any = {};   // { sym: 0 | 1 | 2 | 3 }
   var _macroOverride = macroOverride || null;
   // 🆕 weights override لـ Strategy Lab
   var _weightsOverride = weightsOverride || null;
