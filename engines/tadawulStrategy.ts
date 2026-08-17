@@ -114,8 +114,8 @@ export var STRATEGY_DEFAULTS = {
   
   // معايير البيع - معايرة علمية
   sellScoreThreshold: 45,      // Health Score < 45 للبيع (كان 40)
-  stopLossPct: -0.10,          // وقف خسارة -10%
-  takeProfitPct: 0.25,         // جني أرباح +25%
+  stopLossPct: -0.07,          // وقف خسارة -7% (اختبار)
+  takeProfitPct: 0.15,         // جني أرباح +15% (اختبار)
   maxHoldDays: 180,            // أقصى فترة احتفاظ 180 يوم
   
   // Rebalancing
