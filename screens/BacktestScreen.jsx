@@ -728,6 +728,39 @@ export default function BacktestScreen() {
             })}
           </div>
         </div>
+        <div style={{ marginBottom: 10 }}>
+          <div style={{ fontSize: 10, color: C.smoke, marginBottom: 4 }}>🌍 العالم (عيّنة الأسهم)</div>
+          <div style={{ display: "flex", gap: 6 }}>
+            {[
+              { seed: 20260101, label: 'عالم ١' },
+              { seed: 20260202, label: 'عالم ٢' },
+              { seed: 20260303, label: 'عالم ٣' },
+              { seed: 20260404, label: 'عالم ٤' },
+              { seed: 20260505, label: 'عالم ٥' },
+            ].map(function(opt) {
+              return (
+                <button
+                  key={opt.seed}
+                  onClick={function() { setConfig(Object.assign({}, config, { seed: opt.seed })); }}
+                  style={{
+                    flex: 1,
+                    padding: "8px 4px",
+                    background: config.seed === opt.seed ? C.plasma + "22" : C.void,
+                    border: "1px solid " + (config.seed === opt.seed ? C.plasma : C.line) + "44",
+                    borderRadius: 6,
+                    color: config.seed === opt.seed ? C.plasma : C.smoke,
+                    fontSize: 10, fontWeight: 800, cursor: "pointer",
+                  }}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
+          <div style={{ fontSize: 9, color: C.ash, marginTop: 4, lineHeight: 1.5 }}>
+            💡 كل عالم = ٥٠ سهماً مختلفة. جرّب الخمسة -- استراتيجية قوية تنجح في معظمها.
+          </div>
+        </div>
 
         <div style={{ marginBottom: 10 }}>
           <div style={{ fontSize: 10, color: C.smoke, marginBottom: 4 }}>📅 الفترة</div>
