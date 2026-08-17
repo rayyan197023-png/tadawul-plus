@@ -115,7 +115,7 @@ export var STRATEGY_DEFAULTS = {
   // معايير البيع - معايرة علمية
   sellScoreThreshold: 28,      // خُفّض مع الدخول المبكر -- الدرجة تتذبذب أكثر قبل النضج
   stopLossPct: -0.10,          // المعايرة المثبتة بالاختبار
-  takeProfitPct: 0.28,
+  takeProfitPct: 0.20,         // المعايرة المثبتة بالاختبار
   maxHoldDays: 365,            // أقصى فترة احتفاظ 180 يوم
   
   // Rebalancing
