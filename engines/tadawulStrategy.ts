@@ -113,7 +113,7 @@ export var STRATEGY_DEFAULTS = {
   minPositionValue: 5000,      // أقل قيمة صفقة 5,000 ر.س
   
   // معايير البيع - معايرة علمية
-    sellScoreThreshold: 20,      // خُفّض مع الدخول المبكر -- الدرجة تتذبذب أكثر قبل النضج
+      sellScoreThreshold: 28,      // خُفّض مع الدخول المبكر -- الدرجة تتذبذب أكثر قبل النضج
   stopLossPct: -0.13,          // التوليفة الفائزة: PF 1.33 · فوز 47.8%
   takeProfitPct: 0.28,         // نسبة 2.15:1
   maxHoldDays: 365,            // أقصى فترة احتفاظ 180 يوم
