@@ -113,7 +113,7 @@ export var STRATEGY_DEFAULTS = {
   minPositionValue: 5000,      // أقل قيمة صفقة 5,000 ر.س
   
   // معايير البيع - معايرة علمية
-  sellScoreThreshold: 35,      // كان 45 -- يقتل 71% من الصفقات مبكراً بنجاح 10%
+  sellScoreThreshold: 28,      // خُفّض مع الدخول المبكر -- الدرجة تتذبذب أكثر قبل النضج
   stopLossPct: -0.10,          // وقف أوسع -- 18 صفقة تُلمس بـ7% بنجاح 0%
   takeProfitPct: 0.20,         // نسبة 2:1
   maxHoldDays: 180,            // أقصى فترة احتفاظ 180 يوم
