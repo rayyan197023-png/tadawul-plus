@@ -378,10 +378,11 @@ function shouldSell(position: any, currentPrice: number, currentScore: number, c
     return 'Take Profit (+' + (returnPct * 100).toFixed(1) + '%)';
   }
 
-  // ③ Health Score تدهور
-  if (currentScore !== null && currentScore < config.sellScoreThreshold) {
-    return 'Weak Score (' + currentScore + ')';
-  }
+  // ③ معطّل مؤقتاً للتشخيص
+  // if (currentScore !== null && currentScore < config.sellScoreThreshold) {
+  //   return 'Weak Score (' + currentScore + ')';
+  // }
+
 
   // ④ Max Hold Period -- نحسب من entryDate (المحفوظ فعلياً في backtestEngine)
   if (position.entryDate && currentDate) {
