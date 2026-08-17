@@ -229,7 +229,6 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
      */
     generateSignals: function(day: any, state: any, historicalData: any[], dayIndex: number): any[] {
       var signals: any[] = [];
-      if (dayIndex === 30) alert('sellThr=' + config.sellScoreThreshold + ' stopLoss=' + config.stopLossPct + ' maxHold=' + config.maxHoldDays);
       // ① تحديد Market Regime
       if (config.useRegimeFilter && dayIndex > 20) {
         marketRegime = detectMarketRegime(historicalData, dayIndex);
