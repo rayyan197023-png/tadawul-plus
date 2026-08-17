@@ -340,10 +340,14 @@ const BacktestResultsCard = React.memo(function BacktestResultsCard(props) {
 
       {/* 📊 إحصاءات الصفقات */}
       <Section icon="📊" title="إحصاءات الصفقات" color={C.teal}>
-        <MetricItem label="إجمالي الصفقات" value={perf.totalTrades} color={C.snow} />
-        <MetricItem label="معدل الربح" sublabel="Win Rate" value={perf.winRate + '%'} color={colors.winRate} highlight={true} />
+        <MetricItem label="أوامر التنفيذ" sublabel="شراء + بيع" value={perf.totalTrades} color={C.smoke} />
+        <MetricItem label="صفقات مُغلقة" sublabel="أساس كل النسب أدناه" value={perf.closedTrades} color={C.snow} highlight={true} />
+        <MetricItem label="معدل الربح" sublabel={'Win Rate -- ' + perf.winningTrades + ' من ' + perf.closedTrades} value={perf.winRate + '%'} color={colors.winRate} highlight={true} />
         <MetricItem label="صفقات رابحة" value={perf.winningTrades} color={C.mint} />
         <MetricItem label="صفقات خاسرة" value={perf.losingTrades} color={C.coral} />
+        {perf.closedTrades > 0 && (perf.winningTrades + perf.losingTrades) !== perf.closedTrades && (
+          <MetricItem label="صفقات بتعادل" value={perf.closedTrades - perf.winningTrades - perf.losingTrades} color={C.smoke} />
+        )}
         <MetricItem label="متوسط الربح" value={'+' + perf.avgWin} color={C.mint} />
         <MetricItem label="متوسط الخسارة" value={'-' + perf.avgLoss} color={C.coral} />
         <MetricItem 
