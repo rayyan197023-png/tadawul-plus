@@ -296,9 +296,34 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
         // 🆕 تكييف config حسب الشخصيّة
         var adaptedConfig = adaptParamsToPersonality(config, currentPersonality);
 
-        var sellReason = shouldSell(pos, currentPrice, currentScore, day.date, dayIndex, adaptedConfig);
+        // ✨ سلّم جني الأرباح -- يُفحص قبل قواعد البيع العادية
+        var _sold = soldTranches[sym] || 0;
+        var _ladder = checkScaleOut(pos, currentPrice, _sold);
+        if (_ladder) {
+          var _shares = _ladder.pct >= 1.0
+            ? pos.shares
+            : Math.max(1, Math.floor(pos.shares * _ladder.pct));
+          soldTranches[sym] = _sold + 1;
+          signals.push({
+            action: 'sell',
+            sym: sym,
+            shares: _shares,
+            reason: 'Ladder ' + _ladder.label + ' (+' + (_ladder.gain * 100).toFixed(1) + '%)',
+            personality: currentPersonality,
+          });
+          return;   // لا نطبّق قواعد أخرى على نفس المركز اليوم
+        }
+
+        // ✨ بعد الشريحة الأولى: الوقف يُرفع للتعادل (المخاطرة = صفر)
+        var _adjCfg = adaptedConfig;
+        if (_sold >= 1) {
+          _adjCfg = Object.assign({}, adaptedConfig, { stopLossPct: -0.005 });
+        }
+
+        var sellReason = shouldSell(pos, currentPrice, currentScore, day.date, dayIndex, _adjCfg);
         
         if (sellReason) {
+                  soldTranches[sym] = 0;   // إغلاق كامل -- تصفير السلّم
           signals.push({
             action: 'sell',
             sym: sym,
