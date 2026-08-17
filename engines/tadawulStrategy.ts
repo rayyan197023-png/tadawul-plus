@@ -114,8 +114,8 @@ export var STRATEGY_DEFAULTS = {
   
   // معايير البيع - معايرة علمية
   sellScoreThreshold: 35,      // كان 45 -- يقتل 71% من الصفقات مبكراً بنجاح 10%
-  stopLossPct: -0.07,          // معايرة مثبتة بالاختبار
-  takeProfitPct: 0.15,         // نسبة 2.14:1
+  stopLossPct: -0.10,          // وقف أوسع -- 18 صفقة تُلمس بـ7% بنجاح 0%
+  takeProfitPct: 0.20,         // نسبة 2:1
   maxHoldDays: 180,            // أقصى فترة احتفاظ 180 يوم
   
   // Rebalancing
