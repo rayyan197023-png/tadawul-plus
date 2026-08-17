@@ -245,6 +245,7 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
             sym: stk.sym,
             stk: stk,
             score: health.score || 0,
+                        scoreSlope: _slope,
             health: health,
             price: day.prices[stk.sym],
             personality: _pers,
