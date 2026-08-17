@@ -358,6 +358,47 @@ const BacktestResultsCard = React.memo(function BacktestResultsCard(props) {
           highlight={true}
         />
       </Section>
+      {/* 🚪 تشخيص أسباب الخروج */}
+      {result.trades && result.trades.length > 0 && (function(){
+        var sells = result.trades.filter(function(t){ return t.action === 'sell'; });
+        if (sells.length === 0) return null;
+
+        var buckets = {};
+        sells.forEach(function(t){
+          var r = t.reason || 'غير محدد';
+          var key = r.indexOf('Stop Loss') >= 0 ? '🛑 وقف خسارة'
+                  : r.indexOf('Take Profit') >= 0 ? '🎯 جني أرباح'
+                  : r.indexOf('Weak Score') >= 0 ? '📉 ضعف الدرجة'
+                  : r.indexOf('Max Hold') >= 0 ? '⏰ أقصى مدة'
+                  : '❓ ' + r.split('(')[0].trim();
+          if (!buckets[key]) buckets[key] = { count: 0, pnl: 0, wins: 0 };
+          buckets[key].count++;
+          buckets[key].pnl += (t.pnl || 0);
+          if ((t.pnl || 0) > 0) buckets[key].wins++;
+        });
+
+        var rows = Object.keys(buckets).map(function(k){
+          return { key: k, ...buckets[k] };
+        }).sort(function(a,b){ return b.count - a.count; });
+
+        return (
+          <Section icon="🚪" title="أسباب الخروج (تشخيص)" color={C.plasma}>
+            {rows.map(function(r, i){
+              var pct = Math.round(r.count / sells.length * 100);
+              var wr = Math.round(r.wins / r.count * 100);
+              return (
+                <MetricItem
+                  key={i}
+                  label={r.key}
+                  sublabel={pct + '% من الخروجات · نجاح ' + wr + '%'}
+                  value={r.count + ' | ' + (r.pnl >= 0 ? '+' : '') + Math.round(r.pnl)}
+                  color={r.pnl >= 0 ? C.mint : C.coral}
+                />
+              );
+            })}
+          </Section>
+        );
+      })()}
 
       {/* ⚡ مقاييس المخاطر */}
       <Section icon="⚡" title="مقاييس المخاطر" color={C.coral}>
