@@ -314,8 +314,11 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
             // 🆕 تكييف buyThreshold حسب الشخصيّة
             var adaptedConfig = adaptParamsToPersonality(config, personality);
             
-            // شرط Health Score المُكيَّف
-            if (s.score < adaptedConfig.buyScoreThreshold) return false;
+            // ✨ الدخول المبكر: إمّا درجة مرتفعة، أو درجة متوسطة بميل صاعد قوي
+            //    (الدرجة 72 قد تكون قمة الحركة -- والصعود 50→60 بدايتها)
+            var _passLevel = s.score >= adaptedConfig.buyScoreThreshold;
+            var _passSlope = s.score >= 55 && (s.scoreSlope || 0) >= 8;
+            if (!_passLevel && !_passSlope) return false;
 
             // ليس مملوكاً بالفعل
             if (state.positions[s.sym]) return false;
