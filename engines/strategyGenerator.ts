@@ -230,6 +230,18 @@ const TYPE_RANGES: Record<Exclude<StockType, 'excluded'>, TypeRanges> = {
 // ════════════════════════════════════════════════════════════
 //  HELPER FUNCTIONS
 // ════════════════════════════════════════════════════════════
+// ✨ مولّد عشوائي ببذرة ثابتة (LCG -- Knuth)
+//    الهدف: جعل المختبر قابلاً للتكرار -- نفس البذرة تُنتج نفس الأجيال
+let _labSeed = 987654321;
+
+export function setLabSeed(seed: number): void {
+  _labSeed = (typeof seed === 'number' && seed > 0) ? Math.floor(seed) : 987654321;
+}
+
+function _rnd(): number {
+  _labSeed = (_labSeed * 1664525 + 1013904223) % 4294967296;
+  return _labSeed / 4294967296;
+}
 
 /**
  * توليد رقم عشوائي بين min و max
