@@ -397,6 +397,24 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
 }
 
 /**
+ * ✨ فحص سلّم جني الأرباح (Scaling Out)
+ * يُرجع { pct, label } للشريحة المستحقّة، أو null
+ */
+function checkScaleOut(position: any, currentPrice: number, soldCount: number): any {
+  if (soldCount >= PROFIT_LADDER.length) return null;
+  const cost = position.avgCost;
+  if (!cost || cost <= 0) return null;
+  const gain = (currentPrice - cost) / cost;
+
+  // نفحص الشريحة التالية غير المُباعة فقط
+  const step = PROFIT_LADDER[soldCount];
+  if (gain >= step.at) {
+    return { pct: step.sell, label: step.label, gain: gain };
+  }
+  return null;
+}
+
+/**
  * قرار البيع
  */
 function shouldSell(position: any, currentPrice: number, currentScore: number, currentDate: any, dayIndex: number, config: any): any {
