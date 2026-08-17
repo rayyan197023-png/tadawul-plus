@@ -233,6 +233,14 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
           // ✨ نكشف الشخصيّة مرة واحدة هنا بدل مرتين (بيع + شراء)
           var _pers = 'NEUTRAL';
           try { _pers = detectStockPersonality(stk, stk.bars).personality; } catch (e) {}
+          // ✨ سجّل الدرجة في الذاكرة (آخر 6 أيام)
+          var _sc = health.score || 0;
+          if (!scoreHistory[stk.sym]) scoreHistory[stk.sym] = [];
+          scoreHistory[stk.sym].push(_sc);
+          if (scoreHistory[stk.sym].length > 6) scoreHistory[stk.sym].shift();
+          var _hist = scoreHistory[stk.sym];
+          var _slope = _hist.length >= 4 ? (_hist[_hist.length - 1] - _hist[_hist.length - 4]) : 0;
+
           stockScores.push({
             sym: stk.sym,
             stk: stk,
