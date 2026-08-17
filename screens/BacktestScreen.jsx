@@ -169,7 +169,7 @@ export default function BacktestScreen() {
         // 🆕 ٥٠ سهم للـ Diverse Universe، ١٥ للفئات الأخرى
         // ✨ نقلّل عدد الأسهم للفترات الطويلة -- 50 سهماً × 1260 يوماً يستنفد ذاكرة الجوال
         var sampleSize = config.category === 'diverse'
-          ? (config.days >= 1260 ? 20 : config.days >= 504 ? 35 : 50)
+          ? (config.days >= 1260 ? 10 : config.days >= 504 ? 25 : 50)
           : 15;
         historicalData = await generateDataFromYahoo(enrichedStocks.slice(0, sampleSize), config.days);
         
