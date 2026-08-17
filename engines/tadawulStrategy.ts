@@ -139,7 +139,7 @@ export var STRATEGY_DEFAULTS = {
  *
  * ⚠️ حاسم: بعد T1 يُرفع الوقف إلى التعادل -- تصبح المخاطرة صفراً
  */
-export var PROFIT_LADDER = [];
+export var PROFIT_LADDER: any[] = [];   // معطّل -- البيانات رفضته (يقطع الأرباح ويترك الخسائر)
 
 /**
  * استراتيجية الطبقات التسع
