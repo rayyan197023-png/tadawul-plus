@@ -105,13 +105,13 @@ const LEADER_RANGES: TypeRanges = {
     L8: { min: 0.10, max: 0.20 },
     L9: { min: 0.10, max: 0.20 },
   },
-  buyThreshold: { min: 55, max: 70 },   // 🆕 أخفض ليُتيح صفقات
-  sellThreshold: { min: 35, max: 48 },
-  stopLossPct: { min: 0.05, max: 0.12 }, // 🆕 أوسع قليلاً
-  takeProfitPct: { min: 0.10, max: 0.30 },
-  maxHoldDays: { min: 30, max: 180 },   // 🆕 أقصر للحدّ الأدنى
+  buyThreshold: { min: 55, max: 80 },       // وُسّع -- 72 أثبت تفوّقاً
+  sellThreshold: { min: 20, max: 48 },      // وُسّع -- 28 أثبت تفوّقاً
+  stopLossPct: { min: 0.05, max: 0.18 },    // وُسّع -- 0.13 أثبت تفوّقاً
+  takeProfitPct: { min: 0.10, max: 0.40 },
+  maxHoldDays: { min: 30, max: 400 },       // وُسّع -- 365 أثبت تفوّقاً
   maxPositions: { min: 5, max: 10 },
-  maxPositionPct: { min: 0.08, max: 0.15 },
+  maxPositionPct: { min: 0.08, max: 0.22 }, // وُسّع -- 0.20 أثبت تفوّقاً
 };
 
 /**
