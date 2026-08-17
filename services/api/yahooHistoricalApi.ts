@@ -236,10 +236,22 @@ export async function generateDataFromYahoo(
   const symbols = stocksList.map(s => s.sym);
   const barsMap = await getYahooBarsBatch(symbols, days, 5);
   
-  const validStocks = stocksList.filter(s => {
+  // ✨ الحد الأدنى = 70% من المطلوب -- يمنع سهماً حديث الإدراج من قصّ الجميع
+  //    (سهم بـ178 يوماً كان يختصر باك-تيست 5 سنوات إلى 178 يوماً لكل الأسهم)
+  const _minRequired = Math.max(30, Math.floor(days * 0.70));
+  let validStocks = stocksList.filter(s => {
     const bars = barsMap[s.sym] || barsMap[s.sym.replace(/\.SR$/i, '')];
-    return bars && bars.length >= 30;
+    return bars && bars.length >= _minRequired;
   });
+
+  // إن استُبعد أكثر من اللازم، نتساهل تدريجياً حتى نضمن 10 أسهم على الأقل
+  if (validStocks.length < 10) {
+    validStocks = stocksList.filter(s => {
+      const bars = barsMap[s.sym] || barsMap[s.sym.replace(/\.SR$/i, '')];
+      return bars && bars.length >= 30;
+    });
+    console.warn('[Yahoo] أسهم قليلة بتاريخ كامل -- عاد للحد الأدنى 30 يوماً');
+  }
   
   if (validStocks.length === 0) {
     console.warn(`[Yahoo] لا أسهم بياناتها كافية`);
