@@ -30,7 +30,7 @@ import {
 } from '../engines/strategyLab';
 import { generateAnchorFromAILearning, getAILearningStats } from '../engines/aiLearningWeights';
 import { getTierInfo } from '../engines/strategyFitness';
-import { setLabSeed } from '../engines/strategyGenerator';
+
 // 🆕 لم نعد بحاجة لـ stockClassifier (Universe موحَّد)
 // import { getTypeIcon, getTypeArabic, getTypeColor, getTypeDescription } from '../engines/stockClassifier';
 
