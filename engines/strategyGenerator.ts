@@ -444,7 +444,7 @@ export function crossover(
   const params: StrategyParams = {
     buyThreshold: +(
       (parent1.params.buyThreshold + parent2.params.buyThreshold) / 2 *
-      (1 + (Math.random() - 0.5) * 0.1)
+      (1 + (_rnd() - 0.5) * 0.1)
     ).toFixed(1),
     sellThreshold: +(
       (parent1.params.sellThreshold + parent2.params.sellThreshold) / 2 *
