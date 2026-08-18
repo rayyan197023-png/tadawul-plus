@@ -365,6 +365,9 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
             var _passRev = s.score >= 50 && _rev >= 50;
             if (!_passLevel && !_passSlope && !_passRev) return false;
 
+            // ✨ مسار الانعكاس معفى من بوابة MA20 -- السهم المنعكس من القاع تحتها بطبيعته
+            if (_passRev && !_passLevel && !_passSlope) return true;
+
             // ✨ بوابة التأكيد السعري -- لا نُمسك سكيناً هابطة
             //    الشرط: السعر فوق متوسط 20 يوماً + المتوسط نفسه صاعد
             //    (65 من 109 صفقة كانت تهبط للوقف مباشرة بعد الشراء)
