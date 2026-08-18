@@ -254,7 +254,8 @@ function randomInRange(range: ParamRange): number {
  * توليد عدد صحيح عشوائي
  */
 function randomIntInRange(range: ParamRange): number {
-  return Math.floor(randomInRange(range));
+  // ✨ +1 ليشمل الحد الأقصى -- Math.floor وحده يجعله غير قابل للبلوغ أبداً
+  return Math.floor(range.min + _rnd() * (range.max - range.min + 1));
 }
 
 /**
