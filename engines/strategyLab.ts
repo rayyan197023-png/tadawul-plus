@@ -450,7 +450,12 @@ export async function runStrategyLab(
         ),
       });
       
-      // تشغيل الباك-تيست
+      
+ // تشغيل الباك-تيست
+       // ✨ إفساح المجال للمتصفح لإعادة رسم شريط التقدّم
+      //    (الباك-تيست متزامن داخلياً فيحجب الواجهة حتى النهاية)
+      await new Promise(function(r){ setTimeout(r, 0); });
+
       try {
         const metrics = await runBacktest(strategy, train);
         totalBacktests++;
