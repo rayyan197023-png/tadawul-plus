@@ -1248,6 +1248,59 @@ function analyzeStockRadar(stk: any, pastBars?: any[]): any {
     ],
   };
 }
+// ════════════════════════════════════════════════════════════
+//  ✨ REVERSAL SCORE -- درجة الانعكاس من القاع
+//  الهدف: كشف بداية الحركة لا نهايتها
+//  المكوّنات الأربعة (0-25 لكل واحد):
+//   ① تباعد إيجابي (RSI/MACD)  ② Spring وايكوف
+//   ③ اختراق ترند هابط          ④ تحوّل تدفق المال
+// ════════════════════════════════════════════════════════════
+function calcReversalScore(bars: any[], rsiFull: any, macd: any, cmfNow: number, cmfPrev: number): any {
+  if (!bars || bars.length < 30) {
+    return { score: 0, signals: [], label: 'بيانات غير كافية' };
+  }
+
+  const n = bars.length;
+  const signals: string[] = [];
+  let score = 0;
+
+  // ① تباعد إيجابي (25)
+  if (rsiFull && rsiFull.divergence === 'bullish') { score += 15; signals.push('تباعد RSI إيجابي'); }
+  if (macd && macd.divergence === 'bullish') { score += 10; signals.push('تباعد MACD إيجابي'); }
+
+  // ② Spring وايكوف: قاع جديد مخترَق ثم تعاف بحجم (25)
+  const lo20 = Math.min(...bars.slice(-21, -1).map((b: any) => b.lo));
+  const avgVol = bars.slice(-20).reduce((s: number, b: any) => s + (b.vol || 0), 0) / 20 || 1;
+  const last3 = bars.slice(-3);
+  const springHit = last3.some((b: any) => b.lo < lo20 && b.c > lo20 && (b.vol || 0) > avgVol * 1.2);
+  if (springHit) { score += 25; signals.push('Spring -- اصطياد سيولة وتعافٍ'); }
+
+  // ③ اختراق ترند هابط: انحدار القمم سالب ثم إغلاق فوق خط الاتجاه (25)
+  const win = bars.slice(-30);
+  let hiIdx1 = 0, hiIdx2 = 0;
+  for (let i = 0; i < 15; i++) if (win[i].hi > win[hiIdx1].hi) hiIdx1 = i;
+  for (let i = 15; i < win.length; i++) if (win[i].hi > win[hiIdx2 || 15].hi) hiIdx2 = i;
+  if (hiIdx2 > hiIdx1) {
+    const slope = (win[hiIdx2].hi - win[hiIdx1].hi) / (hiIdx2 - hiIdx1);
+    if (slope < 0) {
+      const projected = win[hiIdx2].hi + slope * (win.length - 1 - hiIdx2);
+      if (bars[n - 1].c > projected) { score += 25; signals.push('اختراق ترند هابط'); }
+    }
+  }
+
+  // ④ تحوّل تدفق المال من سالب لموجب (25)
+  if (cmfPrev < 0 && cmfNow > 0.03) { score += 25; signals.push('تدفق المال انقلب موجباً'); }
+  else if (cmfPrev < cmfNow && cmfNow > 0.05) { score += 12; signals.push('تدفق المال يتحسّن'); }
+
+  score = Math.min(100, score);
+  return {
+    score,
+    signals,
+    label: score >= 60 ? 'انعكاس قوي محتمل'
+         : score >= 35 ? 'إشارات انعكاس مبكرة'
+         : score >= 15 ? 'إشارة ضعيفة' : 'لا انعكاس',
+  };
+}
 
 // ════════════════════════════════════════════════════════════
 //  calc9Layers - الدالة الكبرى مع allStocks مُمرّرة
