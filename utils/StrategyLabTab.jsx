@@ -321,14 +321,6 @@ function RunningPhase({ C, progress, onCancel }) {
             transition: 'width 0.3s ease',
           }} />
         </div>
-          <div style={{
-            height: '100%',
-            width: `${progress.overallPct}%`,
-            background: `linear-gradient(90deg, ${C.electric}, ${C.mint})`,
-            transition: 'width 0.5s ease',
-            boxShadow: `0 0 10px ${C.electric}66`,
-          }} />
-        </div>
       </div>
       
       {/* ═══ تفاصيل ═══ */}
