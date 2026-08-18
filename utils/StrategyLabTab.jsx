@@ -303,12 +303,24 @@ function RunningPhase({ C, progress, onCancel }) {
           </span>
         </div>
         <div style={{
+          position: 'relative',
+          width: '100%',
           height: 12,
           background: 'rgba(255,255,255,0.12)',
           border: '1px solid rgba(255,255,255,0.20)',
           borderRadius: 6,
           overflow: 'hidden',
         }}>
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            height: '100%',
+            width: (progress.overallPct || 0) + '%',
+            background: 'linear-gradient(90deg, ' + C.electric + ', ' + C.mint + ')',
+            transition: 'width 0.3s ease',
+          }} />
+        </div>
           <div style={{
             height: '100%',
             width: `${progress.overallPct}%`,
