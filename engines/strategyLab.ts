@@ -437,7 +437,7 @@ export async function runStrategyLab(
         strategiesInGeneration: currentPopulation.length,
         bestFitnessSoFar: bestFitness > -Infinity ? bestFitness : 0,
         bestStrategyId,
-        overallPct: Math.round((totalBacktests / totalExpectedBacktests) * 100),
+        overallPct: Math.min(99, Math.round(((gen * config.populationSize + i) / totalExpectedBacktests) * 100)),
         message: `جيل ${gen + 1}/${config.generations} - استراتيجية ${i + 1}/${currentPopulation.length}`,
         completedBacktests: totalBacktests,
         totalBacktests: totalExpectedBacktests,
