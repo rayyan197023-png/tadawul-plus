@@ -359,7 +359,11 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
             //    (الدرجة 72 قد تكون قمة الحركة -- والصعود 50→60 بدايتها)
             var _passLevel = s.score >= adaptedConfig.buyScoreThreshold;
             var _passSlope = s.score >= 55 && (s.scoreSlope || 0) >= 8;
-            if (!_passLevel && !_passSlope) return false;
+            // ✨ مسار الانعكاس: درجة متوسطة + إشارات انعكاس قوية من القاع
+            //    الهدف: الدخول في بداية الحركة لا في قمتها
+            var _rev = (s.health && s.health.extras) ? (s.health.extras.reversalScore || 0) : 0;
+            var _passRev = s.score >= 50 && _rev >= 50;
+            if (!_passLevel && !_passSlope && !_passRev) return false;
 
             // ✨ بوابة التأكيد السعري -- لا نُمسك سكيناً هابطة
             //    الشرط: السعر فوق متوسط 20 يوماً + المتوسط نفسه صاعد
