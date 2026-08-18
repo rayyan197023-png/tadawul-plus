@@ -152,8 +152,9 @@ function statsToWeights(stats: AggregatedLayerStats): StrategyWeights {
   // ② تطبيق exponential لتعزيز الفروقات
   const expScores: Record<string, number> = {};
   layerKeys.forEach(k => {
-    // مضاعفة بـ 3 لتعزيز الفروقات بين الطبقات
-    expScores[k] = Math.exp(scores[k] * 3);
+    // ✨ رفع من 3 إلى 8 -- بـ3 كانت النسبة بين أفضل وأسوأ طبقة 1.8× فقط
+    //    فتتقارب الأوزان نحو 0.11 ويفقد التعلّم قدرته على التمييز
+    expScores[k] = Math.exp(scores[k] * 8);
   });
   
   // ③ التطبيع (Sum = 1.0)
