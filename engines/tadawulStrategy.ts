@@ -362,7 +362,8 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
             // ✨ مسار الانعكاس: درجة متوسطة + إشارات انعكاس قوية من القاع
             //    الهدف: الدخول في بداية الحركة لا في قمتها
             var _rev = (s.health && s.health.extras) ? (s.health.extras.reversalScore || 0) : 0;
-            var _passRev = s.score >= 50 && _rev >= 50;
+            // ✨ لا نقبل إلا 3 تأكيدات فأكثر (score 75+) -- الإشارة المفردة قرب العشوائية
+            var _passRev = s.score >= 45 && _rev >= 75;
             if (!_passLevel && !_passSlope && !_passRev) return false;
 
             // ✨ مسار الانعكاس معفى من بوابة MA20 -- السهم المنعكس من القاع تحتها بطبيعته
