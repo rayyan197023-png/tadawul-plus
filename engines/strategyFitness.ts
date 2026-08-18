@@ -115,11 +115,14 @@ const FITNESS_WEIGHTS = {
   stability: 0.05,      // كعقوبة (تُطرح)
 };
 
+// ✨ عتبات معايرة بمراجع حقيقية:
+//    تاسي التاريخي ~8% · Buffett 60 سنة ~20% · Medallion (الأفضل عالمياً) ~39%
+//    العتبات القديمة (Acceptable=15%) كانت تتجاوز Buffett فتُصنّف كل نتيجة واقعية "مرفوضة"
 const TIER_THRESHOLDS = {
-  legendary: { cagr: 80, alpha: 60 },
-  excellent: { cagr: 50, alpha: 30 },
-  good: { cagr: 25, alpha: 10 },
-  acceptable: { cagr: 15, alpha: 5 },
+  legendary: { cagr: 35, alpha: 25 },   // مستوى Medallion
+  excellent: { cagr: 20, alpha: 12 },   // مستوى Buffett
+  good: { cagr: 12, alpha: 6 },         // فوق السوق بوضوح
+  acceptable: { cagr: 6, alpha: 2 },    // فوق السايبور
 };
 
 // ════════════════════════════════════════════════════════════
