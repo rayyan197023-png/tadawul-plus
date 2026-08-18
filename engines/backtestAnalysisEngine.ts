@@ -1337,6 +1337,12 @@ function calc9Layers(stk: any, bars: any[], allStocks: any[]): any {
   const vi = calcIVWAP(rBars);
   const mc = calcMacroFull(stk);
   const tc_tasi = calcTasiContext(stk, bars, allStocks);
+  
+  // ✨ درجة الانعكاس -- تُحسب من المؤشرات الجاهزة
+  const _rsiFullRev = calcRSIFull ? calcRSIFull(rBars, 14) : null;
+  const _macdRev = rBars.length >= 35 ? calcMACD(rBars) : null;
+  const _cmfPrev = rBars.length >= 25 ? calcCMF(rBars.slice(0, -5), 20) : cmf;
+  const revScore = calcReversalScore(rBars, _rsiFullRev, _macdRev, cmf, _cmfPrev);
 
   const radar = analyzeStockRadar(stk, rBars);
   const radarMS = radar.factors.find((f: any) => f.k === "ms")?.s || 0;
@@ -1605,6 +1611,10 @@ function calc9Layers(stk: any, bars: any[], allStocks: any[]): any {
       sslLabel: ls.label, recoveredSSL: ls.recoveredSSL,
       vwapDev: vi.vwapDev, belowB1: vi.belowB1, belowB2: vi.belowB2,
       macroEnv: mc.env, macroScore: mc.score,
+      // ✨ درجة الانعكاس
+      reversalScore: revScore.score,
+      reversalLabel: revScore.label,
+      reversalSignals: revScore.signals,
     }
   };
 }
