@@ -440,6 +440,11 @@ export function crossover(
   });
   
   const weights = normalizeWeights(childWeights);
+    // ✨ نطاقات الفئة -- لتقييد المعاملات بعد التهجين
+  const _r = TYPE_RANGES[parent1.targetType as Exclude<StockType, 'excluded'>];
+  const _clampR = function(v: number, rg: ParamRange): number {
+    return Math.max(rg.min, Math.min(rg.max, v));
+  };
   
   // ② Crossover للمعاملات (متوسط مع عشوائية ±10%)
   const params: StrategyParams = {
