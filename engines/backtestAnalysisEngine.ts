@@ -16,7 +16,7 @@
  *   const health = stockHealth(stk, bars, allStocks);
  */
 
-import { calcRSI, calcATR, calcVWAP, calcCMF, calcOBV, calcMACD, calcMarketStructure } from './technicalEngine';
+import { calcRSI, calcRSIFull, calcATR, calcVWAP, calcCMF, calcOBV, calcMACD, calcMarketStructure } from './technicalEngine';
 
 // ════════════════════════════════════════════════════════════
 //  ثوابت أساسية -- نسخة من analysisEngine
