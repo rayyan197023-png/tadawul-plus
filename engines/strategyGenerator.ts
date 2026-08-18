@@ -262,7 +262,7 @@ function randomIntInRange(range: ParamRange): number {
  */
 function generateId(): string {
   const ts = Date.now().toString(36);
-  const rnd = Math.random().toString(36).substring(2, 8);
+  const rnd = _rnd().toString(36).substring(2, 8);
   return `s_${ts}_${rnd}`;
 }
 
@@ -318,22 +318,22 @@ export function generateRandomStrategy(
   const ranges = TYPE_RANGES[targetType];
   
   // 🆕 30% احتمال للبدء من Anchor (مع طفرة ±25%)
-  const useAnchor = anchorWeights && Math.random() < 0.30;
+  const useAnchor = anchorWeights && _rnd() < 0.30;
   
   let rawWeights: StrategyWeights;
   
   if (useAnchor && anchorWeights) {
     // طفرة الـ Anchor بنسبة ±25% لكل وزن
     rawWeights = {
-      L1: anchorWeights.L1 * (1 + (Math.random() - 0.5) * 0.5),
-      L2: anchorWeights.L2 * (1 + (Math.random() - 0.5) * 0.5),
-      L3: anchorWeights.L3 * (1 + (Math.random() - 0.5) * 0.5),
-      L4: anchorWeights.L4 * (1 + (Math.random() - 0.5) * 0.5),
-      L5: anchorWeights.L5 * (1 + (Math.random() - 0.5) * 0.5),
-      L6: anchorWeights.L6 * (1 + (Math.random() - 0.5) * 0.5),
-      L7: anchorWeights.L7 * (1 + (Math.random() - 0.5) * 0.5),
-      L8: anchorWeights.L8 * (1 + (Math.random() - 0.5) * 0.5),
-      L9: anchorWeights.L9 * (1 + (Math.random() - 0.5) * 0.5),
+      L1: anchorWeights.L1 * (1 + (_rnd() - 0.5) * 0.5),
+      L2: anchorWeights.L2 * (1 + (_rnd() - 0.5) * 0.5),
+      L3: anchorWeights.L3 * (1 + (_rnd() - 0.5) * 0.5),
+      L4: anchorWeights.L4 * (1 + (_rnd() - 0.5) * 0.5),
+      L5: anchorWeights.L5 * (1 + (_rnd() - 0.5) * 0.5),
+      L6: anchorWeights.L6 * (1 + (_rnd() - 0.5) * 0.5),
+      L7: anchorWeights.L7 * (1 + (_rnd() - 0.5) * 0.5),
+      L8: anchorWeights.L8 * (1 + (_rnd() - 0.5) * 0.5),
+      L9: anchorWeights.L9 * (1 + (_rnd() - 0.5) * 0.5),
     };
     
     // التأكّد من البقاء داخل النطاقات
