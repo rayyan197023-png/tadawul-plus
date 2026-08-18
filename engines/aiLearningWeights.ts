@@ -29,7 +29,12 @@ const FEEDBACK_STORE_KEY = 'tdw_feedback_state';
  * الأوزان الافتراضيّة (متساوية تقريباً)
  * تُستعمل إن لم تتوفّر بيانات AI Learning كافية
  */
+// ✨ مطابقة لأوزان BASE في backtestAnalysisEngine -- نبدأ من نفس نقطة المحرّك
 const DEFAULT_WEIGHTS: StrategyWeights = {
+  L1: 0.19, L2: 0.02, L3: 0.02,
+  L4: 0.14, L5: 0.19, L6: 0.04,
+  L7: 0.06, L8: 0.14, L9: 0.20,
+};
 
 /**
  * الحدّ الأدنى من الصفقات لتُعتبر طبقة موثوقة
