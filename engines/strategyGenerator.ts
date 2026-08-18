@@ -247,7 +247,7 @@ function _rnd(): number {
  * توليد رقم عشوائي بين min و max
  */
 function randomInRange(range: ParamRange): number {
-  return range.min + Math.random() * (range.max - range.min);
+  return range.min + _rnd() * (range.max - range.min);
 }
 
 /**
