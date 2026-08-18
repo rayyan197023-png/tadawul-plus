@@ -660,7 +660,12 @@ export function createNextGeneration(
   const offspringCount = Math.round(populationSize * 0.60);
   for (let i = 0; i < offspringCount; i++) {
     const p1 = elites[Math.floor(_rnd() * elites.length)];
-    const p2 = elites[Math.floor(_rnd() * elites.length)];
+    // ✨ نتجنّب التهجين مع النفس -- يُهدر فرصة استكشاف (نسخة لا طفل)
+    let p2 = elites[Math.floor(_rnd() * elites.length)];
+    if (elites.length > 1 && p2.id === p1.id) {
+      const _alt = elites.filter(function(e) { return e.id !== p1.id; });
+      p2 = _alt[Math.floor(_rnd() * _alt.length)];
+    }
     
     let child = crossover(p1, p2, newGenerationNumber);
     
