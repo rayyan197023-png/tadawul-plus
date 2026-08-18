@@ -305,7 +305,11 @@ export function calculateFitness(metrics: BacktestMetrics): FitnessResult {
     - ddPenalty - stabilityPenalty;
   
   // ⑤ Final Fitness (مع عقوبة الـ significance)
-  const finalFitness = rawFitness * (1 - significancePenaltyNorm);
+  // ✨ العقوبة تُطرح عند السالب لا تُضرب -- الضرب كان يُحسّن النتائج السالبة
+  //    (rawFitness=-0.50 × 0.20 = -0.10 أي أن قلّة الصفقات صارت مكافأة)
+  const finalFitness = rawFitness >= 0
+    ? rawFitness * (1 - significancePenaltyNorm)
+    : rawFitness - (significancePenaltyNorm * 0.5);
   
   // ⑥ تصنيف Tier
   const tier = classifyTier(cagr, alpha);
