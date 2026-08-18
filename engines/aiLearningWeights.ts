@@ -30,10 +30,6 @@ const FEEDBACK_STORE_KEY = 'tdw_feedback_state';
  * تُستعمل إن لم تتوفّر بيانات AI Learning كافية
  */
 const DEFAULT_WEIGHTS: StrategyWeights = {
-  L1: 0.15, L2: 0.05, L3: 0.03,
-  L4: 0.15, L5: 0.15, L6: 0.07,
-  L7: 0.07, L8: 0.13, L9: 0.20,
-};
 
 /**
  * الحدّ الأدنى من الصفقات لتُعتبر طبقة موثوقة
