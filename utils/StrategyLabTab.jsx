@@ -929,7 +929,6 @@ export default function StrategyLabTab({
       estimatedRemainingMs: 0,
     });
       // ✨ بذرة ثابتة -- تجعل المختبر قابلاً للتكرار
-    try { setLabSeed(987654321); } catch (e) {}
   
     const config = createLabConfig(mode, targetType);
     
