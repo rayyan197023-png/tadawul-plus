@@ -303,21 +303,19 @@ function RunningPhase({ C, progress, onCancel }) {
           </span>
         </div>
         <div style={{
-          position: 'relative',
           width: '100%',
-          height: 12,
-          background: 'rgba(255,255,255,0.12)',
-          border: '1px solid rgba(255,255,255,0.20)',
-          borderRadius: 6,
+          height: 14,
+          background: '#1e2d42',
+          border: '1px solid #4d9fff',
+          borderRadius: 7,
           overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'row-reverse',
         }}>
           <div style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            height: '100%',
-            width: (progress.overallPct || 0) + '%',
-            background: 'linear-gradient(90deg, ' + C.electric + ', ' + C.mint + ')',
+            height: '14px',
+            width: (progress.overallPct || 1) + '%',
+            background: '#1ee68a',
             transition: 'width 0.3s ease',
           }} />
         </div>
