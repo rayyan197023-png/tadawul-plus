@@ -303,9 +303,10 @@ function RunningPhase({ C, progress, onCancel }) {
           </span>
         </div>
         <div style={{
-          height: 8,
-          background: C.ash,
-          borderRadius: 4,
+          height: 12,
+          background: 'rgba(255,255,255,0.12)',
+          border: '1px solid rgba(255,255,255,0.20)',
+          borderRadius: 6,
           overflow: 'hidden',
         }}>
           <div style={{
