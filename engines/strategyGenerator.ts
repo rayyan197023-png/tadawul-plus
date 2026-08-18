@@ -448,7 +448,7 @@ export function crossover(
     ).toFixed(1),
     sellThreshold: +(
       (parent1.params.sellThreshold + parent2.params.sellThreshold) / 2 *
-      (1 + (Math.random() - 0.5) * 0.1)
+      (1 + (_rnd() - 0.5) * 0.1)
     ).toFixed(1),
     stopLossPct: +(
       (parent1.params.stopLossPct + parent2.params.stopLossPct) / 2
