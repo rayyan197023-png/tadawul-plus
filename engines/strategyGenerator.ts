@@ -239,8 +239,8 @@ export function setLabSeed(seed: number): void {
 }
 
 function _rnd(): number {
-  _labSeed = (_labSeed * 1664525 + 1013904223) % 4294967296;
-  return _labSeed / 4294967296;
+  // ✨ عشوائية حقيقية -- المختبر أداة استكشاف، وكل جولة تبحث في مسار جديد
+  return Math.random();
 }
 
 /**
