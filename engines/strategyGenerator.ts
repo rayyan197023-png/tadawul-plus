@@ -448,30 +448,36 @@ export function crossover(
   
   // ② Crossover للمعاملات (متوسط مع عشوائية ±10%)
   const params: StrategyParams = {
-    buyThreshold: +(
-      (parent1.params.buyThreshold + parent2.params.buyThreshold) / 2 *
-      (1 + (_rnd() - 0.5) * 0.1)
+    buyThreshold: +_clampR(
+      (parent1.params.buyThreshold + parent2.params.buyThreshold) / 2 * (1 + (_rnd() - 0.5) * 0.1),
+      _r.buyThreshold
     ).toFixed(1),
-    sellThreshold: +(
-      (parent1.params.sellThreshold + parent2.params.sellThreshold) / 2 *
-      (1 + (_rnd() - 0.5) * 0.1)
+    sellThreshold: +_clampR(
+      (parent1.params.sellThreshold + parent2.params.sellThreshold) / 2 * (1 + (_rnd() - 0.5) * 0.1),
+      _r.sellThreshold
     ).toFixed(1),
-    stopLossPct: +(
-      (parent1.params.stopLossPct + parent2.params.stopLossPct) / 2
+    stopLossPct: +_clampR(
+      (parent1.params.stopLossPct + parent2.params.stopLossPct) / 2,
+      _r.stopLossPct
     ).toFixed(3),
-    takeProfitPct: +(
-      (parent1.params.takeProfitPct + parent2.params.takeProfitPct) / 2
+    takeProfitPct: +_clampR(
+      (parent1.params.takeProfitPct + parent2.params.takeProfitPct) / 2,
+      _r.takeProfitPct
     ).toFixed(3),
-    maxHoldDays: Math.round(
-      (parent1.params.maxHoldDays + parent2.params.maxHoldDays) / 2
-    ),
-    maxPositions: Math.round(
-      (parent1.params.maxPositions + parent2.params.maxPositions) / 2
-    ),
-    maxPositionPct: +(
-      (parent1.params.maxPositionPct + parent2.params.maxPositionPct) / 2
+    maxHoldDays: Math.round(_clampR(
+      (parent1.params.maxHoldDays + parent2.params.maxHoldDays) / 2,
+      _r.maxHoldDays
+    )),
+    maxPositions: Math.round(_clampR(
+      (parent1.params.maxPositions + parent2.params.maxPositions) / 2,
+      _r.maxPositions
+    )),
+    maxPositionPct: +_clampR(
+      (parent1.params.maxPositionPct + parent2.params.maxPositionPct) / 2,
+      _r.maxPositionPct
     ).toFixed(3),
   };
+
   
   return {
     id: generateId(),
