@@ -427,7 +427,7 @@ export function crossover(
   
   // ① Single-Point Crossover للأوزان
   const weightKeys: (keyof StrategyWeights)[] = ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'L9'];
-  const cutPoint = Math.floor(Math.random() * weightKeys.length);
+  const cutPoint = Math.floor(_rnd() * weightKeys.length);
   
   const childWeights: any = {};
   weightKeys.forEach((key, idx) => {
