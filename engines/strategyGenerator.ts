@@ -500,9 +500,9 @@ export function mutate(
   const weightKeys: (keyof StrategyWeights)[] = ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'L9'];
   
   weightKeys.forEach(key => {
-    if (Math.random() < mutationRate) {
+    if (_rnd() < mutationRate) {
       const current = strategy.weights[key];
-      const delta = (Math.random() - 0.5) * 0.4 * current;  // ±20%
+      const delta = (_rnd() - 0.5) * 0.4 * current;  // ±20%
       let newValue = current + delta;
       
       // التأكّد من البقاء داخل النطاق
@@ -518,52 +518,52 @@ export function mutate(
   // ② طفرة المعاملات
   const mutatedParams: StrategyParams = { ...strategy.params };
   
-  if (Math.random() < mutationRate) {
+  if (_rnd() < mutationRate) {
     mutatedParams.buyThreshold = +Math.max(
       ranges.buyThreshold.min,
       Math.min(ranges.buyThreshold.max, 
-        strategy.params.buyThreshold * (1 + (Math.random() - 0.5) * 0.2)
+        strategy.params.buyThreshold * (1 + (_rnd() - 0.5) * 0.2)
       )
     ).toFixed(1);
   }
   
-  if (Math.random() < mutationRate) {
+  if (_rnd() < mutationRate) {
     mutatedParams.sellThreshold = +Math.max(
       ranges.sellThreshold.min,
       Math.min(ranges.sellThreshold.max,
-        strategy.params.sellThreshold * (1 + (Math.random() - 0.5) * 0.2)
+        strategy.params.sellThreshold * (1 + (_rnd() - 0.5) * 0.2)
       )
     ).toFixed(1);
   }
   
-  if (Math.random() < mutationRate) {
+  if (_rnd() < mutationRate) {
     mutatedParams.stopLossPct = +Math.max(
       ranges.stopLossPct.min,
       Math.min(ranges.stopLossPct.max,
-        strategy.params.stopLossPct * (1 + (Math.random() - 0.5) * 0.3)
+        strategy.params.stopLossPct * (1 + (_rnd() - 0.5) * 0.3)
       )
     ).toFixed(3);
   }
   
-  if (Math.random() < mutationRate) {
+  if (_rnd() < mutationRate) {
     mutatedParams.takeProfitPct = +Math.max(
       ranges.takeProfitPct.min,
       Math.min(ranges.takeProfitPct.max,
-        strategy.params.takeProfitPct * (1 + (Math.random() - 0.5) * 0.3)
+        strategy.params.takeProfitPct * (1 + (_rnd() - 0.5) * 0.3)
       )
     ).toFixed(3);
   }
   
-  if (Math.random() < mutationRate) {
+  if (_rnd() < mutationRate) {
     mutatedParams.maxHoldDays = Math.round(Math.max(
       ranges.maxHoldDays.min,
       Math.min(ranges.maxHoldDays.max,
-        strategy.params.maxHoldDays * (1 + (Math.random() - 0.5) * 0.3)
+        strategy.params.maxHoldDays * (1 + (_rnd() - 0.5) * 0.3)
       )
     ));
   }
   
-  if (Math.random() < mutationRate) {
+  if (_rnd() < mutationRate) {
     mutatedParams.maxPositions = Math.round(Math.max(
       ranges.maxPositions.min,
       Math.min(ranges.maxPositions.max,
