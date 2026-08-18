@@ -927,7 +927,9 @@ export default function StrategyLabTab({
       elapsedMs: 0,
       estimatedRemainingMs: 0,
     });
-    
+      // ✨ بذرة ثابتة -- تجعل المختبر قابلاً للتكرار
+    try { setLabSeed(987654321); } catch (e) {}
+  
     const config = createLabConfig(mode, targetType);
     
     // 🆕 قراءة Anchor Weights من AI Learning
