@@ -291,7 +291,7 @@ function RunningPhase({ C, progress, onCancel }) {
       </div>
       
       {/* ═══ شريط التقدّم ═══ */}
-      <div style={{ marginBottom: 16 }}>
+      <div style={{ marginBottom: 16, width: '100%' }}>
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
