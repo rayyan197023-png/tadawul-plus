@@ -567,16 +567,16 @@ export function mutate(
     mutatedParams.maxPositions = Math.round(Math.max(
       ranges.maxPositions.min,
       Math.min(ranges.maxPositions.max,
-        strategy.params.maxPositions + (Math.random() < 0.5 ? -1 : 1)
+        strategy.params.maxPositions + (_rnd() < 0.5 ? -1 : 1)
       )
     ));
   }
   
-  if (Math.random() < mutationRate) {
+  if (_rnd() < mutationRate) {
     mutatedParams.maxPositionPct = +Math.max(
       ranges.maxPositionPct.min,
       Math.min(ranges.maxPositionPct.max,
-        strategy.params.maxPositionPct * (1 + (Math.random() - 0.5) * 0.2)
+        strategy.params.maxPositionPct * (1 + (_rnd() - 0.5) * 0.2)
       )
     ).toFixed(3);
   }
@@ -647,13 +647,13 @@ export function createNextGeneration(
   // ④ توليد Offspring (60%) من تهجين النخبة
   const offspringCount = Math.round(populationSize * 0.60);
   for (let i = 0; i < offspringCount; i++) {
-    const p1 = elites[Math.floor(Math.random() * elites.length)];
-    const p2 = elites[Math.floor(Math.random() * elites.length)];
+    const p1 = elites[Math.floor(_rnd() * elites.length)];
+    const p2 = elites[Math.floor(_rnd() * elites.length)];
     
     let child = crossover(p1, p2, newGenerationNumber);
     
     // تطبيق طفرة باحتمال
-    if (Math.random() < 0.5) {
+    if (_rnd() < 0.5) {
       child = mutate(child, mutationRate);
     }
     
