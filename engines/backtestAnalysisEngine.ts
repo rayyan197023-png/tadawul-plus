@@ -1869,8 +1869,10 @@ export function stockHealth(stk: any, bars: any[], allStocks?: any[], macroOverr
   
   // STEP 7: Conviction
   // ✨ إن كان المحرّك الأساسي محايداً (لا بيانات أساسية)، نُعيد توزيع وزنه على LA/LC
-  //    بدل أن يسحب الدرجة للأسفل بقيمة محايدة ثابتة
-  const _fundAvailable = stk.pe != null || stk.roe != null || stk.divY != null;
+
+  //    الخلط بين أسهم كاملة البيانات وأخرى محيّدة يجعل نقص البيانات ميزة
+  const _fundAvailable = stk.roe != null && stk.pe != null;
+
   let _wA = wA, _wB = wB, _wC = wC;
   if (!_fundAvailable) {
     const _redistribute = wB;
