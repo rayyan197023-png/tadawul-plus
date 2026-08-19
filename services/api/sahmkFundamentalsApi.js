@@ -62,6 +62,16 @@ function mapRatiosData(data) {
 
 export async function fetchFundamentals(symbol) {
   try {
+      // ✨ كاش دائم -- الأساسيات ربعية، وإعادة الجلب تجعل الباك-تيست غير قابل للتكرار
+    var _ck = 'tp_fund_' + symbol;
+    try {
+      var _c = localStorage.getItem(_ck);
+      if (_c) {
+        var _p = JSON.parse(_c);
+        if (_p && (Date.now() - _p.t) < 7 * 86400000) return _p.d;
+      }
+    } catch (e) {}
+
     const [company, ratios] = await Promise.allSettled([
       sahmkFetch('fundamentals', symbol),
       sahmkFetch('ratios', symbol),
