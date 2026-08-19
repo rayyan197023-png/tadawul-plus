@@ -108,6 +108,7 @@ export default function BacktestScreen() {
 
   async function runBacktest() {
     setIsRunning(true);
+        try { localStorage.removeItem('tp_fund_all'); } catch(e) {}   // مؤقّت -- للتشخيص
     setResults(null);
 
     try {
