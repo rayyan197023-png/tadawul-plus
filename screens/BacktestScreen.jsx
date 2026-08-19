@@ -110,6 +110,9 @@ export default function BacktestScreen() {
     setIsRunning(true);
         try { localStorage.removeItem('tp_fund_all'); } catch(e) {}   // مؤقّت -- للتشخيص
     setResults(null);
+    // ✨ نُحرّر بيانات التشغيل السابق قبل بناء الجديدة -- تراكمها يستنفد ذاكرة الجوال
+    setLabHistoricalData(null);
+    setLabDataInfo(null);
 
     try {
       var historicalData;
