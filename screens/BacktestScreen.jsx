@@ -167,6 +167,11 @@ export default function BacktestScreen() {
           var _fm = await import('../constants/stocksData');
           _fundMap = _fm.STOCKS_MAP || {};
         } catch (e) {}
+        // ✨ نضمن اكتمال الأساسيات لأسهم هذا الباك-تيست قبل البدء
+        try {
+          var _ff = await import('../services/api/sahmkFundamentalsApi');
+          await _ff.loadFundamentalsIntoStocks(_fundMap, categoryStocks.map(function(s){ return s.sym; }));
+        } catch (e) { console.warn('[Fundamentals]', e.message); }
 
         var enrichedStocks = categoryStocks.map(s => {
           var live = STOCKS.find(x => x.sym === s.sym);
