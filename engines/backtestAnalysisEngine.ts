@@ -517,6 +517,21 @@ function calcEarningsModel(stk: any): any {
 
 function calcDCF(stk: any): any {
   if (!stk) return { intrinsic: 0, upside: 0, wacc: 8, dcfScore: 50, signal: "بيانات غير كافية", rating: "احتفاظ" };
+    // ✨ القيمة العادلة المحسوبة من sahmk تغني عن تقديرات DCF بافتراضات
+  //    (fair_price_confidence = 0.95 -- أدق بكثير من Graham/Lynch المفترضين)
+  if (stk.fairPrice != null && stk.fairPrice > 0 && stk.p > 0) {
+    const _up = +((stk.fairPrice / stk.p - 1) * 100).toFixed(1);
+    const _sc = Math.round(Math.max(10, 100 / (1 + Math.exp(-0.06 * (_up - 5)))));
+    return {
+      intrinsic: stk.fairPrice, upside: _up,
+      wacc: 8, grahamValue: null, dcfValue: stk.fairPrice, lynchValue: null, lynchPE: null,
+      dcfScore: _sc,
+      signal: _up > 20 ? "مقيّم بأقل من قيمته بشكل واضح" : _up > 10 ? "مقيّم بأقل من قيمته" : _up > -10 ? "تقييم عادل" : "مقيّم بأعلى من قيمته",
+      rating: _up > 20 ? "شراء قوي" : _up > 10 ? "شراء" : _up > -10 ? "احتفاظ" : "تخفيف",
+      source: "sahmk_fair_value"
+    };
+  }
+
   const eps = stk.eps || stk.p / (stk.pe || 15);
   const ke = 0.08 + (stk.sector_beta || 1) * 0.055;
   const roe = (stk.roe || 12) / 100;
