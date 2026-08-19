@@ -161,9 +161,21 @@ export default function BacktestScreen() {
           return;
         }
         
+        // ✨ نُثري بالأساسيات الحقيقية من sahmk قبل تمريرها للباك-تيست
+        var _fundMap = {};
+        try {
+          var _fm = await import('../constants/stocksData');
+          _fundMap = _fm.STOCKS_MAP || {};
+        } catch (e) {}
+
         var enrichedStocks = categoryStocks.map(s => {
           var live = STOCKS.find(x => x.sym === s.sym);
-          return live ? { ...s, ...live } : s;
+          var fund = _fundMap[s.sym] || {};
+          return { ...s, ...(live || {}), 
+                   pe: fund.pe, pb: fund.pb, eps: fund.eps, bookValue: fund.bookValue,
+                   roe: fund.roe, debt: fund.debt, epsGrw: fund.epsGrw, revGrw: fund.revGrw,
+                   mktCap: fund.mktCap, sector_beta: fund.sector_beta,
+                   w52h: fund.w52h, w52l: fund.w52l, target: fund.target };
         });
         
         // 🆕 ٥٠ سهم للـ Diverse Universe، ١٥ للفئات الأخرى
