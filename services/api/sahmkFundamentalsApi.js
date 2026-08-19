@@ -81,9 +81,11 @@ export async function fetchFundamentals(symbol) {
     const ratiosData = ratios.status === 'fulfilled'
       ? mapRatiosData(ratios.value)
       : {};
-
     var _out = { ...companyData, ...ratiosData };
-    try { localStorage.setItem(_ck, JSON.stringify({ t: Date.now(), d: _out })); } catch (e) {}
+    try {
+      _all[symbol] = { t: Date.now(), d: _out };
+      localStorage.setItem('tp_fund_all', JSON.stringify(_all));
+    } catch (e) {}
     return _out;
 
   } catch (e) {
