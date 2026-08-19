@@ -867,6 +867,30 @@ export default function BacktestScreen() {
             </span>
           </label>
         </div>
+        <button
+          onClick={async function() {
+            haptic.tap();
+            setIsRunning(true);
+            try {
+              var _ff = await import('../services/api/sahmkFundamentalsApi');
+              var _sd = await import('../constants/stocksData');
+              await _ff.loadFundamentalsIntoStocks(_sd.STOCKS_MAP, _sd.STOCKS.map(function(s){ return s.sym; }));
+              alert('✅ اكتمل تحميل البيانات الأساسية -- النتائج الآن قابلة للتكرار');
+            } catch (e) { alert('⚠ فشل التحميل: ' + e.message); }
+            setIsRunning(false);
+          }}
+          disabled={isRunning}
+          style={{
+            width: "100%", padding: "10px", marginBottom: 8,
+            background: C.teal + "18",
+            border: "1px solid " + C.teal + "55",
+            borderRadius: 10, color: C.teal,
+            fontSize: 11, fontWeight: 800, cursor: "pointer",
+            fontFamily: "Cairo, sans-serif",
+          }}
+        >
+          📥 تحميل البيانات الأساسية (مرة واحدة أسبوعياً)
+        </button>
 
         <button
           onClick={() => { haptic.strong(); runBacktest(); }}
