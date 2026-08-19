@@ -13,17 +13,26 @@ async function sahmkFetch(endpoint, sym) {
 }
 
 // ─── تحويل بيانات company إلى شكل STOCKS ───────────
+// ─── تحويل بيانات company إلى شكل STOCKS ───────────
 function mapCompanyData(data) {
-  if (!data) return {};
+  // ✨ الحقول داخل data.fundamentals لا في data مباشرة (مؤكد بالاختبار)
+  const f = (data && data.fundamentals) ? data.fundamentals : null;
+  if (!f) return {};
   return {
-    mktCap: data.market_cap    ?? null,
-    pe:     data.pe_ratio      ?? null,
-    pb:     data.pb_ratio      ?? null,
-    eps:    data.eps           ?? null,
-    beta:   data.beta          ?? null,
-    w52h:   data.week52_high   ?? null,
-    w52l:   data.week52_low    ?? null,
-    divY:   data.dividend_yield ?? null,
+    mktCap: f.market_cap != null ? f.market_cap / 1e9 : null,  // بالمليار
+    pe:     f.pe_ratio != null ? f.pe_ratio : null,
+    pb:     f.price_to_book != null ? f.price_to_book : null,
+    eps:    f.eps != null ? f.eps : (f.eps_ttm != null ? f.eps_ttm : null),
+    bookValue: f.book_value != null ? f.book_value : null,
+    beta:   f.beta != null ? f.beta : null,
+    sector_beta: f.beta != null ? f.beta : null,
+    w52h:   f.fifty_two_week_high != null ? f.fifty_two_week_high : null,
+    w52l:   f.fifty_two_week_low != null ? f.fifty_two_week_low : null,
+    shares: f.shares_outstanding != null ? f.shares_outstanding : null,
+    // ✨ القيمة العادلة وإجماع المحللين -- يغنيان عن تقديرات DCF المفترضة
+    fairPrice: (data.valuation && data.valuation.fair_price != null) ? data.valuation.fair_price : null,
+    target:    (data.analysts && data.analysts.target_mean != null) ? data.analysts.target_mean : null,
+    consensus: (data.analysts && data.analysts.consensus) ? data.analysts.consensus : null,
   };
 }
 
