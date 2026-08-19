@@ -85,7 +85,9 @@ export async function fetchFundamentals(symbol) {
       ? mapRatiosData(ratios.value)
       : {};
 
-    return { ...companyData, ...ratiosData };
+    var _out = { ...companyData, ...ratiosData };
+    try { localStorage.setItem(_ck, JSON.stringify({ t: Date.now(), d: _out })); } catch (e) {}
+    return _out;
 
   } catch (e) {
     console.warn(`[sahmkFundamentals] ${symbol}:`, e.message);
