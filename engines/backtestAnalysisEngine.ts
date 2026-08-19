@@ -1279,6 +1279,18 @@ function calcReversalScore(bars: any[], rsiFull: any, macd: any, cmfNow: number,
   // ③ تباعد إيجابي -- تأكيد داعم (25)
   if (rsiFull && rsiFull.divergence === 'bullish') { score += 15; signals.push('تباعد RSI إيجابي'); }
   if (macd && macd.divergence === 'bullish') { score += 10; signals.push('تباعد MACD إيجابي'); }
+  // ④ اختراق ترند هابط -- كانت ضمن v1 الناجحة (25)
+  const win = bars.slice(-30);
+  let hiIdx1 = 0, hiIdx2 = 15;
+  for (let i = 0; i < 15; i++) if (win[i].hi > win[hiIdx1].hi) hiIdx1 = i;
+  for (let i = 15; i < win.length; i++) if (win[i].hi > win[hiIdx2].hi) hiIdx2 = i;
+  if (hiIdx2 > hiIdx1) {
+    const slope = (win[hiIdx2].hi - win[hiIdx1].hi) / (hiIdx2 - hiIdx1);
+    if (slope < 0) {
+      const projected = win[hiIdx2].hi + slope * (win.length - 1 - hiIdx2);
+      if (bars[n - 1].c > projected) { score += 25; signals.push('اختراق ترند هابط'); }
+    }
+  }
 
   score = Math.min(100, score);
   return {
