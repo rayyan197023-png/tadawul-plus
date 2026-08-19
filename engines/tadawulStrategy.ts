@@ -363,7 +363,7 @@ export function createTadawulStrategy(healthFn: any, options?: any, macroOverrid
             //    الهدف: الدخول في بداية الحركة لا في قمتها
             var _rev = (s.health && s.health.extras) ? (s.health.extras.reversalScore || 0) : 0;
             // تأكيدان (score 40) مع درجة محرّك معقولة -- توازن بين الصرامة والفرص
-            var _passRev = s.score >= 50 && _rev >= 40;
+            var _passRev = s.score >= 50 && _rev >= 50;
             if (!_passLevel && !_passSlope && !_passRev) return false;
 
             // ✨ مسار الانعكاس معفى من بوابة MA20 -- السهم المنعكس من القاع تحتها بطبيعته
