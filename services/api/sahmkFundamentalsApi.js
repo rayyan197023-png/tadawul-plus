@@ -82,10 +82,10 @@ export async function fetchFundamentals(symbol) {
       ? mapRatiosData(ratios.value)
       : {};
     var _out = { ...companyData, ...ratiosData };
-    try {
-      _all[symbol] = { t: Date.now(), d: _out };
-      localStorage.setItem('tp_fund_all', JSON.stringify(_all));
-    } catch (e) {}
+    // try {
+    //   _all[symbol] = { t: Date.now(), d: _out };
+    //   localStorage.setItem('tp_fund_all', JSON.stringify(_all));
+    // } catch (e) {}
     return _out;
 
   } catch (e) {
