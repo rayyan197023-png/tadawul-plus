@@ -1898,11 +1898,10 @@ export function stockHealth(stk: any, bars: any[], allStocks?: any[], macroOverr
   // STEP 8: تجميع النتيجة
   const merged: any = { ...tech };
 
-  // الدرجة من المحرّك التقني -- دمج LB/LC المحايدين (بلا أساسيات) يسحبها
-  // تحت عتبة الشراء فيتذبذب عدد الصفقات بشدة (18 ← 12 ← 1)
-  const score = conviction;
-  merged.score = score;
-  merged.grade = score >= 85 ? "S" : score >= 75 ? "A" : score >= 65 ? "B" : score >= 55 ? "C" : score >= 45 ? "D" : "F";
+
+  // LA وحده -- دمج LB/LC يخفض الدرجة تحت العتبة فتقلّ الصفقات للنصف
+  const score = merged.score;
+
 
 
   let sig, sigC;
