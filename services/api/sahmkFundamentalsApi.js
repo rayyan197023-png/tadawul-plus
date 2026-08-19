@@ -44,7 +44,10 @@ function mapRatiosData(data) {
     roe:          r.roe                   ?? null,
     roa:          r.roa                   ?? null,
     netMargin:    r.net_margin            ?? null,
-    debt:         r.debt_ratio            ?? null,
+    // ✨ debt_ratio غير موجود في الاستجابة -- نشتقه: 1 − (حقوق الملكية ÷ الأصول)
+    debt: (km.total_assets > 0 && km.stockholders_equity != null)
+            ? +(1 - km.stockholders_equity / km.total_assets).toFixed(3)
+            : null,
     revGrw:       r.revenue_growth_yoy    ?? null,
     epsGrw:       r.net_income_growth_yoy ?? null,
     freeCashFlow: km.operating_cash_flow  ?? null,
