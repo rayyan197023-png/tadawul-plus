@@ -1270,11 +1270,11 @@ function calcReversalScore(bars: any[], rsiFull: any, macd: any, cmfNow: number,
   const avgVol = bars.slice(-20).reduce((s: number, b: any) => s + (b.vol || 0), 0) / 20 || 1;
   const last3 = bars.slice(-3);
   const springHit = last3.some((b: any) => b.lo < lo20 && b.c > lo20 && (b.vol || 0) > avgVol * 1.2);
-  if (springHit) { score += 40; signals.push('Spring -- اصطياد سيولة وتعافٍ'); }
+  if (springHit) { score += 25; signals.push('Spring -- اصطياد سيولة وتعافٍ'); }
 
   // ② تحوّل تدفق المال من سالب لموجب (35)
-  if (cmfPrev < 0 && cmfNow > 0.03) { score += 35; signals.push('تدفق المال انقلب موجباً'); }
-  else if (cmfPrev < cmfNow && cmfNow > 0.05) { score += 18; signals.push('تدفق المال يتحسّن'); }
+  if (cmfPrev < 0 && cmfNow > 0.03) { score += 25; signals.push('تدفق المال انقلب موجباً'); }
+  else if (cmfPrev < cmfNow && cmfNow > 0.05) { score += 12; signals.push('تدفق المال يتحسّن'); }
 
   // ③ تباعد إيجابي -- تأكيد داعم (25)
   if (rsiFull && rsiFull.divergence === 'bullish') { score += 15; signals.push('تباعد RSI إيجابي'); }
