@@ -875,7 +875,25 @@ export default function BacktestScreen() {
               var _ff = await import('../services/api/sahmkFundamentalsApi');
               var _sd = await import('../constants/stocksData');
               await _ff.loadFundamentalsIntoStocks(_sd.STOCKS_MAP, _sd.STOCKS.map(function(s){ return s.sym; }));
-              alert('✅ اكتمل تحميل البيانات الأساسية -- النتائج الآن قابلة للتكرار');
+              // ✨ إحصاء دقيق -- كم سهماً وصلته الأساسيات فعلاً
+              var _syms = _sd.STOCKS.map(function(s){ return s.sym; });
+              var _ok = 0, _pe = 0, _roe = 0;
+              _syms.forEach(function(sy) {
+                var o = _sd.STOCKS_MAP[sy];
+                if (!o) return;
+                if (o.pe != null || o.roe != null) _ok++;
+                if (o.pe != null) _pe++;
+                if (o.roe != null) _roe++;
+              });
+              alert('✅ اكتمل التحميل\n\n'
+                + 'إجمالي الأسهم: ' + _syms.length + '\n'
+                + 'وصلتها بيانات: ' + _ok + ' (' + Math.round(_ok / _syms.length * 100) + '%)\n'
+                + '-- منها مضاعف ربحية: ' + _pe + '\n'
+                + '-- منها عائد على الملكية: ' + _roe + '\n\n'
+                + (_ok / _syms.length >= 0.9
+                    ? '✅ التغطية ممتازة -- النتائج موثوقة'
+                    : '⚠ التغطية ناقصة -- أعد الضغط لإكمالها'));
+
             } catch (e) { alert('⚠ فشل التحميل: ' + e.message); }
             setIsRunning(false);
           }}
