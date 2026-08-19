@@ -180,7 +180,8 @@ export default function BacktestScreen() {
                    pe: fund.pe, pb: fund.pb, eps: fund.eps, bookValue: fund.bookValue,
                    roe: fund.roe, debt: fund.debt, epsGrw: fund.epsGrw, revGrw: fund.revGrw,
                    mktCap: fund.mktCap, sector_beta: fund.sector_beta,
-                   w52h: fund.w52h, w52l: fund.w52l, target: fund.target };
+                   w52h: fund.w52h, w52l: fund.w52l, target: fund.target,
+                   fairPrice: fund.fairPrice, consensus: fund.consensus };
         });
         
         // 🆕 ٥٠ سهم للـ Diverse Universe، ١٥ للفئات الأخرى
