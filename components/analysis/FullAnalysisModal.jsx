@@ -234,7 +234,7 @@ function getTooltipKey(title) {
                 display:"flex",alignItems:"center",gap:8,flexShrink:0,
               }}>
                 <div style={{width:3,height:16,background:finalColor,borderRadius:2}}/>
-                <span style={{fontSize:12,fontWeight:700,color:C.mist,letterSpacing:".5px"}}>التحليل الكامل -- ٩ طبقات</span>
+<span style={{fontSize:12,fontWeight:700,color:C.mist,letterSpacing:".5px"}}>التحليل الكامل -- ١١ طبقة</span>
                 <div style={{
                   marginRight:"auto",background:finalColor+"18",
                   border:`1px solid ${finalColor}33`,borderRadius:8,padding:"2px 8px",
