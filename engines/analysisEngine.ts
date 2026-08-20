@@ -1877,9 +1877,13 @@ const grade = score>=GRADE_THRESHOLDS.S?"S":score>=GRADE_THRESHOLDS.A?"A":score>
       sslLabel:ls.label, recoveredSSL:ls.recoveredSSL,
 vwapDev, vwapD:vwapDev, belowB1:vi.belowB1, belowB2:vi.belowB2,
       macroEnv:mc.env, macroScore:mc.score,
+      // ✨ L11 -- عوامل الأداء المُثبتة (زخم 12ش · جودة · تدنّي تقلّب)
+      L11: L11, l11Detail: f11.detail, l11Mom: f11.momScore,
+      l11Qual: f11.qualScore, l11Vol: f11.volScore, l11QualAvail: f11.qualAvail,
     }
   };
 }
+
 
 /* ══ stockHealth v3 — Ensemble + Confidence + Feedback ══ */
 /* ══════════════════════════════════════════════════════════════
