@@ -963,7 +963,7 @@ animation:'shimmer 1.4s ease infinite',
 </div>
       </div>
 
-      {/* ══ لوحة التحليل الكامل -- ٩ طبقات (Modal) ══ */}
+      {/* ══ لوحة التحليل الكامل -- ١١ طبقة (Modal) ══ */}
       <FullAnalysisModal
         sym={fullAnalysis}
         onClose={function(){ setFullAnalysis(null); }}
