@@ -1709,11 +1709,13 @@ const regimeData  = detectMarketRegime(bars, adxV, mktWtd, mktBreadth, atr, stk,
   _momKeys.forEach(k=>{ WCx[k] = (WCx[k]||0) - _l10w * ((WCx[k]||0) / _momSum); });
   WCx.L10 = _l10w;
 
-  const baseScore = _clamp(Math.round(
-    L9*WCx.L9 + L1*WCx.L1 + L5*WCx.L5 + L4*WCx.L4 +
-    L8*WCx.L8 + L7*WCx.L7 + L6*WCx.L6 + L2*WCx.L2 + L3*WCx.L3 +
-    L10*WCx.L10
+  // ✨ L11 تدخل بوزن 20% من الدرجة، والباقي 80% للطبقات التسع
+  const _base9 = _clamp(Math.round(
+    L9 * WC.L9 + L1 * WC.L1 + L5 * WC.L5 + L4 * WC.L4 +
+    L8 * WC.L8 + L7 * WC.L7 + L6 * WC.L6 + L2 * WC.L2 + L3 * WC.L3
   ), 0, 100);
+  const baseScore = _clamp(Math.round(_base9 * 0.80 + L11 * 0.20), 0, 100);
+
   
   // ════════════════════════════════════════════════════════════
   //  🎯 UNIFIED ADJUSTMENT FACTOR -- 5 components, ONE multiplier
