@@ -1852,7 +1852,7 @@ var neut = normalizeProb(prob.neutral);
                             display:"flex",alignItems:"center",justifyContent:"center",gap:8,
                           }}>
                           <span>🔬</span>
-                          <span>التحليل الكامل -- ٩ طبقات</span>
+                          <span>التحليل الكامل -- ١١ طبقة</span>
                           <span style={{fontSize:10,opacity:.7}}>←</span>
                         </button>
                         </div>{/* نهاية div padding */}
