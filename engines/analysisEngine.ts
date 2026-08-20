@@ -441,7 +441,7 @@ var totalVol=profile.reduce(function(s: number, p:any){return s+p.vol;},0);
 
 
 /* ══════════════════════════════════════════════════════════════
-   رادار الفرص (SMC) — محركات مدمجة في الـ 9 طبقات
+   رادار الفرص (SMC) — محركات مدمجة في الـ 11 طبقة
    ─────────────────────────────────────────────────────────────
    analyzeStockRadar() تُحسب نتائج الرادار التسعة:
    msScore/obScore/lsScore/viScore/trScore/moScore/lqScore/vaScore/mcScore
