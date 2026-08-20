@@ -1606,7 +1606,7 @@ var neut = normalizeProb(prob.neutral);
                               color:health.sigC,
                             }}>
                             <span>🔬</span>
-                            <span>٩ طبقات</span>
+                            <span>١١ طبقة</span>
                           </button>
                         </div>
                       )}
