@@ -1692,6 +1692,9 @@ function calc9Layers(stk: any, bars: any[], allStocks: any[]): any {
       sslLabel: ls.label, recoveredSSL: ls.recoveredSSL,
       vwapDev: vi.vwapDev, belowB1: vi.belowB1, belowB2: vi.belowB2,
       macroEnv: mc.env, macroScore: mc.score,
+            L11: L11, l11Detail: f11.detail, l11Mom: f11.momScore,
+      l11Qual: f11.qualScore, l11Vol: f11.volScore,
+
       // ✨ درجة الانعكاس
       reversalScore: revScore.score,
       reversalLabel: revScore.label,
