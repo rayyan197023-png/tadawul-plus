@@ -1255,6 +1255,76 @@ function calculateLayer10(bars: Bar[]): number {
   return L10;
 }
 
+// ════════════════════════════════════════════════════════════
+//  ✨ L11 -- عوامل الأداء المُثبتة أكاديمياً
+//  ① الزخم 12 شهراً بتخطّي الشهر الأخير -- Jegadeesh & Titman (1993)
+//     تأكيد عبر 8 أسواق: Asness, Moskowitz & Pedersen (2013)
+//  ② الجودة/الربحية -- Novy-Marx (2013), Asness et al. (2019) QMJ
+//  ③ تدنّي التقلّب -- Frazzini & Pedersen (2014) BAB
+// ════════════════════════════════════════════════════════════
+function calcFactorLayer11(stk: any, bars: any[]): any {
+  const n = bars ? bars.length : 0;
+  const parts: string[] = [];
+
+  // ① الزخم 12-1
+  let momScore = 50;
+  if (n >= 252) {
+    const p_now = bars[n - 22].c;
+    const p_12m = bars[n - 252].c;
+    if (p_12m > 0) {
+      const mom = (p_now - p_12m) / p_12m;
+      momScore = Math.round(50 + 45 * Math.tanh(mom * 2.2));
+      parts.push('زخم 12ش: ' + (mom * 100).toFixed(0) + '%');
+    }
+  } else if (n >= 120) {
+    const p_now = bars[n - 22].c, p_6m = bars[n - 120].c;
+    if (p_6m > 0) {
+      const mom = (p_now - p_6m) / p_6m;
+      momScore = Math.round(50 + 40 * Math.tanh(mom * 2.8));
+      parts.push('زخم 6ش (بديل)');
+    }
+  }
+
+  // ② الجودة
+  let qualScore = 50;
+  let qualAvail = false;
+  if (stk.roe != null) {
+    qualAvail = true;
+    const roeAnn = stk.roe * 4;
+    let q = 50 + 35 * Math.tanh((roeAnn - 12) / 10);
+    if (stk.netMargin != null) q += 12 * Math.tanh((stk.netMargin - 15) / 20);
+    if (stk.debt != null) q -= 15 * Math.tanh((stk.debt - 0.5) / 0.3);
+    qualScore = Math.round(Math.max(5, Math.min(95, q)));
+    parts.push('جودة: roe ' + roeAnn.toFixed(1) + '%');
+  }
+
+  // ③ تدنّي التقلّب
+  let volScore = 50;
+  if (n >= 60) {
+    const rets: number[] = [];
+    for (let i = n - 60; i < n; i++) {
+      if (bars[i - 1] && bars[i - 1].c > 0) rets.push((bars[i].c - bars[i - 1].c) / bars[i - 1].c);
+    }
+    if (rets.length > 30) {
+      const m = rets.reduce((s, r) => s + r, 0) / rets.length;
+      const sd = Math.sqrt(rets.reduce((s, r) => s + (r - m) ** 2, 0) / rets.length);
+      const annVol = sd * Math.sqrt(252) * 100;
+      volScore = Math.round(Math.max(10, Math.min(90, 50 - 35 * Math.tanh((annVol - 22) / 12))));
+      parts.push('تذبذب: ' + annVol.toFixed(0) + '%');
+    }
+  }
+
+  const L11 = qualAvail
+    ? Math.round(momScore * 0.40 + qualScore * 0.35 + volScore * 0.25)
+    : Math.round(momScore * 0.62 + volScore * 0.38);
+
+  return {
+    L11: Math.max(0, Math.min(100, L11)),
+    momScore, qualScore, volScore, qualAvail,
+    detail: parts.join(' · '),
+  };
+}
+
 function calc9Layers(stk: Stock, bars: Bar[]): any {
   // ✨ Validation - حماية من Edge Cases
   if (!stk || typeof stk !== 'object') {
