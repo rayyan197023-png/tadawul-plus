@@ -1249,7 +1249,9 @@ function calculateLayer10(bars: Bar[]): number {
         ? _amihud[_mid]
         : (_amihud[_mid - 1] + _amihud[_mid]) / 2;
       const _logIlliq = Math.log10(Math.max(_medianIlliq, 1e-6));
-      L10 = Math.round(_clamp(50 - (_logIlliq + 2.7) * 22, 0, 100));
+      // ✨ معايرة لتاسي: المركز عند أميهود ≈ 0.015 (سهم بحجم مليون وتغيّر 1.5%)
+      //    المعايرة القديمة (-2.7) كانت تفترض سيولة أعمق بـ7 أضعاف فتُنتج درجات متدنية للجميع
+      L10 = Math.round(_clamp(50 - (_logIlliq + 1.82) * 22, 0, 100));
     }
   }
   return L10;
