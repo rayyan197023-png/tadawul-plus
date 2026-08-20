@@ -119,6 +119,8 @@ function getTooltipKey(title) {
 
         const layers = [
           {n:"٩", title:"قوة السيولة",       score:L9, color:liqColor, weight:Math.round(W.L9*100), desc:liqDesc,   icon:"💧", id:"L9", simple:"هل المال يدخل أم يخرج؟"},
+          {n:"١١", title:"عوامل الأداء المُثبتة", score:(ex.L11??50), color:lc(ex.L11??50), weight:20, desc:(ex.l11Detail||"زخم ١٢ شهراً · جودة · تدنّي التقلّب"), icon:"🎓", id:"L11", simple:"عوامل أثبتتها الدراسات العالمية"},
+          {n:"١٠", title:"كفاءة السيولة", score:(ex.L10??50), color:lc(ex.L10??50), weight:0, desc:"مقياس أميهود -- أثر التداول على السعر", icon:"🌊", id:"L10", simple:"هل يتحرك السعر بسهولة؟"}, 
           {n:"١", title:"هيكل الحركة",       score:L1, color:lc(L1),  weight:Math.round(W.L1*100), desc:wyDesc,    icon:"🏗", id:"L1", simple:"هل النمط يشبه الصعود؟"},
           {n:"٤", title:"أداء مقارنة بالسوق",score:L4, color:lc(L4),  weight:Math.round(W.L4*100), desc:rscDesc,   icon:"💪", id:"L4", simple:"هل السهم يتفوق على السوق؟"},
           {n:"٥", title:"تأكيد المؤشرات",    score:L5, color:lc(L5),  weight:Math.round(W.L5*100), desc:triDesc,   icon:"🔗", id:"L5", simple:"هل ٣ مؤشرات تتفق؟"},
