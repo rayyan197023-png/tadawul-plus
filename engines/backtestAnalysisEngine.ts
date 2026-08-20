@@ -1418,6 +1418,10 @@ function calc9Layers(stk: any, bars: any[], allStocks: any[]): any {
   const _macdRev = rBars.length >= 35 ? calcMACD(rBars) : null;
   const _cmfPrev = rBars.length >= 25 ? calcCMF(rBars.slice(0, -5), 20) : cmf;
   const revScore = calcReversalScore(rBars, _rsiFullRev, _macdRev, cmf, _cmfPrev);
+  
+  // ✨ L11 -- عوامل الأداء المُثبتة (زخم 12ش · جودة · تدنّي تقلّب)
+  const f11 = calcFactorLayer11(stk, rBars);
+  const L11 = f11.L11;
 
   const radar = analyzeStockRadar(stk, rBars);
   const radarMS = radar.factors.find((f: any) => f.k === "ms")?.s || 0;
@@ -1637,11 +1641,13 @@ function calc9Layers(stk: any, bars: any[], allStocks: any[]): any {
   const conflictData = calcConflictPenalty({ L1, L4, L5, L7, L9 }, regime);
   const conflictCount = conflictData.conflictCount;
 
-  // Base Score
-  const baseScore = _clamp(Math.round(
+  // ✨ L11 تدخل بوزن 20% من الدرجة، والباقي 80% للطبقات التسع
+  const _base9 = _clamp(Math.round(
     L9 * WC.L9 + L1 * WC.L1 + L5 * WC.L5 + L4 * WC.L4 +
     L8 * WC.L8 + L7 * WC.L7 + L6 * WC.L6 + L2 * WC.L2 + L3 * WC.L3
   ), 0, 100);
+  const baseScore = _clamp(Math.round(_base9 * 0.80 + L11 * 0.20), 0, 100);
+
 
   // Adjustment Factor
   const conflictFactor = 1.0 - _clamp(conflictCount * 0.05, 0, 0.20);
