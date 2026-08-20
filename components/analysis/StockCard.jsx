@@ -1573,7 +1573,7 @@ var neut = normalizeProb(prob.neutral);
                         );
                       })()}
 
-                      {/* زر ٩ طبقات + Progressive Disclosure */}
+                      {/* زر ١١ طبقة + Progressive Disclosure */}
                       {!selected&&(
                         <div style={{
                           marginTop:8,display:"flex",alignItems:"center",
