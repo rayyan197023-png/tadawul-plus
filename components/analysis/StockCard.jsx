@@ -1415,7 +1415,7 @@ var neut = normalizeProb(prob.neutral);
                         );
                       })()}
 
-                      {/* ══ مؤشرات متقدمة -- من محرك الـ 9 طبقات ══ */}
+                      {/* ══ مؤشرات متقدمة -- من محرك الـ 11 طبقة ══ */}
                       {(function(){
                         var ex = health.extras || {};
                         if(!ex.rsiV && !ex.macdH) return null;
