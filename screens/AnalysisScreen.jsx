@@ -754,7 +754,7 @@ animation:'shimmer 1.4s ease infinite',
                     animation:"skeletonPulse 1s ease-in-out infinite",
                   }}/>
                   <span style={{fontSize:11,color:C.mist,fontWeight:600}}>
-                    جارٍ تحليل ٩ طبقات لـ {allData.length} سهم...
+                    جارٍ تحليل ١١ طبقة لـ {allData.length} سهم...
                   </span>
                 </div>
               </div>
