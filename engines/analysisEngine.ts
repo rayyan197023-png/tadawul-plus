@@ -1393,6 +1393,9 @@ const ls   = calcLiqSweep(rBars, atr);
   const mc   = calcMacroFull(stk);
   const tc_tasi = calcTasiContext(stk, bars, STOCKS);
 
+  // ✨ L11 -- عوامل الأداء المُثبتة (زخم 12ش · جودة · تدنّي تقلّب)
+  const f11 = calcFactorLayer11(stk, rBars);
+  const L11 = f11.L11;
 
   // ── رادار الفرص (SMC) — 9 عوامل    مدمجة ──────────────────────
   // analyzeStockRadar يُشغّل محرك SMC الكامل:
