@@ -231,7 +231,7 @@ function Shell() {
           }
         };
 
-        setTimeout(runEngine, 10000);
+        setTimeout(runEngine, 45000);   // ✨ ننتظر امتلاء كاش الشموع (tp_hist_) قبل أول تشغيل
         setInterval(runEngine, 30000);
       } catch (e) {
         console.warn('[Alerts] Init failed:', e.message);
