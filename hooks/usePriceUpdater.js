@@ -108,10 +108,13 @@ export function usePriceUpdater() {
            avgV:     q.volume          ?? 0,
            hi:       q.high            || q.price,
            lo:       q.low             || q.price,
-           mktCap:   null, eps:  null, pe:   null,
-           pb:       null, divY: null, roe:  null,
-           debt:     null, beta: null, w52h: null,
-           w52l:     null, target: null,
+           // ✨ نحافظ على الأساسيات المحقونة في seed بدل مسحها كل 15 ثانية
+           mktCap: seed.mktCap ?? null, eps: seed.eps ?? null, pe: seed.pe ?? null,
+           pb: seed.pb ?? null, divY: seed.divY ?? null, roe: seed.roe ?? null,
+           debt: seed.debt ?? null, beta: seed.beta ?? null,
+           bookValue: seed.bookValue ?? null, netMargin: seed.netMargin ?? null,
+           epsGrw: seed.epsGrw ?? null, revGrw: seed.revGrw ?? null,
+           w52h: seed.w52h ?? null, w52l: seed.w52l ?? null, target: seed.target ?? null,
          });
        }
 
