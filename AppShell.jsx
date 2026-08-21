@@ -202,15 +202,20 @@ function Shell() {
                 } catch { return null; }
               })
               .filter(Boolean);
-            if (stocksForAnalysis.length > 0) {
-              const _h = stocksForAnalysis.map(s => s.health);
-              alert('[Alerts] أسهم: ' + stocksForAnalysis.length
-                + '\nأعلى health: ' + Math.max.apply(null, _h)
-                + '\nأدنى health: ' + Math.min.apply(null, _h)
-                + '\nشموع أول سهم: ' + stocksForAnalysis[0].bars.length);
-            } else {
-              alert('[Alerts] لا أسهم -- الكاش فارغ أو الشموع أقل من 15');
-            }
+            var _keys = [];
+            try {
+              for (var _i = 0; _i < localStorage.length; _i++) {
+                var _k = localStorage.key(_i);
+                if (_k && _k.indexOf('tp_hist_') === 0) _keys.push(_k);
+              }
+            } catch (e) {}
+            var _sample = _keys.length > 0 ? localStorage.getItem(_keys[0]) : null;
+            var _parsed = null;
+            try { _parsed = _sample ? JSON.parse(_sample) : null; } catch (e) {}
+            alert('مفاتيح tp_hist_: ' + _keys.length
+              + '\nأول مفتاح: ' + (_keys[0] || 'لا يوجد')
+              + '\nعدد شموعه: ' + (_parsed && _parsed.bars ? _parsed.bars.length : 'لا bars')
+              + '\nعمره بالساعات: ' + (_parsed && _parsed.ts ? ((Date.now() - _parsed.ts) / 3600000).toFixed(1) : 'لا ts'));
             let positions = [];
             try {
               const raw = window.localStorage.getItem('tp_port');
