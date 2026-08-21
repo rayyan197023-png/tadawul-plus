@@ -112,8 +112,10 @@ export function calculateWinnerScore(metrics: WinnerMetrics): number {
     (metrics.cagr * W.cagr) +
     (metrics.alpha * W.alpha) +
     ((-metrics.maxDD) * W.maxDD) +       // -MaxDD يحول السالب لإيجابي
-    (metrics.sortino * W.sortino) +
-    (metrics.winRate * W.winRate / 10);  // /10 لأنّ WinRate من 100
+    // ✨ Sortino نطاقه ~0.5 بينما CAGR/Alpha بالنسب المئوية -- نُطبّعه ×10
+    //    ليعكس وزنه المعلن (10%) بدل 0.6% فعلياً
+    (metrics.sortino * W.sortino * 10) +
+    (metrics.winRate * W.winRate / 10);
   
   return +score.toFixed(2);
 }
