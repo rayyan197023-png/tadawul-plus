@@ -224,9 +224,12 @@ function checkStrictGates(
       failed.push(`Alpha (${newMetrics.alpha.toFixed(1)}%) ≤ Old (${old.alpha.toFixed(1)}%)`);
     }
     
-    // MaxDD سالب، فالأفضل هو الأعلى (الأقرب للصفر)
-    if (newMetrics.maxDD < old.maxDD - G.minDDImprovement) {
-      failed.push(`MaxDD (${newMetrics.maxDD.toFixed(1)}%) < Old (${old.maxDD.toFixed(1)}%)`);
+    // ✨ MaxDD سالب، فالأفضل هو الأقرب للصفر.
+    //    نسمح بتدهور حتى 3 نقاط إن كان العائد المعدّل بالمخاطر أفضل بوضوح
+    //    (الشرط المطلق كان يرفض استراتيجية بضعف العائد لتراجع أسوأ بنقطة واحدة)
+    const _ddTolerance = (newMetrics.sortino > old.sortino * 1.25) ? 3 : 0;
+    if (newMetrics.maxDD < old.maxDD - _ddTolerance) {
+      failed.push(`MaxDD (${newMetrics.maxDD.toFixed(1)}%) أسوأ من السابق (${old.maxDD.toFixed(1)}%)`);
     }
   }
   
