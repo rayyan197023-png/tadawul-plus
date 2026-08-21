@@ -1333,6 +1333,7 @@ function calcFactorLayer11(stk: any, bars: any[]): any {
   return {
     L11: Math.max(0, Math.min(100, L11)),
     momScore, qualScore, volScore, qualAvail,
+    nBars: n,
     detail: parts.join(' · '),
   };
 }
@@ -1892,8 +1893,8 @@ vwapDev, vwapD:vwapDev, belowB1:vi.belowB1, belowB2:vi.belowB2,
       L10: L10,
  
       // ✨ L11 -- عوامل الأداء المُثبتة (زخم 12ش · جودة · تدنّي تقلّب)
-      L11: L11, l11Detail: f11.detail, l11Mom: f11.momScore,
-      l11Qual: f11.qualScore, l11Vol: f11.volScore, l11QualAvail: f11.qualAvail,
+            L11: L11, l11Detail: f11.detail, l11Mom: f11.momScore, l11Bars: f11.nBars,
+l11Qual: f11.qualScore, l11Vol: f11.volScore, l11QualAvail: f11.qualAvail,
     }
   };
 }
