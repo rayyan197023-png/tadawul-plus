@@ -64,10 +64,16 @@ export async function fetchFundamentals(symbol) {
   try {
 
     // ✨ كاش موحّد بمفتاح واحد -- 200 مفتاح منفصل يستنفد localStorage
-    var _all = {};
+    // ✨ كاشان منفصلان: الأساسيات الربعية 90 يوماً · البيانات السعرية 7 أيام
+    var _all = {}, _q = {};
     try { _all = JSON.parse(localStorage.getItem('tp_fund_all') || '{}'); } catch (e) {}
+    try { _q = JSON.parse(localStorage.getItem('tp_fund_quarterly') || '{}'); } catch (e) {}
     var _hit = _all[symbol];
-    if (_hit && (Date.now() - _hit.t) < 7 * 86400000) return _hit.d;
+    var _qhit = _q[symbol];
+    var _qFresh = _qhit && (Date.now() - _qhit.t) < 90 * 86400000;
+    if (_hit && (Date.now() - _hit.t) < 7 * 86400000) {
+      return _qFresh ? Object.assign({}, _qhit.d, _hit.d) : _hit.d;
+    }
 
     const [company, ratios] = await Promise.allSettled([
       sahmkFetch('fundamentals', symbol),
