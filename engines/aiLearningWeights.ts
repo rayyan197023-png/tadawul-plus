@@ -312,3 +312,25 @@ export function clearAILearning(): boolean {
     return false;
   }
 }
+
+
+/**
+ * ♻️ استعادة آخر أرشيف من AI Learning
+ * تُستعمل عند فشل Walk-Forward Rebuild -- لا نترك النظام فارغاً
+ */
+export function restoreLastAIArchive(): boolean {
+  try {
+    if (typeof localStorage === 'undefined') return false;
+    const raw = localStorage.getItem('tdw_feedback_archive');
+    if (!raw) return false;
+    const archives = JSON.parse(raw);
+    if (!Array.isArray(archives) || archives.length === 0) return false;
+    const last = archives[archives.length - 1];
+    if (!last || !last.data) return false;
+    localStorage.setItem(FEEDBACK_STORE_KEY, last.data);
+    return true;
+  } catch (e) {
+    console.warn('[aiLearningWeights] Restore failed:', e);
+    return false;
+  }
+}
