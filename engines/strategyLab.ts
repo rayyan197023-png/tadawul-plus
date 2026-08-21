@@ -23,7 +23,7 @@
 
 import { Strategy, generatePopulation, createNextGeneration, getGenerationStats } from './strategyGenerator';
 import { calculateFitness, FitnessResult, BacktestMetrics, rankByFitness } from './strategyFitness';
-import { StockType } from './stockClassifier';
+import { StockType } from './strategyGenerator';
 
 // ════════════════════════════════════════════════════════════
 //  TYPES
