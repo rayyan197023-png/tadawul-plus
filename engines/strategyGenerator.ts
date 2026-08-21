@@ -23,7 +23,9 @@
  * @version 1.0
  */
 
-import { StockType } from './stockClassifier';
+// ✨ نُقل من stockClassifier المحذوف -- التصنيف نفسه لم يكن مُستدعى من أي مكان
+export type StockType = 'leader' | 'growth' | 'speculative' | 'explosive' | 'mid-cap' | 'excluded';
+
 
 // ════════════════════════════════════════════════════════════
 //  TYPES
