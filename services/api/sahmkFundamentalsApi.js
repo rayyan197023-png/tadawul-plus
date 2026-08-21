@@ -89,8 +89,14 @@ export async function fetchFundamentals(symbol) {
       : {};
     var _out = { ...companyData, ...ratiosData };
     try {
-      _all[symbol] = { t: Date.now(), d: _out };
+      // السعرية (7 أيام)
+      _all[symbol] = { t: Date.now(), d: companyData };
       localStorage.setItem('tp_fund_all', JSON.stringify(_all));
+      // الربعية (90 يوماً) -- تحفظ فقط عند نجاح ratios
+      if (ratiosData && ratiosData.roe != null) {
+        _q[symbol] = { t: Date.now(), d: ratiosData };
+        localStorage.setItem('tp_fund_quarterly', JSON.stringify(_q));
+      }
     } catch (e) {}
     return _out;
 
