@@ -156,12 +156,21 @@ function Shell() {
 
         requestNotificationPermission();
 
-        const runEngine = () => {
+        const runEngine = async () => {
           try {
+            // ✨ نجلب الشموع -- بدونها analyzeStockRadar تُرجع 50 لكل سهم فلا تُطلق تنبيهات
+            let barsMap = {};
+            try {
+              const { getOHLCVBatch } = await import('./services/api/sahmkOHLCV');
+              barsMap = await getOHLCVBatch(STOCKS.map(s => s.sym), '3M');
+            } catch (e) { console.warn('[Alerts] bars unavailable:', e.message); }
+
             const stocksForAnalysis = STOCKS
               .map(stock => {
                 try {
-                  const analysis = analyzeStockRadar(stock);
+                  const _bars = barsMap[stock.sym] || [];
+                  if (_bars.length < 15) return null;
+                  const analysis = analyzeStockRadar(stock, _bars);
                   return {
                     sym: stock.sym, name: stock.name,
                     p: stock.p,     pct: stock.pct,
