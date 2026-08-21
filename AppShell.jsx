@@ -204,12 +204,13 @@ function Shell() {
               .filter(Boolean);
             if (stocksForAnalysis.length > 0) {
               const _h = stocksForAnalysis.map(s => s.health);
-              console.log('[Alerts] أسهم:', stocksForAnalysis.length,
-                '· أعلى health:', Math.max(..._h),
-                '· أدنى:', Math.min(..._h),
-                '· شموع أول سهم:', stocksForAnalysis[0].bars.length);
+              alert('[Alerts] أسهم: ' + stocksForAnalysis.length
+                + '\nأعلى health: ' + Math.max.apply(null, _h)
+                + '\nأدنى health: ' + Math.min.apply(null, _h)
+                + '\nشموع أول سهم: ' + stocksForAnalysis[0].bars.length);
             } else {
-              console.log('[Alerts] لا أسهم -- الكاش فارغ أو الشموع أقل من 15');
+              alert('[Alerts] لا أسهم -- الكاش فارغ أو الشموع أقل من 15');
+            }
             }
             let positions = [];
             try {
