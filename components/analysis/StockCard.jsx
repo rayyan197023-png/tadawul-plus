@@ -1594,8 +1594,14 @@ var neut = normalizeProb(prob.neutral);
                             onClick={function(e){
                               e.stopPropagation();
                               haptic.strong();
+                              // مؤقّت -- قياس توزيع L10/L11 على السوق (ضغطة مطوّلة غير مطلوبة، يظهر مع كل فتح)
+                              try {
+                                var _ex = health && health.extras ? health.extras : {};
+                                alert('هذا السهم:\nL10 = ' + _ex.L10 + '\nL11 = ' + _ex.L11
+                                  + '\nزخم: ' + _ex.l11Mom + ' · جودة: ' + _ex.l11Qual + ' · تقلّب: ' + _ex.l11Vol
+                                  + '\n' + (_ex.l11Detail || ''));
+                              } catch (er) {}
                               onFullAnalysis(stk.sym);
-
                             }}
                             style={{
                               display:"flex",alignItems:"center",gap:5,
