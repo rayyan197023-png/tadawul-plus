@@ -24,7 +24,7 @@
 'use client';
 
 import { Strategy } from './strategyGenerator';
-import { archiveAILearning, clearAILearning } from './aiLearningWeights';
+import { archiveAILearning, clearAILearning, restoreLastAIArchive } from './aiLearningWeights';
 
 // ════════════════════════════════════════════════════════════
 //  CONSTANTS
@@ -313,6 +313,12 @@ export async function evaluateAndApplyWinner(
       walkForwardSuccess = false;
     }
   }
+
+  // ✨ عند فشل Walk-Forward نستعيد الأرشيف بدل ترك النظام فارغاً
+  if (!walkForwardSuccess) {
+    const _restored = restoreLastAIArchive();
+    console.warn('[winnerManager] WF failed -- archive restored:', _restored);
+  }
   
   // ⑦ حفظ Winner كحاليّ
   saveCurrentWinner(candidate);
@@ -374,3 +380,27 @@ export function getCurrentWinnerInfo(): {
     daysActive,
   };
 }
+
+/**
+ * ♻️ استعادة آخر أرشيف من AI Learning
+ * تُستعمل عند فشل Walk-Forward Rebuild -- لا نترك النظام فارغاً
+ */
+export function restoreLastAIArchive(): boolean {
+  try {
+    if (typeof localStorage === 'undefined') return false;
+    const raw = localStorage.getItem('tdw_feedback_archive');
+    if (!raw) return false;
+    const archives = JSON.parse(raw);
+    if (!Array.isArray(archives) || archives.length === 0) return false;
+    const last = archives[archives.length - 1];
+    if (!last || !last.data) return false;
+    localStorage.setItem(FEEDBACK_STORE_KEY, last.data);
+    return true;
+  } catch (e) {
+    console.warn('[aiLearningWeights] Restore failed:', e);
+    return false;
+  }
+}
+
+
+
