@@ -1270,9 +1270,10 @@ function calcFactorLayer11(stk: any, bars: any[]): any {
 
   // ① الزخم 12-1
   let momScore = 50;
-  if (n >= 252) {
+  if (n >= 245) {   // ✨ 252 نظرياً، لكن سنة التداول الفعلية ~248 يوماً
+
     const p_now = bars[n - 22].c;
-    const p_12m = bars[n - 252].c;
+    const p_12m = bars[0].c;
     if (p_12m > 0) {
       const mom = (p_now - p_12m) / p_12m;
       momScore = Math.round(50 + 45 * Math.tanh(mom * 2.2));
