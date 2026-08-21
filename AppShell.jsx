@@ -156,19 +156,29 @@ function Shell() {
 
         requestNotificationPermission();
 
-        const runEngine = async () => {
+            const runEngine = () => {
           try {
-            // ✨ نجلب الشموع -- بدونها analyzeStockRadar تُرجع 50 لكل سهم فلا تُطلق تنبيهات
-            let barsMap = {};
-            try {
-              const { getOHLCVBatch } = await import('./services/api/sahmkOHLCV');
-              barsMap = await getOHLCVBatch(STOCKS.map(s => s.sym), '3M');
-            } catch (e) { console.warn('[Alerts] bars unavailable:', e.message); }
+            // ✨ نقرأ الشموع من كاش tp_hist_ -- بدونها analyzeStockRadar تُرجع 50 لكل سهم
+            const _readBars = (sym) => {
+              try {
+                const raw = localStorage.getItem('tp_hist_' + sym);
+                if (!raw) return [];
+                const entry = JSON.parse(raw);
+                if (!entry || !entry.bars || !entry.ts) return [];
+                if ((Date.now() - entry.ts) >= 12 * 3600000) return [];
+                return entry.bars.map((b, idx) => {
+                  const prevC = idx > 0 ? entry.bars[idx - 1].c : b.o;
+                  const pct = (prevC && prevC > 0) ? ((b.c - prevC) / prevC * 100) : 0;
+                  return { o: b.o, open: b.o, c: b.c, close: b.c,
+                           hi: b.hi, lo: b.lo, vol: b.v, pct: pct };
+                }).filter(b => b.c > 0);
+              } catch (e) { return []; }
+            };
 
             const stocksForAnalysis = STOCKS
               .map(stock => {
                 try {
-                  const _bars = barsMap[stock.sym] || [];
+                  const _bars = _readBars(stock.sym);
                   if (_bars.length < 15) return null;
                   const analysis = analyzeStockRadar(stock, _bars);
                   return {
