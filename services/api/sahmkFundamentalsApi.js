@@ -100,6 +100,22 @@ export async function fetchFundamentals(symbol) {
 
 export async function loadFundamentalsIntoStocks(STOCKS_MAP, symbols) {
   if (!symbols || symbols.length === 0) return;
+  // ✨ لو الكاش شامل وحديث، نحقن مباشرة ونتخطّى الشبكة كلياً
+  try {
+    var _all = JSON.parse(localStorage.getItem('tp_fund_all') || '{}');
+    var _fresh = 0;
+    symbols.forEach(function (s) {
+      var h = _all[s];
+      if (h && (Date.now() - h.t) < 7 * 86400000) {
+        if (STOCKS_MAP[s]) Object.assign(STOCKS_MAP[s], h.d);
+        _fresh++;
+      }
+    });
+    if (_fresh >= symbols.length * 0.95) {
+      console.log('[Fundamentals] من الكاش:', _fresh, '-- لا طلبات شبكية');
+      return;
+    }
+  } catch (e) {}
 
   const BATCH_SIZE = 5;
 
