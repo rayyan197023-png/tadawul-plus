@@ -1594,19 +1594,6 @@ var neut = normalizeProb(prob.neutral);
                             onClick={function(e){
                               e.stopPropagation();
                               haptic.strong();
-                              // مؤقّت -- قياس توزيع L10/L11 على السوق (ضغطة مطوّلة غير مطلوبة، يظهر مع كل فتح)
-                              try {
-                                var _ex = health && health.extras ? health.extras : {};
-                                var _sm = (typeof window !== 'undefined' && window.__STOCKS_MAP__) ? window.__STOCKS_MAP__ : null;
-                                var _me = _sm ? _sm[stk.sym] : null;
-                                alert('L10=' + _ex.L10 + ' · L11=' + _ex.L11
-                                  + '\nزخم:' + _ex.l11Mom + ' · جودة:' + _ex.l11Qual + ' · تقلّب:' + _ex.l11Vol
-                                  + '\n\n-- تشخيص --'
-                                  + '\nشموع L11: ' + (_ex.l11Bars != null ? _ex.l11Bars : 'غير مسجّل')
-                                  + '\nSTOCKS_MAP: ' + (_sm ? 'موجودة' : 'غير موجودة')
-                                  + '\nroe من الخريطة: ' + (_me ? _me.roe : 'لا سجل')
-                                  + '\nroe من السهم: ' + stk.roe);
-                              } catch (er) {}
                               onFullAnalysis(stk.sym);
                             }}
                             style={{
