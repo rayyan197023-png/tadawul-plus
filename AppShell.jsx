@@ -211,7 +211,6 @@ function Shell() {
             } else {
               alert('[Alerts] لا أسهم -- الكاش فارغ أو الشموع أقل من 15');
             }
-            }
             let positions = [];
             try {
               const raw = window.localStorage.getItem('tp_port');
