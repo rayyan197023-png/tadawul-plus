@@ -174,6 +174,7 @@ function Shell() {
                   return {
                     sym: stock.sym, name: stock.name,
                     p: stock.p,     pct: stock.pct,
+                    bars: _bars, 
                     health:      analysis.total,
                     rsi:         analysis.mom?.rsi    || 50,
                     macd:        analysis.mom?.macd   ? 'bullish' : 'bearish',
