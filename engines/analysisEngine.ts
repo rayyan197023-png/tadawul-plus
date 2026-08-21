@@ -1290,12 +1290,22 @@ function calcFactorLayer11(stk: any, bars: any[]): any {
   // ② الجودة
   let qualScore = 50;
   let qualAvail = false;
-  if (stk.roe != null) {
+  // ✨ الأساسيات تُحقن في STOCKS_MAP لا في STOCKS_LIVE -- نقرأ منها عند الغياب
+  let _roe = stk.roe, _nm = stk.netMargin, _dbt = stk.debt;
+  if (_roe == null && typeof window !== 'undefined' && (window as any).__STOCKS_MAP__) {
+    const _m = (window as any).__STOCKS_MAP__[stk.sym];
+    if (_m) {
+      _roe = _m.roe;
+      if (_nm == null) _nm = _m.netMargin;
+      if (_dbt == null) _dbt = _m.debt;
+    }
+  }
+  if (_roe != null) {
     qualAvail = true;
-    const roeAnn = stk.roe * 4;
+    const roeAnn = _roe * 4;
     let q = 50 + 35 * Math.tanh((roeAnn - 12) / 10);
-    if (stk.netMargin != null) q += 12 * Math.tanh((stk.netMargin - 15) / 20);
-    if (stk.debt != null) q -= 15 * Math.tanh((stk.debt - 0.5) / 0.3);
+    if (_nm != null) q += 12 * Math.tanh((_nm - 15) / 20);
+    if (_dbt != null) q -= 15 * Math.tanh((_dbt - 0.5) / 0.3);
     qualScore = Math.round(Math.max(5, Math.min(95, q)));
     parts.push('جودة: roe ' + roeAnn.toFixed(1) + '%');
   }

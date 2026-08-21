@@ -128,6 +128,7 @@ function Shell() {
         const { loadFundamentalsIntoStocks } = await import('./services/api/sahmkFundamentalsApi');
         const { STOCKS_MAP, STOCKS }         = await import('./constants/stocksData');
         await loadFundamentalsIntoStocks(STOCKS_MAP, STOCKS.map(s => s.sym));
+        try { window.__STOCKS_MAP__ = STOCKS_MAP; } catch(e) {} 
       } catch (e) {
         console.warn('[Fundamentals]', e.message);
       }
