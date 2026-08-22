@@ -151,6 +151,17 @@ const [filters, setFilters] = useState({
 const syms = liveStocks.map(s => s.sym);
 const ohlcvCache = useOHLCVCache(syms, '1Y');
 
+  // ✨ بصمة الكاش -- تتغيّر فقط عند اكتمال أسهم جديدة، لا مع كل وصول سهم واحد
+  //    (ohlcvCache كائن يتبدّل مرجعه مع كل تحديث فيُعيد حساب 248 سهم × 11 طبقة)
+  const ohlcvSig = useMemo(function() {
+    var keys = Object.keys(ohlcvCache);
+    var totalBars = 0;
+    for (var i = 0; i < keys.length; i++) {
+      totalBars += (ohlcvCache[keys[i]] || []).length;
+    }
+    return keys.length + ':' + totalBars;
+  }, [ohlcvCache]);
+
         const allData = useMemo(()=>{
     // ✨ تمرير liveMACRO كـ parameter بدلاً من تعديل MACRO global
     // 🔍 مؤقّت: عدّ الأسهم الحقيقية vs الملفّقة (يُحذف بعد القياس)
@@ -183,7 +194,7 @@ return {stk, bars, health:h, isRealData};
       window.__tadawulCounts = { real: _realCount, fake: _fakeCount, total: result.length };
     }
     return result;
-    },[throttledSig, liveMACRO, ohlcvCache]); // ← throttled: recalc max every 5s not every 3s
+    },[throttledSig, liveMACRO, ohlcvSig]); // ✨ ohlcvSig بدل الكائن -- يمنع إعادة الحساب المتكررة
 
   // ✨ لوحة التحليل → AI Learning (المصدر 2)
   // عند انتهاء التحليل: قيّم التوصيات القديمة (7+ أيام) ثم احفظ "شراء قوي" الجديدة
