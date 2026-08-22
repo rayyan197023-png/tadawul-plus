@@ -149,8 +149,7 @@ const [filters, setFilters] = useState({
   }, [priceSignature]);
 
 const syms = liveStocks.map(s => s.sym);
-// ✨ 6 أشهر -- توازن بين دقّة الزخم وخفّة الذاكرة (1Y سبّبت تعليقاً وتذبذب الدرجات)
-const ohlcvCache = useOHLCVCache(syms, '6M');
+const ohlcvCache = useOHLCVCache(syms, '1Y');
 
         const allData = useMemo(()=>{
     // ✨ تمرير liveMACRO كـ parameter بدلاً من تعديل MACRO global
