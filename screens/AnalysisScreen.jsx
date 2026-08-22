@@ -149,8 +149,8 @@ const [filters, setFilters] = useState({
   }, [priceSignature]);
 
 const syms = liveStocks.map(s => s.sym);
-// ✨ سنة كاملة -- الزخم 12 شهراً (Jegadeesh & Titman) يتطلّب 252 شمعة
-const ohlcvCache = useOHLCVCache(syms, '1Y');
+// ✨ 6 أشهر -- توازن بين دقّة الزخم وخفّة الذاكرة (1Y سبّبت تعليقاً وتذبذب الدرجات)
+const ohlcvCache = useOHLCVCache(syms, '6M');
 
         const allData = useMemo(()=>{
     // ✨ تمرير liveMACRO كـ parameter بدلاً من تعديل MACRO global
