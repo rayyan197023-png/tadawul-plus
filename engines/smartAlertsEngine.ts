@@ -19,8 +19,10 @@ const COOLDOWN_MINUTES = 15;
 const MAX_ALERTS_PER_SYMBOL_DAILY = 5;
 const HEALTH_JUMP_THRESHOLD = 15;
 const HEALTH_DROP_THRESHOLD = 15;
-const HIGH_HEALTH_THRESHOLD = 85;
-const LOW_HEALTH_THRESHOLD = 35;
+// ✨ معايرة على التوزيع الفعلي: أعلى درجة مقاسة 71 وأدنى 31
+//    العتبة 85 كانت تجعل STRONG_BUY مستحيلاً عملياً
+const HIGH_HEALTH_THRESHOLD = 68;
+const LOW_HEALTH_THRESHOLD = 36;
 const RSI_OVERSOLD = 30;
 const RSI_OVERBOUGHT = 70;
 
