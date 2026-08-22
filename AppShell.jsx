@@ -151,7 +151,6 @@ function Shell() {
       try {
         const { runSmartAlertsEngine, requestNotificationPermission } =
           await import('./engines/smartAlertsEngine');
-        const { STOCKS_LIVE: STOCKS } = await import('./constants/stocksData');
         const { analyzeStockRadar }   = await import('./engines/analysisEngine');
 
         requestNotificationPermission();
