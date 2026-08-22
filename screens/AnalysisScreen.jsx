@@ -151,17 +151,6 @@ const [filters, setFilters] = useState({
 const syms = liveStocks.map(s => s.sym);
 const ohlcvCache = useOHLCVCache(syms, '1Y');
 
-  // ✨ بصمة الكاش -- تتغيّر فقط عند اكتمال أسهم جديدة، لا مع كل وصول سهم واحد
-  //    (ohlcvCache كائن يتبدّل مرجعه مع كل تحديث فيُعيد حساب 248 سهم × 11 طبقة)
-  const ohlcvSig = useMemo(function() {
-    var keys = Object.keys(ohlcvCache);
-    var totalBars = 0;
-    for (var i = 0; i < keys.length; i++) {
-      totalBars += (ohlcvCache[keys[i]] || []).length;
-    }
-    return keys.length + ':' + totalBars;
-  }, [ohlcvCache]);
-
         const allData = useMemo(()=>{
     // ✨ تمرير liveMACRO كـ parameter بدلاً من تعديل MACRO global
     // 🔍 مؤقّت: عدّ الأسهم الحقيقية vs الملفّقة (يُحذف بعد القياس)
