@@ -156,8 +156,11 @@ function Shell() {
 
         requestNotificationPermission();
 
-            const runEngine = () => {
+        const runEngine = async () => {
           try {
+            // ✨ نُعيد الاستيراد كل مرة -- STOCKS_LIVE تُستبدل بمصفوفة جديدة عند كل تحديث سعري
+            const { STOCKS_LIVE: STOCKS } = await import('./constants/stocksData');
+            if (!STOCKS || STOCKS.length === 0) return;
             // ✨ نقرأ الشموع من كاش tp_hist_ -- بدونها analyzeStockRadar تُرجع 50 لكل سهم
             const _readBars = (sym) => {
               try {
