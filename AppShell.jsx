@@ -205,15 +205,6 @@ function Shell() {
               })
               .filter(Boolean);
 
-            if (stocksForAnalysis.length > 0) {
-              const _h = stocksForAnalysis.map(s => s.health);
-              alert('[Alerts] أسهم: ' + stocksForAnalysis.length
-                + '\nأعلى health: ' + Math.max.apply(null, _h)
-                + '\nأدنى health: ' + Math.min.apply(null, _h)
-                + '\nشموع أول سهم: ' + stocksForAnalysis[0].bars.length);
-            } else {
-              alert('[Alerts] لا أسهم');
-            }
             let positions = [];
             try {
               const raw = window.localStorage.getItem('tp_port');
