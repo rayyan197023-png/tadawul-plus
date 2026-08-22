@@ -202,6 +202,17 @@ function Shell() {
                 } catch { return null; }
               })
               .filter(Boolean);
+            // تشخيص مؤقت
+            var _t1 = 0, _t2 = 0, _t3 = 0;
+            STOCKS.slice(0, 20).forEach(function(s) {
+              var b = _readBars(s.sym);
+              if (b.length === 0) _t1++;
+              else if (b.length < 15) _t2++;
+              else _t3++;
+            });
+            alert('من 20 سهم:\nبلا شموع: ' + _t1 + '\nأقل من 15: ' + _t2 + '\nصالحة: ' + _t3
+              + '\n\nSTOCKS.length = ' + STOCKS.length
+              + '\nأول رمز: ' + (STOCKS[0] ? STOCKS[0].sym : 'لا يوجد'));  
             if (stocksForAnalysis.length > 0) {
               const _h = stocksForAnalysis.map(s => s.health);
               alert('[Alerts] أسهم: ' + stocksForAnalysis.length
