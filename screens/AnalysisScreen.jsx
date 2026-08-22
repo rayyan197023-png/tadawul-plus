@@ -194,7 +194,7 @@ return {stk, bars, health:h, isRealData};
       window.__tadawulCounts = { real: _realCount, fake: _fakeCount, total: result.length };
     }
     return result;
-    },[throttledSig, liveMACRO, ohlcvSig]); // ✨ ohlcvSig بدل الكائن -- يمنع إعادة الحساب المتكررة
+    },[throttledSig, liveMACRO, ohlcvCache]);
 
   // ✨ لوحة التحليل → AI Learning (المصدر 2)
   // عند انتهاء التحليل: قيّم التوصيات القديمة (7+ أيام) ثم احفظ "شراء قوي" الجديدة
