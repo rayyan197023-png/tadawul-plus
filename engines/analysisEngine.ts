@@ -1270,6 +1270,18 @@ function calcFactorLayer11(stk: any, bars: any[]): any {
 
   // ① الزخم 12-1
   let momScore = 50;
+    // ✨ أولاً: نقاط الزخم من الكاش المنفصل (دقّة سنة كاملة بلا حمل ذاكرة)
+  let _momDone = false;
+  if (typeof window !== 'undefined' && (window as any).__MOMENTUM__) {
+    const _mp = (window as any).__MOMENTUM__[stk.sym];
+    if (_mp && _mp.p12m > 0 && _mp.p1m > 0) {
+      const mom = (_mp.p1m - _mp.p12m) / _mp.p12m;
+      momScore = Math.round(50 + 45 * Math.tanh(mom * 2.2));
+      parts.push('زخم 12ش: ' + (mom * 100).toFixed(0) + '%');
+      _momDone = true;
+    }
+  }
+  if (!_momDone)
   if (n >= 245) {   // ✨ 252 نظرياً، لكن سنة التداول الفعلية ~248 يوماً
 
     const p_now = bars[n - 22].c;
