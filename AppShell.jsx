@@ -130,6 +130,14 @@ function Shell() {
          try { window.__STOCKS_MAP__ = STOCKS_MAP; } catch(e) {}
         await loadFundamentalsIntoStocks(STOCKS_MAP, STOCKS.map(s => s.sym));
         try { window.__STOCKS_MAP__ = STOCKS_MAP; } catch(e) {} 
+          // ✨ نقاط الزخم (رقمان لكل سهم بدل 248 شمعة)
+        try {
+          const _mc = await import('./services/api/momentumCache');
+          _mc.exposeMomentumCache();
+          await _mc.loadMomentumBatch(STOCKS.map(s => s.sym));
+          _mc.exposeMomentumCache();
+        } catch (e) { console.warn('[Momentum]', e.message); }
+    
       } catch (e) {
         console.warn('[Fundamentals]', e.message);
       }
