@@ -137,7 +137,14 @@ function Shell() {
           await _mc.loadMomentumBatch(STOCKS.map(s => s.sym));
           _mc.exposeMomentumCache();
         } catch (e) { console.warn('[Momentum]', e.message); }
-    
+          try {
+          var _cnt = (window.__MOMENTUM__ ? Object.keys(window.__MOMENTUM__).length : 0);
+          var _k = window.__MOMENTUM__ ? Object.keys(window.__MOMENTUM__)[0] : null;
+          alert('نقاط الزخم: ' + _cnt
+            + '\nأول رمز: ' + (_k || 'لا يوجد')
+            + '\nقيمه: ' + (_k ? JSON.stringify(window.__MOMENTUM__[_k]) : '-'));
+        } catch (e) { alert('خطأ تشخيص: ' + e.message); }
+  
       } catch (e) {
         console.warn('[Fundamentals]', e.message);
       }
