@@ -35,7 +35,7 @@ export function useOHLCVCache(syms = [], period = '3M') {
           var prevC = idx > 0 ? entry.bars[idx-1].c : b.o;
           var pct = (prevC && prevC > 0) ? ((b.c - prevC) / prevC * 100) : 0;
           return { o: b.o, open: b.o, c: b.c, close: b.c,
-                   hi: b.hi, lo: b.lo, vol: b.v, pct: pct, t: b.t ? new Date(b.t) : null };
+                   hi: b.hi, lo: b.lo, vol: b.v, pct: pct };
         }).filter(function(b) { return b.c > 0; });
         if (bars.length >= 20) init[sym] = bars;
       }
