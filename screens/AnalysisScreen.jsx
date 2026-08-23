@@ -155,6 +155,10 @@ const ohlcvCache = useOHLCVCache(syms, '1Y');
     // ✨ تمرير liveMACRO كـ parameter بدلاً من تعديل MACRO global
     // 🔍 مؤقّت: عدّ الأسهم الحقيقية vs الملفّقة (يُحذف بعد القياس)
     var _realCount = 0, _fakeCount = 0;
+        // ✨ ننتظر اكتمال 85% من الشموع قبل الحساب -- تجنّباً لعرض درجات مؤقتة تتغيّر
+    var _cacheCount = Object.keys(ohlcvCache).length;
+    if (liveStocks.length > 0 && _cacheCount < liveStocks.length * 0.85) return [];
+
 const result = liveStocks.map(stk=>{ 
       // ✨ تحقق من صحة bars من الكاش - إن كانت ناقصة/فاسدة، استخدم genBars
       var cached = ohlcvCache[stk.sym];
