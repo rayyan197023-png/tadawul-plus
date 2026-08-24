@@ -137,7 +137,7 @@ function Shell() {
           _mc.loadMomentumBatch(STOCKS.map(s => s.sym))
             .then(function () {
               const _n = _mc.exposeMomentumCache();
-              alert('[Momentum] اكتمل: ' + _n + ' سهم');
+              console.log('[Momentum] اكتمل:', _n, 'سهم');
             })
             .catch(function (e) { console.warn('[Momentum]', e.message); });
         } catch (e) { console.warn('[Momentum import]', e.message); }
