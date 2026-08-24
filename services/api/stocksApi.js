@@ -1,30 +1,4 @@
 import config          from '../../constants/config';
-import { STOCKS_MAP }  from '../../constants/stocksData';
-import { createStock } from '../../constants/stockModel';
-import {
-  fetchOHLCHistory,
-  periodToEODHDParams,
-} from './eodhdApi';
-
-function seedRng(seed) {
-  let s = seed;
-  return () => {
-    s = (s * 1664525 + 1013904223) & 0xffffffff;
-    return (s >>> 0) / 0xffffffff;
-  };
-}
-
-
-function isSaudiMarketOpen() {
-  const now = new Date();
-  const riyadh = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Riyadh' }));
-  const day = riyadh.getDay();
-  const hour = riyadh.getHours();
-  const min = riyadh.getMinutes();
-  const time = hour * 60 + min;
-  if (day === 5 || day === 6) return false;
-  return time >= 600 && time <= 930;
-}
 
 export async function fetchAIAnalysis(prompt, maxTokens = 1200, signal = undefined) {
   const res = await fetch(config.claudeProxyUrl, {
