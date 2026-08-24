@@ -37,12 +37,10 @@ export async function fetchMomentumPoints(sym) {
   if (cached) return cached;
 
   try {
-      if (sym === '1120') alert('١ -- بدأ جلب 1120');
     const res = await fetch('/api/sahmkdata?endpoint=ohlcv&sym=' + sym + '&period=1Y');
     if (!res.ok) return null;
     const j = await res.json();
     const rows = Array.isArray(j) ? j : (j.data || j.results || j.candles || []);
-        if (sym === '1120') alert('٢ -- وصلت الاستجابة · صفوف: ' + (Array.isArray(rows) ? rows.length : 'ليست مصفوفة'));
     if (!Array.isArray(rows) || rows.length < 120) return null;
 
     const closes = rows.map(r => +(r.close ?? r.c ?? 0)).filter(v => v > 0);
@@ -57,7 +55,6 @@ export async function fetchMomentumPoints(sym) {
 
     const all = _load();
     all[sym] = { t: Date.now(), d: out };
-        if (sym === '1120') alert('٣ -- حُفظ: ' + JSON.stringify(out));
     _save(all);
     return out;
   } catch (e) {
