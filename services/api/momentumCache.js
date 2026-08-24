@@ -70,8 +70,11 @@ export async function loadMomentumBatch(symbols, concurrency = 3) {
   for (let i = 0; i < symbols.length; i += concurrency) {
     const chunk = symbols.slice(i, i + concurrency);
     await Promise.all(chunk.map(s => fetchMomentumPoints(s)));
+    // ✨ نُعرّض الكاش بعد كل دفعة -- لا ننتظر اكتمال 248 سهماً
+    exposeMomentumCache();
     await new Promise(r => setTimeout(r, 200));
   }
+  exposeMomentumCache();
 }
 
 /** يُعرّض الكاش للمحرّكات */
