@@ -133,17 +133,13 @@ function Shell() {
           // ✨ نقاط الزخم (رقمان لكل سهم بدل 248 شمعة)
         try {
           const _mc = await import('./services/api/momentumCache');
-          _mc.exposeMomentumCache();
-          await _mc.loadMomentumBatch(STOCKS.map(s => s.sym));
-          _mc.exposeMomentumCache();
-        } catch (e) { console.warn('[Momentum]', e.message); }
-          try {
-          var _cnt = (window.__MOMENTUM__ ? Object.keys(window.__MOMENTUM__).length : 0);
-          var _k = window.__MOMENTUM__ ? Object.keys(window.__MOMENTUM__)[0] : null;
-          alert('نقاط الزخم: ' + _cnt
-            + '\nأول رمز: ' + (_k || 'لا يوجد')
-            + '\nقيمه: ' + (_k ? JSON.stringify(window.__MOMENTUM__[_k]) : '-'));
-        } catch (e) { alert('خطأ تشخيص: ' + e.message); }
+          alert('١ -- الملف استُورد بنجاح');
+          const _n0 = _mc.exposeMomentumCache();
+          alert('٢ -- من الكاش: ' + _n0 + ' سهم');
+          await _mc.loadMomentumBatch(STOCKS.slice(0, 5).map(s => s.sym));
+          const _n1 = _mc.exposeMomentumCache();
+          alert('٣ -- بعد جلب ٥ أسهم: ' + _n1);
+        } catch (e) { alert('خطأ: ' + e.message); }
   
       } catch (e) {
         console.warn('[Fundamentals]', e.message);
