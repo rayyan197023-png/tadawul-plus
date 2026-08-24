@@ -605,7 +605,7 @@ function analyzeStockRadar(stk: Stock, pastBars?: Bar[], precomputed?: { atr: nu
         const _o = b.o ?? b.open ?? _c;
         return { o: _o, open: _o, c: _c, close: _c, hi: b.hi, lo: b.lo, vol: b.vol, pct: b.pct };
       })
-    : generateBarsRadar(stk, 60);
+    : [];   // ✨ لا نولّد شموعاً وهمية -- الحارس أدناه يُرجع نتيجة "بيانات غير كافية"
 
   // ✨ p يُشتقّ من آخر شمعة ماضية (لا من stk.p الحالي) عند الباك-تيست
   const p = (pastBars && pastBars.length >= 15) ? bars[bars.length-1].close : stk.p;
