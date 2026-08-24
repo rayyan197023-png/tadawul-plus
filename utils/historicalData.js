@@ -284,3 +284,33 @@ export async function fetchEngineBars(sym, opts) {
 
    إن رجع source:'empty' -- تحقّق من حدّ sahmk اليومي (429) أو رمز السهم.
 ─────────────────────────────────────────────── */
+
+/* ───────────────────────────────────────────────
+   ✨ الدالتان اللتان يستوردهما useOHLCVCache
+   (كانتا مفقودتين فيفشل الجلب بصمت داخل try/catch،
+    والبيانات تأتي من localStorage وحده)
+─────────────────────────────────────────────── */
+
+/** جلب شموع سهم واحد بصيغة المحرّك مباشرة */
+export async function fetchBarsForStock(sym, days) {
+  var r = await fetchEngineBars(sym, { days: days || 365 });
+  return r.bars;
+}
+
+/** جلب دفعة أسهم بالتوازي -- concurrency متزامنة في كل مرة */
+export async function prefetchBars(syms, days, concurrency) {
+  var out = {};
+  if (!syms || !syms.length) return out;
+  var C = concurrency || 5;
+  for (var i = 0; i < syms.length; i += C) {
+    var chunk = syms.slice(i, i + C);
+    var results = await Promise.all(chunk.map(function (s) {
+      return fetchBarsForStock(s, days).catch(function () { return []; });
+    }));
+    chunk.forEach(function (s, idx) {
+      if (results[idx] && results[idx].length) out[s] = results[idx];
+    });
+  }
+  return out;
+}
+
