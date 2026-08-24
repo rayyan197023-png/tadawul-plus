@@ -138,17 +138,6 @@ function Shell() {
          try { window.__STOCKS_MAP__ = STOCKS_MAP; } catch(e) {}
         await loadFundamentalsIntoStocks(STOCKS_MAP, STOCKS.map(s => s.sym));
         try { window.__STOCKS_MAP__ = STOCKS_MAP; } catch(e) {} 
-        // ✨ نقاط الزخم -- تُجلب بالخلفية بلا await حتى لا تُعلّق التهيئة
-        try {
-          const _mc = await import('./services/api/momentumCache');
-          _mc.exposeMomentumCache();
-          _mc.loadMomentumBatch(STOCKS.map(s => s.sym))
-            .then(function () {
-              const _n = _mc.exposeMomentumCache();
-              console.log('[Momentum] اكتمل:', _n, 'سهم');
-            })
-            .catch(function (e) { console.warn('[Momentum]', e.message); });
-        } catch (e) { console.warn('[Momentum import]', e.message); }
   
       } catch (e) {
         console.warn('[Fundamentals]', e.message);
