@@ -1594,11 +1594,6 @@ var neut = normalizeProb(prob.neutral);
                             onClick={function(e){
                               e.stopPropagation();
                               haptic.strong();
-                              try {
-                                var _m = window.__MOMENTUM__ || {};
-                                alert('الزخم: ' + Object.keys(_m).length + ' سهم\nهذا السهم: '
-                                  + JSON.stringify(_m[stk.sym] || 'غير موجود'));
-                              } catch (er) {}
                               onFullAnalysis(stk.sym);
                             }}
                             style={{
