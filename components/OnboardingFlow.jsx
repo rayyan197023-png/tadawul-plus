@@ -128,7 +128,7 @@ export default function OnboardingFlow({ onComplete }) {
           onClick={skipOnboarding}
           style={{
             position: 'fixed',
-            top: 50,
+top: 'calc(env(safe-area-inset-top, 0px) + 20px)',
             left: 24,
             background: 'rgba(255,255,255,0.05)',
             backdropFilter: 'blur(20px)',
@@ -151,7 +151,7 @@ export default function OnboardingFlow({ onComplete }) {
 
       <div style={{
         position: 'fixed',
-        top: 50,
+top: 'calc(env(safe-area-inset-top, 0px) + 20px)',
         right: 24,
         color: C.smoke,
         fontSize: 11,
