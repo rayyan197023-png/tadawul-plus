@@ -37,13 +37,6 @@ const config = {
     aiLearning:     true,
     showModeLabel:  RUN_MODE !== 'production',
   },
-
-  // ── Polling Intervals
-  intervals: {
-    marketData: 30_000,  // 30 ثانية
-    portfolio:  60_000,  // دقيقة
-    news:       300_000, // 5 دقائق
-  },
 };
 
 export default config;
