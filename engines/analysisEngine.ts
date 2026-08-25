@@ -156,9 +156,6 @@ function restoreMacro(previous: any): void {
    ⑤ PIF Activity Signal
 ══════════════════════════════════════════════════ */
 
-/* ══ مولّد الشموع (GBM) ══ */
-function seedRng(s: number): () => number { let x=s; return()=>{ x=(x*1664525+1013904223)&0xffffffff; return(x>>>0)/0xffffffff; }; }
-
 /* ══ المؤشرات التقنية ══ */
 function calcEMA(vs: number[], p: number): number {
   if(!vs.length)return 0;
