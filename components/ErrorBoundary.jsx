@@ -47,6 +47,7 @@ export default class ErrorBoundary extends Component {
         <div style={{ fontSize: 13, fontWeight: 700, color: C.textPrimary, marginBottom: 6 }}>
           تعذّر تحميل {label}
         </div>
+         {process.env.NODE_ENV !== 'production' && (
         <div style={{ 
   fontSize: 11, 
   color: '#ff5f6a', 
