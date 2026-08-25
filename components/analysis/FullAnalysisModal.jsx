@@ -116,20 +116,21 @@ function getTooltipKey(title) {
   }
   return 'BOS';
 }
-        // ✨ L1-L9 تُقتطع منها 10% لـL10 و20% لـL11 -- نعرض الوزن الفعلي لا الأصلي
+        // ✨ L1-L9 يُقتطع منها 10% لـL10 و20% لـL11 -- نعرض الوزن الفعلي لا الأصلي
         const _wAdj = 0.72;
+
         const layers = [
-          {n:"٩", title:"قوة السيولة",       score:L9, color:liqColor, weight:Math.round(W.L9*100), desc:liqDesc,   icon:"💧", id:"L9", simple:"هل المال يدخل أم يخرج؟"},
+          {n:"٩", title:"قوة السيولة",       score:L9, color:liqColor, weight:Math.round(W.L9*100*_wAdj), desc:liqDesc,   icon:"💧", id:"L9", simple:"هل المال يدخل أم يخرج؟"},
           {n:"١١", title:"عوامل الأداء المُثبتة", score:(ex.L11??50), color:lc(ex.L11??50), weight:20, desc:(ex.l11Detail||"زخم ١٢ شهراً · جودة · تدنّي التقلّب"), icon:"🎓", id:"L11", simple:"عوامل أثبتتها الدراسات العالمية"},
-          {n:"١٠", title:"كفاءة السيولة", score:(ex.L10??50), color:lc(ex.L10??50), weight:10, desc:"مقياس أميهود -- أثر التداول على السعر", icon:"🌊", id:"L10", simple:"هل يتحرك السعر بسهولة؟"},
-          {n:"١", title:"هيكل الحركة",       score:L1, color:lc(L1),  weight:Math.round(W.L1*100), desc:wyDesc,    icon:"🏗", id:"L1", simple:"هل النمط يشبه الصعود؟"},
-          {n:"٤", title:"أداء مقارنة بالسوق",score:L4, color:lc(L4),  weight:Math.round(W.L4*100), desc:rscDesc,   icon:"💪", id:"L4", simple:"هل السهم يتفوق على السوق؟"},
-          {n:"٥", title:"تأكيد المؤشرات",    score:L5, color:lc(L5),  weight:Math.round(W.L5*100), desc:triDesc,   icon:"🔗", id:"L5", simple:"هل ٣ مؤشرات تتفق؟"},
-          {n:"٧", title:"ثقة الاحتمالية",    score:L7, color:lc(L7),  weight:Math.round(W.L7*100), desc:bayDesc,   icon:"🧮", simple:"نسبة نجاح الإشارة رياضياً"},
-          {n:"٨", title:"نقاط الفرصة",       score:L8, color:lc(L8),  weight:Math.round(W.L8*100), desc:radarDesc, icon:"🎯", id:"L8", simple:"تقييم جوهري مستقل"},
-          {n:"٦", title:"جدوى الصفقة",       score:L6, color:lc(L6),  weight:Math.round(W.L6*100), desc:kelDesc,   icon:"📐", simple:"هل العائد يستحق المخاطرة؟"},
-          {n:"٢", title:"توافق الحجم والحركة",score:L2,color:lc(L2),  weight:Math.round(W.L2*100), desc:erDesc,    icon:"⚖️", id:"L2", simple:"هل الحجم يدعم الاتجاه؟"},
-          {n:"٣", title:"انتظام الحركة",     score:L3, color:lc(L3),  weight:Math.round(W.L3*100), desc:entDesc,   icon:"📊", simple:"هل الحركة منظمة أم فوضوية؟"},
+          {n:"١٠", title:"كفاءة السيولة", score:(ex.L10??50), color:lc(ex.L10??50), weight:8, desc:"مقياس أميهود -- أثر التداول على السعر", icon:"🌊", id:"L10", simple:"هل يتحرك السعر بسهولة؟"},
+          {n:"١", title:"هيكل الحركة",       score:L1, color:lc(L1),  weight:Math.round(W.L1*100*_wAdj), desc:wyDesc,    icon:"🏗", id:"L1", simple:"هل النمط يشبه الصعود؟"},
+          {n:"٤", title:"أداء مقارنة بالسوق",score:L4, color:lc(L4),  weight:Math.round(W.L4*100*_wAdj), desc:rscDesc,   icon:"💪", id:"L4", simple:"هل السهم يتفوق على السوق؟"},
+          {n:"٥", title:"تأكيد المؤشرات",    score:L5, color:lc(L5),  weight:Math.round(W.L5*100*_wAdj), desc:triDesc,   icon:"🔗", id:"L5", simple:"هل ٣ مؤشرات تتفق؟"},
+          {n:"٧", title:"ثقة الاحتمالية",    score:L7, color:lc(L7),  weight:Math.round(W.L7*100*_wAdj), desc:bayDesc,   icon:"🧮", simple:"نسبة نجاح الإشارة رياضياً"},
+          {n:"٨", title:"نقاط الفرصة",       score:L8, color:lc(L8),  weight:Math.round(W.L8*100*_wAdj), desc:radarDesc, icon:"🎯", id:"L8", simple:"تقييم جوهري مستقل"},
+          {n:"٦", title:"جدوى الصفقة",       score:L6, color:lc(L6),  weight:Math.round(W.L6*100*_wAdj), desc:kelDesc,   icon:"📐", simple:"هل العائد يستحق المخاطرة؟"},
+          {n:"٢", title:"توافق الحجم والحركة",score:L2,color:lc(L2),  weight:Math.round(W.L2*100*_wAdj), desc:erDesc,    icon:"⚖️", id:"L2", simple:"هل الحجم يدعم الاتجاه؟"},
+          {n:"٣", title:"انتظام الحركة",     score:L3, color:lc(L3),  weight:Math.round(W.L3*100*_wAdj), desc:entDesc,   icon:"📊", simple:"هل الحركة منظمة أم فوضوية؟"},
         ];
 
         // النتيجة النهائية
