@@ -48,6 +48,14 @@ function MiniChart({ bars, color, h = 40, id = "" }) {
   const W = 200, H = h;
   // ✨ يدعم صيغتين: genBars المحلّي ({c}) وuseOHLCVCache ({close})
   const prices = bars.slice(-30).map(b => (b.c != null ? b.c : b.close));
+    // ✨ لا رسم بلا بيانات حقيقية -- أفضل من خط مُختلق
+  if (!prices.length || prices.some(p => p == null || !isFinite(p))) {
+    return (
+      <div style={{ height: H, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <span style={{ fontSize: 9, color: "#5a6e94" }}>لا توجد بيانات كافية</span>
+      </div>
+    );
+  }
   const mn = Math.min(...prices), mx = Math.max(...prices), rng = mx - mn || 1;
   const toY  = p => H - ((p - mn) / rng) * (H - 8) - 4;
   const pts  = prices.map((p, i) => `${(i / (prices.length - 1)) * W},${toY(p)}`).join(" ");
