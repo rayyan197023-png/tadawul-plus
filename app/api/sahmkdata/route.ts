@@ -25,6 +25,10 @@ export async function GET(req: NextRequest) {
   if (sym && !/^[0-9]{4}$/.test(sym)) {
     return NextResponse.json({ error: 'رمز غير صالح' }, { status: 400 });
   }
+    // ✨ تحقق من قائمة الرموز -- أربعة أرقام مفصولة بفواصل فقط
+  if (symbols && !/^[0-9]{4}(,[0-9]{4})*$/.test(symbols)) {
+    return NextResponse.json({ error: 'قائمة رموز غير صالحة' }, { status: 400 });
+  }
   if (!SAHMK_KEY) {
     return NextResponse.json({ error: 'SAHMK_KEY not set' }, { status: 500 });
   }
