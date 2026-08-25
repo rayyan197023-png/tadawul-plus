@@ -684,7 +684,7 @@ export default function RiskDashboard(props) {
                         <div style={{ flex: 1 }}>
                           <span style={{ color: C.ash }}>بالريال: </span>
                           <span style={{ color: color, fontWeight: 800 }}>
-                            {Math.abs(test.expectedLossSAR).toLocaleString()} ر.س
+                            {test.expectedLossSAR != null ? Math.abs(test.expectedLossSAR).toLocaleString() + ' ر.س' : '-'}
                           </span>
                         </div>
                       </div>
@@ -693,7 +693,7 @@ export default function RiskDashboard(props) {
                         color: C.ash,
                         marginTop: 4,
                       }}>
-                        ⏳ التعافي المتوقع: {test.recoveryDays} يوم
+                        ⏳ التعافي المتوقع: {test.recoveryDays != null ? test.recoveryDays + ' يوم' : 'غير محدد'}
                       </div>
                     </div>
                   );
