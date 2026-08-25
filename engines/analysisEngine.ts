@@ -4,7 +4,6 @@
  *
  * يحتوي على:
  * - ثوابت الاقتصاد الكلي (MACRO, OIL_SENS, RATE_SENS)
- * - مولّد الشموع (seedRng, genBars)
  * - المؤشرات التقنية (RSI, ATR, EMA, VWAP, CMF, OBV)
  * - محركات SMC (Market Structure, Order Blocks, Liquidity)
  * - المحركات الأساسية (DCF, Factor, Earnings)
