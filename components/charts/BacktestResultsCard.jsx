@@ -128,11 +128,12 @@ Section.displayName = 'Section';
  * Format money utility
  */
 function formatMoney(value) {
+  // ✨ حماية من null/undefined -- كانت تنهار على value.toFixed()
+  if (value == null || !isFinite(value)) return '-';
   if (value >= 1000000) return (value / 1000000).toFixed(2) + 'M ر.س';
   if (value >= 1000) return (value / 1000).toFixed(1) + 'K ر.س';
   return value.toFixed(0) + ' ر.س';
 }
-
 /**
  * Main BacktestResultsCard component
  */
