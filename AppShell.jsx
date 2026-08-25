@@ -197,6 +197,10 @@ function Shell() {
                     p: stock.p,     pct: stock.pct,
                     bars: _bars, 
                     health:      analysis.total,
+                    sig:         analysis.total >= 65 ? 'شراء قوي' : analysis.total >= 55 ? 'مراقبة' : analysis.total >= 45 ? 'محايد' : 'تخفيف',
+                    regime:      analysis.regime || 'chop',
+                    atrPct:      analysis.atrPct,
+                    vr:          analysis.liq?.rvNorm || 1, 
                     rsi:         analysis.mom?.rsi    || 50,
                     macd:        analysis.mom?.macd   ? 'bullish' : 'bearish',
                     bos:         analysis.ms?.bosBull ? 'bullish'
