@@ -230,13 +230,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-export async function PUT(req: NextRequest) {
-  if (!SAHMK_KEY) {
-    return NextResponse.json({ error: 'SAHMK_KEY not set' }, { status: 500 });
-  }
-  return NextResponse.json({
-    url: `wss://app.sahmk.sa/ws/v1/stocks/?api_key=${SAHMK_KEY}`
-  }, {
-    headers: { 'Cache-Control': 'no-store' }
-  });
-}
+
