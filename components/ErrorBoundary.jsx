@@ -24,7 +24,6 @@ export default class ErrorBoundary extends Component {
   componentDidCatch(error, info) {
     if (typeof window !== 'undefined') {
       window.__LAST_ERROR__ = error.message + ' | ' + (info.componentStack||'').slice(0,200);
-      document.title = error.message;
     }
   }
 
