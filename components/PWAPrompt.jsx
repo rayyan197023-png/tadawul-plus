@@ -97,5 +97,37 @@ export default function PWAPrompt() {
     );
   }
 
+  // ✨ iOS: Safari لا يدعم beforeinstallprompt -- نعرض تعليمات يدوية
+  if (isIOS) {
+    return (
+      <div style={{
+        position: 'fixed', bottom: 90, left: '50%', transform: 'translateX(-50%)',
+        width: 'calc(100% - 32px)', maxWidth: 448,
+        background: C.layer2, borderRadius: 14,
+        border: `1px solid ${C.gold}33`,
+        padding: '12px 16px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        boxShadow: '0 8px 32px rgba(0,0,0,.6)',
+        zIndex: 500, direction: 'rtl',
+        fontFamily: "'Cairo','Segoe UI',sans-serif",
+      }}>
+        <button onClick={dismiss} style={{
+          background: C.layer3, border: `1px solid ${C.border}`, borderRadius: 8,
+          padding: '7px 12px', color: C.textSecondary, fontSize: 12,
+          cursor: 'pointer', fontFamily: 'inherit',
+        }}>
+          لاحقاً
+        </button>
+        <div style={{ textAlign: 'right', flex: 1, marginRight: 10 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: C.textPrimary }}>ثبّت تداول+ على آيفون</div>
+          <div style={{ fontSize: 10, color: C.textSecondary, lineHeight: 1.5 }}>
+            اضغط زر المشاركة ⬆️ ثم «إضافة إلى الشاشة الرئيسية»
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return null;
 }
+
