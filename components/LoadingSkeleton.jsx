@@ -24,17 +24,26 @@ export const SkeletonBox = React.memo(function SkeletonBox({
   marginBottom = 0,
 }) {
   return (
-    <div
-      style={{
-        width,
-        height,
-        borderRadius,
-        marginBottom,
-        background: `linear-gradient(90deg, ${C.layer1} 25%, ${C.layer2} 50%, ${C.layer1} 75%)`,
-        backgroundSize: '200% 100%',
-        animation: 'skeletonShimmer 1.5s ease-in-out infinite',
-      }}
-    />
+    <>
+      <div
+        style={{
+          width,
+          height,
+          borderRadius,
+          marginBottom,
+          background: `linear-gradient(90deg, ${C.layer1} 25%, ${C.layer2} 50%, ${C.layer1} 75%)`,
+          backgroundSize: '200% 100%',
+          animation: 'skeletonShimmer 1.5s ease-in-out infinite',
+        }}
+      />
+      {/* ✨ الحركة هنا لا في PageSkeleton -- كانت لا تعمل عند الاستخدام المباشر */}
+      <style>{`
+        @keyframes skeletonShimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+      `}</style>
+    </>
   );
 });
 
@@ -147,13 +156,6 @@ export const PageSkeleton = React.memo(function PageSkeleton() {
       <StockCardSkeleton />
       <StockCardSkeleton />
       <StockCardSkeleton />
-      
-      <style>{`
-        @keyframes skeletonShimmer {
-          0% { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-      `}</style>
     </div>
   );
 });
