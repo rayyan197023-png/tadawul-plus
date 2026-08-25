@@ -10,13 +10,6 @@ export const GATE_THRESHOLDS = {
   MOMENTUM_MIN:   50,    // (L4+L5)/2 ≥ 50 للبوابة الثالثة (مصحَّحة لتطابق القيمة الفعلية المستخدمة)
 };
 
-// ── Signal Score Boundaries ───────────────────────────────────────
-export const SIGNAL_LEVELS = {
-  STRONG_BUY:     75,    // شراء قوي
-  WATCH:          60,    // مراقبة
-  NEUTRAL:        45,    // محايد
-  REDUCE:         0,     // تخفيف (أقل من 45)
-};
 
 // ── Grade Thresholds (S/A/B/C/D/F) -- نظام calc9Layers/stockHealth الفعلي ──
 export const GRADE_THRESHOLDS = {
@@ -44,10 +37,3 @@ export const ZAKAT = {
   NISAB_SAR:      22540, // النصاب بالريال (85g ذهب)
 };
 
-// ── API Polling Intervals (ms) ────────────────────────────────────
-export const INTERVALS = {
-  PRICE_UPDATE:   3000,  // تحديث الأسعار كل 3 ثوانٍ
-  ANALYSIS_CALC:  5000,  // حساب التحليل كل 5 ثوانٍ
-  COMMODITY_API:  600000,// أسعار السلع كل 10 دقائق
-  PRICE_ALERT:    5000,  // فحص التنبيهات كل 5 ثوانٍ
-};
