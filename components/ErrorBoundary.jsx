@@ -79,6 +79,7 @@ export default class ErrorBoundary extends Component {
     {typeof window !== 'undefined' && window.__LAST_ERROR__}
   </span>
 </div>
+        )}
         <button
           onClick={() => this.setState({ hasError: false, error: null })}
           style={{
