@@ -104,8 +104,9 @@ const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
     const midX = xScale(midRisk);
 
     // ⑥ Pre-calculate stock points
-    const clampX2 = (x) => Math.max(padding.left + 18, Math.min(width - padding.right - 18, x));
-    const clampY2 = (y) => Math.max(padding.top + 14, Math.min(height - padding.bottom - 8, y));
+    // ✨ clamp داخل حدود الرسم -- يمنع خروج الدائرة أو النص الملصق
+    const clampX = (x) => Math.max(padding.left + 18, Math.min(width - padding.right - 18, x));
+    const clampY = (y) => Math.max(padding.top + 14, Math.min(height - padding.bottom - 8, y));
 
     const stockPoints = stocks.map((stock) => {
       const color = QUADRANT_COLORS[stock.quadrant] || C.smoke;
