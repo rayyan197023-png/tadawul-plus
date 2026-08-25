@@ -5,7 +5,7 @@
  * المصدر الوحيد للحقيقة لجميع بيانات الأسهم
  */
 
-import { createContext, useContext, useReducer, useCallback } from 'react';
+import { createContext, useContext, useReducer, useCallback, useMemo } from 'react';
 
 // ── Persistence helpers
 const LS_KEY_WATCHLIST = 'td_watchlist_v2';
@@ -142,7 +142,8 @@ export function useStocks() {
   const state    = useStockState();
   const dispatch = useStockDispatch();
 
-  const stocks = state.stocks.map(s => {
+  // ✨ useMemo -- كانت تُعاد لكل 248 سهماً في كل رسم
+  const stocks = useMemo(() => state.stocks.map(s => {
     const live = state.priceCache[s.sym];
     if (!live) return s;
     return {
@@ -155,7 +156,7 @@ export function useStocks() {
       hi:   live.hi   ?? s.hi,
       lo:   live.lo   ?? s.lo,
     };
-  });
+  }), [state.stocks, state.priceCache]);
 
   const filtered = state.filter === 'all'
     ? stocks
