@@ -33,27 +33,16 @@ const SECTOR_COLORS = {
 };
 
 // ── Mini Chart ────────────────────────────────────────────────
+// ── Mini Chart ────────────────────────────────────────────────
+// ✨ لا نولّد شموعاً -- نقرأ الحقيقية من كاش tp_hist_
 function genBars(stk) {
-  let seed = stk.sym.split("").reduce((a,c) => a + c.charCodeAt(0), 0) * 7919;
-  const rnd = () => {
-    seed = (seed * 1664525 + 1013904223) & 0xffffffff;
-    return (seed >>> 0) / 0xffffffff;
-  };
-  const bars = [];
-  const up = stk.ch >= 0;
-  // نبدأ قريباً من السعر الحالي (±3%)
-  let price = stk.p * (0.97 + rnd() * 0.06);
-  const trend = up ? 0.502 : 0.498;
-  for (let i = 0; i < 60; i++) {
-    const chg = (rnd() - trend) * price * 0.018;
-    price = Math.max(price * 0.85, Math.min(price * 1.15, price + chg));
-    bars.push({ c: price, vol: (stk.avgV || 1000) * (0.6 + rnd() * 0.9) });
-  }
-  // آخر 3 نقاط تصل للسعر الحالي بشكل طبيعي
-  bars[57].c = bars[56].c + (stk.p - bars[56].c) * 0.3;
-  bars[58].c = bars[57].c + (stk.p - bars[57].c) * 0.5;
-  bars[59].c = stk.p;
-  return bars;
+  try {
+    const raw = localStorage.getItem('tp_hist_' + stk.sym);
+    if (!raw) return [];
+    const entry = JSON.parse(raw);
+    if (!entry || !Array.isArray(entry.bars)) return [];
+    return entry.bars.slice(-60).map(b => ({ c: b.c, vol: b.v || 0 }));
+  } catch (e) { return []; }
 }
 
 function MiniChart({ bars, color, h = 40, id = "" }) {
