@@ -693,7 +693,7 @@ function AddStockForm({ STOCKS, setPort, setPortSheet, haptic, C }) {
             placeholder="100"
             style={{
               width:"100%",background:C.layer2,border:"1px solid "+C.line,
-              borderRadius:8,padding:"8px 10px",fontSize:13,color:C.snow,
+              borderRadius:8,padding:"8px 10px",fontSize:16,color:C.snow,
               fontFamily:"Cairo,sans-serif",outline:"none",textAlign:"center",
               boxSizing:"border-box",
             }}
@@ -707,7 +707,7 @@ function AddStockForm({ STOCKS, setPort, setPortSheet, haptic, C }) {
             placeholder="0.00"
             style={{
               width:"100%",background:C.layer2,border:"1px solid "+C.line,
-              borderRadius:8,padding:"8px 10px",fontSize:13,color:C.snow,
+              borderRadius:8,padding:"8px 10px",fontSize:16,color:C.snow,
               fontFamily:"Cairo,sans-serif",outline:"none",textAlign:"center",
               boxSizing:"border-box",
             }}
