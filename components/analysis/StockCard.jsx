@@ -510,20 +510,16 @@ var items=[{name:"السيولة",val:layers.L9||0,w:(_W.L9||0)*100,icon:"💧"}
                           var vr   = (health.extras && health.extras.vr) || 1;
                           var L9   = (health.layers && health.layers.L9)  || 50;
 
-                          // كلما ارتفع الحجم ضاقت النافذة -- إلحاح حقيقي
-                          var windowMins = vr >= 1.5 ? 8
-                                        : vr >= 1.3 ? 15
-                                        : vr >= 1.1 ? 25
-                                        : L9 >= 75  ? 20
-                                        : 45;
-
-                          var urgColor = windowMins <= 10 ? C.coral
-                                       : windowMins <= 20 ? C.amber
+                          // ✨ نعرض قوة الحجم الفعلية بدل "نافذة زمنية" لا أساس لها في البيانات
+                          var volPctNow = Math.round((vr - 1) * 100);
+                          var urgColor = vr >= 1.4 ? C.gold
+                                       : vr >= 1.15 ? C.mint
+                                       : L9 >= 75 ? C.electric
                                        : health.sigC;
 
-                          var urgLabel = windowMins <= 10 ? "عاجل"
-                                       : windowMins <= 20 ? "قريب"
-                                       : "متاح";
+                          var urgLabel = vr >= 1.4 ? "حجم عالٍ"
+                                       : vr >= 1.15 ? "حجم جيد"
+                                       : "حجم عادي";
 
                           return(
                             <div style={{
@@ -543,7 +539,7 @@ var items=[{name:"السيولة",val:layers.L9||0,w:(_W.L9||0)*100,icon:"💧"}
                               }}>{urgLabel}</div>
 
                               <div style={{fontSize:6.5,color:C.smoke,lineHeight:1.3}}>
-                                {windowMins + "د نافذة"}
+                                {volPctNow >= 0 ? "+" + volPctNow + "% حجم" : volPctNow + "% حجم"}
                               </div>
                             </div>
                           );
