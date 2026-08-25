@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
-import { useStockDispatch } from '../store/stockStore';
-import { useMarketDispatch, MARKET_ACTIONS } from '../store';
+import { useStockDispatch, useMarketDispatch, MARKET_ACTIONS } from '../store';
 import { STOCKS_MAP as SEED_MAP, updateLiveStocks, STOCKS } from '../constants/stocksData';
 
 const INTERVAL_MS = 15_000;
