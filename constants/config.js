@@ -15,10 +15,6 @@ const config = {
   // ── Claude AI
   claudeProxyUrl: process.env.NEXT_PUBLIC_CLAUDE_PROXY_URL ?? '/api/claude',
 
-  // ── Supabase
-  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
-  supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_KEY ?? '',
-
   // ── sahmk API -- الـ proxy الداخلي فقط
   sahmkProxyUrl: '/api/sahmkdata',
 
