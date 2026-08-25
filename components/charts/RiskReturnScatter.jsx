@@ -113,8 +113,8 @@ const RiskReturnScatter = React.memo(function RiskReturnScatter(props) {
       const radius = Math.max(4, Math.min(10, (stock.weight || 5) / 5 + 4));
       return {
         ...stock,
-        x: clampX2(xScale(stock.risk)),
-        y: clampY2(yScale(stock.return)),
+        x: clampX(xScale(stock.risk)),
+        y: clampY(yScale(stock.return)),
         color,
         radius,
       };
