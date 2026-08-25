@@ -273,7 +273,7 @@ export default function AILearningDashboard({ onBack }) {
           )}
 
           {/* Layer Performance */}
-          <SectionCard title="🎯 أداء الطبقات التسع" color={C.gold}>
+          <SectionCard title="🎯 أداء الطبقات (١-٩)" color={C.gold}>
             <LayerPerformance layers={stats.layerAccuracy} />
           </SectionCard>
 
@@ -463,7 +463,7 @@ function ExperienceCard({ stats }) {
         </div>
       </div>
       
-      <style jsx>{`
+      <style>{`
         @keyframes pulse {
           0%, 100% { transform: scale(1); }
           50% { transform: scale(1.1); }
