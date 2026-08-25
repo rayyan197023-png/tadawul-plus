@@ -116,7 +116,8 @@ function getTooltipKey(title) {
   }
   return 'BOS';
 }
-
+        // ✨ L1-L9 تُقتطع منها 10% لـL10 و20% لـL11 -- نعرض الوزن الفعلي لا الأصلي
+        const _wAdj = 0.72;
         const layers = [
           {n:"٩", title:"قوة السيولة",       score:L9, color:liqColor, weight:Math.round(W.L9*100), desc:liqDesc,   icon:"💧", id:"L9", simple:"هل المال يدخل أم يخرج؟"},
           {n:"١١", title:"عوامل الأداء المُثبتة", score:(ex.L11??50), color:lc(ex.L11??50), weight:20, desc:(ex.l11Detail||"زخم ١٢ شهراً · جودة · تدنّي التقلّب"), icon:"🎓", id:"L11", simple:"عوامل أثبتتها الدراسات العالمية"},
