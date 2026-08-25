@@ -19,7 +19,6 @@ const NAV = {
   SET_TAB:         'SET_TAB',
   OPEN_STOCK:      'OPEN_STOCK',
   CLOSE_STOCK:     'CLOSE_STOCK',
-  SET_PREV_TAB:    'SET_PREV_TAB',
 };
 
 // ── Initial State
