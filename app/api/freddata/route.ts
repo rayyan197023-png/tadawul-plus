@@ -148,7 +148,9 @@ if (out.oilPrice === null) {
 out.vix = out.vixPrice ?? null;
 
     out.updatedAt = new Date().toISOString();
-    out.source = 'FRED';
+out.source = _fallbackUsed.length === 0 ? 'FRED'
+           : _fallbackUsed.length >= Object.keys(FALLBACK_VALUES).length ? 'FALLBACK'
+           : 'FRED_PARTIAL';
 
     return new NextResponse(JSON.stringify(out), {
       status: 200,
