@@ -110,12 +110,16 @@ const FALLBACK_VALUES: Record<string, number> = {
   saudiReservesPrice: 365830.33,
 };
 
-// تطبيق fallback على القيم null
+// ✨ نُسجّل أي قيم جاءت من الاحتياطي -- لا تُعرض كبيانات FRED حيّة
+const _fallbackUsed: string[] = [];
 Object.keys(FALLBACK_VALUES).forEach(function(k){
-  if(out[k] === null) {
+  if (out[k] === null) {
     out[k] = FALLBACK_VALUES[k];
+    _fallbackUsed.push(k);
   }
 });
+out.fallbackFields = _fallbackUsed;
+out.isPartialFallback = _fallbackUsed.length > 0;
 
 out.oilPrice = out.oilPrice ?? null;
 out.vix      = out.vixPrice ?? null;
