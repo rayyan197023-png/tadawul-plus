@@ -141,6 +141,7 @@ export default function RootLayout({ children }) {
         {/* DNS Prefetch */}
         <link rel="dns-prefetch" href="https://app.sahmk.sa" />
         <link rel="dns-prefetch" href="https://query1.finance.yahoo.com" />
+        <link rel="dns-prefetch" href="https://supabase.co" />
         
         {/* Resource Hints */}
         <meta httpEquiv="x-dns-prefetch-control" content="on" />
