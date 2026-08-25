@@ -213,19 +213,15 @@ const liveStocks = stocks.length > 0 ? stocks : [];
   const { containerRef: pullRef, isPulling, pullProgress, isRefreshing, touchHandlers } =
     usePullToRefresh(handleRefresh, 60);
 
-  // ── بناء البيانات ─────────────────────────────────────────
   const allData = useMemo(() =>
     liveStocks.map(stk => {
-      const cached = barsCache.current[stk.sym];
-      if (!cached || cached[cached.length - 1]?.c !== stk.p) {
+      // ✨ الشموع الحقيقية تنتهي بإغلاق الأمس لا بالسعر اللحظي،
+      //    فنكتفي بقراءتها مرة واحدة لكل سهم
+      if (!barsCache.current[stk.sym]) {
         barsCache.current[stk.sym] = genBars(stk);
       }
       return { stk, bars: barsCache.current[stk.sym] };
     }),
-  [liveStocks]);
-
-  const SECTORS = useMemo(() =>
-    [...new Set(liveStocks.map(s => s.sec).filter(Boolean))],
   [liveStocks]);
 
   // ── الفلترة والترتيب ──────────────────────────────────────
