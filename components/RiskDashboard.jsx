@@ -43,7 +43,7 @@ function getMetricColor(classification) {
    ② حساب Health Score الإجمالي
 ═══════════════════════════════════════════════════════════ */
 function calcHealthScore(analysis) {
-  if (!analysis || !analysis.performance) return 50;
+  if (!analysis || !analysis.performance) return null;
 
   var perf = analysis.performance;
   var risk = analysis.risk;
@@ -74,6 +74,7 @@ function calcHealthScore(analysis) {
    ③ تحديد الحرف والتصنيف
 ═══════════════════════════════════════════════════════════ */
 function getGradeInfo(score) {
+  if (score == null) return { grade: '-', label: 'بيانات غير كافية', color: C.smoke };
   if (score >= 90) return { grade: 'A+', label: 'ممتاز', color: C.mint };
   if (score >= 80) return { grade: 'A', label: 'ممتاز', color: C.mint };
   if (score >= 70) return { grade: 'B', label: 'جيد جداً', color: C.electric };
@@ -225,7 +226,7 @@ export default function RiskDashboard(props) {
               stroke={gradeInfo.color}
               strokeWidth={4}
               strokeDasharray={2 * Math.PI * 30}
-              strokeDashoffset={2 * Math.PI * 30 * (1 - healthScore / 100)}
+              strokeDashoffset={2 * Math.PI * 30 * (1 - (healthScore || 0) / 100)}
               strokeLinecap="round"
               style={{
                 filter: "drop-shadow(0 0 6px " + gradeInfo.color + "aa)",
@@ -447,7 +448,7 @@ export default function RiskDashboard(props) {
             />
             <MetricCard
               label="Score"
-              value={div.score || '-'}
+              value={div.score != null ? div.score : '-'}
               unit="/100"
               classification={div.scoreClass}
               description={div.scoreLabel}
