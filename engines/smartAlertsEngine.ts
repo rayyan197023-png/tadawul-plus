@@ -549,8 +549,12 @@ export function generateSmartAlerts(currentStocks: any[], positions: any[] = [])
     if (myPosition && stock.p && bars.length >= 14) {
       try {
         // Smart Stop Loss
-        const stopData = calcSmartStopLoss(myPosition.avgCost, stock.p, stock.health || {}, bars);
-        const targets = calcSmartTakeProfit(myPosition.avgCost, stopData.stopPrice, stock.health || null, null);
+        // ✨ stock.health رقم لا كائن -- نبني كائناً مبسّطاً كي لا تسقط الدالة لقيم افتراضية
+        const _hObj = { score: stock.health, sig: stock.sig, regime: stock.regime, sym: stock.sym,
+                        extras: { atrPct: stock.atrPct, vr: stock.vr } };
+        const stopData = calcSmartStopLoss(myPosition.avgCost, stock.p, _hObj, bars);
+        const targets = calcSmartTakeProfit(myPosition.avgCost, stopData.stopPrice, _hObj, null);
+
         
         // Stop Loss Hit
         if (stock.p <= stopData.stopPrice) {
