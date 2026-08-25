@@ -173,7 +173,6 @@ export default function Tooltip({ termKey, label, size = 'small' }) {
               maxWidth: 500,
                             height: '90vh',
               maxHeight: '90vh',
-              maxWidth: '100%',
               margin: 0,
               display: 'flex',
               flexDirection: 'column',
