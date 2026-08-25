@@ -59,7 +59,7 @@ export default async function Image() {
             fontWeight: 600,
           }}
         >
-          <div style={{ color: '#1ee68a' }}>9 Layers AI</div>
+<div style={{ color: '#1ee68a' }}>11 Layers AI</div>
           <div style={{ color: '#1ee68a' }}>•</div>
           <div style={{ color: '#1ee68a' }}>Backtest</div>
           <div style={{ color: '#1ee68a' }}>•</div>
