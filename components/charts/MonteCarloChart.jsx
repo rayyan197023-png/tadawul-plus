@@ -236,7 +236,7 @@ const MonteCarloChart = React.memo(function MonteCarloChart(props) {
       </div>
 
       {/* SVG Histogram */}
-      <svg width={width} height={height} style={{ width: '100%', maxWidth: width }}>
+      <svg width={width} height={height} viewBox={'0 0 ' + width + ' ' + height} style={{ width: '100%', maxWidth: width, display: 'block' }}>
         {/* Grid Lines */}
         {[0, 1, 2, 3].map((i) => {
           const y = padding.top + (chartHeight / 4) * i;
@@ -258,7 +258,7 @@ const MonteCarloChart = React.memo(function MonteCarloChart(props) {
             key={'bar-' + i}
             x={bar.barX}
             y={bar.barY}
-            width={Math.max(1, chartData.barData[0] ? (chartWidth / barData.length) - 1 : 1)}
+            width={Math.max(1, (chartWidth / barData.length) - 1)}
             height={bar.barHeight}
             fill={bar.color}
             stroke={bar.isNegative ? C.coral : C.mint}
