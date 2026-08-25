@@ -30,7 +30,7 @@ const TABS = [
   { id:"stocks",    label:"الأسهم",   Icon:TrendingUp, accent:C.gold, glow:"rgba(240,192,80,0.4)", glowBg:"rgba(240,192,80,0.07)" },
   { id:"analysis",  label:"التحليل",  Icon:BarChart3,  accent:C.gold, glow:"rgba(240,192,80,0.4)", glowBg:"rgba(240,192,80,0.07)" },
   { id:"portfolio", label:"المحفظة",  Icon:PieChart,   accent:C.gold, glow:"rgba(240,192,80,0.4)", glowBg:"rgba(240,192,80,0.07)" },
-  { id:"news",      label:"الأخبار",  Icon:Newspaper,  accent:C.gold, glow:"rgba(240,192,80,0.4)", glowBg:"rgba(240,192,80,0.07)", badge:3 },
+  { id:"news",      label:"الأخبار",  Icon:Newspaper,  accent:C.gold, glow:"rgba(240,192,80,0.4)", glowBg:"rgba(240,192,80,0.07)" },
   { id:"ai",        label:"تحليل AI", Icon:Sparkles,   accent:C.mint, glow:"rgba(30,230,138,0.4)", glowBg:"rgba(30,230,138,0.07)", isAI:true },
   { id:"more",      label:"المزيد",   Icon:LayoutGrid, accent:C.gold, glow:"rgba(240,192,80,0.4)", glowBg:"rgba(240,192,80,0.07)" },
     { id:"backtest", label:"مختبر الاستراتيجيات", Icon:LayoutGrid, accent:C.gold, glow:"rgba(240,192,80,0.4)", glowBg:"rgba(240,192,80,0.07)", hidden:true },
@@ -130,7 +130,6 @@ function NavTab({ tab, isActive, onPress, tabRef }) {
     cancelAnimationFrame(pressRaf.current);
     setPressed(false);
     onPress(tab.id);
-    if (navigator.vibrate) navigator.vibrate(6);
   }, [tab.id, onPress]);
 
   const handlePointerLeave = useCallback(() => {
