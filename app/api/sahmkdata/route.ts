@@ -190,44 +190,4 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest) {
-  if (!SAHMK_KEY) {
-    return NextResponse.json({ error: 'SAHMK_KEY not set' }, { status: 500 });
-  }
-
-  try {
-    const body = await req.json();
-    const { action } = body;
-
-    if (action === 'register_webhook') {
-      const { url: webhookUrl, name } = body;
-      if (!webhookUrl) {
-        return NextResponse.json({ error: 'url is required' }, { status: 400 });
-      }
-
-      const res = await fetch(`${SAHMK_BASE}/webhooks/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': SAHMK_KEY,
-        },
-        body: JSON.stringify({ url: webhookUrl, name: name ?? 'Tadawul Plus Hook' }),
-      });
-
-      const data = await res.text();
-      return new NextResponse(data, {
-        status: res.status,
-        headers: { 'Content-Type': 'application/json; charset=utf-8' },
-      });
-    }
-
-    return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
-
-  } catch (err: any) {
-    return NextResponse.json(
-      { error: 'Proxy failed', message: err.message },
-      { status: 500 }
-    );
-  }
-}
 
