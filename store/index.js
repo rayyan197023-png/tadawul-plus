@@ -29,4 +29,4 @@ export function RootStoreProvider({ children }) {
 // Single import point — components NEVER import from individual store files
 export { useNav, NavProvider }                              from './navStore';
 export { useMarket, useMarketDispatch, MarketProvider, MARKET_ACTIONS } from './marketStore';
-export { useStocks, useStockState, StockProvider, STOCK_ACTIONS, useSharedPrices } from './stockStore';
+export { useStocks, useStockState, useStockDispatch, StockProvider, STOCK_ACTIONS, useSharedPrices } from './stockStore';
