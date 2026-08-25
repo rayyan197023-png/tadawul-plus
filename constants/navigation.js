@@ -51,7 +51,6 @@ export const TABS = [
     accent:  '#f0c050',
     glow:    'rgba(240,192,80,0.4)',
     glowBg:  'rgba(240,192,80,0.07)',
-    badge:   3,
   },
   {
     id:      TAB_IDS.AI,
@@ -86,18 +85,3 @@ export const TABS = [
   },
 ];
 
-// ① TABS_MAP للتبويبات المرئية في الشريط السفلي
-export const TABS_MAP = Object.fromEntries(TABS.map(t => [t.id, t]));
-
-// ② SCREENS_MAP لكل الشاشات (بما فيها المخفية)
-export const SCREENS_MAP = {
-  ...TABS_MAP,
-  [TAB_IDS.BACKTEST]: {
-    id:      TAB_IDS.BACKTEST,
-    label:   'مختبر الاستراتيجيات',
-    accent:  '#f0c050',
-    glow:    'rgba(240,192,80,0.4)',
-    glowBg:  'rgba(240,192,80,0.07)',
-    hidden:  true,
-  },
-};
