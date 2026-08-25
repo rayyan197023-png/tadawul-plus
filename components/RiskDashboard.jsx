@@ -678,7 +678,7 @@ export default function RiskDashboard(props) {
                         <div style={{ flex: 1 }}>
                           <span style={{ color: C.ash }}>الخسارة: </span>
                           <span style={{ color: color, fontWeight: 800 }}>
-                            {(test.expectedLossPct * 100).toFixed(1)}%
+                            {test.expectedLossPct != null ? (test.expectedLossPct * 100).toFixed(1) + '%' : '-'}
                           </span>
                         </div>
                         <div style={{ flex: 1 }}>
