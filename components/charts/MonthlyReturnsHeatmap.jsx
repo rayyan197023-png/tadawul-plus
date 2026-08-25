@@ -327,7 +327,7 @@ const MonthlyReturnsHeatmap = React.memo(function MonthlyReturnsHeatmap(props) {
             color: statsColors.avgReturn,
             fontFamily: "IBM Plex Mono,monospace",
           }}>
-            {stats.avgReturn >= 0 ? '+' : ''}{stats.avgReturn.toFixed(1)}%
+{stats.avgReturn != null ? (stats.avgReturn >= 0 ? '+' : '') + stats.avgReturn.toFixed(1) + '%' : '--'}
           </div>
           <div style={{
             fontSize: 8,
