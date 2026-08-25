@@ -9,7 +9,7 @@
  * - Market status (open/closed)
  * - Last update timestamp
  *
- * Populated by: marketApi.js → dispatched here
+ * Populated by: usePriceUpdater → dispatched here
  * Read by: HomeScreen, AnalysisScreen, StockDetail
  */
 
