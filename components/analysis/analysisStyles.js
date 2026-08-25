@@ -102,5 +102,9 @@ export const ANALYSIS_CSS = `
         @keyframes particle3{0%,100%{transform:translate(0%,0%) scale(1)}50%{transform:translate(-8%,-10%) scale(.92)}}
         @keyframes particle4{0%,100%{transform:translate(0%,0%) scale(1)}50%{transform:translate(5%,7%) scale(1.08)}}
         @keyframes particle5{0%,100%{transform:translate(0%,0%) scale(1)}50%{transform:translate(-4%,9%) scale(.95)}}
+        /* ✨ يمنع سفاري iOS من تكبير الصفحة عند لمس حقول الإدخال */
+        @supports (-webkit-touch-callout: none) {
+          input, select, textarea { font-size: 16px !important; }
+        } 
 `;
  
