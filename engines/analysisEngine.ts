@@ -12,7 +12,7 @@
  * - stockHealth() — الدالة الرئيسية
  *
  * الاستخدام:
- *   import { stockHealth, genBars, scoreWord } from '../engines/analysisEngine';
+ *   import { stockHealth, scoreWord } from '../engines/analysisEngine';
  */
 
 import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
