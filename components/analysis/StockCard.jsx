@@ -124,7 +124,9 @@ return(
 
                           {(function(){
                             var layers=health.layers||{};
-                            var items=[{name:"السيولة",val:layers.L9||0,w:21,icon:"💧"},{name:"الاحتمالية",val:layers.L7||0,w:18,icon:"🧮"},{name:"الرادار",val:layers.L8||0,w:15,icon:"🎯"},{name:"الهيكل",val:layers.L1||0,w:14,icon:"🏗"},{name:"كيلي",val:layers.L6||0,w:12,icon:"📐"},{name:"المؤشرات",val:layers.L5||0,w:9,icon:"🔗"}];
+// ✨ الأوزان الفعلية من المحرّك التكيّفي -- كانت ثابتة ولا تطابق الحقيقة
+var _W = health.weights || {L9:.20,L1:.20,L5:.20,L4:.15,L8:.15,L7:.06,L6:.04};
+var items=[{name:"السيولة",val:layers.L9||0,w:(_W.L9||0)*100,icon:"💧"},{name:"الاحتمالية",val:layers.L7||0,w:(_W.L7||0)*100,icon:"🧮"},{name:"الرادار",val:layers.L8||0,w:(_W.L8||0)*100,icon:"🎯"},{name:"الهيكل",val:layers.L1||0,w:(_W.L1||0)*100,icon:"🏗"},{name:"كيلي",val:layers.L6||0,w:(_W.L6||0)*100,icon:"📐"},{name:"المؤشرات",val:layers.L5||0,w:(_W.L5||0)*100,icon:"🔗"}];
                             var top=items.slice().sort(function(a,b){return(b.val*b.w)-(a.val*a.w);})[0];
                             var isPos=top.val>=60;
                             return(<div style={{display:"inline-flex",alignItems:"center",gap:4,background:isPos?health.sigC+"14":"rgba(90,106,138,.12)",border:"1px solid "+(isPos?health.sigC+"30":"rgba(90,106,138,.25)"),borderRadius:7,padding:"3px 8px"}}>
