@@ -449,28 +449,6 @@ var totalVol=profile.reduce(function(s: number, p:any){return s+p.vol;},0);
 ══════════════════════════════════════════════════════════════ */
 
 
-
-function generateBarsRadar(stk: any, days: number = 60): any[] {
-  const rng=seedRng(parseInt(stk.sym,10)*997+13);
-  const bars=[];
-  let p=stk.p*(1-stk.pct/100*(days/20));
-  const av=stk.avgVol||stk.v||1e6;
-  for(let i=0;i<days;i++){
-    const dr=(stk.pct/100)/days;
-    const no=(rng()-0.49)*0.018;
-    const cl=Math.max(p*0.5,p*(1+dr+no));
-    const hi=cl*(1+rng()*0.020);
-    const lo=cl*(1-rng()*0.020);
-    const volM=0.4+rng()*1.4+Math.abs(dr+no)*10;
-    // ✨ توحيد شامل: o+open و c+close معاً -- تعمل مع كل الدوال (radarEngine تقرأ b.c)
-    // يُصلح انكساراً صامتاً كان يجعل calcOrderBlocks/calcLiqSweep ترى undefined
-    bars.push({o:p,open:p,c:cl,close:cl,hi,lo,vol:Math.round(av*volM),pct:(dr+no)*100});
-    p=cl;
-  }
-  return bars;
-}
-
-
 /**
  * ✨ Stochastic Oscillator %K - George Lane Original
  * 
@@ -2854,7 +2832,7 @@ export {
   calcEMA,
 calcStoch,
 calcSMA, calcVPVR,
-  calcIVWAP, generateBarsRadar, analyzeStockRadar, calc9Layers,
+  calcIVWAP, analyzeStockRadar, calc9Layers,
   calcFactorModel, calcEarningsModel,   calcDCF,
   calcEarningsQuality,
   calcInsiderTransactions, calcAlternativeData,
