@@ -21,7 +21,10 @@ export async function GET(req: NextRequest) {
   const history    = searchParams.get('history')    ?? '5y';
   const type       = searchParams.get('type')       ?? 'all';
   const importance = searchParams.get('importance') ?? '';
-
+  // ✨ تحقق من الرمز -- يمنع تغيير المسار عبر قيم مثل ../
+  if (sym && !/^[0-9]{4}$/.test(sym)) {
+    return NextResponse.json({ error: 'رمز غير صالح' }, { status: 400 });
+  }
   if (!SAHMK_KEY) {
     return NextResponse.json({ error: 'SAHMK_KEY not set' }, { status: 500 });
   }
