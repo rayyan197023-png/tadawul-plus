@@ -250,7 +250,7 @@ const EquityCurveChart = React.memo(function EquityCurveChart(props) {
       </div>
 
       {/* SVG Chart */}
-      <svg width={width} height={height} style={{ width: '100%', maxWidth: width }}>
+      <svg width={width} height={height} viewBox={'0 0 ' + width + ' ' + height} style={{ width: '100%', maxWidth: width, display: 'block' }}>
         {/* Grid Lines */}
         {yLabels.map((label, i) => (
           <line
