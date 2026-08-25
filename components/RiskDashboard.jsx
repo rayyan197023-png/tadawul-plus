@@ -176,13 +176,14 @@ export default function RiskDashboard(props) {
   var expanded = expandedState[0];
   var setExpanded = expandedState[1];
 
-  if (!analysis || !analysis.totalValue) {
-    return null;
-  }
-
+  // ✨ الـhooks قبل أي return مشروط -- قاعدة React الأساسية
   var healthScore = useMemo(function () {
     return calcHealthScore(analysis);
   }, [analysis]);
+
+  if (!analysis || !analysis.totalValue) {
+    return null;
+  }
 
   var gradeInfo = getGradeInfo(healthScore);
   var perf = analysis.performance || {};
