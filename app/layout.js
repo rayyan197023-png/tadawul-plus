@@ -139,8 +139,8 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
         {/* DNS Prefetch */}
-        <link rel="dns-prefetch" href="https://eodhd.com" />
-        <link rel="dns-prefetch" href="https://supabase.co" />
+        <link rel="dns-prefetch" href="https://app.sahmk.sa" />
+        <link rel="dns-prefetch" href="https://query1.finance.yahoo.com" />
         
         {/* Resource Hints */}
         <meta httpEquiv="x-dns-prefetch-control" content="on" />
