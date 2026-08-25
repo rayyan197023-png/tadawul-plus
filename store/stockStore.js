@@ -158,20 +158,23 @@ export function useStocks() {
     };
   }), [state.stocks, state.priceCache]);
 
-  const filtered = state.filter === 'all'
-    ? stocks
-    : stocks.filter(s => s.sectorId === state.filter);
+  // ✨ useMemo -- الفلترة والترتيب كانا يُعادان في كل رسم
+  const sorted = useMemo(() => {
+    const filtered = state.filter === 'all'
+      ? stocks
+      : stocks.filter(s => s.sectorId === state.filter);
 
-  const sorted = [...filtered].sort((a, b) => {
-    switch (state.sort) {
-      case 'gainers': return b.pct - a.pct;
-      case 'losers':  return a.pct - b.pct;
-      case 'volume':  return b.v   - a.v;
-      case 'price':   return b.p   - a.p;
-      case 'name':    return (a.name || '').localeCompare(b.name || '', 'ar');
-      default:        return b.v   - a.v;
-    }
-  });
+    return [...filtered].sort((a, b) => {
+      switch (state.sort) {
+        case 'gainers': return b.pct - a.pct;
+        case 'losers':  return a.pct - b.pct;
+        case 'volume':  return b.v   - a.v;
+        case 'price':   return b.p   - a.p;
+        case 'name':    return (a.name || '').localeCompare(b.name || '', 'ar');
+        default:        return b.v   - a.v;
+      }
+    });
+  }, [stocks, state.filter, state.sort]);
 
   const isInWatchlist = useCallback(
     sym => state.watchlist.includes(sym),
