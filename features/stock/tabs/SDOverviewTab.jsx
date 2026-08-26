@@ -356,9 +356,18 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
   if(n===0) return (
     <div style={{height:220,display:"flex",alignItems:"center",justifyContent:"center",background:C.ink}}>
       <div style={{textAlign:"center"}}>
-        <div style={{fontSize:12,color:C.smoke,marginBottom:8}}>جارٍ تحميل البيانات...</div>
-        <div style={{width:32,height:32,border:`3px solid ${C.line}`,borderTopColor:C.electric,borderRadius:"50%",animation:"spin 0.9s linear infinite",margin:"0 auto"}}/>
-        <style>{"@keyframes spin{to{transform:rotate(360deg)}}"}</style>
+        {sahmkLoading ? (
+          <>
+            <div style={{fontSize:12,color:C.smoke,marginBottom:8}}>جارٍ تحميل البيانات...</div>
+            <div style={{width:32,height:32,border:`3px solid ${C.line}`,borderTopColor:C.electric,borderRadius:"50%",animation:"spin 0.9s linear infinite",margin:"0 auto"}}/>
+            <style>{"@keyframes spin{to{transform:rotate(360deg)}}"}</style>
+          </>
+        ) : (
+          <>
+            <div style={{fontSize:22,marginBottom:6}}>📉</div>
+            <div style={{fontSize:12,color:C.smoke}}>لا توجد بيانات لهذه الفترة</div>
+          </>
+        )}
       </div>
     </div>
   );
