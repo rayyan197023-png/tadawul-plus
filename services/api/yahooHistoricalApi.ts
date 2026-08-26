@@ -348,7 +348,7 @@ export async function generateDataFromYahoo(
           v: enrichedBars[enrichedBars.length-1]?.vol || 1000000,
           avgV: 1000000,
           avgVol: 1000000,
-          mktCap: dCap != null ? dCap / 1e9 : null,
+          mktCap: dCap / 1e9,
           pe: dPE,
           roe: dROE,
           cap: dCap,
