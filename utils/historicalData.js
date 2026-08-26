@@ -260,20 +260,4 @@ export async function fetchBarsForStock(sym, days) {
   return r.bars;
 }
 
-/** جلب دفعة أسهم بالتوازي -- concurrency متزامنة في كل مرة */
-export async function prefetchBars(syms, days, concurrency) {
-  var out = {};
-  if (!syms || !syms.length) return out;
-  var C = concurrency || 5;
-  for (var i = 0; i < syms.length; i += C) {
-    var chunk = syms.slice(i, i + C);
-    var results = await Promise.all(chunk.map(function (s) {
-      return fetchBarsForStock(s, days).catch(function () { return []; });
-    }));
-    chunk.forEach(function (s, idx) {
-      if (results[idx] && results[idx].length) out[s] = results[idx];
-    });
-  }
-  return out;
-}
 
