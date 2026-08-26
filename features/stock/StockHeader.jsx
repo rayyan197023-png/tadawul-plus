@@ -185,7 +185,15 @@ const [alertSet, setAlertSet] = useState(() => {
   تفعيل
 </button>
                   {alertSet && (
-                    <button onClick={() => { setAlertSet(false); setAlertOpen(false); }} style={{ padding: '8px 10px', borderRadius: 8, background: C.layer3, border: `1px solid ${C.border}`, color: C.textSecondary, fontSize: 11, cursor: 'pointer', fontFamily: 'Cairo,sans-serif' }}>
+                    <button onClick={() => {
+                      // ✨ حذف فعلي من التخزين -- كان يُلغى في الذاكرة فقط ويبقى محفوظاً
+                      try {
+                        const ex = JSON.parse(window.localStorage.getItem('tadawul_alerts') || '[]');
+                        window.localStorage.setItem('tadawul_alerts', JSON.stringify(ex.filter(a => a.sym !== stk.sym)));
+                      } catch (e) {}
+                      setAlertSet(false);
+                      setAlertOpen(false);
+                    }} style={{ padding: '8px 10px', borderRadius: 8, background: C.layer3, border: `1px solid ${C.border}`, color: C.textSecondary, fontSize: 11, cursor: 'pointer', fontFamily: 'Cairo,sans-serif' }}>
                       إلغاء
                     </button>
                   )}
