@@ -432,6 +432,9 @@ export async function runStrategyLab(
     
     // ② اختبار كل استراتيجية
     for (let i = 0; i < currentPopulation.length; i++) {
+      // ✨ إلغاء فوري -- لا ينتظر اكتمال الجيل
+      if (shouldCancel && shouldCancel()) break;
+
       const strategy = currentPopulation[i];
       
       // تحديث progress
