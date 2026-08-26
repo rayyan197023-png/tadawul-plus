@@ -54,42 +54,6 @@ export const colors = {
   glowElectric: 'rgba(77,159,255,0.4)',
   glowPlasma:   'rgba(167,139,250,0.4)',
 };
-export const lightColors = {
-  bg:        '#f0f2f5',
-  bgDeep:    '#e8eaed',
-  layer1:    '#ffffff',
-  layer2:    '#f5f7fa',
-  layer3:    '#eceef2',
-  layer4:    '#e0e3e9',
-  border:    '#d0d5e0',
-  borderSub: '#e0e3e9',
-  line:      '#dde0e8',
-  textPrimary:   '#0d1117',
-  textSecondary: '#4a5568',
-  textTertiary:  '#718096',
-  textMuted:     '#a0aec0',
-  gold:     '#c07820',
-  goldDim:  '#8a5610',
-  goldGlow: 'rgba(192,120,32,0.15)',
-  positive: '#16a34a',
-  negative: '#dc2626',
-  warning:  '#d97706',
-  info:     '#2563eb',
-  electric: '#2563eb',
-  plasma:   '#7c3aed',
-  mint:     '#16a34a',
-  coral:    '#dc2626',
-  amber:    '#d97706',
-  teal:     '#0891b2',
-  rose:     '#db2777',
-  ash:      '#64748b',
-  glowGold:     'rgba(192,120,32,0.4)',
-  glowGoldBg:   'rgba(192,120,32,0.07)',
-  glowMint:     'rgba(22,163,74,0.4)',
-  glowMintBg:   'rgba(22,163,74,0.07)',
-  glowElectric: 'rgba(37,99,235,0.4)',
-  glowPlasma:   'rgba(124,58,237,0.4)',
-};
 
 export const typography = {
   fontFamily: "'Cairo', 'Segoe UI', sans-serif",
@@ -133,29 +97,12 @@ export const radius = {
   full: 9999,
 };
 
-export const shadows = {
-  gold:     `0 0 24px rgba(240,192,80,0.25)`,
-  mint:     `0 0 24px rgba(30,230,138,0.25)`,
-  electric: `0 0 24px rgba(77,159,255,0.25)`,
-  card:     `0 4px 24px rgba(0,0,0,0.4)`,
-  cardHover:`0 8px 40px rgba(0,0,0,0.6)`,
-};
-
-export const transitions = {
-  fast:   '0.15s ease',
-  base:   '0.25s ease',
-  slow:   '0.4s ease',
-  spring: 'cubic-bezier(0.34,1.56,0.64,1)',
-};
-
 // ── Composed theme object
 const theme = {
   colors,
   typography,
   spacing,
   radius,
-  shadows,
-  transitions,
 };
 
 export default theme;
