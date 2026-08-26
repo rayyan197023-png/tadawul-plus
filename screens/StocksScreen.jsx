@@ -255,12 +255,12 @@ const liquidityFetched = useRef(new Set());
   // جلب واحد كل 300ms لتفادي 429
   toFetch.forEach(function(sym, i) {
     setTimeout(function() {
-          liquidityFetched.current.add(sym);
+      // ✨ نسجّل قبل الطلب -- كان التسجيل بعد النجاح فتُعاد الطلبات الفاشلة كل مرة
+      liquidityFetched.current.add(sym);
       fetch('/api/sahmkdata?endpoint=liquidity&sym=' + sym)
         .then(function(r) { return r.json(); })
         .then(function(j) {
           if (j && j.liquidity && typeof j.liquidity.net_value === 'number') {
-            liquidityFetched.current.add(sym);
             setLiquidityMap(function(prev) {
               return Object.assign({}, prev, { [sym]: j.liquidity.net_value });
             });
