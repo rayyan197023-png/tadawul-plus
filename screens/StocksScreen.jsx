@@ -465,7 +465,8 @@ const liquidityFetched = useRef(new Set());
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                   {[
                     { k: "all", l: "الكل", c: C.electric, count: allData.length },
-                    ...SECTORS.map(sec => ({ k: sec, l: sec, c: SECTOR_COLORS[sec] || C.smoke, count: allData.filter(d => d.stk.sec === sec).length })),
+                    // ✨ القطاعات من البيانات الفعلية -- SECTORS لم تكن معرّفة والفلتر ينهار
+                    ...Array.from(new Set(allData.map(d => d.stk.sec).filter(Boolean))).map(sec => ({ k: sec, l: sec, c: SECTOR_COLORS[sec] || C.smoke, count: allData.filter(d => d.stk.sec === sec).length })),
                   ].map(({ k, l, c, count }) => (
                     <button key={k} onClick={() => changeTab(k)}
                       style={{ flex: "0 0 auto", padding: "6px 12px", borderRadius: 8, cursor: "pointer", fontFamily: "Cairo,sans-serif", fontSize: 11, fontWeight: 700, background: tab === k ? c + "25" : "transparent", border: `1px solid ${tab === k ? c + "66" : C.line}`, color: tab === k ? c : C.smoke, transition: "all .15s ease", display: "flex", alignItems: "center", gap: 4 }}>
