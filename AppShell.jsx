@@ -1,12 +1,11 @@
 'use client';
-import React, { lazy, Suspense, useEffect, useCallback } from 'react';
+import React, { lazy, Suspense, useEffect, useCallback, useRef, useState } from 'react';
 import { RootStoreProvider }  from './store/index';
 import { useNav, useStockState } from './store';
 import TadawulNav             from './components/shared/TadawulNav';
 import { TABS, TAB_IDS }      from './constants/navigation';
 import ErrorBoundary          from './components/ErrorBoundary';
 import { usePriceUpdater }    from './hooks/usePriceUpdater';
-import { useRef, useState } from 'react';
 import { useMarketBridge }    from './hooks/useMarketBridge';
 import { useHaptic }          from './hooks/useHaptic';
 import { colors }             from './theme/tokens';
