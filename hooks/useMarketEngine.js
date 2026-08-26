@@ -42,9 +42,4 @@ export function useMarketEngine() {
   return state;
 }
 
-export const HISTORICAL_SERIES = {
-  year:  [],
-  q3m:   [],
-  month: [],
-  week:  [],
-};
+
