@@ -65,7 +65,7 @@ const [alertSet, setAlertSet] = useState(() => {
     });
   }
   // ✨ الحارس قبل استخدام stk -- كان stk.p يُقرأ قبله فينهار عند الغياب
-  if (!stk) return null;
+  if (!stk) return null; 
 
   const isUp     = (stk.pct ?? 0) >= 0;
   const triggered= alertSet && (alertType === 'فوق' ? stk.p >= alertPrice : stk.p <= alertPrice);
