@@ -287,14 +287,15 @@ export async function generateDataFromYahoo(
           ? ((bar.c - prevBar.c) / prevBar.c) * 100 
           : 0;
         
-        const dPE = stk.pe || 18;
-        const dROE = stk.roe || 12;
-        const dCap = stk.cap || (bar.c * 1e9);
-        const dDY = stk.dy || stk.div || 3.5;
-        const dPB = stk.pb || 2.0;
-        const dDE = stk.de || 0.5;
-        const dEPS = stk.eps || (bar.c / dPE);
-        const dBV = stk.bv || (bar.c / dPB);
+        // ✨ لا نختلق أساسيات -- الغائب يبقى null فتتخطّاه المحرّكات
+        const dPE  = stk.pe  ?? null;
+        const dROE = stk.roe ?? null;
+        const dCap = stk.cap ?? null;
+        const dDY  = stk.dy ?? stk.div ?? null;
+        const dPB  = stk.pb  ?? null;
+        const dDE  = stk.de  ?? null;
+        const dEPS = stk.eps ?? null;
+        const dBV  = stk.bv  ?? null;
         
         const enrichedBars = bars.slice(0, offset + 1).map(function(b: any, idx: number, arr: any[]) {
           let pctVal = b.pct;
@@ -348,7 +349,7 @@ export async function generateDataFromYahoo(
           v: enrichedBars[enrichedBars.length-1]?.vol || 1000000,
           avgV: 1000000,
           avgVol: 1000000,
-          mktCap: dCap / 1e9,
+          mktCap: dCap != null ? dCap / 1e9 : null,
           pe: dPE,
           roe: dROE,
           cap: dCap,
