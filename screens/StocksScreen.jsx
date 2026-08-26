@@ -209,7 +209,13 @@ const liveStocks = stocks.length > 0 ? stocks : [];
   }, []);
 
   // ── Pull to Refresh ───────────────────────────────────────
-  const handleRefresh = useCallback(() => new Promise(res => setTimeout(res, 800)), []);
+  // ✨ تحديث فعلي: نمسح كاش الشموع ليُعاد بناؤه من tp_hist_ المحدَّث
+  const handleRefresh = useCallback(async () => {
+    barsCache.current = {};
+    liquidityFetched.current = new Set();
+    setLiquidityMap({});
+    await new Promise(res => setTimeout(res, 400));
+  }, []);
   const { containerRef: pullRef, isPulling, pullProgress, isRefreshing, touchHandlers } =
     usePullToRefresh(handleRefresh, 60);
 
