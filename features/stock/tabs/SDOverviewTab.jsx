@@ -525,9 +525,6 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
 function ScoreDrawer({ item, color, onClose }) {
   if (!item) return null;
   const col = color || item?.color || C.electric;
-  const history = item.v!=null ? [0.85,0.90,0.95,1].map(f=>
-    parseFloat(((item.max ? item.v/item.max : 0.7)*f*(item.max||10)).toFixed(1))
-  ) : [];
   return (
     <>
       <div onClick={onClose}
@@ -569,22 +566,6 @@ function ScoreDrawer({ item, color, onClose }) {
               <span style={{ color:C.smoke }}>{"0"}</span>
               <span style={{ color:col, fontWeight:700 }}>{item.v}{" / "}{item.max}</span>
               <span style={{ color:C.smoke }}>{item.max}</span>
-            </div>
-          </div>
-        )}
-        {history.length > 0 && (
-          <div style={{ background:C.layer3, borderRadius:10, padding:"10px 12px" }}>
-            <div style={{ fontSize:10, color:C.smoke, marginBottom:8, fontWeight:700 }}>{"الاتجاه -- آخر 4 أرباع"}</div>
-            <div style={{ display:"flex", gap:4, alignItems:"flex-end", height:36 }}>
-              {history.map((h,i)=>{
-                const pct = item.max ? h/item.max : 0.7;
-                return (
-                  <div key={i} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
-                    <div style={{ width:"100%", height:Math.max(8,pct*36), background:col, borderRadius:3, opacity:0.4+i*0.18 }}/>
-                    <span style={{ fontSize:8, color:C.smoke, fontFamily:"IBM Plex Mono,monospace" }}>{h}</span>
-                  </div>
-                );
-              })}
             </div>
           </div>
         )}
