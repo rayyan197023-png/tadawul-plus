@@ -6,7 +6,6 @@ import { colors, typography } from './tokens';
  */
 export function getGlobalStyles() {
   return `
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap');
 
     *, *::before, *::after {
       box-sizing: border-box;
