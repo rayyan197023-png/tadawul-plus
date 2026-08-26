@@ -72,7 +72,7 @@ export function useOHLCVCache(syms = [], period = '3M') {
 async function fetchAll() {
   for (let i = 0; i < toFetch.length; i += 5) {
     await new Promise(r => setTimeout(r, 800));
-    fetchBatch(toFetch.slice(i, i + 5));
+    await fetchBatch(toFetch.slice(i, i + 5));
   }
 }
 fetchAll();
