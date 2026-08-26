@@ -200,9 +200,6 @@ var e = f.eps_ttm ?? f.basic_eps ?? null;
         targetLow:   ana.target_low    || null,
         consensus:   ana.consensus     || null,
         numAnalysts: ana.num_analysts  || 0,
-        buy:  Math.round((ana.num_analysts || 0) * 0.5),
-        hold: Math.round((ana.num_analysts || 0) * 0.3),
-        sell: Math.round((ana.num_analysts || 0) * 0.2),
       } : null,
     };
     
@@ -387,7 +384,7 @@ var cashflowRows = cfAll.filter(function(x){return x.is_full_year;}).slice(0,4).
         altmanZ: z,
         piotroski: piotroski,
         cashScore: cashScore,
-        beneish: -2.5, // افتراضي (لا تلاعب)
+        beneish: null, // ✨ يتطلب 8 متغيرات غير متاحة -- لا نعرض قيمة مُختلقة
         profitScore: Math.max(0, profitScore),
         growthScore: growthScore,
         debtScore: debtScore,
