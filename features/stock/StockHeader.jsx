@@ -64,10 +64,11 @@ const [alertSet, setAlertSet] = useState(() => {
       return next;
     });
   }
-  const isUp     = (stk?.pct ?? 0) >= 0;
-  const triggered= alertSet && (alertType === 'فوق' ? stk.p >= alertPrice : stk.p <= alertPrice);
-
+  // ✨ الحارس قبل استخدام stk -- كان stk.p يُقرأ قبله فينهار عند الغياب
   if (!stk) return null;
+
+  const isUp     = (stk.pct ?? 0) >= 0;
+  const triggered= alertSet && (alertType === 'فوق' ? stk.p >= alertPrice : stk.p <= alertPrice);
 
   return (
     <div style={{ padding: '4px 16px 8px', flexShrink: 0, background: C.ink, borderBottom: `1px solid ${C.border}` }}>
