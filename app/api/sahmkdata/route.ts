@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
   const type       = searchParams.get('type')       ?? 'all';
   const importance = searchParams.get('importance') ?? '';
   // ✨ تحقق من الرمز -- يمنع تغيير المسار عبر قيم مثل ../
-  if (sym && !/^[0-9]{4}$/.test(sym)) {
+  if (sym && !/^([0-9]{4}|TASI|NOMU)$/.test(sym)) {
     return NextResponse.json({ error: 'رمز غير صالح' }, { status: 400 });
   }
     // ✨ تحقق من قائمة الرموز -- أربعة أرقام مفصولة بفواصل فقط
