@@ -215,23 +215,6 @@ export function toEngineBars(candles) {
 /* ───────────────────────────────────────────────
    أدوات مساعدة
 ─────────────────────────────────────────────── */
-// مسح cache سهم معيّن (أو الكل إن لم يُمرر sym)
-export function clearHistoricalCache(sym) {
-  try {
-    if (sym) {
-      delete memCache[sym];
-      localStorage.removeItem(CACHE_PREFIX + sym);
-    } else {
-      for (var k in memCache) delete memCache[k];
-      // امسح كل مفاتيح tp_hist_ من localStorage
-      for (var i = localStorage.length - 1; i >= 0; i--) {
-        var key = localStorage.key(i);
-        if (key && key.indexOf(CACHE_PREFIX) === 0) localStorage.removeItem(key);
-      }
-    }
-  } catch (e) { /* تجاهل */ }
-}
-
 // دالة مدمجة مريحة: جلب + تحويل لصيغة المحرك مباشرة
 // @returns {Promise<{bars, source}>} -- bars جاهزة للمحركات
 export async function fetchEngineBars(sym, opts) {
