@@ -408,6 +408,11 @@ export async function runStrategyLab(
   const totalExpectedBacktests = config.generations * config.populationSize + 3;
   
   for (let gen = 0; gen < config.generations; gen++) {
+    // ✨ إلغاء حقيقي -- كان العلم يوقف تحديث الواجهة فقط بينما يواصل الحساب
+    if (shouldCancel && shouldCancel()) {
+      warnings.push('أُلغي التطوير بطلب المستخدم عند الجيل ' + (gen + 1));
+      break;
+    }
     const genStart = Date.now();
     
     // ① توليد الجيل
