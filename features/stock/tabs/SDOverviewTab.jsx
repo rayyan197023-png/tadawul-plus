@@ -230,7 +230,7 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
         });
       }
     }
-    if(stk?.vwap||true){
+    if(vols.some(v => v > 0)){
       const tv=vols.reduce((a,b)=>a+b,0);
       const vwap=tv?parseFloat((pts.map((p2,i)=>((p2.h+p2.l+p2.c)/3)*vols[i]).reduce((a,b)=>a+b,0)/tv).toFixed(2)):null;
       if(vwap&&vwap>=mn&&vwap<=mx){
