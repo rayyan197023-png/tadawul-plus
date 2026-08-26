@@ -926,7 +926,7 @@ function PerDropdown({ per, setPer }) {
   const [open, setOpen] = useState(false);
   const [rect, setRect] = useState(null);
   const btnRef = useRef(null);
-  const labels = {"1H":"ساعي","1D":"يوم","1W":"أسبوع","1M":"شهر","3M":"3 أشهر","6M":"6 أشهر","1Y":"سنة","MAX":"أقصى"};
+  const labels = {"1H":"ساعي","1D":"يوم","1W":"أسبوع","1M":"شهر","3M":"3 أشهر","6M":"6 أشهر","1Y":"سنة"};
 
   const toggle = () => {
     if(btnRef.current) setRect(btnRef.current.getBoundingClientRect());
