@@ -31,19 +31,7 @@ function SDTechnical({ stk }) {
   const p = stk.p;
   const hist = stk.priceHistory || [];
 
-  // إذا لم تتوفر بيانات الأسعار، نعرض EmptyState
-  if (!p || hist.length === 0) {
-    return (
-      <SectionCard title="التحليل التقني" accent={C.electric}>
-        <EmptyState
-          icon="📈"
-          title="بيانات التحليل التقني غير متوفرة"
-          subtitle="جارٍ جلب البيانات التاريخية من sahmk... المؤشرات تتطلب 20+ شمعة على الأقل"
-        />
-      </SectionCard>
-    );
-  }
-
+  // ✨ الـhooks قبل أي return مشروط -- قاعدة React الأساسية
   // ── حساب كل المؤشرات
   const D = useMemo(() => {
     const closes = hist.length >= 20 ? hist.map(h => h.c) : null;
