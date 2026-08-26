@@ -15,7 +15,7 @@ import { getGlobalStyles }    from './theme/globalStyles';
 const C = colors;
 
 const HomeScreen        = lazy(() => import('./screens/HomeScreen'));
-const StocksScreen      = lazy(() => import('./screens/StocksScreen?v=2'));
+const StocksScreen = lazy(() => import('./screens/StocksScreen'));
 const AnalysisScreen    = lazy(() => import('./screens/AnalysisScreen'));
 const PortfolioScreen   = lazy(() => import('./screens/PortfolioScreen'));
 const NewsScreen        = lazy(() => import('./screens/NewsScreen'));
