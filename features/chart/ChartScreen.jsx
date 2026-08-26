@@ -23,6 +23,7 @@ export default function ChartScreen({ stk, onClose }) {
   // When stock changes after load → send postMessage
   useEffect(() => {
   const handler = (e) => {
+      if (e.origin && e.origin !== window.location.origin) return;
     if (e.data === 'closeChart') onClose && onClose();
     if (e.data && e.data.type === 'TADAWUL_SNAPSHOT') {
       window.dispatchEvent(new MessageEvent('message', { data: e.data }));
@@ -36,7 +37,7 @@ export default function ChartScreen({ stk, onClose }) {
     try {
       iframeRef.current.contentWindow?.postMessage(
         { type: 'SET_STOCK', sym },
-        '*'
+        window.location.origin
       );
     } catch (e) {
       // iframe cross-origin safety — URL param handles initial load
