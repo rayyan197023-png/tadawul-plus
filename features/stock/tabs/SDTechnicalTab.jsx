@@ -288,6 +288,19 @@ function SDTechnical({ stk }) {
     };
   }, [stk.sym, stk.p, stk.dayHi, stk.dayLo, stk.prev, hist.length]);
 
+  // إذا لم تتوفر بيانات الأسعار، نعرض EmptyState
+  if (!p || hist.length === 0) {
+    return (
+      <SectionCard title="التحليل التقني" accent={C.electric}>
+        <EmptyState
+          icon="📈"
+          title="بيانات التحليل التقني غير متوفرة"
+          subtitle="جارٍ جلب البيانات التاريخية من sahmk... المؤشرات تتطلب 20+ شمعة على الأقل"
+        />
+      </SectionCard>
+    );
+  }
+
   const maSig = val => val > p ? { l: "بيع", c: C.coral } : { l: "شراء", c: C.mint };
   const n = nowStr();
 
