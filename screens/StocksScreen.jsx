@@ -247,7 +247,8 @@ const [liquidityMap, setLiquidityMap] = useState({});
 const liquidityFetched = useRef(new Set());
 
   useEffect(function() {
-    var syms = filtered.slice(0, visibleCount).map(function(d) { return d.stk.sym; });
+    // ✨ سقف 30 سهماً -- كان يطلب 249 سهماً (75 ثانية طلبات) ويسبب 429
+    var syms = filtered.slice(0, 30).map(function(d) { return d.stk.sym; });
   var toFetch = syms.filter(function(s) { return !liquidityFetched.current.has(s); });
   if (toFetch.length === 0) return;
   
