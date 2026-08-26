@@ -955,7 +955,8 @@ export default function StrategyLabTab({
           if (cancelRef.current) return;
           setProgress(prog);
         },
-        anchorWeights
+        anchorWeights,
+        () => cancelRef.current   // ✨ دالة فحص الإلغاء
       );
       
       if (!cancelRef.current) {
