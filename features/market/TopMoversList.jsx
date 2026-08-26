@@ -12,6 +12,7 @@ const C = colors;
 const TABS = ['الأكثر ارتفاعاً', 'الأكثر انخفاضاً', 'الأكثر نشاطاً'];
 
 function fmtVol(v) {
+  if (v == null || !isFinite(v)) return '--';
   if (v >= 1_000_000) return (v / 1_000_000).toFixed(1) + 'M';
   if (v >= 1_000)     return (v / 1_000).toFixed(0) + 'K';
   return v.toString();
