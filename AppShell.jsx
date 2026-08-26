@@ -153,7 +153,7 @@ function Shell() {
 
     import('./lib/webVitals').then(({ reportWebVitals }) => reportWebVitals());
     import('./lib/registerSW').then(({ registerServiceWorker }) => registerServiceWorker());
-
+    const _alertTimers = [];
     const initAlerts = async () => {
       try {
         const { runSmartAlertsEngine, requestNotificationPermission } =
@@ -231,8 +231,9 @@ function Shell() {
           }
         };
 
-        setTimeout(runEngine, 45000);   // ✨ ننتظر امتلاء كاش الشموع (tp_hist_) قبل أول تشغيل
-        setInterval(runEngine, 30000);
+        // ✨ نحفظ المؤقتين للتنظيف -- كانا يتراكمان عند إعادة التركيب
+        _alertTimers.push(setTimeout(runEngine, 45000));
+        _alertTimers.push(setInterval(runEngine, 30000));
       } catch (e) {
         console.warn('[Alerts] Init failed:', e.message);
       }
@@ -251,6 +252,10 @@ function Shell() {
     idle(() => { import('./screens/StocksScreen'); import('./screens/AnalysisScreen'); }, 2000);
     idle(() => { import('./screens/PortfolioScreen'); import('./screens/AIScreen'); }, 4000);
     idle(() => { import('./screens/NewsScreen'); import('./screens/MoreScreen'); }, 6000);
+
+    return () => {
+      _alertTimers.forEach(t => { clearTimeout(t); clearInterval(t); });
+    };
   }, []);
 
   useEffect(() => {
