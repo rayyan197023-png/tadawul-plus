@@ -5,7 +5,7 @@
  * يُستدعى مرة واحدة في AppShell
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { useMarketEngine }   from './useMarketEngine';
 import { useMarketDispatch, MARKET_ACTIONS } from '../store';
 import { useStockState } from '../store/stockStore';
@@ -17,11 +17,12 @@ export function useMarketBridge() {
   const prevIdx  = useRef(null);
 
   // دمج الأسعار الحية في الأسهم
-  const liveStocks = stocks.map(s => {
+  // ✨ useMemo -- كانت تُعاد لكل 248 سهما في كل رسم وتُطلق الـeffect
+  const liveStocks = useMemo(() => stocks.map(s => {
     const live = priceCache[s.sym];
     if (!live) return s;
     return { ...s, p: live.p, ch: live.ch, pct: live.pct, v: live.v };
-  });
+  }), [stocks, priceCache]);
 
   useEffect(() => {
     if (!market.current) return;
