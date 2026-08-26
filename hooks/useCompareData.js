@@ -13,7 +13,7 @@ import { sahmkFetch } from '../features/stock/tabs/SDApiEnginesTab';
 // قراءة من cache الموجود (الأسهم المفتوحة سابقاً)
 const readStockCache = (sym) => {
   try {
-    const raw = localStorage.getItem(`stockFund_v4_${sym}`);
+    const raw = localStorage.getItem(`stockFund_v14_${sym}`);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     return parsed.data || null;
