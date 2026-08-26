@@ -117,7 +117,6 @@ function Shell() {
   const wlSyms = React.useMemo(() => watchlist.map(w => w.sym), [watchlist]);
   const [commData, setCommData] = React.useState([]);
 
-  useLiveStockPrices();
   useMarketBridge();
   usePriceUpdater();
 
