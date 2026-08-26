@@ -100,7 +100,10 @@ export default function FullAnalysisModal({ sym, onClose, allData, liveStocks, h
 
 // ✨ Tooltip Helper - Performance Fix (one map, not 9 conditions)
 const TOOLTIP_KEYS = {
-  'سيولة': 'السيولة',
+  // ✨ الأطول أولاً -- "كفاءة السيولة" تحتوي "سيولة" فيجب فحصها قبلها
+  'عوامل الأداء': 'عوامل الأداء المُثبتة',
+  'كفاءة السيولة': 'كفاءة السيولة',
+  'قوة السيولة': 'السيولة',
   'هيكل': 'الهيكل',
   'احتمالية': 'Softmax',
   'جدوى': 'Half-Kelly',
