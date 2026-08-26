@@ -11,7 +11,6 @@
  * 📦 يستورد من:
  * - strategyLab (المحرّك)
  * - strategyFitness (للعرض)
- * - stockClassifier (للتصنيف)
  * 
  * 🔌 يحتاج props:
  * - C (الألوان)
@@ -31,8 +30,6 @@ import {
 import { generateAnchorFromAILearning, getAILearningStats } from '../engines/aiLearningWeights';
 import { getTierInfo } from '../engines/strategyFitness';
 
-// 🆕 لم نعد بحاجة لـ stockClassifier (Universe موحَّد)
-// import { getTypeIcon, getTypeArabic, getTypeColor, getTypeDescription } from '../engines/stockClassifier';
 
 // ════════════════════════════════════════════════════════════
 //  PHASE: SETUP - شاشة الإعداد
@@ -100,8 +97,7 @@ function SetupPhase({ C, onStart, isReady, dataInfo }) {
           borderRight: '2px solid #10b981',
           lineHeight: 1.5,
         }}>
-          💡 المختبر يكتشف Winner عامّ يعمل على ٧ شخصيّات مختلفة من الأسهم
-          (LEADER / GROWTH / VALUE / DIVIDEND / TURNAROUND / SPECULATIVE / AVOID)
+          💡 المختبر يكتشف Winner عامّ يعمل على ٥٠ سهماً متنوّعاً من قطاعات مختلفة
         </div>
       </div>
       
