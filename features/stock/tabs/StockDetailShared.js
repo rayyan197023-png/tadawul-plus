@@ -56,8 +56,9 @@ const ANALYST_BANKS = { default: [] };
 const PEERS = { default: [] };
 const FIN_SCORES = {
   default: {
-    altmanZ: 0, piotroski: 0, beneish: 0,
-    cashScore: 0, profitScore: 0, growthScore: 0, debtScore: 0,
+    // ✨ null لا صفر -- الصفر يعني "خطر إفلاس" في Altman و"مراقبة" في Beneish
+    altmanZ: null, piotroski: null, beneish: null,
+    cashScore: null, profitScore: null, growthScore: null, debtScore: null,
     overallLabel: "--", overallColor: "smoke",
   },
 };
