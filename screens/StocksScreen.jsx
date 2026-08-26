@@ -255,6 +255,7 @@ const liquidityFetched = useRef(new Set());
   // جلب واحد كل 300ms لتفادي 429
   toFetch.forEach(function(sym, i) {
     setTimeout(function() {
+          liquidityFetched.current.add(sym);
       fetch('/api/sahmkdata?endpoint=liquidity&sym=' + sym)
         .then(function(r) { return r.json(); })
         .then(function(j) {
