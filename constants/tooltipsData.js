@@ -735,40 +735,4 @@ export function getTooltip(key) {
   return TOOLTIPS[key] || null;
 }
 
-/**
- * البحث عن مصطلحات
- * @param {string} query - نص البحث
- * @returns {Array} - قائمة المصطلحات المطابقة
- */
-export function searchTooltips(query) {
-  if (!query || query.length < 2) return [];
-  
-  const q = query.toLowerCase();
-  const results = [];
-  
-  Object.keys(TOOLTIPS).forEach(key => {
-    const t = TOOLTIPS[key];
-    if (
-      key.toLowerCase().includes(q) ||
-      t.title.toLowerCase().includes(q) ||
-      t.subtitle.toLowerCase().includes(q)
-    ) {
-      results.push({ key, ...t });
-    }
-  });
-  
-  return results;
-}
-
-/**
- * الحصول على جميع مصطلحات فئة معينة
- * @param {string} category - الفئة (technical, portfolio, risk, etc.)
- * @returns {Array}
- */
-export function getTooltipsByCategory(category) {
-  return Object.keys(TOOLTIPS)
-    .filter(key => TOOLTIPS[key].category === category)
-    .map(key => ({ key, ...TOOLTIPS[key] }));
-}
-
 export default TOOLTIPS;
