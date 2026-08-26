@@ -883,7 +883,7 @@ function HealthScores({ scores, scoreLabel, scoreColor }) {
                 tip:"يقيس جودة الأرباح والقوة المالية من 9 نقاط. 7-9 ممتاز، 4-6 متوسط، 0-3 ضعيف."},
               {l:"نقاط التدفق النقدي", eng:"Cash Score",        v:scores.cashScore, max:100, note:scoreLabel(scores.cashScore), color:scoreColor(scores.cashScore),
                 tip:"يقيس قوة التدفق النقدي من 100 نقطة. ≥75 قوي، 50-74 متوسط، <50 ضعيف."},
-              {l:"بينيش M",            eng:"Beneish M-Score",   v:scores.beneish,   max:null, note:scores.beneish<-2.22?"لا تلاعب":"مراقبة", color:scores.beneish<-2.22?C.mint:C.amber, isNeg:true,
+              {l:"بينيش M",            eng:"Beneish M-Score",   v:scores.beneish,   max:null, note:scores.beneish==null?"غير متاح":scores.beneish<-2.22?"لا تلاعب":"مراقبة", color:scores.beneish==null?C.smoke:scores.beneish<-2.22?C.mint:C.amber, isNeg:true,
                 tip:"يكتشف التلاعب بالأرباح. <-2.22 لا تلاعب، ≥-2.22 يستحق المراقبة."},
             ].map((item,i) => (
               <ScoreCard key={i} item={item} idx={i} onInfo={openDrawer}/>
