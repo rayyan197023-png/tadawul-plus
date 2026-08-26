@@ -357,7 +357,51 @@ onClick={() => {
           {chartType === 'line' && (
             <path d={pathD} fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           )}
-          
+
+          {/* Candlestick mode */}
+          {chartType === 'candle' && pts.length > 0 && (() => {
+            const ohlcRaw = ohlcvData[period + '_ohlc'];
+            const candleW = Math.max(2, Math.floor(W / Math.min(40, pts.length) * 0.7));
+            const candleCount = Math.min(40, pts.length);
+            const candles = [];
+            if (ohlcRaw && ohlcRaw.length > 0) {
+              const step = ohlcRaw.length / candleCount;
+              for (let i = 0; i < candleCount; i++) {
+                const b = ohlcRaw[Math.floor(i * step)];
+                if (!b) continue;
+                const x = Math.round(i / candleCount * W + W / candleCount / 2);
+                candles.push({ x, o: b.o, c: b.c, hi: b.h, lo: b.l, up: b.c >= b.o });
+              }
+            } else {
+              const step = pts.length / candleCount;
+              for (let i = 0; i < candleCount; i++) {
+                const start = Math.floor(i * step);
+                const end   = Math.min(Math.floor((i + 1) * step), pts.length);
+                const slice = pts.slice(start, end);
+                if (!slice.length) continue;
+                const o = slice[0], cl = slice[slice.length - 1];
+                const x = Math.round(i / candleCount * W + W / candleCount / 2);
+                candles.push({ x, o, c: cl, hi: Math.max(...slice), lo: Math.min(...slice), up: cl >= o });
+              }
+            }
+
+            return candles.map((candle, i) => {
+              const openY  = toY(candle.o);
+              const closeY = toY(candle.c);
+              const hiY    = toY(candle.hi);
+              const loY    = toY(candle.lo);
+              const col    = candle.up ? C.positive : C.negative;
+              const bodyTop    = Math.min(openY, closeY);
+              const bodyHeight = Math.max(2, Math.abs(closeY - openY));
+              return (
+                <g key={i}>
+                  <line x1={candle.x} y1={hiY} x2={candle.x} y2={loY} stroke={col} strokeWidth="1" opacity="0.8" />
+                  <rect x={candle.x - candleW/2} y={bodyTop} width={candleW} height={bodyHeight} fill={col} opacity="0.9" rx="1" />
+                </g>
+              );
+            });
+          })()}
+
           {/* Live dot */}
           <circle cx={liveX} cy={liveY} r="4" fill={color} opacity="0.9" />
           <circle cx={liveX} cy={liveY} r="8" fill={color} opacity="0.15" />
