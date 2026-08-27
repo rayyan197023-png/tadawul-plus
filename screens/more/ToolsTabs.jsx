@@ -849,7 +849,7 @@ function ProfitCalc(props) {
   const [buyP, setBuyP] = useState("");
   const [sellP, setSellP] = useState("");
   const [calcTab, setCalcTab] = useState("basic");
-  const [commRate, setCommRate] = useState("0.06");
+  const [commRate, setCommRate] = useState("0.155");
   var scenarios=[
     {label:"هبوط (Bear)",    pct:-15, color:C.coral},
     {label:"متحفظ",          pct:5,   color:C.teal},
