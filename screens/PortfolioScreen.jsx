@@ -1858,7 +1858,7 @@ return result;
           <div style={{display:"flex",gap:6,marginTop:8,marginBottom:4}}>
             <button onClick={function(){switchTab("decisions");}} style={{flex:1,padding:"8px 6px",background:"linear-gradient(135deg,"+C.gold+"18,"+C.gold+"08)",border:"1px solid "+C.gold+"33",borderRadius:10,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
               <div style={{fontSize:12,fontWeight:900,color:C.gold,fontFamily:"Cairo,sans-serif"}}>التحليل</div>
-              <div style={{fontSize:9,color:C.smoke,fontWeight:600}}>9 طبقات</div>
+              <div style={{fontSize:9,color:C.smoke,fontWeight:600}}>١١ طبقة</div>
             </button>
             <button onClick={function(){setTab(TAB_IDS.REBALANCING);}} style={{flex:1,padding:"8px 6px",background:"linear-gradient(135deg,"+C.electric+"18,"+C.electric+"08)",border:"1px solid "+C.electric+"33",borderRadius:10,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
               <div style={{fontSize:12,fontWeight:900,color:C.electric,fontFamily:"Cairo,sans-serif"}}>توازن</div>
@@ -3560,7 +3560,7 @@ return result;
           <div style={{width:"100%",maxWidth:360,textAlign:"center"}}>
             {[
               {icon:"portfolio",title:"محفظتك الذكية",desc:"تتبع اسهمك وراقب قراراتك الورقية قبل التنفيذ الحقيقي في البنك",color:C.electric},
-              {icon:"hold",title:"قرارات من المحرك",desc:"كل سهم يحصل على قرار واحد واضح مع سبب ديناميكي من 9 طبقات تحليل",color:C.mint},
+desc:"كل سهم يحصل على قرار واحد واضح مع سبب ديناميكي من ١١ طبقة تحليل",
               {icon:"log",title:"سجّل صفقاتك الورقية",desc:"جرّب القرارات على ورق اولاً - تابع الربح والخسارة دون مخاطرة حقيقية",color:C.gold},
             ].map(function(s,idx){return obStep===idx?(
               <div key={idx} className="card-enter">
