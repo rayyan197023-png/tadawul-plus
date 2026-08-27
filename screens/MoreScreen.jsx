@@ -25,8 +25,7 @@ import { C, Ico, COMM, PRIORITY_ORDER, WATCHLIST_DEFAULT, RANKINGS, DIVS, CSS_ST
 import { RankingsTab, CommoditiesTab } from './more/MarketTabs';
 
 // ── تبويبات مالية
-import { DividendsTab, FundsTab, MacroTab } from './more/FinanceTabs';
-
+import { DividendsTab, MacroTab } from './more/FinanceTabs';
 
 // ── تبويبات الأدوات
 import { SnapshotsTab, SettingsTab, ProfitCalc, CompareView, AlertsPanel, WatchlistTab } from './more/ToolsTabs';
