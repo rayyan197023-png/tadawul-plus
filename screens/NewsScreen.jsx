@@ -823,8 +823,8 @@ export default function NewsScreen() {
                               fontVariantNumeric:"tabular-nums",
                               display:"flex", alignItems:"center", gap:4 }}>
                             {n.sym}
-                            {STOCK_PRICES[n.sym] && (
-                              <span style={{ fontSize:9 }}>{STOCK_PRICES[n.sym].up ? "▲" : "▼"}</span>
+                            {priceMap[n.sym] && (
+                              <span style={{ fontSize:9 }}>{priceMap[n.sym].up ? "▲" : "▼"}</span>
                             )}
                           </button>
                           {stockPopup === n.sym && (
