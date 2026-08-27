@@ -424,7 +424,7 @@ const EquityCurveChart = React.memo(function EquityCurveChart(props) {
               marginBottom: 2,
               fontWeight: 700,
             }}>
-              Alpha vs TASI
+              Alpha vs B&H
             </div>
             <div style={{
               fontSize: 11,
