@@ -1048,9 +1048,9 @@ function LiquidityMapPanel({stocks=[], allStocks=[], ohlcvCache={}}) {
               </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:6}}>
                 {[
-                  {l:"MFI", v:d.mfi,                        c:d.mfi>60?G:d.mfi<40?R:T2},
-                  {l:"CMF", v:d.cmf>0?"+"+d.cmf:d.cmf,     c:d.cmf>0.05?G:d.cmf<-0.05?R:T2},
-                  {l:"RSI", v:d.rsi,                        c:d.rsi>60?G:d.rsi<40?R:T2},
+                  {l:"تدفق~", v:d.mfi,                      c:d.mfi>60?G:d.mfi<40?R:T2},
+                  {l:"ضغط~", v:d.cmf>0?"+"+d.cmf:d.cmf,    c:d.cmf>0.05?G:d.cmf<-0.05?R:T2},
+                  {l:"زخم~", v:d.rsi,                       c:d.rsi>60?G:d.rsi<40?R:T2},
                   {l:"LPI", v:(d.lpi>0?"+":"")+d.lpi,      c:d.lpi>20?G:d.lpi<-20?R:T2},
                 ].map((m,mi)=>(
                   <div key={mi} style={{background:"rgba(255,255,255,.04)",borderRadius:8,padding:"6px 8px",textAlign:"center"}}>
