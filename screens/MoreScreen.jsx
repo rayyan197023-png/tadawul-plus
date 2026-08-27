@@ -301,6 +301,8 @@ useEffect(function(){
       var triggered=false;
       var updated=als.map(function(al){
         if(!al.active||al.triggered) return al;
+        // ✨ تجاهل التنبيهات المنتهية -- expiry كان يُعرض ولا يُفحص
+        if(al.expiry && new Date(al.expiry) < new Date()) return al;
         var stock=stocksLive.filter(function(s){return s.sym===al.sym;})[0];
         if(!stock) return al;
         var hit=(al.type==="above"&&stock.p>=al.price)||(al.type==="below"&&stock.p<=al.price);
