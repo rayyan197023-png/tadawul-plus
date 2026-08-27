@@ -1185,22 +1185,8 @@ function DnaCard({d, bars: ohlcvBars}) {
       });
     }
 
-    // فولباك: بيانات تَجريبيّة (إذا cache لم يَصِل بعد)
-    return Array.from({length:20},(_,k)=>{
-      const daysAgo=19-k;
-      const date=new Date(); date.setDate(date.getDate()-daysAgo);
-      const timeFade=0.5+(k/20)*0.5;
-      const baseH=4+(d.sm/100)*44*timeFade;
-      const noise=(Math.sin(k*2.4+d.stk.sym.charCodeAt(0))*0.5+0.5)*8;
-      const h=Math.round(baseH+noise);
-      const barPct=+((d.stk.pct||0)*timeFade*(0.8+Math.sin(k)*0.2)).toFixed(2);
-      const vol=Math.round((d.stk.v||1e6)*(0.4+Math.sin(k*1.7)*0.3+0.3));
-      return{
-        k, h:Math.max(4,h), barPct, vol, isRecent:k>14,
-        label:`${dayNames[date.getDay()]} ${date.getDate()} ${monthNames[date.getMonth()]}`,
-        shortDate:`${date.getDate()}/${date.getMonth()+1}`,
-      };
-    });
+    // ✨ لا بيانات وهمية -- ننتظر وصول الشموع الحقيقية
+    return [];
   },[d, ohlcvBars, isReal]);
 
   const ab = activeBar!==null ? bars[activeBar] : null;
