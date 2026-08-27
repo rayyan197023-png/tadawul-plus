@@ -958,7 +958,7 @@ export default function NewsScreen() {
                   borderRadius:10, background:C.layer1, border:`1px solid ${C.line}33` }}>
                   <span className="do-pulse" aria-hidden="true" style={{ width:6, height:6, borderRadius:"50%",
                     flexShrink:0, background:C.mint, boxShadow:`0 0 5px ${C.mint}88`, display:"inline-block" }}/>
-                  <span style={{ fontSize:10, color:C.ash, fontWeight:600 }}>عيّنة تجريبية • تُربط بمصدر حقيقي قريباً</span>
+                  <span style={{ fontSize:10, color:C.ash, fontWeight:600 }}>أحداث السوق • المصدر: sahmk</span>
                   <div aria-hidden="true" style={{ marginInlineStart:"auto", display:"flex", gap:3 }}>
                     {[C.electric, C.mint, C.plasma].map((col, i) => (
                       <div key={i} style={{ width:5, height:5, borderRadius:"50%", background:col, opacity:.5 }}/>
