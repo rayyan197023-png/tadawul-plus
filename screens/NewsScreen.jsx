@@ -264,7 +264,7 @@ function FeedbackBar({ theme, newsId }) {
       clearTimeout(confirmTimerRef.current);
       confirmTimerRef.current = setTimeout(() => setConfirmed(false), 2000);
     }
-  }, []);
+  }, [newsId]);
 
   useEffect(() => {
     return () => clearTimeout(confirmTimerRef.current);
