@@ -6,6 +6,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback, useMemo, useReducer } from "react";
+import { useSharedPrices } from "../store";
 
 const C = {
   ink:     "#04070d",
