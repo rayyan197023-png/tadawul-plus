@@ -1164,8 +1164,12 @@ useEffect(() => {
 
   // ======= دالة إطلاق التنبيه الكامل =======
   function fireAlert(a) {
+    // ✨ نقرأ إعدادات المستخدم -- كانت تُحفظ ولا تُقرأ
+    var _as = {soundEnabled:true, browserNotifications:true, vibration:true};
+    try { var _r = localStorage.getItem("tadawul_alert_settings"); if(_r) _as = Object.assign(_as, JSON.parse(_r)); } catch(e){}
+
     // ١. إشعار المتصفح
-    if("Notification" in window && Notification.permission==="granted"){
+    if(_as.browserNotifications && "Notification" in window && Notification.permission==="granted"){
       new Notification("⚡ "+a.name+" — "+a.act,{
         body:a.reason,
         tag:a.sym,
