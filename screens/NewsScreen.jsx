@@ -345,6 +345,16 @@ const articleReducer = (state, action) => {
 export default function NewsScreen() {
   useGlobalStyle();
 
+  // ✨ أسعار حقيقية من المتجر -- كانت STOCK_PRICES فارغة دائماً
+  const liveStocks = useSharedPrices();
+  const priceMap = useMemo(() => {
+    const m = {};
+    (liveStocks || []).forEach(s => {
+      if (s && s.sym) m[s.sym] = { price:(s.p||0).toFixed(2), pct:((s.pct||0)>=0?"+":"")+(s.pct||0).toFixed(2)+"%", change:((s.pct||0)/100*(s.p||0)).toFixed(2), up:(s.pct||0)>=0 };
+    });
+    return m;
+  }, [liveStocks]);
+
   const [activeTab,    setActiveTab]    = useState("كل الأخبار");
   const [article,      dispatchArticle] = useReducer(articleReducer, { news:null, feedbackKey:0, closing:false });
   const [tabLoading,   setTabLoading]   = useState(false);
