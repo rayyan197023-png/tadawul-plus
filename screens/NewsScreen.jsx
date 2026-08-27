@@ -255,6 +255,8 @@ function FeedbackBar({ theme, newsId }) {
     const next = votedRef.current === key ? null : key;
     votedRef.current = next;
     setVoted(next);
+    // ✨ يُحفظ محلياً -- كان يضيع عند إغلاق الخبر
+    try { if (next) localStorage.setItem(`vote-${newsId}`, next); else localStorage.removeItem(`vote-${newsId}`); } catch(e) {}
     if (next === null) {
       setConfirmed(false);
     } else {
