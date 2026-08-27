@@ -401,7 +401,6 @@ useEffect(function(){
     {id:"compare",    label:"مقارنة سهمين",      color:"#f97316", icoK:"scale",   sub:"رادار · جدول · مقاييس"},
 
     {id:"profitcalc", label:"حاسبة الربح",       color:C.mint,    icoK:"calc",    sub:"ROI · نقطة التعادل · سيناريوهات"},
-    {id:"funds",      label:"الصناديق",          color:C.plasma,  icoK:"invest",  sub:"تصنيف · ألفا · شارب"},
   ];
 
   var subItem=MENU.filter(function(m){return m.id===sub;})[0];
@@ -682,10 +681,6 @@ style={{
 
       
       {sub==="dividends"&&<DividendsTab p={tabProps}/>}
-
-
-      
-      {sub==="funds"&&<FundsTab p={tabProps}/>}
 
 
       
