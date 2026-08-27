@@ -278,6 +278,7 @@ function FeedbackBar({ theme, newsId }) {
     const next = !savedRef.current;
     setSaved(next);
     try { if (next) localStorage.setItem(savedKey, "1"); else localStorage.removeItem(savedKey); } catch(e) {}
+  }, [savedKey]);
 
   return (
     <div style={{ marginBlockStart:28, padding:"16px", background:theme.layer1, borderRadius:14, border:`1px solid ${theme.line}44` }}>
