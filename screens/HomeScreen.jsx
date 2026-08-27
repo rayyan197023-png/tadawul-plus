@@ -1193,7 +1193,12 @@ function DnaCard({d, bars: ohlcvBars}) {
 
   return(
     <div style={{background:CARD2,borderRadius:12,padding:"10px 12px",marginBottom:7,border:"1px solid "+LN}}>
-      <div style={{display:"flex",gap:2,alignItems:"flex-end",height:44,marginBottom:4}}>
+      {bars.length === 0 && (
+        <div style={{height:44,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,color:T3,marginBottom:4}}>
+          جارٍ تحميل شموع {d.stk.sym}…
+        </div>
+      )}
+      <div style={{display:bars.length?"flex":"none",gap:2,alignItems:"flex-end",height:44,marginBottom:4}}>
         {bars.map(bar=>(
           <div key={bar.k} onClick={()=>setActiveBar(activeBar===bar.k?null:bar.k)} style={{
             flex:1,height:bar.h,borderRadius:2,cursor:"pointer",
