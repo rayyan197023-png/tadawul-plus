@@ -990,8 +990,8 @@ function ProfitCalc(props) {
                   return(
                     <div key={sc.label} style={{background:"linear-gradient(135deg,"+C.layer2+","+C.layer3+")",border:"1px solid "+sc.color+"22",borderRadius:14,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                       <div>
-                        <div className="num" style={{fontSize:15,fontWeight:900,color:sc.color}}>+{profit.toFixed(0)} ر.س</div>
-                        <div style={{fontSize:8,color:C.smoke,marginTop:2}}>{sc.label} · +{sc.pct}%</div>
+                        <div className="num" style={{fontSize:15,fontWeight:900,color:sc.color}}>{profit>=0?"+":""}{profit.toFixed(0)} ر.س</div>
+                        <div style={{fontSize:8,color:C.smoke,marginTop:2}}>{sc.label} · {sc.pct>=0?"+":""}{sc.pct}%</div>
                       </div>
                       <div style={{width:42,height:42,borderRadius:11,background:sc.color+"18",border:"1px solid "+sc.color+"33",display:"flex",alignItems:"center",justifyContent:"center"}}>
                         <Ico k="invest" color={sc.color} size={20}/>
