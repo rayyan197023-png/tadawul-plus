@@ -467,7 +467,7 @@ const EquityCurveChart = React.memo(function EquityCurveChart(props) {
               opacity: 0.6,
             }} />
             <span style={{ fontSize: 9, color: C.smoke, fontWeight: 700 }}>
-              تاسي
+              شراء واحتفاظ
             </span>
           </div>
         )}
