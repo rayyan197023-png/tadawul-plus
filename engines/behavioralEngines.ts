@@ -51,7 +51,10 @@ var vol30pct = bars.slice(-30).reduce(function(s: number, b: any){return s+Math.
     signal:unusualActivity&&pressureRatio<0.8?"نشاط استثنائي صعودي":unusualActivity&&pressureRatio>1.3?"نشاط استثنائي هبوطي":sentiment};
 }
 
-/* ══ Insider Transactions ══ */
+/* ══ Insider Transactions ══
+   ⚠️ ملاحظة صدق: لا بيانات تعاملات مطلعين حقيقية (غير متاحة عبر sahmk).
+   هذا مؤشر تراكم/تصريف مُستنتَج من الحجم والسعر والأساسيات فقط.
+   المخرجات (netBuy/signal) داخلية للدرجة ولا تُعرض للمستخدم. */
 function calcInsiderTransactions(stk: Stock, bars: Bar[]): any {
 
   var n=bars?bars.length:0;
