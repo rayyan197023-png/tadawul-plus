@@ -851,10 +851,10 @@ function ProfitCalc(props) {
   const [calcTab, setCalcTab] = useState("basic");
   const [commRate, setCommRate] = useState("0.06");
   var scenarios=[
-    {label:"متحفظ (Bear)",   pct:5,  color:C.teal},
-    {label:"متوسط (Base)",   pct:10, color:C.amber},
-    {label:"متفائل (Bull)",  pct:20, color:C.mint},
-    {label:"استثنائي",       pct:35, color:C.gold},
+    {label:"هبوط (Bear)",    pct:-15, color:C.coral},
+    {label:"متحفظ",          pct:5,   color:C.teal},
+    {label:"متوسط (Base)",   pct:10,  color:C.amber},
+    {label:"متفائل (Bull)",  pct:20,  color:C.mint},
   ];
   var buy=parseFloat(buyP)||sym.p*0.95;
   var sell=parseFloat(sellP)||sym.p;
