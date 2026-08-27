@@ -948,7 +948,7 @@ function LiquidityMapPanel({stocks=[], allStocks=[], ohlcvCache={}}) {
               background:"linear-gradient(135deg,#6d28d9,"+PU+")",border:"none",color:T1,
               borderRadius:9,padding:"5px 14px",fontSize:11,fontWeight:700,cursor:"pointer",
               fontFamily:"Cairo,sans-serif",boxShadow:"0 2px 8px rgba(167,139,250,.3)",opacity:scanning?0.6:1,
-            }}>{scanning?"...":"فحص"}</button>
+          }}>تحديث الوقت</button>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:8}}>
             <div style={{textAlign:"right"}}>
