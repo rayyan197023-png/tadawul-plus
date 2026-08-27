@@ -813,7 +813,7 @@ try{localStorage.setItem('tadawul_font_size', f.k);}catch(e){}
                       title:"التواصل معنا",
                       ico:"bell",
                       color:C.teal,
-                      body:"لأي استفسارات أو ملاحظات بخصوص سياسة الخصوصية أو التطبيق، يسعدنا تلقّي تواصلك عبر قسم التقييم داخل التطبيق. نلتزم بالرد خلال 48 ساعة."
+                      body:"لأي ملاحظات بخصوص سياسة الخصوصية أو التطبيق، يمكنك استخدام قسم التقييم داخل التطبيق. التقييمات تُحفظ محلياً على جهازك."
                     },
                   ].map(function(sec,si){return(
                     <div key={si} style={{background:"linear-gradient(135deg,"+C.layer2+","+C.layer3+")",borderRadius:16,padding:"16px 18px",border:"1px solid "+sec.color+"22",boxShadow:"0 4px 20px rgba(0,0,0,.2)"}}>
