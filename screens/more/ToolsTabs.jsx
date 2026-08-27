@@ -1186,6 +1186,8 @@ function CompareView(props) {
 
 function AlertsPanel(props) {
   var onClose=props.onClose;
+  // ✨ يشمل critical -- المستوردة من MoreShared بلا critical
+  var ALERT_PRIORITY={critical:0,high:1,medium:2,low:3};
   
   // ✨ حُذف volume و news -- كانا يُنشآن ولا يُفحصان أبداً
   var typeOpts=[
