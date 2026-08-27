@@ -432,10 +432,10 @@ const BacktestResultsCard = React.memo(function BacktestResultsCard(props) {
 
       {/* ⚔️ مقارنة مع Benchmark */}
       {comparison && (
-        <Section icon="⚔️" title="مقارنة مع تاسي" color={C.gold}>
+        <Section icon="⚔️" title="مقارنة مع شراء واحتفاظ" color={C.gold}>
           <MetricItem 
             label="Alpha"
-            sublabel="الفرق السنوي عن تاسي"
+            sublabel="الفرق السنوي عن شراء واحتفاظ (٥ أسهم)"
             value={(comparison.alpha >= 0 ? '+' : '') + comparison.alpha + '%'}
             color={comparison.alpha >= 0 ? C.mint : C.coral}
             highlight={true}
@@ -470,8 +470,8 @@ const BacktestResultsCard = React.memo(function BacktestResultsCard(props) {
               color: comparison.outperformance ? C.mint : C.coral,
             }}>
               {comparison.outperformance 
-                ? '🏆 استراتيجيتك تتفوّق على تاسي'
-                : '📊 تاسي يتفوّق على استراتيجيتك'}
+                ? '🏆 استراتيجيتك تتفوّق على شراء واحتفاظ'
+                : '📊 شراء واحتفاظ يتفوّق على استراتيجيتك'}
             </div>
           </div>
         </Section>
