@@ -1323,7 +1323,7 @@ function AlertsPanel(props) {
     return (b.timestamp||0)-(a.timestamp||0);
   });
   var manualAlerts=alerts.filter(function(a){return !a.smart;}).sort(function(a,b){
-    return (PRIORITY_ORDER[a.priority]||1)-(PRIORITY_ORDER[b.priority]||1);
+    return (ALERT_PRIORITY[a.priority]||2)-(ALERT_PRIORITY[b.priority]||2);
   });
   
   // Apply filter to smart alerts
