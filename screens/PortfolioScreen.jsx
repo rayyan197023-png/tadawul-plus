@@ -3557,7 +3557,7 @@ return result;
           <div style={{width:"100%",maxWidth:360,textAlign:"center"}}>
             {[
               {icon:"portfolio",title:"محفظتك الذكية",desc:"تتبع اسهمك وراقب قراراتك الورقية قبل التنفيذ الحقيقي في البنك",color:C.electric},
-desc:"كل سهم يحصل على قرار واحد واضح مع سبب ديناميكي من ١١ طبقة تحليل",
+              {icon:"hold",title:"قرارات من المحرك",desc:"كل سهم يحصل على قرار واحد واضح مع سبب ديناميكي من ١١ طبقة تحليل",color:C.mint},
               {icon:"log",title:"سجّل صفقاتك الورقية",desc:"جرّب القرارات على ورق اولاً - تابع الربح والخسارة دون مخاطرة حقيقية",color:C.gold},
             ].map(function(s,idx){return obStep===idx?(
               <div key={idx} className="card-enter">
