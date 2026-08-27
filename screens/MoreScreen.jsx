@@ -614,7 +614,7 @@ style={{
                 مختبر الاستراتيجيات
               </div>
               <div style={{ fontSize: 11, color: "#c8d8f0", lineHeight: 1.5 }}>
-                اختبر محفظتك على سنوات + محاكاة 10,000 سيناريو
+                اختبر محفظتك على سنوات + محاكاة 5,000 سيناريو
               </div>
             </div>
             <div style={{ fontSize: 20, color: "#f0c050", fontWeight: 900, flexShrink: 0 }}>
@@ -630,7 +630,7 @@ style={{
               💼 محفظتي
             </span>
             <span style={{ fontSize: 9, padding: "3px 8px", background: "rgba(240, 192, 80, 0.15)", color: "#f0c050", borderRadius: 10, fontWeight: 700 }}>
-              🔍 الطبقات التسع
+              🔍 ١١ طبقة
             </span>
             <span style={{ fontSize: 9, padding: "3px 8px", background: "rgba(34, 211, 238, 0.15)", color: "#22d3ee", borderRadius: 10, fontWeight: 700 }}>
               🌐 السوق
