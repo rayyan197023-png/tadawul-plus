@@ -81,7 +81,10 @@ var recentVol=n>=5?bars.slice(-5).reduce(function(s: number, b: any){return s+b.
     signal,sentColor:isBuyDom?"#10c97e":"#f04f5a",score:netScore};
 }
 
-/* ══ Alternative Data ══ */
+/* ══ Alternative Data ══
+   ⚠️ ملاحظة صدق: لا بيانات بديلة حقيقية (Google Trends / تواصل اجتماعي / سلاسل توريد).
+   كل المخرجات مشتقة من أسعار القطاع والأساسيات والحجم:
+   sentimentScore = زخم القطاع · searchTrend = أداء نسبي · supplyChain = استقرار الحجم. */
 function calcAlternativeData(stk: Stock, bars: Bar[], macroData: Pick<MacroData, 'oilPrice' | 'saudiRepoRate' | 'cpi'> = { oilPrice: 80, saudiRepoRate: 4, cpi: 2 }): any {
 
   var sectorStocks=STOCKS.filter(function(x: any){return x.sec===stk.sec;});
