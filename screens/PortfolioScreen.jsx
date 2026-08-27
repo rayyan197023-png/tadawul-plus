@@ -1601,6 +1601,7 @@ return result;
   var timeVal=hour*60+min;
   // الأحد-الخميس فقط (0-4)
   var isWeekday = _day >= 0 && _day <= 4;
+  // ✨ تاسي: المزاد الافتتاحي 9:30 · التداول 10:00-15:00 · الإغلاق 15:00-15:10
   var isSession = isWeekday && (timeVal>=10*60&&timeVal<15*60);
   var isPreOpen = isWeekday && (timeVal>=9*60+30&&timeVal<10*60);
   var sessionLabel=isSession?"الجلسة مفتوحة":isPreOpen?"ما قبل الفتح":"الجلسة مغلقة";
