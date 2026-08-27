@@ -541,7 +541,7 @@ try{localStorage.setItem('tadawul_font_size', f.k);}catch(e){}
                 </div>
               </div>
               <div onClick={function(){
-                var shareData={title:"تداول+ | تطبيق الأسهم السعودية",text:"تطبيق تداول+ المتكامل لتحليل سوق الأسهم السعودية بالذكاء الاصطناعي",url:"https://claude.ai"};
+                var shareData={title:"تداول+ | تطبيق الأسهم السعودية",text:"تطبيق تداول+ المتكامل لتحليل سوق الأسهم السعودية بالذكاء الاصطناعي",url:"https://tadawul-plus.vercel.app"};
                 var tryShare=function(w){if(w&&w.navigator&&w.navigator.share){w.navigator.share(shareData).catch(function(){});return true;}return false;};
               if(!tryShare(window)){try{if(!tryShare(window.top))tryShare(window.parent);}catch(e){}}
               }} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 20px",cursor:"pointer"}}>
