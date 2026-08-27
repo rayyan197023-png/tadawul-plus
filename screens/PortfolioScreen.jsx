@@ -1813,7 +1813,7 @@ return result;
                   stroke={tp>=0?C.mint:C.coral}
                   strokeWidth={7}
                   strokeDasharray={2*Math.PI*42}
-                  strokeDashoffset={2*Math.PI*42*(1-Math.min(1,Math.abs(tpP)/100))}
+                  strokeDashoffset={2*Math.PI*42*(1-Math.min(1,Math.abs(tpP)/30))}
                   strokeLinecap="round"
                   style={{filter:"drop-shadow(0 0 8px "+(tp>=0?C.mint:C.coral)+"cc)",transition:"stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)"}}
                 />
