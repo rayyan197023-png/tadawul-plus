@@ -1509,7 +1509,7 @@ function AlertsPanel(props) {
                 return(
                   <div style={{position:"absolute",top:"110%",left:0,right:0,background:C.layer2,border:"1px solid "+C.line,borderRadius:10,zIndex:50,overflow:"hidden",boxShadow:"0 8px 24px rgba(0,0,0,.5)",maxHeight:200,overflowY:"auto"}}>
                     {results.map(function(s){return(
-                      <div key={s.sym} onClick={function(){setSym(s);setPrice("");}}
+                      <div key={s.sym} onClick={function(){setSym(s);setAlertSearch(null);}}
                         style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 14px",borderBottom:"1px solid "+C.line+"44",cursor:"pointer",background:sym.sym===s.sym?C.gold+"11":"transparent"}}>
                         <div style={{fontFamily:"monospace",fontSize:11,fontWeight:700,color:C.smoke}}>{s.sym}</div>
                         <div style={{fontSize:12,color:C.snow}}>{s.name}</div>
