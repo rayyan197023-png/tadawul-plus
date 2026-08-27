@@ -884,8 +884,7 @@ function LiquidityMapPanel({stocks=[], allStocks=[], ohlcvCache={}}) {
   }), [stocks]);
 
   // ✨ البيانات تُشتق تلقائياً من الأسعار الحية -- الزر يحدّث الطابع الزمني فقط
-  const run = () => { setLastUpdate(new Date()); };
-  useEffect(() => { run(); }, []);
+  useEffect(() => { setLastUpdate(new Date()); }, []);
 
   const now = `${lastUpdate.getHours().toString().padStart(2,"0")}:${lastUpdate.getMinutes().toString().padStart(2,"0")}`;
 
