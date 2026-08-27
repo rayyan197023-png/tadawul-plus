@@ -816,9 +816,9 @@ export default function NewsScreen() {
                             onClick={ev => { ev.stopPropagation(); setStockPopup(p => p === n.sym ? null : n.sym); }}
                             aria-label={`عرض سعر سهم ${n.sym}`}
                             style={{ fontSize:10, fontWeight:700,
-                              color: STOCK_PRICES[n.sym] ? (STOCK_PRICES[n.sym].up ? C.mint : C.coral) : C.ash,
-                              background: STOCK_PRICES[n.sym] ? (STOCK_PRICES[n.sym].up ? C.mint+"18" : C.coral+"18") : C.layer3,
-                              border:`1px solid ${STOCK_PRICES[n.sym] ? (STOCK_PRICES[n.sym].up ? C.mint+"44" : C.coral+"44") : C.line+"55"}`,
+                              color: priceMap[n.sym] ? (priceMap[n.sym].up ? C.mint : C.coral) : C.ash,
+                              background: priceMap[n.sym] ? (priceMap[n.sym].up ? C.mint+"18" : C.coral+"18") : C.layer3,
+                              border:`1px solid ${priceMap[n.sym] ? (priceMap[n.sym].up ? C.mint+"44" : C.coral+"44") : C.line+"55"}`,
                               paddingBlock:"2px", paddingInline:"7px", borderRadius:5,
                               fontVariantNumeric:"tabular-nums",
                               display:"flex", alignItems:"center", gap:4 }}>
