@@ -1385,7 +1385,8 @@ function HomeContent({idx, chgP, market, liveStocks=[], isLoadingH=false, isRefr
 
   // ✨ جلب OHLCV لحساب التغيّر حسب الفترة
   const syms = useMemo(()=>liveStocks.map(s=>s.sym),[liveStocks]);
-  const ohlcvCache = useOHLCVCache(syms, '3M');
+  // ✨ لا نجلب شموع 249 سهماً إلا عند اختيار فترة غير يومية
+  const ohlcvCache = useOHLCVCache(period === "يومي" ? [] : syms, '3M');
 
   // أيام كل فترة (عدد شموع التداول)
   // الأسبوعي = 5 أيام تداول، لكن نَحتاج 6 شموع (إغلاق الخميس السابق + 5 أيام)
