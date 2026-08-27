@@ -234,9 +234,11 @@ function CommoditiesTab(props) {
             <div style={{display:"flex",alignItems:"center",gap:8}}>
               <div style={{textAlign:"right"}}>
                 <div style={{fontSize:8,color:C.smoke}}>إيجابية السوق</div>
-                <div className="num" style={{fontSize:11,fontWeight:800,color:commData.filter(function(c){return c.pct>=0;}).length/commData.length>=0.5?C.mint:C.coral}}>{commData.filter(function(c){return c.pct>=0;}).length}/{commData.length} صاعد</div>
+                <div className="num" style={{fontSize:11,fontWeight:800,color:(commData.length>0&&commData.filter(function(c){return c.pct>=0;}).length/commData.length>=0.5)?C.mint:C.coral}}>{commData.filter(function(c){return c.pct>=0;}).length}/{commData.length} صاعد</div>
               </div>
+              {commData.length>0&&(
               <SentimentGauge pct={Math.round(commData.filter(function(c){return c.pct>=0;}).length/commData.length*100)} color={commData.filter(function(c){return c.pct>=0;}).length/commData.length>=0.5?C.mint:C.coral}/>
+              )}
             </div>
           </div>
           <div style={{padding:"8px 16px 4px",overflowX:"auto",display:"flex",gap:6,whiteSpace:"nowrap",borderBottom:"1px solid "+C.line}}>
@@ -311,8 +313,8 @@ function CommoditiesTab(props) {
                     </div>
                     {com.cat==="نفط"&&(
                       <div style={{marginTop:8,padding:"5px 10px",background:C.electric+"08",borderRadius:8,border:"1px solid "+C.electric+"20",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                        <span style={{fontSize:8,color:C.electric,fontWeight:700}}>ارتباط تاسي: عالي</span>
-                        <span style={{fontSize:8,color:C.smoke}}>يؤثر على 30%+ من تاسي</span>
+                        <span style={{fontSize:8,color:C.electric,fontWeight:700}}>مؤثر على السوق السعودي</span>
+                        <span style={{fontSize:8,color:C.smoke}}>قطاعا الطاقة والبتروكيماويات</span>
                       </div>
                     )}
                   </div>
