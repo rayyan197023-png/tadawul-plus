@@ -407,4 +407,4 @@ if(ageHours < CACHE_HOURS) {
 }
 
 
-export { DividendsTab, FundsTab, MacroTab };
+export { DividendsTab, MacroTab };
