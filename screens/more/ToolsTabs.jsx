@@ -860,7 +860,7 @@ function ProfitCalc(props) {
   var sell=parseFloat(sellP)||sym.p;
   var q=Math.max(1,parseInt(qty)||100);
   var gross=(sell-buy)*q;
-  var rate=Math.max(0,parseFloat(commRate)||0.06)/100;
+  var rate=Math.max(0,parseFloat(commRate)||0.155)/100;
   var brok=Math.max((buy*q+sell*q)*rate,30);
   var net=gross-brok;
   var pct=((sell-buy)/buy)*100;
@@ -923,7 +923,7 @@ function ProfitCalc(props) {
                 {label:"سعر الشراء (ر.س)", val:buyP,  set:setBuyP,  ph:buy.toFixed(2)},
                 {label:"سعر البيع (ر.س)",  val:sellP, set:setSellP, ph:sym.p.toFixed(2)},
                 {label:"الكمية / Shares",  val:qty,   set:setQty,   ph:"100"},
-                {label:"نسبة العمولة %",   val:commRate, set:setCommRate, ph:"0.06"},
+                {label:"نسبة العمولة %",   val:commRate, set:setCommRate, ph:"0.155"},
               ].map(function(f){return(
                 <div key={f.label} style={{marginBottom:8}}>
                   <div style={{fontSize:10,color:C.smoke,marginBottom:5,textAlign:"right"}}>{f.label}</div>
