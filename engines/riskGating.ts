@@ -29,7 +29,8 @@ function calcAdaptiveThreshold(allHealthData: any[], breadth: number = 0.5, vix:
 
 /* ⑤ Sharpe-like Tracker
    ⚠️ ليست نسبة شارب حقيقية: المدخلات درجات صحة لا عوائد،
-   والثابت 0.15 افتراض تحويل تعسّفي. مؤشر تشتت داخلي فقط. */
+   والثابت 0.15 افتراض تحويل تعسّفي. مؤشر تشتت داخلي فقط
+   (شارب الحقيقي في portfolioMath وbacktestEngine). */
 function calcPortfolioSharpe(allHealthData: any[], saudiRepoRate: number = 4.25): any {
   if(!allHealthData||allHealthData.length<2) return null;
   var scores = allHealthData.map(function(h){return h.score||50;});
