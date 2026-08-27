@@ -1155,14 +1155,7 @@ useEffect(() => {
       ].join("");
       document.head.appendChild(s);
     }
-    ["https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap",
-     "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap"
-    ].forEach(function(href){
-      if(!document.querySelector("link[href=\""+href+"\"]")){
-        var l=document.createElement("link"); l.rel="stylesheet"; l.href=href;
-        document.head.appendChild(l);
-      }
-    });
+
     // طلب إذن الإشعارات
     if("Notification" in window && Notification.permission==="default"){
       Notification.requestPermission();
