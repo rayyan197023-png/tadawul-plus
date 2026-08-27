@@ -935,7 +935,7 @@ function ProfitCalc(props) {
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
                   {[
                     {l:"صافي الربح",    v:(net>=0?"+":"")+net.toFixed(2)+" ر.س",     c:net>=0?C.mint:C.coral,big:true},
-                    {l:"ROI %",         v:(pct>=0?"+":"")+pct.toFixed(2)+"%",         c:pct>=0?C.mint:C.coral,big:true},
+                    {l:"ROI % (صافي)",  v:(netPct>=0?"+":"")+(netPct*100).toFixed(2)+"%", c:netPct>=0?C.mint:C.coral,big:true},
                     {l:"العمولة (ش+ب)", v:brok.toFixed(2)+" ر.س",                     c:C.smoke},
                     {l:"نقطة التعادل",  v:breakeven+" ر.س",                            c:C.amber},
                   ].map(function(r){return(
