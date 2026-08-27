@@ -19,7 +19,7 @@ import AILearningDashboard from '../components/AILearningDashboard';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
 import { useRankings } from '../hooks/useRankings';
 // ── Shared constants + UI
-import { C, Ico, COMM, PRIORITY_ORDER, WATCHLIST_DEFAULT, RANKINGS, FUNDS, DIVS, CSS_STR, TADAWUL, WTI } from './more/MoreShared';
+import { C, Ico, COMM, PRIORITY_ORDER, WATCHLIST_DEFAULT, RANKINGS, DIVS, CSS_STR, TADAWUL, WTI } from './more/MoreShared';
 
 // ── تبويبات السوق
 import { RankingsTab, CommoditiesTab } from './more/MarketTabs';
@@ -375,7 +375,6 @@ useEffect(function(){
   var catList=["الكل"];
   commData.forEach(function(c){if(catList.indexOf(c.cat)===-1)catList.push(c.cat);});
   var commF=commCat==="الكل"?commData:commData.filter(function(c){return c.cat===commCat;});
-  var fundsF=fundTab==="all"?FUNDS:fundTab==="top"?FUNDS.slice().sort(function(a,b){return b.ret1y-a.ret1y;}).slice(0,3):FUNDS.filter(function(f){return f.type==="إسلامي";});
 
   function cfmt(v) {
   if(v==null||isNaN(v)) return "-- ر.س";
