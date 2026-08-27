@@ -856,7 +856,7 @@ function ProfitCalc(props) {
     {label:"متوسط (Base)",   pct:10,  color:C.amber},
     {label:"متفائل (Bull)",  pct:20,  color:C.mint},
   ];
-  var buy=parseFloat(buyP)||sym.p*0.95;
+  var buy=parseFloat(buyP)||sym.p;
   var sell=parseFloat(sellP)||sym.p;
   var q=Math.max(1,parseInt(qty)||100);
   var gross=(sell-buy)*q;
