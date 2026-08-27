@@ -828,7 +828,7 @@ export default function NewsScreen() {
                             )}
                           </button>
                           {stockPopup === n.sym && (
-                            <StockPopup sym={n.sym} onClose={() => setStockPopup(null)}/>
+                            <StockPopup sym={n.sym} onClose={() => setStockPopup(null)} priceMap={priceMap}/>
                           )}
                         </div>
                       )}
