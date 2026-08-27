@@ -1518,9 +1518,11 @@ return result;
       if(prevPnl!==undefined&&p.pnlPct>=20&&prevPnl<20){
         newAlerts.push({id:Date.now()+Math.random(),sym:p.sym,name:p.stk.name,act:"هدف الربح",reason:"وصل السهم لهدف الربح +20% — فكّر في الحجز",color:"#f0c050",pnlPct:p.pnlPct,urgent:false});
       }
-      // تجاوز حد الخسارة -7%
-      if(prevPnl!==undefined&&p.pnlPct<=-7&&prevPnl>-7){
-        newAlerts.push({id:Date.now()+Math.random(),sym:p.sym,name:p.stk.name,act:"وقف الخسارة",reason:"وصل السهم لحد الخسارة -7% — أغلق المركز",color:C.coral,pnlPct:p.pnlPct,urgent:true});
+      // ✨ وقف ديناميكي من المحرّك -- كان -7% ثابتاً يتعارض مع calcSmartStopLoss
+      var _sd = p.smartAction && (p.smartAction.trailingStop || p.smartAction.stopData);
+      var _stopLimit = (_sd && _sd.stopPct) ? -Math.abs(_sd.stopPct) : -7;
+      if(prevPnl!==undefined&&p.pnlPct<=_stopLimit&&prevPnl>_stopLimit){
+        newAlerts.push({id:Date.now()+Math.random(),sym:p.sym,name:p.stk.name,act:"وقف الخسارة",reason:"وصل السهم لحد الوقف "+_stopLimit.toFixed(1)+"% -- أغلق المركز",color:C.coral,pnlPct:p.pnlPct,urgent:true});
       }
     });
     if(newAlerts.length>0){
