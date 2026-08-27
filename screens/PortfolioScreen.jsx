@@ -1731,7 +1731,8 @@ return result;
       sectors:sectors,
       bars:[
         {l:"محفظتك",v:portReturn,c:C.electric,icon:"portfolio"},
-        {l:tasiLiveLabel,v:tasiReturn,c:C.amber,icon:"compare"},
+        // ✨ نستخدم benchmarkReturn (العائد التراكمي) لا tasiReturn (قد يكون تغيّراً يومياً)
+        {l:tasiLiveLabel,v:benchmarkReturn,c:C.amber,icon:"compare"},
       ],
       statsItems:[
         {l:"عدد الصفقات",v:String(tradeLog.length),c:C.electric},
