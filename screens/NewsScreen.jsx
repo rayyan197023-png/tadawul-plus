@@ -143,12 +143,6 @@ const GLOBAL_CSS = `
 function useGlobalStyle() {
   useEffect(() => {
     if (typeof document === "undefined") return;
-    if (!document.getElementById(FONT_ID)) {
-      const link = document.createElement("link");
-      link.id = FONT_ID; link.rel = "stylesheet";
-      link.href = "https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap";
-      document.head.appendChild(link);
-    }
     if (!document.getElementById(STYLE_ID)) {
       const style = document.createElement("style");
       style.id = STYLE_ID; style.textContent = GLOBAL_CSS;
