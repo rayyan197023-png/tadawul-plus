@@ -488,9 +488,9 @@ const EquityCurveChart = React.memo(function EquityCurveChart(props) {
           ? '🏆 استراتيجيتك ربحت ' + totalReturn.toFixed(1) + '%'
           : '📉 استراتيجيتك خسرت ' + Math.abs(totalReturn).toFixed(1) + '%'}
         {benchmarkValues.length > 0 && alpha > 0 
-          ? ' -- تفوّقت على تاسي بـ +' + alpha.toFixed(1) + '% ✅'
+          ? ' -- تفوّقت على شراء واحتفاظ بـ +' + alpha.toFixed(1) + '% ✅'
           : benchmarkValues.length > 0
-          ? ' -- أقل من تاسي بـ ' + alpha.toFixed(1) + '%'
+          ? ' -- أقل من شراء واحتفاظ بـ ' + alpha.toFixed(1) + '%'
           : ''}
       </div>
     </div>
