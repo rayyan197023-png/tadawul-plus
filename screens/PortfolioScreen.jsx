@@ -1195,7 +1195,7 @@ useEffect(() => {
       }, 600);
     } catch(e){}
     // ٣. اهتزاز الجهاز
-    if(navigator.vibrate){
+    if(_as.vibration && navigator.vibrate){
       navigator.vibrate(a.urgent?[200,100,200,100,400]:[150,100,150]);
     }
   }
