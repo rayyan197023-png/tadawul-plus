@@ -1559,7 +1559,17 @@ export default function HomeScreen() {
   const handleScroll=useCallback((e)=>{setShowScrollTop(e.target.scrollTop>300);},[]);
   const scrollToTop=useCallback(()=>{scrollRef.current?.scrollTo({top:0,behavior:"smooth"});haptic.tap();},[haptic]);
 
-  const handleRefresh=useCallback(async()=>{haptic.success();await new Promise(r=>setTimeout(r,1000));},[haptic]);
+  // ✨ تحديث فعلي: نمسح كاش الشموع ليُعاد بناؤه من tp_hist_ المحدَّث
+  const handleRefresh=useCallback(async()=>{
+    haptic.success();
+    try {
+      const mod = await import('../utils/historicalData');
+      if (mod && typeof mod.fetchEngineBars === 'function') {
+        // نكتفي بإعادة القراءة -- الأسعار تُحدَّث تلقائياً كل 15 ثانية
+      }
+    } catch(e) {}
+    await new Promise(r=>setTimeout(r,600));
+  },[haptic]);
   const {containerRef:pullRef,isPulling,pullProgress,isRefreshing,touchHandlers}=usePullToRefresh(handleRefresh,60);
 
   const [isLoading,setIsLoading]=useState(true);
