@@ -883,7 +883,8 @@ function LiquidityMapPanel({stocks=[], allStocks=[], ohlcvCache={}}) {
     return { stk:s, sm, lpi:Math.round(lpi), rv:+rv.toFixed(2), col, lbl, hd, ep, phase, phCol, mfi, cmf, rsi, vp:Math.round((rv-1)*100) };
   }), [stocks]);
 
-  const run = () => { setScan(true); setTimeout(() => { setLastUpdate(new Date()); setScan(false); }, 900); };
+  // ✨ البيانات تُشتق تلقائياً من الأسعار الحية -- الزر يحدّث الطابع الزمني فقط
+  const run = () => { setLastUpdate(new Date()); };
   useEffect(() => { run(); }, []);
 
   const now = `${lastUpdate.getHours().toString().padStart(2,"0")}:${lastUpdate.getMinutes().toString().padStart(2,"0")}`;
