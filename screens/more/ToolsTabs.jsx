@@ -1185,11 +1185,10 @@ function AlertsPanel(props) {
   var onClose=props.onClose;
   var PRIORITY_ORDER={critical:0,high:1,medium:2,low:3};
   
+  // ✨ حُذف volume و news -- كانا يُنشآن ولا يُفحصان أبداً
   var typeOpts=[
     {k:"above",  l:"فوق السعر",      c:C.mint},
     {k:"below",  l:"تحت السعر",      c:C.coral},
-    {k:"volume", l:"حجم غير عادي",   c:C.amber},
-    {k:"news",   l:"أخبار جديدة",    c:C.electric},
   ];
   var prioOpts=[
     {k:"high",   l:"عالي",   c:C.coral},
