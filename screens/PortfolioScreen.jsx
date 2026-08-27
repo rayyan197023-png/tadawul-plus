@@ -1178,6 +1178,7 @@ useEffect(() => {
     }
     // ٢. صوت تنبيه
     try {
+      if(!_as.soundEnabled) throw 0;
       var ctx=new (window.AudioContext||window.webkitAudioContext)();
       var osc=ctx.createOscillator();
       var gain=ctx.createGain();
