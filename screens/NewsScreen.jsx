@@ -195,9 +195,9 @@ function ReadingProgress({ scrollRef, newsId }) {
   );
 }
 
-function StockPopup({ sym, onClose }) {
+function StockPopup({ sym, onClose, priceMap }) {
   const ref = useRef(null);
-  const data = STOCK_PRICES[sym];
+  const data = (priceMap || {})[sym];
 
   useEffect(() => {
     const handler = (e) => {
