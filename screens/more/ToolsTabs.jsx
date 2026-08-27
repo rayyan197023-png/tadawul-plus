@@ -1496,7 +1496,6 @@ function AlertsPanel(props) {
             <div style={{fontSize:10,color:C.smoke,marginBottom:8,textAlign:"right",fontWeight:700}}>السهم</div>
             <div style={{position:"relative",marginBottom:10}}>
               <input
-              <input
                 value={alertSearch!==null ? alertSearch : (sym.name+" "+sym.p+" ر.س")}
                 onChange={function(e){setAlertSearch(e.target.value);}}
                 onFocus={function(){setAlertSearch("");}}
