@@ -246,7 +246,7 @@ const FEEDBACK_BTNS = [
 function FeedbackBar({ theme, newsId }) {
   const savedKey = `saved-${newsId}`;
   const [voted,     setVoted]     = useState(null);
-  const [saved,     setSaved]     = useState(() => sessionStorage.getItem(savedKey) === "1");
+  const [saved,     setSaved]     = useState(() => { try { return localStorage.getItem(savedKey) === "1"; } catch(e) { return false; } });
   const [confirmed, setConfirmed] = useState(false);
   const confirmTimerRef = useRef(null);
 
@@ -274,9 +274,7 @@ function FeedbackBar({ theme, newsId }) {
   const handleSave = useCallback(() => {
     const next = !savedRef.current;
     setSaved(next);
-    if (next) sessionStorage.setItem(savedKey, "1");
-    else sessionStorage.removeItem(savedKey);
-  }, [savedKey]);
+    try { if (next) localStorage.setItem(savedKey, "1"); else localStorage.removeItem(savedKey); } catch(e) {}
 
   return (
     <div style={{ marginBlockStart:28, padding:"16px", background:theme.layer1, borderRadius:14, border:`1px solid ${theme.line}44` }}>
