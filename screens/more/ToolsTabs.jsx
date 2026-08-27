@@ -604,8 +604,12 @@ try{localStorage.setItem('tadawul_font_size', f.k);}catch(e){}
                       <div className="num-lg" style={{fontSize:14,color:ratingVal>=4?C.mint:ratingVal>=3?C.amber:C.coral,fontWeight:700,marginBottom:20}}>
                         {ratingVal===5?"ممتاز! شكراً جزيلاً":ratingVal===4?"رائع! نسعد بتقييمك":ratingVal===3?"جيد، سنعمل على التحسين":ratingVal===2?"شكراً، سنحاول أكثر":"نأسف لذلك، أخبرنا ما المشكلة"}
                       </div>
-                      <button onClick={function(){setShowRatingPanel(false);setRatingVal(0);}} style={{background:"linear-gradient(135deg,"+C.gold+","+C.goldD+")",color:"#000",border:"none",padding:"12px 40px",borderRadius:12,fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"Cairo,sans-serif"}}>
-                        إرسال التقييم
+                      <button onClick={function(){
+                        // ✨ يُحفظ محلياً -- لا خادم للإرسال إليه
+                        try{localStorage.setItem('tadawul_rating',JSON.stringify({stars:ratingVal,at:Date.now()}));}catch(e){}
+                        setShowRatingPanel(false);setRatingVal(0);
+                      }} style={{background:"linear-gradient(135deg,"+C.gold+","+C.goldD+")",color:"#000",border:"none",padding:"12px 40px",borderRadius:12,fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"Cairo,sans-serif"}}>
+                        حفظ التقييم
                       </button>
                     </div>
                   )}
