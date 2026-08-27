@@ -5,8 +5,6 @@
  */
 import { useState, useRef } from 'react';
 var CSS_STR = [
-  "@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');",
-  "@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap');",
   "*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}",
   "::-webkit-scrollbar{width:0;height:0}",
   "body{background:#06080f}",
@@ -302,5 +300,5 @@ function TagFilter(props) {
 
 // ── MAIN COMPONENT ────────────────────────────────────────────
 
-export { WATCHLIST_DEFAULT, CSS_STR, C, Ico, ArcRing, SentimentGauge, MiniLine, SparkLine, Stars, SectionHeader, TagFilter, COMM, DIVS, IPOS, FUNDS, RANKINGS, EVENTS, PRIORITY_ORDER };
+export { WATCHLIST_DEFAULT, CSS_STR, C, Ico, ArcRing, SentimentGauge, MiniLine, SparkLine, Stars, SectionHeader, TagFilter, COMM, DIVS, IPOS, RANKINGS, EVENTS, PRIORITY_ORDER };
 
