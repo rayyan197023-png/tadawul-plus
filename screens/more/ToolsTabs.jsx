@@ -1254,6 +1254,7 @@ function AlertsPanel(props) {
   var sS=useState(STOCKS[0]); var sym=sS[0]; var setSym=sS[1];
   var sT=useState("above"); var type=sT[0]; var setType=sT[1];
   var sP2=useState(""); var price=sP2[0]; var setPrice=sP2[1];
+    var sASrch=useState(null); var alertSearch=sASrch[0]; var setAlertSearch=sASrch[1];
   var sN=useState(""); var note=sN[0]; var setNote=sN[1];
   var sPr=useState("medium"); var priority=sPr[0]; var setPriority=sPr[1];
   var sEx=useState(""); var expiry=sEx[0]; var setExpiry=sEx[1];
@@ -1495,9 +1496,10 @@ function AlertsPanel(props) {
             <div style={{fontSize:10,color:C.smoke,marginBottom:8,textAlign:"right",fontWeight:700}}>السهم</div>
             <div style={{position:"relative",marginBottom:10}}>
               <input
-                value={price.startsWith("search:")? price.slice(7) : (sym.name+" "+sym.p+" ر.س")}
-                onChange={function(e){setPrice("search:"+e.target.value);}}
-                onFocus={function(){setPrice("search:");}}
+              <input
+                value={alertSearch!==null ? alertSearch : (sym.name+" "+sym.p+" ر.س")}
+                onChange={function(e){setAlertSearch(e.target.value);}}
+                onFocus={function(){setAlertSearch("");}}
                 placeholder="ابحث باسم السهم أو رقمه..."
                 style={{width:"100%",background:C.layer2,border:"1px solid "+C.gold+"55",borderRadius:9,padding:"9px 12px",color:C.snow,fontSize:12,direction:"rtl",outline:"none",boxSizing:"border-box"}}
               />
