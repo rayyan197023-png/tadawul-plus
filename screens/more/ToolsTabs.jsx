@@ -1083,7 +1083,6 @@ function CompareView(props) {
   var bFull = Object.assign({}, b, cmp.extraB);
 
   var metrics=[
-    {l:"السعر",   ka:"p",      higher:true},
     {l:"التغير",  ka:"pct",    higher:true},
     {l:"P/E",     ka:"pe",     higher:false},
     {l:"توزيعات", ka:"div",    higher:true},
