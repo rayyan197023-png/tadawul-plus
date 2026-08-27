@@ -664,8 +664,8 @@ export default function BacktestScreen() {
         <ModeCard
           icon="🔍"
           title="قائمة التحليل"
-          description="استراتيجية الطبقات التسع - اختر فئة الأسهم"
-          question="هل الطبقات التسع دقيقة فعلاً؟"
+          description="استراتيجية الطبقات الإحدى عشرة - اختر فئة الأسهم"
+          question="هل الطبقات الإحدى عشرة دقيقة فعلاً؟"
           color={C.gold}
           active={config.mode === 'analysis'}
           onClick={function() { haptic.tap(); setConfig(Object.assign({}, config, { mode: 'analysis' })); }}
