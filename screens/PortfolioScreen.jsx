@@ -1492,14 +1492,8 @@ if (result && typeof result === 'object' && !result.grade) {
 return result;
     } catch(e) {
       console.error('[Portfolio IQ Error]', e);
-      return { 
-        _error: true,
-        message: e.message,
-        stack: e.stack,
-        positions: positions.map(function(p){ 
-          return {sym: p.sym, qty: p.qty, hasStk: !!p.stk, hasHealth: !!p.health}; 
-        })
-      };
+      // ✨ لا نضع تتبّع المكدس في الحالة -- قد يُعرض للمستخدم في الإنتاج
+      return { _error: true, message: e.message };
 }
 }, [positions, realBarsMap]);
 
