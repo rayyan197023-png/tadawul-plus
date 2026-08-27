@@ -1503,8 +1503,8 @@ function AlertsPanel(props) {
                 placeholder="ابحث باسم السهم أو رقمه..."
                 style={{width:"100%",background:C.layer2,border:"1px solid "+C.gold+"55",borderRadius:9,padding:"9px 12px",color:C.snow,fontSize:12,direction:"rtl",outline:"none",boxSizing:"border-box"}}
               />
-              {price.startsWith("search:") && (function(){
-                var q=price.slice(7).trim();
+              {alertSearch!==null && (function(){
+                var q=alertSearch.trim();
                 var results=q.length>0?STOCKS.filter(function(s){return s.sym.indexOf(q)>=0||s.name.indexOf(q)>=0;}).slice(0,6):STOCKS.slice(0,6);
                 return(
                   <div style={{position:"absolute",top:"110%",left:0,right:0,background:C.layer2,border:"1px solid "+C.line,borderRadius:10,zIndex:50,overflow:"hidden",boxShadow:"0 8px 24px rgba(0,0,0,.5)",maxHeight:200,overflowY:"auto"}}>
