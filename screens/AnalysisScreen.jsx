@@ -427,6 +427,16 @@ const avgChange = (liveStocks && liveStocks.length > 0)
       {/* ══ خلفية الجسيمات -- Canvas مستقل ══ */}
       <ParticleCanvas/>
 
+      {/* 🔍 لوحة تشخيص مؤقتة */}
+      {diag && (
+        <div style={{position:"fixed",bottom:90,left:8,right:8,zIndex:999,
+          background:"#000d",border:"1px solid #f0c050",borderRadius:10,
+          padding:"8px 10px",fontSize:10,color:"#f0c050",direction:"ltr",fontFamily:"monospace"}}>
+          real {diag.real}/{diag.total} · avg {diag.avg} · min {diag.min} · max {diag.max}
+          <br/>sample: {diag.sample}
+        </div>
+      )}
+
       {/* ══════════════════════════════════
            الصفحة الرئيسية
       ══════════════════════════════════ */}
