@@ -46,7 +46,9 @@ function calcRiskAttribution(stk: Stock, bars: Bar[], saudiRepoRate: number = 4.
   var sortino=downsideVol>0?+((histReturn-rfRate)/downsideVol).toFixed(2):0;
   var mktRet = STOCKS.reduce(function(s,x){ return s + (x.ch||0)/100; },0) / STOCKS.length / 5;
   var mktAvgDailyRet = mktRet;
-  var mktAnnReturn=Math.pow(1+mktAvgDailyRet,252)-1;
+  // ✨ عائد تاسي الحقيقي إن توفّر، وإلا التقدير من متوسط السوق
+  var _tasiAnn = _getTasiAnnReturn();
+  var mktAnnReturn = _tasiAnn !== null ? _tasiAnn : Math.pow(1+mktAvgDailyRet,252)-1;
   var beta=stk.sector_beta||1.0;
   var capmReturn=rfRate+beta*(mktAnnReturn-rfRate);
   var alpha=+(histReturn-capmReturn).toFixed(3);
