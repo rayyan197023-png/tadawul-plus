@@ -511,15 +511,6 @@ const best3 = sortedByScore.length > 0 ? sortedByScore[0] : null;
                       </>
                     );
                   })()}
-                  {(function(){
-                    var c = (typeof window !== 'undefined') ? window.__tadawulCounts : null;
-                    if (!c || !c.total) return null;
-                    var pct = Math.round((c.real/c.total)*100);
-                    var clr = pct >= 90 ? C.mint : pct >= 70 ? C.amber : C.coral;
-                    return (<span style={{fontSize:8,fontWeight:700,color:clr,marginRight:4,direction:"ltr"}}>
-                      {c.real}/{c.total}
-                    </span>);
-                                    })()}
                   <span style={{fontSize:8,color:C.smoke}}>
 {(function(){
     var d = liveTime || new Date();
@@ -769,8 +760,6 @@ animation:'shimmer 1.4s ease infinite',
     background:"linear-gradient(135deg," + C.layer1 + "," + C.layer2 + ")",
     borderRadius:14,padding:"10px 14px",
     border:"1px solid " + tempColor + "22",
-    borderRadius:14,padding:"10px 14px",
-    border:"1px solid " + tempColor + "22",
     display:"flex",alignItems:"center",
     boxShadow:"0 4px 20px rgba(0,0,0,.3), inset 0 1px 0 " + C.layer3,
 }}>
@@ -868,121 +857,121 @@ animation:'shimmer 1.4s ease infinite',
             </button>
           </div>
 
-          {/* ─── شريط الفلتر ─── */}
-          <div style={{padding:"0 16px 10px",display:"flex",gap:6}}>
-            {[
-              {k:"all",   l:"الكل",     c:C.electric},
-              {k:"buy",   l:"شراء قوي", c:C.mint},
-              {k:"watch", l:"مراقبة",    c:C.amber},
-              {k:"reduce",l:"تخفيف",    c:C.coral},
-            ].map(({k,l,c})=>(
-                            <button key={k} onClick={()=>{ haptic.tap(); setTab(k); }} style={{
+            {/* ─── شريط الفلتر ─── */}
+            <div style={{padding:"0 16px 10px",display:"flex",gap:6}}>
+              {[
+                {k:"all",   l:"الكل",     c:C.electric},
+                {k:"buy",   l:"شراء قوي", c:C.mint},
+                {k:"watch", l:"مراقبة",    c:C.amber},
+                {k:"reduce",l:"تخفيف",    c:C.coral},
+              ].map(({k,l,c})=>(
+                              <button key={k} onClick={()=>{ haptic.tap(); setTab(k); }} style={{
 
-                flex:1,padding:"8px 4px",borderRadius:10,cursor:"pointer",
-                fontFamily:"Cairo,sans-serif",fontSize:10,fontWeight:700,
-                background:tab===k ? c+"22" : "transparent",
-                border:"1px solid "+(tab===k ? c+"55" : C.line),
-                color:tab===k ? c : C.smoke,
-                transition:"all .25s cubic-bezier(.4,0,.2,1)",
-                letterSpacing:".2px",
-              }}>
-                <div>{l}</div>
-                <div style={{fontSize:8,marginTop:1,opacity:.8}}>
-  {k==="all"?signalCounts.total:k==="buy"?signalCounts.buy:k==="watch"?signalCounts.watch:signalCounts.reduce}
-</div>
-              </button>
-            ))}
+                  flex:1,padding:"8px 4px",borderRadius:10,cursor:"pointer",
+                  fontFamily:"Cairo,sans-serif",fontSize:10,fontWeight:700,
+                  background:tab===k ? c+"22" : "transparent",
+                  border:"1px solid "+(tab===k ? c+"55" : C.line),
+                  color:tab===k ? c : C.smoke,
+                  transition:"all .25s cubic-bezier(.4,0,.2,1)",
+                  letterSpacing:".2px",
+                }}>
+                  <div>{l}</div>
+                  <div style={{fontSize:8,marginTop:1,opacity:.8}}>
+    {k==="all"?signalCounts.total:k==="buy"?signalCounts.buy:k==="watch"?signalCounts.watch:signalCounts.reduce}
+  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* ─── قائمة الأسهم ─── */}
+            <div style={{padding:"0 16px",display:"flex",flexDirection:"column",gap:10}}>
+              {filtered.map(function(d,idx){
+                return (
+                  <StockCard
+                    key={d.stk.sym}
+                    stk={d.stk}
+                    bars={d.bars}
+                    health={d.health}
+                    isRealData={d.isRealData}
+                    idx={idx}
+                    selected={sel===d.stk.sym}
+                    isFlashing={flashCard===d.stk.sym}
+                    globalRank={rankMap[d.stk.sym]||1}
+                    allData={allData}
+                    discovered={discovered}
+                    onCardClick={handleCardClick}
+                    onFullAnalysis={handleFullAnalysis}
+                    haptic={haptic}
+                  />
+                );
+              })}
+
+            {/* ══ مصفوفة الارتباط ══ */}
+            <CorrelationMatrix allData={allData} C={C}/>
+
+            </div>
+            </div>
+            )}
           </div>
+          );
+        })()}
 
-          {/* ─── قائمة الأسهم ─── */}
-          <div style={{padding:"0 16px",display:"flex",flexDirection:"column",gap:10}}>
-            {filtered.map(function(d,idx){
-              return (
-                <StockCard
-                  key={d.stk.sym}
-                  stk={d.stk}
-                  bars={d.bars}
-                  health={d.health}
-                  isRealData={d.isRealData}
-                  idx={idx}
-                  selected={sel===d.stk.sym}
-                  isFlashing={flashCard===d.stk.sym}
-                  globalRank={rankMap[d.stk.sym]||1}
-                  allData={allData}
-                  discovered={discovered}
-                  onCardClick={handleCardClick}
-                  onFullAnalysis={handleFullAnalysis}
-                  haptic={haptic}
-                />
-              );
-            })}
+        {/* ══════════════════════════════════
+             صفحة الإشارات
+        ══════════════════════════════════ */}
+        {page==="signals"&&(
+          <SignalsPage
+            allData={allData}
+            filtered2={filtered2}
+            filters={filters}
+            setFilters={setFilters}
+            screenerOpen={screenerOpen}
+            setScreenerOpen={setScreenerOpen}
+            sectorList={sectorList}
+            onBack={function(){ setPage("home"); }}
+            haptic={haptic}
+          />
+        )}
+   
 
-          {/* ══ مصفوفة الارتباط ══ */}
-          <CorrelationMatrix allData={allData} C={C}/>
-
-          </div>
-          </div>
-          )}
+        {/* ══ شريط الحالة العلوي ══ */}
+        <div style={{
+          position:"fixed",top:0,left:"50%",transform:"translateX(-50%)",
+          width:"100%",maxWidth:430,
+          padding:"12px 20px 6px",
+          display:"flex",justifyContent:"space-between",alignItems:"center",
+          background:`linear-gradient(180deg,${C.void} 60%,transparent 100%)`,
+          zIndex:40,pointerEvents:"none",
+        }}>
+          <div style={{fontSize:9,fontWeight:600,color:C.smoke}}>
+    {(function(){
+      var d = liveTime || new Date();
+      var hh = String(d.getHours()).padStart(2,"0");
+      var mm = String(d.getMinutes()).padStart(2,"0");
+      return hh + ":" + mm;
+    })()}
+  </div>
         </div>
-        );
-      })()}
 
-      {/* ══════════════════════════════════
-           صفحة الإشارات
-      ══════════════════════════════════ */}
-      {page==="signals"&&(
-        <SignalsPage
+        {/* ══ لوحة التحليل الكامل -- ١١ طبقة (Modal) ══ */}
+        <FullAnalysisModal
+          sym={fullAnalysis}
+          onClose={function(){ setFullAnalysis(null); }}
           allData={allData}
-          filtered2={filtered2}
-          filters={filters}
-          setFilters={setFilters}
-          screenerOpen={screenerOpen}
-          setScreenerOpen={setScreenerOpen}
-          sectorList={sectorList}
-          onBack={function(){ setPage("home"); }}
+          liveStocks={liveStocks}
           haptic={haptic}
         />
-      )}
- 
 
-      {/* ══ شريط الحالة العلوي ══ */}
-      <div style={{
-        position:"fixed",top:0,left:"50%",transform:"translateX(-50%)",
-        width:"100%",maxWidth:430,
-        padding:"12px 20px 6px",
-        display:"flex",justifyContent:"space-between",alignItems:"center",
-        background:`linear-gradient(180deg,${C.void} 60%,transparent 100%)`,
-        zIndex:40,pointerEvents:"none",
-      }}>
-        <div style={{fontSize:9,fontWeight:600,color:C.smoke}}>
-  {(function(){
-    var d = liveTime || new Date();
-    var hh = String(d.getHours()).padStart(2,"0");
-    var mm = String(d.getMinutes()).padStart(2,"0");
-    return hh + ":" + mm;
-  })()}
-</div>
       </div>
+    );
+  }
 
-      {/* ══ لوحة التحليل الكامل -- ١١ طبقة (Modal) ══ */}
-      <FullAnalysisModal
-        sym={fullAnalysis}
-        onClose={function(){ setFullAnalysis(null); }}
-        allData={allData}
-        liveStocks={liveStocks}
-        haptic={haptic}
-      />
-
-    </div>
-  );
-}
-
-// ══ Default Export with Error Boundary ══
-export default function AnalysisScreen(props) {
-  return (
-    <ErrorBoundary label="لوحة التحليل">
-      <AnalysisScreenInner {...props} />
-    </ErrorBoundary>
-  );
-}
+  // ══ Default Export with Error Boundary ══
+  export default function AnalysisScreen(props) {
+    return (
+      <ErrorBoundary label="لوحة التحليل">
+        <AnalysisScreenInner {...props} />
+      </ErrorBoundary>
+    );
+  }
 
