@@ -470,7 +470,7 @@ function applyFeedbackToWeights(WC: any, sym: string, currentRegime?: string): a
 
   let totalAdjustment = 0;
   keys.forEach(k => {
-    if (adj[k] && typeof adj[k] === 'number') {
+    if (adj[k] && typeof adj[k] === 'number' && typeof result[k] === 'number') {
       result[k] = Math.max(0.005, result[k] + adj[k]);
       totalAdjustment += Math.abs(adj[k]);
     }
