@@ -31,7 +31,7 @@ function _emptyHealthResult(){
       priority: 0,
       highLiq: false, highStr: false, highMom: false
     },
-    layers: {L1:50,L2:50,L3:50,L4:50,L5:50,L6:50,L7:50,L8:50,L9:50},
+    layers: {L1:50,L2:50,L3:50,L4:50,L5:50,L6:50,L7:50,L8:50,L9:50,L10:50,L11:50},
     extras: {
       conflictCount: 0,
       conflictDetails: [] as any[],
