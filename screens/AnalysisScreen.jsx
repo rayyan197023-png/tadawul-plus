@@ -267,12 +267,13 @@ return {stk, bars, health:h, isRealData};
     });
 
     var h = Math.round(sH/n);
-    // ✨ ثقة محسوبة من المحرك -- كانت h×0.9 (رقم مشتق)
+       // ✨ ثقة محسوبة من المحرك -- كانت h×0.9 (رقم مشتق)
     var sC = 0, cN = 0;
-    allData.forEach(function(d){
+    _src.forEach(function(d){
       var c = d && d.health && d.health.confidence;
       if (isFinite(c)) { sC += c; cN++; }
     });
+
     var conf = cN > 0 ? Math.round(sC / cN) : Math.round(h * 0.9);
     return { health:h, conf:conf, radar: rN > 0 ? Math.round(sR/rN) : 50 };
   }, [allData]);
