@@ -255,11 +255,12 @@ return {stk, bars, health:h, isRealData};
 
     const marketAverages = useMemo(() => {
     if (!allData || !allData.length) return { health:50, conf:50, radar:50 };
-    var sH=0, sR=0, n=allData.length;
+    var sH=0, sR=0, rN=0, n=allData.length;
     allData.forEach(function(d){
       if(d && d.health && isFinite(d.health.score)) sH += d.health.score;
-      // ⚠️ rating قيمة يدوية في stocksData -- ليست محسوبة من البيانات
-      if(d && d.stk && isFinite(d.stk.rating)) sR += d.stk.rating;
+      // ✨ نسبة البوابات المجتازة -- كانت stk.rating (قيمة يدوية في stocksData)
+      var g = d && d.health && d.health.gates;
+      if (g && isFinite(g.passed)) { sR += (g.passed / 3) * 100; rN++; }
     });
     var h = Math.round(sH/n);
     // ✨ ثقة محسوبة من المحرك -- كانت h×0.9 (رقم مشتق)
@@ -269,7 +270,7 @@ return {stk, bars, health:h, isRealData};
       if (isFinite(c)) { sC += c; cN++; }
     });
     var conf = cN > 0 ? Math.round(sC / cN) : Math.round(h * 0.9);
-    return { health:h, conf:conf, radar:Math.round(sR/n) };
+    return { health:h, conf:conf, radar: rN > 0 ? Math.round(sR/rN) : 50 };
   }, [allData]);
 
   const sortedByScore = useMemo(() => {
