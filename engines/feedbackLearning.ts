@@ -190,7 +190,7 @@ function applyWinnerWeights(WC: any, winner: any): any {
 
   const wWinner = winner.weights;
   const result: any = {};
-  const keys = ['L1','L2','L3','L4','L5','L6','L7','L8','L9'];
+  const keys = ['L1','L2','L3','L4','L5','L6','L7','L8','L9','L10','L11'];
 
   keys.forEach(k => {
     const winnerW = typeof wWinner[k] === 'number' ? wWinner[k] : (WC[k] || 0.11);
@@ -203,10 +203,6 @@ function applyWinnerWeights(WC: any, winner: any): any {
     keys.forEach(k => {
       result[k] = +(result[k] / total).toFixed(4);
     });
-  }
-
-  if (WC.L10 !== undefined) {
-    result.L10 = WC.L10;
   }
 
   (result as any).__winnerMeta = {
@@ -433,7 +429,7 @@ function recordFeedback(sym: string, signal: any, layers: any, actualOutcome: an
   perf.context[marketRegime].total += weight;
   if (isCorrect) perf.context[marketRegime].correct += weight;
 
-  const lnames = ['L1','L2','L3','L4','L5','L6','L7','L8','L9'];
+  const lnames = ['L1','L2','L3','L4','L5','L6','L7','L8','L9','L10','L11'];
   lnames.forEach(k => {
     if (layers[k] === undefined) return;
     if (!perf.layers[k]) perf.layers[k] = { total: 0, correct: 0, recent: [] as any[] };
@@ -469,7 +465,8 @@ function applyFeedbackToWeights(WC: any, sym: string, currentRegime?: string): a
   if (!adj) return WC;
 
   const result = { ...WC };
-  const keys = Object.keys(result);
+  // ✨ نستثني حقول الميتا -- كانت تدخل التطبيع وتنتج NaN
+  const keys = Object.keys(result).filter(k => k.indexOf('__') !== 0);
 
   let totalAdjustment = 0;
   keys.forEach(k => {
