@@ -255,13 +255,17 @@ return {stk, bars, health:h, isRealData};
 
     const marketAverages = useMemo(() => {
     if (!allData || !allData.length) return { health:50, conf:50, radar:50 };
-    var sH=0, sR=0, rN=0, n=allData.length;
-    allData.forEach(function(d){
+    // ✨ نحسب من الأسهم ذات البيانات الحقيقية فقط -- الباقي ثابت عند 50 ويسحب المتوسط
+    var _real = allData.filter(function(d){ return d && d.isRealData; });
+    var _src = _real.length >= 10 ? _real : allData;
+    var sH=0, sR=0, rN=0, n=_src.length;
+    _src.forEach(function(d){
       if(d && d.health && isFinite(d.health.score)) sH += d.health.score;
       // ✨ نسبة البوابات المجتازة -- كانت stk.rating (قيمة يدوية في stocksData)
       var g = d && d.health && d.health.gates;
       if (g && isFinite(g.passed)) { sR += (g.passed / 3) * 100; rN++; }
     });
+
     var h = Math.round(sH/n);
     // ✨ ثقة محسوبة من المحرك -- كانت h×0.9 (رقم مشتق)
     var sC = 0, cN = 0;
