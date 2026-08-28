@@ -256,6 +256,7 @@ return {stk, bars, health:h, isRealData};
     var sH=0, sR=0, n=allData.length;
     allData.forEach(function(d){
       if(d && d.health && isFinite(d.health.score)) sH += d.health.score;
+      // ⚠️ rating قيمة يدوية في stocksData -- ليست محسوبة من البيانات
       if(d && d.stk && isFinite(d.stk.rating)) sR += d.stk.rating;
     });
     var h = Math.round(sH/n);
