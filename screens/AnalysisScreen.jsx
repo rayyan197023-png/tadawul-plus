@@ -150,7 +150,8 @@ const [filters, setFilters] = useState({
     return () => clearTimeout(t);
   }, [priceSignature]);
 
-const syms = liveStocks.map(s => s.sym);
+// ✨ مرجع ثابت -- كان يُبنى في كل رسم فيُعيد الجلب ويمسح الكاش
+const syms = useMemo(() => liveStocks.map(s => s.sym), [liveStocks]);
 const ohlcvCache = useOHLCVCache(syms, '3M');
 
         const allData = useMemo(()=>{
