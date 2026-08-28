@@ -82,6 +82,8 @@ function AnalysisScreenInner({ commData: extCommData } = {}) {
     
     return Object.assign(base, {
       oilPrice:  (oil && oil.price)  || base.oilPrice,
+      // ⚠️ قيم احتياطية ثابتة (الذهب/الدولار/S&P) -- لا مزوّد حقيقي لها حالياً.
+      // النفط وVIX يأتيان من FRED أعلاه.
       goldPrice: (gold && gold.price) || (base.goldPrice||2900),
       dxy:       (dxy && dxy.price)  || (base.dxy||103),
       spx:       (sp && sp.price)    || (base.spx||5500),
