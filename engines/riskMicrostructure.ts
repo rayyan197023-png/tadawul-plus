@@ -8,6 +8,26 @@ import { STOCKS_LIVE as STOCKS } from '../constants/stocksData';
 import { OIL_SENS, RATE_SENS } from './marketConstants';
 import type { Bar, MacroData, Stock } from './types';
 
+// ── عائد تاسي السنوي التراكمي من كاش الشموع ──
+function _getTasiAnnReturn(): number | null {
+  try {
+    var keys = ['tp_hist_TASI', 'tp_hist_^TASI', 'tp_hist_1'];
+    for (var i = 0; i < keys.length; i++) {
+      var raw = localStorage.getItem(keys[i]);
+      if (!raw) continue;
+      var entry = JSON.parse(raw);
+      if (!entry || !entry.bars || entry.bars.length < 30) continue;
+      var b = entry.bars;
+      var first = b[0].c, last = b[b.length - 1].c;
+      if (!first || first <= 0 || !last) continue;
+      var totalRet = (last - first) / first;
+      // تحويل لعائد سنوي حسب عدد الشموع الفعلي
+      return Math.pow(1 + totalRet, 252 / b.length) - 1;
+    }
+  } catch (e) {}
+  return null;
+}
+
 /* ══ Risk Attribution ══ */
 function calcRiskAttribution(stk: Stock, bars: Bar[], saudiRepoRate: number = 4.25): any {
   var volBars=bars.slice(-Math.min(bars.length,100));
