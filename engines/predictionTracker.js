@@ -23,6 +23,24 @@ function todayKey() {
   return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
 }
 
+
+// ── سعر تاسي الحالي من كاش الشموع (للتقييم النسبي) ──
+function getTasiPrice() {
+  try {
+    var keys = ['tp_hist_TASI', 'tp_hist_^TASI', 'tp_hist_1'];
+    for (var i = 0; i < keys.length; i++) {
+      var raw = localStorage.getItem(keys[i]);
+      if (!raw) continue;
+      var entry = JSON.parse(raw);
+      if (entry && entry.bars && entry.bars.length) {
+        var last = entry.bars[entry.bars.length - 1];
+        if (last && last.c > 0) return last.c;
+      }
+    }
+  } catch (e) {}
+  return null;
+}
+
 /**
  * حفظ "شراء قوي" -- مرة واحدة يومياً (snapshot)
  * @param {Array} strongBuys [{sym, signal, layers, price}]
@@ -38,6 +56,7 @@ export function savePredictions(strongBuys) {
     var raw = localStorage.getItem(PENDING_KEY);
     var pending = raw ? JSON.parse(raw) : {};
     var now = Date.now();
+    var _tasiNow = getTasiPrice();
 
     strongBuys.forEach(function(p){
       if (!p || !p.sym || !p.price) return;
@@ -48,6 +67,7 @@ export function savePredictions(strongBuys) {
         signal: p.signal,
         layers: p.layers || {},
         price:  p.price,
+        tasi:   _tasiNow,
         date:   now,
       };
     });
