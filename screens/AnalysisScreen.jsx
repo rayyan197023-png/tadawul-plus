@@ -259,7 +259,14 @@ return {stk, bars, health:h, isRealData};
       if(d && d.stk && isFinite(d.stk.rating)) sR += d.stk.rating;
     });
     var h = Math.round(sH/n);
-    return { health:h, conf:Math.round(h*0.9), radar:Math.round(sR/n) };
+    // ✨ ثقة محسوبة من المحرك -- كانت h×0.9 (رقم مشتق)
+    var sC = 0, cN = 0;
+    allData.forEach(function(d){
+      var c = d && d.health && d.health.confidence;
+      if (isFinite(c)) { sC += c; cN++; }
+    });
+    var conf = cN > 0 ? Math.round(sC / cN) : Math.round(h * 0.9);
+    return { health:h, conf:conf, radar:Math.round(sR/n) };
   }, [allData]);
 
   const sortedByScore = useMemo(() => {
