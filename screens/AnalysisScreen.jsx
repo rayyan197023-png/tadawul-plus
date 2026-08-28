@@ -401,47 +401,6 @@ const avgChange = (liveStocks && liveStocks.length > 0)
       {/* ══ CSS الأساسي ══ */}
       <style>{ANALYSIS_CSS}</style>
 
-      {/* ══ خلفية الجسيمات المتحركة ══ */}
-      <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0,overflow:"hidden"}}>
-        {/* جسيمات كبيرة — تطفو ببطء */}
-        {[
-          {w:340,h:340,t:"-8%", r:"-15%",c:C.gold+"08",  dur:"18s"},
-          {w:260,h:260,t:"55%", r:"-8%", c:C.gold+"06",  dur:"22s"},
-          {w:280,h:280,t:"25%", r:"65%", c:C.electric+"07",dur:"16s"},
-          {w:200,h:200,t:"75%", r:"18%", c:C.electric+"05",dur:"24s"},
-          {w:220,h:220,t:"2%",  r:"38%", c:C.plasma+"06", dur:"20s"},
-          {w:180,h:180,t:"45%", r:"75%", c:C.plasma+"05", dur:"14s"},
-        ].map(function(p,i){
-          return(
-            <div key={i} style={{
-              position:"absolute",
-              width:p.w, height:p.h,
-              borderRadius:"50%",
-              background:"radial-gradient(circle," + p.c + " 0%, transparent 70%)",
-              top:p.t, right:p.r,
-              animation:"particle" + i + " " + p.dur + " ease-in-out infinite",
-            }}/>
-          );
-        })}
-        {/* نجوم صغيرة ثابتة */}
-        {[...Array(12)].map(function(_,i){
-          var size = i%3===0 ? 2 : 1;
-          var colors = [C.gold+"66", C.electric+"55", C.plasma+"44"];
-          return(
-            <div key={"star"+i} style={{
-              position:"absolute",
-              width:size, height:size,
-              borderRadius:"50%",
-              background:colors[i%3],
-              top: (7+i*7.3)%95 + "%",
-              right: (3+i*8.1)%92 + "%",
-              animation:"pulse " + (2.5+i*0.4) + "s ease-in-out infinite",
-              animationDelay: (i*0.3) + "s",
-            }}/>
-          );
-        })}
-      </div>
-
       {/* ══ خلفية الجسيمات -- Canvas مستقل ══ */}
       <ParticleCanvas/>
 
@@ -942,26 +901,6 @@ animation:'shimmer 1.4s ease infinite',
             haptic={haptic}
           />
         )}
-   
-
-        {/* ══ شريط الحالة العلوي ══ */}
-        <div style={{
-          position:"fixed",top:0,left:"50%",transform:"translateX(-50%)",
-          width:"100%",maxWidth:430,
-          padding:"12px 20px 6px",
-          display:"flex",justifyContent:"space-between",alignItems:"center",
-          background:`linear-gradient(180deg,${C.void} 60%,transparent 100%)`,
-          zIndex:40,pointerEvents:"none",
-        }}>
-          <div style={{fontSize:9,fontWeight:600,color:C.smoke}}>
-    {(function(){
-      var d = liveTime || new Date();
-      var hh = String(d.getHours()).padStart(2,"0");
-      var mm = String(d.getMinutes()).padStart(2,"0");
-      return hh + ":" + mm;
-    })()}
-  </div>
-        </div>
 
         {/* ══ لوحة التحليل الكامل -- ١١ طبقة (Modal) ══ */}
         <FullAnalysisModal
