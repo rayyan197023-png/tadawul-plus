@@ -102,7 +102,16 @@ export function evaluatePredictions(currentPrices) {
         delete pending[sym]; changed = true; return; // سعر مفقود → احذف
       }
 
-      var pnlPct = ((cur - pred.price) / pred.price) * 100;
+      var rawPct = ((cur - pred.price) / pred.price) * 100;
+
+      // ✨ تقييم نسبي: نطرح عائد تاسي لنقيس جودة الاختيار لا اتجاه السوق
+      var pnlPct = rawPct;
+      if (pred.tasi && pred.tasi > 0) {
+        var _tasiCur = getTasiPrice();
+        if (_tasiCur && _tasiCur > 0) {
+          pnlPct = rawPct - ((_tasiCur - pred.tasi) / pred.tasi) * 100;
+        }
+      }
 
       // ── Dead Zone + Anomaly (مطابق لـ Backtest) ──
       if (Math.abs(pnlPct) >= 0.5 && Math.abs(pnlPct) <= 30) {
