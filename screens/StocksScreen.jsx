@@ -527,7 +527,7 @@ const liquidityFetched = useRef(new Set());
                       </div>
                     )}
                     <div style={{ display: "flex", flexDirection: "column", gap: 5, touchAction: "pan-y" }}>
-                                            {group.items.slice(0, Math.max(0, visibleCount - globalIdx)).map(({ stk, bars }) => {
+                                            {group.items.slice(0, Math.max(0, visibleCount - globalIdx)).map(({ stk }) => {
                         globalIdx++;
                         // ✨ بيانات حقيقية إن توفّرت (للمرئي)، وإلا الرسم التقريبي
                         return (
