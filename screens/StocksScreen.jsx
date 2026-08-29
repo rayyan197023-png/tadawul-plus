@@ -33,7 +33,7 @@ const SECTOR_COLORS = {
 
 
 // ── Stock Card ────────────────────────────────────────────────
-const StockCard = React.memo(function StockCard({ stk, bars, flash, openDetail, setFlash, fmtVol, netFlow }) {
+const StockCard = React.memo(function StockCard({ stk, flash, openDetail, setFlash, fmtVol, netFlow }) {
 
   const up     = (stk.ch || 0) >= 0;
   const pc     = up ? C.mint : C.coral;
@@ -106,8 +106,7 @@ const StockCard = React.memo(function StockCard({ stk, bars, flash, openDetail, 
   prev.stk.ch   === next.stk.ch  &&
   prev.stk.v    === next.stk.v   &&
   prev.flash    === next.flash   &&
-  prev.netFlow  === next.netFlow &&
-  prev.bars     === next.bars
+  prev.netFlow  === next.netFlow
 );
 
 // ── Main Screen ───────────────────────────────────────────────
@@ -531,13 +530,10 @@ const liquidityFetched = useRef(new Set());
                                             {group.items.slice(0, Math.max(0, visibleCount - globalIdx)).map(({ stk, bars }) => {
                         globalIdx++;
                         // ✨ بيانات حقيقية إن توفّرت (للمرئي)، وإلا الرسم التقريبي
-                        var realB = realBars[stk.sym];
-                        var chartBars = (realB && realB.length >= 10) ? realB : bars;
                         return (
                           <StockCard
                             key={stk.sym}
                             stk={stk}
-                            bars={chartBars}
                             flash={flash}
                             openDetail={openDetail}
                             setFlash={setFlash}
