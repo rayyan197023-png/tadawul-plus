@@ -236,7 +236,7 @@ const liquidityFetched = useRef(new Set());
         .catch(function() {});
     }, i * 300));
   });
-}, [filtered.slice(0, 30).map(function(d){ return d.stk.sym; }).join(',')]);
+}, [filtered.slice(0, Math.min(visibleCount, filtered.length)).map(function(d){ return d.stk.sym; }).join(',')]);
 
   // ── إحصاءات ───────────────────────────────────────────────
   const upCount   = liveStocks.filter(s => (s.ch || 0) > 0).length;
