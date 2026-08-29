@@ -217,8 +217,7 @@ const liquidityFetched = useRef(new Set());
   
   // جلب واحد كل 300ms لتفادي 429
   toFetch.forEach(function(sym, i) {
-    setTimeout(function() {
-      // ✨ نسجّل قبل الطلب -- كان التسجيل بعد النجاح فتُعاد الطلبات الفاشلة كل مرة
+    _liqTimers.current.push(setTimeout(function() {
       liquidityFetched.current.add(sym);
       fetch('/api/sahmkdata?endpoint=liquidity&sym=' + sym)
         .then(function(r) { return r.json(); })
@@ -238,7 +237,7 @@ const liquidityFetched = useRef(new Set());
         })
 
         .catch(function() {});
-    }, i * 300);
+    }, i * 300));
   });
 }, [filtered.slice(0, 30).map(function(d){ return d.stk.sym; }).join(',')]);
 
