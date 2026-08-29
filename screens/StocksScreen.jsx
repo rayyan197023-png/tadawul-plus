@@ -44,38 +44,6 @@ function genBars(stk) {
   } catch (e) { return []; }
 }
 
-function MiniChart({ bars, color, h = 40, id = "" }) {
-  const W = 200, H = h;
-  // ✨ يدعم صيغتين: genBars المحلّي ({c}) وuseOHLCVCache ({close})
-  const prices = bars.slice(-30).map(b => (b.c != null ? b.c : b.close));
-    // ✨ لا رسم بلا بيانات حقيقية -- أفضل من خط مُختلق
-  if (!prices.length || prices.some(p => p == null || !isFinite(p))) {
-    return (
-      <div style={{ height: H, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ fontSize: 9, color: "#5a6e94" }}>لا توجد بيانات كافية</span>
-      </div>
-    );
-  }
-  const mn = Math.min(...prices), mx = Math.max(...prices), rng = mx - mn || 1;
-  const toY  = p => H - ((p - mn) / rng) * (H - 8) - 4;
-  const pts  = prices.map((p, i) => `${(i / (prices.length - 1)) * W},${toY(p)}`).join(" ");
-  const area = `0,${H} ` + prices.map((p, i) => `${(i / (prices.length - 1)) * W},${toY(p)}`).join(" ") + ` ${W},${H}`;
-  const gid  = `mg${id}${color.replace("#", "")}`;
-  const lastY = toY(prices[prices.length - 1]);
-  return (
-    <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ display: "block" }}>
-      <defs>
-        <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stopColor={color} stopOpacity={0.22} />
-          <stop offset="100%" stopColor={color} stopOpacity={0} />
-        </linearGradient>
-      </defs>
-      <polygon points={area} fill={`url(#${gid})`} />
-      <polyline points={pts} fill="none" stroke={color} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx={W} cy={lastY} r={2.2} fill={color} />
-    </svg>
-  );
-}
 
 // ── Stock Card ────────────────────────────────────────────────
 const StockCard = React.memo(function StockCard({ stk, bars, flash, openDetail, setFlash, fmtVol, netFlow }) {
@@ -246,9 +214,6 @@ const liveStocks = stocks.length > 0 ? stocks : [];
 
   // ✨ جلب بيانات OHLCV الحقيقية لأول 30 سهماً مرئياً (آمن من 429)
   // يتبع القائمة المفلترة: عند تغيير القطاع/البحث، يُجلب أول 30 من النتيجة الجديدة
-  var visibleSyms = useMemo(function() {
-return filtered.slice(0, 60).map(function(d) { return d.stk.sym; });
-  }, [filtered]);
 
   // ✨ لم نعد نعرض شارتاً -- الشموع كانت تبطئ جلب السيولة
   var realBars = {};
