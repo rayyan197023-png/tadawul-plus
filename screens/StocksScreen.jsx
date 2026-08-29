@@ -70,15 +70,15 @@ const StockCard = React.memo(function StockCard({ stk, bars, flash, openDetail, 
           {/* وسط -- تدفق السيولة */}
           <div style={{ flex: 1, minWidth: 0, padding: "8px 6px", display: "flex", alignItems: "center", justifyContent: "center" }}>
             {netFlow ? (
-              <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 2, direction: "ltr" }}>
+              <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 6, direction: "ltr" }}>
                 {[
                   { l: "صافي السيولة", v: (netFlow.net >= 0 ? "+" : "") + fmtVol(Math.abs(netFlow.net)), c: netFlow.net >= 0 ? C.mint : C.coral, b: true },
                   { l: "ش/ب", v: netFlow.pct + "%", c: netFlow.pct >= 50 ? C.mint : C.coral },
                 ].map(function (r, i) {
                   return (
                     <div key={i} style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 5, direction: "rtl" }}>
-                      <span style={{ fontSize: 9, color: C.ash, minWidth: 26, textAlign: "right" }}>{r.l}</span>
-                      <span style={{ fontSize: 10, fontWeight: r.b ? 800 : 700, color: r.c, fontFamily: "monospace", direction: "ltr" }}>{r.v}</span>
+                      <span style={{ fontSize: r.b ? 10 : 9, color: C.ash }}>{r.l}</span>
+                      <span style={{ fontSize: r.b ? 14 : 11, fontWeight: r.b ? 900 : 700, color: r.c, fontFamily: "monospace", direction: "ltr" }}>{r.v}</span>
                     </div>
                   );
                 })}
