@@ -433,8 +433,9 @@ const avgChange = (liveStocks && liveStocks.length > 0)
           background:"#000d",border:"1px solid #f0c050",borderRadius:10,
           padding:"8px 10px",fontSize:10,color:"#f0c050",direction:"ltr",fontFamily:"monospace"}}>
           real {diag.real}/{diag.total} · avg {diag.avg} · min {diag.min} · max {diag.max}
+
           <br/>mktAvg: {marketAverages.health} · conf: {marketAverages.conf} · radar: {marketAverages.radar}
-          <br/>mktAvg: {marketAverages.health} · conf: {marketAverages.conf} · radar: {marketAverages.radar}
+          <br/>above60: {allData.filter(d=>d.health.score>=60).length} · above50: {allData.filter(d=>d.health.score>=50).length} · below45: {allData.filter(d=>d.health.score<45).length}
 
           <br/>sample: {diag.sample}
         </div>
