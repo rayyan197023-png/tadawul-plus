@@ -891,65 +891,6 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=5Y`),
 
       const curPrice = stk.p || daily[daily.length - 1]?.c || 0;
 
-      // ✨ توافق الإطارات: إذا الأسبوعي صاعد، اليومي لا يمكن أن يكون موجة A هابطة مستقلة
-      if (primary && intermediate) {
-        if (primary.dir === "صاعد" && intermediate.wave === "A" && intermediate.dir === "هابط") {
-          intermediate.wave = "4";
-          intermediate.type = "تصحيح مؤقت";
-          intermediate.dir = "محايد";
-          // ✨ هدف موجة 4 = 38.2% تصحيح من السعر الحالي (لا يجب أن ينزل كثيراً)
-          var wave4Target = parseFloat((curPrice * 0.90).toFixed(2));
-          intermediate.target = wave4Target;
-          intermediate.note = `تصحيح مؤقت ضمن الاتجاه الصاعد الرئيسي -- دعم متوقع عند ${wave4Target} ر.س (10% تصحيح)`;
-        }
-
-        if (primary.dir === "هابط" && intermediate.wave === "5" && intermediate.dir === "صاعد") {
-          intermediate.wave = "B";
-          intermediate.type = "ارتداد مؤقت";
-          intermediate.dir = "محايد";
-          intermediate.note = `ارتداد B مؤقت عكس الاتجاه الهابط الرئيسي`;
-        }
-      } 
-
-      // ✨ الساعي: تصحيح منطقي شامل
-      if (minor) {
-        // لو السعر تراجع أكثر من 5% من أعلى قمة أسبوعية → الساعي في تصحيح
-        const weeklyHigh = weekly.length > 0 ? Math.max(...weekly.slice(-12).map(b => b.h)) : curPrice;
-        const dropFromHigh = (weeklyHigh - curPrice) / weeklyHigh;
-        if (dropFromHigh > 0.05 && minor.dir === "صاعد") {
-          // السعر تراجع من القمة -- الساعي في تصحيح لا صعود
-          minor.wave = "4";
-          minor.type = "تصحيح مؤقت";
-          minor.dir = "محايد";
-          minor.target = parseFloat((curPrice * 0.95).toFixed(2));
-          minor.note = `تصحيح مؤقت من قمة ${weeklyHigh.toFixed(2)} -- دعم متوقع عند ${minor.target} ر.س`;
-        } else if (minor.dir === "هابط" && minor.target > curPrice) {
-          minor.target = parseFloat((curPrice * 0.95).toFixed(2));
-          minor.note = minor.note.replace(/هدف.*ر\.س/, '') + ` | هدف: ${minor.target} ر.س`;
-        } else if (minor.dir === "صاعد" && minor.target < curPrice) {
-          minor.target = parseFloat((curPrice * 1.05).toFixed(2));
-          minor.note = minor.note.replace(/هدف.*ر\.س/, '') + ` | هدف: ${minor.target} ر.س`;
-        }
-      }
-
-      // ✨ اليومي: لو السعر تراجع من قمة أسبوعية → اليومي في موجة 4 أو تصحيح
-      if (intermediate && primary) {
-        const weeklyHigh2 = weekly.length > 0 ? Math.max(...weekly.slice(-12).map(b => b.h)) : curPrice;
-        const dropFromHigh2 = (weeklyHigh2 - curPrice) / weeklyHigh2;
-        if (dropFromHigh2 > 0.05 && primary.dir === "صاعد" && intermediate.dir === "صاعد") {
-          intermediate.wave = "4";
-          intermediate.type = "تصحيح مؤقت";
-          intermediate.dir = "محايد";
-          // موجة 4 تصحح 38.2% من موجة 3 -- الدعم عند 61.8% فيبوناتشي من القمة
-          const weeklyLow2 = weekly.length > 0 ? Math.min(...weekly.map(b => b.l)) : curPrice * 0.5;
-          const wave4Support = parseFloat((weeklyHigh2 - (weeklyHigh2 - weeklyLow2) * 0.382).toFixed(2));
-
-          const safeWave4 = wave4Support > curPrice * 0.85 && wave4Support < curPrice ? wave4Support : parseFloat((curPrice * 0.92).toFixed(2));
-          intermediate.target = safeWave4;
-          intermediate.note = `تصحيح موجة 4 من قمة ${weeklyHigh2.toFixed(2)} -- دعم فيبوناتشي 38.2% عند ${safeWave4} ر.س`;
-        }
-      }
-
 
       // ✨ توافق الهدف مع الاتجاه
       if (primary && primary.dir === "صاعد" && primary.target < curPrice) {
