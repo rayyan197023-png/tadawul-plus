@@ -100,7 +100,6 @@ function AnalysisScreenInner({ commData: extCommData } = {}) {
   const [rareAlert,   setRareAlert]   = useState(null);
   const [liveTime,    setLiveTime]    = useState(new Date());
   const [discovered,  setDiscovered]  = useState([]);
-    const [diag, setDiag] = useState(null);
   const [cardLevel,   setCardLevel]   = useState({});
   const [flashCard,   setFlashCard]   = useState(null);
   const [loading,     setLoading]     = useState(true);
@@ -189,21 +188,6 @@ return {stk, bars, health:h, isRealData};
     }
     return result;
     },[throttledSig, liveMACRO, ohlcvCache]);
-
-  // 🔍 تشخيص مؤقت -- يُحذف بعد الفحص
-  useEffect(function(){
-    if (!allData || !allData.length) return;
-    var real = allData.filter(function(d){ return d && d.isRealData; });
-    var sc = real.map(function(d){ return d.health.score; });
-    setDiag({
-      real: real.length,
-      total: allData.length,
-      avg: sc.length ? Math.round(sc.reduce(function(s,v){return s+v;},0)/sc.length) : 0,
-      min: sc.length ? Math.min.apply(null, sc) : 0,
-      max: sc.length ? Math.max.apply(null, sc) : 0,
-      sample: sc.slice(0, 8).join(','),
-    });
-  }, [allData]);
 
   // ✨ لوحة التحليل → AI Learning (المصدر 2)
   // عند انتهاء التحليل: قيّم التوصيات القديمة (7+ أيام) ثم احفظ "شراء قوي" الجديدة
