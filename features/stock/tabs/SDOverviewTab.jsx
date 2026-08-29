@@ -532,6 +532,7 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
           {lbl:"VWAP",clr:C.amber,dash:"5,3"},
           {lbl:"MA20",clr:C.electric,dash:""},
           {lbl:"MA50",clr:C.plasma,dash:""},
+ {lbl:"Pivot",clr:C.electric,dash:"6,4"},
         ].map((item,i)=>(
           <span key={i} style={{ display:"flex", alignItems:"center", gap:4 }}>
             <svg width="14" height="6"><line x1="0" y1="3" x2="14" y2="3" stroke={item.clr} strokeWidth={item.dash?"1.2":"1.6"} strokeDasharray={item.dash} opacity=".85"/></svg>
