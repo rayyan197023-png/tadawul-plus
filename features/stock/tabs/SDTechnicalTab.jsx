@@ -859,7 +859,10 @@ function ElliottWaveAI({ stk, hist }) {
     if (waveTarget > 0) {
       var _wrongDir = (waveDir === "هابط" && waveTarget > curPrice) ||
                       (waveDir === "صاعد" && waveTarget < curPrice);
-      var _far = waveTarget > curPrice * 1.6 || waveTarget < curPrice * 0.4;
+      // ✨ حد أوسع حين تستوفي القواعد -- النمط الصحيح يبرر هدفاً أبعد
+      var _strict = (ruleStatus || "").indexOf("✓") === 0;
+      var _hi = _strict ? 2.2 : 1.6, _lo = _strict ? 0.45 : 0.4;
+      var _far = waveTarget > curPrice * _hi || waveTarget < curPrice * _lo;
       if (_wrongDir || _far) {
         waveTarget = 0;
         fibRatio = "--";
