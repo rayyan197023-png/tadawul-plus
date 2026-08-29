@@ -791,8 +791,7 @@ function ElliottWaveAI({ stk, hist }) {
     } else if (cor.valid) {
       const P = cor.points;
       waveDir = cor.down ? "هابط" : "صاعد";
-      ruleStatus = `نمط تصحيحي: ${cor.pattern}`;
-
+      ruleStatus = `نمط تصحيحي ${cor.down ? "هابط" : "صاعد (ارتداد)"} · ${cor.pattern}`;
       const beyondC = cor.down ? curPrice < P.pC.price : curPrice > P.pC.price;
       if (beyondC) {
         waveNum = "C"; waveType = cor.cRatio >= 1.5 ? "ممتدة" : "طبيعية";
