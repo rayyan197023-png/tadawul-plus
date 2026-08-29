@@ -207,7 +207,8 @@ const liquidityFetched = useRef(new Set());
     // ✨ ألغِ المؤقتات السابقة قبل بدء دفعة جديدة
     _liqTimers.current.forEach(function(t){ clearTimeout(t); });
     _liqTimers.current = [];
-    var syms = filtered.slice(0, 30).map(function(d) { return d.stk.sym; });
+    // ✨ يتوسع مع التمرير -- visibleCount يزيد تدريجياً
+    var syms = filtered.slice(0, Math.min(visibleCount, filtered.length)).map(function(d) { return d.stk.sym; });
   var toFetch = syms.filter(function(s) { return !liquidityFetched.current.has(s); });
   if (toFetch.length === 0) return;
   
