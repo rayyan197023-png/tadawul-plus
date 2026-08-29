@@ -111,9 +111,27 @@ const StockCard = React.memo(function StockCard({ stk, bars, flash, openDetail, 
               {(stk.v || 0) > (stk.avgV || 0) * 1.3 && <span style={{ fontSize: 11, color: C.mint }}>↑</span>}
             </div>
           </div>
-          {/* وسط -- الرسم البياني */}
-          <div style={{ flex: 1, minWidth: 0, padding: "10px 8px", display: "flex", alignItems: "center" }}>
-            <MiniChart bars={bars} color={pc} h={40} id={stk.sym} />
+          {/* وسط -- تدفق السيولة */}
+          <div style={{ flex: 1, minWidth: 0, padding: "8px 6px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {netFlow ? (
+              <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 2, direction: "ltr" }}>
+                {[
+                  { l: "صافي", v: (netFlow.net >= 0 ? "+" : "") + fmtVol(Math.abs(netFlow.net)), c: netFlow.net >= 0 ? C.mint : C.coral, b: true },
+                  { l: "شراء", v: fmtVol(netFlow.buy), c: C.mint },
+                  { l: "بيع",  v: fmtVol(netFlow.sell), c: C.coral },
+                  { l: "ش/ب",  v: netFlow.pct + "%", c: netFlow.pct >= 50 ? C.mint : C.coral },
+                ].map(function (r, i) {
+                  return (
+                    <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span style={{ fontSize: 10, fontWeight: r.b ? 800 : 700, color: r.c, fontFamily: "monospace" }}>{r.v}</span>
+                      <span style={{ fontSize: 9, color: C.ash }}>{r.l}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <span style={{ fontSize: 9, color: C.ash }}>…</span>
+            )}
           </div>
           {/* يسار -- السعر والتغيير */}
           <div style={{ flexShrink: 0, minHeight: 60, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 4, padding: "10px 8px 10px 0" }}>
