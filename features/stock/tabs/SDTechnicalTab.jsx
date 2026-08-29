@@ -837,7 +837,9 @@ function ElliottWaveAI({ stk, hist }) {
     }
 
     // ═══ إضافة الخصائص الأكاديمية ═══
-    const props = WAVE_PROPS[waveNum];
+    // ✨ نص مختلف للموجة C الصاعدة (ارتداد لا هبوط)
+    var _pk = (waveNum === "C" && waveDir === "صاعد") ? "C_up" : waveNum;
+    const props = WAVE_PROPS[_pk];
     waveProps = props ? {
       title: props.title,
       chars: props.chars,
