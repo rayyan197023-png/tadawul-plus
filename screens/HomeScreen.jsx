@@ -602,7 +602,7 @@ function FearGreedIndex({liveStocks=[]}) {
               {ZONES.map((z,i)=>(
                 <path key={i} d={arcPath(z.from,z.to,R2)} fill="none" stroke={z.col} strokeWidth="12" strokeLinecap="butt" opacity="0.75"/>
               ))}
-              <path d={arcPath(0,score,R2)} fill="none" stroke={lbl.col} strokeWidth="14" strokeLinecap="round" opacity="0.35"/>
+
               <line x1={CX} y1={CY} x2={nx} y2={ny} stroke={lbl.col} strokeWidth="3" strokeLinecap="round"/>
               <circle cx={CX} cy={CY} r="6" fill={lbl.col} opacity="0.9"/>
               <circle cx={CX} cy={CY} r="3" fill="#fff"/>
