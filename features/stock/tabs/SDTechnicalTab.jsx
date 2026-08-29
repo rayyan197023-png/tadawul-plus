@@ -881,7 +881,9 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=5Y`),
       if (daily.length < 20) { setEwErr("بيانات غير كافية -- تحتاج 20+ شمعة يومية"); setEwLoading(false); return; }
 
       // ZigZag لكل إطار
-      const wPivots = zigzag(weekly, 0.04);  // 4% للأسبوعي
+      // ✨ عتبة أدق للأسبوعي -- 4% تعطي محاور قليلة جداً (4 فقط)
+      var wPivots = zigzag(weekly, 0.025);
+      if (wPivots.length < 6) wPivots = zigzag(weekly, 0.015);
       const dPivots = zigzag(daily,  0.025); // 2.5% لليومي
       const hPivots = zigzag(hourly, 0.015); // 1.5% للساعي
 
