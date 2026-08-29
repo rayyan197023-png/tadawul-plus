@@ -597,7 +597,7 @@ function FearGreedIndex({liveStocks=[]}) {
         <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
           {/* Gauge */}
           <div style={{flexShrink:0}}>
-            <svg width="200" height="108" viewBox="0 0 200 108">
+            <svg width="200" height="125" viewBox="0 0 200 125">
               <path d={arcPath(0,100,R2)} fill="none" stroke="rgba(255,255,255,.07)" strokeWidth="14" strokeLinecap="round"/>
               {ZONES.map((z,i)=>(
                 <path key={i} d={arcPath(z.from,z.to,R2)} fill="none" stroke={z.col} strokeWidth="12" strokeLinecap="butt" opacity="0.75"/>
