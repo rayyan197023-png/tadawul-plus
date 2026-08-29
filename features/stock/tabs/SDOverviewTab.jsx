@@ -135,7 +135,7 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
 
     fetchBars();
     return () => { cancelled = true; };
-  }, [sym, per]);
+  }, [sym, per, stk?.p]);
 
 
   const history = sahmkBars;
