@@ -32,18 +32,6 @@ const SECTOR_COLORS = {
   "خدمات مالية":"#a78bfa",  مرافق:"#1ee68a",
 };
 
-// ── Mini Chart ────────────────────────────────────────────────
-// ✨ لا نولّد شموعاً -- نقرأ الحقيقية من كاش tp_hist_
-function genBars(stk) {
-  try {
-    const raw = localStorage.getItem('tp_hist_' + stk.sym);
-    if (!raw) return [];
-    const entry = JSON.parse(raw);
-    if (!entry || !Array.isArray(entry.bars)) return [];
-    return entry.bars.slice(-60).map(b => ({ c: b.c, vol: b.v || 0 }));
-  } catch (e) { return []; }
-}
-
 
 // ── Stock Card ────────────────────────────────────────────────
 const StockCard = React.memo(function StockCard({ stk, bars, flash, openDetail, setFlash, fmtVol, netFlow }) {
