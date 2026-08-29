@@ -182,10 +182,7 @@ const liveStocks = stocks.length > 0 ? stocks : [];
     liveStocks.map(stk => {
       // ✨ الشموع الحقيقية تنتهي بإغلاق الأمس لا بالسعر اللحظي،
       //    فنكتفي بقراءتها مرة واحدة لكل سهم
-      if (!barsCache.current[stk.sym]) {
-        barsCache.current[stk.sym] = genBars(stk);
-      }
-      return { stk, bars: barsCache.current[stk.sym] };
+      return { stk, bars: [] };
     }),
   [liveStocks]);
 
