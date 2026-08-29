@@ -895,13 +895,13 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=5Y`),
       const bullTarget = primary?.target > curPrice ? primary.target : (intermediate?.target > curPrice ? intermediate.target : parseFloat((curPrice * 1.05).toFixed(2)));
       const bearTarget = primary?.support || parseFloat((curPrice * 0.95).toFixed(2));
 
-      // تقييم الثقة
-      const confidence = Math.min(95, Math.max(40,
-        (wPivots.length >= 6 ? 30 : 15) +
-        (dPivots.length >= 6 ? 25 : 12) +
-        (hPivots.length >= 4 ? 20 : 10) +
-        (primary?.wave !== "?" ? 15 : 0) +
-        (intermediate?.wave !== "?" ? 10 : 0)
+      // ✨ الثقة من صحة النمط لا من عدد المحاور
+      const _ok = (w) => w && w.wave !== "?" && (w.ruleStatus || "").indexOf("✓") === 0;
+      const confidence = Math.min(92, Math.max(15,
+        (_ok(primary)      ? 40 : primary?.wave      !== "?" ? 20 : 5) +
+        (_ok(intermediate) ? 30 : intermediate?.wave !== "?" ? 15 : 5) +
+        (_ok(minor)        ? 15 : minor?.wave        !== "?" ? 8  : 3) +
+        (wPivots.length >= 6 ? 7 : 0)
       ));
 
       // الملخص
