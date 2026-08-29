@@ -78,9 +78,9 @@ const StockCard = React.memo(function StockCard({ stk, bars, flash, openDetail, 
                   { l: "ش/ب",  v: netFlow.pct + "%", c: netFlow.pct >= 50 ? C.mint : C.coral },
                 ].map(function (r, i) {
                   return (
-                    <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: 10, fontWeight: r.b ? 800 : 700, color: r.c, fontFamily: "monospace" }}>{r.v}</span>
-                      <span style={{ fontSize: 9, color: C.ash }}>{r.l}</span>
+                    <div key={i} style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 5, direction: "rtl" }}>
+                      <span style={{ fontSize: 9, color: C.ash, minWidth: 26, textAlign: "right" }}>{r.l}</span>
+                      <span style={{ fontSize: 10, fontWeight: r.b ? 800 : 700, color: r.c, fontFamily: "monospace", direction: "ltr" }}>{r.v}</span>
                     </div>
                   );
                 })}
