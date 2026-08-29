@@ -650,6 +650,39 @@ function ElliottWaveAI({ stk, hist }) {
     };
   };
 
+  // ═══ فحص النمط التصحيحي ABC ═══
+  // يتطلب 4 محاور: P0 → A → B → C
+  const validateCorrective = (p) => {
+    if (!p || p.length < 4) return { valid: false, reason: "محاور غير كافية (نحتاج 4)" };
+
+    const [p0, pA, pB, pC] = p.slice(-4);
+    const down = pA.price < p0.price;
+
+    const seq = [p0, pA, pB, pC].map(x => x.type).join("");
+    if (seq !== (down ? "HLHL" : "LHLH")) {
+      return { valid: false, reason: "المحاور غير متناوبة" };
+    }
+
+    const wA = Math.abs(pA.price - p0.price);
+    const wC = Math.abs(pC.price - pB.price);
+    const bRetr = wA > 0 ? Math.abs(pB.price - pA.price) / wA : 0;
+
+    // قاعدة: الموجة B لا تتجاوز بداية A (إلا في expanded flat)
+    const expanded = down ? pB.price > p0.price : pB.price < p0.price;
+
+    // النمط: zigzag إن كان B تصحيحاً ضحلاً، flat إن كان عميقاً
+    const pattern = bRetr < 0.618 ? "zigzag" : expanded ? "expanded flat" : "flat";
+
+    return {
+      valid: true, down,
+      points: { p0, pA, pB, pC },
+      wA, wC,
+      cRatio: wA > 0 ? +(wC / wA).toFixed(2) : 1,
+      bRetr: +(bRetr * 100).toFixed(0),
+      pattern,
+    };
+  };
+
   // ═══ تحليل الموجات من القمم والقيعان ═══
   const analyzeWaves = (pivots, bars, timeframe) => {
     if (!pivots || pivots.length < 4) return null;
