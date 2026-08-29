@@ -250,7 +250,8 @@ const liveStocks = stocks.length > 0 ? stocks : [];
 return filtered.slice(0, 60).map(function(d) { return d.stk.sym; });
   }, [filtered]);
 
-  var realBars = useOHLCVCache(visibleSyms, '3M');
+  // ✨ لم نعد نعرض شارتاً -- الشموع كانت تبطئ جلب السيولة
+  var realBars = {};
 
 const [liquidityMap, setLiquidityMap] = useState({});
 const liquidityFetched = useRef(new Set());
