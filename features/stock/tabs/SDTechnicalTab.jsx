@@ -673,6 +673,12 @@ function ElliottWaveAI({ stk, hist }) {
     // النمط: zigzag إن كان B تصحيحاً ضحلاً، flat إن كان عميقاً
     const pattern = bRetr < 0.618 ? "zigzag" : expanded ? "expanded flat" : "flat";
 
+        // ✨ شروط إضافية: C يجب أن تتجاوز A، والنسب ضمن المعقول
+    const cBeyondA = down ? pC.price < pA.price : pC.price > pA.price;
+    const ratioOk = wA > 0 && (wC / wA) >= 0.5 && (wC / wA) <= 3.0;
+    if (!cBeyondA) return { valid: false, reason: "الموجة C لم تتجاوز A -- النمط غير مكتمل" };
+    if (!ratioOk)  return { valid: false, reason: "نسبة C/A خارج النطاق المعقول" };
+
     return {
       valid: true, down,
       points: { p0, pA, pB, pC },
