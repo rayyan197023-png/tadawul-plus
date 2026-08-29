@@ -797,7 +797,9 @@ function ElliottWaveAI({ stk, hist }) {
       if (beyondC) {
         waveNum = "C"; waveType = cor.cRatio >= 1.5 ? "ممتدة" : "طبيعية";
         waveStart = P.pB.price;
-        waveTarget = fib(P.pB.price, P.pC.price, cor.cRatio >= 1.5 ? 1.618 : 1.0);
+        // ✨ الهدف = امتداد من B بمقدار A (في اتجاه C الصحيح)
+        var _ext = cor.cRatio >= 1.5 ? 1.618 : 1.0;
+        waveTarget = +(P.pB.price + (cor.down ? -1 : 1) * cor.wA * _ext).toFixed(2);
         fibRatio = cor.cRatio >= 1.5 ? "161.8%" : "100%";
         waveNote = `الموجة C مستمرة -- نسبتها ${cor.cRatio}× من A · نمط ${cor.pattern}`;
       } else {
