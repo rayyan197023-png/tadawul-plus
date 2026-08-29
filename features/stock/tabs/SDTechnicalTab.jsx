@@ -607,6 +607,49 @@ function ElliottWaveAI({ stk, hist }) {
     return labels[closest] || ratio.toFixed(3);
   };
 
+  // ═══ فحص قواعد إليوت الثلاث الصارمة ═══
+  // يتطلب 6 محاور متناوبة: P0(قاع) P1(قمة) P2(قاع) P3(قمة) P4(قاع) P5(قمة)
+  const validateImpulse = (p) => {
+    if (!p || p.length < 6) return { valid: false, reason: "محاور غير كافية (نحتاج 6)" };
+
+    const [p0, p1, p2, p3, p4, p5] = p.slice(-6);
+    const up = p1.price > p0.price;
+
+    // التناوب إلزامي
+    const seq = [p0, p1, p2, p3, p4, p5].map(x => x.type).join("");
+    if (seq !== (up ? "LHLHLH" : "HLHLHL")) {
+      return { valid: false, reason: "المحاور غير متناوبة" };
+    }
+
+    const w1 = Math.abs(p1.price - p0.price);
+    const w3 = Math.abs(p3.price - p2.price);
+    const w5 = Math.abs(p5.price - p4.price);
+
+    // القاعدة 1: الموجة 2 لا تتجاوز بداية الموجة 1
+    if (up ? p2.price <= p0.price : p2.price >= p0.price) {
+      return { valid: false, reason: "خرق القاعدة 1: الموجة 2 تجاوزت بداية الموجة 1" };
+    }
+
+    // القاعدة 2: الموجة 3 ليست الأقصر
+    if (w3 < w1 && w3 < w5) {
+      return { valid: false, reason: "خرق القاعدة 2: الموجة 3 هي الأقصر" };
+    }
+
+    // القاعدة 3: الموجة 4 لا تتداخل مع منطقة الموجة 1
+    if (up ? p4.price <= p1.price : p4.price >= p1.price) {
+      return { valid: false, reason: "خرق القاعدة 3: الموجة 4 تداخلت مع الموجة 1" };
+    }
+
+    return {
+      valid: true, up,
+      points: { p0, p1, p2, p3, p4, p5 },
+      sizes: { w1, w3, w5 },
+      w3Ratio: w1 > 0 ? +(w3 / w1).toFixed(2) : 1,
+      w5Ratio: w1 > 0 ? +(w5 / w1).toFixed(2) : 1,
+      extended: w1 > 0 && (w3 / w1) >= 1.618,
+    };
+  };
+
   // ═══ تحليل الموجات من القمم والقيعان ═══
   const analyzeWaves = (pivots, bars, timeframe) => {
     if (!pivots || pivots.length < 4) return null;
