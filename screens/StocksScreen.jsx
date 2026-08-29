@@ -72,10 +72,8 @@ const StockCard = React.memo(function StockCard({ stk, bars, flash, openDetail, 
             {netFlow ? (
               <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 2, direction: "ltr" }}>
                 {[
-                  { l: "صافي", v: (netFlow.net >= 0 ? "+" : "") + fmtVol(Math.abs(netFlow.net)), c: netFlow.net >= 0 ? C.mint : C.coral, b: true },
-                  { l: "شراء", v: fmtVol(netFlow.buy), c: C.mint },
-                  { l: "بيع",  v: fmtVol(netFlow.sell), c: C.coral },
-                  { l: "ش/ب",  v: netFlow.pct + "%", c: netFlow.pct >= 50 ? C.mint : C.coral },
+                  { l: "صافي السيولة", v: (netFlow.net >= 0 ? "+" : "") + fmtVol(Math.abs(netFlow.net)), c: netFlow.net >= 0 ? C.mint : C.coral, b: true },
+                  { l: "ش/ب", v: netFlow.pct + "%", c: netFlow.pct >= 50 ? C.mint : C.coral },
                 ].map(function (r, i) {
                   return (
                     <div key={i} style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 5, direction: "rtl" }}>
