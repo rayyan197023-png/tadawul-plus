@@ -837,10 +837,18 @@ function ElliottWaveAI({ stk, hist }) {
       ? parseFloat((lows[lows.length-1]?.price * 0.995 || curPrice * 0.95).toFixed(2))
       : parseFloat((highs[highs.length-1]?.price * 1.005 || curPrice * 1.05).toFixed(2));
 
-    // ✨ لا نعدّل هدف فيبوناتشي قسراً -- نُفصح عن بُعده بدل تزييفه
+    // ✨ الهدف يجب أن يتوافق مع اتجاه الموجة -- وإلا فالنمط غير موثوق
     if (waveTarget > 0) {
+      var _wrongDir = (waveDir === "هابط" && waveTarget > curPrice) ||
+                      (waveDir === "صاعد" && waveTarget < curPrice);
       var _far = waveTarget > curPrice * 1.6 || waveTarget < curPrice * 0.4;
-      waveNote += ` | هدف فيبوناتشي: ${waveTarget} ر.س` + (_far ? " (بعيد -- تحقق من صحة النمط)" : "");
+      if (_wrongDir || _far) {
+        waveTarget = 0;
+        fibRatio = "--";
+        waveNote += ` | ⚠ الهدف غير متوافق مع اتجاه الموجة -- النمط يحتاج محاور أوضح`;
+      } else {
+        waveNote += ` | هدف فيبوناتشي: ${waveTarget} ر.س`;
+      }
     }
 
     const safeSupport = support < curPrice * 0.5 || support > curPrice ? parseFloat((curPrice * 0.93).toFixed(2)) : parseFloat(support.toFixed(2));
