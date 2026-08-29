@@ -891,15 +891,6 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=5Y`),
 
       const curPrice = stk.p || daily[daily.length - 1]?.c || 0;
 
-
-      // ✨ توافق الهدف مع الاتجاه
-      if (primary && primary.dir === "صاعد" && primary.target < curPrice) {
-        primary.target = parseFloat((curPrice * 1.05).toFixed(2));
-      }
-      if (primary && primary.dir === "هابط" && primary.target > curPrice) {
-        primary.target = parseFloat((curPrice * 0.95).toFixed(2));
-      }
-
       // الهدف التالي
       const bullTarget = primary?.target > curPrice ? primary.target : (intermediate?.target > curPrice ? intermediate.target : parseFloat((curPrice * 1.05).toFixed(2)));
       const bearTarget = primary?.support || parseFloat((curPrice * 0.95).toFixed(2));
