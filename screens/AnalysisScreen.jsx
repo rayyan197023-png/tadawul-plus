@@ -813,23 +813,6 @@ animation:'shimmer 1.4s ease infinite',
                   <span style={{fontSize:16}}>⚡</span>
                 </div>
               </div>
-              <div style={{display:"flex",justifyContent:"space-between",gap:6}}>
-                {[
-    {label:"شراء قوي", count:signalCounts.buy, color:C.mint},
-    {label:"مراقبة",   count:signalCounts.watch, color:C.amber||"#f59e0b"},
-    {label:"محايد",    count:signalCounts.neutral, color:C.teal},
-    {label:"تخفيف",    count:signalCounts.reduce, color:C.coral},
-].map(item=>(
-                  <div key={item.label} style={{
-                    flex:1, background:item.color+"18",
-                    border:"1px solid "+item.color+"33",
-                    borderRadius:8, padding:"6px 4px", textAlign:"center",
-                  }}>
-                    <div style={{fontSize:16,fontWeight:900,color:item.color}}>{item.count}</div>
-                    <div style={{fontSize:8,color:C.smoke,marginTop:1}}>{item.label}</div>
-                  </div>
-                ))}
-              </div>
             </button>
           </div>
 
