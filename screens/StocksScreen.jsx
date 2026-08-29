@@ -163,9 +163,8 @@ const liveStocks = stocks.length > 0 ? stocks : [];
   }, []);
 
   // ── Pull to Refresh ───────────────────────────────────────
-  // ✨ تحديث فعلي: نمسح كاش الشموع ليُعاد بناؤه من tp_hist_ المحدَّث
+  // الأسعار تُحدَّث تلقائياً كل 15 ثانية -- السحب للإحساس بالاستجابة فقط
   const handleRefresh = useCallback(async () => {
-    barsCache.current = {};
     await new Promise(res => setTimeout(res, 400));
   }, []);
   const { containerRef: pullRef, isPulling, pullProgress, isRefreshing, touchHandlers } =
