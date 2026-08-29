@@ -206,8 +206,11 @@ const liveStocks = stocks.length > 0 ? stocks : [];
 const [liquidityMap, setLiquidityMap] = useState({});
 const liquidityFetched = useRef(new Set());
 
+  var _liqTimers = useRef([]);
   useEffect(function() {
-    // ✨ سقف 30 سهماً -- كان يطلب 249 سهماً (75 ثانية طلبات) ويسبب 429
+    // ✨ ألغِ المؤقتات السابقة قبل بدء دفعة جديدة
+    _liqTimers.current.forEach(function(t){ clearTimeout(t); });
+    _liqTimers.current = [];
     var syms = filtered.slice(0, 30).map(function(d) { return d.stk.sym; });
   var toFetch = syms.filter(function(s) { return !liquidityFetched.current.has(s); });
   if (toFetch.length === 0) return;
