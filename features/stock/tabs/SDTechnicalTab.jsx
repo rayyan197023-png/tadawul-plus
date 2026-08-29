@@ -943,7 +943,9 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=5Y`),
 
       setEwData({
         primary, intermediate, minor,
-        structure: dir === "صاعد" ? "نمط دافع (1-2-3-4-5)" : dir === "هابط" ? "نمط تصحيحي (A-B-C)" : "نمط غير محدد",
+        structure: primary?.wave === "?" ? "لا نمط إليوت واضح حالياً"
+                 : ["1","2","3","4","5"].includes(primary?.wave) ? "نمط دافع (1-2-3-4-5)"
+                 : "نمط تصحيحي (A-B-C)",
         currentPos: `السعر الحالي ${curPrice.toFixed(2)} ر.س -- ${primary?.wave !== "?" ? `ضمن الموجة ${primary?.wave} ${dir}` : "الموجة غير محددة"}`,
         nextTarget: { bull: bullTarget, bear: bearTarget, fib: primary?.fib || "61.8%" },
         invalidation: primary?.invalidation || 0,
