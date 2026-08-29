@@ -108,6 +108,22 @@ function CChart({ sym, base, per, chartType, stk, onExpand }) {
           }
         }
 
+        // ✨ نضيف شمعة اليوم من السعر الحي -- sahmk يُرجع المُغلقة فقط
+        if (per !== "1D" && per !== "1W" && per !== "1H" && stk && stk.p > 0) {
+          var _last = normalized[normalized.length - 1];
+          var _todayC = stk.p;
+          // نضيفها فقط إن اختلفت عن آخر شمعة (تفادي التكرار بعد الإغلاق)
+          if (!_last || Math.abs(_last.c - _todayC) > 0.001) {
+            normalized = normalized.concat([{
+              o: +(stk.o ?? stk.open ?? _todayC),
+              h: +(stk.hi ?? stk.high ?? Math.max(_todayC, _last ? _last.c : _todayC)),
+              l: +(stk.lo ?? stk.low  ?? Math.min(_todayC, _last ? _last.c : _todayC)),
+              c: _todayC,
+              v: +(stk.v || 0),
+              _live: true,
+            }]);
+          }
+        }
         if (!cancelled) setSahmkBars(normalized);
       } catch (e) {
         if (!cancelled) setSahmkBars([]);
