@@ -788,7 +788,7 @@ function ElliottWaveAI({ stk, hist }) {
         var _next = _lv.find(function(x){ return x > imp.w5Ratio; }) || 2.618;
         waveTarget = +(P.p4.price + (imp.up ? 1 : -1) * S.w1 * _next).toFixed(2);
         fibRatio = (_next * 100).toFixed(1) + "% من الموجة 1";
-        waveNote = `الموجة 5 مستمرة -- نسبتها ${imp.w5Ratio}× من الموجة 1 · الموجة 3 = ${imp.w3Ratio}×`;
+        waveNote = `الموجة 5 مستمرة -- نسبتها ${imp.w5Ratio}× من الموجة 1 · الموجة 3 = ${imp.w3Ratio}× [تشخيص: p4=${P.p4.price} w1=${S.w1.toFixed(2)} هدف=${waveTarget}]`;
       } else if (retrFrom5 <= 0.382) {
         waveNum = "5"; waveType = "قرب الاكتمال";
         waveStart = P.p4.price;
