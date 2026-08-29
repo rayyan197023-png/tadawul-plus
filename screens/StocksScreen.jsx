@@ -4,7 +4,6 @@ import { useHaptic }        from '../hooks/useHaptic';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
 import { useNav, useSharedPrices, useStockState } from '../store';
 // import StockDetail removed -- opened by AppShell
-import { useOHLCVCache }    from '../hooks/useOHLCVCache';
 
 // ── Design Tokens ─────────────────────────────────────────────
 const C = {
@@ -118,7 +117,6 @@ const { stocks } = useStockState();
 const liveStocks = stocks.length > 0 ? stocks : [];
   const { openStock }           = useNav();
 
-  const barsCache    = useRef({});
   const scrollPos    = useRef(0);
   const listRef      = useRef(null);
 
@@ -175,11 +173,7 @@ const liveStocks = stocks.length > 0 ? stocks : [];
     usePullToRefresh(handleRefresh, 60);
 
   const allData = useMemo(() =>
-    liveStocks.map(stk => {
-      // ✨ الشموع الحقيقية تنتهي بإغلاق الأمس لا بالسعر اللحظي،
-      //    فنكتفي بقراءتها مرة واحدة لكل سهم
-      return { stk, bars: [] };
-    }),
+    liveStocks.map(stk => ({ stk })),
   [liveStocks]);
 
   // ── الفلترة والترتيب ──────────────────────────────────────
@@ -196,8 +190,6 @@ const liveStocks = stocks.length > 0 ? stocks : [];
   // ✨ جلب بيانات OHLCV الحقيقية لأول 30 سهماً مرئياً (آمن من 429)
   // يتبع القائمة المفلترة: عند تغيير القطاع/البحث، يُجلب أول 30 من النتيجة الجديدة
 
-  // ✨ لم نعد نعرض شارتاً -- الشموع كانت تبطئ جلب السيولة
-  var realBars = {};
 
 const [liquidityMap, setLiquidityMap] = useState({});
 const liquidityFetched = useRef(new Set());
