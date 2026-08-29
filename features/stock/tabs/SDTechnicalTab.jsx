@@ -1105,6 +1105,17 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=5Y`),
                     <div style={{ fontSize: 10, color: C.mist, lineHeight: 1.8, background: C.layer3, borderRadius: 6, padding: "6px 10px" }}>
                       {tf.data.note}
                     </div>
+                    {tf.data.ruleStatus && (
+                      <div style={{
+                        fontSize: 9, fontWeight: 700, lineHeight: 1.7,
+                        color: tf.data.ruleStatus.indexOf("✓") === 0 ? C.mint : C.amber,
+                        background: (tf.data.ruleStatus.indexOf("✓") === 0 ? C.mint : C.amber) + "12",
+                        border: `1px solid ${(tf.data.ruleStatus.indexOf("✓") === 0 ? C.mint : C.amber)}25`,
+                        borderRadius: 6, padding: "5px 9px",
+                      }}>
+                        {tf.data.ruleStatus.indexOf("✓") === 0 ? tf.data.ruleStatus : "⚠ " + tf.data.ruleStatus}
+                      </div>
+                    )}
                     {tf.data.props && (
                       <div style={{ background: col+"10", border: `1px solid ${col}22`, borderRadius: 8, padding: "8px 10px" }}>
                         <div style={{ fontSize: 10, color: col, fontWeight: 800, marginBottom: 6 }}>
