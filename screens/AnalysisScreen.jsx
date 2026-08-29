@@ -781,7 +781,7 @@ animation:'shimmer 1.4s ease infinite',
               <div style={{
                 fontSize:7,fontWeight:700,marginTop:2,
                 color: avgHealth>=65?C.mint:avgHealth>=55?C.electric:avgHealth>=45?C.amber:C.coral,
-              }}>{avgHealth>=65?"ممتاز":avgHealth>=55?"جيد":avgHealth>=45?"محايد":"حذر"}</div>
+              }}>{avgHealth>=56?"ممتاز":avgHealth>=52?"جيد":avgHealth>=48?"محايد":"حذر"}</div>
             </div>
             <div style={{width:1,height:36,background:C.line}}/>
             {/* السؤال ٢: ما أفضل سهم؟ */}
