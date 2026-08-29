@@ -776,11 +776,11 @@ animation:'shimmer 1.4s ease infinite',
               <div style={{fontSize:8,color:C.smoke,marginBottom:3}}>حال السوق</div>
               <div style={{
                 fontSize:16,fontWeight:900,lineHeight:1,
-                color: avgHealth>=65?C.mint:avgHealth>=55?C.electric:avgHealth>=45?C.amber:C.coral,
+                color: avgHealth>=56?C.mint:avgHealth>=52?C.electric:avgHealth>=48?C.amber:C.coral,
               }}>{avgHealth}</div>
               <div style={{
                 fontSize:7,fontWeight:700,marginTop:2,
-                color: avgHealth>=65?C.mint:avgHealth>=55?C.electric:avgHealth>=45?C.amber:C.coral,
+                color: avgHealth>=56?C.mint:avgHealth>=52?C.electric:avgHealth>=48?C.amber:C.coral,
               }}>{avgHealth>=56?"ممتاز":avgHealth>=52?"جيد":avgHealth>=48?"محايد":"حذر"}</div>
             </div>
             <div style={{width:1,height:36,background:C.line}}/>
