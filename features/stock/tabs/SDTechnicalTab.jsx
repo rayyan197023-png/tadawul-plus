@@ -754,96 +754,68 @@ function ElliottWaveAI({ stk, hist }) {
       },
     };
 
-    if (overallUp && highs.length >= 2 && lows.length >= 2) {
-      const lastLow  = lows[lows.length - 1].price;
-      const lastHigh = highs[highs.length - 1].price;
-      const prevLow  = lows.length >= 2 ? lows[lows.length - 2].price : lows[0].price;
-      const prevHigh = highs.length >= 2 ? highs[highs.length - 2].price : highs[0].price;
-      const moveSize = lastHigh - lastLow;
-      const prevSize = prevHigh - prevLow;
-      const ratio = prevSize > 0 ? moveSize / prevSize : 1;
+    // ═══ تصنيف مبني على قواعد إليوت ═══
+    const imp = validateImpulse(recent);
+    const cor = validateCorrective(recent);
+    let ruleStatus = "";
 
-      // ✨ تحديد رقم الموجة بناءً على نسبة الحركة الكلية
-      const allLows = pivots.filter(p => p.type === "L");
-      const absoluteBottom = allLows.length > 0 ? Math.min(...allLows.map(p => p.price)) : lows[0].price;
-      const totalMove = (lastHigh - absoluteBottom) / absoluteBottom;
-      // ✨ موجة 3 إذا: حركة كلية > 40% أو السعر الحالي أعلى بـ 30%+ من أدنى قاع
-      const priceFromBottom = (curPrice - absoluteBottom) / absoluteBottom;
-      const isWave3 = totalMove > 0.4 || priceFromBottom > 0.3 || ratio >= 1.2;
+    if (imp.valid) {
+      const P = imp.points, S = imp.sizes;
+      waveDir = imp.up ? "صاعد" : "هابط";
+      ruleStatus = "✓ القواعد الثلاث مستوفاة";
 
+      const beyond5 = imp.up ? curPrice > P.p5.price : curPrice < P.p5.price;
+      const retrFrom5 = Math.abs(P.p5.price - curPrice) / (Math.abs(P.p5.price - P.p4.price) || 1);
 
-      waveDir = "صاعد";
-      waveStart = lastLow;
-
-      if (curPrice > lastHigh * 0.98) {
-        if (isWave3) {
-
-          // حركة > 100% أو امتداد 1.5x = موجة 3
-          waveNum = "3"; waveType = ratio >= 2.5 ? "ممتدة" : "طبيعية";
-          waveTarget = fib(lastLow, lastHigh, 1.618);
-          fibRatio = "161.8%";
-          waveNote = `الموجة الثالثة الأقوى -- بدأت من ${lastLow.toFixed(2)} وامتدت ${(ratio * 100).toFixed(0)}% من الموجة الأولى`;
-        } else if (ratio >= 0.9 && ratio < 1.5) {
-          waveNum = "5"; waveType = "طبيعية";
-          waveTarget = fib(lastLow, lastHigh, 1.0);
-          fibRatio = "100%";
-          waveNote = `الموجة الخامسة -- مساوية للموجة الأولى تقريباً، مرشحة للانتهاء قريباً`;
-        } else {
-          waveNum = "1"; waveType = "بداية";
-          waveTarget = fib(lastLow, lastHigh, 1.618);
-          fibRatio = "161.8%";
-          waveNote = `بداية موجة صاعدة جديدة من ${lastLow.toFixed(2)}`;
-        }
-      } else if (curPrice < lastHigh * 0.98 && curPrice > lastLow * 1.02) {
-        const retrace = (lastHigh - curPrice) / (lastHigh - lastLow);
-        if (retrace >= 0.382 && retrace <= 0.618) {
-          waveNum = "4"; waveType = "تصحيحي";
-          waveTarget = fib(lastHigh, lastLow, 0.382);
-          fibRatio = getFibLabel(retrace);
-          waveNote = `تصحيح موجة 4 -- تراجع ${(retrace * 100).toFixed(0)}% من الموجة 3`;
-        } else if (retrace > 0.618) {
-          waveNum = "2"; waveType = "تصحيح عميق";
-          waveTarget = fib(lastHigh, lastLow, 0.618);
-          fibRatio = getFibLabel(retrace);
-          waveNote = `تصحيح موجة 2 عميق -- تراجع ${(retrace * 100).toFixed(0)}%`;
-        } else {
-          waveNum = "B"; waveType = "ارتداد";
-          waveTarget = fib(lastLow, lastHigh, 0.618);
-          fibRatio = "61.8%";
-          waveNote = `موجة B -- ارتداد ضمن نمط ABC`;
-        }
-      }
-    } else if (!overallUp && highs.length >= 2 && lows.length >= 2) {
-      const lastLow  = lows[lows.length - 1].price;
-      const lastHigh = highs[highs.length - 1].price;
-      const prevLow  = lows.length >= 2 ? lows[lows.length - 2].price : lows[0].price;
-      const prevHigh = highs.length >= 2 ? highs[highs.length - 2].price : highs[0].price;
-      const moveSize = lastHigh - lastLow;
-      const prevSize = prevHigh - prevLow;
-      const ratio = prevSize > 0 ? moveSize / prevSize : 1;
-
-      waveDir = "هابط";
-      waveStart = lastHigh;
-
-      if (ratio >= 1.5) {
-        waveNum = "C"; waveType = "ممتدة";
-        waveTarget = fib(lastHigh, lastLow, 1.618);
-        fibRatio = "161.8%";
-        waveNote = `موجة C هابطة ممتدة`;
+      if (beyond5) {
+        waveNum = "5"; waveType = imp.extended ? "امتداد بعد 3 ممتدة" : "طبيعية";
+        waveStart = P.p4.price;
+        waveTarget = fib(P.p4.price, P.p5.price, imp.w5Ratio >= 1.5 ? 1.618 : 1.0);
+        fibRatio = imp.w5Ratio >= 1.5 ? "161.8%" : "100%";
+        waveNote = `الموجة 5 مستمرة -- نسبتها ${imp.w5Ratio}× من الموجة 1 · الموجة 3 = ${imp.w3Ratio}×`;
+      } else if (retrFrom5 <= 0.382) {
+        waveNum = "5"; waveType = "قرب الاكتمال";
+        waveStart = P.p4.price;
+        waveTarget = P.p5.price;
+        fibRatio = "قمة 5";
+        waveNote = `الموجة 5 قرب اكتمالها عند ${P.p5.price.toFixed(2)} -- تصحيح ABC مرجّح بعدها`;
       } else {
-        const midPoint = (lastHigh + lastLow) / 2;
-        if (curPrice > midPoint) {
-          waveNum = "B"; waveType = "ارتداد صاعد";
-          waveTarget = fib(lastLow, lastHigh, 0.618);
-          fibRatio = "61.8%";
-          waveNote = `موجة B -- ارتداد صاعد وهمي ضمن تصحيح ABC`;
-        } else {
-          waveNum = "A"; waveType = "هبوطية";
-          waveTarget = fib(lastHigh, lastLow, 1.0);
-          fibRatio = "100%";
-          waveNote = `بداية موجة A هابطة`;
-        }
+        waveNum = "A"; waveType = "بداية تصحيح";
+        waveDir = imp.up ? "هابط" : "صاعد";
+        waveStart = P.p5.price;
+        waveTarget = fib(P.p5.price, P.p2.price, 0.382);
+        fibRatio = "38.2%";
+        waveNote = `اكتمل النمط الدافع 1-5 -- بدأ تصحيح ABC من ${P.p5.price.toFixed(2)}`;
       }
+
+    } else if (cor.valid) {
+      const P = cor.points;
+      waveDir = cor.down ? "هابط" : "صاعد";
+      ruleStatus = `نمط تصحيحي: ${cor.pattern}`;
+
+      const beyondC = cor.down ? curPrice < P.pC.price : curPrice > P.pC.price;
+      if (beyondC) {
+        waveNum = "C"; waveType = cor.cRatio >= 1.5 ? "ممتدة" : "طبيعية";
+        waveStart = P.pB.price;
+        waveTarget = fib(P.pB.price, P.pC.price, cor.cRatio >= 1.5 ? 1.618 : 1.0);
+        fibRatio = cor.cRatio >= 1.5 ? "161.8%" : "100%";
+        waveNote = `الموجة C مستمرة -- نسبتها ${cor.cRatio}× من A · نمط ${cor.pattern}`;
+      } else {
+        waveNum = "C"; waveType = "قرب الاكتمال";
+        waveStart = P.pB.price;
+        waveTarget = P.pC.price;
+        fibRatio = "قاع C";
+        waveNote = `الموجة C قرب اكتمالها -- B صحّحت ${cor.bRetr}% من A · نمط ${cor.pattern}`;
+      }
+
+    } else {
+      waveNum = "?"; waveType = "غير محدد";
+      waveDir = overallUp ? "صاعد" : "هابط";
+      ruleStatus = imp.reason || cor.reason || "لا نمط واضح";
+      waveStart = lastPivot.price;
+      waveTarget = 0;
+      fibRatio = "--";
+      waveNote = `لا يمكن تصنيف الموجة: ${ruleStatus}`;
     }
 
     // ═══ إضافة الخصائص الأكاديمية ═══
