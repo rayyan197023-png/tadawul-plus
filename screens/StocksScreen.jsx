@@ -267,11 +267,19 @@ const liquidityFetched = useRef(new Set());
         .then(function(r) { return r.json(); })
         .then(function(j) {
           if (j && j.liquidity && typeof j.liquidity.net_value === 'number') {
+            var L = j.liquidity;
+            var tot = (L.inflow_value || 0) + (L.outflow_value || 0);
             setLiquidityMap(function(prev) {
-              return Object.assign({}, prev, { [sym]: j.liquidity.net_value });
+              return Object.assign({}, prev, { [sym]: {
+                net:  L.net_value,
+                buy:  L.inflow_value || 0,
+                sell: L.outflow_value || 0,
+                pct:  tot > 0 ? Math.round((L.inflow_value || 0) / tot * 100) : 50,
+              }});
             });
           }
         })
+
         .catch(function() {});
     }, i * 300);
   });
