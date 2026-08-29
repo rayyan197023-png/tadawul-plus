@@ -782,10 +782,12 @@ function ElliottWaveAI({ stk, hist }) {
       if (beyond5) {
         waveNum = "5"; waveType = imp.extended ? "امتداد بعد 3 ممتدة" : "طبيعية";
         waveStart = P.p4.price;
-        // ✨ الهدف = امتداد من قاع الموجة 4 بمقدار الموجة 1 (في اتجاه الدفع)
-        var _e5 = imp.w5Ratio >= 1.618 ? 1.618 : 1.0;
-        waveTarget = +(P.p4.price + (imp.up ? 1 : -1) * S.w1 * _e5).toFixed(2);
-        fibRatio = _e5 === 1.618 ? "161.8% من الموجة 1" : "100% من الموجة 1";
+
+        // ✨ الهدف = المستوى التالي فوق ما تحقق فعلاً
+        var _lv = [1.0, 1.272, 1.618, 2.0, 2.618];
+        var _next = _lv.find(function(x){ return x > imp.w5Ratio; }) || 2.618;
+        waveTarget = +(P.p4.price + (imp.up ? 1 : -1) * S.w1 * _next).toFixed(2);
+        fibRatio = (_next * 100).toFixed(1) + "% من الموجة 1";
         waveNote = `الموجة 5 مستمرة -- نسبتها ${imp.w5Ratio}× من الموجة 1 · الموجة 3 = ${imp.w3Ratio}×`;
       } else if (retrFrom5 <= 0.382) {
         waveNum = "5"; waveType = "قرب الاكتمال";
