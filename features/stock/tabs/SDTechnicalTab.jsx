@@ -887,7 +887,8 @@ function ElliottWaveAI({ stk, hist }) {
       note: waveNote, props: waveProps,
       ruleStatus: ruleStatus,
       support: safeSupport, resistance: safeResistance,
-      invalidation: invalidation > curPrice * 1.5 || invalidation < curPrice * 0.5
+      // ✨ نقطة الإبطال يجب أن تكون قريبة عملياً -- البعيدة لا تُستخدم كوقف
+      invalidation: (invalidation > curPrice * 1.20 || invalidation < curPrice * 0.80)
         ? parseFloat((waveDir === "صاعد" ? curPrice * 0.93 : curPrice * 1.07).toFixed(2))
         : invalidation,
       pivotCount: pivots.length,
