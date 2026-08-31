@@ -823,8 +823,11 @@ function ElliottWaveAI({ stk, hist }) {
       } else {
         waveNum = "C"; waveType = "قرب الاكتمال";
         waveStart = P.pB.price;
-        waveTarget = P.pC.price;
-        fibRatio = "قاع C";
+        // ✨ الهدف = امتداد C إلى 100% من A (لا نقطة C الحالية)
+        var _cD = P.pC.price < P.pB.price;
+        waveTarget = +(P.pB.price + (_cD ? -1 : 1) * cor.wA).toFixed(2);
+        fibRatio = "100% من A";
+
         waveNote = `الموجة C قرب اكتمالها -- B صحّحت ${cor.bRetr}% من A · نمط ${cor.pattern}`;
       }
 
