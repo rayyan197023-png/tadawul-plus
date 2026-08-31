@@ -872,7 +872,11 @@ function ElliottWaveAI({ stk, hist }) {
       }
     }
 
-    const safeSupport = support < curPrice * 0.5 || support > curPrice ? parseFloat((curPrice * 0.93).toFixed(2)) : parseFloat(support.toFixed(2));
+    // ✨ الدعم يجب أن يكون قريباً عملياً -- أبعد من 20% لا يفيد المتداول
+    const safeSupport = (support < curPrice * 0.80 || support > curPrice)
+      ? parseFloat((curPrice * 0.93).toFixed(2))
+      : parseFloat(support.toFixed(2));
+
     const safeResistance = resistance > curPrice * 1.5 || resistance < curPrice ? parseFloat((curPrice * 1.07).toFixed(2)) : parseFloat(resistance.toFixed(2));
 
     return {
