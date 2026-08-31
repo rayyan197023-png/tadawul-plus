@@ -931,12 +931,14 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=5Y`),
       if (wPivots.length < 6)  wPivots = zigzag(weekly, 0.015);
       if (wPivots.length > 30) wPivots = zigzag(weekly, 0.07);
 
-      // ✨ عتبة تكيّفية -- نخفّضها حتى نحصل على محاور كافية للتصنيف
+      // ✨ عتبة تكيّفية -- نخفّضها عند نقص المحاور ونرفعها عند الضجيج
       var dPivots = zigzag(daily, 0.025);
-      if (dPivots.length < 6) dPivots = zigzag(daily, 0.015);
-      if (dPivots.length < 6) dPivots = zigzag(daily, 0.01);
+      if (dPivots.length < 6)  dPivots = zigzag(daily, 0.015);
+      if (dPivots.length < 6)  dPivots = zigzag(daily, 0.01);
+      if (dPivots.length > 40) dPivots = zigzag(daily, 0.045);
       var hPivots = zigzag(hourly, 0.015);
-      if (hPivots.length < 6) hPivots = zigzag(hourly, 0.008);
+      if (hPivots.length < 6)  hPivots = zigzag(hourly, 0.008);
+      if (hPivots.length > 20) hPivots = zigzag(hourly, 0.025);
 
       // تحليل كل إطار
       const primary      = analyzeWaves(wPivots, weekly, "أسبوعي");
