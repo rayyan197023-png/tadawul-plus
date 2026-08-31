@@ -864,7 +864,8 @@ function ElliottWaveAI({ stk, hist }) {
                       (waveDir === "صاعد" && waveTarget < curPrice);
       // ✨ حد أوسع حين تستوفي القواعد -- النمط الصحيح يبرر هدفاً أبعد
       var _strict = (ruleStatus || "").indexOf("✓") === 0;
-      var _hi = _strict ? 2.2 : 1.6, _lo = _strict ? 0.45 : 0.4;
+      // ✨ حدود عملية للتداول -- الهدف الأبعد من ±35% لا يفيد
+      var _hi = _strict ? 1.60 : 1.35, _lo = _strict ? 0.62 : 0.72;
       var _far = waveTarget > curPrice * _hi || waveTarget < curPrice * _lo;
       if (_wrongDir || _far) {
         waveTarget = 0;
