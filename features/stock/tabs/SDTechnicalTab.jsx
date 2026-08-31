@@ -926,8 +926,12 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=5Y`),
       // ✨ عتبة أدق للأسبوعي -- 4% تعطي محاور قليلة جداً (4 فقط)
       var wPivots = zigzag(weekly, 0.025);
       if (wPivots.length < 6) wPivots = zigzag(weekly, 0.015);
-      const dPivots = zigzag(daily,  0.025); // 2.5% لليومي
-      const hPivots = zigzag(hourly, 0.015); // 1.5% للساعي
+      // ✨ عتبة تكيّفية -- نخفّضها حتى نحصل على محاور كافية للتصنيف
+      var dPivots = zigzag(daily, 0.025);
+      if (dPivots.length < 6) dPivots = zigzag(daily, 0.015);
+      if (dPivots.length < 6) dPivots = zigzag(daily, 0.01);
+      var hPivots = zigzag(hourly, 0.015);
+      if (hPivots.length < 6) hPivots = zigzag(hourly, 0.008);
 
       // تحليل كل إطار
       const primary      = analyzeWaves(wPivots, weekly, "أسبوعي");
