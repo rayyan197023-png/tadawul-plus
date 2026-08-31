@@ -881,8 +881,6 @@ function ElliottWaveAI({ stk, hist }) {
       : parseFloat(resistance.toFixed(2));
 
 
-    const safeResistance = resistance > curPrice * 1.5 || resistance < curPrice ? parseFloat((curPrice * 1.07).toFixed(2)) : parseFloat(resistance.toFixed(2));
-
     return {
       wave: waveNum, dir: waveDir, type: waveType,
       start: waveStart, target: waveTarget, fib: fibRatio,
