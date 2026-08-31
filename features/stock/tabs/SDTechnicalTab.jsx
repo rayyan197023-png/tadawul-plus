@@ -828,7 +828,7 @@ function ElliottWaveAI({ stk, hist }) {
         waveTarget = +(P.pB.price + (_cD ? -1 : 1) * cor.wA).toFixed(2);
         fibRatio = "100% من A";
 
-        waveNote = `الموجة C قرب اكتمالها عند ${P.pC.price.toFixed(2)} -- B صحّحت ${cor.bRetr}% من A · نمط ${cor.pattern} · انعكاس مرشّح`;
+        waveNote = `الموجة C قرب اكتمالها -- B صحّحت ${cor.bRetr}% من A · نمط ${cor.pattern} · انعكاس مرشّح`;
       }
 
     } else {
