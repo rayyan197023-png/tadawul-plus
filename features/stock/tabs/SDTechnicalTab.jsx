@@ -925,8 +925,12 @@ fetch(`/api/sahmkdata?endpoint=ohlcv&sym=${stk.sym}&period=5Y`),
 
       // ZigZag لكل إطار
       // ✨ عتبة أدق للأسبوعي -- 4% تعطي محاور قليلة جداً (4 فقط)
-      var wPivots = zigzag(weekly, 0.025);
-      if (wPivots.length < 6) wPivots = zigzag(weekly, 0.015);
+      // ✨ نخفّض العتبة فقط عند نقص المحاور -- ونرفعها عند الضجيج
+      var wPivots = zigzag(weekly, 0.04);
+      if (wPivots.length < 6)  wPivots = zigzag(weekly, 0.025);
+      if (wPivots.length < 6)  wPivots = zigzag(weekly, 0.015);
+      if (wPivots.length > 30) wPivots = zigzag(weekly, 0.07);
+
       // ✨ عتبة تكيّفية -- نخفّضها حتى نحصل على محاور كافية للتصنيف
       var dPivots = zigzag(daily, 0.025);
       if (dPivots.length < 6) dPivots = zigzag(daily, 0.015);
